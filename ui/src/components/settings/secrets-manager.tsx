@@ -58,6 +58,7 @@ export function SecretsManager() {
     const [newSecretKey, setNewSecretKey] = useState("");
     const [newSecretValue, setNewSecretValue] = useState("");
     const [newSecretProvider, setNewSecretProvider] = useState<string>("custom");
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         loadSecrets();
@@ -90,6 +91,7 @@ export function SecretsManager() {
             return;
         }
 
+        setIsSaving(true);
         try {
             const newSecret: SecretDefinition = {
                 id: Math.random().toString(36).substring(7),
@@ -117,6 +119,8 @@ export function SecretsManager() {
                 description: "Failed to save secret.",
                 variant: "destructive",
             });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -219,7 +223,10 @@ export function SecretsManager() {
                         </div>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={handleSaveSecret}>Save Secret</Button>
+                            <Button onClick={handleSaveSecret} disabled={isSaving}>
+                                {isSaving && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
+                                {isSaving ? "Saving..." : "Save Secret"}
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

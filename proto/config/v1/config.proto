@@ -137,6 +137,33 @@ message GlobalSettings {
   bool auto_discover_local = 26 [json_name = "auto_discover_local"];
   // Alert configuration.
   AlertConfig alerts = 27 [json_name = "alerts"];
+  // Cache configuration.
+  CacheSettings cache = 28 [json_name = "cache"];
+}
+
+message CacheSettings {
+  // The type of cache to use ("memory", "redis", "disk", "tiered").
+  string type = 1 [json_name = "type"];
+  // Redis configuration.
+  RedisConfig redis = 2 [json_name = "redis"];
+  // Disk cache configuration.
+  DiskConfig disk = 3 [json_name = "disk"];
+}
+
+message RedisConfig {
+  // Redis address (host:port).
+  string address = 1 [json_name = "address"];
+  // Redis password (optional).
+  string password = 2 [json_name = "password"];
+  // Redis database index.
+  int32 db = 3 [json_name = "db"];
+}
+
+message DiskConfig {
+  // Path to the directory where cache files will be stored.
+  string path = 1 [json_name = "path"];
+  // Max size of the cache in bytes (optional).
+  int64 max_size = 2 [json_name = "max_size"];
 }
 
 message AlertConfig {

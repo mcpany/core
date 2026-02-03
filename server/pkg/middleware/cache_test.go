@@ -23,8 +23,13 @@ const (
 	testToolName        = "test-tool"
 	testServiceName     = "test-service"
 	testServiceToolName = "test-service.test-tool"
-	successResult       = "success"
 )
+
+var successResult = &mcp.CallToolResult{
+	Content: []mcp.Content{
+		&mcp.TextContent{Text: "success"},
+	},
+}
 
 // mockTool is a mock implementation of the tool.Tool interface for testing.
 type mockTool struct {
@@ -78,7 +83,7 @@ func (m *mockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) b
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
@@ -120,7 +125,7 @@ func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 	ttl := 50 * time.Millisecond
 
 	testTool := &mockTool{
@@ -158,7 +163,7 @@ func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
 			Name:      proto.String(testToolName),
@@ -190,7 +195,7 @@ func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
 			Name:      proto.String(testToolName),
@@ -219,7 +224,7 @@ func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 func TestCachingMiddleware_ServiceInfoNotFound(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	// Tool belonging to a service that is NOT known to the tool manager
 	testTool := &mockTool{
@@ -246,7 +251,7 @@ func TestCachingMiddleware_ServiceInfoNotFound(t *testing.T) {
 func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
@@ -287,7 +292,7 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 func TestCachingMiddleware_DeterministicKeys(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
@@ -332,7 +337,7 @@ func TestCachingMiddleware_DeterministicKeys(t *testing.T) {
 func TestCachingMiddleware_Clear(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
@@ -369,7 +374,7 @@ func TestCachingMiddleware_Clear(t *testing.T) {
 func TestCachingMiddleware_ActionDeleteCache_VerifyDeletion(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	testTool := &mockTool{
 		tool: v1.Tool_builder{
@@ -431,7 +436,7 @@ func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float
 func TestCachingMiddleware_SemanticCache(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	// Override factory
 	mockFactory := &MockProviderFactory{
@@ -515,7 +520,7 @@ func TestCachingMiddleware_SemanticCache(t *testing.T) {
 func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	cacheMiddleware := middleware.NewCachingMiddleware(tm, nil)
 
 	// Helper to trigger factory
 	triggerFactory := func(conf *configv1.SemanticCacheConfig, serviceIDSuffix string) error {
@@ -604,4 +609,35 @@ func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 
 func (m *mockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, true
+}
+
+func TestCachingMiddleware_Initialization(t *testing.T) {
+	tm := &mockToolManager{}
+
+	t.Run("Default Memory", func(t *testing.T) {
+		m := middleware.NewCachingMiddleware(tm, nil)
+		require.NotNil(t, m)
+	})
+
+	t.Run("Redis Config", func(t *testing.T) {
+		settings := configv1.CacheSettings_builder{
+			Type: proto.String("redis"),
+			Redis: configv1.RedisConfig_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+		m := middleware.NewCachingMiddleware(tm, settings)
+		require.NotNil(t, m)
+	})
+
+	t.Run("Disk Config", func(t *testing.T) {
+		settings := configv1.CacheSettings_builder{
+			Type: proto.String("disk"),
+			Disk: configv1.DiskConfig_builder{
+				Path: proto.String(t.TempDir()),
+			}.Build(),
+		}.Build()
+		m := middleware.NewCachingMiddleware(tm, settings)
+		require.NotNil(t, m)
+	})
 }

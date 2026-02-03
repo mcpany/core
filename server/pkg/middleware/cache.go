@@ -16,13 +16,17 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	gocache_redis "github.com/eko/gocache/store/redis/v4"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	go_cache "github.com/patrickmn/go-cache"
+	"github.com/redis/go-redis/v9"
+	"github.com/spf13/afero"
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
@@ -39,7 +43,7 @@ var (
 
 // CachingMiddleware handles caching of tool execution results.
 type CachingMiddleware struct {
-	cache           *cache.Cache[any]
+	cache           cache.CacheInterface[any]
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
 	initMu          sync.Mutex // Guards semantic cache initialization
@@ -52,9 +56,61 @@ type CachingMiddleware struct {
 // toolManager is the toolManager.
 //
 // Returns the result.
-func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
-	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
-	cacheManager := cache.New[any](goCacheStore)
+func NewCachingMiddleware(toolManager tool.ManagerInterface, settings *configv1.CacheSettings) *CachingMiddleware {
+	// Default memory store
+	memStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
+	memCache := cache.New[any](memStore)
+
+	var cacheManager cache.CacheInterface[any] = memCache
+
+	cacheType := "memory"
+	if settings != nil {
+		cacheType = settings.GetType()
+	}
+
+	switch cacheType {
+	case "redis":
+		if settings.GetRedis() != nil {
+			client := redis.NewClient(&redis.Options{
+				Addr:     settings.GetRedis().GetAddress(),
+				Password: settings.GetRedis().GetPassword(),
+				DB:       int(settings.GetRedis().GetDb()),
+			})
+			redisStore := gocache_redis.NewRedis(client)
+			cacheManager = cache.New[any](redisStore)
+		}
+	case "disk":
+		if settings.GetDisk() != nil {
+			diskStore := NewDiskStore(afero.NewOsFs(), settings.GetDisk().GetPath())
+			cacheManager = cache.New[any](diskStore)
+		}
+	case "tiered":
+		var caches []cache.SetterCacheInterface[any]
+		// L1: Memory
+		caches = append(caches, memCache)
+
+		// L2: Redis (if configured)
+		if settings.GetRedis() != nil {
+			client := redis.NewClient(&redis.Options{
+				Addr:     settings.GetRedis().GetAddress(),
+				Password: settings.GetRedis().GetPassword(),
+				DB:       int(settings.GetRedis().GetDb()),
+			})
+			redisStore := gocache_redis.NewRedis(client)
+			caches = append(caches, cache.New[any](redisStore))
+		}
+
+		// L3: Disk (if configured)
+		if settings.GetDisk() != nil {
+			diskStore := NewDiskStore(afero.NewOsFs(), settings.GetDisk().GetPath())
+			caches = append(caches, cache.New[any](diskStore))
+		}
+
+		if len(caches) > 1 {
+			cacheManager = cache.NewChain[any](caches...)
+		}
+	}
+
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
@@ -171,9 +227,39 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	if cacheControl.Action != tool.ActionDeleteCache {
 		// If normal allow (0), check cache.
 		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
-			// Found in cache
-			metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
-			return cached, nil
+			// Check if it's already the correct type (Memory Store)
+			if res, ok := cached.(*mcp.CallToolResult); ok {
+				metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
+				return res, nil
+			}
+
+			// Handle potential serialized data from Redis/Disk
+			var res mcp.CallToolResult
+			var unmarshalErr error
+
+			if bytes, ok := cached.([]byte); ok {
+				unmarshalErr = jsoniter.Unmarshal(bytes, &res)
+			} else if str, ok := cached.(string); ok {
+				unmarshalErr = jsoniter.Unmarshal([]byte(str), &res)
+			} else if m, ok := cached.(map[string]any); ok {
+				// Round-trip for map
+				if b, err := jsoniter.Marshal(m); err == nil {
+					unmarshalErr = jsoniter.Unmarshal(b, &res)
+				} else {
+					unmarshalErr = err
+				}
+			} else {
+				// Unknown type, treat as miss
+				unmarshalErr = fmt.Errorf("unknown cache value type: %T", cached)
+			}
+
+			if unmarshalErr == nil {
+				metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
+				return &res, nil
+			}
+
+			logging.GetLogger().Warn("Failed to unmarshal cache entry", "error", unmarshalErr, "type", fmt.Sprintf("%T", cached))
+			// Fallthrough to execution (Miss)
 		}
 		// Not found in cache
 		metrics.IncrCounterWithLabels(metricCacheMisses, 1, labels)
@@ -196,7 +282,16 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return result, nil
 	}
 
-	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
+	// Always marshal result to JSON bytes before storing to ensure consistency across stores (Redis/Disk)
+	// and to avoid type issues with Redis (which uses fmt.Sprint by default for structs).
+	marshaledResult, err := jsoniter.Marshal(result)
+	if err != nil {
+		metrics.IncrCounterWithLabels(metricCacheErrors, 1, labels)
+		logging.GetLogger().Error("Failed to marshal result for cache", "error", err, "tool", toolName)
+		return result, nil
+	}
+
+	if err := m.cache.Set(ctx, cacheKey, marshaledResult, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
 		metrics.IncrCounterWithLabels(metricCacheErrors, 1, labels)
 		logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
 	}

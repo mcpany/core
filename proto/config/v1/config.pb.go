@@ -807,6 +807,7 @@ type GlobalSettings struct {
 	xxx_hidden_ReadOnly           bool                     `protobuf:"varint,25,opt,name=read_only"`
 	xxx_hidden_AutoDiscoverLocal  bool                     `protobuf:"varint,26,opt,name=auto_discover_local"`
 	xxx_hidden_Alerts             *AlertConfig             `protobuf:"bytes,27,opt,name=alerts"`
+	xxx_hidden_Cache              *CacheSettings           `protobuf:"bytes,28,opt,name=cache"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -1053,49 +1054,56 @@ func (x *GlobalSettings) GetAlerts() *AlertConfig {
 	return nil
 }
 
+func (x *GlobalSettings) GetCache() *CacheSettings {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 28)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 28)
 }
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 28)
 }
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 28)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 28)
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
 	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 28)
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
 	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 28)
 }
 
 func (x *GlobalSettings) SetGithubApiUrl(v string) {
 	x.xxx_hidden_GithubApiUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 28)
 }
 
 func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
 	x.xxx_hidden_UseSudoForDocker = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 28)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -1160,16 +1168,20 @@ func (x *GlobalSettings) SetDebugger(v *DebuggerConfig) {
 
 func (x *GlobalSettings) SetReadOnly(v bool) {
 	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 24, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 24, 28)
 }
 
 func (x *GlobalSettings) SetAutoDiscoverLocal(v bool) {
 	x.xxx_hidden_AutoDiscoverLocal = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 25, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 25, 28)
 }
 
 func (x *GlobalSettings) SetAlerts(v *AlertConfig) {
 	x.xxx_hidden_Alerts = v
+}
+
+func (x *GlobalSettings) SetCache(v *CacheSettings) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1319,6 +1331,13 @@ func (x *GlobalSettings) HasAlerts() bool {
 	return x.xxx_hidden_Alerts != nil
 }
 
+func (x *GlobalSettings) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -1414,6 +1433,10 @@ func (x *GlobalSettings) ClearAlerts() {
 	x.xxx_hidden_Alerts = nil
 }
 
+func (x *GlobalSettings) ClearCache() {
+	x.xxx_hidden_Cache = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1472,6 +1495,8 @@ type GlobalSettings_builder struct {
 	AutoDiscoverLocal *bool
 	// Alert configuration.
 	Alerts *AlertConfig
+	// Cache configuration.
+	Cache *CacheSettings
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1479,39 +1504,39 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 28)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 28)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 28)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 28)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 28)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 28)
 		x.xxx_hidden_DbDsn = b.DbDsn
 	}
 	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 28)
 		x.xxx_hidden_DbDriver = b.DbDriver
 	}
 	if b.GithubApiUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 28)
 		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
 	}
 	if b.UseSudoForDocker != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 28)
 		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
@@ -1530,14 +1555,400 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_ContextOptimizer = b.ContextOptimizer
 	x.xxx_hidden_Debugger = b.Debugger
 	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 24, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 24, 28)
 		x.xxx_hidden_ReadOnly = *b.ReadOnly
 	}
 	if b.AutoDiscoverLocal != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 25, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 25, 28)
 		x.xxx_hidden_AutoDiscoverLocal = *b.AutoDiscoverLocal
 	}
 	x.xxx_hidden_Alerts = b.Alerts
+	x.xxx_hidden_Cache = b.Cache
+	return m0
+}
+
+type CacheSettings struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Type        *string                `protobuf:"bytes,1,opt,name=type"`
+	xxx_hidden_Redis       *RedisConfig           `protobuf:"bytes,2,opt,name=redis"`
+	xxx_hidden_Disk        *DiskConfig            `protobuf:"bytes,3,opt,name=disk"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *CacheSettings) Reset() {
+	*x = CacheSettings{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CacheSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CacheSettings) ProtoMessage() {}
+
+func (x *CacheSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *CacheSettings) GetType() string {
+	if x != nil {
+		if x.xxx_hidden_Type != nil {
+			return *x.xxx_hidden_Type
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *CacheSettings) GetRedis() *RedisConfig {
+	if x != nil {
+		return x.xxx_hidden_Redis
+	}
+	return nil
+}
+
+func (x *CacheSettings) GetDisk() *DiskConfig {
+	if x != nil {
+		return x.xxx_hidden_Disk
+	}
+	return nil
+}
+
+func (x *CacheSettings) SetType(v string) {
+	x.xxx_hidden_Type = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *CacheSettings) SetRedis(v *RedisConfig) {
+	x.xxx_hidden_Redis = v
+}
+
+func (x *CacheSettings) SetDisk(v *DiskConfig) {
+	x.xxx_hidden_Disk = v
+}
+
+func (x *CacheSettings) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *CacheSettings) HasRedis() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Redis != nil
+}
+
+func (x *CacheSettings) HasDisk() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Disk != nil
+}
+
+func (x *CacheSettings) ClearType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Type = nil
+}
+
+func (x *CacheSettings) ClearRedis() {
+	x.xxx_hidden_Redis = nil
+}
+
+func (x *CacheSettings) ClearDisk() {
+	x.xxx_hidden_Disk = nil
+}
+
+type CacheSettings_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The type of cache to use ("memory", "redis", "disk", "tiered").
+	Type *string
+	// Redis configuration.
+	Redis *RedisConfig
+	// Disk cache configuration.
+	Disk *DiskConfig
+}
+
+func (b0 CacheSettings_builder) Build() *CacheSettings {
+	m0 := &CacheSettings{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Type = b.Type
+	}
+	x.xxx_hidden_Redis = b.Redis
+	x.xxx_hidden_Disk = b.Disk
+	return m0
+}
+
+type RedisConfig struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,2,opt,name=password"`
+	xxx_hidden_Db          int32                  `protobuf:"varint,3,opt,name=db"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *RedisConfig) Reset() {
+	*x = RedisConfig{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RedisConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RedisConfig) ProtoMessage() {}
+
+func (x *RedisConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *RedisConfig) GetAddress() string {
+	if x != nil {
+		if x.xxx_hidden_Address != nil {
+			return *x.xxx_hidden_Address
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *RedisConfig) GetPassword() string {
+	if x != nil {
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *RedisConfig) GetDb() int32 {
+	if x != nil {
+		return x.xxx_hidden_Db
+	}
+	return 0
+}
+
+func (x *RedisConfig) SetAddress(v string) {
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *RedisConfig) SetPassword(v string) {
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *RedisConfig) SetDb(v int32) {
+	x.xxx_hidden_Db = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *RedisConfig) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RedisConfig) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *RedisConfig) HasDb() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *RedisConfig) ClearAddress() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Address = nil
+}
+
+func (x *RedisConfig) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Password = nil
+}
+
+func (x *RedisConfig) ClearDb() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Db = 0
+}
+
+type RedisConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Redis address (host:port).
+	Address *string
+	// Redis password (optional).
+	Password *string
+	// Redis database index.
+	Db *int32
+}
+
+func (b0 RedisConfig_builder) Build() *RedisConfig {
+	m0 := &RedisConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Address != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Address = b.Address
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Password = b.Password
+	}
+	if b.Db != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Db = *b.Db
+	}
+	return m0
+}
+
+type DiskConfig struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Path        *string                `protobuf:"bytes,1,opt,name=path"`
+	xxx_hidden_MaxSize     int64                  `protobuf:"varint,2,opt,name=max_size"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *DiskConfig) Reset() {
+	*x = DiskConfig{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiskConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiskConfig) ProtoMessage() {}
+
+func (x *DiskConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DiskConfig) GetPath() string {
+	if x != nil {
+		if x.xxx_hidden_Path != nil {
+			return *x.xxx_hidden_Path
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *DiskConfig) GetMaxSize() int64 {
+	if x != nil {
+		return x.xxx_hidden_MaxSize
+	}
+	return 0
+}
+
+func (x *DiskConfig) SetPath(v string) {
+	x.xxx_hidden_Path = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *DiskConfig) SetMaxSize(v int64) {
+	x.xxx_hidden_MaxSize = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *DiskConfig) HasPath() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DiskConfig) HasMaxSize() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *DiskConfig) ClearPath() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Path = nil
+}
+
+func (x *DiskConfig) ClearMaxSize() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_MaxSize = 0
+}
+
+type DiskConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Path to the directory where cache files will be stored.
+	Path *string
+	// Max size of the cache in bytes (optional).
+	MaxSize *int64
+}
+
+func (b0 DiskConfig_builder) Build() *DiskConfig {
+	m0 := &DiskConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Path != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Path = b.Path
+	}
+	if b.MaxSize != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_MaxSize = *b.MaxSize
+	}
 	return m0
 }
 
@@ -1553,7 +1964,7 @@ type AlertConfig struct {
 
 func (x *AlertConfig) Reset() {
 	*x = AlertConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1565,7 +1976,7 @@ func (x *AlertConfig) String() string {
 func (*AlertConfig) ProtoMessage() {}
 
 func (x *AlertConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1662,7 +2073,7 @@ type ContextOptimizerConfig struct {
 
 func (x *ContextOptimizerConfig) Reset() {
 	*x = ContextOptimizerConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1674,7 +2085,7 @@ func (x *ContextOptimizerConfig) String() string {
 func (*ContextOptimizerConfig) ProtoMessage() {}
 
 func (x *ContextOptimizerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1738,7 +2149,7 @@ type DebuggerConfig struct {
 
 func (x *DebuggerConfig) Reset() {
 	*x = DebuggerConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1750,7 +2161,7 @@ func (x *DebuggerConfig) String() string {
 func (*DebuggerConfig) ProtoMessage() {}
 
 func (x *DebuggerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1845,7 +2256,7 @@ type TelemetryConfig struct {
 
 func (x *TelemetryConfig) Reset() {
 	*x = TelemetryConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1857,7 +2268,7 @@ func (x *TelemetryConfig) String() string {
 func (*TelemetryConfig) ProtoMessage() {}
 
 func (x *TelemetryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2026,7 +2437,7 @@ type OIDCConfig struct {
 
 func (x *OIDCConfig) Reset() {
 	*x = OIDCConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2038,7 +2449,7 @@ func (x *OIDCConfig) String() string {
 func (*OIDCConfig) ProtoMessage() {}
 
 func (x *OIDCConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2203,7 +2614,7 @@ type GCSettings struct {
 
 func (x *GCSettings) Reset() {
 	*x = GCSettings{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2215,7 +2626,7 @@ func (x *GCSettings) String() string {
 func (*GCSettings) ProtoMessage() {}
 
 func (x *GCSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2362,7 +2773,7 @@ type DLPConfig struct {
 
 func (x *DLPConfig) Reset() {
 	*x = DLPConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2374,7 +2785,7 @@ func (x *DLPConfig) String() string {
 func (*DLPConfig) ProtoMessage() {}
 
 func (x *DLPConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2461,7 +2872,7 @@ type AuditConfig struct {
 
 func (x *AuditConfig) Reset() {
 	*x = AuditConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2473,7 +2884,7 @@ func (x *AuditConfig) String() string {
 func (*AuditConfig) ProtoMessage() {}
 
 func (x *AuditConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2763,7 +3174,7 @@ type SplunkConfig struct {
 
 func (x *SplunkConfig) Reset() {
 	*x = SplunkConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[13]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2775,7 +3186,7 @@ func (x *SplunkConfig) String() string {
 func (*SplunkConfig) ProtoMessage() {}
 
 func (x *SplunkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[13]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2972,7 +3383,7 @@ type DatadogConfig struct {
 
 func (x *DatadogConfig) Reset() {
 	*x = DatadogConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2984,7 +3395,7 @@ func (x *DatadogConfig) String() string {
 func (*DatadogConfig) ProtoMessage() {}
 
 func (x *DatadogConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3151,7 +3562,7 @@ type ProfileDefinition struct {
 
 func (x *ProfileDefinition) Reset() {
 	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3163,7 +3574,7 @@ func (x *ProfileDefinition) String() string {
 func (*ProfileDefinition) ProtoMessage() {}
 
 func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3308,7 +3719,7 @@ type ProfileSelector struct {
 
 func (x *ProfileSelector) Reset() {
 	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3320,7 +3731,7 @@ func (x *ProfileSelector) String() string {
 func (*ProfileSelector) ProtoMessage() {}
 
 func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3382,7 +3793,7 @@ type Middleware struct {
 
 func (x *Middleware) Reset() {
 	*x = Middleware{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3394,7 +3805,7 @@ func (x *Middleware) String() string {
 func (*Middleware) ProtoMessage() {}
 
 func (x *Middleware) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3535,7 +3946,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xbe\f\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xf5\f\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x02 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x12\x18\n" +
@@ -3568,7 +3979,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\x12\x1c\n" +
 	"\tread_only\x18\x19 \x01(\bR\tread_only\x120\n" +
 	"\x13auto_discover_local\x18\x1a \x01(\bR\x13auto_discover_local\x125\n" +
-	"\x06alerts\x18\x1b \x01(\v2\x1d.mcpany.config.v1.AlertConfigR\x06alerts\"w\n" +
+	"\x06alerts\x18\x1b \x01(\v2\x1d.mcpany.config.v1.AlertConfigR\x06alerts\x125\n" +
+	"\x05cache\x18\x1c \x01(\v2\x1f.mcpany.config.v1.CacheSettingsR\x05cache\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -3578,7 +3990,19 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tLogFormat\x12\x1a\n" +
 	"\x16LOG_FORMAT_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLOG_FORMAT_TEXT\x10\x01\x12\x13\n" +
-	"\x0fLOG_FORMAT_JSON\x10\x02\"I\n" +
+	"\x0fLOG_FORMAT_JSON\x10\x02\"\x8a\x01\n" +
+	"\rCacheSettings\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x123\n" +
+	"\x05redis\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RedisConfigR\x05redis\x120\n" +
+	"\x04disk\x18\x03 \x01(\v2\x1c.mcpany.config.v1.DiskConfigR\x04disk\"S\n" +
+	"\vRedisConfig\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x0e\n" +
+	"\x02db\x18\x03 \x01(\x05R\x02db\"<\n" +
+	"\n" +
+	"DiskConfig\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\x12\x1a\n" +
+	"\bmax_size\x18\x02 \x01(\x03R\bmax_size\"I\n" +
 	"\vAlertConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\vwebhook_url\x18\x02 \x01(\tR\vwebhook_url\"6\n" +
@@ -3667,7 +4091,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB=B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),   // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),  // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -3677,67 +4101,73 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*Secret)(nil),                 // 5: mcpany.config.v1.Secret
 	(*SecretList)(nil),             // 6: mcpany.config.v1.SecretList
 	(*GlobalSettings)(nil),         // 7: mcpany.config.v1.GlobalSettings
-	(*AlertConfig)(nil),            // 8: mcpany.config.v1.AlertConfig
-	(*ContextOptimizerConfig)(nil), // 9: mcpany.config.v1.ContextOptimizerConfig
-	(*DebuggerConfig)(nil),         // 10: mcpany.config.v1.DebuggerConfig
-	(*TelemetryConfig)(nil),        // 11: mcpany.config.v1.TelemetryConfig
-	(*OIDCConfig)(nil),             // 12: mcpany.config.v1.OIDCConfig
-	(*GCSettings)(nil),             // 13: mcpany.config.v1.GCSettings
-	(*DLPConfig)(nil),              // 14: mcpany.config.v1.DLPConfig
-	(*AuditConfig)(nil),            // 15: mcpany.config.v1.AuditConfig
-	(*SplunkConfig)(nil),           // 16: mcpany.config.v1.SplunkConfig
-	(*DatadogConfig)(nil),          // 17: mcpany.config.v1.DatadogConfig
-	(*ProfileDefinition)(nil),      // 18: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),        // 19: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),             // 20: mcpany.config.v1.Middleware
-	nil,                            // 21: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                            // 22: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	nil,                            // 23: mcpany.config.v1.ProfileDefinition.SecretsEntry
-	nil,                            // 24: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),  // 25: mcpany.config.v1.UpstreamServiceConfig
-	(*Collection)(nil),             // 26: mcpany.config.v1.Collection
-	(*User)(nil),                   // 27: mcpany.config.v1.User
-	(*bus.MessageBus)(nil),         // 28: bus.MessageBus
-	(*RateLimitConfig)(nil),        // 29: mcpany.config.v1.RateLimitConfig
-	(*ProfileServiceConfig)(nil),   // 30: mcpany.config.v1.ProfileServiceConfig
-	(*SecretValue)(nil),            // 31: mcpany.config.v1.SecretValue
+	(*CacheSettings)(nil),          // 8: mcpany.config.v1.CacheSettings
+	(*RedisConfig)(nil),            // 9: mcpany.config.v1.RedisConfig
+	(*DiskConfig)(nil),             // 10: mcpany.config.v1.DiskConfig
+	(*AlertConfig)(nil),            // 11: mcpany.config.v1.AlertConfig
+	(*ContextOptimizerConfig)(nil), // 12: mcpany.config.v1.ContextOptimizerConfig
+	(*DebuggerConfig)(nil),         // 13: mcpany.config.v1.DebuggerConfig
+	(*TelemetryConfig)(nil),        // 14: mcpany.config.v1.TelemetryConfig
+	(*OIDCConfig)(nil),             // 15: mcpany.config.v1.OIDCConfig
+	(*GCSettings)(nil),             // 16: mcpany.config.v1.GCSettings
+	(*DLPConfig)(nil),              // 17: mcpany.config.v1.DLPConfig
+	(*AuditConfig)(nil),            // 18: mcpany.config.v1.AuditConfig
+	(*SplunkConfig)(nil),           // 19: mcpany.config.v1.SplunkConfig
+	(*DatadogConfig)(nil),          // 20: mcpany.config.v1.DatadogConfig
+	(*ProfileDefinition)(nil),      // 21: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),        // 22: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),             // 23: mcpany.config.v1.Middleware
+	nil,                            // 24: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                            // 25: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	nil,                            // 26: mcpany.config.v1.ProfileDefinition.SecretsEntry
+	nil,                            // 27: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),  // 28: mcpany.config.v1.UpstreamServiceConfig
+	(*Collection)(nil),             // 29: mcpany.config.v1.Collection
+	(*User)(nil),                   // 30: mcpany.config.v1.User
+	(*bus.MessageBus)(nil),         // 31: bus.MessageBus
+	(*RateLimitConfig)(nil),        // 32: mcpany.config.v1.RateLimitConfig
+	(*ProfileServiceConfig)(nil),   // 33: mcpany.config.v1.ProfileServiceConfig
+	(*SecretValue)(nil),            // 34: mcpany.config.v1.SecretValue
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	25, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	26, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
-	27, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
+	28, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	29, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
+	30, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
 	4,  // 4: mcpany.config.v1.McpAnyServerConfig.merge_strategy:type_name -> mcpany.config.v1.MergeStrategyConfig
 	5,  // 5: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
 	0,  // 6: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
 	1,  // 7: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	28, // 8: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	15, // 9: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	14, // 10: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
-	13, // 11: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
-	12, // 12: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	29, // 13: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
-	11, // 14: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
-	18, // 15: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	20, // 16: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	9,  // 17: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
-	10, // 18: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
-	8,  // 19: mcpany.config.v1.GlobalSettings.alerts:type_name -> mcpany.config.v1.AlertConfig
-	2,  // 20: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	21, // 21: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	16, // 22: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	17, // 23: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	19, // 24: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	22, // 25: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	23, // 26: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
-	24, // 27: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	30, // 28: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
-	31, // 29: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
-	30, // [30:30] is the sub-list for method output_type
-	30, // [30:30] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	31, // 8: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	18, // 9: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	17, // 10: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
+	16, // 11: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
+	15, // 12: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
+	32, // 13: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	14, // 14: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
+	21, // 15: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	23, // 16: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	12, // 17: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
+	13, // 18: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
+	11, // 19: mcpany.config.v1.GlobalSettings.alerts:type_name -> mcpany.config.v1.AlertConfig
+	8,  // 20: mcpany.config.v1.GlobalSettings.cache:type_name -> mcpany.config.v1.CacheSettings
+	9,  // 21: mcpany.config.v1.CacheSettings.redis:type_name -> mcpany.config.v1.RedisConfig
+	10, // 22: mcpany.config.v1.CacheSettings.disk:type_name -> mcpany.config.v1.DiskConfig
+	2,  // 23: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	24, // 24: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	19, // 25: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	20, // 26: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	22, // 27: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	25, // 28: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	26, // 29: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
+	27, // 30: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	33, // 31: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
+	34, // 32: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
+	33, // [33:33] is the sub-list for method output_type
+	33, // [33:33] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -3756,7 +4186,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   22,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

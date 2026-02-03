@@ -247,7 +247,7 @@ func TestServer_ClearCache(t *testing.T) {
 	assert.Equal(t, codes.FailedPrecondition, status.Code(err))
 
 	// Test ClearCache with valid cache
-	realMiddleware := middleware.NewCachingMiddleware(tool.NewMockManagerInterface(ctrl))
+	realMiddleware := middleware.NewCachingMiddleware(tool.NewMockManagerInterface(ctrl), nil)
 	sValid := NewServer(realMiddleware, nil, nil, nil, nil, nil)
 	resp, err := sValid.ClearCache(context.Background(), pb.ClearCacheRequest_builder{}.Build())
 	require.NoError(t, err)

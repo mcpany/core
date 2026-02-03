@@ -1,9 +1,7 @@
-go 1.24.6
-
-toolchain go1.24.11
+go 1.24.0
 
 use (
 	.
-	// ./examples/upstream_service_demo/grpc/client
-	// ./examples/upstream_service_demo/grpc/greeter_server
+// ./examples/upstream_service_demo/grpc/client
+// ./examples/upstream_service_demo/grpc/greeter_server
 )

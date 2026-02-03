@@ -410,7 +410,7 @@ func TestCachingMiddleware_Clear(t *testing.T) {
 	// Mock not needed for NewCachingMiddleware call but needed for args type
 	mockToolManager := tool.NewMockManagerInterface(ctrl)
 
-	m := NewCachingMiddleware(mockToolManager)
+	m := NewCachingMiddleware(mockToolManager, nil)
 
 	// Set something in cache
 	ctx := context.Background()
