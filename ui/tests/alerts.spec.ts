@@ -6,6 +6,40 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
+  test.beforeAll(async ({ request }) => {
+    // Seed alerts
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: "High CPU Usage",
+        message: "CPU usage > 90%",
+        severity: "critical",
+        status: "active",
+        service: "test-service",
+        source: "test"
+      }
+    });
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: "API Latency Spike",
+        message: "Latency high",
+        severity: "warning",
+        status: "active",
+        service: "api-gateway",
+        source: "test"
+      }
+    });
+    await request.post('/api/v1/alerts', {
+        data: {
+          title: "Disk Space Low",
+          message: "Disk space low",
+          severity: "warning",
+          status: "active",
+          service: "db-service",
+          source: "test"
+        }
+      });
+  });
+
   test('should load alerts page and display key elements', async ({ page }) => {
     // Navigate to alerts page
     await page.goto('/alerts');
@@ -17,7 +51,7 @@ test.describe('Alerts Page', () => {
     await expect(page.getByText('Active Critical')).toBeVisible();
     await expect(page.getByText('MTTR (Today)')).toBeVisible();
 
-    // Check table content (mock data)
+    // Check table content (seeded data)
     await expect(page.getByText('High CPU Usage')).toBeVisible();
     await expect(page.getByText('API Latency Spike')).toBeVisible();
   });
