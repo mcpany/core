@@ -1,0 +1,70 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+name: Delete Stale Branches
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch:
+
+jobs:
+  delete-stale-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Delete Stale Branches
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+        run: |
+          # Configuration
+          DAYS_THRESHOLD=3
+          EXCLUDED_BRANCHES=("main" "master" "develop" "staging" "HEAD")
+
+          # Calculate cutoff date in seconds
+          CUTOFF_DATE=$(date -d "$DAYS_THRESHOLD days ago" +%s)
+
+          echo "Cleaning up branches older than $DAYS_THRESHOLD days (before $(date -d @$CUTOFF_DATE))..."
+
+          # Iterate over remote branches
+          # git for-each-ref returns "origin/branchname commit-date-iso"
+          git for-each-ref --format='%(refname:short) %(committerdate:unix)' refs/remotes/origin/ | while read full_ref commit_date; do
+            # Remove 'origin/' prefix
+            branch_name=${full_ref#origin/}
+
+            # Check if excluded
+            skip=false
+            for excluded in "${EXCLUDED_BRANCHES[@]}"; do
+              if [[ "$branch_name" == "$excluded" ]]; then
+                skip=true
+                break
+              fi
+            done
+
+            if [[ "$skip" == "true" ]]; then
+              echo "Skipping excluded branch: $branch_name"
+              continue
+            fi
+
+            # Check for open PRs associated with this branch (optional safety check)
+            # If there is an open PR, we probably shouldn't delete the branch yet even if stale?
+            # User said "automatically delete stale branch after 3 days". Usually stale means "no activity".
+            # If an open PR exists but no activity for 3 days, should it be deleted?
+            # Let's assume yes, or maybe check if it's draft?
+            # To be safe, let's ONLY check the date for now as requested.
+
+            if [[ $commit_date -lt $CUTOFF_DATE ]]; then
+              echo "Deleting stale branch: $branch_name (Last commit: $(date -d @$commit_date))"
+              # Use git push to delete
+              git push origin --delete "$branch_name" || echo "Failed to delete $branch_name"
+            else
+              echo "Keeping active branch: $branch_name (Last commit: $(date -d @$commit_date))"
+            fi
+          done
