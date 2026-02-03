@@ -5,7 +5,7 @@
 
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { Graph, NodeStatus } from '@/types/topology';
 
 /**
@@ -25,7 +25,9 @@ export interface MetricPoint {
 }
 
 interface ServiceHealthContextType {
+    /** @deprecated Use useServiceHistory(serviceId) instead for better performance. */
     getServiceHistory: (serviceId: string) => MetricPoint[];
+    /** @deprecated Use useServiceHistory(serviceId) instead. */
     getServiceCurrentHealth: (serviceId: string) => MetricPoint | null;
     latestTopology: Graph | null;
     refreshTopology: () => Promise<void>;
@@ -39,11 +41,69 @@ interface TopologyContextType {
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
 const TopologyContext = createContext<TopologyContextType | undefined>(undefined);
 
+// Internal Store Context to allow useServiceHistory to access the store
+const ServiceHealthStoreContext = createContext<HealthStore | undefined>(undefined);
+
 /** Maximum number of history points to keep (30 points * 5s = 2.5 minutes). */
 const MAX_HISTORY_POINTS = 30;
 
 /** Polling interval in milliseconds (5 seconds). */
 const POLLING_INTERVAL = 5000;
+
+const EMPTY_HISTORY: MetricPoint[] = [];
+
+type Listener = () => void;
+
+class HealthStore {
+    private history: Record<string, MetricPoint[]> = {};
+    private listeners: Set<Listener> = new Set();
+
+    getHistory(serviceId: string): MetricPoint[] {
+        return this.history[serviceId] || EMPTY_HISTORY;
+    }
+
+    getAllHistory(): Record<string, MetricPoint[]> {
+        return this.history;
+    }
+
+    update(newPoints: Record<string, MetricPoint>) {
+        let changed = false;
+        Object.entries(newPoints).forEach(([id, point]) => {
+            const currentPoints = this.history[id] || EMPTY_HISTORY;
+            // Optimization: Only update if strictly needed, but for history we always append.
+            // But we can check if the new point is different from the last one?
+            // Usually we always append time series data.
+
+            const newHistory = [...currentPoints, point];
+            if (newHistory.length > MAX_HISTORY_POINTS) {
+                newHistory.shift();
+            }
+            this.history[id] = newHistory;
+            changed = true;
+        });
+
+        // Also ensure we keep existing history for services not in newPoints?
+        // The original code did: next = { ...prev }; update...
+        // So yes, we keep others.
+
+        // We technically create a new object for this.history to be safe?
+        // Or just mutate and notify. useSyncExternalStore handles snapshots.
+        // To be safe with concurrent rendering, we should treat this.history as immutable or snapshot.
+        if (changed) {
+            this.history = { ...this.history }; // Shallow copy to ensure reference change
+            this.notify();
+        }
+    }
+
+    subscribe(listener: Listener) {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+    }
+
+    private notify() {
+        this.listeners.forEach(l => l());
+    }
+}
 
 /**
  * ServiceHealthProvider component.
@@ -52,7 +112,10 @@ const POLLING_INTERVAL = 5000;
  * @returns The rendered component.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
-    const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
+    // ⚡ Bolt: Use a stable store ref to manage history without triggering provider re-renders.
+    // Randomized Selection from Top 5 High-Impact Targets.
+    const store = useRef(new HealthStore()).current;
+
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
     const lastTopologyText = useRef<string>('');
     const lastGraph = useRef<Graph | null>(null);
@@ -63,8 +126,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             // Handle relative URL for fetch in jsdom/test env
             const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
 
-            // ⚡ Bolt: Optimize Polling with ETag (If-None-Match).
-            // Randomized Selection from Top 5 High-Impact Targets.
             const headers: HeadersInit = {};
             if (lastEtag.current) {
                 headers['If-None-Match'] = lastEtag.current;
@@ -81,7 +142,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             const res = await fetch(url, { headers });
 
             if (res.status === 304 && lastGraph.current) {
-                // Not modified, use cached graph
                 return;
             }
 
@@ -92,8 +152,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 lastEtag.current = etag;
             }
 
-            // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
-            // res.text() + string comparison is much faster than res.json() + JSON.stringify().
             const text = await res.text();
             let graph: Graph;
 
@@ -110,10 +168,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             const newPoints: Record<string, MetricPoint> = {};
 
             // Helper to extract service nodes
-            // Using 'any' for node because TopologyNode type from types/topology
-            // might not match exactly what comes from API or recursion needs to be flexible
-            // But we should try to be safer if possible.
-            // Assuming Node type from @/types/topology
             const extractServiceNodes = (nodes: any[]) => {
                 nodes.forEach(node => {
                     if (node.type === 'NODE_TYPE_SERVICE') {
@@ -136,24 +190,13 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 if (graph.core.children) extractServiceNodes(graph.core.children);
             }
 
-            // Update history
-            setHistory(prev => {
-                const next = { ...prev };
-                Object.entries(newPoints).forEach(([id, point]) => {
-                    const points = next[id] ? [...next[id], point] : [point];
-                    if (points.length > MAX_HISTORY_POINTS) {
-                        points.shift();
-                    }
-                    next[id] = points;
-                });
-
-                return next;
-            });
+            // Update store instead of state
+            store.update(newPoints);
 
         } catch (e) {
             console.error("Failed to fetch topology for health history", e);
         }
-    }, []);
+    }, [store]);
 
     useEffect(() => {
         void fetchTopology();
@@ -174,34 +217,45 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         };
     }, [fetchTopology]);
 
-    const getServiceHistory = useCallback((serviceId: string) => {
-        return history[serviceId] || [];
-    }, [history]);
-
-    const getServiceCurrentHealth = useCallback((serviceId: string) => {
-        const points = history[serviceId];
-        return points && points.length > 0 ? points[points.length - 1] : null;
-    }, [history]);
+    // Backward compatibility helpers
+    // These WILL trigger re-renders if used, but we'll migrate to useServiceHistory.
+    // However, to make them reactive, we need to subscribe the Context value?
+    // Or we just return functions that get from store?
+    // If we return functions that get from store, they won't trigger re-render when data changes,
+    // so the consumer won't update!
+    // So for backward compatibility, we can't fully support reactivity via these methods unless
+    // the consumer uses `useServiceHistory` or we simulate the old behavior.
+    //
+    // BUT, `useServiceHealth` hook returns this context.
+    // If we want `useServiceHealth` to still cause re-renders for old code, we can put a listener in `useServiceHealth`.
+    //
+    // For now, let's keep the context value stable (except topology) and fix `useServiceHealth` to wrap the store.
 
     const value = useMemo(() => ({
-        getServiceHistory,
-        getServiceCurrentHealth,
+        // These are just accessors now. They don't make the component reactive by themselves.
+        // Reactivity will be handled by the hook wrapper.
+        getServiceHistory: (serviceId: string) => store.getHistory(serviceId),
+        getServiceCurrentHealth: (serviceId: string) => {
+            const points = store.getHistory(serviceId);
+            return points && points.length > 0 ? points[points.length - 1] : null;
+        },
         latestTopology,
         refreshTopology: fetchTopology
-    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
+    }), [latestTopology, fetchTopology, store]);
 
-    // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
     const topologyValue = useMemo(() => ({
         latestTopology,
         refreshTopology: fetchTopology
     }), [latestTopology, fetchTopology]);
 
     return (
-        <ServiceHealthContext.Provider value={value}>
-            <TopologyContext.Provider value={topologyValue}>
-                {children}
-            </TopologyContext.Provider>
-        </ServiceHealthContext.Provider>
+        <ServiceHealthStoreContext.Provider value={store}>
+            <ServiceHealthContext.Provider value={value}>
+                <TopologyContext.Provider value={topologyValue}>
+                    {children}
+                </TopologyContext.Provider>
+            </ServiceHealthContext.Provider>
+        </ServiceHealthStoreContext.Provider>
     );
 }
 
@@ -209,13 +263,41 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
  * useServiceHealth is a hook to access service health history and current status.
  * @returns The service health context.
  * @throws Error if used outside of a ServiceHealthProvider.
+ * @deprecated Use `useServiceHistory` for specific services or `useTopology` for graph.
  */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
-    if (!context) {
+    const store = useContext(ServiceHealthStoreContext);
+
+    if (!context || !store) {
         throw new Error("useServiceHealth must be used within a ServiceHealthProvider");
     }
-    return context;
+
+    // ⚡ Bolt: Maintain backward compatibility reactivity.
+    // We subscribe to the store and force a re-render when ANY history changes.
+    // This mimics the old behavior (global re-render) but allows us to migrate components one by one.
+    const subscribe = useCallback((cb: Listener) => store.subscribe(cb), [store]);
+    const history = useSyncExternalStore(
+        subscribe,
+        () => store.getAllHistory(),
+        () => store.getAllHistory()
+    );
+
+    // We wrap the context methods to use the reactive history we just subscribed to.
+    // Actually, `history` here is just to force re-render.
+    // The methods in `context` read from `store` directly.
+
+    return useMemo(() => ({
+        ...context,
+        // We override these to be explicit, though context already has them.
+        // The dependency on `history` ensures we return a new object when history changes,
+        // causing the consumer to re-render.
+        getServiceHistory: (serviceId: string) => history[serviceId] || [],
+        getServiceCurrentHealth: (serviceId: string) => {
+            const points = history[serviceId] || [];
+             return points.length > 0 ? points[points.length - 1] : null;
+        }
+    }), [context, history]);
 }
 
 /**
@@ -230,4 +312,26 @@ export function useTopology() {
         throw new Error("useTopology must be used within a ServiceHealthProvider");
     }
     return context;
+}
+
+/**
+ * useServiceHistory is a highly optimized hook to subscribe to a single service's history.
+ * It only triggers a re-render when the specific service's history changes.
+ * @param serviceId - The ID of the service to monitor.
+ * @returns The list of metric points for the service.
+ */
+export function useServiceHistory(serviceId: string) {
+    const store = useContext(ServiceHealthStoreContext);
+    if (!store) {
+        throw new Error("useServiceHistory must be used within a ServiceHealthProvider");
+    }
+
+    const subscribe = useCallback((cb: Listener) => store.subscribe(cb), [store]);
+    const history = useSyncExternalStore(
+        subscribe,
+        () => store.getHistory(serviceId),
+        () => EMPTY_HISTORY // Server snapshot
+    );
+
+    return history;
 }
