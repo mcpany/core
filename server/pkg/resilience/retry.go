@@ -72,7 +72,12 @@ func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) e
 		timer := time.NewTimer(r.backoff(i))
 		select {
 		case <-ctx.Done():
-			timer.Stop()
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
 			return ctx.Err()
 		case <-timer.C:
 			// continue
