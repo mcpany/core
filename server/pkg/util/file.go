@@ -50,10 +50,15 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 	// Seek backwards
 	// Use a reasonable chunk size
 	const chunkSize = 1024 * 16
-	buf := make([]byte, chunkSize)
-	var cursor = filesize
 
-	var collected []byte
+	// ⚡ BOLT: Optimization to avoid O(N^2) allocations and scanning.
+	// Instead of prepending to a growing slice, we collect chunks and assemble once.
+	// Randomized Selection from Top 5 High-Impact Targets
+
+	var cursor = filesize
+	var chunks [][]byte
+	var newlineCount int
+	var totalBytes int
 
 	for cursor > 0 {
 		toRead := chunkSize
@@ -67,27 +72,40 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 			return nil, err
 		}
 
-		// Only read the chunk we calculated
-		// We re-slice buf to size needed
-		readBuf := buf[:toRead]
-		if _, err := io.ReadFull(f, readBuf); err != nil {
+		// Allocate chunk for this read
+		chunk := make([]byte, toRead)
+		if _, err := io.ReadFull(f, chunk); err != nil {
 			return nil, err
 		}
 
-		// Prepend readBuf to collected
-		collected = append(readBuf, collected...)
+		chunks = append(chunks, chunk)
+		totalBytes += len(chunk)
 
-		// Count newlines in collected
-		count := 0
-		for _, b := range collected {
+		// Optimization: Only scan the new chunk for newlines
+		for _, b := range chunk {
 			if b == '\n' {
-				count++
+				newlineCount++
 			}
 		}
 
-		if count >= n {
+		if newlineCount >= n {
 			break
 		}
+	}
+
+	// Assemble the final buffer
+	collected := make([]byte, totalBytes)
+	pos := 0
+	// Chunks were appended in reverse order (closest to EOF first in the slice? No.)
+	// Wait:
+	// Loop 1: Read [PartC]. chunks[0] = PartC.
+	// Loop 2: Read [PartB]. chunks[1] = PartB.
+	// We want [PartB][PartC].
+	// So we need to copy chunks in reverse order of appending: chunks[len-1], then chunks[len-2]...
+
+	for i := len(chunks) - 1; i >= 0; i-- {
+		copy(collected[pos:], chunks[i])
+		pos += len(chunks[i])
 	}
 
 	// Now process 'collected'
