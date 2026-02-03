@@ -2638,7 +2638,44 @@ func checkForLocalFileAccess(val string) error {
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
+
+	// Sentinel Security Update: Block access to sensitive files
+	if isSensitiveFile(val) {
+		return fmt.Errorf("access to sensitive file %q is blocked", filepath.Base(val))
+	}
+
 	return nil
+}
+
+func isSensitiveFile(path string) bool {
+	// Normalize path separators
+	cleanPath := filepath.ToSlash(path)
+
+	// Check for .git directory in path components
+	parts := strings.Split(cleanPath, "/")
+	for _, part := range parts {
+		if part == ".git" {
+			return true
+		}
+	}
+
+	base := strings.ToLower(filepath.Base(path))
+
+	// Block .env files (and variations like .env.local, .env.prod)
+	if strings.HasPrefix(base, ".env") {
+		return true
+	}
+
+	// Block private keys and certificates
+	ext := filepath.Ext(base)
+	sensitiveExts := []string{".key", ".pem", ".crt", ".cer", ".p12", ".pfx", ".der"}
+	for _, e := range sensitiveExts {
+		if ext == e {
+			return true
+		}
+	}
+
+	return false
 }
 
 func checkForArgumentInjection(val string) error {
