@@ -1006,6 +1006,9 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping Redis container tests in CI due to dind/overlay issues")
+	}
 	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
