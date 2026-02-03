@@ -4,17 +4,18 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices } from './test-data';
+import { seedServices, login } from './test-data';
 
 test.describe('Bulk Service Actions', () => {
 
-  test.beforeEach(async ({ request }) => {
+  test.beforeEach(async ({ page, request }) => {
     const services = [
-        { id: "s1", name: "service-1", http_service: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-        { id: "s2", name: "service-2", http_service: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-        { id: "s3", name: "service-3", http_service: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
+        { id: "s1", name: "service-1", http_service: { address: "http://example.com/8001" }, disable: false, tags: ["prod"] },
+        { id: "s2", name: "service-2", http_service: { address: "http://example.com/8002" }, disable: true, tags: ["dev"] },
+        { id: "s3", name: "service-3", http_service: { address: "http://example.com/8003" }, disable: false, tags: ["prod"] }
     ];
     await seedServices(request, services);
+    await login(page);
   });
 
   test('should select all services and show bulk actions', async ({ page }) => {

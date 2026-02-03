@@ -4,11 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices } from './e2e/test-data';
+import { seedServices, cleanupServices, login } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
-    test.beforeEach(async ({ request }) => {
+    test.beforeEach(async ({ page, request }) => {
         await seedServices(request);
+        await login(page);
     });
 
     test('should list available tools', async ({ page }) => {

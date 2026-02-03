@@ -560,15 +560,8 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	})
 
 	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
-	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
-
-	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
-	// We assume typical docker-compose indentation of services/environment.
-	// This is a simple injection that works for standard file structures.
-	// A more robust way would be to unmarshal/marshal YAML.
-	if !strings.Contains(s, "MCPANY_ENABLE_FILE_CONFIG") {
-		s = strings.Replace(s, "environment:", "environment:\n      MCPANY_ENABLE_FILE_CONFIG: \"true\"", -1)
-	}
+	// The original docker-compose.yml uses array format for environment variables.
+	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true\n      - MCPANY_ENABLE_FILE_CONFIG=true", 1)
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")

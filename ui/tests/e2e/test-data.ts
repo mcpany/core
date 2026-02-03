@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { request, APIRequestContext } from '@playwright/test';
+import { request, APIRequestContext, Page, expect } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -17,7 +17,7 @@ export const seedServices = async (requestContext?: APIRequestContext, customSer
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: "http://example.com", // Changed from stripe.com to avoid external calls, and non-local to avoid SSRF in some configs, though CI usually allows external.
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -28,7 +28,11 @@ export const seedServices = async (requestContext?: APIRequestContext, customSer
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                // Use a non-resolvable domain or example.com to avoid SSRF blocking on localhost in CI
+                // and avoid trying to actually connect to a non-existent service on a port.
+                // However, we want the tools to be registered.
+                // Using example.com is safe.
+                address: "http://example.com/user",
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -40,7 +44,7 @@ export const seedServices = async (requestContext?: APIRequestContext, customSer
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://example.com/math",
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
@@ -66,7 +70,7 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
                 name: "weather-service",
                 mcp_service: {
                     stdio_connection: {
-                        command: "weather",
+                        command: "weather", // Dummy command, won't run but config persists
                         container_image: "mcpany/weather-service:latest",
                         env: {
                             API_KEY: { plain_text: "secret" }
@@ -146,4 +150,18 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
     } catch (e) {
         console.log(`Failed to cleanup user: ${e}`);
     }
+};
+
+export const login = async (page: Page) => {
+    await seedUser(page.request, 'e2e-user');
+    await page.goto('/login');
+    // Wait for page to be fully loaded as it might be transitioning
+    await page.waitForLoadState('networkidle');
+
+    await page.fill('input[name="username"]', 'e2e-user');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+
+    // Wait for redirect to home page and verify
+    await expect(page).toHaveURL('/', { timeout: 15000 });
 };

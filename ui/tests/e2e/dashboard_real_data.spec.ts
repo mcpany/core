@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { login } from './test-data';
 
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
@@ -37,7 +38,8 @@ test.describe('Dashboard Real Data', () => {
         });
         expect(seedRes.ok()).toBeTruthy();
 
-        // 2. Load the dashboard
+        // 2. Login and Load the dashboard
+        await login(page);
         await page.goto('/');
 
         // Debug: Fetch traffic data directly to verify backend state
@@ -113,6 +115,7 @@ test.describe('Dashboard Real Data', () => {
          });
          expect(seedRes.ok()).toBeTruthy();
 
+         await login(page);
          await page.goto('/');
          // Check for "System Uptime" card
          await expect(page.locator('text=System Uptime')).toBeVisible();

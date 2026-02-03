@@ -4,12 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection } from './test-data';
+import { seedCollection, login } from './test-data';
 
 test.describe('Stack Composer', () => {
 
-  test.beforeEach(async ({ request }) => {
+  test.beforeEach(async ({ page, request }) => {
     await seedCollection('e2e-test-stack', request);
+    await login(page);
   });
 
   test('should load the editor and visualize configuration', async ({ page }) => {
