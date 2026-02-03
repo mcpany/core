@@ -148,13 +148,19 @@ func TestBroadcaster(t *testing.T) {
 	b.Unsubscribe(ch1)
 	assert.Len(t, b.subscribers, 1)
 
-	// Ensure ch1 is closed
-	_, ok := <-ch1
-	assert.False(t, ok)
+	// Ensure ch1 is NOT receiving messages anymore.
+	// We no longer close the channel in Unsubscribe to avoid race conditions with lock-free broadcasting.
 
 	// Broadcast again, only ch2 should receive
 	msg2 := []byte("test message 2")
 	b.Broadcast(msg2)
+
+	// Verify ch1 receives nothing
+	select {
+	case <-ch1:
+		t.Fatal("ch1 received message after unsubscribe")
+	default:
+	}
 
 	select {
 	case received := <-ch2:
