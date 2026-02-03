@@ -3,6 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -39,8 +44,11 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
 };
 
 /**
- * PolicyEditor allows configuring security policies for tool execution.
- * It provides a UI to define default actions (Allow/Deny) and specific rules based on tool names or arguments.
+ * A component for editing call policies.
+ * @param props The component props.
+ * @param props.policies The list of policies to edit.
+ * @param props.onUpdate A callback to update the policies.
+ * @returns The rendered component.
  */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
