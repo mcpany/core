@@ -2806,6 +2806,16 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	isPerl := strings.HasPrefix(base, "perl")
+	isPhp := strings.HasPrefix(base, "php")
+
+	// Awk: Check for pipe and redirection which allow RCE even in strings
+	if strings.Contains(base, "awk") {
+		if strings.ContainsAny(val, "|<>") {
+			return fmt.Errorf("awk command injection detected: value contains dangerous character '|', '<', or '>'")
+		}
+	}
+
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2836,8 +2846,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
-	isPerl := strings.HasPrefix(base, "perl")
-	isPhp := strings.HasPrefix(base, "php")
 
 	if isNode && quoteLevel == 3 { // Backtick
 		if strings.Contains(val, "${") {
@@ -2849,6 +2857,31 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+
+	// Perl: Check for dangerous function calls
+	if isPerl {
+		lowerVal := strings.ToLower(val)
+		// system and exec are dangerous even without parentheses in Perl (e.g. system "ls")
+		// We block them broadly.
+		dangerousPerl := []string{"open(", "syscall", "system", "exec", "qx/", "qx("}
+		for _, call := range dangerousPerl {
+			if strings.Contains(lowerVal, call) {
+				return fmt.Errorf("perl injection detected: value contains dangerous function call %q", call)
+			}
+		}
+	}
+
+	// PHP: Check for dangerous function calls
+	if isPhp {
+		lowerVal := strings.ToLower(val)
+		dangerousPhp := []string{"passthru", "proc_open", "shell_exec", "include", "require", "pcntl_exec", "popen", "system", "exec"}
+		for _, call := range dangerousPhp {
+			if strings.Contains(lowerVal, call) {
+				return fmt.Errorf("php injection detected: value contains dangerous function call %q", call)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -2893,7 +2926,12 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{
+		"python", "ruby", "perl", "php",
+		"node", "nodejs", "bun", "deno",
+		"lua", "java", "R", "julia", "elixir", "go",
+		"awk", "gawk", "nawk", "mawk",
+	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
