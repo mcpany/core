@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,11 +16,21 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, FileText, Code, Table as TableIcon, FileJson } from "lucide-react";
 
 interface RichResultViewerProps {
-    result: any;
+    result: unknown;
     isError?: boolean;
     className?: string;
 }
 
+/**
+ * RichResultViewer component.
+ * Renders execution results in various formats (Table, JSON, Markdown, Text).
+ *
+ * @param props - The component props.
+ * @param props.result - The result data to display.
+ * @param props.isError - Whether the result represents an error.
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered component.
+ */
 export function RichResultViewer({ result, isError, className }: RichResultViewerProps) {
     const [parsedJson, isJson, isTableCompatible] = useMemo(() => {
         if (!result) return [null, false, false];
@@ -37,7 +47,7 @@ export function RichResultViewer({ result, isError, className }: RichResultViewe
                     content = parsed;
                     validJson = true;
                 }
-            } catch (e) {
+            } catch (_e) {
                 // Not JSON
             }
         } else if (typeof content === 'object' && content !== null) {
@@ -46,7 +56,7 @@ export function RichResultViewer({ result, isError, className }: RichResultViewe
 
         let tableCompat = false;
         if (validJson && Array.isArray(content) && content.length > 0) {
-             const isListOfObjects = content.every((item: any) => typeof item === 'object' && item !== null && !Array.isArray(item));
+             const isListOfObjects = content.every((item: unknown) => typeof item === 'object' && item !== null && !Array.isArray(item));
              if (isListOfObjects) tableCompat = true;
         }
 

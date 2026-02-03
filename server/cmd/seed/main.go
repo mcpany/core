@@ -1,3 +1,7 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package main provides a utility to seed the audit database with sample data.
 package main
 
 import (
@@ -21,7 +25,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to open audit store: %v", err)
 	}
-	defer store.Close()
+	defer func() {
+		if err := store.Close(); err != nil {
+			log.Printf("Failed to close audit store: %v", err)
+		}
+	}()
 
 	ctx := context.Background()
 
