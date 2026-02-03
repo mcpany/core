@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { apiClient } from "@/lib/client"
 
 // ⚡ Bolt Optimization: Lazy load the syntax highlighter.
 // react-syntax-highlighter is a heavy dependency. By lazy loading it only when a user
@@ -257,6 +258,7 @@ LogRow.displayName = 'LogRow'
  */
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
+  const logIdsRef = React.useRef(new Set<string>())
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
   // without triggering a reconnection or having a stale closure.
@@ -265,6 +267,34 @@ export function LogStream() {
   React.useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  React.useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const res = await apiClient.listLogs({ limit: 1000 })
+        if (res.logs) {
+          // Backend returns DESC (newest first). Reverse to ASC (oldest first).
+          // We use any type temporarily as LogEntry might have minor diffs but keys match
+          const history = (res.logs as LogEntry[]).reverse()
+          const uniqueHistory = history.filter((l) => !logIdsRef.current.has(l.id))
+          uniqueHistory.forEach((l) => logIdsRef.current.add(l.id))
+
+          setLogs(prev => {
+             // If we already have logs (e.g. from WS before history loaded), merge carefully
+             // But usually history loads first or concurrent.
+             // We just prepend history if it's older?
+             // Actually, setLogs replaces.
+             // But if WS arrived, we might have newer logs.
+             // Let's assume history is the base.
+             return [...uniqueHistory, ...prev]
+          })
+        }
+      } catch (e) {
+        console.error("Failed to load log history", e)
+      }
+    }
+    loadHistory()
+  }, [])
 
   const searchParams = useSearchParams()
   const initialSource = searchParams.get("source") || "ALL"
@@ -295,25 +325,41 @@ export function LogStream() {
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
-          const MAX_LOGS = 1000
+
+          // Deduplicate incoming logs against existing IDs
+          const newLogs = buffer.filter(l => !logIdsRef.current.has(l.id))
+          newLogs.forEach(l => logIdsRef.current.add(l.id))
+
+          if (newLogs.length === 0) return prev
+
+          const MAX_LOGS = 2000 // Increased buffer since we have history now
 
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
           // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
 
           // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
+          if (prev.length + newLogs.length <= MAX_LOGS) {
+            return [...prev, ...newLogs]
           }
 
           // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
+          if (newLogs.length >= MAX_LOGS) {
+            return newLogs.slice(newLogs.length - MAX_LOGS)
           }
 
           // Case 3: Need to trim from prev to make room for buffer
           // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
+          const keepCount = MAX_LOGS - newLogs.length
+          const nextLogs = [...prev.slice(-keepCount), ...newLogs]
+
+          // Memory Cleanup: If ID set grows too large (indicating many dropped logs), rebuild it from current window
+          if (logIdsRef.current.size > MAX_LOGS * 2) {
+            const newSet = new Set<string>()
+            nextLogs.forEach(l => newSet.add(l.id))
+            logIdsRef.current = newSet
+          }
+
+          return nextLogs
         })
       }
     }, 100) // Flush every 100ms

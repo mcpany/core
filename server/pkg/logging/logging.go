@@ -16,10 +16,27 @@ import (
 )
 
 var (
-	mu            sync.Mutex
-	once          sync.Once
-	defaultLogger atomic.Pointer[slog.Logger]
+	mu               sync.Mutex
+	once             sync.Once
+	defaultLogger    atomic.Pointer[slog.Logger]
+	globalPersister  atomic.Pointer[LogPersister]
+	logPersistenceCh = make(chan LogEntry, 1000)
+	persisterOnce    sync.Once
 )
+
+// SetPersister sets the global log persister and starts the worker.
+func SetPersister(p LogPersister) {
+	globalPersister.Store(&p)
+	persisterOnce.Do(func() {
+		go func() {
+			for entry := range logPersistenceCh {
+				if persister := globalPersister.Load(); persister != nil {
+					_ = (*persister).SaveLog(entry)
+				}
+			}
+		}()
+	})
+}
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different

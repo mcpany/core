@@ -120,6 +120,18 @@ func initSchema(db *sql.DB) error {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS logs (
+		id TEXT PRIMARY KEY,
+		timestamp DATETIME NOT NULL,
+		level TEXT NOT NULL,
+		source TEXT,
+		message TEXT NOT NULL,
+		metadata TEXT
+	);
+	CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
+	CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level);
+	CREATE INDEX IF NOT EXISTS idx_logs_source ON logs(source);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

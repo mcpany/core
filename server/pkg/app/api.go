@@ -161,6 +161,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/traces", a.handleTraces())
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
+	mux.HandleFunc("/logs/history", a.handleLogsHistory(store))
 
 	return mux
 }
