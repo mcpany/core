@@ -5,16 +5,19 @@
 
 import { test, expect } from '@playwright/test';
 import { seedServices, cleanupServices } from './test-data';
+import crypto from 'crypto';
 
 test.describe('Network Topology', () => {
+  const testId = crypto.randomBytes(4).toString('hex');
+
   test.beforeEach(async ({ request }) => {
     // Clean up first to ensure fresh state
-    await cleanupServices(request);
-    await seedServices(request);
+    await cleanupServices(request, testId);
+    await seedServices(request, testId);
   });
 
   test.afterEach(async ({ request }) => {
-    await cleanupServices(request);
+    await cleanupServices(request, testId);
   });
 
   test('should display network topology nodes with real data', async ({ page }) => {
@@ -27,8 +30,8 @@ test.describe('Network Topology', () => {
     // The graph might take a moment to render
     // We expect "MCP Any" (Core) and the seeded services
     await expect(page.locator('.react-flow').getByText('MCP Any').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('.react-flow').getByText('Payment Gateway').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('.react-flow').getByText('User Service').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.react-flow').getByText(`Payment Gateway-${testId}`).first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.react-flow').getByText(`User Service-${testId}`).first()).toBeVisible({ timeout: 15000 });
   });
 
   test('should open node details sheet', async ({ page }) => {
