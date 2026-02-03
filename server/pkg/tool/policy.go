@@ -6,10 +6,28 @@ package tool
 import (
 	"fmt"
 	"regexp"
+	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
+
+// ⚡ BOLT: Global cache for compiled regexes to avoid recompilation overhead.
+// Randomized Selection from Top 5 High-Impact Targets.
+var regexCache sync.Map
+
+// getCompiledRegex retrieves a compiled regex from the cache or compiles and stores it.
+func getCompiledRegex(pattern string) (*regexp.Regexp, error) {
+	if v, ok := regexCache.Load(pattern); ok {
+		return v.(*regexp.Regexp), nil
+	}
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, err
+	}
+	regexCache.Store(pattern, re)
+	return re, nil
+}
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
 // based on the provided ExportPolicy.
@@ -25,12 +43,14 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 		if rule.GetNameRegex() == "" {
 			continue
 		}
-		matched, err := regexp.MatchString(rule.GetNameRegex(), name)
+
+		re, err := getCompiledRegex(rule.GetNameRegex())
 		if err != nil {
 			logging.GetLogger().Error("Invalid regex in export policy", "regex", rule.GetNameRegex(), "error", err)
 			continue
 		}
-		if matched {
+
+		if re.MatchString(name) {
 			return rule.GetAction() == configv1.ExportPolicy_EXPORT
 		}
 	}
@@ -57,12 +77,14 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 		for _, rule := range policy.GetRules() {
 			matched := true
 			if rule.GetNameRegex() != "" {
-				if matchedTool, _ := regexp.MatchString(rule.GetNameRegex(), toolName); !matchedTool {
+				re, err := getCompiledRegex(rule.GetNameRegex())
+				if err != nil || !re.MatchString(toolName) {
 					matched = false
 				}
 			}
 			if matched && rule.GetCallIdRegex() != "" {
-				if matchedCall, _ := regexp.MatchString(rule.GetCallIdRegex(), callID); !matchedCall {
+				re, err := getCompiledRegex(rule.GetCallIdRegex())
+				if err != nil || !re.MatchString(callID) {
 					matched = false
 				}
 			}
@@ -71,7 +93,8 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 					// Cannot match argument regex at registration time
 					matched = false
 				} else {
-					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), arguments); !matchedArgs {
+					re, err := getCompiledRegex(rule.GetArgumentRegex())
+					if err != nil || !re.Match(arguments) {
 						matched = false
 					}
 				}
