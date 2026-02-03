@@ -2749,6 +2749,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 			return err
 		}
+	} else if isShellCommand(command) {
+		// Heuristic: check if template starts with an interpreter invocation (e.g. sh -c "awk ...")
+		// We split by whitespace to get the first word of the template/argument
+		fields := strings.Fields(template)
+		if len(fields) > 0 {
+			possibleInterp := fields[0]
+			// Check if the first word is an interpreter (e.g. "awk", "python")
+			// We skip "env" because it's a wrapper, we want the command after it?
+			// But isInterpreter check might handle that if we pass the right thing.
+			if isInterpreter(possibleInterp) {
+				if err := checkInterpreterInjection(val, template, strings.ToLower(filepath.Base(possibleInterp)), quoteLevel); err != nil {
+					return err
+				}
+			}
+		}
 	}
 
 	if quoteLevel == 3 { // Backticked
@@ -2806,7 +2821,18 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Python: Check for f-string prefix in template
+	// Awk: Block pipe and getline to prevent RCE
+	// Awk is often used inside shell commands (sh -c "awk ...")
+	if strings.HasPrefix(base, "awk") || strings.HasSuffix(base, "awk") {
+		if strings.Contains(val, "|") {
+			return fmt.Errorf("awk injection detected: value contains '|'")
+		}
+		if strings.Contains(strings.ToLower(val), "getline") {
+			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+	}
+
+	// Python: Check for f-string prefix in template and dangerous modules
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
 		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
@@ -2824,6 +2850,11 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			if strings.ContainsAny(val, "{}") {
 				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
 			}
+		}
+		// Block subprocess module to prevent RCE via importless code execution if possible,
+		// or if the script imports it.
+		if strings.Contains(val, "subprocess") {
+			return fmt.Errorf("python injection detected: value contains 'subprocess'")
 		}
 	}
 
@@ -2893,7 +2924,11 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{
+		"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno",
+		"lua", "java", "R", "julia", "elixir", "go",
+		"awk", "gawk", "nawk", "mawk",
+	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
