@@ -6,7 +6,11 @@
 import { test, expect } from '@playwright/test';
 import crypto from 'crypto';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:50050';
+// Ensure we use 127.0.0.1 to avoid IPv6 issues in CI, even if env var says localhost
+let BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:50050';
+if (BACKEND_URL.includes('localhost')) {
+    BACKEND_URL = BACKEND_URL.replace('localhost', '127.0.0.1');
+}
 
 test.describe('Distributed Tracing', () => {
   test('should visualize nested traces from W3C headers', async ({ page, request }) => {
@@ -16,7 +20,7 @@ test.describe('Distributed Tracing', () => {
     const traceId = crypto.randomBytes(16).toString('hex');
     const parentSpanId = crypto.randomBytes(8).toString('hex');
 
-    console.log(`Seeding trace: ${traceId}`);
+    console.log(`Seeding trace: ${traceId} to ${BACKEND_URL}`);
 
     // Send two requests with the same Trace ID
     // This simulates a distributed trace where multiple spans belong to the same trace.
@@ -27,12 +31,25 @@ test.describe('Distributed Tracing', () => {
         'User-Agent': 'playwright-tracing-test'
     };
 
-    await request.get(`${BACKEND_URL}/health`, { headers });
+    // Retry sending requests if connection fails (e.g. backend starting up)
+    await expect(async () => {
+        const res = await request.get(`${BACKEND_URL}/health`, { headers });
+        expect(res.status()).toBeGreaterThanOrEqual(200);
+    }).toPass({ timeout: 10000 });
+
     await request.get(`${BACKEND_URL}/health`, { headers });
 
-    // Wait for async processing in backend (ring buffer)
-    // Increased wait time to ensure backend processes the log entry
-    await new Promise(r => setTimeout(r, 2000));
+    // Poll for the trace to be available in the backend debugger API
+    // This ensures data is present before we try to load the UI
+    await expect(async () => {
+        const res = await request.get(`${BACKEND_URL}/debug/entries`);
+        expect(res.ok()).toBeTruthy();
+        const entries = await res.json();
+        // Check if any entry has our traceId (field might be trace_id or id depending on version/parsing)
+        // We look for trace_id in the JSON
+        const found = entries.some((e: any) => e.trace_id === traceId || e.id === traceId);
+        expect(found).toBeTruthy();
+    }).toPass({ timeout: 15000, intervals: [1000] });
 
     await page.goto('/traces');
 
@@ -48,10 +65,13 @@ test.describe('Distributed Tracing', () => {
 
     // Retry logic for finding the trace, as the backend might lag
     await expect(async () => {
-        await page.reload(); // Reload to refresh list if live update is off/slow
-        await searchInput.fill(traceId);
+        // Only reload if not visible
+        if (!await traceItem.isVisible()) {
+             await page.reload();
+             await searchInput.fill(traceId);
+        }
         await expect(traceItem).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 20000 });
+    }).toPass({ timeout: 30000 });
 
     await traceItem.click();
 
