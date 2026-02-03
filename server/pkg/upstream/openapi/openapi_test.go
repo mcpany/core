@@ -96,6 +96,10 @@ func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
 	return true
 }
 
+func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+	return 0
+}
+
 func TestNewOpenAPIUpstream(t *testing.T) {
 	u := NewOpenAPIUpstream()
 	assert.NotNil(t, u)
