@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
@@ -102,11 +103,17 @@ test.describe('User Guide Walkthrough', () => {
     await expect(page.getByText('Monitor system health')).toBeVisible();
   });
 
-  test('Stack Composer', async ({ page }) => {
-    await page.goto('/stacks');
-    await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
-    // "Create Stack" button is missing in implementation, check for default stack card instead
-    await expect(page.getByText('mcpany-system')).toBeVisible();
+  test('Stack Composer', async ({ page, request }) => {
+    const stackName = 'mcpany-system';
+    await seedCollection(stackName, request);
+
+    try {
+        await page.goto('/stacks');
+        await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
+        await expect(page.getByText(stackName)).toBeVisible();
+    } finally {
+        await cleanupCollection(stackName, request);
+    }
   });
 
   test('Webhooks Management', async ({ page }) => {
