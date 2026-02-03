@@ -95,7 +95,10 @@ func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*Ch
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("openai api error (status %d): failed to read body: %w", resp.StatusCode, err)
+		}
 		return nil, fmt.Errorf("openai api error (status %d): %s", resp.StatusCode, string(body))
 	}
 
