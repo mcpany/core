@@ -539,6 +539,7 @@ export const apiClient = {
 
     /**
      * Performs a bulk action (enable, disable, delete, restart) on a list of services.
+     * Use this method to batch operations and reduce network traffic/reloads.
      * @param action The action to perform.
      * @param services The list of service names.
      * @returns A promise that resolves when the action is complete.
