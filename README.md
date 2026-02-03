@@ -6,11 +6,9 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is a configuration-driven gateway that instantly exposes any API (REST, gRPC, GraphQL, Command-line) as a Model Context Protocol (MCP) server. It eliminates "binary fatigue" by unifying multiple backend services into a single, secure, and observable endpoint.
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
-
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**The Solution:** Stop writing custom code to connect your APIs to AI agents. **MCP Any** allows you to capability-enable your infrastructure purely through lightweight configuration files, acting as a Universal Adapter for the AI era.
 
 ## 2. Architecture
 
@@ -105,6 +103,7 @@ Run all unit, integration, and end-to-end tests to ensure code correctness.
 ```bash
 make test
 ```
+**Side Effects:** Running tests may create temporary files in `test-results/` and launch Docker containers for integration testing.
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
