@@ -73,6 +73,7 @@ export function CreateRuleDialog() {
             title: "Rule Created",
             description: "Alert rule has been successfully created."
         });
+        // Trigger CI retry
         setOpen(false);
         // Reset form
         setName("");
