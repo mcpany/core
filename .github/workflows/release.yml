@@ -22,7 +22,8 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     outputs:
       version: ${{ steps.vars.outputs.version }}
@@ -69,7 +70,8 @@ jobs:
     needs: setup
     if: needs.setup.outputs.is_release == 'true'
     name: Build Binaries (${{ matrix.platform }})
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 60
     strategy:
       matrix:
@@ -132,6 +134,7 @@ jobs:
     needs: [setup, build-binaries]
     if: needs.setup.outputs.is_release == 'true'
     runs-on: ubuntu-latest
+    # runs-on: self-hosted
     timeout-minutes: 60
     steps:
       - name: Download all binaries
@@ -173,6 +176,7 @@ jobs:
         include:
           - platform: linux/amd64
             runner: ubuntu-latest
+            # runner: self-hosted
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
 
@@ -257,6 +261,7 @@ jobs:
   # ==============================================================================
   docker-merge:
     runs-on: ubuntu-latest
+    # runs-on: self-hosted
     timeout-minutes: 60
     needs: [setup, docker-build]
     permissions:
@@ -386,6 +391,7 @@ jobs:
         include:
           - platform: linux/amd64
             runner: ubuntu-latest
+            # runner: self-hosted
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
 
@@ -475,7 +481,7 @@ jobs:
   # JOB 6: UI DOCKER MERGE
   # ==============================================================================
   docker-merge-ui:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 60
     needs: [setup, docker-build-ui]
     permissions:
