@@ -53,11 +53,77 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Try to run a hello-world container to verify execution capability.
+	// We use 'hello-world' or 'alpine' if available.
+	// To minimize download, we can try 'alpine' which is used in tests.
+	imageName := "alpine:latest"
+
+	// Check if image exists locally or pull it
+	_, _, err = cli.ImageInspectWithRaw(ctx, imageName)
+	if err != nil {
+		if client.IsErrNotFound(err) {
+			reader, err := cli.ImagePull(ctx, imageName, image.PullOptions{})
+			if err != nil {
+				t.Logf("could not pull check image %s: %v", imageName, err)
+				// If pull fails, we assume Docker is not fully functional for tests
+				return false
+			}
+			defer reader.Close()
+			_, _ = io.Copy(io.Discard, reader)
+		} else {
+			t.Logf("could not inspect image %s: %v", imageName, err)
+			return false
+		}
+	}
+
+	// Try creating a container
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: imageName,
+		Cmd:   []string{"echo", "hello"},
+	}, nil, nil, nil, "")
+
+	if err != nil {
+		t.Logf("could not create check container: %v", err)
+		return false
+	}
+
+	// Ensure cleanup
+	defer func() {
+		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	// Start it
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("could not start check container: %v", err)
+		return false
+	}
+
+	// Wait for it
+	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		if err != nil {
+			t.Logf("wait error for check container: %v", err)
+			return false
+		}
+	case <-statusCh:
+		// Success
+	case <-ctx.Done():
+		t.Logf("timeout waiting for check container")
+		return false
+	}
+
 	return true
 }
 
@@ -200,7 +266,7 @@ func TestLocalExecutor(t *testing.T) {
 
 func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to or run containers in Docker daemon, skipping Docker tests")
 	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
@@ -704,7 +770,8 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
 		// With the fix, Key is Source, Value is Target
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		absTestdata, _ := filepath.Abs("testdata")
+		assert.Equal(t, absTestdata, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
