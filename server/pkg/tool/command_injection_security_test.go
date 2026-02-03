@@ -169,6 +169,36 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "cmd.exe should block injection even in single quotes")
 	})
+
+	// Case 10: Bypass isShellCommand with mixed case (Python vs python)
+	t.Run("python_case_bypass_fixed", func(t *testing.T) {
+		cmd := "Python"
+		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "import os; os.system('rm -rf /')"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected", "Fix Verification: Python (mixed case) should now be detected")
+	})
+
+	// Case 11: Bypass isShellCommand with CMD.EXE on Windows-like scenario
+	t.Run("cmd_case_bypass_fixed", func(t *testing.T) {
+		cmd := "CMD.EXE"
+		tool := createTestCommandToolWithTemplate(cmd, "/C echo {{input}}")
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "hello & calc.exe"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected", "Fix Verification: CMD.EXE should now be detected")
+	})
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {
