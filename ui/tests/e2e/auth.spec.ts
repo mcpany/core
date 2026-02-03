@@ -17,7 +17,7 @@ test.describe('Authentication and User Management', () => {
           data: {
               user: {
                   id: USER_ID,
-                  roles: ['viewer'],
+                  roles: ['admin'],
                   authentication: {
                       basic_auth: {
                           username: USER_ID,
