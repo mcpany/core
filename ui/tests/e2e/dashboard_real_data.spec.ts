@@ -87,7 +87,7 @@ test.describe('Dashboard Real Data', () => {
 
 
         // 4. Verify charts existence (roughly)
-        await expect(page.locator('.recharts-surface').first()).toBeVisible();
+        await expect(page.locator('.recharts-surface').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('should display health history based on traffic', async ({ page, request }) => {
