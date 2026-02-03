@@ -14,17 +14,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// LogEntry is the structure for logs sent over WebSocket.
-// It matches the frontend expectation.
-type LogEntry struct {
-	ID        string         `json:"id"`
-	Timestamp string         `json:"timestamp"`
-	Level     string         `json:"level"`
-	Message   string         `json:"message"`
-	Source    string         `json:"source,omitempty"`
-	Metadata  map[string]any `json:"metadata,omitempty"`
-}
-
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
@@ -110,6 +99,21 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	}
 
 	h.broadcaster.Broadcast(data)
+
+	// Persist to storage if configured
+	if store := GetStorage(); store != nil {
+		// Asynchronous save to avoid blocking log emission
+		go func() {
+			// Create a detached context with timeout
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := store.SaveLog(ctx, &entry); err != nil {
+				// Fallback logging? No, infinite loop risk.
+				// Just drop for now or metric.
+			}
+		}()
+	}
+
 	return nil
 }
 

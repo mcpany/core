@@ -6,9 +6,11 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -842,4 +844,187 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 		return fmt.Errorf("failed to delete token: %w", err)
 	}
 	return nil
+}
+
+// Credentials
+
+// ListCredentials retrieves all credentials.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query credentials: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var credentials []*configv1.Credential
+	for rows.Next() {
+		var configJSON []byte
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan credential config: %w", err)
+		}
+
+		var cred configv1.Credential
+		if err := protojson.Unmarshal(configJSON, &cred); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+		}
+		credentials = append(credentials, &cred)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return credentials, nil
+}
+
+// GetCredential retrieves a credential by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+	query := "SELECT config_json FROM credentials WHERE id = $1"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON []byte
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan credential: %w", err)
+	}
+
+	var cred configv1.Credential
+	if err := protojson.Unmarshal(configJSON, &cred); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+	}
+	return &cred, nil
+}
+
+// SaveCredential saves a credential.
+//
+// ctx is the context for the request.
+// cred is the cred.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+	if cred.GetId() == "" {
+		return fmt.Errorf("credential ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(cred)
+	if err != nil {
+		return fmt.Errorf("failed to marshal credential: %w", err)
+	}
+
+	query := `
+	INSERT INTO credentials (id, name, config_json, updated_at)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, cred.GetId(), cred.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save credential: %w", err)
+	}
+	return nil
+}
+
+// DeleteCredential deletes a credential by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns an error if the operation fails.
+func (s *Store) DeleteCredential(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM credentials WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete credential: %w", err)
+	}
+	return nil
+}
+
+// SaveLog saves a log entry.
+func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	query := `
+	INSERT INTO logs (id, timestamp, level, message, source, metadata_json)
+	VALUES ($1, $2, $3, $4, $5, $6)
+	`
+	metaJSON, _ := json.Marshal(entry.Metadata)
+	_, err := s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Message, entry.Source, string(metaJSON))
+	return err
+}
+
+// ListLogs lists logs matching the filter.
+func (s *Store) ListLogs(ctx context.Context, filter logging.LogFilter) ([]*logging.LogEntry, error) {
+	query := "SELECT id, timestamp, level, message, source, metadata_json FROM logs WHERE 1=1"
+	var args []any
+	argID := 1
+
+	if filter.Source != "" {
+		query += fmt.Sprintf(" AND source = $%d", argID)
+		args = append(args, filter.Source)
+		argID++
+	}
+	if filter.Level != "" {
+		query += fmt.Sprintf(" AND level = $%d", argID)
+		args = append(args, filter.Level)
+		argID++
+	}
+	if filter.Search != "" {
+		query += fmt.Sprintf(" AND (message LIKE $%d OR source LIKE $%d)", argID, argID+1)
+		args = append(args, "%"+filter.Search+"%", "%"+filter.Search+"%")
+		argID += 2
+	}
+	if filter.StartTime != nil {
+		query += fmt.Sprintf(" AND timestamp >= $%d", argID)
+		args = append(args, filter.StartTime)
+		argID++
+	}
+	if filter.EndTime != nil {
+		query += fmt.Sprintf(" AND timestamp <= $%d", argID)
+		args = append(args, filter.EndTime)
+		argID++
+	}
+
+	query += " ORDER BY timestamp DESC"
+
+	if filter.Limit > 0 {
+		query += fmt.Sprintf(" LIMIT $%d", argID)
+		args = append(args, filter.Limit)
+		argID++
+	}
+	if filter.Offset > 0 {
+		query += fmt.Sprintf(" OFFSET $%d", argID)
+		args = append(args, filter.Offset)
+		argID++
+	}
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []*logging.LogEntry
+	for rows.Next() {
+		var l logging.LogEntry
+		var metaJSON string
+		if err := rows.Scan(&l.ID, &l.Timestamp, &l.Level, &l.Message, &l.Source, &metaJSON); err != nil {
+			return nil, err
+		}
+		if metaJSON != "" {
+			_ = json.Unmarshal([]byte(metaJSON), &l.Metadata)
+		}
+		logs = append(logs, &l)
+	}
+	return logs, nil
 }
