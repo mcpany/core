@@ -811,6 +811,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
 	t.Setenv("MCPANY_DB_PATH", dbPath)
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
