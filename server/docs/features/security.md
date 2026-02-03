@@ -88,3 +88,13 @@ upstream_authentication:
         region: "us-west-2"
         json_key: "api_key_value" # Optional: if secret is JSON
 ```
+
+## Tool Poisoning Mitigation (Integrity Checks)
+
+MCP Any implements integrity checks to prevent "Rug Pull" attacks where a malicious or compromised upstream service changes its tool definitions (e.g., arguments, descriptions) after registration without the server's knowledge.
+
+### How it works
+
+The server calculates a SHA256 hash of the tool definition at registration time. This hash acts as a cryptographic signature of the tool's interface (name, input schema, etc.). If a tool definition includes an `integrity` hash, the server verifies that the calculated hash matches the provided one. If the verification fails, the tool is rejected to prevent potential poisoning.
+
+This ensures that the tools your agents rely on are exactly what you expect them to be.
