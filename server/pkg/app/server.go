@@ -216,7 +216,7 @@ type Application struct {
 	// We need to keep a reference to update it on reload.
 	AuthManager *auth.Manager
 	// Middlewares that need manual updates
-	ipMiddleware   *middleware.IPAllowlistMiddleware
+	ipMiddleware   atomic.Pointer[middleware.IPAllowlistMiddleware]
 	corsMiddleware *middleware.HTTPCORSMiddleware
 	csrfMiddleware *middleware.CSRFMiddleware
 
@@ -945,8 +945,8 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 
 	// Update dynamic middlewares
-	if a.ipMiddleware != nil {
-		if err := a.ipMiddleware.Update(a.SettingsManager.GetAllowedIPs()); err != nil {
+	if ipMw := a.ipMiddleware.Load(); ipMw != nil {
+		if err := ipMw.Update(a.SettingsManager.GetAllowedIPs()); err != nil {
 			log.Error("Failed to update IP allowlist", "error", err)
 		}
 	}
@@ -1446,9 +1446,7 @@ func (a *Application) runServerMode(
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
 
-	a.configMu.Lock()
-	a.ipMiddleware = ipMiddleware
-	a.configMu.Unlock()
+	a.ipMiddleware.Store(ipMiddleware)
 
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -1948,15 +1946,23 @@ func (a *Application) runServerMode(
 
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
+	// Use IP allowlist from atomic pointer
+	ipHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ipMw := a.ipMiddleware.Load()
+		if ipMw != nil {
+			ipMw.Handler(rateLimiter.Handler(finalHandler)).ServeHTTP(w, r)
+		} else {
+			rateLimiter.Handler(finalHandler).ServeHTTP(w, r)
+		}
+	})
+
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			csrfMiddleware.Handler(
 				middleware.JSONRPCComplianceMiddleware(
 					middleware.RecoveryMiddleware(
 						a.HTTPRequestContextMiddleware(
-							ipMiddleware.Handler(
-								rateLimiter.Handler(finalHandler),
-							),
+							ipHandler,
 						),
 					),
 				),
@@ -1976,7 +1982,7 @@ func (a *Application) runServerMode(
 			ip := util.ExtractIP(p.Addr.String())
 			ctx = util.ContextWithRemoteIP(ctx, ip)
 
-			if !ipMiddleware.Allow(p.Addr.String()) {
+			if ipMw := a.ipMiddleware.Load(); ipMw != nil && !ipMw.Allow(p.Addr.String()) {
 				return nil, status.Error(codes.PermissionDenied, "IP not allowed")
 			}
 		}
@@ -1990,7 +1996,7 @@ func (a *Application) runServerMode(
 				ServerStream: ss,
 				Ctx:          util.ContextWithRemoteIP(ss.Context(), ip),
 			}
-			if !ipMiddleware.Allow(p.Addr.String()) {
+			if ipMw := a.ipMiddleware.Load(); ipMw != nil && !ipMw.Allow(p.Addr.String()) {
 				return status.Error(codes.PermissionDenied, "IP not allowed")
 			}
 			return handler(srv, wrappedStream)
