@@ -803,11 +803,14 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	switch {
 	case len(t.allowedParams) == 0 && len(inputs) > 0:
 		// Optimization: If no parameters are allowed, clear everything immediately.
+		// Note: 'inputs' is a local map created in this function, so replacing it is safe
+		// and effective as it is returned to the caller.
 		inputs = make(map[string]any)
 		filtered = true
 	case len(inputs) > len(t.allowedParams)*2:
 		// Optimization: If inputs are significantly larger than allowed params,
 		// rebuild the map by iterating over allowed params (O(M)) instead of inputs (O(N)).
+		// Note: 'inputs' is a local map, so replacement is safe.
 		newInputs := make(map[string]any, len(t.allowedParams))
 		for k := range t.allowedParams {
 			if v, ok := inputs[k]; ok {
