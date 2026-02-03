@@ -69,6 +69,62 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	assert.Contains(t, err.Error(), "system(")
 }
 
+func TestSentinelRCE_AwkPipeInjection(t *testing.T) {
+	// 1. Configure a tool that uses sh -c to run awk with user input in single quotes
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("sh"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "awk '{{script}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("script"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("awk_pipe_wrapper")
+
+	tool := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDef,
+		nil,
+		"awk_pipe_wrapper",
+	)
+
+	// 2. Craft a malicious input that uses | getline to bypass system() check
+	// This was previously vulnerable.
+	payload := `BEGIN { "echo pwned" | getline; print $0 }`
+
+	inputMap := map[string]interface{}{
+		"script": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	req := &ExecutionRequest{
+		ToolName:   "awk_pipe_wrapper",
+		ToolInputs: inputBytes,
+	}
+
+	// 3. Execute - Expect Error (Security Check Block)
+	res, err := tool.Execute(context.Background(), req)
+
+	// 4. Assert
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "awk injection detected")
+	assert.Contains(t, err.Error(), "|")
+}
+
 func TestSentinelRCE_Backticks(t *testing.T) {
 	// 1. Configure a tool that uses sh -c to run perl with user input in single quotes
 	svc := configv1.CommandLineUpstreamService_builder{
