@@ -25,7 +25,9 @@ export default function ServiceDetailPage({ params: paramsPromise }: { params: P
   const siblings = useServiceSiblings(params.id);
 
   useEffect(() => {
-    apiClient.getService(params.id).then(res => setService(res.service || null));
+    // Ensure ID is decoded (Next.js usually decodes, but safe to ensure)
+    const id = decodeURIComponent(params.id);
+    apiClient.getService(id).then(res => setService(res.service || null));
   }, [params.id]);
 
   const breadcrumbItems: BreadcrumbItem[] = service ? [{
