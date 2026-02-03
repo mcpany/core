@@ -741,8 +741,8 @@ jobs:
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
   k8s-e2e:
-    # runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
     timeout-minutes: 20
     needs: [build-images]
     steps:
