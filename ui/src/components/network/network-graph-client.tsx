@@ -109,10 +109,22 @@ const defaultEdgeOptions = {
     style: { strokeWidth: 2 }
 };
 
+/**
+ * Props for the NetworkGraphFlow component.
+ */
 export interface NetworkGraphFlowProps {
+    /**
+     * Whether to render in widget mode (simplified UI).
+     */
     widgetMode?: boolean;
 }
 
+/**
+ * NetworkGraphFlow component.
+ * Renders the interactive network graph using ReactFlow.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) {
   const router = useRouter();
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
