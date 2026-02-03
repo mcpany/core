@@ -53,11 +53,39 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually create a container (checks for overlayfs/mounting issues in CI)
+	// We use "hello-world" or "alpine" if available.
+	// Since we can't easily pull here without making this slow, we assume the test setup pulls it,
+	// or we accept failure if image missing as "can't connect".
+	// But let's try to create a container with "alpine:latest" assuming it's popular or pulled by previous tests.
+	// If it fails with "No such image", we might want to try pulling or just return true and let test fail if pull fails.
+	// However, the error we want to catch is "failed to mount ... overlay".
+
+	// Ensure we have an image to test with.
+	reader, err := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+	if err == nil {
+		_, _ = io.Copy(io.Discard, reader)
+		_ = reader.Close()
+	}
+
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd: []string{"true"},
+	}, nil, nil, nil, "")
+
+	if err != nil {
+		t.Logf("Docker found but unable to create container (likely CI environment issue): %v", err)
+		return false
+	}
+
+	_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 	return true
 }
 
