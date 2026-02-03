@@ -2228,9 +2228,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			if apiKey != "" {
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
-				}
-				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {
 						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
@@ -2285,8 +2282,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 				// Check if the request is from a loopback address
 				ipAddr := net.ParseIP(host)
-				if !util.IsPrivateIP(ipAddr) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				if !ipAddr.IsLoopback() {
+					logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
 					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 					return
 				}
