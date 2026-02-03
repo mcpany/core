@@ -195,9 +195,19 @@ export interface SystemStatus {
     security_warnings: string[];
 }
 
+/**
+ * Severity levels for alerts.
+ */
 export type Severity = "critical" | "warning" | "info";
+
+/**
+ * Status of an alert.
+ */
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
+/**
+ * Represents a system alert.
+ */
 export interface Alert {
   id: string;
   title: string;
@@ -209,6 +219,9 @@ export interface Alert {
   source: string;
 }
 
+/**
+ * Configuration for an alert rule.
+ */
 export interface AlertRule {
   id: string;
   name: string;
