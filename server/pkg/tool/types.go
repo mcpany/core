@@ -679,7 +679,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			bodyBytes = util.RedactJSON(bodyBytes)
 			bodyStr := string(bodyBytes)
 
-			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", httpReq.URL.String())
+			// Sentinel Security Update: Redact secrets from URL in logs
+			logURL := t.redactURL(httpReq.URL)
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", logURL)
 
 			// Truncate body for the returned error message to prevent leaking large stack traces or extensive details to the user/LLM.
 			// We keep enough to likely identify the issue (e.g. "invalid argument").
@@ -1104,6 +1106,37 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	}
 
 	return result, nil
+}
+
+// redactURL removes sensitive query parameters from the URL for logging.
+func (t *HTTPTool) redactURL(u *url.URL) string {
+	// Check if we have any secret parameters mapped
+	hasSecretParams := false
+	for _, param := range t.parameters {
+		if param.GetSecret() != nil {
+			hasSecretParams = true
+			break
+		}
+	}
+
+	if !hasSecretParams {
+		return u.String()
+	}
+
+	// Create a copy of the URL to avoid modifying the original
+	redactedURL := *u
+	q := redactedURL.Query()
+
+	for _, param := range t.parameters {
+		if param.GetSecret() != nil {
+			name := param.GetSchema().GetName()
+			if q.Has(name) {
+				q.Set(name, redactedPlaceholder)
+			}
+		}
+	}
+	redactedURL.RawQuery = q.Encode()
+	return redactedURL.String()
 }
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
@@ -2623,7 +2656,7 @@ func isShellCommand(cmd string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
-		"busybox", "expect",
+		"busybox", "expect", "watch", "tmux", "screen",
 		// Common interpreters and runners that can execute code
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
