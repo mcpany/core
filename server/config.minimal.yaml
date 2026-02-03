@@ -9,10 +9,15 @@ global_settings:
       selector:
         tags: ["dev"]
   db_path: "/tmp/mcpany.db"
+  debugger:
+    enabled: true
+    size: 1000
   middlewares:
     - name: "auth"
       priority: 1
       disabled: true
+    - name: "debugger"
+      priority: 10
 
 upstream_services:
   - id: "weather-service"
