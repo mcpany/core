@@ -9,9 +9,9 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
-export const seedServices = async (requestContext?: APIRequestContext) => {
+export const seedServices = async (requestContext?: APIRequestContext, customServices?: any[]) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const services = [
+    const services = customServices || [
         {
             id: "svc_01",
             name: "Payment Gateway",

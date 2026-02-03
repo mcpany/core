@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
@@ -61,7 +61,8 @@ test.describe('Dashboard Real Data', () => {
         // The endpoint returns points. The UI sums them up.
         // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
         // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
+        // const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
+
         // Or simpler: find the value card.
         // The card structure: Header "Total Requests", Content: "6,000"
         // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
