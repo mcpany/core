@@ -29,14 +29,15 @@ const (
 
 // Alert represents a system alert.
 type Alert struct {
-	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Message   string    `json:"message"`
-	Severity  Severity  `json:"severity"`
-	Status    Status    `json:"status"`
-	Service   string    `json:"service"`
-	Source    string    `json:"source"`
-	Timestamp time.Time `json:"timestamp"`
+	ID         string    `json:"id"`
+	Title      string    `json:"title"`
+	Message    string    `json:"message"`
+	Severity   Severity  `json:"severity"`
+	Status     Status    `json:"status"`
+	Service    string    `json:"service"`
+	Source     string    `json:"source"`
+	Timestamp  time.Time `json:"timestamp"`
+	ResolvedAt time.Time `json:"resolved_at,omitempty"`
 }
 
 // AlertRule defines a condition for triggering an alert.
@@ -50,4 +51,6 @@ type AlertRule struct {
 	Severity    Severity  `json:"severity"`
 	Enabled     bool      `json:"enabled"`
 	LastUpdated time.Time `json:"last_updated"`
+	Service     string    `json:"service"`
+	Condition   string    `json:"condition"`
 }
