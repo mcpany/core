@@ -1173,6 +1173,40 @@ export const apiClient = {
         return {};
     },
 
+    // User Preferences
+
+    /**
+     * Gets user preferences.
+     * @param userId Optional user ID.
+     * @returns A promise that resolves to the preferences.
+     */
+    getUserPreferences: async (userId?: string) => {
+        let url = '/api/v1/user/preferences';
+        if (userId) url += `?user_id=${encodeURIComponent(userId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch user preferences');
+        return res.json();
+    },
+
+    /**
+     * Updates user preferences.
+     * @param preferences The preferences to update.
+     * @param userId Optional user ID.
+     * @returns A promise that resolves to the updated preferences.
+     */
+    updateUserPreferences: async (preferences: Record<string, string>, userId?: string) => {
+        const payload: any = { preferences };
+        if (userId) payload.user_id = userId;
+
+        const res = await fetchWithAuth('/api/v1/user/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to update user preferences');
+        return res.json();
+    },
+
 
     // OAuth
 

@@ -550,6 +550,76 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 	return nil
 }
 
+// User Preferences
+
+// GetUserPreferences retrieves preferences for a user.
+//
+// ctx is the context for the request.
+// userID is the user ID.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetUserPreferences(ctx context.Context, userID string) (map[string]string, error) {
+	query := "SELECT key, value FROM user_preferences WHERE user_id = ?"
+	rows, err := s.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query user preferences: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	prefs := make(map[string]string)
+	for rows.Next() {
+		var key, value string
+		if err := rows.Scan(&key, &value); err != nil {
+			return nil, fmt.Errorf("failed to scan user preference: %w", err)
+		}
+		prefs[key] = value
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return prefs, nil
+}
+
+// UpdateUserPreferences updates preferences for a user.
+//
+// ctx is the context for the request.
+// userID is the user ID.
+// preferences is the map of preferences to update.
+//
+// Returns an error if the operation fails.
+func (s *Store) UpdateUserPreferences(ctx context.Context, userID string, preferences map[string]string) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	query := `
+	INSERT INTO user_preferences (user_id, key, value, updated_at)
+	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(user_id, key) DO UPDATE SET
+		value = excluded.value,
+		updated_at = excluded.updated_at;
+	`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer func() { _ = stmt.Close() }()
+
+	for key, value := range preferences {
+		if _, err := stmt.ExecContext(ctx, userID, key, value); err != nil {
+			return fmt.Errorf("failed to update user preference %s: %w", key, err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+	return nil
+}
+
 // Secrets
 
 // ListSecrets retrieves all secrets.

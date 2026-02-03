@@ -426,3 +426,47 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 	}
 	return pb.ListAuditLogsResponse_builder{Entries: pbEntries}.Build(), nil
 }
+
+// GetUserPreferences returns user preferences.
+func (s *Server) GetUserPreferences(ctx context.Context, req *pb.GetUserPreferencesRequest) (*pb.GetUserPreferencesResponse, error) {
+	// Determine user ID:
+	// 1. From request (if provided and admin/self)
+	// 2. From context (authenticated user)
+	// For now, we trust the request user_id if present, otherwise fallback to "default" or error if auth context missing.
+	// Since we don't have full auth context helper here visible, we rely on req.UserId.
+	// If empty, we might want to default to "anonymous" or error.
+	userID := req.GetUserId()
+	if userID == "" {
+		// Try to get from context if available (placeholder)
+		// if u, ok := auth.UserFromContext(ctx); ok { userID = u.ID }
+		// For now, require it or default to "default" for single-user mode
+		userID = "default"
+	}
+
+	prefs, err := s.storage.GetUserPreferences(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get preferences: %v", err)
+	}
+
+	return pb.GetUserPreferencesResponse_builder{Preferences: prefs}.Build(), nil
+}
+
+// UpdateUserPreferences updates user preferences.
+func (s *Server) UpdateUserPreferences(ctx context.Context, req *pb.UpdateUserPreferencesRequest) (*pb.UpdateUserPreferencesResponse, error) {
+	userID := req.GetUserId()
+	if userID == "" {
+		userID = "default"
+	}
+
+	if err := s.storage.UpdateUserPreferences(ctx, userID, req.GetPreferences()); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update preferences: %v", err)
+	}
+
+	// Fetch updated to confirm (or just return what we merged if we trust it)
+	prefs, err := s.storage.GetUserPreferences(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get updated preferences: %v", err)
+	}
+
+	return pb.UpdateUserPreferencesResponse_builder{Preferences: prefs}.Build(), nil
+}

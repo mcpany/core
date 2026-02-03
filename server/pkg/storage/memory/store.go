@@ -31,6 +31,7 @@ type Store struct {
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
+	userPreferences    map[string]map[string]string
 }
 
 // NewStore creates a new memory store.
@@ -45,6 +46,7 @@ func NewStore() *Store {
 		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
+		userPreferences:    make(map[string]map[string]string),
 	}
 }
 
@@ -391,6 +393,36 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.users, id)
+	return nil
+}
+
+// User Preferences
+
+// GetUserPreferences retrieves preferences for a user.
+func (s *Store) GetUserPreferences(_ context.Context, userID string) (map[string]string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if prefs, ok := s.userPreferences[userID]; ok {
+		// Return copy
+		copy := make(map[string]string, len(prefs))
+		for k, v := range prefs {
+			copy[k] = v
+		}
+		return copy, nil
+	}
+	return map[string]string{}, nil
+}
+
+// UpdateUserPreferences updates preferences for a user.
+func (s *Store) UpdateUserPreferences(_ context.Context, userID string, preferences map[string]string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.userPreferences[userID]; !ok {
+		s.userPreferences[userID] = make(map[string]string)
+	}
+	for k, v := range preferences {
+		s.userPreferences[userID][k] = v
+	}
 	return nil
 }
 
