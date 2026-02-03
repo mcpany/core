@@ -1,7 +1,9 @@
 *
 !ui/
 !proto/
+!proto/**
 !server/
+!server/**
 !go.mod
 !go.sum
 !Makefile
