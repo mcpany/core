@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -244,7 +245,8 @@ func (g *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator: %w", err)
 	}
 
-	client := graphql.NewClient(graphqlConfig.GetAddress())
+	safeClient := util.NewSafeHTTPClient()
+	client := graphql.NewClient(graphqlConfig.GetAddress(), graphql.WithHTTPClient(safeClient))
 
 	req := graphql.NewRequest(introspectionQuery)
 	if authenticator != nil {
