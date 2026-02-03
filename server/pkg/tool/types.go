@@ -2827,10 +2827,12 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
-	// Ruby: #{...} works in double quotes
-	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
-		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+	// Ruby: #{...} works in double quotes AND backticks
+	if strings.HasPrefix(base, "ruby") {
+		if quoteLevel == 1 || quoteLevel == 3 { // Double Quoted or Backticked
+			if strings.Contains(val, "#{") {
+				return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+			}
 		}
 	}
 
@@ -2844,9 +2846,16 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
 		}
 	}
-	if (isPerl || isPhp) && quoteLevel == 1 { // Double Quoted
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+
+	if isPerl || isPhp {
+		if quoteLevel == 1 || quoteLevel == 3 { // Double Quoted or Backticked
+			// Perl/PHP interpolate variables ($var) and arrays (@var, Perl only) in double quotes and backticks
+			if strings.Contains(val, "$") {
+				return fmt.Errorf("variable interpolation injection detected: value contains '$'")
+			}
+			if isPerl && strings.Contains(val, "@") {
+				return fmt.Errorf("variable interpolation injection detected: value contains '@'")
+			}
 		}
 	}
 	return nil
