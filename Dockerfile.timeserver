@@ -17,9 +17,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY timeserver_patch/requirements.txt .
+COPY server/tests/integration/examples/timeserver_patch/requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 
-COPY timeserver_patch/main.py /app/main.py
+COPY server/tests/integration/examples/timeserver_patch/main.py /app/main.py
 
 CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
