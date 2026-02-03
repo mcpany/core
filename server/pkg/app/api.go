@@ -197,6 +197,8 @@ func (a *Application) handleServicesBulk(store storage.Storage) http.HandlerFunc
 		ctx := r.Context()
 		logger := logging.GetLogger()
 
+		logger.Info("Processing bulk service action", "action", req.Action, "count", len(req.Services))
+
 		switch req.Action {
 		case "delete":
 			for _, name := range req.Services {
