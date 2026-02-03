@@ -59,23 +59,23 @@ type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
 	// Parameters:
-	//   - uri: The URI of the resource to retrieve.
+	//   - uri: string. The URI of the resource to retrieve.
 	//
 	// Returns:
-	//   - Resource: The resource instance if found.
+	//   - Resource: The resource instance.
 	//   - bool: True if the resource exists, false otherwise.
 	GetResource(uri string) (Resource, bool)
 
 	// AddResource adds a new resource to the manager.
 	//
 	// Parameters:
-	//   - resource: The resource to add.
+	//   - resource: Resource. The resource to add.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
 	//
 	// Parameters:
-	//   - uri: The URI of the resource to remove.
+	//   - uri: string. The URI of the resource to remove.
 	RemoveResource(uri string)
 
 	// ListResources returns a slice of all resources currently in the manager.
@@ -87,13 +87,13 @@ type ManagerInterface interface {
 	// OnListChanged registers a callback function to be called when the list of resources changes.
 	//
 	// Parameters:
-	//   - f: The callback function to invoke.
+	//   - f: func(). The callback function to invoke.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	//
 	// Parameters:
-	//   - serviceID: The ID of the service whose resources should be cleared.
+	//   - serviceID: string. The ID of the service whose resources should be cleared.
 	ClearResourcesForService(serviceID string)
 }
 

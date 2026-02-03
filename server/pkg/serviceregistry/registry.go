@@ -33,8 +33,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// with the respective managers.
 	//
 	// Parameters:
-	//   - ctx: The context for the registration process.
-	//   - serviceConfig: The configuration for the service to be registered.
+	//   - ctx: context.Context. The context for the registration process.
+	//   - serviceConfig: *config.UpstreamServiceConfig. The configuration for the service to be registered.
 	//
 	// Returns:
 	//   - string: The unique service key generated for the registered service.
@@ -46,8 +46,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// UnregisterService removes a service from the registry and shuts down its upstream connection.
 	//
 	// Parameters:
-	//   - ctx: The context for the unregistration process.
-	//   - serviceName: The name of the service to remove.
+	//   - ctx: context.Context. The context for the unregistration process.
+	//   - serviceName: string. The name of the service to remove.
 	//
 	// Returns:
 	//   - error: An error if the service was not found or if shutdown failed.
@@ -63,7 +63,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// GetServiceInfo retrieves the metadata for a service by its ID.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
 	//   - *tool.ServiceInfo: The service metadata info if found.
@@ -73,7 +73,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// GetServiceConfig returns the configuration for a given service key.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
 	//   - *config.UpstreamServiceConfig: The service configuration if found.
@@ -83,7 +83,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// GetServiceError returns the registration error for a service, if any.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
 	//   - string: The error message associated with the service, or empty string.

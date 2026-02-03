@@ -18,7 +18,27 @@ import (
 )
 
 // InitiateOAuth starts the OAuth2 flow for a given service or credential.
-// It returns the authorization URL and the state parameter.
+//
+// It resolves the OAuth2 configuration from the service or credential, generates a random state,
+// and constructs the authorization URL.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - userID: string. The ID of the user initiating the flow (currently unused but preserved for future use).
+//   - serviceID: string. The ID of the service (optional if credentialID is provided).
+//   - credentialID: string. The ID of the credential (optional if serviceID is provided).
+//   - redirectURL: string. The URL to redirect to after authorization.
+//
+// Returns:
+//   - string: The authorization URL.
+//   - string: The generated state parameter.
+//   - error: An error if initiation fails.
+//
+// Errors/Throws:
+//   - Returns an error if storage is not initialized.
+//   - Returns an error if neither serviceID nor credentialID is provided.
+//   - Returns an error if the service or credential is not found or not configured for OAuth2.
+//   - Returns an error if resolving secrets (client ID/secret) fails.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -118,6 +138,30 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 }
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
+//
+// It exchanges the authorization code for an access token and saves the token
+// (either updating the credential or creating a new user token).
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - userID: string. The ID of the user.
+//   - serviceID: string. The ID of the service (optional if credentialID is provided).
+//   - credentialID: string. The ID of the credential (optional if serviceID is provided).
+//   - code: string. The authorization code received from the provider.
+//   - redirectURL: string. The redirect URL used in the initial request.
+//
+// Returns:
+//   - error: An error if the callback handling fails.
+//
+// Errors/Throws:
+//   - Returns an error if storage is not initialized.
+//   - Returns an error if inputs are invalid or missing.
+//   - Returns an error if the code exchange fails.
+//   - Returns an error if saving the token fails.
+//
+// Side Effects:
+//   - Makes an HTTP request to the OAuth2 token endpoint.
+//   - Writes to the storage (database).
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage
