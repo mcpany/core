@@ -166,6 +166,30 @@ var (
 	dockerOnce    sync.Once
 )
 
+var (
+	dockerFunctional     bool
+	dockerFunctionalOnce sync.Once
+)
+
+// IsDockerFunctional checks if Docker is functional by running a simple container.
+func IsDockerFunctional(t *testing.T) bool {
+	dockerFunctionalOnce.Do(func() {
+		if !IsDockerSocketAccessible() {
+			return
+		}
+		dockerExe, dockerBaseArgs := getDockerCommand()
+		// Try running alpine to verify container execution works (not just CLI)
+		args := append(dockerBaseArgs, "run", "--rm", "alpine:latest", "echo", "hello")
+		cmd := exec.CommandContext(context.Background(), dockerExe, args...)
+		if output, err := cmd.CombinedOutput(); err == nil {
+			dockerFunctional = true
+		} else {
+			t.Logf("Docker is accessible but failed to run container: %v. Output: %s", err, string(output))
+		}
+	})
+	return dockerFunctional
+}
+
 // getDockerCommand returns the command and base arguments for running Docker,
 // checking for direct access, then trying passwordless sudo. The result is
 // cached for subsequent calls.
@@ -1002,7 +1026,9 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+	if !IsDockerFunctional(t) {
+		t.Skip("Docker is not functional, skipping Redis container test")
+	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
