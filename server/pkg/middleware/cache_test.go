@@ -605,3 +605,7 @@ func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 func (m *mockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, true
 }
+
+func (m *mockToolManager) GetToolCountForService(serviceID string) int {
+	return 0
+}

@@ -282,3 +282,7 @@ func (m *MockToolManagerForCost) GetAllowedServiceIDs(profileID string) (map[str
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
+
+func (m *MockToolManagerForCost) GetToolCountForService(serviceID string) int {
+	return 0
+}
