@@ -9,33 +9,41 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MethodHandler defines the signature for a function that handles an MCP method
-// call. It takes a context and a request, and returns a result and an error.
+// MethodHandler defines the signature for a function that handles an MCP method call.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: mcp.Request. The request object.
+//
+// Returns:
+//   - mcp.Result: The result of the method call.
+//   - error: An error if the method call fails.
 type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
 
-// Router is responsible for mapping MCP method names to their corresponding
-// handler functions. It provides a simple mechanism for registering and
-// retrieving handlers.
+// Router is responsible for mapping MCP method names to their corresponding handler functions.
+//
+// It provides a mechanism for registering and retrieving handlers for different MCP methods.
 type Router struct {
 	handlers map[string]MethodHandler
 }
 
-// NewRouter creates and returns a new, empty Router.
+// NewRouter creates and initializes a new Router.
 //
 // Returns:
-//   - A pointer to a new Router.
+//   - *Router: A new instance of the Router.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
 	}
 }
 
-// Register associates a handler function with a specific MCP method name. If a
-// handler for the method already exists, it will be overwritten.
+// Register associates a handler function with a specific MCP method name.
+//
+// If a handler for the method already exists, it will be overwritten.
 //
 // Parameters:
-//   - method: The name of the MCP method (e.g., "tools/call").
-//   - handler: The function that will handle the method call.
+//   - method: string. The name of the MCP method (e.g., "tools/call").
+//   - handler: MethodHandler. The function that will handle the method call.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -43,11 +51,11 @@ func (r *Router) Register(method string, handler MethodHandler) {
 // GetHandler retrieves the handler function for a given MCP method name.
 //
 // Parameters:
-//   - method: The name of the MCP method.
+//   - method: string. The name of the MCP method.
 //
 // Returns:
-//   - The handler function if found.
-//   - A boolean indicating whether a handler was found.
+//   - MethodHandler: The handler function if found.
+//   - bool: A boolean indicating whether a handler was found (true) or not (false).
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

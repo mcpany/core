@@ -43,6 +43,7 @@ var fastJSON = jsoniter.Config{
 }.Froze()
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+//
 // It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
 //
 // Side Effects:
@@ -366,6 +367,9 @@ func (s *Server) ListPrompts(
 // Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation.
 //   - error: An error if no active session is found in context or if the operation fails.
+//
+// Throws/Errors:
+//   - fmt.Errorf("no active session found in context"): If session is missing.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -389,6 +393,8 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 //
 // Throws/Errors:
 //   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
+//   - fmt.Errorf("access denied..."): If profile access is denied.
+//   - fmt.Errorf("failed to marshal..."): If argument marshaling fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -458,6 +464,7 @@ func (s *Server) ListResources(
 //
 // Throws/Errors:
 //   - resource.ErrResourceNotFound: If the requested resource does not exist.
+//   - fmt.Errorf("access denied..."): If profile access is denied.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -538,9 +545,6 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
 //   - info: *tool.ServiceInfo. The service information to add.
-//
-// Returns:
-//   None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -579,6 +583,9 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Throws/Errors:
+//   - fmt.Errorf("access denied..."): If profile access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -607,7 +614,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
+	defer metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
@@ -735,9 +742,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //
 // Parameters:
 //   - mcpServer: tool.MCPServerProvider. The MCP server provider to set.
-//
-// Returns:
-//   None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -773,9 +777,6 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //
 // Parameters:
 //   - serviceKey: string. The identifier of the service whose tools should be cleared.
-//
-// Returns:
-//   None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -784,9 +785,6 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //
 // Parameters:
 //   - f: func(context.Context) error. The function to execute on reload.
-//
-// Returns:
-//   None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
