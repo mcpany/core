@@ -63,6 +63,7 @@ func TestWaitForText(t *testing.T) {
 
 func TestDockerHelpers(t *testing.T) {
 	if os.Getenv("CI") == "true" {
+		t.Log("Skipping TestDockerHelpers in CI environment (CI=true)")
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
