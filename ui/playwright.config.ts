@@ -46,7 +46,9 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
+        // Start backend (background) and frontend
+        // Wait for backend to be healthy before starting tests (frontend start is parallel but tests wait for URL)
+        command: `../build/bin/server run --mcp-listen-address 0.0.0.0:50050 --api-key test-token > server.log 2>&1 & count=0; while ! curl -s http://localhost:50050/health > /dev/null; do if [ $count -ge 30 ]; then echo "Timeout waiting for backend"; exit 1; fi; echo "Waiting for backend..."; sleep 1; count=$((count+1)); done; BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: false,
         env: {
