@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
     libgif-dev \
     librsvg2-dev \
+    protobuf-compiler \
+    curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies based on the preferred package manager
@@ -34,6 +37,27 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ ./proto/
+
+# Download googleapis and grpc-gateway for protobuf generation
+RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q googleapis.zip -d /tmp && \
+    mv /tmp/googleapis-master /tmp/googleapis && \
+    rm googleapis.zip
+
+RUN curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/v2.27.3.zip && \
+    unzip -q grpc-gateway.zip -d /tmp && \
+    mv /tmp/grpc-gateway-2.27.3 /tmp/grpc-gateway && \
+    rm grpc-gateway.zip
+
+# Generate TypeScript protobuf files
+RUN find proto -name "*.proto" -exec protoc \
+    --proto_path=. \
+    --proto_path=/tmp/googleapis \
+    --proto_path=/tmp/grpc-gateway \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=. \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
