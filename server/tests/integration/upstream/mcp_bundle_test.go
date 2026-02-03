@@ -241,6 +241,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Verify Docker can actually run containers (check for overlayfs/permission issues)
+	// We map a volume to trigger potential overlayfs issues seen in some CI environments.
+	smokeCmd := exec.Command("docker", "run", "--rm", "-v", os.TempDir()+":/tmp", "hello-world")
+	if out, err := smokeCmd.CombinedOutput(); err != nil {
+		t.Logf("Docker smoke test failed: %v\nOutput: %s", err, out)
+		t.Skipf("Skipping Docker tests: docker run failed (environment likely doesn't support OverlayFS/mounts)")
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
