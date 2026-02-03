@@ -175,14 +175,28 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   };
 
   const openInPlayground = () => {
-      // Encode the result or logic to transfer state.
-      // Since Playground is a separate page, we might pass data via URL or localStorage.
-      // URL might be too long.
-      // For now, we'll just navigate to playground.
+      if (executionResult && executionResult.messages) {
+          const newMessages = executionResult.messages.map((msg: any) => ({
+              id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+              type: msg.role === 'user' ? 'user' : 'assistant',
+              content: msg.content?.type === 'text' ? msg.content.text : typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
+              timestamp: new Date(),
+          }));
+
+          try {
+              const existing = localStorage.getItem("playground-messages");
+              const parsed = existing ? JSON.parse(existing) : [];
+              const combined = [...parsed, ...newMessages];
+              localStorage.setItem("playground-messages", JSON.stringify(combined));
+          } catch (e) {
+              console.error("Failed to save to localStorage", e);
+          }
+      }
+
       router.push("/playground");
       toast({
-          title: "Navigating to Playground",
-          description: "You can paste the prompt result there.",
+          title: "Opened in Playground",
+          description: "Prompt result has been added to your session history.",
       });
   };
 
