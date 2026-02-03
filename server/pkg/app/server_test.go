@@ -2556,6 +2556,12 @@ func TestRunServerMode_Auth(t *testing.T) {
 	waitForServerReady(t, bindAddress)
 	baseURL := fmt.Sprintf("http://%s", bindAddress)
 
+	// Since we are running subtests that make HTTP requests against a running server,
+	// and the server setup is done once for all subtests, we should be fine.
+	// However, we must ensure we don't call runServerMode again or reuse 'app' in conflicting ways.
+	// The failure was likely due to concurrent access to 'app' state or reused mcpSrv.
+	// But here we are just making HTTP requests.
+
 	t.Run("Invalid Path", func(t *testing.T) {
 		resp, err := http.Get(baseURL + "/mcp/u/foo")
 		require.NoError(t, err)
