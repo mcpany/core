@@ -62,13 +62,19 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	// Skip in CI environments to avoid timeouts and rate limiting.
+	// We check for "CI" (GitHub Actions) and "GITHUB_ACTIONS".
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
-	t.Parallel()
+
+	// Also check if we are in the e2e-parallel job by checking an environment variable
+	// or just make it robust enough to fail fast if Docker isn't ready.
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
 	}
+
+	t.Parallel()
 
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
