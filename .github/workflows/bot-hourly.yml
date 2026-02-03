@@ -5,7 +5,7 @@ name: Manage PRs (Merge & Cleanup)
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
+    - cron: '0 */10 * * *' # Runs every 10 minutes
   workflow_dispatch: # Allows manual triggering
 
 jobs:
