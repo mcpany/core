@@ -122,3 +122,36 @@ Run the included E2E test to verify implementation:
 # In docs/features/webhooks/examples/html_to_md
 go test -v e2e_test.go
 ```
+
+## Standard Webhook Sidecar
+
+For convenience, MCP Any provides a standard webhook sidecar that includes common utility hooks. This avoids the need to write custom servers for standard tasks.
+
+### Running the Sidecar
+
+The sidecar is located in `server/cmd/webhooks`.
+
+```bash
+go run server/cmd/webhooks/main.go
+```
+
+It listens on port `8080` by default (configurable via `PORT` environment variable).
+
+### Available Hooks
+
+| Path | Type | Description |
+| :--- | :--- | :--- |
+| `/markdown` | Post-Call | Converts HTML output to Markdown. |
+| `/truncate` | Post-Call | Truncates long string outputs to a specified length. |
+| `/paginate` | Post-Call | Paginates array outputs. |
+
+### Configuration Example
+
+```yaml
+upstream_services:
+  - name: "my-service"
+    post_call_hooks:
+      - name: "html-to-md"
+        webhook:
+          url: "http://localhost:8080/markdown"
+```
