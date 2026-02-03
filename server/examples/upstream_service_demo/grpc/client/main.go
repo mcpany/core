@@ -18,6 +18,8 @@ const (
 	defaultName = "world"
 )
 
+// main starts the gRPC client.
+// It connects to the server at localhost:50051 and sends a greeting request.
 func main() {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())

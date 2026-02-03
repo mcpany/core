@@ -32,6 +32,8 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+// main starts the gRPC server.
+// It listens on the port specified by the GRPC_PORT environment variable (default: 50051).
 func main() {
 	port := os.Getenv("GRPC_PORT")
 	if port == "" {

@@ -5,15 +5,35 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * GrpcWebImpl is a mock implementation of the gRPC-Web client.
+ * It is used for testing purposes to simulate gRPC communication.
+ */
 export class GrpcWebImpl {
+    /**
+     * Creates an instance of GrpcWebImpl.
+     * @param _host The host URL.
+     * @param _options Configuration options.
+     */
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * RegistrationServiceClientImpl is a mock implementation of the RegistrationService client.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Creates an instance of RegistrationServiceClientImpl.
+     * @param _rpc The RPC implementation to use.
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * GetService retrieves a service definition.
+     * @param _request The request object.
+     * @param _metadata Optional metadata.
+     * @returns A promise that resolves to the service definition.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 

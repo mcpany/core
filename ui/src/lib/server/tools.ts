@@ -3,10 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Tool represents an executable unit of logic exposed by the server.
+ */
 export interface Tool {
+  /** The unique name of the tool. */
   name: string;
+  /** A human-readable description of what the tool does. */
   description: string;
+  /** The JSON schema defining the expected input arguments. */
   schema: Record<string, any>;
+  /** The function to execute when the tool is called. */
   execute: (args: any) => Promise<any>;
 }
 

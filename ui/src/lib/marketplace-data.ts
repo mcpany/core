@@ -6,9 +6,15 @@
 
 
 
+/**
+ * MarketplaceItemConfig defines the configuration required to run a marketplace item.
+ */
 export interface MarketplaceItemConfig {
+  /** The command to execute (e.g., 'npx', 'docker'). */
   command: string;
+  /** The arguments to pass to the command. */
   args: string[];
+  /** The environment variables required by the tool. */
   envVars: EnvVarDefinition[];
 }
 

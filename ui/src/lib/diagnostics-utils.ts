@@ -3,11 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * DiagnosticResult represents the outcome of an error analysis.
+ */
 export interface DiagnosticResult {
+  /** The category of the error (e.g., network, auth). */
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
+  /** A short title for the diagnostic result. */
   title: string;
+  /** A detailed description of what went wrong. */
   description: string;
+  /** A suggestion on how to fix the issue. */
   suggestion: string;
+  /** The severity of the issue. */
   severity: "critical" | "warning" | "info";
 }
 

@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * STACK_CONFIG_SCHEMA defines the JSON schema for the stack configuration file.
+ * It is used to validate the structure of the configuration uploaded by the user.
+ */
 export const STACK_CONFIG_SCHEMA = {
   uri: "http://mcp-any/stack-config.json",
   fileMatch: ["*"],
