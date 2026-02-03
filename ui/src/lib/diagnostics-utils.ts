@@ -3,11 +3,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents a categorized diagnostic result for a connection error.
+ * Used to display user-friendly error messages and suggestions in the UI.
+ */
 export interface DiagnosticResult {
+  /** The broad category of the error (e.g., network, auth). */
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
+  /** A short, user-friendly title for the error. */
   title: string;
+  /** A detailed description of what went wrong. */
   description: string;
+  /** Actionable steps the user can take to fix the issue. */
   suggestion: string;
+  /** The severity of the issue. */
   severity: "critical" | "warning" | "info";
 }
 

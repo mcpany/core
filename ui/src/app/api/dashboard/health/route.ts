@@ -5,6 +5,9 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * Represents the structure of a service returned by the backend.
+ */
 interface BackendService {
   id: string;
   name: string;
@@ -14,6 +17,12 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * Fetches the health status of upstream services from the backend.
+ *
+ * @param request - The incoming HTTP request.
+ * @returns A JSON response containing a list of services and their health status.
+ */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');

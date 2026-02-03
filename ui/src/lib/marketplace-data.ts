@@ -3,40 +3,55 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-
+/**
+ * Configuration parameters for a marketplace item.
+ * Defines how to execute the tool and what environment variables are needed.
+ */
 export interface MarketplaceItemConfig {
+  /** The executable command (e.g., "npx", "docker"). */
   command: string;
+  /** Arguments to pass to the command. */
   args: string[];
+  /** Definitions of environment variables required by the item. */
   envVars: EnvVarDefinition[];
 }
 
 /**
- * EnvVarDefinition type definition.
+ * Defines an environment variable required by a marketplace item.
  */
 export interface EnvVarDefinition {
+  /** The name of the environment variable (e.g., "API_KEY"). */
   name: string;
+  /** A description of what this variable is for. */
   description: string;
+  /** Whether this variable must be provided by the user. */
   required: boolean;
+  /** The input type for the variable in the UI (text, password, path). */
   type: "text" | "password" | "path";
-  // If true, this value is also appended to the command args
+  /** If true, this value is also appended to the command args. */
   addToArgs?: boolean;
 }
 
 /**
- * MarketplaceItem type definition.
+ * Represents an item available in the marketplace.
  */
 export interface MarketplaceItem {
+  /** Unique identifier for the item. */
   id: string;
+  /** Display name of the item. */
   name: string;
+  /** Description of the item's functionality. */
   description: string;
-  icon: string; // We'll map string to Lucide icon in the UI
+  /** Name of the icon to display (mapped to Lucide icons). */
+  icon: string;
+  /** Configuration details for the item. */
   config: MarketplaceItemConfig;
 }
 
 /**
- * The MARKETPLACE_ITEMS const.
+ * A registry of available marketplace items.
+ *
+ * This constant list defines the curated set of tools that users can easily install.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {

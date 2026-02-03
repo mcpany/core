@@ -5,20 +5,39 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Mock implementation of GrpcWebImpl for testing purposes.
+ */
 export class GrpcWebImpl {
+    /**
+     * Creates a new instance of GrpcWebImpl.
+     * @param _host - The host address.
+     * @param _options - Configuration options.
+     */
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * Mock implementation of RegistrationServiceClient.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Creates a new instance of RegistrationServiceClientImpl.
+     * @param _rpc - The RPC implementation.
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * Mocks the GetService method.
+     * @param _request - The request object.
+     * @param _metadata - Metadata.
+     * @returns A promise resolving to an empty object.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
 /**
- * UpstreamServiceConfig type definition.
+ * Defines the configuration for an upstream service.
  */
 export interface UpstreamServiceConfig {
     id?: string;
@@ -37,7 +56,7 @@ export interface UpstreamServiceConfig {
 }
 
 /**
- * ToolDefinition type definition.
+ * Defines a tool and its properties.
  */
 export interface ToolDefinition {
     name: string;
@@ -45,7 +64,7 @@ export interface ToolDefinition {
 }
 
 /**
- * ResourceDefinition type definition.
+ * Defines a resource available in the system.
  */
 export interface ResourceDefinition {
     uri: string;
@@ -55,7 +74,7 @@ export interface ResourceDefinition {
 }
 
 /**
- * PromptDefinition type definition.
+ * Defines a prompt available in the system.
  */
 export interface PromptDefinition {
     name: string;
@@ -63,7 +82,7 @@ export interface PromptDefinition {
 }
 
 /**
- * Credential type definition.
+ * Represents a credential used for authentication.
  */
 export interface Credential {
     id?: string;
@@ -71,21 +90,21 @@ export interface Credential {
 }
 
 /**
- * Authentication type definition.
+ * Defines authentication settings.
  */
 export interface Authentication {
     [key: string]: any;
 }
 
 /**
- * ListServicesResponse type definition.
+ * Response type for listing services.
  */
 export type ListServicesResponse = any;
 /**
- * GetServiceResponse type definition.
+ * Response type for getting a specific service.
  */
 export type GetServiceResponse = any;
 /**
- * GetServiceStatusResponse type definition.
+ * Response type for getting service status.
  */
 export type GetServiceStatusResponse = any;

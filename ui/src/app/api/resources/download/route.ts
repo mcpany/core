@@ -5,6 +5,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Handles the download of a resource from the MCP server.
+ *
+ * It proxies the resource content from the backend /api/v1/resources/read endpoint
+ * and serves it as a downloadable file with the correct Content-Type and Content-Disposition.
+ *
+ * @param request - The incoming NextRequest containing query parameters (uri, name, token).
+ * @returns A NextResponse containing the file content or a JSON error message.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');

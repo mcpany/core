@@ -20,11 +20,14 @@ MCP Any acts as a centralized middleware between AI Agents (Clients) and your Up
 1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies (DLP, Audit Logging) to keep your infrastructure safe.
+5.  **Dashboard (UI)**: A web-based interface for managing services, inspecting logs, and debugging interactions.
 
 ```mermaid
 graph TD
     User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+    Admin[Admin / Developer] -->|Web UI| Dashboard[MCP Any Dashboard]
+    Dashboard --> Server
 
     subgraph "MCP Any Core"
         Server --> Registry[Service Registry]
@@ -101,7 +104,7 @@ make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Ensure code adheres to our style guides (Godoc for Go, JSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
 ```bash
 make lint
 ```
@@ -109,7 +112,7 @@ make lint
 ### Building
 Compile all artifacts (Server binary and UI assets).
 ```bash
-make build
+make all
 ```
 
 ### Code Generation

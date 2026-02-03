@@ -6,6 +6,11 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * Retrieves the list of configured webhooks (Mock).
+ *
+ * @returns A JSON response containing the list of webhooks.
+ */
 export async function GET() {
   const webhooks = [
     { id: "wh_1", url: "https://example.com/webhook", events: ["service.up", "service.down"], active: true },
