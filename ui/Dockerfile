@@ -21,6 +21,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /proto/
+# DEBUG: List proto files to verify context copy
+RUN ls -R /proto
+
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
@@ -44,6 +47,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # User authentication service URL
+ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
 RUN addgroup --system --gid 1001 nodejs

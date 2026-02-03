@@ -1,6 +1,7 @@
 *
 !ui/
-!proto/
+!ui/**
+!proto
 !proto/**
 !server/
 !server/**
