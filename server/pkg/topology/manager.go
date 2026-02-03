@@ -113,6 +113,14 @@ func (m *Manager) processLoop() {
 	}
 }
 
+// now returns the current time using the configured function or time.Now if nil.
+func (m *Manager) now() time.Time {
+	if m.nowFunc != nil {
+		return m.nowFunc()
+	}
+	return time.Now()
+}
+
 // handleActivity processes a single activity event.
 func (m *Manager) handleActivity(event activityEvent) {
 	m.mu.Lock()
@@ -142,7 +150,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 		}
 	}
 	session := m.sessions[sessionID]
-	session.LastActive = m.nowFunc()
+	session.LastActive = m.now()
 	session.RequestCount++
 	session.TotalLatency += latency
 	if isError {
@@ -163,7 +171,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 	}
 
 	// Record traffic history
-	now := m.nowFunc().Truncate(time.Minute).Unix()
+	now := m.now().Truncate(time.Minute).Unix()
 	if _, ok := m.trafficHistory[now]; !ok {
 		m.trafficHistory[now] = &MinuteStats{
 			ServiceStats: make(map[string]*ServiceTrafficStats),
@@ -193,7 +201,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 
 	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
 	if session.RequestCount%100 == 0 {
-		now := m.nowFunc()
+		now := m.now()
 		historyCutoff := now.Add(-24 * time.Hour).Unix()
 		for t := range m.trafficHistory {
 			if t < historyCutoff {
@@ -291,7 +299,7 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	defer m.mu.RUnlock()
 
 	points := make([]TrafficPoint, 0, 60)
-	now := m.nowFunc()
+	now := m.now()
 
 	// Generate points for the last 60 minutes
 	for i := 59; i >= 0; i-- {
@@ -348,7 +356,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	// The points are "HH:MM" -> total.
 	// We should map them to today's timestamps.
 
-	now := m.nowFunc()
+	now := m.now()
 	// Clear current history
 	m.trafficHistory = make(map[int64]*MinuteStats)
 	log := logging.GetLogger()
@@ -408,7 +416,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
 		// Get current traffic stats
-		now := m.nowFunc()
+		now := m.now()
 		minuteKey := now.Truncate(time.Minute).Unix()
 		var currentStats *MinuteStats
 		if stats, ok := m.trafficHistory[minuteKey]; ok {
@@ -526,7 +534,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	clients := make([]*topologyv1.Node, 0, len(m.sessions))
 	for _, session := range m.sessions {
 		// Filter out old sessions > 1 hour
-		if m.nowFunc().Sub(session.LastActive) > 1*time.Hour {
+		if m.now().Sub(session.LastActive) > 1*time.Hour {
 			continue
 		}
 
