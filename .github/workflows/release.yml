@@ -233,9 +233,9 @@ jobs:
             ${{ needs.setup.outputs.tags_ghcr }}
           # Export as tarball for artifact upload
           outputs: type=docker,dest=/tmp/server-image.tar
-          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-from: type=gha,scope=${{ matrix.platform }}-v1
           # Optimized cache: use mode=max to cache layers
-          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}-v1
 
       - name: Rename artifact
         run: |
@@ -440,8 +440,8 @@ jobs:
             ${{ needs.setup.outputs.tags_ui_ghcr }}
           # Export as tarball for artifact upload
           outputs: type=docker,dest=/tmp/ui-image.tar
-          cache-from: type=gha,scope=ui-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=ui-${{ matrix.platform }}
+          cache-from: type=gha,scope=ui-${{ matrix.platform }}-v1
+          cache-to: type=gha,mode=max,scope=ui-${{ matrix.platform }}-v1
 
       - name: Rename artifact
         run: |
