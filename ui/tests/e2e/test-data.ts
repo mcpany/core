@@ -50,9 +50,11 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) throw new Error(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
         } catch (e) {
-            console.log(`Failed to seed service ${svc.name}: ${e}`);
+            console.error(`Failed to seed service ${svc.name}: ${e}`);
+            throw e; // Fail the test
         }
     }
 };
@@ -79,10 +81,11 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
     try {
         const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
         if (!res.ok()) {
-            console.log(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
+            throw new Error(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
         }
     } catch (e) {
-        console.log(`Failed to seed collection ${name}: ${e}`);
+        console.error(`Failed to seed collection ${name}: ${e}`);
+        throw e;
     }
 };
 
@@ -92,9 +95,11 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
         { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
     ];
     try {
-        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        const res = await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        if (!res.ok()) throw new Error(`Failed to seed traffic: ${res.status()}`);
     } catch (e) {
-        console.log(`Failed to seed traffic: ${e}`);
+        console.error(`Failed to seed traffic: ${e}`);
+        throw e;
     }
 };
 
@@ -106,6 +111,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
+        // Cleanup failure is not fatal for current test but bad for next
     }
 };
 
@@ -133,9 +139,11 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
     };
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        const res = await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        if (!res.ok()) throw new Error(`Failed to seed user: ${res.status()} ${await res.text()}`);
     } catch (e) {
-        console.log(`Failed to seed user: ${e}`);
+        console.error(`Failed to seed user: ${e}`);
+        throw e;
     }
 };
 
