@@ -219,6 +219,9 @@ func (rm *Manager) ListResources() []Resource {
 //
 // Parameters:
 //   - f: The callback function to be set.
+//
+// Returns:
+//   - ): The result.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()

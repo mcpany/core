@@ -63,6 +63,13 @@ type ConfigurableEngine interface {
 //
 // Returns an `Engine` implementation for the corresponding file format, or an
 // error if the format is not supported.
+//
+// Returns:
+//   - Engine: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -591,6 +598,9 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //     files.
 //
 // Returns a new instance of `FileStore`.
+//
+// Returns:
+//   - *FileStore: The result.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }

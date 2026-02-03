@@ -72,6 +72,12 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 // Parameters:
 //   cmd: The cobra command containing flags.
 //   fs: The file system interface for reading config files.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs

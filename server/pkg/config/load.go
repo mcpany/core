@@ -26,11 +26,11 @@ import (
 //   - binaryType: The type of binary running the code (e.g., "server", "worker").
 //
 // Returns:
-//   - A validated `McpAnyServerConfig` object.
-//   - An error if loading or validation fails.
-// LoadServices loads, validates, and processes the MCP Any server configuration.
-// It acts as a resilient loader that filters out invalid services to allow the server to start
-// even with partial configuration failures.
+//   - *configv1.McpAnyServerConfig: A validated `McpAnyServerConfig` object.
+//   - error: An error if loading or validation fails.
+//
+// Throws/Errors:
+//   - Returns an error if loading or validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

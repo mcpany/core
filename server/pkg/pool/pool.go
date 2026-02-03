@@ -201,6 +201,13 @@ func (p *poolImpl[T]) release(n int64) {
 //
 // Returns a client from the pool or an error if the pool is closed, the context
 // is canceled, or the factory fails to create a new client.
+//
+// Returns:
+//   - T: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
