@@ -103,7 +103,7 @@ func TestBundleDockerConn_Write(t *testing.T) {
 		Method: "method",
 		Params: json.RawMessage(`{"foo":"bar"}`),
 	}
-	setUnexportedID(&req.ID, "123")
+	setUnexportedID(&req.ID, 123)
 
 	err := conn.Write(context.Background(), req)
 	assert.NoError(t, err)
@@ -119,7 +119,7 @@ func TestBundleDockerConn_Write(t *testing.T) {
 		Result: json.RawMessage(`{"result":"ok"}`),
 	}
 	// Use string "456" to align with Request success
-	setUnexportedID(&resp.ID, "456")
+	setUnexportedID(&resp.ID, 456)
 
 	err = conn.Write(context.Background(), resp)
 	assert.NoError(t, err)
