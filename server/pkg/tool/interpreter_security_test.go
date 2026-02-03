@@ -52,7 +52,7 @@ func TestInterpreterSecurity(t *testing.T) {
 		_, err := tool.Execute(context.Background(), req)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "ruby interpolation injection detected", "Should detect ruby interpolation")
+		assert.Contains(t, err.Error(), "elixir/ruby interpolation injection detected", "Should detect ruby interpolation")
 	})
 
 	// 2. Python F-String Injection
