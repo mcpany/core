@@ -165,6 +165,18 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+/**
+ * Community Server from Backend Registry.
+ */
+export interface CommunityServer {
+    name: string;
+    description: string;
+    url: string;
+    tags: string[];
+    category: string;
+    command: string;
+    configurationSchema: string; // JSON string
+}
 
 /**
  * Metric definition for dashboard.
@@ -1580,6 +1592,18 @@ export const apiClient = {
 
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
+        return res.json();
+    },
+
+    // Marketplace
+
+    /**
+     * Gets the list of community servers from the backend registry.
+     * @returns A promise that resolves to the list of community servers.
+     */
+    getCommunityServers: async (): Promise<CommunityServer[]> => {
+        const res = await fetchWithAuth('/api/v1/marketplace/community');
+        if (!res.ok) throw new Error('Failed to fetch community servers');
         return res.json();
     }
 };

@@ -37,6 +37,7 @@ import (
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/marketplace"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/middleware"
@@ -189,6 +190,9 @@ type Application struct {
 	TemplateManager  *TemplateManager
 	// Store explicit API Key passed via CLI args
 	explicitAPIKey string
+
+	// MarketplaceManager manages community servers
+	MarketplaceManager *marketplace.Manager
 
 	// SkillManager manages agent skills
 	SkillManager *skill.Manager
@@ -448,6 +452,7 @@ func (a *Application) Run(opts RunOptions) error {
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
 	a.ResourceManager = resource.NewManager()
 
+	a.MarketplaceManager = marketplace.NewManager()
 	a.DiscoveryManager = discovery.NewManager()
 
 	// Initialize Skill Manager
@@ -1863,6 +1868,9 @@ func (a *Application) runServerMode(
 
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
+
+	// Register Marketplace API
+	mux.Handle("/api/v1/marketplace/community", authMiddleware(a.handleListCommunityServers()))
 
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
