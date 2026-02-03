@@ -20,9 +20,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
-COPY proto/ /proto/
-# Symlink node_modules so proto files can find dependencies
-RUN ln -s /app/node_modules /proto/node_modules
+COPY proto/ ./proto/
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
