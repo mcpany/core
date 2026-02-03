@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -273,6 +274,13 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}.Build()
 
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+	if err != nil {
+		// In some CI environments (e.g. Docker-in-Docker with overlayfs), bind mounting a directory
+		// from the overlayfs into the container fails. We skip the test in this case.
+		if strings.Contains(err.Error(), "mount source: \"overlay\"") {
+			t.Skipf("Skipping test due to Docker overlayfs mount restriction: %v", err)
+		}
+	}
 	require.NoError(t, err)
 	expectedKey, _ := util.SanitizeServiceName("fs-bundle-service")
 	assert.Equal(t, expectedKey, serviceID)

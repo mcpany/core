@@ -1445,10 +1445,7 @@ func (a *Application) runServerMode(
 	if err != nil {
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
-
-	a.configMu.Lock()
 	a.ipMiddleware = ipMiddleware
-	a.configMu.Unlock()
 
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -1575,10 +1572,6 @@ func (a *Application) runServerMode(
 	// We use a prefix match via stripping.
 	// NOTE: We manually handle the path parsing because we support subpaths like /sse or /messages
 	mux.HandleFunc("/mcp/u/", func(w http.ResponseWriter, r *http.Request) {
-		// Fix data race: Shadow ctx to prevent modifying the captured variable from outer scope.
-		// Use request context as the base.
-		ctx := r.Context()
-
 		// Expected path: /mcp/u/{uid}/profile/{profileId}/...
 		parts := strings.Split(r.URL.Path, "/")
 		// parts[0] = ""
@@ -1628,7 +1621,7 @@ func (a *Application) runServerMode(
 		var isAuthenticated bool
 		// 2. User Auth
 		if user.GetAuthentication() != nil {
-			if err := auth.ValidateAuthentication(ctx, user.GetAuthentication(), r); err == nil {
+			if err := auth.ValidateAuthentication(r.Context(), user.GetAuthentication(), r); err == nil {
 				isAuthenticated = true
 			} else {
 				// User auth configured but failed
@@ -1651,11 +1644,11 @@ func (a *Application) runServerMode(
 
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
-					// Note: We don't inject API Key/Roles/User into ctx here because
-					// the context is reset later (around line 1715) with r.Context().
-					// The logic below (lines 1715+) reconstructs the context based on the target user (uid).
-					// If Global Auth is used, we currently allow access to the target profile
-					// but do not carry over "system-admin" identity or "admin" roles.
+					// Inject API Key into context if needed
+					ctx = auth.ContextWithAPIKey(ctx, requestKey)
+					// Global API Key grants Admin privileges (Root Access)
+					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+					ctx = auth.ContextWithUser(ctx, "system-admin")
 				} else {
 					// Global auth configured but failed
 					http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
@@ -1718,9 +1711,7 @@ func (a *Application) runServerMode(
 		}
 
 		// Inject context
-		// We use r.Context() to ensure we start fresh, discarding any partial auth context from above.
-		// Note: We assign to the shadowed ctx variable.
-		ctx = auth.ContextWithUser(ctx, uid)
+		ctx := auth.ContextWithUser(r.Context(), uid)
 		ctx = auth.ContextWithProfileID(ctx, profileID)
 		ctx = auth.ContextWithRoles(ctx, user.GetRoles())
 
@@ -1922,15 +1913,11 @@ func (a *Application) runServerMode(
 
 	// Apply CORS Middleware
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
-	a.configMu.Lock()
 	a.corsMiddleware = corsMiddleware
-	a.configMu.Unlock()
 
 	// Apply CSRF Middleware
 	csrfMiddleware := middleware.NewCSRFMiddleware(a.SettingsManager.GetAllowedOrigins())
-	a.configMu.Lock()
 	a.csrfMiddleware = csrfMiddleware
-	a.configMu.Unlock()
 
 	// Prepare final handler (Mux wrapped with Content Optimizer and Debugger)
 	var finalHandler http.Handler = mux

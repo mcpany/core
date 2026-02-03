@@ -9,8 +9,6 @@ import (
 	"errors"
 	"net"
 	"os"
-	"path/filepath"
-	"runtime"
 	"testing"
 
 	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
@@ -31,45 +29,9 @@ import (
 
 func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoreflect.MethodDescriptor {
 	t.Helper()
-
-	// Try using runtime.Caller to find the test file location
-	_, filename, _, ok := runtime.Caller(0)
-	var path string
-	if ok {
-		baseDir := filepath.Dir(filename)
-		// Assume repo root is 3 levels up from server/pkg/tool
-		path = filepath.Join(baseDir, "../../../build/all.protoset")
-	} else {
-		path = "../../../build/all.protoset"
-	}
-
+	path := "../../../build/all.protoset"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// Fallback to absolute path in container
 		path = "/app/build/all.protoset"
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			// Debugging info for CI failure
-			cwd, _ := os.Getwd()
-			t.Logf("Current working directory: %s", cwd)
-			t.Logf("Failed to find protoset at computed path: %s", path)
-
-			// Check what IS available
-			if entries, err := os.ReadDir("../../.."); err == nil {
-				var names []string
-				for _, e := range entries {
-					names = append(names, e.Name())
-				}
-				t.Logf("Entries in ../../..: %v", names)
-			} else {
-				t.Logf("Failed to read ../../..: %v", err)
-			}
-			if entries, err := os.ReadDir("../../../build"); err == nil {
-				var names []string
-				for _, e := range entries {
-					names = append(names, e.Name())
-				}
-				t.Logf("Entries in ../../../build: %v", names)
-			}
-		}
 	}
 	b, err := os.ReadFile(path)
 	require.NoError(t, err, "Failed to read protoset file at %s. Ensure 'make gen' has been run.", path)
