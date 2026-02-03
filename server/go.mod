@@ -27,9 +27,9 @@ require (
 	github.com/coder/websocket v1.8.14
 	github.com/coreos/go-oidc/v3 v3.17.0
 	github.com/docker/docker v28.5.0+incompatible
-	github.com/eko/gocache/lib/v4 v4.2.3
-	github.com/eko/gocache/store/go_cache/v4 v4.2.4
-	github.com/eko/gocache/store/redis/v4 v4.2.6
+	github.com/eko/gocache/lib/v4 v4.1.5
+	github.com/eko/gocache/store/go_cache/v4 v4.2.1
+	github.com/eko/gocache/store/redis/v4 v4.2.1
 	github.com/fclairamb/afero-s3 v0.3.1
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/getkin/kin-openapi v0.131.0
@@ -166,6 +166,7 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/go-tpm v0.9.6 // indirect
