@@ -547,13 +547,21 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 
 // NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files
 // instead of returning an error.
+//
+// Parameters:
+//   - fs: The filesystem interface to use for file operations.
+//   - paths: A slice of file or directory paths to scan for configuration files.
+//
+// Returns:
+//   - *FileStore: A new instance of FileStore configured to skip errors.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
 
 // HasConfigSources returns true if the store has configuration paths configured.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if config sources are configured.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -566,8 +574,12 @@ func (s *FileStore) HasConfigSources() bool {
 // files are merged into earlier ones. This allows for a cascading configuration
 // setup where base configurations can be overridden by more specific ones.
 //
-// Returns the merged `McpAnyServerConfig` or an error if any part of the process
-// fails.
+// Parameters:
+//   - ctx: The context for the request.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if any part of the process fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 
@@ -1108,19 +1120,25 @@ type MultiStore struct {
 
 // NewMultiStore creates a new MultiStore with the given stores.
 //
-// stores is the stores.
+// Parameters:
+//   - stores: Variadic list of Store instances to merge.
 //
-// Returns the result.
+// Returns:
+//   - *MultiStore: A new MultiStore instance.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
+// It iterates through the configured stores in order, loading configuration from each
+// and merging it into a cumulative configuration object.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if the operation fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1241,7 +1259,8 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if any underlying store has config sources.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

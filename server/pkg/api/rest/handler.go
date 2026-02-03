@@ -16,17 +16,16 @@ import (
 )
 
 // ValidateConfigHandler handles requests to validate configuration.
-//
-// Summary: Validates the provided configuration content against the JSON schema and internal logic.
+// It validates the provided configuration content against the JSON schema and internal logic.
 //
 // Parameters:
 //   - w: http.ResponseWriter. The response writer to send the validation result.
 //   - r: *http.Request. The HTTP request containing the configuration content in the body.
 //
 // Returns:
-//   - JSON response with validation status and errors.
+//   None.
 //
-// Errors/Throws:
+// Throws/Errors:
 //   - Returns 405 Method Not Allowed if the request method is not POST.
 //   - Returns 400 Bad Request if the request body is invalid or empty.
 //   - Returns 500 Internal Server Error if there is an error encoding the response.
