@@ -22,15 +22,18 @@ export interface Alert {
   timestamp: string; // ISO string
   source: string;
 }
-/**
- * Alert type definition.
- */
 
+/**
+ * AlertRule type definition.
+ */
 export interface AlertRule {
   id: string;
   name: string;
-  condition: string;
+  metric: string;
+  operator: string;
+  threshold: number;
+  duration: string;
   severity: Severity;
-  service: string;
   enabled: boolean;
+  last_updated?: string;
 }
