@@ -49,25 +49,33 @@ func NewProvider(opts ...Option) *Provider {
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			host, _, err := net.SplitHostPort(addr)
+			host, port, err := net.SplitHostPort(addr)
 			if err != nil {
 				return nil, err
 			}
 
-			// Resolve IPs
-			ips, err := net.LookupIP(host)
+			// Resolve IPs using context-aware lookup
+			ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
 			if err != nil {
 				return nil, err
 			}
 
-			// Check for private IPs
-			for _, ip := range ips {
-				if util.IsPrivateIP(ip) {
-					return nil, fmt.Errorf("access to private IP %s (resolved from %s) is forbidden", ip, host)
+			// Check IPs and dial the first safe one
+			for _, ipAddr := range ips {
+				if util.IsPrivateIP(ipAddr.IP) {
+					continue
 				}
+
+				// Safe IP found, dial specific IP to prevent DNS rebinding
+				conn, err := dialer.DialContext(ctx, network, net.JoinHostPort(ipAddr.IP.String(), port))
+				if err == nil {
+					return conn, nil
+				}
+				// If dial fails, try next IP (standard behavior)
 			}
 
-			return dialer.DialContext(ctx, network, addr)
+			// If we exhausted all IPs or they were all private
+			return nil, fmt.Errorf("no safe public IP found for %s", host)
 		},
 	}
 
@@ -104,7 +112,9 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch url: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return "", fmt.Errorf("request failed with status code: %d", resp.StatusCode)

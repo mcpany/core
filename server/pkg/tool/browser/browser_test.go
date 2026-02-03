@@ -20,21 +20,31 @@ func TestBrowserProvider(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Use default client to bypass SSRF check for testing against localhost
-	p := NewProvider(WithClient(http.DefaultClient))
+	// 1. Functional Test (Bypass SSRF check to test parsing)
+	pFunc := NewProvider(WithClient(http.DefaultClient))
 
 	// Test Tool Definition
-	def := p.ToolDefinition()
+	def := pFunc.ToolDefinition()
 	assert.Equal(t, "browse_page", def["name"])
 
 	// Test BrowsePage
-	content, err := p.BrowsePage(context.Background(), server.URL)
+	content, err := pFunc.BrowsePage(context.Background(), server.URL)
 	assert.NoError(t, err)
 	assert.Contains(t, content, "# Hello World")
 	assert.Contains(t, content, "This is a test.")
 	assert.Contains(t, content, server.URL)
 
 	// Test Error Case
-	_, err = p.BrowsePage(context.Background(), "")
+	_, err = pFunc.BrowsePage(context.Background(), "")
 	assert.Error(t, err)
+
+	// 2. Security Test (Verify SSRF protection)
+	// Create provider with default security enabled
+	pSec := NewProvider()
+
+	// Attempt to access the mock server (which is on localhost/127.0.0.1)
+	// This MUST fail with our security policy
+	_, err = pSec.BrowsePage(context.Background(), server.URL)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no safe public IP found")
 }
