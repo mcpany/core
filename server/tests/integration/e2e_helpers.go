@@ -670,6 +670,7 @@ type MCPANYTestServerInfo struct {
 	MetricsEndpoint          string
 	NatsURL                  string
 	SessionID                string
+	APIKey                   string
 	HTTPClient               *http.Client
 	GRPCRegConn              *grpc.ClientConn
 	RegistrationClient       apiv1.RegistrationServiceClient
@@ -914,6 +915,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		HTTPClient:               &http.Client{Timeout: 2 * time.Second},
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
+		APIKey:                   actualAPIKey,
 		CleanupFunc: func() {
 			cancel()
 			if grpcRegConn != nil {
@@ -1214,8 +1216,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	if jsonrpcPort != 0 {
 		jsonrpcEndpoint = fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
-		// Include API Key in URL query param for easy auth
-		mcpRequestURL = fmt.Sprintf("%s/mcp?api_key=%s", jsonrpcEndpoint, apiKey)
+		// API Key is passed via Header now
+		mcpRequestURL = fmt.Sprintf("%s/mcp", jsonrpcEndpoint)
 	}
 	if grpcRegPort != 0 {
 		grpcRegEndpoint = net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
@@ -1257,12 +1259,13 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		require.Eventually(t, func() bool {
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 			defer cancel()
-			// Use the URL with API key for health check too?
-			// But health check usually hits healthz? NO, this checks mcpRequestURL (SSE/POST).
-			// mcpRequestURL now has ?api_key=...
+			// Use the URL for health check (SSE/POST).
 			req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
 			if err != nil {
 				return false
+			}
+			if apiKey != "" {
+				req.Header.Set("X-API-Key", apiKey)
 			}
 			resp, err := httpClient.Do(req)
 			if err != nil {
@@ -1292,6 +1295,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		RegistrationClient:       registrationClient,
 		NatsURL:                  natsURL,
 		SessionID:                sessionID,
+		APIKey:                   apiKey,
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
@@ -1332,9 +1336,10 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	if s.APIKey != "" {
+		httpReq.Header.Set("X-API-Key", s.APIKey)
+	}
 	// Do NOT set Mcp-Session-Id for initialize, let server generate it if needed.
-	// Or maybe we need to support both modes?
-	// If we send it, server says 404 session not found. So we shouldn't send it for new session?
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
@@ -1372,6 +1377,9 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	if s.APIKey != "" {
+		httpReq.Header.Set("X-API-Key", s.APIKey)
+	}
 	httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
 
 	respNotify, err := s.HTTPClient.Do(httpReq)
@@ -1432,6 +1440,9 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	if s.APIKey != "" {
+		httpReq.Header.Set("X-API-Key", s.APIKey)
+	}
 	if s.SessionID != "" {
 		httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
 	}
