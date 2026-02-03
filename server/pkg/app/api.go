@@ -179,6 +179,7 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// BulkServiceActionRequest represents a request to perform an action on multiple services.
 type BulkServiceActionRequest struct {
 	Action   string   `json:"action"` // delete, enable, disable, restart
 	Services []string `json:"services"`
