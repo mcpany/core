@@ -26,8 +26,12 @@ test.describe('Secrets Manager', () => {
     await page.fill('#key', secretKey);
     await page.fill('#value', secretValue);
     await page.getByRole('button', { name: 'Save Secret' }).click();
+
+    // Check for success toast to confirm action completed
+    await expect(page.getByText('Secret saved successfully.')).toBeVisible({ timeout: 30000 });
+
     // Wait for dialog to close to ensure submission is processed
-    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 30000 });
+    await expect(page.getByRole('dialog')).toBeHidden();
 
     // Verify it appears in the list
     await expect(page.getByText(secretName)).toBeVisible({ timeout: 15000 });

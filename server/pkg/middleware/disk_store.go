@@ -59,16 +59,6 @@ func (s *DiskStore) Get(_ context.Context, key any) (any, error) {
 	}
 
 	if !entry.ExpiresAt.IsZero() && time.Now().After(entry.ExpiresAt) {
-		// Can't delete easily without context if Delete signature required it?
-		// Delete requires context, but Get signature also has it.
-		// Wait, I replaced ctx with _ in signature to satisfy unused-parameter.
-		// But I need it for Delete?
-		// Actually Delete doesn't use ctx either in my impl.
-		// So I can pass nil or context.Background() internally or just keep ctx named _ and pass it?
-		// If I rename ctx to _, I can't use it.
-		// But Delete(ctx) uses it? Let's check Delete implementation.
-		// Delete implementation below has unused ctx too.
-		// So I can just ignore it.
 		_ = s.Delete(context.Background(), key)
 		return nil, store.NotFound{}
 	}
