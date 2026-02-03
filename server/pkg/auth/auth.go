@@ -380,13 +380,17 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 // validate the request. If no authenticator is found, the request falls back to global checks.
 //
 // Parameters:
-//   - ctx: The request context.
-//   - serviceID: The identifier of the service being accessed.
-//   - r: The HTTP request to authenticate.
+//   - ctx: context.Context. The request context.
+//   - serviceID: string. The identifier of the service being accessed.
+//   - r: *http.Request. The HTTP request to authenticate.
 //
 // Returns:
 //   - context.Context: The authenticated context (possibly modified).
 //   - error: An error if authentication fails.
+//
+// Errors/Throws:
+//   - Returns an error if the request is unauthorized (missing or invalid credentials).
+//   - Returns an error if no authentication method is configured and global checks fail.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")

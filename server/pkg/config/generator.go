@@ -30,12 +30,17 @@ func NewGenerator() *Generator {
 }
 
 // Generate prompts the user for service details and returns the generated
-// configuration as a byte slice. It supports multiple service types including
-// HTTP, gRPC, OpenAPI, and GraphQL.
+// configuration as a byte slice.
+//
+// It supports multiple service types including HTTP, gRPC, OpenAPI, and GraphQL.
 //
 // Returns:
-//   - A byte slice containing the generated YAML configuration.
-//   - An error if the generation fails or the user provides invalid input.
+//   - []byte: A byte slice containing the generated YAML configuration.
+//   - error: An error if the generation fails or the user provides invalid input.
+//
+// Errors/Throws:
+//   - Returns an error if reading from input fails.
+//   - Returns an error if the service type is unsupported.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

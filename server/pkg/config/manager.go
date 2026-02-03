@@ -43,15 +43,14 @@ type UpstreamServiceManager struct {
 }
 
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
+//
 // It initializes the manager with the specified enabled profiles and default settings.
 //
 // Parameters:
-//
-//	enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
+//   - enabledProfiles: []string. A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
-//
-//	A pointer to a fully initialized UpstreamServiceManager.
+//   - *UpstreamServiceManager: A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -73,18 +72,25 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 }
 
 // LoadAndMergeServices loads all upstream services from the provided configuration.
+//
 // It processes both locally defined services and remote service collections, merging them
 // based on their priority and name.
 //
 // Parameters:
-//
-//	ctx: The context for the operation.
-//	config: The main server configuration containing service definitions and collection references.
+//   - ctx: context.Context. The context for the operation.
+//   - config: *configv1.McpAnyServerConfig. The main server configuration containing service definitions and collection references.
 //
 // Returns:
+//   - []*configv1.UpstreamServiceConfig: A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
+//   - error: An error if any critical failure occurs during loading or merging.
 //
-//	A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
-//	An error if any critical failure occurs during loading or merging.
+// Errors/Throws:
+//   - Returns an error if local service validation fails (though currently addService returns nil on logic error).
+//   - Returns an error if loading from remote collections fails fatally (though individual collection failures are logged and skipped).
+//
+// Side Effects:
+//   - Makes HTTP requests to load remote collections (if configured).
+//   - Logs warnings for duplicate services or loading failures.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {

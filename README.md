@@ -40,6 +40,15 @@ graph TD
     end
 ```
 
+### Directory Structure
+
+*   `server/`: The core Go server application.
+    *   `pkg/`: Core library code (config, auth, mcpserver, tool, resource).
+    *   `cmd/`: Entry points for binaries.
+*   `ui/`: The Next.js frontend dashboard.
+*   `proto/`: Protocol Buffer definitions for configuration and internal APIs.
+*   `k8s/`: Kubernetes deployment manifests and operator.
+
 ### Key Design Patterns
 *   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
@@ -66,6 +75,7 @@ Follow these steps to get up and running immediately.
     ```bash
     make prepare
     ```
+    This installs necessary tools like `protoc`, linters, and Go modules.
 
 3.  **Build the server:**
     ```bash
@@ -94,6 +104,12 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 
 We follow a strict development workflow to ensure quality.
 
+### Code Generation
+Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
+```bash
+make gen
+```
+
 ### Testing
 Run all unit, integration, and end-to-end tests to ensure code correctness.
 ```bash
@@ -110,12 +126,6 @@ make lint
 Compile all artifacts (Server binary and UI assets).
 ```bash
 make build
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
 ```
 
 ## 5. Configuration

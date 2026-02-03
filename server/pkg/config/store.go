@@ -55,14 +55,16 @@ type ConfigurableEngine interface {
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format
-// indicated by the file extension of the given path. It supports `.json`,
-// `.yaml`, `.yml`, and `.textproto` file formats.
+// indicated by the file extension of the given path.
+//
+// It supports `.json`, `.yaml`, `.yml`, and `.textproto` file formats.
 //
 // Parameters:
-//   - path: The file path used to determine the configuration format.
+//   - path: string. The file path used to determine the configuration format.
 //
-// Returns an `Engine` implementation for the corresponding file format, or an
-// error if the format is not supported.
+// Returns:
+//   - Engine: An `Engine` implementation for the corresponding file format.
+//   - error: An error if the format is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -271,15 +273,18 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - *configv1.McpAnyServerConfig: The loaded configuration.
+	//   - error: An error if the operation fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if configuration sources are present, false otherwise.
 	HasConfigSources() bool
 }
 
@@ -289,30 +294,42 @@ type ServiceStore interface {
 	// SaveService saves or updates a service configuration.
 	//
 	// Parameters:
-	//   - service: The service configuration to save.
+	//   - ctx: context.Context. The context for the request.
+	//   - service: *configv1.UpstreamServiceConfig. The service configuration to save.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
 	//
 	// Parameters:
-	//   - name: The name of the service to retrieve.
+	//   - ctx: context.Context. The context for the request.
+	//   - name: string. The name of the service to retrieve.
 	//
-	// Returns the service configuration, or an error if not found or the operation fails.
+	// Returns:
+	//   - *configv1.UpstreamServiceConfig: The service configuration.
+	//   - error: An error if not found or the operation fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
 	//
-	// Returns a slice of service configurations, or an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
+	//   - error: An error if the operation fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
 	//
 	// Parameters:
-	//   - name: The name of the service to delete.
+	//   - ctx: context.Context. The context for the request.
+	//   - name: string. The name of the service to delete.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -536,11 +553,11 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 // paths to load configurations from.
 //
 // Parameters:
-//   - fs: The filesystem interface to use for file operations.
-//   - paths: A slice of file or directory paths to scan for configuration
-//     files.
+//   - fs: afero.Fs. The filesystem interface to use for file operations.
+//   - paths: []string. A slice of file or directory paths to scan for configuration files.
 //
-// Returns a new instance of `FileStore`.
+// Returns:
+//   - *FileStore: A new instance of `FileStore`.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -558,16 +575,26 @@ func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
 
-// Load scans the configured paths for supported configuration files (JSON,
-// YAML, and textproto), reads them, unmarshals their contents, and merges them
-// into a single `McpAnyServerConfig`.
+// Load scans the configured paths for supported configuration files.
 //
-// The files are processed in alphabetical order, and configurations from later
-// files are merged into earlier ones. This allows for a cascading configuration
-// setup where base configurations can be overridden by more specific ones.
+// It reads JSON, YAML, and textproto files, unmarshals their contents, and merges them
+// into a single `McpAnyServerConfig`. The files are processed in alphabetical order,
+// and configurations from later files are merged into earlier ones. This allows for
+// a cascading configuration setup where base configurations can be overridden.
 //
-// Returns the merged `McpAnyServerConfig` or an error if any part of the process
-// fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The merged `McpAnyServerConfig`.
+//   - error: An error if any part of the process fails.
+//
+// Errors/Throws:
+//   - Returns an error if reading files fails.
+//   - Returns an error if unmarshaling fails.
+//
+// Side Effects:
+//   - Reads files from the filesystem or makes HTTP requests for URL paths.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 

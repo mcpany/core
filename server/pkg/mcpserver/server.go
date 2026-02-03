@@ -102,6 +102,9 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Errors/Throws:
+//   - Returns an error if tool manager fails to register built-in tools.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -579,6 +582,15 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Errors/Throws:
+//   - Returns an error if the tool is not found.
+//   - Returns an error if the current user profile is not allowed to access the tool.
+//   - Returns an error if the tool execution itself fails.
+//
+// Side Effects:
+//   - Logs the execution request and result.
+//   - Increments metrics for tool usage, errors, and latency.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.

@@ -23,19 +23,23 @@ type Router struct {
 // NewRouter creates and returns a new, empty Router.
 //
 // Returns:
-//   - A pointer to a new Router.
+//   - *Router: A pointer to a new Router.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
 	}
 }
 
-// Register associates a handler function with a specific MCP method name. If a
-// handler for the method already exists, it will be overwritten.
+// Register associates a handler function with a specific MCP method name.
+//
+// If a handler for the method already exists, it will be overwritten.
 //
 // Parameters:
-//   - method: The name of the MCP method (e.g., "tools/call").
-//   - handler: The function that will handle the method call.
+//   - method: string. The name of the MCP method (e.g., "tools/call").
+//   - handler: MethodHandler. The function that will handle the method call.
+//
+// Returns:
+//   None.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -43,11 +47,11 @@ func (r *Router) Register(method string, handler MethodHandler) {
 // GetHandler retrieves the handler function for a given MCP method name.
 //
 // Parameters:
-//   - method: The name of the MCP method.
+//   - method: string. The name of the MCP method.
 //
 // Returns:
-//   - The handler function if found.
-//   - A boolean indicating whether a handler was found.
+//   - MethodHandler: The handler function if found.
+//   - bool: A boolean indicating whether a handler was found.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

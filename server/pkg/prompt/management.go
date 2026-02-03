@@ -16,30 +16,42 @@ import (
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
-	// prompt is the prompt.
+	// Parameters:
+	//   - prompt: Prompt. The prompt to add.
 	AddPrompt(prompt Prompt)
+
 	// UpdatePrompt updates an existing prompt.
 	//
-	// prompt is the prompt.
+	// Parameters:
+	//   - prompt: Prompt. The prompt to update.
 	UpdatePrompt(prompt Prompt)
+
 	// GetPrompt retrieves a prompt by name.
 	//
-	// name is the name of the resource.
+	// Parameters:
+	//   - name: string. The name of the prompt.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Prompt: The prompt instance.
+	//   - bool: True if found, false otherwise.
 	GetPrompt(name string) (Prompt, bool)
+
 	// ListPrompts returns all registered prompts.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Prompt: A list of all prompts.
 	ListPrompts() []Prompt
+
 	// ClearPromptsForService removes all prompts associated with a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The ID of the service.
 	ClearPromptsForService(serviceID string)
+
 	// SetMCPServer sets the MCP server provider.
 	//
-	// mcpServer is the mcpServer.
+	// Parameters:
+	//   - mcpServer: MCPServerProvider. The provider to set.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
