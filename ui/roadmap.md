@@ -46,7 +46,6 @@
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
 - [x] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
-- [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [x] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
@@ -63,7 +62,7 @@
 - [x] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [x] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
-- [ ] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
+- [x] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
 - [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.
 - [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.

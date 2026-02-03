@@ -118,7 +118,15 @@ Audit logs are written as newline-delimited JSON (NDJSON). Each line represents 
 }
 ```
 
+## Sensitive Data Redaction
+
+When `log_arguments` or `log_results` are enabled, the system automatically applies Data Loss Prevention (DLP) rules to redact sensitive information before it is written to the audit log.
+
+The Redactor scans JSON payloads for common secret patterns (e.g., API keys, passwords, credit card numbers) and replaces them with a redacted placeholder (e.g., `***REDACTED***`). This ensures that even if full logging is enabled for debugging, accidental leakage of credentials is minimized.
+
+**Note:** Redaction is a best-effort mechanism. You should still treat audit logs containing arguments and results as sensitive artifacts.
+
 ## Security Considerations
 
-- **Sensitive Data**: By default, `log_arguments` and `log_results` are disabled. Enable them with caution, as they may expose API keys, PII, or other sensitive information handled by your tools.
+- **Sensitive Data**: By default, `log_arguments` and `log_results` are disabled. While the system attempts to redact secrets, enabling these options may still expose PII or other sensitive information. Enable with caution.
 - **File Permissions**: Ensure that the `output_path` is writable by the MCP Any server process and readable only by authorized personnel.

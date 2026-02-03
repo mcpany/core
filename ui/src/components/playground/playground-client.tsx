@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff, Bookmark, Save as SaveIcon, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -35,6 +35,14 @@ import {
     DialogTitle,
     DialogDescription
 } from "@/components/ui/dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ToolForm } from "@/components/playground/tool-form";
 
 type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
@@ -49,6 +57,13 @@ interface Message {
   previousResult?: unknown;
   duration?: number;
   timestamp: Date;
+}
+
+interface Preset {
+    id: string;
+    name: string;
+    toolName: string;
+    args: string;
 }
 
 /**
@@ -68,6 +83,7 @@ export function PlaygroundClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const [presets, setPresets] = useState<Preset[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastExecutionRef = useRef<{ toolName: string; args: string; result: unknown } | null>(null);
 
@@ -76,6 +92,16 @@ export function PlaygroundClient() {
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
         .catch(err => console.error("Failed to load tools:", err));
+
+    // Load presets
+    const savedPresets = localStorage.getItem("mcpany-playground-presets");
+    if (savedPresets) {
+        try {
+            setPresets(JSON.parse(savedPresets));
+        } catch (e) {
+            console.error("Failed to load presets", e);
+        }
+    }
 
     // Check URL params for tool
     if (typeof window !== "undefined") {
@@ -126,6 +152,45 @@ export function PlaygroundClient() {
 
     // Process immediately
     processResponse(input);
+  };
+
+  const savePreset = () => {
+      if (!input.trim()) return;
+
+      // Parse input to get tool name and args roughly
+      const firstSpaceIndex = input.indexOf(' ');
+      let toolName = input;
+      let args = "{}";
+
+      if (firstSpaceIndex > 0) {
+          toolName = input.substring(0, firstSpaceIndex).trim();
+          args = input.substring(firstSpaceIndex + 1).trim();
+      }
+
+      const name = prompt("Enter a name for this preset:", `${toolName} preset`);
+      if (!name) return;
+
+      const newPreset: Preset = {
+          id: Date.now().toString(),
+          name,
+          toolName,
+          args
+      };
+
+      const newPresets = [...presets, newPreset];
+      setPresets(newPresets);
+      localStorage.setItem("mcpany-playground-presets", JSON.stringify(newPresets));
+  };
+
+  const loadPreset = (preset: Preset) => {
+      setInput(`${preset.toolName} ${preset.args}`);
+  };
+
+  const deletePreset = (id: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      const newPresets = presets.filter(p => p.id !== id);
+      setPresets(newPresets);
+      localStorage.setItem("mcpany-playground-presets", JSON.stringify(newPresets));
   };
 
   const handleToolFormSubmit = (data: Record<string, unknown>) => {
@@ -267,6 +332,37 @@ export function PlaygroundClient() {
               <Bot className="text-primary" /> Playground
           </h2>
           <div className="flex items-center gap-2">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                        <Bookmark className="size-4" /> Presets
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Saved Presets</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {presets.length === 0 && (
+                        <div className="p-2 text-xs text-muted-foreground text-center">No saved presets</div>
+                    )}
+                    {presets.map((preset) => (
+                        <DropdownMenuItem key={preset.id} onClick={() => loadPreset(preset)} className="flex items-center justify-between group">
+                            <div className="flex items-center gap-2 overflow-hidden">
+                                <Play className="size-3 text-muted-foreground" />
+                                <span className="truncate">{preset.name}</span>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 opacity-0 group-hover:opacity-100 hover:bg-destructive/20 hover:text-destructive"
+                                onClick={(e) => deletePreset(preset.id, e)}
+                            >
+                                <Trash2 className="size-3" />
+                            </Button>
+                        </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+            </DropdownMenu>
+
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
@@ -347,7 +443,17 @@ export function PlaygroundClient() {
                         className="bg-background shadow-sm pr-20 font-mono text-sm"
                         autoFocus
                     />
-                    <div className="absolute right-1 top-1">
+                    <div className="absolute right-1 top-1 flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            onClick={savePreset}
+                            title="Save as Preset"
+                            disabled={!input.trim()}
+                        >
+                            <SaveIcon className="size-4" />
+                        </Button>
                         <Button size="sm" className="h-8" onClick={handleSend} disabled={isLoading || !input.trim()}>
                             {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
                             <span className="sr-only">Send</span>

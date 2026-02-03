@@ -57,3 +57,22 @@ You can manage your playground session history using the buttons in the top righ
 
 - **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
 - **Import**: Load a previously exported session file to replay tool executions and results.
+
+### 6. Key Features
+
+The Playground includes several power-user features to enhance productivity.
+
+#### Native File Upload
+For tools that require file inputs (e.g., image analysis), the Playground automatically renders a file picker if the schema specifies `contentEncoding: "base64"` or `format: "binary"`. Selected files are automatically base64-encoded before submission.
+
+#### Tool Output Diffing
+When re-running a tool with the same arguments, the Playground detects if the output has changed. A "Show Changes" button allows you to view a side-by-side diff of the results, making it easy to spot regressions or dynamic data changes.
+
+#### Saved Presets
+You can save frequently used argument combinations as "Presets". This allows you to quickly switch between different test scenarios without re-typing complex inputs.
+
+#### Execution Duration
+Each tool execution displays its latency (time taken), helping you identify performance bottlenecks in your upstream services.
+
+#### Context Usage Estimator
+To help manage LLM context windows, the Playground estimates the token usage for each tool call and result, preventing accidental context bloat.
