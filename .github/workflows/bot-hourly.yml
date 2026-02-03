@@ -27,7 +27,7 @@ jobs:
           gh pr list \
             --repo mcpany/core \
             --base main \
-            --search "is:open status:success -mergeable:conflicting" \
+            --search "is:pr is:open status:success author:@me" \
             --json number \
             --jq '.[].number' | \
           while read pr_number; do
