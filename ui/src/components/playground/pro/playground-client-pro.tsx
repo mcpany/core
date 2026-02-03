@@ -216,7 +216,7 @@ export function PlaygroundClientPro() {
       }]);
 
       try {
-          const result = await apiClient.executeTool({
+          const { result, traceId } = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
           }, isDryRun);
@@ -245,6 +245,7 @@ export function PlaygroundClientPro() {
               type: "tool-result",
               toolName: toolName,
               toolResult: result,
+              traceId: traceId || undefined,
               previousResult,
               timestamp: new Date(),
           }]);

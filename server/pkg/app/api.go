@@ -745,12 +745,21 @@ func (a *Application) handleExecute() http.HandlerFunc {
 			req.ToolInputs = b
 		}
 
-		result, err := a.ToolManager.ExecuteTool(r.Context(), &req)
+		// Capture Trace ID for deep linking
+		var traceID string
+		ctx := context.WithValue(r.Context(), middleware.TraceIDCaptureKey, &traceID)
+
+		result, err := a.ToolManager.ExecuteTool(ctx, &req)
 		if err != nil {
 			logging.GetLogger().Error("failed to execute tool", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		if traceID != "" {
+			w.Header().Set("X-Trace-Id", traceID)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(result)
 	}

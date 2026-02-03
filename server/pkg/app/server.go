@@ -664,6 +664,14 @@ func (a *Application) Run(opts RunOptions) error {
 		}
 	}
 	a.standardMiddlewares = standardMiddlewares
+
+	// ⚡ BOLT: Attach Audit Middleware to ToolManager to ensure REST API executions are traced.
+	// This makes Audit the innermost middleware (wrapped by Metrics and Resilience),
+	// ensuring we capture the actual execution attempt details.
+	if standardMiddlewares.Audit != nil {
+		a.ToolManager.AddMiddleware(standardMiddlewares.Audit)
+	}
+
 	if standardMiddlewares.Cleanup != nil {
 		defer func() {
 			if err := standardMiddlewares.Cleanup(); err != nil {

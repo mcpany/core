@@ -10,12 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCcw, Bug, Unplug, Pause, Play, Trash2 } from "lucide-react";
 import { useTraces } from "@/hooks/use-traces";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-/**
- * InspectorPage component.
- * @returns The rendered component.
- */
-export default function InspectorPage() {
+function InspectorContent() {
   const {
       traces,
       loading,
@@ -25,6 +23,8 @@ export default function InspectorPage() {
       clearTraces,
       refresh
   } = useTraces();
+  const searchParams = useSearchParams();
+  const traceId = searchParams.get("traceId");
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 space-y-4">
@@ -73,8 +73,20 @@ export default function InspectorPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto rounded-md border bg-card">
-        <InspectorTable traces={traces} loading={loading && traces.length === 0} />
+        <InspectorTable traces={traces} loading={loading && traces.length === 0} initialSelectedId={traceId} />
       </div>
     </div>
+  );
+}
+
+/**
+ * InspectorPage component.
+ * @returns The rendered component.
+ */
+export default function InspectorPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading inspector...</div>}>
+      <InspectorContent />
+    </Suspense>
   );
 }

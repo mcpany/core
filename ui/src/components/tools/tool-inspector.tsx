@@ -110,12 +110,12 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
     try {
       const args = JSON.parse(input);
       // const start = Date.now();
-      const res = await apiClient.executeTool({
+      const { result } = await apiClient.executeTool({
           toolName: tool.name,
           arguments: args
       }, isDryRun);
       // const duration = Date.now() - start;
-      setOutput(JSON.stringify(res, null, 2));
+      setOutput(JSON.stringify(result, null, 2));
       // Refresh metrics after execution to show it in the graph
       // Give it a small delay for backend to write audit log
       setTimeout(fetchMetrics, 500);
