@@ -50,7 +50,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
+    // Updated selector to match UI (h2 or generic heading)
+    await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible();
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 

@@ -569,8 +569,9 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	// Inject pull_policy: never to avoid registry lookup failures for local images.
 	// We use specific string replacement to ensure valid YAML and avoid regex complexity/fragility.
 	// This assumes standard 4-space indentation as found in the example docker-compose.yml.
-	// s = strings.ReplaceAll(s, "    image: mcpany/server:latest", "    image: mcpany/server:latest\n    pull_policy: never")
-	// s = strings.ReplaceAll(s, "    image: mcpany/http-echo-server:latest", "    image: mcpany/http-echo-server:latest\n    pull_policy: never")
+	// We verify valid indentation in the target files before replacing.
+	s = strings.ReplaceAll(s, "    image: mcpany/server:latest", "    image: mcpany/server:latest\n    pull_policy: never")
+	s = strings.ReplaceAll(s, "    image: mcpany/http-echo-server:latest", "    image: mcpany/http-echo-server:latest\n    pull_policy: never")
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")
