@@ -6,7 +6,7 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is the universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and AI agents.
 
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
@@ -17,7 +17,8 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
 **High-Level Overview:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol (JSON-RPC 2.0).
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
@@ -79,14 +80,17 @@ Follow these steps to get up and running immediately.
     ```
 
 ### Hello World
-Once the server is running, you can verify it using `curl` or an MCP client.
+Once the server is running, you can verify it using `curl` or connect an MCP client.
+
+**Health Check:**
 ```bash
-# Check health
 curl http://localhost:50050/health
 ```
 
+**Connect an AI Client:**
 To connect an AI client (like Claude Desktop or Gemini CLI):
 ```bash
+# Example using Gemini CLI
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 

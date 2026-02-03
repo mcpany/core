@@ -28,14 +28,22 @@ import (
 )
 
 var (
-	metricToolsListTotal   = []string{"tools", "list", "total"}
-	metricToolsCallTotal   = []string{"tools", "call", "total"}
-	metricToolsCallErrors  = []string{"tools", "call", "errors"}
+	// metricToolsListTotal tracks the total number of tool list requests.
+	metricToolsListTotal = []string{"tools", "list", "total"}
+	// metricToolsCallTotal tracks the total number of tool execution requests.
+	metricToolsCallTotal = []string{"tools", "call", "total"}
+	// metricToolsCallErrors tracks the total number of failed tool execution requests.
+	metricToolsCallErrors = []string{"tools", "call", "errors"}
+	// metricToolsCallLatency tracks the latency of tool execution requests.
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
 
 // fastJSON is a jsoniter configuration that disables map key sorting for performance.
+//
 // The order of keys in the JSON response does not matter for the LLM.
+//
+// Side Effects:
+//   - Creates a frozen jsoniter configuration instance.
 var fastJSON = jsoniter.Config{
 	EscapeHTML:             true,
 	SortMapKeys:            false,
@@ -43,7 +51,11 @@ var fastJSON = jsoniter.Config{
 }.Froze()
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+//
 // It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
+//
+// Parameters:
+//   - name: string. The name of the middleware being added or inspected.
 //
 // Side Effects:
 //   - When set, this function is called synchronously during Server() access.
@@ -55,16 +67,26 @@ var AddReceivingMiddlewareHook func(name string)
 // tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
 // handlers and communicates with backend workers via an event bus.
 type Server struct {
-	server          *mcp.Server
-	router          *Router
-	toolManager     tool.ManagerInterface
-	promptManager   prompt.ManagerInterface
+	// server is the underlying MCP server instance.
+	server *mcp.Server
+	// router handles the routing of MCP requests to specific handlers.
+	router *Router
+	// toolManager manages the lifecycle and retrieval of tools.
+	toolManager tool.ManagerInterface
+	// promptManager manages the lifecycle and retrieval of prompts.
+	promptManager prompt.ManagerInterface
+	// resourceManager manages the lifecycle and retrieval of resources.
 	resourceManager resource.ManagerInterface
-	authManager     *auth.Manager
+	// authManager handles authentication logic for requests.
+	authManager *auth.Manager
+	// serviceRegistry keeps track of registered upstream services.
 	serviceRegistry *serviceregistry.ServiceRegistry
-	bus             *bus.Provider
-	reloadFunc      func(context.Context) error
-	debug           bool
+	// bus is the event bus provider for asynchronous communication.
+	bus *bus.Provider
+	// reloadFunc is a callback function executed when configuration reload is triggered.
+	reloadFunc func(context.Context) error
+	// debug indicates whether debug logging and features are enabled.
+	debug bool
 }
 
 // Server returns the underlying *mcp.Server instance.
@@ -910,19 +932,27 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // its JSON content only when logged.
 type LazyRedact []byte
 
-// LogValue implements slog.LogValuer.
+// LogValue implements slog.LogValuer to return a redacted string representation of the JSON bytes.
+//
+// Returns:
+//   - slog.Value: A string value containing the redacted JSON.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
 // LazyLogResult wraps a tool execution result for efficient logging.
+//
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 type LazyLogResult struct {
+	// Value is the tool execution result to be logged.
 	Value any
 }
 
-// LogValue implements slog.LogValuer.
+// LogValue implements slog.LogValuer to return a simplified summary of the tool result.
+//
+// Returns:
+//   - slog.Value: A string or group value summarizing the result.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

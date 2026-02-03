@@ -65,18 +65,29 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The underlying protobuf definition of the tool.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request containing tool name and arguments.
+	//
+	// Returns:
+	//   - any: The result of the tool execution.
+	//   - error: An error if the execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if not configured.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -128,7 +139,7 @@ type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
 	// Parameters:
-	//   - toolName: The name of the tool to retrieve.
+	//   - toolName: string. The name of the tool to retrieve.
 	//
 	// Returns:
 	//   - Tool: The tool instance if found.
@@ -138,7 +149,7 @@ type ServiceRegistry interface {
 	// GetServiceInfo retrieves metadata for a service.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
@@ -156,8 +167,8 @@ const toolContextKey = contextKey("tool")
 // NewContextWithTool creates a new context with the given tool embedded.
 //
 // Parameters:
-//   - ctx: The context to extend.
-//   - t: The tool instance to embed in the context.
+//   - ctx: context.Context. The context to extend.
+//   - t: Tool. The tool instance to embed in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
@@ -168,7 +179,7 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // GetFromContext retrieves a tool from the context if present.
 //
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx: context.Context. The context to search.
 //
 // Returns:
 //   - Tool: The tool instance from the context.
@@ -216,8 +227,8 @@ const cacheControlContextKey = contextKey("cache_control")
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
 // Parameters:
-//   - ctx: The context to extend.
-//   - cc: The CacheControl instance to embed.
+//   - ctx: context.Context. The context to extend.
+//   - cc: *CacheControl. The CacheControl instance to embed.
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
@@ -228,7 +239,7 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // GetCacheControl retrieves the CacheControl from the context.
 //
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx: context.Context. The context to search.
 //
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
