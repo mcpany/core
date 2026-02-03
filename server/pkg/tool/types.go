@@ -2782,10 +2782,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		cleanVal := strings.ToLower(b.String())
 
-		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+		dangerousCalls := []string{
+			"system(", "exec(", "popen(", "eval(",
+			"spawn(", "check_output(", "open(",
+			"__import__", "subprocess.", "importsubprocess", "fromsubprocess",
+		}
 		for _, call := range dangerousCalls {
 			if strings.Contains(cleanVal, call) {
-				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
+				return fmt.Errorf("shell injection detected: value contains dangerous function call or keyword %q inside single-quoted argument (potential interpreter abuse)", call)
 			}
 		}
 
