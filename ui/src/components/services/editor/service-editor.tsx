@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { ToolMappingEditor } from "@/components/services/editor/tool-mapping-editor";
 import { SourceEditor } from "@/components/services/editor/source-editor";
 import yaml from "js-yaml";
 
@@ -170,6 +171,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                         <TabsList className="bg-transparent">
                             <TabsTrigger value="general">General</TabsTrigger>
                             <TabsTrigger value="connection">Connection</TabsTrigger>
+                            <TabsTrigger value="tools">Tools</TabsTrigger>
                             <TabsTrigger value="auth">Authentication</TabsTrigger>
                             <TabsTrigger value="policies">Policies</TabsTrigger>
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
@@ -402,6 +404,10 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     </div>
                                 </div>
                             )}
+                        </TabsContent>
+
+                        <TabsContent value="tools" className="space-y-4 mt-0">
+                            <ToolMappingEditor service={service} onChange={onChange} />
                         </TabsContent>
 
                         <TabsContent value="policies" className="space-y-4 mt-0">
