@@ -419,6 +419,12 @@ func (p *poolImpl[T]) Put(client T) {
 
 // Close shuts down the pool, closing all idle clients and preventing any new
 // operations. Any subsequent calls to `Get` will return `ErrPoolClosed`.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -452,6 +458,9 @@ func (p *poolImpl[T]) Close() error {
 // Len returns the current number of idle clients in the pool.
 //
 // Returns the result.
+//
+// Returns:
+//   - int: The result.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -477,6 +486,9 @@ type Manager struct {
 
 // NewManager creates and returns a new pool Manager for managing multiple named
 // connection pools.
+//
+// Returns:
+//   - *Manager: The result.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -509,6 +521,9 @@ func (m *Manager) Register(name string, pool any) {
 // Deregister closes and removes a pool from the manager.
 //
 // name is the name of the resource.
+//
+// Parameters:
+//   - name: string. The name.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -37,6 +37,15 @@ type Upstream struct {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -45,6 +54,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+//
+// Parameters:
+//   - poolManager: *pool.Manager. The pool.Manager instance.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -54,6 +69,23 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and
 // registering tools for each call definition specified in the configuration.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The configv1.UpstreamServiceConfig instance.
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//   - promptManager: prompt.ManagerInterface. The promptManager parameter.
+//   - resourceManager: resource.ManagerInterface. The resourceManager parameter.
+//   - isReload: bool. The isReload parameter.
+//
+// Returns:
+//   - string: The result.
+//   - []*configv1.ToolDefinition: The result.
+//   - []*configv1.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

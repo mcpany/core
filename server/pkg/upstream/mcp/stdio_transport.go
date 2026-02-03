@@ -29,6 +29,16 @@ type StdioTransport struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -97,6 +107,16 @@ type stdioConn struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -189,6 +209,16 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - msg: jsonrpc.Message. The msg parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -231,6 +261,12 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Close terminates the command and closes the streams.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -249,6 +285,9 @@ func (c *stdioConn) Close() error {
 // SessionID returns a static session ID for the stdio connection.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

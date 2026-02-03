@@ -43,6 +43,17 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
@@ -50,6 +61,9 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 // Callable returns the underlying Callable of the tool.
 //
 // Returns the result.
+//
+// Returns:
+//   - Callable: The result.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

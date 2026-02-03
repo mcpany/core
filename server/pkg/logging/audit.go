@@ -22,6 +22,13 @@ type AuditHandler struct {
 }
 
 // NewAuditHandler creates a new AuditHandler.
+//
+// Parameters:
+//   - next: The handler instance.
+//   - config: The configuration.
+//
+// Returns:
+//   - *AuditHandler: The result.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,
@@ -67,11 +74,28 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 }
 
 // Enabled reports whether the handler handles records at the given level.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - level: slog.Level. The level parameter.
+//
+// Returns:
+//   - bool: The result.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
 
 // Handle handles the Record.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -83,6 +107,12 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new generic Handler with the given attributes.
+//
+// Parameters:
+//   - attrs: []slog.Attr. A list of slog.Attrs.
+//
+// Returns:
+//   - slog.Handler: The result.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -92,6 +122,12 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new generic Handler with the given group.
+//
+// Parameters:
+//   - name: string. The name.
+//
+// Returns:
+//   - slog.Handler: The result.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithGroup(name),
@@ -101,6 +137,16 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 }
 
 // Export sends the log record to the configued sinks.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil

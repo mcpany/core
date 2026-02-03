@@ -49,6 +49,12 @@ func isCompressible(contentType string) bool {
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
 // It checks the Accept-Encoding header and only compresses if the client supports gzip.
 // It also checks the Content-Type to ensure we only compress compressible types.
+//
+// Parameters:
+//   - next: The handler instance.
+//
+// Returns:
+//   - http.Handler: The result.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -93,6 +99,16 @@ type gzipResponseWriter struct {
 
 // Write writes the data to the connection as part of an HTTP reply.
 // It buffers data until the threshold is reached or the response is closed.
+//
+// Parameters:
+//   - b: []byte. A list of bytes.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -124,6 +140,9 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 }
 
 // WriteHeader captures the status code.
+//
+// Parameters:
+//   - code: int. The code parameter.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return

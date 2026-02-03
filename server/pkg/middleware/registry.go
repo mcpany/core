@@ -39,6 +39,10 @@ var (
 //
 // name is the name of the resource.
 // factory is the factory.
+//
+// Parameters:
+//   - name: string. The name.
+//   - factory: Factory. The factory parameter.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -49,6 +53,10 @@ func Register(name string, factory Factory) {
 //
 // name is the name of the resource.
 // factory is the factory.
+//
+// Parameters:
+//   - name: string. The name.
+//   - factory: MCPFactory. The factory parameter.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -60,6 +68,12 @@ func RegisterMCP(name string, factory MCPFactory) {
 // configs is the configs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - configs: []*configv1.Middleware. A list of *configv1.Middlewares.
+//
+// Returns:
+//   - http.Handler: The result.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -88,6 +102,12 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // configs is the configs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - configs: []*configv1.Middleware. A list of *configv1.Middlewares.
+//
+// Returns:
+//   - mcp.MethodHandler: The result.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -133,6 +153,23 @@ type StandardMiddlewares struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - authManager: *auth.Manager. The auth.Manager instance.
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//   - auditConfig: *configv1.AuditConfig. The configv1.AuditConfig instance.
+//   - cachingMiddleware: *CachingMiddleware. The CachingMiddleware instance.
+//   - globalRateLimitConfig: *configv1.RateLimitConfig. The configv1.RateLimitConfig instance.
+//   - dlpConfig: *configv1.DLPConfig. The configv1.DLPConfig instance.
+//   - contextOptimizerConfig: context.Context. The context for the operation.
+//   - debuggerConfig: *configv1.DebuggerConfig. The configv1.DebuggerConfig instance.
+//
+// Returns:
+//   - *StandardMiddlewares: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

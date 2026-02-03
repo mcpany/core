@@ -31,6 +31,9 @@ type Upstream struct {
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -52,6 +55,15 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -69,6 +81,23 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The configv1.UpstreamServiceConfig instance.
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//   - _: prompt.ManagerInterface. The _ parameter.
+//   - _: resource.ManagerInterface. The _ parameter.
+//   - _: bool. The _ parameter.
+//
+// Returns:
+//   - string: The result.
+//   - []*configv1.ToolDefinition: The result.
+//   - []*configv1.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -169,6 +198,17 @@ type vectorCallable struct {
 // Call executes the vector tool with the given arguments.
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }

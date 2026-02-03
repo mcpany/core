@@ -45,6 +45,16 @@ type WebsocketTool struct {
 // authenticator handles adding authentication credentials to the connection request.
 // callDefinition contains the configuration for the WebSocket call, such as
 // parameter mappings and transformers.
+//
+// Parameters:
+//   - tool: *v1.Tool. The v1.Tool instance.
+//   - poolManager: *pool.Manager. The pool.Manager instance.
+//   - serviceID: string. The serviceID parameter.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator parameter.
+//   - callDefinition: *configv1.WebsocketCallDefinition. The configv1.WebsocketCallDefinition instance.
+//
+// Returns:
+//   - *WebsocketTool: The result.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -67,6 +77,9 @@ func NewWebsocketTool(
 // Tool returns the protobuf definition of the WebSocket tool.
 //
 // Returns the result.
+//
+// Returns:
+//   - *v1.Tool: The result.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -74,6 +87,9 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 // MCPTool returns the MCP tool definition.
 //
 // Returns the result.
+//
+// Returns:
+//   - *mcp.Tool: The result.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -88,6 +104,9 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
 // Returns the result.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -95,6 +114,17 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the WebSocket tool. It retrieves a connection
 // from the pool, sends the tool inputs as a message, and waits for a single
 // response message, which it then processes and returns.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

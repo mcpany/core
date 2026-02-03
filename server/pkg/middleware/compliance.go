@@ -29,6 +29,12 @@ type JSONRPCResponse struct {
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
 // It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format.
 // Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+//
+// Parameters:
+//   - next: The handler instance.
+//
+// Returns:
+//   - http.Handler: The result.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -85,6 +91,9 @@ type smartResponseWriter struct {
 // Header returns the header map that will be sent by WriteHeader.
 //
 // Returns the result.
+//
+// Returns:
+//   - http.Header: The result.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
@@ -92,6 +101,9 @@ func (w *smartResponseWriter) Header() http.Header {
 // WriteHeader sends an HTTP response header with the provided status code.
 //
 // code is the code.
+//
+// Parameters:
+//   - code: int. The code parameter.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -120,6 +132,16 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - b: []byte. A list of bytes.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)

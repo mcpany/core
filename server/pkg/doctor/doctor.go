@@ -51,6 +51,13 @@ type CheckResult struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - config: The configuration.
+//
+// Returns:
+//   - []CheckResult: The result.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -76,6 +83,13 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 }
 
 // CheckService performs a connectivity check for a single service.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - service: *configv1.UpstreamServiceConfig. The configv1.UpstreamServiceConfig instance.
+//
+// Returns:
+//   - CheckResult: The result.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

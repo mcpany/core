@@ -113,6 +113,13 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 // It assumes the input is standard JSON (no comments) and skips comment detection logic
 // for significantly improved performance on mixed payloads.
 // visitor is called for every string value (not keys).
+//
+// Parameters:
+//   - input: []byte. A list of bytes.
+//   - visitor: func(raw []byte. The visitor parameter.
+//
+// Returns:
+//   - []byte: The result.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0

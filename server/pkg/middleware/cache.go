@@ -52,6 +52,12 @@ type CachingMiddleware struct {
 // toolManager is the toolManager.
 //
 // Returns the result.
+//
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//
+// Returns:
+//   - *CachingMiddleware: The result.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -113,6 +119,9 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 // SetProviderFactory allows overriding the default provider factory for testing.
 //
 // factory is the factory.
+//
+// Parameters:
+//   - factory: ProviderFactory. The factory parameter.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
@@ -125,6 +134,18 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//   - next: tool.ExecutionFunc. The next parameter.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -422,6 +443,15 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 // ctx is the context for the request.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

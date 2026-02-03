@@ -71,6 +71,17 @@ func (b *Bus[T]) Close() {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - topic: string. The topic parameter.
+//   - msg: T. The msg parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -86,6 +97,14 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - topic: string. The topic parameter.
+//   - handler: func(T. The handler parameter.
+//
+// Returns:
+//   - func()): The result.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -105,6 +124,14 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - topic: string. The topic parameter.
+//   - handler: func(T. The handler parameter.
+//
+// Returns:
+//   - func()): The result.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

@@ -39,6 +39,9 @@ type Upstream struct {
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -50,6 +53,15 @@ func NewUpstream() upstream.Upstream {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -76,6 +88,23 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The configv1.UpstreamServiceConfig instance.
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//   - _: prompt.ManagerInterface. The _ parameter.
+//   - _: resource.ManagerInterface. The _ parameter.
+//   - _: bool. The _ parameter.
+//
+// Returns:
+//   - string: The result.
+//   - []*configv1.ToolDefinition: The result.
+//   - []*configv1.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -193,6 +222,17 @@ type fsCallable struct {
 
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {
