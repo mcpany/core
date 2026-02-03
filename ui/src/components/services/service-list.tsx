@@ -6,7 +6,7 @@
 "use client";
 
 import { useMemo, useState, memo, useCallback, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +36,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { TableVirtuoso } from "react-virtuoso";
+import React from "react";
+import { cn } from "@/lib/utils";
 
 
 interface ServiceListProps {
@@ -95,6 +98,18 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   }, []);
 
   const isAllSelected = filteredServices.length > 0 && selected.size === filteredServices.length;
+
+  const contextValue = useMemo(() => ({
+      selected,
+      onSelect: handleSelectOne,
+      onToggle,
+      onEdit,
+      onDelete,
+      onDuplicate,
+      onExport,
+      onLogin,
+      onRestart
+  }), [selected, handleSelectOne, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart]);
 
   if (isLoading) {
       return (
@@ -157,10 +172,25 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                    )}
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
+      <div className="rounded-md border h-[600px] flex flex-col">
+        {/* ⚡ BOLT: Virtualized list to support large number of services without rendering lag */}
+        {/* Randomized Selection from Top 5 High-Impact Targets */}
+        <TableVirtuoso
+          initialItemCount={50}
+          data={filteredServices}
+          context={contextValue}
+          components={{
+            Table: (props) => <table {...props} className="w-full caption-bottom text-sm" />,
+            TableHead: TableHeader,
+            TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
+            TableRow: (props) => {
+                const { item, context, ...rest } = props as any;
+                if (!item) return <tr {...rest} />;
+                return <ServiceRow service={item} context={context} {...rest} />;
+            },
+          }}
+          fixedHeaderContent={() => (
+            <TableRow className="bg-background">
               <TableHead className="w-[50px]">
                   <Checkbox
                     checked={isAllSelected}
@@ -178,32 +208,13 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               <TableHead className="text-center">Secure</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredServices.map((service) => (
-               <ServiceRow
-                  key={service.name}
-                  service={service}
-                  isSelected={selected.has(service.name)}
-                  onSelect={handleSelectOne}
-                  onToggle={onToggle}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onDuplicate={onDuplicate}
-                  onExport={onExport}
-                  onLogin={onLogin}
-                  onRestart={onRestart}
-               />
-            ))}
-            {filteredServices.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
-                  No services match the tag filter.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+          )}
+        />
+        {filteredServices.length === 0 && (
+          <div className="p-4 text-center text-sm text-muted-foreground border-t">
+            No services match the tag filter.
+          </div>
+        )}
       </div>
       <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
         <DialogContent>
@@ -241,32 +252,29 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   );
 }
 
+interface ServiceRowContext {
+    selected: Set<string>;
+    onSelect: (name: string, checked: boolean) => void;
+    onToggle?: (name: string, enabled: boolean) => void;
+    onEdit?: (service: UpstreamServiceConfig) => void;
+    onDelete?: (name: string) => void;
+    onDuplicate?: (service: UpstreamServiceConfig) => void;
+    onExport?: (service: UpstreamServiceConfig) => void;
+    onLogin?: (service: UpstreamServiceConfig) => void;
+    onRestart?: (name: string) => void;
+}
+
 /**
  * ServiceRow component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @param props.isSelected - The isSelected property.
- * @param props.onSelect - The onSelect property.
- * @param props.onToggle - The onToggle property.
- * @param props.onEdit - The onEdit property.
- * @param props.onDelete - The onDelete property.
- * @param props.onDuplicate - The onDuplicate property.
- * @param props.onExport - The onExport property.
- * @param props.onLogin - The onLogin property.
- * @returns The rendered component.
  */
-const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
+const ServiceRow = memo(function ServiceRow({ service, context, ...rest }: {
     service: UpstreamServiceConfig,
-    isSelected: boolean,
-    onSelect: (name: string, checked: boolean) => void,
-    onToggle?: (name: string, enabled: boolean) => void,
-    onEdit?: (service: UpstreamServiceConfig) => void,
-    onDelete?: (name: string) => void,
-    onDuplicate?: (service: UpstreamServiceConfig) => void,
-    onExport?: (service: UpstreamServiceConfig) => void,
-    onLogin?: (service: UpstreamServiceConfig) => void,
-    onRestart?: (name: string) => void
+    context: ServiceRowContext,
+    [key: string]: any
 }) {
+    const { selected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart } = context;
+    const isSelected = selected.has(service.name);
+
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
         if (service.grpcService) return "gRPC";
@@ -303,7 +311,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     }, [history]);
 
     return (
-        <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
+        <TableRow {...rest} className={cn(service.disable ? "opacity-60 bg-muted/40" : "", rest.className)}>
              <TableCell>
                  <Checkbox
                     checked={isSelected}
