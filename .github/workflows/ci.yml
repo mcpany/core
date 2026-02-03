@@ -826,7 +826,6 @@ jobs:
       - name: Check Results and Comment
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
           script: |
             // 1. Check for Failures
             const needs = ${{ toJson(needs) }};
