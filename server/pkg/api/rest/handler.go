@@ -78,6 +78,8 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		// Skip schema validation in the engine since we already performed it above
 		if configurable, ok := engine.(config.ConfigurableEngine); ok {
 			configurable.SetSkipValidation(true)
+			// Disable environment variable expansion to prevent existence oracle attacks
+			configurable.SetExpandEnvVars(false)
 		}
 
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()

@@ -52,6 +52,8 @@ type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
 	SetSkipValidation(skip bool)
+	// SetExpandEnvVars sets whether to expand environment variables.
+	SetExpandEnvVars(expand bool)
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format
@@ -69,7 +71,7 @@ func NewEngine(path string) (Engine, error) {
 	case ".json":
 		return &jsonEngine{}, nil
 	case ".yaml", ".yml":
-		return &yamlEngine{}, nil
+		return &yamlEngine{expandEnvVars: true}, nil
 	case ".textproto", ".prototxt", ".pb", ".pb.txt":
 		return &textprotoEngine{}, nil
 	default:
@@ -80,11 +82,17 @@ func NewEngine(path string) (Engine, error) {
 // yamlEngine implements the Engine interface for YAML configuration files.
 type yamlEngine struct {
 	skipValidation bool
+	expandEnvVars  bool
 }
 
 // SetSkipValidation sets whether to skip schema validation.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
+}
+
+// SetExpandEnvVars sets whether to expand environment variables.
+func (e *yamlEngine) SetExpandEnvVars(expand bool) {
+	e.expandEnvVars = expand
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`. It achieves this
@@ -118,7 +126,9 @@ func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Me
 func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 	// This allows overriding any configuration value using environment variables.
-	applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
+	if e.expandEnvVars {
+		applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
+	}
 
 	// Apply --set overrides: section.key=value or section[idx].key=value
 	applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
