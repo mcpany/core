@@ -75,6 +75,10 @@ func (m *mockToolManager) IsServiceAllowed(serviceID, profileID string) bool    
 func (m *mockToolManager) ClearToolsForService(_ string)                           {}
 func (m *mockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool      { return true }
 
+func (m *mockToolManager) GetToolCountForService(serviceID string) int {
+	return 0
+}
+
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup
 	tm := &mockToolManager{}

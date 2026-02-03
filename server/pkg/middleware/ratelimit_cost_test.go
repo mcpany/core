@@ -59,6 +59,10 @@ func (m *MockToolManagerForCost) ToolMatchesProfile(tool tool.Tool, profileID st
 	return true
 }
 
+func (m *MockToolManagerForCost) GetToolCountForService(serviceID string) int {
+	return 0
+}
+
 // MockToolForCost is a mock for tool.Tool
 type MockToolForCost struct {
 	mock.Mock

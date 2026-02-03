@@ -90,6 +90,10 @@ func (m *MockToolManagerForRegistry) ToolMatchesProfile(tool tool.Tool, profileI
 	return true
 }
 
+func (m *MockToolManagerForRegistry) GetToolCountForService(serviceID string) int {
+	return 0
+}
+
 func TestInitStandardMiddlewares(t *testing.T) {
 	// Setup dependencies
 	authManager := auth.NewManager()
