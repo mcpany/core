@@ -177,7 +177,6 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	// // t.Skip("Skipping heavy integration test TestHelmChart")
 	// Add build/env/bin to PATH to find helm installed by make
 	rootDir := integration.ProjectRoot(t)
 	buildBin := filepath.Join(rootDir, "../build/env/bin")
@@ -186,7 +185,7 @@ func TestHelmChart(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		// t.Skip("helm command not found, skipping TestHelmChart.")
+		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
@@ -213,15 +212,11 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
-	if os.Getenv("E2E") != "true" {
-		t.Skip("Skipping K8s E2E test (E2E=true not set)")
-	}
-
 	// Dependencies check
 	requiredCmds := []string{"kind", "helm", "kubectl", "docker", "npm"}
 	for _, cmd := range requiredCmds {
 		if !commandExists(cmd) {
-			t.Fatalf("%s command not found", cmd)
+			t.Skipf("%s command not found, skipping TestK8sFullStack", cmd)
 		}
 	}
 
