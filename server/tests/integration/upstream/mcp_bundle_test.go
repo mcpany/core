@@ -240,6 +240,10 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
+	// Also check if we can actually run a container (validating mounts/storage driver)
+	if err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run failed (environment likely doesn't support dind/mounts): %v", err)
+	}
 
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)

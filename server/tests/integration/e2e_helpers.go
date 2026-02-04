@@ -578,10 +578,27 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
+	// First check basic connectivity
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// Then check if we can actually run a container (validating mounts/storage driver)
+	// We use 'hello-world' or 'alpine' if available, or just try to run without pulling if possible?
+	// 'docker run --rm alpine true' is a good check.
+	// We use a small image. 'hello-world' is standard.
+	// But we don't want to fail if image pull fails due to network?
+	// 'docker run --rm busybox true'
+	// Let's assume alpine is available or pullable.
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
+	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
+	if err := cmdRun.Run(); err != nil {
+		// Log but return false
+		fmt.Printf("IsDockerSocketAccessible: docker run failed: %v\n", err)
+		return false
+	}
+
 	return true
 }
 
