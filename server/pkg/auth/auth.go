@@ -467,7 +467,7 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	}
 
 	// Fallback: Check Global User API Key Auth
-	if ctx, err := am.checkApiKeyWithUsers(ctx, r); err == nil {
+	if ctx, err := am.checkAPIKeyWithUsers(ctx, r); err == nil {
 		return ctx, nil
 	}
 
@@ -632,8 +632,8 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 	}
 }
 
-// checkApiKeyWithUsers checks if the request has a valid API Key matching any configured user.
-func (am *Manager) checkApiKeyWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
+// checkAPIKeyWithUsers checks if the request has a valid API Key matching any configured user.
+func (am *Manager) checkAPIKeyWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
 
