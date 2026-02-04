@@ -2681,7 +2681,7 @@ func isShellCommand(cmd string) bool {
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
 		// Additional interpreters and compilers that can execute code
-		"R", "Rscript", "julia", "groovy", "jshell",
+		"r", "rscript", "julia", "groovy", "jshell",
 		"scala", "kotlin", "swift",
 		"elixir", "iex", "erl", "escript",
 		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
@@ -2690,7 +2690,7 @@ func isShellCommand(cmd string) bool {
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
-	base := filepath.Base(cmd)
+	base := strings.ToLower(filepath.Base(cmd))
 	for _, shell := range shells {
 		if base == shell {
 			return true
@@ -2893,7 +2893,7 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "r", "julia", "elixir", "go"}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true

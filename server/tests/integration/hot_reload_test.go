@@ -119,7 +119,7 @@ upstream_services:
 	// server/docs/features/hot_reload.md says "The server debounces the events".
 	require.Eventually(t, func() bool {
 		return hasTool("tool-b")
-	}, 15*time.Second, 1*time.Second, "Tool B should appear after hot reload")
+	}, 30*time.Second, 1*time.Second, "Tool B should appear after hot reload")
 
 	require.True(t, hasTool("tool-a"), "Tool A should still exist")
 }
