@@ -31,16 +31,21 @@ func ForTestsOnlyResetLogger() {
 	defaultLogger.Store(nil)
 }
 
-// Init initializes the application's global logger with a specific log level
-// and output destination. This function is designed to be called only once,
-// typically at the start of the application, to ensure a consistent logging
-// setup.
+// Init initializes the application's global logger with a specific log level and output destination.
+//
+// Summary: Configures the global logger singleton.
 //
 // Parameters:
-//   - level: The minimum log level to be recorded (e.g., `slog.LevelInfo`).
-//   - output: The `io.Writer` to which log entries will be written (e.g.,
-//     `os.Stdout`).
-//   - format: Optional format string ("json" or "text"). Defaults to "text".
+//   - level: slog.Level. The minimum log level to record.
+//   - output: io.Writer. The destination for log output.
+//   - format: ...string. Optional format ("json" or "text"). Defaults to "text".
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Sets the global logger instance.
+//   - Configures redaction for sensitive keys.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -78,12 +83,15 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 	})
 }
 
-// GetLogger returns the shared global logger instance. If the logger has not yet
-// been initialized through a call to `Init`, this function will initialize it
-// with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
+// GetLogger returns the shared global logger instance.
+//
+// Summary: Retrieves the global logger, initializing a default one if necessary.
 //
 // Returns:
-//   - The global `*slog.Logger` instance.
+//   - *slog.Logger: The global logger instance.
+//
+// Side Effects:
+//   - May initialize a default logger to stderr if Init has not been called.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.

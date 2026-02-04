@@ -8,8 +8,16 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Middleware for handling request interception, proxying, and security headers.
- * @param request - The incoming NextRequest object.
- * @returns A NextResponse object.
+ *
+ * Summary: Intercepts requests to handle routing, authentication injection, and security header application.
+ *
+ * @param request - NextRequest. The incoming request object from Next.js.
+ * @returns NextResponse. The response object, potentially with modified headers or rewritten URL.
+ *
+ * Side Effects:
+ *   - Rewrites paths for API calls to the backend.
+ *   - Injects 'X-API-Key' header if configured.
+ *   - Sets strict Content-Security-Policy and other security headers.
  */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

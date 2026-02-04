@@ -267,10 +267,14 @@ type statsCacheEntry struct {
 
 // NewApplication creates a new Application with default dependencies.
 //
-// Summary: Initializes a new Application instance.
+// Summary: Initializes a new Application instance with default managers and configuration.
 //
 // Returns:
-//   - *Application: The initialized application.
+//   - *Application: A pointer to the initialized Application struct.
+//
+// Side Effects:
+//   - Initializes internal managers (Prompt, Tool, Alerts, Resource, etc.).
+//   - Sets up the event bus provider.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -291,18 +295,20 @@ func NewApplication() *Application {
 
 // Run starts the MCP Any server and all its components.
 //
-// Summary: Executes the application.
+// Summary: Starts the application server, initializing all subsystems and listening for requests.
 //
 // Parameters:
-//   - opts: RunOptions. The runtime options.
+//   - opts: RunOptions. Configuration options for the application runtime (ports, config paths, etc.).
 //
 // Returns:
-//   - error: An error if execution fails.
+//   - error: An error if the server fails to start or encounters a critical error during execution.
 //
 // Side Effects:
-//   - Starts HTTP and gRPC servers.
-//   - Initializes background workers.
-//   - Loads configuration.
+//   - Initializes the database connection.
+//   - Loads configuration from files and/or database.
+//   - Starts background workers (upstream, registration, health checks).
+//   - Starts HTTP and gRPC listeners.
+//   - Blocks until the server is shut down.
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
@@ -838,18 +844,23 @@ func (a *Application) Run(opts RunOptions) error {
 	return nil
 }
 
-// ReloadConfig reloads the configuration from the given paths and updates the
-// services.
+// ReloadConfig reloads the configuration from the given paths and updates the services.
 //
-// Summary: Reloads application configuration from disk/storage.
+// Summary: Triggers a dynamic reload of the application configuration.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the reload operation.
-//   - fs: afero.Fs. The filesystem interface for reading configuration files.
-//   - configPaths: []string. A slice of paths to configuration files to reload.
+//   - ctx: context.Context. The context for the operation.
+//   - fs: afero.Fs. The filesystem interface to read config files from.
+//   - configPaths: []string. A list of file paths to load configuration from.
 //
 // Returns:
-//   - error: An error if the configuration reload fails.
+//   - error: An error if loading or applying the new configuration fails.
+//
+// Side Effects:
+//   - Reads files from disk.
+//   - Updates global settings and active services.
+//   - May start or stop services based on configuration changes.
+//   - Updates metrics counter for config reloads.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1326,23 +1337,21 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 	}
 }
 
-// HealthCheck performs a health check against a running server by sending an
-// HTTP GET request to its /healthz endpoint. This is useful for monitoring and
-// ensuring the server is operational.
+// HealthCheck performs a health check against a running server.
 //
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
+// Summary: Sends an HTTP GET request to the /healthz endpoint to verify server status.
 //
 // Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
+//   - timeout: time.Duration. The maximum duration to wait for the health check.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
-//     error if the health check fails for any reason (e.g., connection error,
-//     non-200 status code).
+//   - error: An error if the health check fails (connection error or non-200 status).
+//
+// Side Effects:
+//   - Writes a success message to the provided writer if successful.
+//   - Makes an HTTP network request.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
