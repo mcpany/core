@@ -30,6 +30,8 @@ type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
+//
+// Summary: WebRTC upstream implementation.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -37,14 +39,30 @@ type Upstream struct {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
+//
+// Summary: Shuts down the WebRTC upstream (no-op).
+//
+// Parameters:
+//   - _ : context.Context. Unused.
+//
+// Returns:
+//   - error: Always returns nil.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
+// Summary: Creates a new instance of WebrtcUpstream.
+//
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+//
+// Parameters:
+//   - poolManager: *pool.Manager. The pool manager.
+//
+// Returns:
+//   - upstream.Upstream: A new upstream instance.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -54,6 +72,22 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and
 // registering tools for each call definition specified in the configuration.
+//
+// Summary: Registers the WebRTC service and its tools.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the registration.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - promptManager: prompt.ManagerInterface. The prompt manager.
+//   - resourceManager: resource.ManagerInterface. The resource manager.
+//   - isReload: bool. Whether this is a reload.
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

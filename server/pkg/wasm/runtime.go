@@ -10,8 +10,12 @@ import (
 )
 
 // Runtime defines the interface for a WASM plugin runtime.
+//
+// Summary: Interface for a WASM plugin runtime.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
+	//
+	// Summary: Loads a WASM plugin from bytecode.
 	//
 	// Parameters:
 	//   - ctx: The context for the request.
@@ -24,14 +28,20 @@ type Runtime interface {
 
 	// Close closes the runtime and releases resources.
 	//
+	// Summary: Closes the runtime and releases resources.
+	//
 	// Returns:
 	//   - error: An error if the operation fails.
 	Close() error
 }
 
 // Plugin defines an instantiated WASM plugin.
+//
+// Summary: Interface for an instantiated WASM plugin.
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
+	//
+	// Summary: Runs a function exported by the WASM module.
 	//
 	// Parameters:
 	//   - ctx: The context for the request.
@@ -45,15 +55,21 @@ type Plugin interface {
 
 	// Close closes the plugin instance.
 	//
+	// Summary: Closes the plugin instance.
+	//
 	// Returns:
 	//   - error: An error if the operation fails.
 	Close() error
 }
 
 // MockRuntime is a placeholder implementation.
+//
+// Summary: Mock implementation of the Runtime interface.
 type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
+//
+// Summary: Creates a new MockRuntime.
 //
 // Returns:
 //   - *MockRuntime: A new mock runtime instance.
@@ -62,6 +78,8 @@ func NewMockRuntime() *MockRuntime {
 }
 
 // LoadPlugin loads a plugin.
+//
+// Summary: Loads a plugin.
 //
 // Parameters:
 //   - _ : The context (unused).
@@ -79,6 +97,8 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 
 // Close closes the runtime.
 //
+// Summary: Closes the runtime.
+//
 // Returns:
 //   - error: Always returns nil.
 func (m *MockRuntime) Close() error {
@@ -86,9 +106,13 @@ func (m *MockRuntime) Close() error {
 }
 
 // MockPlugin is a mock plugin.
+//
+// Summary: Mock implementation of the Plugin interface.
 type MockPlugin struct{}
 
 // Execute executes a function.
+//
+// Summary: Executes a function.
 //
 // Parameters:
 //   - _ : The context (unused).
@@ -106,6 +130,8 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 }
 
 // Close closes the plugin.
+//
+// Summary: Closes the plugin.
 //
 // Returns:
 //   - error: Always returns nil.

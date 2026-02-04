@@ -14,8 +14,11 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// NewHTTPClientWithTLS creates a new *http.Client configured with the specified
-// TLS settings. It supports setting a custom CA certificate, a client
+// NewHTTPClientWithTLS creates a new *http.Client configured with the specified TLS settings.
+//
+// Summary: Creates a new *http.Client configured with the specified TLS settings.
+//
+// It supports setting a custom CA certificate, a client
 // certificate and key, the server name for SNI, and skipping verification.
 //
 // It also configures the client with a SafeDialer to prevent SSRF attacks against

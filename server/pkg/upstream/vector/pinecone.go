@@ -18,6 +18,8 @@ import (
 )
 
 // PineconeClient implements VectorClient for Pinecone.
+//
+// Summary: Pinecone client implementation.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client
@@ -26,10 +28,14 @@ type PineconeClient struct {
 
 // NewPineconeClient creates a new Pinecone client.
 //
-// config holds the configuration settings.
+// Summary: Creates a new Pinecone client.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - config: *configv1.PineconeVectorDB. The configuration settings.
+//
+// Returns:
+//   - *PineconeClient: A new Pinecone client instance.
+//   - error: An error if the operation fails.
 func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, error) {
 	if config.GetApiKey() == "" {
 		return nil, fmt.Errorf("api_key is required for Pinecone")
@@ -112,14 +118,18 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 
 // Query searches for similar vectors.
 //
-// ctx is the context for the request.
-// vector is the vector.
-// topK is the topK.
-// filter is the filter.
-// namespace is the namespace.
+// Summary: Searches for similar vectors.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - vector: []float32. The query vector.
+//   - topK: int64. The number of results to return.
+//   - filter: map[string]interface{}. A metadata filter.
+//   - namespace: string. The namespace to query.
+//
+// Returns:
+//   - map[string]interface{}: The search results.
+//   - error: An error if the operation fails.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector":          vector,
@@ -139,12 +149,16 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 
 // Upsert inserts or updates vectors.
 //
-// ctx is the context for the request.
-// vectors is the vectors.
-// namespace is the namespace.
+// Summary: Inserts or updates vectors.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - vectors: []map[string]interface{}. The list of vectors to upsert.
+//   - namespace: string. The namespace to upsert into.
+//
+// Returns:
+//   - map[string]interface{}: The operation result.
+//   - error: An error if the operation fails.
 func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vectors": vectors,
@@ -158,13 +172,17 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 
 // Delete removes vectors.
 //
-// ctx is the context for the request.
-// ids is the ids.
-// namespace is the namespace.
-// filter is the filter.
+// Summary: Removes vectors.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - ids: []string. The list of IDs to delete.
+//   - namespace: string. The namespace to delete from.
+//   - filter: map[string]interface{}. An optional metadata filter.
+//
+// Returns:
+//   - map[string]interface{}: The operation result.
+//   - error: An error if the operation fails.
 func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if len(ids) > 0 {
@@ -186,11 +204,15 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 
 // DescribeIndexStats returns statistics about the index.
 //
-// ctx is the context for the request.
-// filter is the filter.
+// Summary: Returns statistics about the index.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - filter: map[string]interface{}. An optional metadata filter.
+//
+// Returns:
+//   - map[string]interface{}: The index statistics.
+//   - error: An error if the operation fails.
 func (c *PineconeClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if filter != nil {

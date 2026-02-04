@@ -15,6 +15,9 @@ import (
 const trueVal = "true"
 
 // IsSafeURL checks if the URL is safe to connect to.
+//
+// Summary: Checks if the URL is safe to connect to.
+//
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
 //

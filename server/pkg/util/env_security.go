@@ -12,6 +12,8 @@ import (
 // IsEnvVarAllowed checks if an environment variable is allowed to be accessed
 // by the configuration system.
 //
+// Summary: Checks if an environment variable is allowed to be accessed by the configuration system.
+//
 // Security Policy:
 // 1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
 //    (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection.

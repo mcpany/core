@@ -13,7 +13,8 @@ import (
 
 var (
 	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
-	// It checks if the Docker socket is accessible.
+	//
+	// Summary: Checks if the Docker socket is accessible.
 	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
 
 	dockerClient     client.APIClient
@@ -35,6 +36,8 @@ var initDockerClientDefault = func() {
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
 //
+// Summary: Checks if the Docker daemon is accessible through the socket.
+//
 // Returns:
 //   - bool: True if the Docker daemon is accessible, false otherwise.
 func IsDockerSocketAccessible() bool {
@@ -42,7 +45,11 @@ func IsDockerSocketAccessible() bool {
 }
 
 // CloseDockerClient closes the shared Docker client.
-// It should be called on application shutdown.
+//
+// Summary: Closes the shared Docker client.
+//
+// Side Effects:
+//   - Closes the connection to the Docker daemon if it was established.
 func CloseDockerClient() {
 	if dockerClient != nil {
 		_ = dockerClient.Close()
