@@ -579,7 +579,10 @@ func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
 	// Basic info check
-	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
+	// Use a copy to avoid modifying the backing array of dockerArgs if it has capacity
+	infoArgs := append([]string(nil), dockerArgs...)
+	infoArgs = append(infoArgs, "info")
+	cmd := exec.CommandContext(context.Background(), dockerExe, infoArgs...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -591,8 +594,10 @@ func IsDockerSocketAccessible() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "echo", "hello")
-	runCmd := exec.CommandContext(ctx, dockerExe, runArgs...)
+	// Use a copy to avoid modifying the backing array of dockerArgs
+	runArgs := append([]string(nil), dockerArgs...)
+	runArgs = append(runArgs, "run", "--rm", "alpine:latest", "echo", "hello")
+	runCmd := exec.CommandContext(ctx, dockerExe, runArgs...) //nolint:gosec // Test helper
 	if err := runCmd.Run(); err != nil {
 		return false
 	}

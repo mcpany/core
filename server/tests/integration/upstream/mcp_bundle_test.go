@@ -236,23 +236,23 @@ func createE2EBundle(t *testing.T, dir string) string {
 // This is more robust than just checking 'docker info' which might succeed even if
 // the overlayfs driver is broken.
 func canRunDockerContainer(t *testing.T) bool {
-    // Basic check first
-    if err := exec.Command("docker", "info").Run(); err != nil {
-        t.Logf("docker info failed: %v", err)
-        return false
-    }
+	// Basic check first
+	if err := exec.Command("docker", "info").Run(); err != nil {
+		t.Logf("docker info failed: %v", err)
+		return false
+	}
 
-    // Attempt to run a minimal container
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	// Attempt to run a minimal container
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    cmd := exec.CommandContext(ctx, "docker", "run", "--rm", "alpine:latest", "echo", "hello")
-    output, err := cmd.CombinedOutput()
-    if err != nil {
-        t.Logf("docker run failed: %v. Output: %s", err, string(output))
-        return false
-    }
-    return true
+	cmd := exec.CommandContext(ctx, "docker", "run", "--rm", "alpine:latest", "echo", "hello")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("docker run failed: %v. Output: %s", err, string(output))
+		return false
+	}
+	return true
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
