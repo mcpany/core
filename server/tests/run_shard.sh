@@ -38,6 +38,8 @@ PACKAGES=$(go list $PKG_PATTERN | \
     grep -v /pkg/command | \
     grep -v /build | \
     grep -v /tests/e2e_sequential | \
+    grep -v /tools | \
+    grep -v /tests/integration/cmd/mocks | \
     sort)
 
 # Select packages for this shard
