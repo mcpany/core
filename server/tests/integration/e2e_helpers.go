@@ -587,8 +587,9 @@ func IsDockerSocketAccessible() bool {
 	// This catches environments where docker socket exists but running containers fails
 	// (e.g. overlayfs mount issues in nested Docker environments).
 	// We use 'alpine' because it is small and standard.
+	// We perform a write operation (touch) to ensure the filesystem (overlayfs) is actually writable/working.
 	// If 'alpine' pull fails, we assume docker is not fully functional for tests.
-	checkCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine", "true")...)
+	checkCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine", "sh", "-c", "touch /tmp/healthcheck")...) //nolint:gosec // Test helper
 	if err := checkCmd.Run(); err != nil {
 		return false
 	}
