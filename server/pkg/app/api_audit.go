@@ -69,7 +69,7 @@ func (a *Application) handleListAuditLogs(w http.ResponseWriter, r *http.Request
 		DurationMs int64  `json:"durationMs"`
 	}
 
-	var jsonEntries []jsonAuditEntry
+	jsonEntries := make([]jsonAuditEntry, 0, len(entries))
 	for _, e := range entries {
 		var resultStr string
 		if s, ok := e.Result.(string); ok {
