@@ -53,11 +53,53 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container.
+	// Some CI environments have a daemon but cannot run containers (e.g. nested overlayfs issues).
+	// We perform a smoke test by creating and starting a lightweight container.
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"echo", "hello"},
+	}, nil, nil, nil, "")
+
+	if err != nil {
+		// Try pulling if image is missing
+		if client.IsErrNotFound(err) {
+			reader, pullErr := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+			if pullErr == nil {
+				_, _ = io.Copy(io.Discard, reader)
+				_ = reader.Close()
+				resp, err = cli.ContainerCreate(ctx, &container.Config{
+					Image: "alpine:latest",
+					Cmd:   []string{"echo", "hello"},
+				}, nil, nil, nil, "")
+			} else {
+				t.Logf("could not pull alpine:latest: %v", pullErr)
+				return false
+			}
+		}
+	}
+
+	if err != nil {
+		t.Logf("could not create smoke test container: %v", err)
+		return false
+	}
+
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("could not start smoke test container: %v", err)
+		return false
+	}
+
 	return true
 }
 
