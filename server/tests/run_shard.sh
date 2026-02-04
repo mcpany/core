@@ -62,4 +62,4 @@ echo "... (and more)"
 
 # Run tests
 # shellcheck disable=SC2086
-go test $SELECTED_PACKAGES "$@"
+go test -v $SELECTED_PACKAGES "$@"
