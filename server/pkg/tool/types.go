@@ -1926,6 +1926,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
+			// Sentinel Security Update: Check for shell injection in environment variables if running a shell
+			if isTrueShell(t.service.GetCommand()) {
+				if err := checkForEnvInjection(valStr, t.service.GetCommand()); err != nil {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
+			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
@@ -2247,6 +2253,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
+			// Sentinel Security Update: Check for shell injection in environment variables if running a shell
+			if isTrueShell(t.service.GetCommand()) {
+				if err := checkForEnvInjection(valStr, t.service.GetCommand()); err != nil {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
+			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
@@ -2549,6 +2561,25 @@ func checkForPathTraversal(val string) error {
 	return nil
 }
 
+func checkForEnvInjection(val, command string) error {
+	// For environment variables in shell commands, we must be strict but allow spaces.
+	// Users often pass sentences or paths with spaces in env vars.
+	// However, we MUST block shell metacharacters that allow RCE if the variable is used unquoted.
+	// Blocklist is same as checkUnquotedInjection but WITHOUT space (' ').
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+
+	charsToCheck := dangerousChars
+	// For 'env' command, '=' is dangerous
+	if filepath.Base(command) == "env" {
+		charsToCheck += "="
+	}
+
+	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+		return fmt.Errorf("shell injection detected in environment variable: value contains dangerous character %q", val[idx])
+	}
+	return nil
+}
+
 // cleanPathPreserveDoubleSlash cleans the path like path.Clean but preserves double slashes.
 // It resolves . and .. segments.
 // It also trims the trailing slash (by removing the final empty segment if present),
@@ -2650,6 +2681,41 @@ func checkForArgumentInjection(val string) error {
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
 	return nil
+}
+
+func isTrueShell(cmd string) bool {
+	// Only checks for actual shells, not interpreters.
+	// Used for stricter environment variable validation.
+	shells := []string{
+		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
+		"ssh", "scp", "su", "sudo", "env",
+		"busybox", "expect", "watch", "tmux", "screen",
+	}
+	base := filepath.Base(cmd)
+	for _, shell := range shells {
+		if base == shell {
+			return true
+		}
+		if strings.HasPrefix(base, shell) {
+			suffix := base[len(shell):]
+			if isVersionSuffix(suffix) {
+				return true
+			}
+		}
+	}
+	// Check for shell script extensions
+	ext := strings.ToLower(filepath.Ext(base))
+	scriptExts := []string{
+		".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
+		".bat", ".cmd", ".ps1", ".vbs",
+	}
+	for _, scriptExt := range scriptExts {
+		if ext == scriptExt {
+			return true
+		}
+	}
+	return false
 }
 
 func isShellCommand(cmd string) bool {
