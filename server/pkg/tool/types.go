@@ -797,10 +797,38 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	// Filter undefined parameters from inputs to prevent mass assignment/pollution
 	filtered := false
-	for k := range inputs {
-		if !t.allowedParams[k] {
-			delete(inputs, k)
+
+	// ⚡ BOLT: Adaptive Parameter Filtering
+	// Randomized Selection from Top 5 High-Impact Targets
+	switch {
+	case len(t.allowedParams) == 0 && len(inputs) > 0:
+		// Optimization: If no parameters are allowed, clear everything immediately.
+		// Note: 'inputs' is a local map created in this function, so replacing it is safe
+		// and effective as it is returned to the caller.
+		inputs = make(map[string]any)
+		filtered = true
+	case len(inputs) > len(t.allowedParams)*2:
+		// Optimization: If inputs are significantly larger than allowed params,
+		// rebuild the map by iterating over allowed params (O(M)) instead of inputs (O(N)).
+		// Note: 'inputs' is a local map, so replacement is safe.
+		newInputs := make(map[string]any, len(t.allowedParams))
+		for k := range t.allowedParams {
+			if v, ok := inputs[k]; ok {
+				newInputs[k] = v
+			}
+		}
+		// If size differs, we filtered something out
+		if len(newInputs) != len(inputs) {
+			inputs = newInputs
 			filtered = true
+		}
+	default:
+		// Standard iteration for small inputs
+		for k := range inputs {
+			if !t.allowedParams[k] {
+				delete(inputs, k)
+				filtered = true
+			}
 		}
 	}
 

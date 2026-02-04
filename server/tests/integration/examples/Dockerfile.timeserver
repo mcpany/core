@@ -14,11 +14,10 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
-WORKDIR /app
+# Use flat paths to avoid creating directories and minimize overlay usage
+COPY timeserver_patch/requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
 
-COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+COPY timeserver_patch/main.py /main.py
 
-COPY timeserver_patch/main.py /app/main.py
-
-CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "/main.py", "--mcp-stdio"]
