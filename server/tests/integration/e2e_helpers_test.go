@@ -70,6 +70,13 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// Verify Docker can actually run containers (check for overlayfs/permission issues)
+	smokeCmd := exec.Command("docker", "run", "--rm", "-v", os.TempDir()+":/tmp", "hello-world")
+	if out, err := smokeCmd.CombinedOutput(); err != nil {
+		t.Logf("Docker smoke test failed: %v\nOutput: %s", err, out)
+		t.Skipf("Skipping Docker tests: docker run failed (environment likely doesn't support OverlayFS/mounts)")
+	}
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())

@@ -62,11 +62,17 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 
 // ValidateService validates a service configuration by attempting to connect and discover tools.
 //
-// ctx is the context for the request.
-// req is the request object.
+// It performs a dry-run registration of the service to ensure the configuration is syntactically
+// correct and that the upstream service is reachable. It returns the list of discovered tools
+// and resources without permanently registering the service.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the gRPC request.
+//   - req: *v1.ValidateServiceRequest. The request containing the service configuration to validate.
+//
+// Returns:
+//   - *v1.ValidateServiceResponse: The validation result, including validity status and discovered items.
+//   - error: An error if the request is invalid (e.g., missing config).
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")

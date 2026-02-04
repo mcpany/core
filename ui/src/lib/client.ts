@@ -222,7 +222,11 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     *
+     * Retrieves the complete list of configured services from the backend,
+     * including their status and configuration details.
+     *
+     * @returns A promise that resolves to a list of `UpstreamServiceConfig` objects.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -261,7 +265,11 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
+     *
+     * Retrieves detailed configuration and runtime status for a specific service.
+     * Tries to use gRPC-Web for performance, falling back to REST if necessary.
+     *
+     * @param id - The unique identifier of the service.
      * @returns A promise that resolves to the service configuration.
      */
     getService: async (id: string) => {
@@ -352,7 +360,11 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
+     *
+     * Submits a new service configuration to the backend registry.
+     * The service will be validated and initialized upon registration.
+     *
+     * @param config - The configuration object for the new service.
      * @returns A promise that resolves to the registered service configuration.
      */
     registerService: async (config: UpstreamServiceConfig) => {
