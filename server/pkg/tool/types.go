@@ -1980,7 +1980,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, util.RedactSecrets(stderrBuf.String(), secrets))
 		}
 		return result, nil
 	}
@@ -2301,7 +2301,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, util.RedactSecrets(stderrBuf.String(), secrets))
 		}
 		return result, nil
 	}
