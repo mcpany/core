@@ -10,8 +10,15 @@ import os from 'os';
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
+// Log the env var for debugging CI
+console.log(`[Playwright Config] SKIP_BACKEND_STARTUP: '${process.env.SKIP_BACKEND_STARTUP}'`);
+
 // Helper to determine if we should start the backend
-const shouldStartBackend = process.env.SKIP_BACKEND_STARTUP !== 'true';
+// Check for various truthy string representations
+const skipBackend = process.env.SKIP_BACKEND_STARTUP === 'true' || process.env.SKIP_BACKEND_STARTUP === '1';
+const shouldStartBackend = !skipBackend;
+
+console.log(`[Playwright Config] shouldStartBackend: ${shouldStartBackend}`);
 
 // Construct the webServer command
 // If local: start backend, wait for health, then start frontend
@@ -20,10 +27,12 @@ const shouldStartBackend = process.env.SKIP_BACKEND_STARTUP !== 'true';
 let webServerCommand = `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`;
 
 if (shouldStartBackend) {
+  // Use a safer separator than just space/semicolon if possible, but shell chaining is needed.
+  // We trim carefully.
   webServerCommand = `../build/bin/server run --mcp-listen-address 0.0.0.0:50050 --api-key test-token > server.log 2>&1 & count=0; while ! curl -s http://localhost:50050/health > /dev/null; do if [ $count -ge 30 ]; then echo "Timeout waiting for backend"; exit 1; fi; echo "Waiting for backend..."; sleep 1; count=$((count+1)); done; ${webServerCommand}`;
 }
 
-console.log(`Using webServer command: ${webServerCommand}`);
+console.log(`[Playwright Config] Using webServer command: ${webServerCommand}`);
 
 export default defineConfig({
   testDir: './tests',
