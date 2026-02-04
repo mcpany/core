@@ -7,8 +7,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
+import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Rows, LayoutTemplate } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDashboard } from "@/components/dashboard/dashboard-context";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -66,6 +67,7 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const { density, setDensity } = useDashboard();
 
     useEffect(() => {
         setIsMounted(true);
@@ -214,7 +216,28 @@ export function DashboardGrid() {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 items-center">
+                <div className="flex items-center bg-muted/50 p-1 rounded-md border mr-2">
+                    <Button
+                        variant={density === "comfortable" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={() => setDensity("comfortable")}
+                        title="Comfortable Density"
+                    >
+                        <LayoutTemplate className="h-3 w-3" />
+                    </Button>
+                    <Button
+                        variant={density === "compact" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={() => setDensity("compact")}
+                        title="Compact Density"
+                    >
+                        <Rows className="h-3 w-3" />
+                    </Button>
+                </div>
+
                 <AddWidgetSheet onAdd={addWidget} />
 
                 {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
@@ -261,7 +284,10 @@ export function DashboardGrid() {
                         <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            className="grid grid-cols-12 gap-4"
+                            className={cn(
+                                "grid grid-cols-12",
+                                density === "compact" ? "gap-2" : "gap-4"
+                            )}
                         >
                             {visibleWidgets.map((widget, index) => (
                                 <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
