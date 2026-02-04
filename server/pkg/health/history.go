@@ -60,6 +60,14 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
+// RemoveHealthStatus removes a service from the history.
+// This is primarily used for testing cleanup.
+func RemoveHealthStatus(serviceName string) {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+	delete(historyStore, serviceName)
+}
+
 // GetHealthHistory returns the history for all services.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()

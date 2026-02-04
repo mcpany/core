@@ -252,7 +252,11 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		// Use a test-specific temp directory for bundles to ensure isolation
 		// and avoid conflicts with global state or other tests.
 		// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
-		impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		if bundleDir := os.Getenv("MCP_BUNDLE_DIR"); bundleDir != "" {
+			impl.BundleBaseDir = bundleDir
+		} else {
+			impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		}
 		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
 			t.Fatalf("Failed to create test bundle dir: %v", err)
 		}
