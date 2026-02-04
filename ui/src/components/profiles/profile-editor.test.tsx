@@ -23,6 +23,19 @@ vi.mock("sonner", () => ({
     },
 }));
 
+// Mock react-virtuoso to render all items without virtualization
+vi.mock("react-virtuoso", () => ({
+    Virtuoso: ({ data, itemContent, context }: any) => (
+        <div>
+            {data.map((item: any, index: number) => (
+                <div key={index}>
+                    {itemContent(index, item, context)}
+                </div>
+            ))}
+        </div>
+    ),
+}));
+
 describe("ProfileEditor", () => {
     const mockServices = [
         { name: "service-a", tags: ["finance"], version: "1.0.0", httpService: {} },
@@ -60,19 +73,9 @@ describe("ProfileEditor", () => {
 
         // Check implicit selection
         // service-a has tag "finance", so it should be auto-selected (disabled checkbox)
-        // We find the checkbox associated with service-a
-        // The label text is "service-a"
         const labelA = screen.getByText("service-a");
-        // The checkbox is a sibling or parent logic. In the component:
-        // <div ...> <Checkbox id="svc-service-a" ... /> <div ...> <label htmlFor="svc-service-a">service-a</label> ...
-        // So we can look up by label text or id
-        // The Checkbox component from ui/checkbox renders a button with role="checkbox".
-        // It might not be associated with label in standard HTML way if using Radix UI Checkbox which usually handles it but let's check.
-        // Or we can just find by id.
-        // But testing-library prefers accessible queries.
-
-        // Let's try finding the row container first
         const rowA = labelA.closest("div.flex.items-start");
+        // Use querySelector for role checkbox as within() might fail if structure is complex or virtualized (though we mocked it)
         const checkboxA = within(rowA as HTMLElement).getByRole("checkbox");
 
         expect(checkboxA).toBeDisabled();
@@ -93,9 +96,6 @@ describe("ProfileEditor", () => {
         expect(financeTagNode).toBeDefined();
         const removeButton = within(financeTagNode!.parentElement!).getByRole("button");
         fireEvent.click(removeButton);
-
-        // "finance" should still be in the document (in service list), but the tag badge should be gone
-        // effectively we check if implicit selection is gone
 
         // Re-query checkbox A to ensure fresh state
         const labelA2 = screen.getByText("service-a");

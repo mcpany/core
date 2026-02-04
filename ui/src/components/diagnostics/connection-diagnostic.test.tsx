@@ -264,7 +264,7 @@ describe("ConnectionDiagnosticDialog", () => {
     }, { timeout: 5000 });
 
     // Check for suggestion card elements
-    expect(screen.getByText("Connection Failed")).toBeInTheDocument();
+    expect(screen.getByText("Connection Refused")).toBeInTheDocument();
     // Use getAllByText because it appears in logs and the card
     expect(screen.getAllByText(/Check if the upstream service is running/).length).toBeGreaterThan(0);
 });

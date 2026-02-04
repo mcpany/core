@@ -7,14 +7,26 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
-// Mock react-virtuoso
-vi.mock("react-virtuoso", () => ({
-  Virtuoso: ({ data, itemContent }: any) => (
-    <div data-testid="virtuoso-mock">
-      {data.map((item: any, index: number) => itemContent(index, item))}
-    </div>
-  ),
-  VirtuosoHandle: {},
+// Mock next/dynamic to handle Virtuoso and JsonViewer
+vi.mock("next/dynamic", () => ({
+  default: () => {
+    const MockDynamic = (props: any) => {
+        // Mock Virtuoso behavior
+        if (props.data && props.itemContent) {
+             return (
+                <div data-testid="virtuoso-mock">
+                  {props.data.map((item: any, index: number) => props.itemContent(index, item))}
+                </div>
+              );
+        }
+        // Mock JsonViewer behavior
+        if (props.data) {
+            return <pre>{JSON.stringify(props.data, null, 2)}</pre>
+        }
+        return null;
+    }
+    return MockDynamic;
+  }
 }));
 
 // Mock next/navigation
