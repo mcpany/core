@@ -1,20 +1,37 @@
-*
-!ui/
-!proto/
-!proto/**
-!server/
-!go.mod
-!go.sum
-!Makefile
-!ui/Dockerfile.e2e
-!.dockerignore
-!server/
-!k8s/
-!go.mod
-!go.sum
-!go.work
-!go.work.sum
+# Core ignores
+.git
+.github
+.agent
+.vscode
+.idea
+*.log
 
+# Build artifacts
+build/
+docs/
+k8s/
+marketplace/
+server/
+data/
+skills/
+
+# Go files (not needed for UI build)
+go.mod
+go.sum
+go.work
+go.work.sum
+Makefile
+docker-compose.yml
+generate.go
+README.md
+LICENSE
+CODE_OF_CONDUCT.md
+NOTICE
+
+# Node modules (root level if any)
+node_modules/
+
+# UI ignores
 ui/node_modules
 ui/.next
 ui/test-results
@@ -22,5 +39,5 @@ ui/playwright-report
 ui/coverage
 ui/*.log
 
+# Proto ignores
 proto/node_modules
-**/node_modules
