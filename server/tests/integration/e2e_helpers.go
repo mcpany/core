@@ -877,9 +877,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	jsonrpcEndpoint := fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
 	grpcRegEndpoint := net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
-	if actualAPIKey != "" {
-		mcpRequestURL += "?api_key=" + actualAPIKey
-	}
 
 	// Verify gRPC connection
 	var grpcRegConn *grpc.ClientConn

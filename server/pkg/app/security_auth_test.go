@@ -54,14 +54,6 @@ func TestQueryParamAPIKey(t *testing.T) {
 		if ok {
 			w.WriteHeader(http.StatusOK)
 		} else {
-			// Actually the middleware sets context if authenticated.
-			// But createAuthMiddleware doesn't set RemoteIP in context, createAuthMiddleware calls next handler.
-			// The middleware we are testing is AuthMiddleware.
-			// Wait, the middleware logic:
-			// ip := util.GetClientIP(r, trustProxy)
-			// ctx := util.ContextWithRemoteIP(r.Context(), ip)
-			// ...
-			// So RemoteIP IS set.
 			w.WriteHeader(http.StatusOK)
 		}
 	}))
@@ -74,6 +66,18 @@ func TestQueryParamAPIKey(t *testing.T) {
 	handler.ServeHTTP(w, req)
 
 	// Vulnerability: currently returns 200 OK because Query Param is checked
-	// Expectation (Hardened): Should be 401 Unauthorized (because we removed Query Param support)
+	// Expectation (Hardened): Should be 403 Forbidden.
+	// Since we ignore the query param, we fall through.
+	// `forcePrivateIPOnly` is false, but `apiKey` is set.
+	// The logic:
+	// if !forcePrivateIPOnly && apiKey != "" {
+	//    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	//    return
+	// }
+	// Ah, wait. `createAuthMiddleware` takes `(false, false)`.
+	// Line 2276 (approx): if !forcePrivateIPOnly && apiKey != "" { return 401 }
+	// So it SHOULD be 401.
+	// Let me re-verify server.go logic.
+
 	assert.Equal(t, http.StatusUnauthorized, w.Code, "Expected 401 Unauthorized for Query Param API Key")
 }
