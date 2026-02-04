@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -2992,6 +2993,87 @@ func analyzeQuoteContext(template, placeholder string) int {
 	return minLevel
 }
 
+func checkForSSRF(val string) error {
+	// 1. Check if it looks like an IP address (bare)
+	if ip := net.ParseIP(val); ip != nil {
+		if err := validateIPAddress(ip); err != nil {
+			return fmt.Errorf("SSRF attempt blocked: %w", err)
+		}
+		return nil
+	}
+
+	// 2. Check if it looks like a URL
+	if strings.Contains(val, "://") {
+		// Trim whitespace for robust parsing
+		trimmed := strings.TrimSpace(val)
+		u, err := url.Parse(trimmed)
+		if err != nil {
+			// Fail Closed: If it looks like a URL but Go can't parse it, block it.
+			// This prevents bypasses where the tool (e.g. curl) might accept malformed URLs that Go rejects.
+			return fmt.Errorf("SSRF attempt blocked: input contains '://' but is not a valid URL: %w", err)
+		}
+
+		host := u.Hostname()
+		if host == "" {
+			return nil
+		}
+
+		// Check if host is IP
+		if ip := net.ParseIP(host); ip != nil {
+			if err := validateIPAddress(ip); err != nil {
+				return fmt.Errorf("SSRF attempt blocked: %w", err)
+			}
+			return nil
+		}
+
+		// It's a domain. Resolve it to check if it points to internal IP.
+		// Use a timeout for resolution
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+		if err != nil {
+			// DNS failure or not found. We don't block on DNS failure as it might be transient
+			// or an internal domain that fails resolution (which is fine if it fails).
+			// However, if it's an internal domain that DOES resolve, we catch it below.
+			return nil
+		}
+
+		for _, ip := range ips {
+			if err := validateIPAddress(ip); err != nil {
+				return fmt.Errorf("SSRF attempt blocked: host %s resolved to %s: %w", host, ip, err)
+			}
+		}
+	}
+	return nil
+}
+
+func validateIPAddress(ip net.IP) error {
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true"
+
+	if !allowLoopback {
+		if ip.IsLoopback() || ip.IsUnspecified() || validation.IsNAT64Loopback(ip) {
+			return fmt.Errorf("loopback address is not allowed")
+		}
+		if validation.IsIPv4Compatible(ip) && ip[12] == 127 {
+			return fmt.Errorf("loopback address is not allowed")
+		}
+	}
+
+	if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || validation.IsNAT64LinkLocal(ip) {
+		return fmt.Errorf("link-local address is not allowed")
+	}
+	if validation.IsIPv4Compatible(ip) && ip[12] == 169 && ip[13] == 254 {
+		return fmt.Errorf("link-local address is not allowed")
+	}
+
+	if !allowPrivate && validation.IsPrivateNetworkIP(ip) {
+		return fmt.Errorf("private network address is not allowed")
+	}
+	return nil
+}
+
 func validateSafePathAndInjection(val string, isDocker bool) error {
 	if err := checkForPathTraversal(val); err != nil {
 		return err
@@ -3013,6 +3095,12 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 				return fmt.Errorf("%w (decoded)", err)
 			}
 		}
+	}
+
+	// Sentinel Security Update: SSRF Protection
+	// Block internal URLs and IPs from being passed as arguments.
+	if err := checkForSSRF(val); err != nil {
+		return err
 	}
 
 	if err := checkForArgumentInjection(val); err != nil {
