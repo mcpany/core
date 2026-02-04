@@ -7,6 +7,7 @@ import (
 	"archive/zip"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -245,6 +246,13 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}
 
 	tempDir := t.TempDir()
+
+	// Verify Docker volume mounts are working (avoids failures in DinD/CI environments)
+	verifyCmd := exec.Command("docker", "run", "--rm", "-v", fmt.Sprintf("%s:/test", tempDir), "node:18-alpine", "true")
+	if out, err := verifyCmd.CombinedOutput(); err != nil {
+		t.Skipf("Skipping Docker bundle test: Volume mounts failed (likely CI overlayfs issue): %v, Output: %s", err, string(out))
+	}
+
 	bundlePath := createE2EBundle(t, tempDir)
 
 	toolManager := tool.NewManager(nil)
