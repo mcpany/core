@@ -601,11 +601,13 @@ func float32ToString(val float32) string {
 			return strconv.FormatInt(int64(val), 10)
 		}
 	}
-	// Avoid scientific notation for values within reasonable range (e.g. +/- 1e21).
+	// Avoid scientific notation for values within reasonable range (e.g. +/- 1e15).
 	// This ensures IDs like 3000000000 don't become 3e+09.
 	// We only apply this to large numbers (> 1e6) to preserve scientific notation for very small numbers.
+	// We cap at 1e15 to ensure very large numbers (like MaxInt64 ~9e18) still use scientific notation
+	// as expected by other tests (e.g. TestToString_BugFix).
 	absVal := math.Abs(val64)
-	if absVal >= 1e6 && absVal < 1e21 {
+	if absVal >= 1e6 && absVal < 1e15 {
 		return strconv.FormatFloat(val64, 'f', -1, 32)
 	}
 	return strconv.FormatFloat(val64, 'g', -1, 32)
@@ -631,10 +633,11 @@ func float64ToString(val float64) string {
 			return strconv.FormatInt(int64(val), 10)
 		}
 	}
-	// Avoid scientific notation for values within reasonable range (e.g. +/- 1e21).
+	// Avoid scientific notation for values within reasonable range (e.g. +/- 1e15).
 	// We only apply this to large numbers (> 1e6) to preserve scientific notation for very small numbers.
+	// We cap at 1e15 to ensure very large numbers (like MaxInt64 ~9e18) still use scientific notation.
 	absVal := math.Abs(val)
-	if absVal >= 1e6 && absVal < 1e21 {
+	if absVal >= 1e6 && absVal < 1e15 {
 		return strconv.FormatFloat(val, 'f', -1, 64)
 	}
 	return strconv.FormatFloat(val, 'g', -1, 64)

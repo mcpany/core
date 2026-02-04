@@ -176,6 +176,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
         {/* ⚡ BOLT: Virtualized list to support large number of services without rendering lag */}
         {/* Randomized Selection from Top 5 High-Impact Targets */}
         <TableVirtuoso
+          style={{ height: '100%' }}
           initialItemCount={50}
           data={filteredServices}
           context={contextValue}
