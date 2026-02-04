@@ -32,6 +32,12 @@ var _ resource.Resource = &SkillResource{}
 // s is the s.
 //
 // Returns the result.
+//
+// Parameters:
+//   - s: *skill.Skill. The skill.Skill instance.
+//
+// Returns:
+//   - *SkillResource: The result.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -44,6 +50,13 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 // assetPath is the assetPath.
 //
 // Returns the result.
+//
+// Parameters:
+//   - s: *skill.Skill. The skill.Skill instance.
+//   - assetPath: string. The assetPath parameter.
+//
+// Returns:
+//   - *SkillResource: The result.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -54,6 +67,9 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 // URI returns the URI of the resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -64,6 +80,9 @@ func (r *SkillResource) URI() string {
 // Name returns the name of the resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -74,6 +93,9 @@ func (r *SkillResource) Name() string {
 // Service returns the service associated with the resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
@@ -81,6 +103,9 @@ func (r *SkillResource) Service() string {
 // Resource returns the underlying MCP resource definition.
 //
 // Returns the result.
+//
+// Returns:
+//   - *mcp.Resource: The result.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {
@@ -104,6 +129,16 @@ func (r *SkillResource) Resource() *mcp.Resource {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	var content []byte
 	var err error
@@ -214,6 +249,15 @@ func isTextMime(mimeType string) bool {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -225,6 +269,16 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 // sm is the sm.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - rm: resource.ManagerInterface. The rm parameter.
+//   - sm: *skill.Manager. The skill.Manager instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

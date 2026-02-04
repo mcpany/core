@@ -26,6 +26,13 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 // NewUpdater creates a new Updater.
+//
+// Parameters:
+//   - httpClient: *http.Client. The http.Client instance.
+//   - githubAPIURL: string. The githubAPIURL parameter.
+//
+// Returns:
+//   - *Updater: The result.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -53,6 +60,18 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Returns the result.
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - currentVersion: string. The currentVersion parameter.
+//
+// Returns:
+//   - *github.RepositoryRelease: The result.
+//   - bool: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -76,6 +95,19 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // checksumsAssetName is the checksumsAssetName.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - fs: afero.Fs. The fs parameter.
+//   - executablePath: string. The executablePath parameter.
+//   - release: *github.RepositoryRelease. The github.RepositoryRelease instance.
+//   - checksumsAssetName: string. The checksumsAssetName parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

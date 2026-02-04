@@ -23,6 +23,9 @@ type ConnectionFactory struct {
 
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
 // settings.
+//
+// Returns:
+//   - *ConnectionFactory: The result.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
@@ -31,6 +34,13 @@ func NewConnectionFactory() *ConnectionFactory {
 // useful for tests that need to mock the network connection.
 //
 // dialer is the function to be used for creating network connections.
+//
+// Parameters:
+//   - dialer: context.Context. The context for the operation.
+//
+// Returns:
+//   - net.Conn: The result.
+//   - error): The result.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
 	f.dialer = dialer
 }
@@ -42,6 +52,17 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // ctx is the context for the connection attempt.
 // targetAddress is the address of the gRPC service to connect to.
 // It returns a new *grpc.ClientConn or an error if the connection fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - targetAddress: string. The targetAddress parameter.
+//
+// Returns:
+//   - *grpc.ClientConn: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

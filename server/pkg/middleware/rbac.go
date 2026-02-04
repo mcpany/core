@@ -19,6 +19,9 @@ type RBACMiddleware struct {
 // NewRBACMiddleware creates a new RBACMiddleware.
 //
 // Returns the result.
+//
+// Returns:
+//   - *RBACMiddleware: The result.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
@@ -27,6 +30,12 @@ func NewRBACMiddleware() *RBACMiddleware {
 
 // RequireRole returns an HTTP middleware that requires the user to have the specified role.
 // It assumes that the user roles are already populated in the request context (e.g., by an authentication middleware).
+//
+// Parameters:
+//   - role: string. The role parameter.
+//
+// Returns:
+//   - http.Handler: The result.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +63,12 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 // roles is the roles.
 //
 // Returns the result.
+//
+// Parameters:
+//   - roles: ...string. The roles parameter.
+//
+// Returns:
+//   - http.Handler: The result.
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -83,6 +98,12 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 // _ is an unused parameter.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: func(user *configv1.User. The _ parameter.
+//
+// Returns:
+//   - http.Handler: The result.
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

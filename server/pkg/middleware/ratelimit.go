@@ -46,6 +46,12 @@ type Option func(*RateLimitMiddleware)
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: tokenizer.Tokenizer. The t parameter.
+//
+// Returns:
+//   - Option: The result.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -58,6 +64,13 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 // opts contains the options.
 //
 // Returns the result.
+//
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//   - opts: ...Option. The opts parameter.
+//
+// Returns:
+//   - *RateLimitMiddleware: The result.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -88,6 +101,18 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//   - next: tool.ExecutionFunc. The next parameter.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

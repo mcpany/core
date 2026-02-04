@@ -2,15 +2,15 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Elevator Pitch
+## 1. Project Identity
 
 **What is this project and why does it exist?**
 
 **MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+**The Problem:** Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. This approach scales linearly with the number of tools and becomes a maintenance nightmare.
 
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**The Solution:** MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files. **Don't write code to expose your APIs to AI agents. Just configure them.**
 
 ## 2. Architecture
 
@@ -45,7 +45,7 @@ graph TD
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
-## 3. Getting Started
+## 3. Quick Start
 
 Follow these steps to get up and running immediately.
 
@@ -90,7 +90,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## 4. Developer Workflow
 
 We follow a strict development workflow to ensure quality.
 

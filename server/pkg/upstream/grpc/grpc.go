@@ -47,6 +47,15 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	if u.checker != nil {
 		res := u.checker.Check(ctx)
@@ -62,6 +71,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
+//
+// Parameters:
+//   - poolManager: *pool.Manager. The pool.Manager instance.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -76,6 +91,15 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.reflectionCache.Stop()
 	u.poolManager.Deregister(u.serviceID)
@@ -86,6 +110,23 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // connection pool, uses gRPC reflection to discover the service's protobuf
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The configv1.UpstreamServiceConfig instance.
+//   - toolManager: tool.ManagerInterface. The toolManager parameter.
+//   - promptManager: prompt.ManagerInterface. The promptManager parameter.
+//   - resourceManager: resource.ManagerInterface. The resourceManager parameter.
+//   - isReload: bool. The isReload parameter.
+//
+// Returns:
+//   - string: The result.
+//   - []*configv1.ToolDefinition: The result.
+//   - []*configv1.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

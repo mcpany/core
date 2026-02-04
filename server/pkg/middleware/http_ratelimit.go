@@ -26,6 +26,12 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
 // WithTrustProxy enables trusting the X-Forwarded-For header.
 // This should only be used when the server is behind a trusted reverse proxy.
+//
+// Parameters:
+//   - trust: bool. The trust parameter.
+//
+// Returns:
+//   - HTTPRateLimitOption: The result.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust

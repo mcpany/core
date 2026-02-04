@@ -57,6 +57,17 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic parameter.
+//   - msg: T. The msg parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -72,6 +83,14 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic parameter.
+//   - handler: func(T. The handler parameter.
+//
+// Returns:
+//   - func()): The result.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -128,6 +147,14 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic parameter.
+//   - handler: func(T. The handler parameter.
+//
+// Returns:
+//   - func()): The result.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -162,6 +189,12 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 // Close closes the Redis client.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

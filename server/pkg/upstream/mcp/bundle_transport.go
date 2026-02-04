@@ -40,6 +40,9 @@ type transportError struct {
 // Error returns the error message.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -65,6 +68,16 @@ type BundleDockerTransport struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -181,6 +194,16 @@ type bundleDockerConn struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -315,6 +338,16 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - msg: jsonrpc.Message. The msg parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -406,6 +439,12 @@ func fixID(id interface{}) interface{} {
 // Close closes the connection.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -413,6 +452,9 @@ func (c *bundleDockerConn) Close() error {
 // SessionID returns the session ID of the connection.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
@@ -429,6 +471,16 @@ type bundleSlogWriter struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - p: []byte. A list of bytes.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

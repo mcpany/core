@@ -26,6 +26,16 @@ type TextTemplate struct {
 //
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
+//
+// Parameters:
+//   - endTag: string. The endTag parameter.
+//
+// Returns:
+//   - *TextTemplate: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -56,6 +66,16 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 // params is a map of key-value pairs that will be available within the
 // template.
 // It returns the rendered string or an error if the template execution fails.
+//
+// Parameters:
+//   - params: map[string]any. The params parameter.
+//
+// Returns:
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

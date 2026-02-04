@@ -56,6 +56,16 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - schemaMap: map[string]interface{}. The schemaMap parameter.
+//
+// Returns:
+//   - *jsonschema.Schema: The result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns an error if the operation fails.
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"
