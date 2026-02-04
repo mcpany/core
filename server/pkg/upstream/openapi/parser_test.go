@@ -11,6 +11,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -607,13 +608,13 @@ func TestParseOpenAPISpec_Errors(t *testing.T) {
 func TestConvertOpenAPISchemaToInputSchemaProperties_Errors(t *testing.T) {
 	doc := loadTestSpec(t)
 	t.Run("nil schema ref", func(t *testing.T) {
-		_, err := convertOpenAPISchemaToInputSchemaProperties(nil, nil, doc)
+		_, _, err := convertOpenAPISchemaToInputSchemaProperties(nil, nil, doc)
 		assert.NoError(t, err, "Nil schema should not cause a panic, just result in empty properties")
 	})
 
 	t.Run("unresolvable ref", func(t *testing.T) {
 		schemaRef := &openapi3.SchemaRef{Ref: "#/components/schemas/NonExistent"}
-		_, err := convertOpenAPISchemaToInputSchemaProperties(schemaRef, nil, doc)
+		_, _, err := convertOpenAPISchemaToInputSchemaProperties(schemaRef, nil, doc)
 		assert.Error(t, err)
 	})
 }
@@ -761,4 +762,102 @@ func TestConvertMcpOperationsToTools_AllOfAndNested(t *testing.T) {
 	assert.Contains(t, extProps, "common")
 	commonDesc := extProps["common"].GetStructValue().GetFields()["description"].GetStringValue()
 	assert.Equal(t, "extended common", commonDesc, "Local property should override inherited one")
+}
+
+func TestConvertMcpOperationsToTools_RequiredFields(t *testing.T) {
+	spec := `
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Test", "version": "1.0" },
+  "paths": {
+    "/required": {
+      "post": {
+        "operationId": "requiredTest",
+        "parameters": [
+          {
+            "name": "q_param",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "opt_param",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["top_req"],
+                "properties": {
+                  "top_req": { "type": "string" },
+                  "top_opt": { "type": "string" },
+                  "nested": {
+                    "type": "object",
+                    "required": ["sub_req"],
+                    "properties": {
+                      "sub_req": { "type": "string" },
+                      "sub_opt": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}`
+
+	loader := openapi3.NewLoader()
+	doc, err := loader.LoadFromData([]byte(spec))
+	require.NoError(t, err)
+
+	ops := extractMcpOperationsFromOpenAPI(doc)
+	tools := convertMcpOperationsToTools(ops, doc, "test-service")
+
+	require.Len(t, tools, 1)
+	tool := tools[0]
+	inputSchema := tool.GetAnnotations().GetInputSchema()
+
+	// Check top-level required (includes parameters and body props)
+	// The top-level input schema is "type": "object".
+	// It should have a "required" field which is a list.
+
+	// In structpb, a list is a ListValue.
+	requiredVal, ok := inputSchema.GetFields()["required"]
+	require.True(t, ok, "InputSchema should have 'required' field")
+
+	requiredList := requiredVal.GetListValue().GetValues()
+	var requiredFields []string
+	for _, v := range requiredList {
+		requiredFields = append(requiredFields, v.GetStringValue())
+	}
+
+	assert.Contains(t, requiredFields, "q_param", "Required query parameter should be in required list")
+	assert.Contains(t, requiredFields, "top_req", "Required body property should be in required list")
+	assert.NotContains(t, requiredFields, "opt_param", "Optional query parameter should NOT be in required list")
+	assert.NotContains(t, requiredFields, "top_opt", "Optional body property should NOT be in required list")
+
+	// Check nested required
+	props := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
+	nestedVal := props["nested"].GetStructValue()
+
+	nestedRequiredVal, ok := nestedVal.GetFields()["required"]
+	require.True(t, ok, "Nested object should have 'required' field")
+
+	nestedRequiredList := nestedRequiredVal.GetListValue().GetValues()
+	var nestedRequiredFields []string
+	for _, v := range nestedRequiredList {
+		nestedRequiredFields = append(nestedRequiredFields, v.GetStringValue())
+	}
+
+	assert.Contains(t, nestedRequiredFields, "sub_req")
+	assert.NotContains(t, nestedRequiredFields, "sub_opt")
 }
