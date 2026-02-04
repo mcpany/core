@@ -27,6 +27,7 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 }
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
+	SkipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -63,6 +64,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
+	SkipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -99,6 +101,7 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 }
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
+	SkipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -120,6 +123,7 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
+	SkipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -173,6 +177,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
+	SkipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
