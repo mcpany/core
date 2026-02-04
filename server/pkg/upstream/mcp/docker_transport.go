@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
 	"strings"
 	"sync"
 
@@ -85,6 +86,15 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}
 
 	setupCmds := t.StdioConfig.GetSetupCommands()
+
+	// Sentinel Security: Disable setup_commands by default as they allow arbitrary command execution.
+	if len(setupCmds) > 0 {
+		if os.Getenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS") != "true" {
+			return nil, fmt.Errorf("setup_commands are disabled by default for security reasons. Set MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true to enable them if you trust the configuration")
+		}
+		log.Warn("Using setup_commands in DockerTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", "HIDDEN")
+	}
+
 	// Allocate slice with capacity for setup commands + 1 main command
 	scriptCommands := make([]string, 0, len(setupCmds)+1)
 
