@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -131,6 +132,39 @@ func (s *MockStoreForError) Load(ctx context.Context) (*configv1.McpAnyServerCon
 func (s *MockStoreForError) HasConfigSources() bool {
 	return true
 }
+
+func (s *MockStoreForError) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error { return nil }
+func (s *MockStoreForError) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) { return nil, nil }
+func (s *MockStoreForError) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) { return nil, nil }
+func (s *MockStoreForError) DeleteService(ctx context.Context, name string) error { return nil }
+func (s *MockStoreForError) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) { return nil, nil }
+func (s *MockStoreForError) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error { return nil }
+func (s *MockStoreForError) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) { return nil, nil }
+func (s *MockStoreForError) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) { return nil, nil }
+func (s *MockStoreForError) SaveSecret(ctx context.Context, secret *configv1.Secret) error { return nil }
+func (s *MockStoreForError) DeleteSecret(ctx context.Context, id string) error { return nil }
+func (s *MockStoreForError) CreateUser(ctx context.Context, user *configv1.User) error { return nil }
+func (s *MockStoreForError) GetUser(ctx context.Context, id string) (*configv1.User, error) { return nil, nil }
+func (s *MockStoreForError) ListUsers(ctx context.Context) ([]*configv1.User, error) { return nil, nil }
+func (s *MockStoreForError) UpdateUser(ctx context.Context, user *configv1.User) error { return nil }
+func (s *MockStoreForError) DeleteUser(ctx context.Context, id string) error { return nil }
+func (s *MockStoreForError) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) { return nil, nil }
+func (s *MockStoreForError) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) { return nil, nil }
+func (s *MockStoreForError) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error { return nil }
+func (s *MockStoreForError) DeleteProfile(ctx context.Context, name string) error { return nil }
+func (s *MockStoreForError) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) { return nil, nil }
+func (s *MockStoreForError) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) { return nil, nil }
+func (s *MockStoreForError) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error { return nil }
+func (s *MockStoreForError) DeleteServiceCollection(ctx context.Context, name string) error { return nil }
+func (s *MockStoreForError) SaveToken(ctx context.Context, token *configv1.UserToken) error { return nil }
+func (s *MockStoreForError) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) { return nil, nil }
+func (s *MockStoreForError) DeleteToken(ctx context.Context, userID, serviceID string) error { return nil }
+func (s *MockStoreForError) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) { return nil, nil }
+func (s *MockStoreForError) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) { return nil, nil }
+func (s *MockStoreForError) SaveCredential(ctx context.Context, cred *configv1.Credential) error { return nil }
+func (s *MockStoreForError) DeleteCredential(ctx context.Context, id string) error { return nil }
+func (s *MockStoreForError) Close() error { return nil }
+func (s *MockStoreForError) QueryLogs(ctx context.Context, filter logging.LogFilter) ([]logging.LogEntry, int, error) { return nil, 0, nil }
 
 // TestValidate_DuplicateService covers duplicate service check in Validate.
 func TestValidate_DuplicateService(t *testing.T) {

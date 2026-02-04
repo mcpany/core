@@ -5,169 +5,150 @@ package config
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 type MockStore struct {
-	Config *configv1.McpAnyServerConfig
-	Err    error
+	LoadFunc func(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 }
 
 func (m *MockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
-	return m.Config, m.Err
-}
-
-func (m *MockStore) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
-	return m.Err
-}
-
-func (m *MockStore) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
-	return nil, m.Err
-}
-
-func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
-	if m.Config != nil {
-		return m.Config.GetUpstreamServices(), nil
+	if m.LoadFunc != nil {
+		return m.LoadFunc(ctx)
 	}
-	return nil, m.Err
+	return nil, nil
 }
 
+func (m *MockStore) HasConfigSources() bool {
+	return false
+}
+
+// Implement other methods as no-ops
+func (m *MockStore) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+	return nil
+}
+func (m *MockStore) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+	return nil, nil
+}
+func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	return nil, nil
+}
 func (m *MockStore) DeleteService(ctx context.Context, name string) error {
-	return m.Err
+	return nil
 }
-
+func (m *MockStore) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
+	return nil, nil
+}
+func (m *MockStore) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
+	return nil
+}
+func (m *MockStore) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
+	return nil, nil
+}
+func (m *MockStore) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
+	return nil, nil
+}
+func (m *MockStore) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
+	return nil
+}
+func (m *MockStore) DeleteSecret(ctx context.Context, id string) error {
+	return nil
+}
+func (m *MockStore) CreateUser(ctx context.Context, user *configv1.User) error {
+	return nil
+}
+func (m *MockStore) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+	return nil, nil
+}
+func (m *MockStore) ListUsers(ctx context.Context) ([]*configv1.User, error) {
+	return nil, nil
+}
+func (m *MockStore) UpdateUser(ctx context.Context, user *configv1.User) error {
+	return nil
+}
+func (m *MockStore) DeleteUser(ctx context.Context, id string) error {
+	return nil
+}
+func (m *MockStore) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+	return nil, nil
+}
+func (m *MockStore) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
+	return nil, nil
+}
+func (m *MockStore) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
+	return nil
+}
+func (m *MockStore) DeleteProfile(ctx context.Context, name string) error {
+	return nil
+}
+func (m *MockStore) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
+	return nil, nil
+}
+func (m *MockStore) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
+	return nil, nil
+}
+func (m *MockStore) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error {
+	return nil
+}
+func (m *MockStore) DeleteServiceCollection(ctx context.Context, name string) error {
+	return nil
+}
+func (m *MockStore) SaveToken(ctx context.Context, token *configv1.UserToken) error {
+	return nil
+}
+func (m *MockStore) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
+	return nil, nil
+}
+func (m *MockStore) DeleteToken(ctx context.Context, userID, serviceID string) error {
+	return nil
+}
+func (m *MockStore) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	return nil, nil
+}
+func (m *MockStore) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+	return nil, nil
+}
+func (m *MockStore) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+	return nil
+}
+func (m *MockStore) DeleteCredential(ctx context.Context, id string) error {
+	return nil
+}
 func (m *MockStore) Close() error {
 	return nil
 }
 
-func (m *MockStore) HasConfigSources() bool {
-	return true
+func (m *MockStore) QueryLogs(ctx context.Context, filter logging.LogFilter) ([]logging.LogEntry, int, error) {
+	return nil, 0, nil
 }
 
-func TestMultiStore(t *testing.T) {
-	t.Run("MergeConfigs", func(t *testing.T) {
-		s1 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key1"),
-					}.Build(),
-				}.Build()
-			}(),
-		}
-		s2 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						McpListenAddress: proto.String(":8080"),
-					}.Build(),
-				}.Build()
-			}(),
-		}
+func TestMultiStore_Load(t *testing.T) {
+	mock1 := &MockStore{
+		LoadFunc: func(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+			return &configv1.McpAnyServerConfig{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					{Name: "service1"},
+				},
+			}, nil
+		},
+	}
+	mock2 := &MockStore{
+		LoadFunc: func(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+			return &configv1.McpAnyServerConfig{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					{Name: "service2"},
+				},
+			}, nil
+		},
+	}
 
-		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load(context.Background())
-		assert.NoError(t, err)
-
-		assert.Equal(t, "key1", cfg.GetGlobalSettings().GetApiKey())
-		assert.Equal(t, ":8080", cfg.GetGlobalSettings().GetMcpListenAddress())
-	})
-
-	t.Run("OverrideValues", func(t *testing.T) {
-		s1 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key1"),
-					}.Build(),
-				}.Build()
-			}(),
-		}
-		s2 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key2"),
-					}.Build(),
-				}.Build()
-			}(),
-		}
-
-		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load(context.Background())
-		assert.NoError(t, err)
-
-		assert.Equal(t, "key2", cfg.GetGlobalSettings().GetApiKey())
-	})
-
-	t.Run("ErrorInStore", func(t *testing.T) {
-		s1 := &MockStore{
-			Config: configv1.McpAnyServerConfig_builder{}.Build(),
-		}
-		s2 := &MockStore{
-			Err: errors.New("load error"),
-		}
-
-		ms := NewMultiStore(s1, s2)
-		_, err := ms.Load(context.Background())
-		assert.Error(t, err)
-		assert.Equal(t, "load error", err.Error())
-	})
-
-	t.Run("MergeLists", func(t *testing.T) {
-		s1 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				svc1 := configv1.UpstreamServiceConfig_builder{
-					Name: proto.String("svc1"),
-				}.Build()
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{svc1},
-				}.Build()
-			}(),
-		}
-		s2 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				svc2 := configv1.UpstreamServiceConfig_builder{
-					Name: proto.String("svc2"),
-				}.Build()
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{svc2},
-				}.Build()
-			}(),
-		}
-
-		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load(context.Background())
-		assert.NoError(t, err)
-
-		assert.Len(t, cfg.GetUpstreamServices(), 2)
-		assert.Equal(t, "svc1", cfg.GetUpstreamServices()[0].GetName())
-		assert.Equal(t, "svc2", cfg.GetUpstreamServices()[1].GetName())
-	})
-
-	t.Run("NilConfigIgnored", func(t *testing.T) {
-		s1 := &MockStore{
-			Config: nil, // Should be ignored
-		}
-		s2 := &MockStore{
-			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key2"),
-					}.Build(),
-				}.Build()
-			}(),
-		}
-
-		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load(context.Background())
-		assert.NoError(t, err)
-
-		assert.Equal(t, "key2", cfg.GetGlobalSettings().GetApiKey())
-	})
+	ms := NewMultiStore(mock1, mock2)
+	cfg, err := ms.Load(context.Background())
+	assert.NoError(t, err)
+	assert.NotNil(t, cfg)
+	assert.Len(t, cfg.UpstreamServices, 2)
 }

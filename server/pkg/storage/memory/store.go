@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -102,6 +103,11 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	}
 	delete(s.tokens, key)
 	return nil
+}
+
+// QueryLogs retrieves logs based on filters.
+func (s *Store) QueryLogs(ctx context.Context, filter logging.LogFilter) ([]logging.LogEntry, int, error) {
+	return nil, 0, nil
 }
 
 // Load retrieves the full server configuration.

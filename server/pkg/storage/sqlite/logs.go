@@ -28,7 +28,7 @@ func (s *Store) SaveLog(entry logging.LogEntry) error {
 	// SQLite timestamp format: RFC3339
 	// The entry.Timestamp is string, typically RFC3339 already from BroadcastHandler.
 
-	_, err = s.db.Exec(query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
+	_, err = s.db.ExecContext(context.Background(), query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
 	return err
 }
 
@@ -96,10 +96,15 @@ func (s *Store) QueryLogs(ctx context.Context, filter logging.LogFilter) ([]logg
 		}
 		if metadataJSON != "" {
 			if err := json.Unmarshal([]byte(metadataJSON), &entry.Metadata); err != nil {
-				// log error? or ignore
+				// Ignore malformed metadata in logs to avoid breaking the list
+				_ = err
 			}
 		}
 		logs = append(logs, entry)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("error iterating logs: %w", err)
 	}
 
 	return logs, total, nil

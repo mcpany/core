@@ -26,7 +26,7 @@ func (s *Store) SaveLog(entry logging.LogEntry) error {
 	VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
-	_, err = s.db.Exec(query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
+	_, err = s.db.ExecContext(context.Background(), query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
 	return err
 }
 
@@ -102,10 +102,15 @@ func (s *Store) QueryLogs(ctx context.Context, filter logging.LogFilter) ([]logg
 		}
 		if metadataJSON != "" {
 			if err := json.Unmarshal([]byte(metadataJSON), &entry.Metadata); err != nil {
-				// log error?
+				// Ignore malformed metadata
+				_ = err
 			}
 		}
 		logs = append(logs, entry)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("error iterating logs: %w", err)
 	}
 
 	return logs, total, nil
