@@ -19,7 +19,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             // Use command_line_service with dummy command to avoid network issues/SSRF
             command_line_service: {
                 command: "echo",
-                args: ["{}"], // Echo empty json
                 tools: [
                     {
                         name: "process_payment",
@@ -38,7 +37,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             command_line_service: {
                 command: "echo",
-                args: ["{}"],
                 tools: [
                      {
                          name: "get_user",
@@ -57,7 +55,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             command_line_service: {
                 command: "echo",
-                args: ["{}"],
                 tools: [
                     {
                         name: "calculator",
