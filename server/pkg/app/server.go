@@ -150,6 +150,7 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
+	DataDir         string
 }
 
 // Runner defines the interface for running the application.
@@ -449,7 +450,11 @@ func (a *Application) Run(opts RunOptions) error {
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
 
 	a.PromptManager = prompt.NewManager()
-	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
+	dataDir := opts.DataDir
+	if dataDir == "" {
+		dataDir = "data"
+	}
+	a.TemplateManager = NewTemplateManager(dataDir)
 	a.ResourceManager = resource.NewManager()
 
 	a.DiscoveryManager = discovery.NewManager()

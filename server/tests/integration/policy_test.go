@@ -32,10 +32,12 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	serverBin := filepath.Join(root, "../build/bin/server")
 
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
-	dbPath := filepath.Join(t.TempDir(), "test.db")
+	tempDir := t.TempDir()
+	dbPath := filepath.Join(tempDir, "test.db")
+	dataDir := filepath.Join(tempDir, "data")
 
 	// Create command
-	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
+	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--data-dir", dataDir, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
 	cmd.Env = append(os.Environ(),
 		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"MCPANY_ENABLE_FILE_CONFIG=true",

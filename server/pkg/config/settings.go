@@ -32,6 +32,7 @@ type Settings struct {
 	shutdownTimeout time.Duration
 	profiles        []string
 	dbPath          string
+	dataDir         string
 	setValues       []string
 	fs              afero.Fs
 	cmd             *cobra.Command
@@ -104,6 +105,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")
+	s.dataDir = viper.GetString("data-dir")
 	s.setValues = getStringSlice("set")
 
 	// Special handling for MCPListenAddress to respect config file precedence
@@ -289,6 +291,11 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 // Returns the result.
 func (s *Settings) DBPath() string {
 	return s.dbPath
+}
+
+// DataDir returns the directory for persistent data.
+func (s *Settings) DataDir() string {
+	return s.dataDir
 }
 
 // SetValues returns configuration values to override.

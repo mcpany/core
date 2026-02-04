@@ -96,6 +96,7 @@ func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("api-key", "", "API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY")
 	cmd.Flags().StringSlice("profiles", []string{"default"}, "Comma-separated list of active profiles. Env: MCPANY_PROFILES")
 	cmd.Flags().String("db-path", "data/mcpany.db", "Path to the SQLite database file. Env: MCPANY_DB_PATH")
+	cmd.Flags().String("data-dir", "data", "Directory to store persistent data (templates, etc). Env: MCPANY_DATA_DIR")
 
 	if err := viper.BindPFlag("grpc-port", cmd.Flags().Lookup("grpc-port")); err != nil {
 		fmt.Fprintf(os.Stderr, "Error binding grpc-port flag: %v\n", err)
@@ -119,6 +120,10 @@ func BindServerFlags(cmd *cobra.Command) {
 	}
 	if err := viper.BindPFlag("db-path", cmd.Flags().Lookup("db-path")); err != nil {
 		fmt.Fprintf(os.Stderr, "Error binding db-path flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("data-dir", cmd.Flags().Lookup("data-dir")); err != nil {
+		fmt.Fprintf(os.Stderr, "Error binding data-dir flag: %v\n", err)
 		os.Exit(1)
 	}
 }
