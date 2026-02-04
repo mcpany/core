@@ -26,7 +26,7 @@ export default function TracesPage() {
   // Separate load function for reuse
   const loadTraces = async (isFirstLoad = false) => {
       try {
-        const res = await fetch('/api/traces');
+        const res = await fetch('/api/traces?limit=100');
         const data = await res.json();
 
         // If live, prepend new traces or merge?

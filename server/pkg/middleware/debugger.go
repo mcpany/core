@@ -6,29 +6,23 @@ package middleware
 import (
 	"bytes"
 	"container/ring"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/storage"
 )
 
 // DebugEntry represents a captured HTTP request/response.
-type DebugEntry struct {
-	ID              string        `json:"id"`
-	Timestamp       time.Time     `json:"timestamp"`
-	Method          string        `json:"method"`
-	Path            string        `json:"path"`
-	Status          int           `json:"status"`
-	Duration        time.Duration `json:"duration"`
-	RequestHeaders  http.Header   `json:"request_headers"`
-	ResponseHeaders http.Header   `json:"response_headers"`
-	RequestBody     string        `json:"request_body,omitempty"`
-	ResponseBody    string        `json:"response_body,omitempty"`
-}
+// We alias storage.LogEntry for compatibility but use it directly.
+type DebugEntry = storage.LogEntry
 
 // Debugger monitors and records traffic for inspection.
 type Debugger struct {
@@ -38,20 +32,23 @@ type Debugger struct {
 	maxBodySize int64
 	ingress     chan DebugEntry
 	done        chan struct{}
+	store       storage.Storage
 }
 
 // NewDebugger creates a new Debugger middleware.
 //
 // size is the size.
+// store is the storage backend.
 //
 // Returns the result.
-func NewDebugger(size int) *Debugger {
+func NewDebugger(size int, store storage.Storage) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
 		limit:       size,
 		maxBodySize: 10 * 1024, // 10KB default limit for body capture
 		ingress:     make(chan DebugEntry, size*2),
 		done:        make(chan struct{}),
+		store:       store,
 	}
 	go d.process()
 	return d
@@ -60,10 +57,21 @@ func NewDebugger(size int) *Debugger {
 // process runs in the background to handle log entries.
 func (d *Debugger) process() {
 	for entry := range d.ingress {
+		// Write to Ring Buffer (Memory Cache)
 		d.mu.Lock()
 		d.ring.Value = entry
 		d.ring = d.ring.Next()
 		d.mu.Unlock()
+
+		// Write to Persistent Storage
+		if d.store != nil {
+			// We use a background context or specific timeout context
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			if err := d.store.SaveLog(ctx, &entry); err != nil {
+				logging.GetLogger().Error("Failed to save debug log to storage", "error", err)
+			}
+			cancel()
+		}
 	}
 	close(d.done)
 }
@@ -239,8 +247,38 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Returns the result.
 func (d *Debugger) APIHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(d.Entries())
+
+		// Parse limit and offset
+		limit := d.limit
+		if l := r.URL.Query().Get("limit"); l != "" {
+			if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
+				limit = parsed
+			}
+		}
+		offset := 0
+		if o := r.URL.Query().Get("offset"); o != "" {
+			if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
+				offset = parsed
+			}
+		}
+
+		if d.store != nil {
+			// Fetch from storage
+			logs, err := d.store.ListLogs(r.Context(), limit, offset)
+			if err != nil {
+				http.Error(w, "Failed to fetch logs", http.StatusInternalServerError)
+				return
+			}
+			// If logs is nil (empty), return empty array
+			if logs == nil {
+				logs = []*storage.LogEntry{}
+			}
+			_ = json.NewEncoder(w).Encode(logs)
+		} else {
+			// Fallback to in-memory ring buffer if no store (e.g. tests)
+			_ = json.NewEncoder(w).Encode(d.Entries())
+		}
 	}
 }

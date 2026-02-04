@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -130,6 +131,7 @@ type StandardMiddlewares struct {
 // dlpConfig is the dlpConfig.
 // contextOptimizerConfig is the contextOptimizerConfig.
 // debuggerConfig is the debuggerConfig.
+// store is the storage backend.
 //
 // Returns the result.
 // Returns an error if the operation fails.
@@ -142,6 +144,7 @@ func InitStandardMiddlewares(
 	dlpConfig *configv1.DLPConfig,
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
+	store storage.Storage,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -311,7 +314,7 @@ func InitStandardMiddlewares(
 		if size == 0 {
 			size = 100 // Default
 		}
-		debugger = NewDebugger(size)
+		debugger = NewDebugger(size, store)
 		Register("debugger", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 			return debugger.Handler
 		})
