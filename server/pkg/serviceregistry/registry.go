@@ -199,6 +199,27 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	// Perform registration without holding the lock to avoid blocking other services
 	_, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 
+	if err == nil {
+		// Safety Check: Duplicate Tool Detection
+		// Although we enforce namespacing, we warn if multiple services expose the same tool name
+		// to avoid user confusion or potential shadowing if namespacing is bypassed or ambiguous.
+		existingTools := r.toolManager.ListTools()
+		for _, dt := range discoveredTools {
+			for _, et := range existingTools {
+				// Check if names match and they are from DIFFERENT services
+				// et.Tool().GetServiceId() might be empty for internal tools, or the service ID we just generated.
+				// We care if it's NOT the current serviceID.
+				if dt.GetName() == et.Tool().GetName() && et.Tool().GetServiceId() != serviceID {
+					logging.GetLogger().Warn("Duplicate tool name detected across services",
+						"tool", dt.GetName(),
+						"service_new", serviceConfig.GetName(),
+						"service_existing", et.Tool().GetServiceId(),
+						"warning", "Potential confusion or shadowing")
+				}
+			}
+		}
+	}
+
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
