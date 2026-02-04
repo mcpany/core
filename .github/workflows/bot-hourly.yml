@@ -5,7 +5,7 @@ name: Manage PRs (Merge & Cleanup)
 
 on:
   schedule:
-    - cron: '0 */10 * * *' # Runs every 10 minutes
+    - cron: '*/10 * * * *' # Runs every 10 minutes
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -27,34 +27,32 @@ jobs:
           gh pr list \
             --repo mcpany/core \
             --base main \
-            --search "is:open status:success -mergeable:conflicting" \
+            --search "is:pr is:open status:success author:@me" \
             --json number \
             --jq '.[].number' | \
           while read pr_number; do
-            echo "Merging PR #$pr_number..."
-            gh pr merge $pr_number --squash --repo mcpany/core
-          done
+            echo "Processing PR #$pr_number..."
 
-      # Step 2: Close PRs that have merge conflicts
-      - name: Close Conflicting PRs
-        env:
-          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
-        run: |
-          # Find PRs that are open but have merge conflicts
-          gh pr list \
-            --repo mcpany/core \
-            --base main \
-            --search "is:open mergeable:conflicting" \
-            --json number \
-            --jq '.[].number' | \
-          while read pr_number; do
-            echo "Closing conflicting PR #$pr_number..."
+            # Retry mechanism
+            max_retries=3
+            retry_count=0
+            success=false
 
-            # Add a comment first explaining why
-            gh pr comment $pr_number \
-              --repo mcpany/core \
-              --body "🤖 **Automated Cleanup:** This PR has merge conflicts. Please resolve them locally and reopen or open a new PR."
+            while [ $retry_count -lt $max_retries ]; do
+              if gh pr merge $pr_number --squash --repo mcpany/core; then
+                success=true
+                echo "Successfully merged PR #$pr_number"
+                break
+              else
+                echo "Failed to merge PR #$pr_number (Attempt $((retry_count+1))/$max_retries)"
+                retry_count=$((retry_count+1))
+                sleep 5 # Wait a bit before retrying
+              fi
+            done
 
-            # Close the PR
-            gh pr close $pr_number --repo mcpany/core
+            if [ "$success" = false ]; then
+              echo "Could not merge PR #$pr_number after $max_retries attempts. Closing it."
+              gh pr comment $pr_number --repo mcpany/core --body "🤖 **Automated Cleanup:** This PR has merge conflicts. Please resolve them locally and reopen or open a new PR."
+              gh pr close $pr_number --repo mcpany/core
+            fi
           done

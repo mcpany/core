@@ -48,6 +48,14 @@ func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]b
 }
 
 // createAPIHandler creates a http.Handler for the config API.
+//
+// Summary: Creates the main API handler mux.
+//
+// Parameters:
+//   - store: storage.Storage. The storage backend.
+//
+// Returns:
+//   - http.Handler: The configured handler.
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 

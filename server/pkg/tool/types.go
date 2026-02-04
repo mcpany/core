@@ -2827,8 +2827,8 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
-	// Ruby: #{...} works in double quotes
-	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
+	// Ruby: #{...} works in double quotes AND backticks
+	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
@@ -2844,11 +2844,21 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
 		}
 	}
-	if (isPerl || isPhp) && quoteLevel == 1 { // Double Quoted
+	// Perl and PHP interpolate variables in both double quotes and backticks
+	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+
+	// Awk: Block pipe | to prevent external command execution
+	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
+	if isAwk {
+		if strings.Contains(val, "|") {
+			return fmt.Errorf("awk injection detected: value contains '|'")
+		}
+	}
+
 	return nil
 }
 
@@ -2893,7 +2903,7 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk"}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
@@ -2964,7 +2974,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
-		if char == '\\' {
+		if char == '\\' && !inSingle {
 			escaped = true
 			continue
 		}

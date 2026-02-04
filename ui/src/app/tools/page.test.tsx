@@ -20,11 +20,16 @@ vi.mock('@/lib/client', () => ({
     },
 }));
 
+const mockBulkPin = vi.fn();
+const mockBulkUnpin = vi.fn();
+
 // Mock usePinnedTools
 vi.mock('@/hooks/use-pinned-tools', () => ({
     usePinnedTools: () => ({
         isPinned: () => false,
         togglePin: vi.fn(),
+        bulkPin: mockBulkPin,
+        bulkUnpin: mockBulkUnpin,
         isLoaded: true,
     }),
 }));
@@ -84,6 +89,8 @@ describe('ToolsPage', () => {
         vi.clearAllMocks();
         (apiClient.listTools as Mock).mockResolvedValue({ tools: mockTools });
         (apiClient.listServices as Mock).mockResolvedValue(mockServices);
+        mockBulkPin.mockClear();
+        mockBulkUnpin.mockClear();
     });
 
     it('renders tools and services', async () => {
@@ -191,5 +198,39 @@ describe('ToolsPage', () => {
             expect(screen.getByText('search')).toBeInTheDocument();
             expect(screen.getByText('database')).toBeInTheDocument();
         });
+    });
+
+    it('supports bulk actions', async () => {
+        render(<ToolsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('tool1')).toBeInTheDocument();
+        });
+
+        // Find checkboxes for tool1 and tool2
+        const tool1Checkbox = screen.getByLabelText('Select tool1');
+        const tool2Checkbox = screen.getByLabelText('Select tool2');
+
+        fireEvent.click(tool1Checkbox);
+        fireEvent.click(tool2Checkbox);
+
+        // Expect toolbar to appear with "2 selected"
+        expect(screen.getByText('2 selected')).toBeInTheDocument();
+
+        // Click Disable
+        const disableBtn = screen.getByText('Disable');
+        fireEvent.click(disableBtn);
+
+        expect(apiClient.setToolStatus).toHaveBeenCalledWith('tool1', true);
+        expect(apiClient.setToolStatus).toHaveBeenCalledWith('tool2', true);
+
+        // Re-select (since toolbar clears selection)
+        fireEvent.click(tool1Checkbox);
+
+        // Click Pin
+        const pinBtn = screen.getByText('Pin');
+        fireEvent.click(pinBtn);
+
+        expect(mockBulkPin).toHaveBeenCalledWith(['tool1']);
     });
 });

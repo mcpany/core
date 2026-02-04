@@ -179,3 +179,63 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	assert.Contains(t, err.Error(), "shell injection detected")
 	assert.Contains(t, err.Error(), "system(")
 }
+
+func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
+	// 1. Configure a tool that uses sh -c with a vulnerable template (accidentally using \' inside single quotes)
+	// Template: echo 'foo\'{{input}}'
+	// This template is parsed by Bash as: 'foo\' (string) then {{input}} (unquoted) then ' (string start)
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("sh"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "echo 'foo\\'{{input}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("input"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("vulnerable_template")
+
+	tool := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDef,
+		nil,
+		"vulnerable_template",
+	)
+
+	// 2. Craft a malicious input that exploits the unquoted context
+	// If the parser thinks it's single-quoted, it would allow semicolon.
+	// But since it's actually unquoted, semicolon allows RCE.
+	payload := "; echo pwned"
+
+	inputMap := map[string]interface{}{
+		"input": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	req := &ExecutionRequest{
+		ToolName: "vulnerable_template",
+		ToolInputs: inputBytes,
+	}
+
+	// 3. Execute - Expect Error
+	res, err := tool.Execute(context.Background(), req)
+
+	// 4. Assert
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "shell injection detected")
+	// It should fail because it detected dangerous character (semicolon) in unquoted context
+	assert.Contains(t, err.Error(), ";")
+}

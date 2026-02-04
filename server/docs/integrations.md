@@ -134,10 +134,10 @@ For production or staging environments, you can deploy `mcpany` to a Kubernetes 
 ### Deployment
 
 1. **Install the Helm Chart:**
-   Navigate to the `helm` directory in this repository and install the chart.
+   Navigate to the `k8s/helm/mcpany` directory in this repository and install the chart.
 
    ```bash
-   cd helm/
+   cd k8s/helm/mcpany
    helm install mcpany . -f values.yaml
    ```
 

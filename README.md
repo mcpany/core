@@ -94,6 +94,12 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 
 We follow a strict development workflow to ensure quality.
 
+### Setup
+Before running tests or building locally, ensure all dependencies and tools are installed.
+```bash
+make prepare
+```
+
 ### Testing
 Run all unit, integration, and end-to-end tests to ensure code correctness.
 ```bash
@@ -102,6 +108,7 @@ make test
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Run the linter to verify your changes:
 ```bash
 make lint
 ```

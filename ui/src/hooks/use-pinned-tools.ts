@@ -28,18 +28,36 @@ export function usePinnedTools() {
     }
   }, []);
 
+  const saveToStorage = (tools: string[]) => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tools));
+    } catch (error) {
+      console.error("Failed to save pinned tools to local storage", error);
+    }
+  };
+
   const togglePin = (toolName: string) => {
     setPinnedTools((prev) => {
       const newPinned = prev.includes(toolName)
         ? prev.filter((t) => t !== toolName)
         : [...prev, toolName];
+      saveToStorage(newPinned);
+      return newPinned;
+    });
+  };
 
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newPinned));
-      } catch (error) {
-        console.error("Failed to save pinned tools to local storage", error);
-      }
+  const bulkPin = (names: string[]) => {
+    setPinnedTools((prev) => {
+      const newPinned = Array.from(new Set([...prev, ...names]));
+      saveToStorage(newPinned);
+      return newPinned;
+    });
+  };
 
+  const bulkUnpin = (names: string[]) => {
+    setPinnedTools((prev) => {
+      const newPinned = prev.filter((t) => !names.includes(t));
+      saveToStorage(newPinned);
       return newPinned;
     });
   };
@@ -48,5 +66,5 @@ export function usePinnedTools() {
     return pinnedTools.includes(toolName);
   };
 
-  return { pinnedTools, togglePin, isPinned, isLoaded };
+  return { pinnedTools, togglePin, bulkPin, bulkUnpin, isPinned, isLoaded };
 }

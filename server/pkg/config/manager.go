@@ -28,8 +28,12 @@ import (
 const MergeStrategyReplace = "replace"
 
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.
-// It handles loading, validating, and merging service configurations from various sources,
-// including local files and remote URLs (e.g., GitHub).
+//
+// Summary: Handles loading, validating, and merging service configurations from various sources.
+//
+// Side Effects:
+//   - Stores the final, merged UpstreamServiceConfig objects.
+//   - Makes HTTP requests to fetch remote configurations.
 type UpstreamServiceManager struct {
 	log               *slog.Logger
 	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
@@ -43,15 +47,14 @@ type UpstreamServiceManager struct {
 }
 
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
-// It initializes the manager with the specified enabled profiles and default settings.
+//
+// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
 //
 // Parameters:
-//
-//	enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
+//   - enabledProfiles: []string. A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
-//
-//	A pointer to a fully initialized UpstreamServiceManager.
+//   - *UpstreamServiceManager: A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -73,18 +76,20 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 }
 
 // LoadAndMergeServices loads all upstream services from the provided configuration.
-// It processes both locally defined services and remote service collections, merging them
-// based on their priority and name.
+//
+// Summary: Processes local and remote service configurations, merging them based on priority and name.
 //
 // Parameters:
-//
-//	ctx: The context for the operation.
-//	config: The main server configuration containing service definitions and collection references.
+//   - ctx: context.Context. The context for the operation.
+//   - config: *configv1.McpAnyServerConfig. The main server configuration containing service definitions and collection references.
 //
 // Returns:
+//   - []*configv1.UpstreamServiceConfig: A slice of merged service configurations.
+//   - error: An error if any critical failure occurs during loading or merging.
 //
-//	A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
-//	An error if any critical failure occurs during loading or merging.
+// Side Effects:
+//   - May clear existing services if a replace strategy is configured.
+//   - Fetches remote collections via HTTP.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {
