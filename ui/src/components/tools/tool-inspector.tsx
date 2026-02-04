@@ -12,12 +12,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, RefreshCw } from "lucide-react";
+import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, RefreshCw, Code, FileText } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { DynamicForm } from "./dynamic-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -48,6 +49,8 @@ interface AuditLogEntry {
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   const [input, setInput] = useState("{}");
+  const [formValue, setFormValue] = useState<Record<string, any>>({});
+  const [inputMode, setInputMode] = useState<"form" | "json">("form");
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
@@ -111,7 +114,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       const args = JSON.parse(input);
       // const start = Date.now();
       const res = await apiClient.executeTool({
-          toolName: tool.name,
+          name: tool.name,
           arguments: args
       }, isDryRun);
       // const duration = Date.now() - start;
@@ -171,15 +174,66 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                     </Tabs>
                 </div>
 
-                <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="args">Arguments</Label>
+                    <div className="flex items-center space-x-1 border rounded-md p-0.5 bg-muted/20">
+                      <Button
+                        variant={inputMode === "form" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="h-6 px-2 text-xs gap-1"
+                        onClick={() => setInputMode("form")}
+                      >
+                        <FileText className="h-3 w-3" /> Form
+                      </Button>
+                      <Button
+                        variant={inputMode === "json" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="h-6 px-2 text-xs gap-1"
+                        onClick={() => {
+                          // Try to parse current form value to JSON string if switching to JSON
+                          try {
+                            setInput(JSON.stringify(formValue, null, 2));
+                          } catch (e) {
+                             // Ignore
+                          }
+                          setInputMode("json");
+                        }}
+                      >
+                        <Code className="h-3 w-3" /> JSON
+                      </Button>
+                    </div>
+                  </div>
+
+                  {inputMode === "form" ? (
+                    <div className="border rounded-md p-4 bg-muted/10">
+                      <DynamicForm
+                        schema={tool.inputSchema as any}
+                        value={formValue}
+                        onChange={(val) => {
+                          setFormValue(val);
+                          // Sync to JSON string for execution
+                          setInput(JSON.stringify(val, null, 2));
+                        }}
+                      />
+                    </div>
+                  ) : (
                     <Textarea
                         id="args"
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
+                        onChange={(e) => {
+                          setInput(e.target.value);
+                          // Try sync to form value
+                          try {
+                            setFormValue(JSON.parse(e.target.value));
+                          } catch (e) {
+                            // Invalid JSON, don't update form value yet
+                          }
+                        }}
                         className="font-mono text-sm"
-                        rows={5}
+                        rows={10}
                     />
+                  )}
                 </div>
 
                 {output && (
