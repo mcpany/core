@@ -254,10 +254,24 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// Using --rm to clean up.
 	// We purposely ignore the image pull error if it happens, assuming the run might fail later.
 	// But if run fails, we skip.
-	if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "mirror.gcr.io/library/busybox", "true").Run(); err != nil {
+	// We also mount a volume to verify that mounting works (common failure point in CI with overlayfs).
+	pwd, _ := os.Getwd()
+	mountArg := "-v"
+	// Use current dir or tmp as mount source
+	if pwd == "" {
+		pwd = "/tmp"
+	}
+	mountArg = mountArg + " " + pwd + ":/test_mount"
+
+	// Split mountArg for command
+	mountSrc := pwd
+	mountDst := "/test_mount"
+	mountSpec := mountSrc + ":" + mountDst
+
+	if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "-v", mountSpec, "mirror.gcr.io/library/busybox", "true").Run(); err != nil {
 		// Try fallback image if busybox fails to pull
-		if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "busybox", "true").Run(); err != nil {
-			t.Skipf("Skipping Docker tests: failed to run minimal container (likely storage driver/overlayfs issue): %v", err)
+		if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "-v", mountSpec, "busybox", "true").Run(); err != nil {
+			t.Skipf("Skipping Docker tests: failed to run minimal container with mount (likely storage driver/overlayfs issue): %v", err)
 		}
 	}
 
