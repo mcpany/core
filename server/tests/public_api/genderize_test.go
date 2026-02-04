@@ -12,9 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/tests/framework"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -33,9 +34,18 @@ func TestUpstreamService_Genderize(t *testing.T) {
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGenderizeServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Genderize Server with MCPANY ---
+	// --- 2. Start Fake Upstream ---
+	fakeUpstream := framework.NewFakeUpstream(t, map[string]interface{}{
+		"name":        "michael",
+		"gender":      "male",
+		"probability": 0.99,
+		"count":       12345,
+	})
+	defer fakeUpstream.Close()
+
+	// --- 3. Register Genderize Server with MCPANY ---
 	const genderizeServiceID = "e2e_genderize"
-	genderizeServiceEndpoint := "https://api.genderize.io"
+	genderizeServiceEndpoint := fakeUpstream.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", genderizeServiceID, genderizeServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

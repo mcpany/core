@@ -347,9 +347,26 @@ func NewManager() *Manager {
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
+	// Should we clear existing users first? Usually yes for a "Set" operation.
+	// But the previous implementation was additive/update only.
+	// However, for consistency with SetUsers semantics (replace), we should probably clear or handle removals.
+	// But to avoid breaking existing behavior implicitly, we keep it as is, or maybe we want to support partial updates?
+	// The previous code was:
+	// for _, u := range users { am.users[u.GetId()] = u }
+	// This only adds/updates. It does not remove users not in the list.
+	// We'll keep it additive for now to be safe, unless we want strict config sync.
 	for _, u := range users {
 		am.users[u.GetId()] = u
 	}
+}
+
+// ClearUsers removes all users from the manager.
+//
+// Summary: Clears all users.
+func (am *Manager) ClearUsers() {
+	am.usersMu.Lock()
+	defer am.usersMu.Unlock()
+	am.users = make(map[string]*configv1.User)
 }
 
 // SetStorage sets the storage backend for the manager.

@@ -510,6 +510,37 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 	return nil
 }
 
+// ClearAllServices unregisters all services and clears the registry.
+//
+// Summary: Unregisters all services.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: Error if any unregistration fails.
+func (r *ServiceRegistry) ClearAllServices(ctx context.Context) error {
+	// We get a list of all services first to avoid holding the lock while unregistering
+	r.mu.RLock()
+	services := make([]string, 0, len(r.serviceConfigs))
+	for name := range r.serviceConfigs {
+		services = append(services, name)
+	}
+	r.mu.RUnlock()
+
+	var errs []error
+	for _, name := range services {
+		if err := r.UnregisterService(ctx, name); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("failed to clear some services: %v", errs)
+	}
+	return nil
+}
+
 // GetAllServices returns a list of all registered services.
 //
 // Summary: Lists all services with redacted secrets.

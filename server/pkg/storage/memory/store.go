@@ -222,6 +222,23 @@ func (s *Store) Close() error {
 	return nil
 }
 
+// Clear deletes all data from the storage.
+//
+// Returns an error if the operation fails.
+func (s *Store) Clear(_ context.Context) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.services = make(map[string]*configv1.UpstreamServiceConfig)
+	s.secrets = make(map[string]*configv1.Secret)
+	s.users = make(map[string]*configv1.User)
+	s.profileDefinitions = make(map[string]*configv1.ProfileDefinition)
+	s.serviceCollections = make(map[string]*configv1.Collection)
+	s.tokens = make(map[tokenKey]*configv1.UserToken)
+	s.credentials = make(map[string]*configv1.Credential)
+	s.globalSettings = nil
+	return nil
+}
+
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 // Memory store always has data available.
 func (s *Store) HasConfigSources() bool {

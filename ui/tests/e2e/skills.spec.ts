@@ -5,8 +5,9 @@
 
 import { test, expect } from '@playwright/test';
 
-test.skip('Agent Skills', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('Agent Skills', () => {
+  test.beforeEach(async ({ page, request }) => {
+    await request.post('/api/v1/debug/reset');
     await page.goto('/skills');
     // Ensure we are on the list page
     await expect(page).toHaveURL(/\/skills\/?$/);
