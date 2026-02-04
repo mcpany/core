@@ -36,6 +36,7 @@ import {
 import { Download } from "lucide-react";
 import { TemplateConfigForm } from "@/components/services/template-config-form";
 import { applyTemplateFields } from "@/lib/template-utils";
+import { BulkUpdates } from "@/components/services/bulk-service-editor";
 
 
 /**
@@ -164,14 +165,28 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: BulkUpdates) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
         await Promise.all(servicesToUpdate.map(service => {
             const updated = { ...service };
-            if (updates.tags) {
+
+            // Apply Tags
+            if (updates.tags && updates.tags.length > 0) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
             }
+
+            // Apply Env Vars (only for Command Line services)
+            if (updates.env && Object.keys(updates.env).length > 0 && service.commandLineService) {
+                updated.commandLineService = {
+                    ...service.commandLineService,
+                    env: {
+                        ...(service.commandLineService.env || {}),
+                        ...updates.env
+                    }
+                };
+            }
+
             return apiClient.updateService(updated as any);
         }));
         toast({
