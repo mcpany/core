@@ -5,8 +5,9 @@ package integration_test
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"testing"
 	"time"
 
@@ -26,16 +27,48 @@ func TestE2EPrompt(t *testing.T) {
 		RegisterUpstream:    RegisterPromptService,
 		InvokeAIClient:      InvokeAIWithPrompt,
 		RegistrationMethods: []framework.RegistrationMethod{framework.GRPCRegistration},
+		WaitForUpstreamPort: WaitForPromptServerPort,
 	})
 }
 
 func BuildPromptServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
+	// Use port 0 for dynamic allocation
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(root, "../build/test/bin/prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
-	proc.Port = port
+	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(root, "../build/test/bin/prompt-server"), []string{"--port", "0"}, nil)
+	proc.Port = 0
 	return proc
+}
+
+func WaitForPromptServerPort(t *testing.T, proc *integration.ManagedProcess) int {
+	t.Helper()
+	var port int
+	timeout := 10 * time.Second
+	deadline := time.Now().Add(timeout)
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+
+	// Regex for "server listening at 127.0.0.1:54321"
+	re := regexp.MustCompile(`server listening at .*?:(\d+)`)
+
+	for time.Now().Before(deadline) {
+		out := proc.StderrString() // prompt-server uses log which goes to stderr
+		matches := re.FindStringSubmatch(out)
+		if len(matches) >= 2 {
+			if p, err := strconv.Atoi(matches[1]); err == nil {
+				port = p
+				t.Logf("WaitForPromptServerPort: Found port %d", port)
+				return port
+			}
+		}
+		select {
+		case <-ticker.C:
+			continue
+		default:
+		}
+	}
+	t.Fatalf("Prompt server did not output a port within %v. Stderr: %q", timeout, proc.StderrString())
+	return 0
 }
 
 func RegisterPromptService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
