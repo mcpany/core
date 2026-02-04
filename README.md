@@ -80,6 +80,7 @@ Follow these steps to get up and running immediately.
 
 ### Hello World
 Once the server is running, you can verify it using `curl` or an MCP client.
+
 ```bash
 # Check health
 curl http://localhost:50050/health

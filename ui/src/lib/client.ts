@@ -222,7 +222,16 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     *
+     * Summary: Retrieves a list of all configured upstream services from the backend.
+     *
+     * @returns Promise<any[]>. A promise that resolves to a list of services.
+     *
+     * Errors/Throws:
+     *   - Throws error if the fetch fails.
+     *
+     * Side Effects:
+     *   - Makes a network request.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -261,8 +270,17 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     *
+     * Summary: Retrieves detailed configuration for a specific service.
+     *
+     * @param id - string. The ID of the service to retrieve.
+     * @returns Promise<any>. A promise that resolves to the service configuration.
+     *
+     * Errors/Throws:
+     *   - Throws error if the service is not found or fetch fails.
+     *
+     * Side Effects:
+     *   - Makes a network request (gRPC or REST).
      */
     getService: async (id: string) => {
          try {

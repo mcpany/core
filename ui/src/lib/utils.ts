@@ -9,8 +9,13 @@ import { twMerge } from "tailwind-merge"
 /**
  * Combines multiple class names into a single string, handling conflicts and conditionals.
  *
- * @param inputs - A list of class values (strings, arrays, objects) to combine.
- * @returns A merged class name string.
+ * Summary: Merges Tailwind CSS classes and handles conditional class logic.
+ *
+ * @param inputs - ClassValue[]. A list of class values (strings, arrays, objects) to combine.
+ * @returns string. A merged class name string.
+ *
+ * Side Effects:
+ *  - None.
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
