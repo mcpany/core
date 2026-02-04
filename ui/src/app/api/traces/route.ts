@@ -27,7 +27,7 @@ interface DebugEntry {
  * @param request - The request.
  */
 export async function GET(request: Request) {
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
 
   try {
     const res = await fetch(`${backendUrl}/debug/entries`, {
@@ -55,6 +55,7 @@ export async function GET(request: Request) {
         const startTime = new Date(entry.timestamp).getTime();
         const durationMs = entry.duration / 1000000; // ns to ms
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let input: Record<string, any> | undefined;
         try {
             input = JSON.parse(entry.request_body);
@@ -62,6 +63,7 @@ export async function GET(request: Request) {
             input = { raw: entry.request_body };
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let output: Record<string, any> | undefined;
         try {
             output = JSON.parse(entry.response_body);

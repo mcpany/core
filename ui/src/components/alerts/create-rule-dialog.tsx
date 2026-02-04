@@ -26,8 +26,9 @@ import {
     SelectValue,
   } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/client";
 
 /**
  * CreateRuleDialog component.
@@ -36,14 +37,53 @@ import { useToast } from "@/hooks/use-toast";
 export function CreateRuleDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
-    // In a real app, this would make an API call
-    toast({
-        title: "Rule Created",
-        description: "Alert rule has been successfully created."
-    });
-    setOpen(false);
+  const [name, setName] = useState("");
+  const [severity, setSeverity] = useState("warning");
+  const [service, setService] = useState("all");
+  const [condition, setCondition] = useState("");
+
+  const handleSave = async () => {
+    if (!name || !condition) {
+        toast({
+            title: "Validation Error",
+            description: "Name and Condition are required.",
+            variant: "destructive"
+        });
+        return;
+    }
+
+    setLoading(true);
+    try {
+        await apiClient.createAlertRule({
+            name,
+            severity,
+            service: service === 'all' ? '' : service,
+            condition,
+            enabled: true
+        });
+
+        toast({
+            title: "Rule Created",
+            description: "Alert rule has been successfully created."
+        });
+        setOpen(false);
+        // Reset form
+        setName("");
+        setSeverity("warning");
+        setService("all");
+        setCondition("");
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Error",
+            description: "Failed to create alert rule.",
+            variant: "destructive"
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -65,13 +105,19 @@ export function CreateRuleDialog() {
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input id="name" placeholder="e.g. High CPU Warning" className="col-span-3" />
+            <Input
+                id="name"
+                placeholder="e.g. High CPU Warning"
+                className="col-span-3"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="severity" className="text-right">
               Severity
             </Label>
-            <Select defaultValue="warning">
+            <Select value={severity} onValueChange={setSeverity}>
                 <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select severity" />
                 </SelectTrigger>
@@ -86,7 +132,7 @@ export function CreateRuleDialog() {
             <Label htmlFor="service" className="text-right">
               Service
             </Label>
-            <Select>
+            <Select value={service} onValueChange={setService}>
                 <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select service (optional)" />
                 </SelectTrigger>
@@ -107,6 +153,8 @@ export function CreateRuleDialog() {
                     id="condition"
                     placeholder="e.g. cpu_usage > 90 AND duration > 5m"
                     className="font-mono text-xs"
+                    value={condition}
+                    onChange={(e) => setCondition(e.target.value)}
                 />
                 <p className="text-[10px] text-muted-foreground">
                     Supports PromQL or simple expression syntax.
@@ -115,8 +163,11 @@ export function CreateRuleDialog() {
           </div>
         </div>
         <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Create Rule</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>Cancel</Button>
+            <Button onClick={handleSave} disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Rule
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
