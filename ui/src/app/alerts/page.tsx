@@ -8,6 +8,7 @@
 import { AlertList } from "@/components/alerts/alert-list";
 import { AlertStats } from "@/components/alerts/alert-stats";
 import { CreateRuleDialog } from "@/components/alerts/create-rule-dialog";
+import { WebhookDialog } from "@/components/alerts/webhook-dialog";
 
 /**
  * AlertsPage component.
@@ -21,7 +22,10 @@ export default function AlertsPage() {
             <h2 className="text-3xl font-bold tracking-tight">Alerts & Incidents</h2>
             <p className="text-muted-foreground">Monitor system health and manage incident response.</p>
         </div>
-        <CreateRuleDialog />
+        <div className="flex items-center gap-2">
+            <WebhookDialog />
+            <CreateRuleDialog />
+        </div>
       </div>
 
       <div className="space-y-4 flex-1 flex flex-col min-h-0">

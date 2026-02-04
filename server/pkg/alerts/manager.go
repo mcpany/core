@@ -5,11 +5,16 @@
 package alerts
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"net/http"
 	"sort"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // ManagerInterface defines the interface for managing alerts.
@@ -22,6 +27,13 @@ type ManagerInterface interface {
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
 	UpdateAlert(id string, alert *Alert) *Alert
+
+	// Webhooks
+
+	// GetWebhookURL returns the configured global webhook URL.
+	GetWebhookURL() string
+	// SetWebhookURL sets the configured global webhook URL.
+	SetWebhookURL(url string)
 
 	// Rules
 
@@ -39,9 +51,10 @@ type ManagerInterface interface {
 
 // Manager implements ManagerInterface using in-memory storage.
 type Manager struct {
-	mu     sync.RWMutex
-	alerts map[string]*Alert
-	rules  map[string]*AlertRule
+	mu         sync.RWMutex
+	alerts     map[string]*Alert
+	rules      map[string]*AlertRule
+	webhookURL string
 }
 
 // NewManager creates a new Manager and seeds it with initial data.
@@ -93,7 +106,6 @@ func (m *Manager) GetAlert(id string) *Alert {
 // CreateAlert creates a new alert.
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	if alert.ID == "" {
 		alert.ID = "AL-" + uuid.New().String()[:8]
 	}
@@ -101,15 +113,44 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 		alert.Timestamp = time.Now()
 	}
 	m.alerts[alert.ID] = alert
+	webhookURL := m.webhookURL
+	m.mu.Unlock()
+
+	// Trigger webhook asynchronously
+	if webhookURL != "" {
+		go func(url string, a *Alert) {
+			body, err := json.Marshal(a)
+			if err != nil {
+				logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
+				return
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
+			if err != nil {
+				logging.GetLogger().Error("failed to create webhook request", "error", err)
+				return
+			}
+			req.Header.Set("Content-Type", "application/json")
+
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
+				return
+			}
+			defer func() { _ = resp.Body.Close() }()
+		}(webhookURL, alert)
+	}
+
 	return alert
 }
 
 // UpdateAlert updates an existing alert.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	existing, ok := m.alerts[id]
 	if !ok {
+		m.mu.Unlock()
 		return nil
 	}
 	// Update fields
@@ -117,7 +158,51 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 		existing.Status = alert.Status
 	}
 	// Can add more updatable fields here
+	webhookURL := m.webhookURL
+	m.mu.Unlock()
+
+	// Trigger webhook asynchronously if status changed (or just on update?)
+	// For now trigger on any update as "Incident Response" implies updates are important.
+	if webhookURL != "" {
+		go func(url string, a *Alert) {
+			body, err := json.Marshal(a)
+			if err != nil {
+				logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
+				return
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
+			if err != nil {
+				logging.GetLogger().Error("failed to create webhook request", "error", err)
+				return
+			}
+			req.Header.Set("Content-Type", "application/json")
+
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
+				return
+			}
+			defer func() { _ = resp.Body.Close() }()
+		}(webhookURL, existing)
+	}
+
 	return existing
+}
+
+// GetWebhookURL returns the configured global webhook URL.
+func (m *Manager) GetWebhookURL() string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.webhookURL
+}
+
+// SetWebhookURL sets the configured global webhook URL.
+func (m *Manager) SetWebhookURL(url string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.webhookURL = url
 }
 
 // ListRules returns all rules.
