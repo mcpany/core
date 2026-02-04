@@ -87,8 +87,8 @@ func ExportAuditLogsHandler(auditMiddleware *middleware.AuditMiddleware) http.Ha
 
 		// Rows
 		for _, log := range logs {
-			argsJson, _ := json.Marshal(log.Arguments)
-			resultJson, _ := json.Marshal(log.Result)
+			argsJSON, _ := json.Marshal(log.Arguments)
+			resultJSON, _ := json.Marshal(log.Result)
 
 			row := []string{
 				log.Timestamp.Format(time.RFC3339),
@@ -97,8 +97,8 @@ func ExportAuditLogsHandler(auditMiddleware *middleware.AuditMiddleware) http.Ha
 				log.ProfileID,
 				log.Duration,
 				log.Error,
-				string(argsJson),
-				string(resultJson),
+				string(argsJSON),
+				string(resultJSON),
 			}
 			if err := writer.Write(row); err != nil {
 				logging.GetLogger().Error("Failed to write CSV row", "error", err)
