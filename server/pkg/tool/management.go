@@ -14,6 +14,7 @@ import (
 	json "github.com/json-iterator/go"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/tracing"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
@@ -425,6 +426,10 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := tracing.StartSpan(ctx, "tool_execution", "core")
+	defer span.End()
+	span.SetInput(req)
+
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
 
@@ -507,13 +512,17 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 
 	// 3. Run Pre-execution Hooks (modifies ctx/req)
 	for _, h := range preHooks {
+		_, hookSpan := tracing.StartSpan(ctx, "pre_hook", "hook")
 		action, modifiedReq, err := h.ExecutePre(ctx, req)
 		if err != nil {
+			hookSpan.SetError(err)
+			hookSpan.End()
 			log.Warn("Tool execution denied by pre-hook error", "error", err)
 			return nil, err
 		}
 		if action == ActionDeny {
 			log.Warn("Tool execution denied by pre-hook")
+			hookSpan.End()
 			return nil, fmt.Errorf("tool execution denied by hook")
 		}
 		if action == ActionSaveCache || action == ActionDeleteCache {
@@ -524,20 +533,32 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		if modifiedReq != nil {
 			req = modifiedReq
 		}
+		hookSpan.End()
 	}
 
 	// 4. Define Core Execution (Execute + PostHooks)
 	executeCore := func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		_, execSpan := tracing.StartSpan(ctx, "tool_call", "tool")
 		result, err := t.Execute(ctx, req)
+		if err != nil {
+			execSpan.SetError(err)
+		} else {
+			execSpan.SetOutput(result)
+		}
+		execSpan.End()
 
 		// Execute Post Hooks
 		for _, h := range postHooks {
+			_, hookSpan := tracing.StartSpan(ctx, "post_hook", "hook")
 			newResult, hkErr := h.ExecutePost(ctx, req, result)
 			if hkErr != nil {
+				hookSpan.SetError(hkErr)
+				hookSpan.End()
 				log.Warn("Post-hook execution failed", "error", hkErr)
 				return nil, hkErr
 			}
 			result = newResult
+			hookSpan.End()
 		}
 
 		if err != nil {
@@ -554,8 +575,14 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		m := tm.middlewares[i]
 		chain = func(next ExecutionFunc) ExecutionFunc {
 			return func(ctx context.Context, req *ExecutionRequest) (any, error) {
+				ctx, mwSpan := tracing.StartSpan(ctx, fmt.Sprintf("middleware_%d", i), "middleware")
 				log.Debug("Executing middleware", "middleware", i)
-				return m.Execute(ctx, req, next)
+				res, err := m.Execute(ctx, req, next)
+				if err != nil {
+					mwSpan.SetError(err)
+				}
+				mwSpan.End()
+				return res, err
 			}
 		}(chain)
 	}
@@ -565,8 +592,10 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	duration := time.Since(start)
 
 	if err != nil {
+		span.SetError(err)
 		log.Error("Tool execution failed", "error", err, "duration", duration.String())
 	} else {
+		span.SetOutput(result)
 		log.Info("Tool execution successful", "duration", duration.String())
 	}
 	return result, err
