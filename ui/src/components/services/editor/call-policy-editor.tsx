@@ -28,6 +28,15 @@ const ACTION_LABELS: Record<number, string> = {
   [CallPolicy_Action.DELETE_CACHE]: "Delete Cache",
 };
 
+/**
+ * CallPolicyEditor provides a UI for managing access control policies (Call Policies).
+ * It allows users to define Allow/Deny rules for specific tools, arguments, and paths.
+ *
+ * @param props - The component props.
+ * @param props.policies - The list of current Call Policies.
+ * @param props.onChange - Callback function called when policies are updated.
+ * @returns The rendered CallPolicyEditor component.
+ */
 export function CallPolicyEditor({ policies, onChange }: CallPolicyEditorProps) {
   const addPolicy = () => {
     const newPolicy: CallPolicy = {
