@@ -2752,6 +2752,13 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 			return err
 		}
+		// Also check for dangerous calls for ALL quote levels if it is an interpreter.
+		// This prevents exploitation of interpreters where the shell argument structure is preserved
+		// (e.g. double-quoted shell arg) but the interpreter's code execution can still be triggered
+		// via function calls if the input is treated as code (e.g. python -c "{{code}}").
+		if err := checkDangerousInterpreterCalls(val); err != nil {
+			return fmt.Errorf("shell injection detected: %w", err)
+		}
 	}
 
 	if quoteLevel == 3 { // Backticked
@@ -2773,23 +2780,10 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
 		}
 
-		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
-		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
-		// We normalize by removing whitespace to detect "system (" or "system\t(".
-		var b strings.Builder
-		b.Grow(len(val))
-		for _, r := range val {
-			if !unicode.IsSpace(r) {
-				b.WriteRune(r)
-			}
-		}
-		cleanVal := strings.ToLower(b.String())
-
-		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
-		for _, call := range dangerousCalls {
-			if strings.Contains(cleanVal, call) {
-				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
-			}
+		// Check for dangerous calls unconditionally for single-quoted strings, as they might be wrapping an interpreter command
+		// (e.g. sh -c "awk '...'").
+		if err := checkDangerousInterpreterCalls(val); err != nil {
+			return fmt.Errorf("shell injection detected: %w", err)
 		}
 
 		return nil
@@ -2806,6 +2800,28 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	return checkUnquotedInjection(val, command)
+}
+
+func checkDangerousInterpreterCalls(val string) error {
+	// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis.
+	// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
+	// We normalize by removing whitespace to detect "system (" or "system\t(".
+	var b strings.Builder
+	b.Grow(len(val))
+	for _, r := range val {
+		if !unicode.IsSpace(r) {
+			b.WriteRune(r)
+		}
+	}
+	cleanVal := strings.ToLower(b.String())
+
+	dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+	for _, call := range dangerousCalls {
+		if strings.Contains(cleanVal, call) {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", call)
+		}
+	}
+	return nil
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
