@@ -14,6 +14,15 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * Handles GET requests to check the health of upstream services.
+ *
+ * It proxies the request to the backend's /api/v1/services endpoint and
+ * returns a list of services with their calculated status (healthy, inactive, or unhealthy).
+ *
+ * @param request - The incoming Request object.
+ * @returns A NextResponse containing the list of BackendService objects or an error message.
+ */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');
