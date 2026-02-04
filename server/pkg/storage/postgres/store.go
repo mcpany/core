@@ -49,7 +49,10 @@ func (s *Store) HasConfigSources() bool {
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	// ⚡ BOLT: Parallelized independent DB queries to reduce waterfall latency.
 	// Randomized Selection from Top 5 High-Impact Targets.
-	g, ctx := errgroup.WithContext(ctx)
+	// We use a basic errgroup (no context cancellation) to ensure all queries
+	// attempt to run, preventing race conditions in tests where context cancellation
+	// might race with sqlmock expectations.
+	var g errgroup.Group
 
 	var (
 		services    []*configv1.UpstreamServiceConfig
