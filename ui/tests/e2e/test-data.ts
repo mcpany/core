@@ -26,9 +26,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                         input_schema: {
                             type: "object",
                             properties: { amount: { type: "number" } }
-                        }
+                        },
+                        call_id: "process_payment_call"
                     }
-                ]
+                ],
+                calls: {
+                    "process_payment_call": {
+                        id: "process_payment_call",
+                        args: ["payment_processed"]
+                    }
+                }
             }
         },
         {
@@ -44,9 +51,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                          input_schema: {
                              type: "object",
                              properties: { id: { type: "string" } }
-                         }
+                         },
+                         call_id: "get_user_call"
                      }
-                ]
+                ],
+                calls: {
+                    "get_user_call": {
+                        id: "get_user_call",
+                        args: ["user_details"]
+                    }
+                }
             }
         },
         {
@@ -62,9 +76,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                         input_schema: {
                             type: "object",
                             properties: { expr: { type: "string" } }
-                        }
+                        },
+                        call_id: "calculator_call"
                     }
-                ]
+                ],
+                calls: {
+                    "calculator_call": {
+                        id: "calculator_call",
+                        args: ["42"]
+                    }
+                }
             }
         }
     ];
