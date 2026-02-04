@@ -15,6 +15,7 @@ test.describe('Alerts Page', () => {
     // But for this test, we can just create them and filter by unique text we look for.
     await request.post('/api/v1/alerts', {
       data: {
+        id: "alert-cpu", // Force ID to avoid duplicates
         title: "High CPU Usage",
         message: "CPU usage > 90%",
         severity: "critical",
@@ -25,6 +26,7 @@ test.describe('Alerts Page', () => {
     });
     await request.post('/api/v1/alerts', {
       data: {
+        id: "alert-latency", // Force ID
         title: "API Latency Spike",
         message: "Latency high",
         severity: "warning",
@@ -35,6 +37,7 @@ test.describe('Alerts Page', () => {
     });
     await request.post('/api/v1/alerts', {
         data: {
+          id: "alert-disk", // Force ID
           title: "Disk Space Low",
           message: "Disk space low",
           severity: "warning",
