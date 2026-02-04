@@ -11,6 +11,10 @@ upstream_services:
         echo:
           method: "HTTP_METHOD_POST"
           endpoint_path: "/echo"
+          parameters:
+            - schema:
+                name: "message"
+                type: "STRING"
       tools:
         - name: "echo"
           description: "Echoes back the request body."

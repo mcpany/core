@@ -19,8 +19,18 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "pay" }
+                ],
+                calls: {
+                    "pay": {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/charge",
+                        parameters: [
+                            { schema: { name: "amount", type: "NUMBER" } },
+                            { schema: { name: "currency", type: "STRING" } }
+                        ]
+                    }
+                }
             }
         },
         {
@@ -28,22 +38,41 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://ui-http-echo-server:5678", // Point to reachable echo server
+                address: "http://ui-http-echo-server:5678",
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                     { name: "get_user", description: "Get user details", call_id: "get" }
+                ],
+                calls: {
+                    "get": {
+                        method: "HTTP_METHOD_GET",
+                        endpoint_path: "/users/{{id}}",
+                        parameters: [
+                            { schema: { name: "id", type: "STRING" } }
+                        ]
+                    }
+                }
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://ui-http-echo-server:5678", // Point to reachable echo server
+                address: "http://ui-http-echo-server:5678",
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    { name: "calculator", description: "calc", call_id: "calc" }
+                ],
+                calls: {
+                    "calc": {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/calculate",
+                        parameters: [
+                            { schema: { name: "op", type: "STRING" } },
+                            { schema: { name: "a", type: "NUMBER" } },
+                            { schema: { name: "b", type: "NUMBER" } }
+                        ]
+                    }
+                }
             }
         }
     ];
