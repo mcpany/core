@@ -1,7 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package app provides the main application logic.
+// Package app provides the main application logic and lifecycle management for the MCP Any server.
+// It orchestrates the initialization of components, configuration loading, and server startup.
 package app
 
 import (
