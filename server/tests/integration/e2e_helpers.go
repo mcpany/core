@@ -154,6 +154,7 @@ const (
 	localHeaderMcpSessionID = "Mcp-Session-Id"
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
+	trueStr                 = "true"
 	// LoopbackIP is the default loopback IP for testing.
 	LoopbackIP              = "127.0.0.1"
 	loopbackIP              = LoopbackIP
@@ -172,7 +173,7 @@ var (
 func getDockerCommand() (string, []string) {
 	dockerOnce.Do(func() {
 		// Environment variable overrides detection.
-		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == "true" || val == "1" {
+		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == trueStr || val == "1" {
 			dockerCommand = sudoCmd
 			dockerArgs = []string{dockerCmd}
 			return
@@ -598,7 +599,7 @@ func IsDockerSocketAccessible() bool {
 // Returns the result.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") == trueStr {
 		t.Skip("Skipping test requiring Docker in CI due to potential rate limiting/network issues")
 	}
 
@@ -1006,7 +1007,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") == trueStr {
 		t.Skip("Skipping Redis container tests in CI due to dind/overlay issues")
 	}
 	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")

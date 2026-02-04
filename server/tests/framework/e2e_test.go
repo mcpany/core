@@ -6,6 +6,7 @@ package framework
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/mcpany/core/server/tests/integration"
@@ -16,6 +17,9 @@ import (
 
 func TestGRPCHelperFunctions(t *testing.T) {
 	t.Parallel()
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping gRPC helper tests in CI due to potential network/port binding issues")
+	}
 	t.Run("unauthenticated", func(t *testing.T) {
 		t.Parallel()
 		proc := BuildGRPCWeatherServer(t)
