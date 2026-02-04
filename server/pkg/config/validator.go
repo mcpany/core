@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"os/exec"
@@ -1202,6 +1203,14 @@ func validateSchema(s *structpb.Struct) error {
 
 	// Create a new compiler
 	c := jsonschema.NewCompiler()
+
+	// Sentinel Security Update: Disable external resource loading to prevent LFI/SSRF.
+	// By default, jsonschema might try to load referenced schemas via HTTP or File.
+	// We explicitly disable this by providing a loader that always errors.
+	c.LoadURL = func(s string) (io.ReadCloser, error) {
+		return nil, fmt.Errorf("external schema references are disabled for security: %s", s)
+	}
+
 	// Add the schema as a resource
 	// We use "schema.json" as a virtual filename
 	if err := c.AddResource("schema.json", bytes.NewReader(jsonBytes)); err != nil {
