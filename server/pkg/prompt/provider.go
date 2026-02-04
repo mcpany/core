@@ -11,18 +11,21 @@ type mcpServerProvider struct {
 	server *mcp.Server
 }
 
-// Server returns the underlying MCP server instance.
+// Server returns the underlying MCP server instance associated with this provider.
 //
-// Returns the result.
+// Returns:
+//   - *mcp.Server: The MCP server instance.
 func (p *mcpServerProvider) Server() *mcp.Server {
 	return p.server
 }
 
-// NewMCPServerProvider creates a new MCPServerProvider.
+// NewMCPServerProvider creates a new provider that wraps an MCP server.
 //
-// server is the server instance.
+// Parameters:
+//   - server: *mcp.Server. The MCP server instance to wrap.
 //
-// Returns the result.
+// Returns:
+//   - MCPServerProvider: A new provider instance.
 func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
 	return &mcpServerProvider{server: server}
 }

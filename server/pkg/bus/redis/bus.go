@@ -19,12 +19,14 @@ type Bus[T any] struct {
 	client *redis.Client
 }
 
-// New creates a new RedisBus.
+// New creates a new RedisBus instance using the provided configuration.
 //
-// redisConfig is the redisConfig.
+// Parameters:
+//   - redisConfig: *bus.RedisBus. The configuration object containing address, password, and DB index.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *Bus[T]: A pointer to the initialized RedisBus.
+//   - error: An error if the configuration causes initialization issues (always nil currently).
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
@@ -41,9 +43,11 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
 //
-// client is the client.
+// Parameters:
+//   - client: *redis.Client. The pre-configured Redis client instance.
 //
-// Returns the result.
+// Returns:
+//   - *Bus[T]: A pointer to the initialized RedisBus.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -52,11 +56,13 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 
 // Publish publishes a message to a Redis channel.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// msg is the msg.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic to publish to.
+//   - msg: T. The message payload to publish.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if serialization fails or the Redis publish operation fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -65,13 +71,16 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	return b.client.Publish(ctx, topic, payload).Err()
 }
 
-// Subscribe subscribes to a Redis channel.
+// Subscribe subscribes to a Redis channel and invokes the handler for each received message.
+// It manages the subscription and handles message unmarshaling.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// handler is the handler.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic to subscribe to.
+//   - handler: func(T). The callback function to invoke for each message.
 //
-// Returns the result.
+// Returns:
+//   - func(): A function to unsubscribe and close the subscription.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -121,13 +130,15 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 	return unsubscribe
 }
 
-// SubscribeOnce subscribes to a topic for a single message.
+// SubscribeOnce subscribes to a Redis topic and invokes the handler exactly once for the first received message.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// handler is the handler.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic to subscribe to.
+//   - handler: func(T). The callback function to invoke.
 //
-// Returns the result.
+// Returns:
+//   - func(): A function to unsubscribe (if called before the message is received).
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -159,9 +170,10 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return proxyUnsub
 }
 
-// Close closes the Redis client.
+// Close closes the underlying Redis client and releases resources.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if closing the client fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

@@ -6,8 +6,11 @@
 import { useState, useEffect, useCallback } from "react";
 
 /**
- * Hook for localstorage.
- * @returns The result.
+ * A hook that manages a piece of state synchronized with localStorage.
+ *
+ * @param key - The localStorage key.
+ * @param initialValue - The initial value to use if no value is stored.
+ * @returns A tuple containing the current value and a setter function.
  */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void, boolean] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
