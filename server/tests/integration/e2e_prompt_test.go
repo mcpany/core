@@ -6,6 +6,7 @@ package integration_test
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -33,7 +34,18 @@ func BuildPromptServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(root, "../build/test/bin/prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
+
+	binPath := filepath.Join(root, "../build/test/bin/prompt-server")
+	if _, err := os.Stat(binPath); os.IsNotExist(err) {
+		t.Logf("prompt-server binary not found at %s, falling back to 'go run'", binPath)
+		// Fallback to go run
+		sourcePath := filepath.Join(root, "tests/integration/cmd/mocks/prompt-server/main.go")
+		proc := integration.NewManagedProcess(t, "prompt_server", "go", []string{"run", sourcePath, "--port", fmt.Sprintf("%d", port)}, nil)
+		proc.Port = port
+		return proc
+	}
+
+	proc := integration.NewManagedProcess(t, "prompt_server", binPath, []string{"--port", fmt.Sprintf("%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
