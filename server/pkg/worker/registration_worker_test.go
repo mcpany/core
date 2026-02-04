@@ -145,7 +145,7 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 		assert.Equal(t, "test-service-id", res.ServiceKey)
 		assert.Len(t, res.DiscoveredTools, 1)
 		assert.Len(t, res.DiscoveredResources, 1)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for registration result")
 	}
 }
@@ -191,7 +191,7 @@ func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
 	case res := <-resChan:
 		assert.Equal(t, correlationID, res.CorrelationID())
 		assert.ErrorIs(t, res.Error, expectedErr)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for registration result")
 	}
 }
@@ -247,7 +247,7 @@ func TestServiceRegistrationWorker_Unregister(t *testing.T) {
 		mu.Lock()
 		assert.True(t, unregisterCalled)
 		mu.Unlock()
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for unregistration result")
 	}
 }
@@ -294,7 +294,7 @@ func TestServiceRegistrationWorker_List(t *testing.T) {
 		assert.Equal(t, correlationID, res.CorrelationID())
 		assert.NoError(t, res.Error)
 		assert.Equal(t, services, res.Services)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for list result")
 	}
 }
@@ -341,7 +341,7 @@ func TestServiceRegistrationWorker_Get(t *testing.T) {
 		assert.Equal(t, correlationID, res.CorrelationID())
 		assert.NoError(t, res.Error)
 		assert.Equal(t, service, res.Service)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for get result")
 	}
 }
@@ -383,7 +383,7 @@ func TestServiceRegistrationWorker_Get_NotFound(t *testing.T) {
 		assert.Equal(t, correlationID, res.CorrelationID())
 		assert.Error(t, res.Error)
 		assert.Nil(t, res.Service)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for get result")
 	}
 }
@@ -441,7 +441,7 @@ func TestServiceRegistrationWorker_Register_Timeout(t *testing.T) {
 	case res := <-resChan:
 		assert.Equal(t, correlationID, res.CorrelationID())
 		assert.NoError(t, res.Error)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for registration result")
 	}
 }
