@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -242,6 +243,22 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Verify Docker can actually run containers (checks for overlayfs/storage driver issues)
+	// We use 'busybox' or 'alpine' as a lightweight check.
+	// We assume 'node:18-alpine' will be pulled later, so we can try running 'hello-world' or just check if we can run *anything*.
+	// Use 'true' to exit immediately.
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// Using --rm to clean up.
+	// We purposely ignore the image pull error if it happens, assuming the run might fail later.
+	// But if run fails, we skip.
+	if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "mirror.gcr.io/library/busybox", "true").Run(); err != nil {
+		// Try fallback image if busybox fails to pull
+		if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "busybox", "true").Run(); err != nil {
+			t.Skipf("Skipping Docker tests: failed to run minimal container (likely storage driver/overlayfs issue): %v", err)
+		}
 	}
 
 	tempDir := t.TempDir()
