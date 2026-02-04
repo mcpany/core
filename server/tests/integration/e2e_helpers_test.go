@@ -62,10 +62,9 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	// Skip in CI environments to avoid timeouts and rate limiting.
-	// We check for "CI" (GitHub Actions) and "GITHUB_ACTIONS".
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
+	// Skip in CI environments or when explicitly requested to avoid timeouts and rate limiting.
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		t.Skip("Skipping TestDockerHelpers in CI/Explicit Skip due to potential rate limiting/network issues")
 	}
 
 	// Also check if we are in the e2e-parallel job by checking an environment variable
