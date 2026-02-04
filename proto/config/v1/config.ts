@@ -136,7 +136,11 @@ export interface GlobalSettings {
   /** Whether to auto-discover local services (e.g. Ollama). */
   autoDiscoverLocal: boolean;
   /** Alert configuration. */
-  alerts?: AlertConfig | undefined;
+  alerts?:
+    | AlertConfig
+    | undefined;
+  /** Smart Recovery configuration. */
+  smartRecovery?: SmartRecoveryConfig | undefined;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -227,6 +231,22 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface SmartRecoveryConfig {
+  enabled: boolean;
+  /** The provider to use (e.g., "openai", "ollama"). */
+  provider: string;
+  /** The API key or secret for the provider. */
+  apiKey?:
+    | SecretValue
+    | undefined;
+  /** The model to use. */
+  model: string;
+  /** Maximum number of retries. */
+  maxRetries: number;
+  /** Base URL for the provider (optional). */
+  baseUrl: string;
 }
 
 export interface AlertConfig {
@@ -901,6 +921,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     readOnly: false,
     autoDiscoverLocal: false,
     alerts: undefined,
+    smartRecovery: undefined,
   };
 }
 
@@ -986,6 +1007,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.alerts !== undefined) {
       AlertConfig.encode(message.alerts, writer.uint32(218).fork()).join();
+    }
+    if (message.smartRecovery !== undefined) {
+      SmartRecoveryConfig.encode(message.smartRecovery, writer.uint32(226).fork()).join();
     }
     return writer;
   },
@@ -1213,6 +1237,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.alerts = AlertConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 28: {
+          if (tag !== 226) {
+            break;
+          }
+
+          message.smartRecovery = SmartRecoveryConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1263,6 +1295,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
       autoDiscoverLocal: isSet(object.auto_discover_local) ? globalThis.Boolean(object.auto_discover_local) : false,
       alerts: isSet(object.alerts) ? AlertConfig.fromJSON(object.alerts) : undefined,
+      smartRecovery: isSet(object.smart_recovery) ? SmartRecoveryConfig.fromJSON(object.smart_recovery) : undefined,
     };
   },
 
@@ -1349,6 +1382,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.alerts !== undefined) {
       obj.alerts = AlertConfig.toJSON(message.alerts);
     }
+    if (message.smartRecovery !== undefined) {
+      obj.smart_recovery = SmartRecoveryConfig.toJSON(message.smartRecovery);
+    }
     return obj;
   },
 
@@ -1402,6 +1438,151 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.alerts = (object.alerts !== undefined && object.alerts !== null)
       ? AlertConfig.fromPartial(object.alerts)
       : undefined;
+    message.smartRecovery = (object.smartRecovery !== undefined && object.smartRecovery !== null)
+      ? SmartRecoveryConfig.fromPartial(object.smartRecovery)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseSmartRecoveryConfig(): SmartRecoveryConfig {
+  return { enabled: false, provider: "", apiKey: undefined, model: "", maxRetries: 0, baseUrl: "" };
+}
+
+export const SmartRecoveryConfig: MessageFns<SmartRecoveryConfig> = {
+  encode(message: SmartRecoveryConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.enabled !== false) {
+      writer.uint32(8).bool(message.enabled);
+    }
+    if (message.provider !== "") {
+      writer.uint32(18).string(message.provider);
+    }
+    if (message.apiKey !== undefined) {
+      SecretValue.encode(message.apiKey, writer.uint32(26).fork()).join();
+    }
+    if (message.model !== "") {
+      writer.uint32(34).string(message.model);
+    }
+    if (message.maxRetries !== 0) {
+      writer.uint32(40).int32(message.maxRetries);
+    }
+    if (message.baseUrl !== "") {
+      writer.uint32(50).string(message.baseUrl);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SmartRecoveryConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSmartRecoveryConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.enabled = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.provider = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.apiKey = SecretValue.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.model = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.maxRetries = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.baseUrl = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SmartRecoveryConfig {
+    return {
+      enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false,
+      provider: isSet(object.provider) ? globalThis.String(object.provider) : "",
+      apiKey: isSet(object.api_key) ? SecretValue.fromJSON(object.api_key) : undefined,
+      model: isSet(object.model) ? globalThis.String(object.model) : "",
+      maxRetries: isSet(object.max_retries) ? globalThis.Number(object.max_retries) : 0,
+      baseUrl: isSet(object.base_url) ? globalThis.String(object.base_url) : "",
+    };
+  },
+
+  toJSON(message: SmartRecoveryConfig): unknown {
+    const obj: any = {};
+    if (message.enabled !== false) {
+      obj.enabled = message.enabled;
+    }
+    if (message.provider !== "") {
+      obj.provider = message.provider;
+    }
+    if (message.apiKey !== undefined) {
+      obj.api_key = SecretValue.toJSON(message.apiKey);
+    }
+    if (message.model !== "") {
+      obj.model = message.model;
+    }
+    if (message.maxRetries !== 0) {
+      obj.max_retries = Math.round(message.maxRetries);
+    }
+    if (message.baseUrl !== "") {
+      obj.base_url = message.baseUrl;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SmartRecoveryConfig>, I>>(base?: I): SmartRecoveryConfig {
+    return SmartRecoveryConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SmartRecoveryConfig>, I>>(object: I): SmartRecoveryConfig {
+    const message = createBaseSmartRecoveryConfig();
+    message.enabled = object.enabled ?? false;
+    message.provider = object.provider ?? "";
+    message.apiKey = (object.apiKey !== undefined && object.apiKey !== null)
+      ? SecretValue.fromPartial(object.apiKey)
+      : undefined;
+    message.model = object.model ?? "";
+    message.maxRetries = object.maxRetries ?? 0;
+    message.baseUrl = object.baseUrl ?? "";
     return message;
   },
 };

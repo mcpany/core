@@ -638,6 +638,7 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetDlp(),
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
+		cfg.GetGlobalSettings().GetSmartRecovery(),
 	)
 	if err != nil {
 		workerCancel()
