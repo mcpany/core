@@ -21,4 +21,6 @@ message User {
   repeated string profile_ids = 3 [json_name = "profile_ids"];
   // The list of roles assigned to the user.
   repeated string roles = 4 [json_name = "roles"];
+  // The dashboard layout configuration (JSON string).
+  string dashboard_layout = 5 [json_name = "dashboard_layout"];
 }
