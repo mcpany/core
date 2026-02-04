@@ -4,6 +4,7 @@
 package mcp
 
 import (
+	"archive/zip"
 	"context"
 	"os"
 	"path/filepath"
@@ -13,6 +14,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -68,13 +70,65 @@ func TestUnzipBundle_Cases(t *testing.T) {
 	t.Run("ZipSlip", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		zipPath := filepath.Join(tmpDir, "slip.zip")
-		f, _ := os.Create(zipPath)
-		f.Close()
+		destDir := filepath.Join(tmpDir, "dest")
+		err := os.Mkdir(destDir, 0755)
+		require.NoError(t, err)
+
+		f, err := os.Create(zipPath)
+		require.NoError(t, err)
+		w := zip.NewWriter(f)
+
+		header := &zip.FileHeader{
+			Name:   "../evil.txt",
+			Method: zip.Store,
+		}
+		writer, err := w.CreateHeader(header)
+		require.NoError(t, err)
+		_, err = writer.Write([]byte("evil content"))
+		require.NoError(t, err)
+
+		require.NoError(t, w.Close())
+		require.NoError(t, f.Close())
+
+		err = unzipBundle(zipPath, destDir)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "illegal file path")
+		assert.NoFileExists(t, filepath.Join(tmpDir, "evil.txt"))
 	})
 
 	t.Run("DecompressionBomb", func(t *testing.T) {
-		_ = filepath.Join(t.TempDir(), "bomb.zip")
-		_ = t.TempDir()
+		if os.Getenv("SKIP_EXPENSIVE_TESTS") == "true" {
+			t.Skip("Skipping expensive decompression bomb test")
+		}
+		// Create a zip bomb (1.1 GB of zeros)
+		tmpDir := t.TempDir()
+		zipPath := filepath.Join(tmpDir, "bomb.zip")
+		destDir := filepath.Join(tmpDir, "dest")
+		err := os.Mkdir(destDir, 0755)
+		require.NoError(t, err)
+
+		f, err := os.Create(zipPath)
+		require.NoError(t, err)
+		w := zip.NewWriter(f)
+
+		writer, err := w.Create("bomb.txt")
+		require.NoError(t, err)
+
+		chunkSize := 10 * 1024 * 1024 // 10MB
+		chunk := make([]byte, chunkSize)
+		iterations := (1024 / 10) + 1 // 103 iterations * 10MB = 1030MB > 1024MB
+
+		for i := 0; i < iterations; i++ {
+			_, err := writer.Write(chunk)
+			require.NoError(t, err)
+		}
+
+		require.NoError(t, w.Close())
+		require.NoError(t, f.Close())
+
+		err = unzipBundle(zipPath, destDir)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "exceeds maximum allowed size")
 	})
 
 	t.Run("InvalidZipFile", func(t *testing.T) {
