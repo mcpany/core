@@ -60,11 +60,12 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	// ⚡ BOLT: Parallelize discovery providers using goroutines.
 	// Randomized Selection from Top 5 High-Impact Targets
 	var wg sync.WaitGroup
-	var servicesMu sync.Mutex
+	// Store results by index to ensure deterministic order
+	results := make([][]*configv1.UpstreamServiceConfig, len(providers))
 
-	for _, p := range providers {
+	for i, p := range providers {
 		wg.Add(1)
-		go func(p Provider) {
+		go func(index int, p Provider) {
 			defer wg.Done()
 			log.Info("Running auto-discovery", "provider", p.Name())
 			services, err := p.Discover(ctx)
@@ -84,20 +85,22 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 				log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
 				status.Status = "OK"
 				status.DiscoveredCount = len(services)
+				results[index] = services
 			}
 			m.statuses[p.Name()] = status
 			m.mu.Unlock()
-
-			// Append services to result (needs local lock)
-			if len(services) > 0 {
-				servicesMu.Lock()
-				allServices = append(allServices, services...)
-				servicesMu.Unlock()
-			}
-		}(p)
+		}(i, p)
 	}
 
 	wg.Wait()
+
+	// Aggregate results in order
+	for _, services := range results {
+		if len(services) > 0 {
+			allServices = append(allServices, services...)
+		}
+	}
+
 	return allServices
 }
 
