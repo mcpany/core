@@ -37,6 +37,7 @@ type Alert struct {
 	Service   string    `json:"service"`
 	Source    string    `json:"source"`
 	Timestamp time.Time `json:"timestamp"`
+	ResolvedAt time.Time `json:"resolved_at,omitempty"`
 }
 
 // AlertRule defines a condition for triggering an alert.
@@ -50,4 +51,12 @@ type AlertRule struct {
 	Severity    Severity  `json:"severity"`
 	Enabled     bool      `json:"enabled"`
 	LastUpdated time.Time `json:"last_updated"`
+}
+
+// AlertStats represents the statistics of alerts.
+type AlertStats struct {
+	ActiveCritical int    `json:"activeCritical"`
+	ActiveWarning  int    `json:"activeWarning"`
+	MTTR           string `json:"mttr"`
+	TotalToday     int    `json:"totalToday"`
 }

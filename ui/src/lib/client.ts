@@ -965,6 +965,16 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the alert statistics.
+     * @returns A promise that resolves to the alert statistics.
+     */
+    getAlertStats: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts/stats');
+        if (!res.ok) throw new Error('Failed to fetch alert stats');
+        return res.json();
+    },
+
     // Stack Management (Collections)
 
     /**
