@@ -6,8 +6,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
-  test.beforeAll(async ({ request }) => {
-    // Seed alerts
+  // Use beforeAll for data setup, but note that server state might persist or reset depending on CI
+  // We use unique prefixes or reset logic if needed. Here we assume a fresh server or we can handle existing data.
+  // Actually, beforeAll hook in Playwright runs once per worker.
+  test.beforeEach(async ({ request }) => {
+    // Seed required alerts if not present. Idempotency is key.
+    // Since we don't have unique constraints on title, we might create duplicates if we run multiple times.
+    // But for this test, we can just create them and filter by unique text we look for.
     await request.post('/api/v1/alerts', {
       data: {
         title: "High CPU Usage",
