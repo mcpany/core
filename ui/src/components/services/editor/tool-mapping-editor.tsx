@@ -45,6 +45,15 @@ interface ToolMappingEditorProps {
     onChange: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * ToolMappingEditor component allows visual configuration of Tool Definitions
+ * and their mapping to Upstream HTTP calls.
+ *
+ * @param props - Component props.
+ * @param props.service - The current service configuration.
+ * @param props.onChange - Callback when configuration changes.
+ * @returns The rendered component.
+ */
 export function ToolMappingEditor({ service, onChange }: ToolMappingEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);

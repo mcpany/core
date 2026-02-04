@@ -586,7 +586,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             <Input
                                                 id="timeout"
                                                 placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
                                                 defaultValue="30s"
                                             />
                                         </div>
