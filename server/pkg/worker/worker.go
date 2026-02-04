@@ -14,12 +14,16 @@ import (
 )
 
 // Config holds the configuration for the worker.
+//
+// Summary: Configuration for worker pool.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
 // Worker is responsible for processing jobs from the bus.
+//
+// Summary: Processes background jobs.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -30,12 +34,14 @@ type Worker struct {
 
 // New creates a new Worker.
 //
+// Summary: Initializes a new Worker.
+//
 // Parameters:
-//   busProvider: The bus provider for messaging.
-//   cfg: The worker configuration.
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
 //
 // Returns:
-//   *Worker: The created Worker.
+//   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -48,14 +54,22 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 
 // Start starts the worker and its background tasks.
 //
+// Summary: Starts the worker processing loop.
+//
 // Parameters:
-//   ctx: The context for the worker.
+//   - ctx: context.Context. The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
 
 // Stop stops the worker and cleans up resources.
+//
+// Summary: Stops the worker.
+//
+// Side Effects:
+//   - Waits for pending jobs.
+//   - Unsubscribes from the bus.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()
