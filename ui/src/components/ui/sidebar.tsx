@@ -43,6 +43,11 @@ type SidebarContext = {
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
 
+/**
+ * Hook to access the sidebar context.
+ * @returns The sidebar context.
+ * @throws Error if used outside of a SidebarProvider.
+ */
 function useSidebar() {
   const context = React.useContext(SidebarContext)
   if (!context) {
