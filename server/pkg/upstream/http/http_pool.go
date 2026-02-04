@@ -109,7 +109,8 @@ var NewHTTPPool = func(
 		ForceAttemptHTTP2:     true,
 	}
 
-	clientTimeout := 30 * time.Second
+	// Default client timeout. Increased to 60s to reduce flakes in CI/slow environments for public APIs.
+	clientTimeout := 60 * time.Second
 	if config.GetResilience() != nil && config.GetResilience().GetTimeout() != nil {
 		clientTimeout = config.GetResilience().GetTimeout().AsDuration()
 	}
