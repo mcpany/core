@@ -554,3 +554,55 @@ func TestInitSchema(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestPostgresStore_Load(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	pgDB := &DB{db}
+	store := NewStore(pgDB)
+
+	t.Run("Success", func(t *testing.T) {
+		// Since we use errgroup, the queries can happen in any order
+		mock.MatchExpectationsInOrder(false)
+
+		// Mock services
+		rowsServices := sqlmock.NewRows([]string{"config_json"}).
+			AddRow(`{"name":"s1","id":"id1"}`)
+		mock.ExpectQuery("SELECT config_json FROM upstream_services").
+			WillReturnRows(rowsServices)
+
+		// Mock users
+		rowsUsers := sqlmock.NewRows([]string{"config_json"}).
+			AddRow(`{"id":"u1","roles":["admin"]}`)
+		mock.ExpectQuery("SELECT config_json FROM users").
+			WillReturnRows(rowsUsers)
+
+		// Mock settings
+		rowsSettings := sqlmock.NewRows([]string{"config_json"}).
+			AddRow(`{"mcp_listen_address":":8080"}`)
+		mock.ExpectQuery("SELECT config_json FROM global_settings").
+			WillReturnRows(rowsSettings)
+
+		// Mock collections
+		rowsCollections := sqlmock.NewRows([]string{"config_json"}).
+			AddRow(`{"name":"c1"}`)
+		mock.ExpectQuery("SELECT config_json FROM service_collections").
+			WillReturnRows(rowsCollections)
+
+		cfg, err := store.Load(context.Background())
+		require.NoError(t, err)
+		assert.NotNil(t, cfg)
+		assert.Len(t, cfg.GetUpstreamServices(), 1)
+		assert.Equal(t, "s1", cfg.GetUpstreamServices()[0].GetName())
+		assert.Len(t, cfg.GetUsers(), 1)
+		assert.Equal(t, "u1", cfg.GetUsers()[0].GetId())
+		assert.NotNil(t, cfg.GetGlobalSettings())
+		assert.Equal(t, ":8080", cfg.GetGlobalSettings().GetMcpListenAddress())
+		assert.Len(t, cfg.GetCollections(), 1)
+		assert.Equal(t, "c1", cfg.GetCollections()[0].GetName())
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+}
