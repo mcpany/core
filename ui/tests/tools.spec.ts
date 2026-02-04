@@ -27,6 +27,11 @@ test.describe('Tool Exploration', () => {
         await cleanupServices(request);
 
         await page.goto('/tools');
+
+        // Wait for potential cached services to disappear (handle race condition)
+        await expect(page.getByText('process_payment').first()).not.toBeVisible();
+        await expect(page.getByText('calculator').first()).not.toBeVisible();
+
         // The table shows one row with "No tools found." when empty
         await expect(page.locator('text=No tools found.')).toBeVisible();
     });
