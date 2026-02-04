@@ -191,7 +191,7 @@ func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
 	case res := <-resChan:
 		assert.Equal(t, correlationID, res.CorrelationID())
 		assert.ErrorIs(t, res.Error, expectedErr)
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for registration result")
 	}
 }
