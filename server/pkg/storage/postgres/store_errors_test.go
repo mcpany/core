@@ -24,46 +24,20 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	store := NewStore(pgDB)
 
 	t.Run("QueryError", func(t *testing.T) {
-		// Since Load runs queries in parallel, we must expect all of them,
-		// though order is not guaranteed.
-		mock.MatchExpectationsInOrder(false)
-
-		// One of them fails
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnError(errors.New("query error"))
 
-		// Others might succeed or fail, but we need to satisfy the mock
-		mock.ExpectQuery("SELECT config_json FROM users").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery("SELECT config_json FROM global_settings").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery("SELECT config_json FROM service_collections").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-
 		_, err := store.Load(context.Background())
 		assert.Error(t, err)
-		// We can't guarantee WHICH error returns first, but "query error" should be likely if others succeed.
-		// However, with errgroup, it returns the first non-nil error.
-		// If others succeed, then "query error" is returned.
 		assert.Contains(t, err.Error(), "query error")
 	})
 
 	t.Run("UnmarshalError", func(t *testing.T) {
-		mock.MatchExpectationsInOrder(false)
-
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("invalid-json"))
 
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
-
-		// Expect others
-		mock.ExpectQuery("SELECT config_json FROM users").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery("SELECT config_json FROM global_settings").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery("SELECT config_json FROM service_collections").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		_, err := store.Load(context.Background())
 		assert.Error(t, err)
@@ -71,22 +45,12 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	})
 
 	t.Run("RowsIterationError", func(t *testing.T) {
-		mock.MatchExpectationsInOrder(false)
-
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("{}")).
 			RowError(0, errors.New("row error"))
 
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
-
-		// Expect others
-		mock.ExpectQuery("SELECT config_json FROM users").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery("SELECT config_json FROM global_settings").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery("SELECT config_json FROM service_collections").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		_, err := store.Load(context.Background())
 		// sqlmock RowError on 0th row might cause Scan to fail or Next to return false but Err() to be set?

@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -47,99 +46,75 @@ func (s *Store) HasConfigSources() bool {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
-	// ⚡ BOLT: Parallelize independent DB queries to reduce startup/reload time.
-	// Randomized Selection from Top 5 High-Impact Targets
-	g, ctx := errgroup.WithContext(ctx)
+	// 1. Load services
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var services []*configv1.UpstreamServiceConfig
+	// Allow unknown fields to be safe against schema evolution
 	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
-	var (
-		services    []*configv1.UpstreamServiceConfig
-		users       []*configv1.User
-		settings    *configv1.GlobalSettings
-		collections []*configv1.Collection
-	)
-
-	// 1. Load services
-	g.Go(func() error {
-		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
-		if err != nil {
-			return fmt.Errorf("failed to query upstream_services: %w", err)
+	for rows.Next() {
+		var configJSON []byte
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
-		defer func() { _ = rows.Close() }()
 
-		for rows.Next() {
-			var configJSON []byte
-			if err := rows.Scan(&configJSON); err != nil {
-				return fmt.Errorf("failed to scan config_json: %w", err)
-			}
-
-			var service configv1.UpstreamServiceConfig
-			if err := opts.Unmarshal(configJSON, &service); err != nil {
-				return fmt.Errorf("failed to unmarshal service config: %w", err)
-			}
-			services = append(services, &service)
+		var service configv1.UpstreamServiceConfig
+		if err := opts.Unmarshal(configJSON, &service); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
 		}
-		if err := rows.Err(); err != nil {
-			return fmt.Errorf("failed to iterate rows: %w", err)
-		}
-		return nil
-	})
+		services = append(services, &service)
+	}
+	_ = rows.Close()
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate rows: %w", err)
+	}
 
 	// 2. Load users
-	g.Go(func() error {
-		userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
-		if err != nil {
-			return fmt.Errorf("failed to query users: %w", err)
-		}
-		defer func() { _ = userRows.Close() }()
+	userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query users: %w", err)
+	}
+	defer func() { _ = userRows.Close() }()
 
-		for userRows.Next() {
-			var configJSON []byte
-			if err := userRows.Scan(&configJSON); err != nil {
-				return fmt.Errorf("failed to scan user config_json: %w", err)
-			}
+	var users []*configv1.User
+	for userRows.Next() {
+		var configJSON []byte
+		if err := userRows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan user config_json: %w", err)
+		}
 
-			var user configv1.User
-			if err := opts.Unmarshal(configJSON, &user); err != nil {
-				return fmt.Errorf("failed to unmarshal user config: %w", err)
-			}
-			users = append(users, &user)
+		var user configv1.User
+		if err := opts.Unmarshal(configJSON, &user); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
 		}
-		if err := userRows.Err(); err != nil {
-			return fmt.Errorf("failed to iterate user rows: %w", err)
-		}
-		return nil
-	})
+		users = append(users, &user)
+	}
+	_ = userRows.Close()
+	if err := userRows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate user rows: %w", err)
+	}
 
 	// 3. Load Global Settings
-	g.Go(func() error {
-		settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
-		var settingsJSON []byte
-		if err := settingsRow.Scan(&settingsJSON); err == nil {
-			var s configv1.GlobalSettings
-			if err := opts.Unmarshal(settingsJSON, &s); err == nil {
-				settings = &s
-			}
+	var settings *configv1.GlobalSettings
+	settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
+	var settingsJSON []byte
+	if err := settingsRow.Scan(&settingsJSON); err == nil {
+		var s configv1.GlobalSettings
+		if err := opts.Unmarshal(settingsJSON, &s); err == nil {
+			settings = &s
 		}
-		// Note: We ignore scan error as it might mean no settings found, which is valid.
-		return nil
-	})
+	}
 
 	// 4. Load Collections
-	g.Go(func() error {
-		collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
-		// If table doesn't exist or query fails, we treat it as empty for now to match original logic best effort?
-		// Original logic: if err == nil { ... }
-		if err != nil {
-			// Original logic effectively ignored query errors (if err != nil, collections remains nil).
-			// We can preserve that or be stricter. Let's return error if it's not a "table not found" which is hard to check portably.
-			// But looking at original code: `if err == nil { ... }`. It swallowed the error!
-			// We should probably log it or fail. Given we are parallelizing, if one fails, we fail all.
-			// But to match behavior:
-			return nil
-		}
+	collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
+	var collections []*configv1.Collection
+	if err == nil {
 		defer func() { _ = collectionRows.Close() }()
-
 		for collectionRows.Next() {
 			var configJSON []byte
 			if err := collectionRows.Scan(&configJSON); err != nil {
@@ -151,13 +126,8 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 			}
 		}
 		if err := collectionRows.Err(); err != nil {
-			return fmt.Errorf("failed to iterate collection rows: %w", err)
+			return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
 		}
-		return nil
-	})
-
-	if err := g.Wait(); err != nil {
-		return nil, err
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
