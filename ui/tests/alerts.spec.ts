@@ -7,36 +7,50 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
   test.beforeEach(async ({ page }) => {
-    // Mock the API response for all tests to ensure consistent data and avoid backend dependency
-    await page.route('**/api/v1/alerts', async route => {
-      const json = [
-        { id: '1', title: 'High CPU Usage', message: 'CPU > 90%', severity: 'critical', status: 'active', service: 'weather-service', timestamp: new Date().toISOString() },
-        { id: '2', title: 'API Latency Spike', message: 'Latency > 2s', severity: 'warning', status: 'active', service: 'api-gateway', timestamp: new Date().toISOString() },
-        { id: '3', title: 'Disk Space Low', message: 'Volume /data at 90%', severity: 'warning', status: 'acknowledged', service: 'database', timestamp: new Date().toISOString() }
-      ];
-      await route.fulfill({ json });
-    });
+    // Consolidated Mock for /api/v1/alerts and /api/v1/alerts/*
+    // Using regex to match both list and detail/update URLs reliably
+    await page.route(/\/api\/v1\/alerts/, async route => {
+      const method = route.request().method();
+      const url = route.request().url();
+      console.log(`Intercepted ${method} ${url}`);
 
-    // Mock the PATCH request for status updates
-    await page.route('**/api/v1/alerts/*', async route => {
-      if (route.request().method() === 'PATCH') {
+      // Handle List (GET /api/v1/alerts)
+      if (method === 'GET' && !url.match(/\/api\/v1\/alerts\/.+/)) {
+        const json = [
+          { id: '1', title: 'High CPU Usage', message: 'CPU > 90%', severity: 'critical', status: 'active', service: 'weather-service', timestamp: new Date().toISOString() },
+          { id: '2', title: 'API Latency Spike', message: 'Latency > 2s', severity: 'warning', status: 'active', service: 'api-gateway', timestamp: new Date().toISOString() },
+          { id: '3', title: 'Disk Space Low', message: 'Volume /data at 90%', severity: 'warning', status: 'acknowledged', service: 'database', timestamp: new Date().toISOString() }
+        ];
+        await route.fulfill({ json });
+        return;
+      }
+
+      // Handle Update (PATCH /api/v1/alerts/{id})
+      if (method === 'PATCH') {
         const body = route.request().postDataJSON();
-        const id = route.request().url().split('/').pop();
+        const id = url.split('/').pop();
+
+        // Preserve original fields to keep row visible
+        let original: any = {};
+        if (id === '1') original = { title: 'High CPU Usage', severity: 'critical', service: 'weather-service' };
+        else if (id === '2') original = { title: 'API Latency Spike', severity: 'warning', service: 'api-gateway' };
+        else if (id === '3') original = { title: 'Disk Space Low', severity: 'warning', service: 'database' };
+
         await route.fulfill({
           json: {
             id,
             status: body.status,
-            // Return minimal fields required by frontend
-            title: 'Mock Alert',
+            title: original.title || 'Mock Alert',
             message: 'Mock Message',
-            severity: 'info',
-            service: 'mock-service',
+            severity: original.severity || 'info',
+            service: original.service || 'mock-service',
             timestamp: new Date().toISOString()
           }
         });
-      } else {
-        await route.continue();
+        return;
       }
+
+      await route.continue();
     });
   });
 
