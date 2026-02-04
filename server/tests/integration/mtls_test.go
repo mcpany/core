@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -44,14 +45,22 @@ func TestMTLSAuthentication(t *testing.T) {
 
 	// Configure the gateway to use mTLS for the upstream.
 	// The paths must be relative to the project root, where the server binary runs.
+	root, err := GetProjectRoot()
+	require.NoError(t, err)
+
+	tlsDir := "tests/tls"
+	if filepath.Base(root) != "server" {
+		tlsDir = "server/tests/tls"
+	}
+
 	config := `
 upstream_services:
   - name: my-upstream
     upstream_auth:
       mtls:
-        client_cert_path: "tests/tls/client.crt"
-        client_key_path: "tests/tls/client.key"
-        ca_cert_path: "tests/tls/ca.crt"
+        client_cert_path: "` + tlsDir + `/client.crt"
+        client_key_path: "` + tlsDir + `/client.key"
+        ca_cert_path: "` + tlsDir + `/ca.crt"
     http_service:
       address: "` + server.URL + `"
       tools:

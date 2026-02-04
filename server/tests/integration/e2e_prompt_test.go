@@ -31,9 +31,8 @@ func TestE2EPrompt(t *testing.T) {
 
 func BuildPromptServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(root, "../build/test/bin/prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
+	buildDir := integration.GetBuildDir(t)
+	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(buildDir, "test/bin/prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
