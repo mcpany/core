@@ -52,8 +52,10 @@ describe("ToolForm", () => {
 
     expect(schemaTab).toHaveAttribute("data-state", "active");
     // Verify schema content is displayed (basic check)
-    expect(screen.getByText(/"type": "object"/)).toBeInTheDocument();
-    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+    // Note: SyntaxHighlighter splits content into multiple spans, so we check for individual parts
+    expect(screen.getAllByText(/"type"/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/"object"/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/"foo"/)[0]).toBeInTheDocument();
   });
 
   it("includes a copy button in schema view", async () => {

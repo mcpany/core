@@ -3,10 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TraceList } from '@/components/traces/trace-list';
 import { Trace } from '@/app/api/traces/route';
+
+// Mock Virtuoso to render items directly
+vi.mock('react-virtuoso', () => ({
+  Virtuoso: ({ data, itemContent }: any) => {
+    return (
+      <div>
+        {data.map((item: any, index: number) => (
+          <div key={item.id || index}>
+            {itemContent(index, item)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+}));
 
 // Mock traces
 const MOCK_TRACES: Trace[] = [
@@ -28,7 +43,7 @@ const MOCK_TRACES: Trace[] = [
     }
 ];
 
-test('TraceList renders traces', () => {
+test('TraceList renders traces', async () => {
   render(
     <TraceList
         traces={MOCK_TRACES}
@@ -41,8 +56,9 @@ test('TraceList renders traces', () => {
     />
   );
 
-  expect(screen.getByText("test_tool_1")).toBeDefined();
-  expect(screen.getByText("test_tool_2")).toBeDefined();
+  // Use findByText for asynchronous rendering (Virtuoso)
+  expect(await screen.findByText("test_tool_1")).toBeDefined();
+  expect(await screen.findByText("test_tool_2")).toBeDefined();
 });
 
 test('TraceList filters traces based on search query', () => {
