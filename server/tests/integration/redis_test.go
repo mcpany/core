@@ -5,7 +5,6 @@ package integration
 
 import (
 	"context"
-	"os"
 	"sync"
 	"testing"
 	"time"
