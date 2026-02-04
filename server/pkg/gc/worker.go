@@ -7,6 +7,7 @@ package gc
 
 import (
 	"context"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -102,33 +103,60 @@ func (w *Worker) runCleanup(ctx context.Context) {
 
 		log.Debug("GC: Scanning directory", "path", cleanPath)
 
-		// We only scan the top-level directories in the list, but we recurse?
-		// Usually temporary directories have a flat structure or predictable depth.
-		// For safety, let's use WalkDir but be careful about crossing boundaries.
-		// We WILL delete subdirectories if they are old.
+		// ⚡ BOLT: Optimization to stream directory entries instead of loading all at once.
+		// Randomized Selection from Top 5 High-Impact Targets
+		// os.ReadDir reads the whole directory into a slice, which can cause OOM for large temporary directories.
+		// We use os.Open + ReadDir(n) to process in chunks.
 
-		entries, err := os.ReadDir(cleanPath)
+		f, err := os.Open(cleanPath)
 		if err != nil {
 			if os.IsNotExist(err) {
 				continue
 			}
-			log.Error("GC: Failed to read directory", "path", cleanPath, "error", err)
+			log.Error("GC: Failed to open directory", "path", cleanPath, "error", err)
 			continue
 		}
 
-		for _, entry := range entries {
-			fullPath := filepath.Join(cleanPath, entry.Name())
-			info, err := entry.Info()
-			if err != nil {
-				continue
-			}
+		// Ensure we close the file handle.
+		// We use a closure to ensure Close is called before moving to the next path.
+		func() {
+			defer f.Close()
 
-			if info.ModTime().Before(cutoff) {
-				log.Info("GC: Removing old item", "path", fullPath, "age", time.Since(info.ModTime()))
-				if err := os.RemoveAll(fullPath); err != nil {
-					log.Error("GC: Failed to remove item", "path", fullPath, "error", err)
+			const batchSize = 100
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+
+				entries, err := f.ReadDir(batchSize)
+
+				// Process entries even if there was an error (e.g. partial read)
+				if len(entries) > 0 {
+					for _, entry := range entries {
+						fullPath := filepath.Join(cleanPath, entry.Name())
+						info, err := entry.Info()
+						if err != nil {
+							continue
+						}
+
+						if info.ModTime().Before(cutoff) {
+							log.Info("GC: Removing old item", "path", fullPath, "age", time.Since(info.ModTime()))
+							if err := os.RemoveAll(fullPath); err != nil {
+								log.Error("GC: Failed to remove item", "path", fullPath, "error", err)
+							}
+						}
+					}
+				}
+
+				if err != nil {
+					if err != io.EOF {
+						log.Error("GC: Failed to read directory chunk", "path", cleanPath, "error", err)
+					}
+					return // Stop processing this directory on error or EOF
 				}
 			}
-		}
+		}()
 	}
 }
