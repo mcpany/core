@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -19,7 +19,9 @@ const mockService: UpstreamServiceConfig = {
     httpService: {
         address: 'http://localhost',
         tools: [],
-        calls: {}
+        calls: {},
+        resources: [],
+        prompts: []
     },
     configurationSchema: "",
     tags: [],
@@ -29,6 +31,10 @@ const mockService: UpstreamServiceConfig = {
     prompts: [],
     autoDiscoverTool: false,
     configError: "",
+    readOnly: false,
+    toolExportPolicy: undefined,
+    promptExportPolicy: undefined,
+    resourceExportPolicy: undefined
 };
 
 describe('ToolMappingEditor', () => {
