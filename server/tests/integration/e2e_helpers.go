@@ -587,8 +587,8 @@ func IsDockerSocketAccessible() bool {
 	// Check if we can actually run a container (catches overlayfs/storage driver issues in dind)
 	// We use 'alpine:latest' as it is commonly used in these tests.
 	// Use 'true' command to exit immediately.
-	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
-	cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...)
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")  //nolint:gocritic // appendAssign
+	cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	if output, err := cmd.CombinedOutput(); err != nil {
 		// Log the error to stdout for debugging context, but return false to skip tests
 		fmt.Printf("IsDockerSocketAccessible: docker run failed: %v. Output: %s\n", err, string(output))
