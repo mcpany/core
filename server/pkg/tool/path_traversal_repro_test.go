@@ -115,9 +115,9 @@ func TestLocalCommandTool_FileScheme_EncodedBypass(t *testing.T) {
 	// Execute
 	_, err := localTool.Execute(context.Background(), req)
 
-	// EXPECTATION: Should FAIL with "file: scheme detected" (decoded)
+	// EXPECTATION: Should FAIL with "dangerous scheme detected" (decoded)
 	assert.Error(t, err)
 	if err != nil {
-		assert.Contains(t, err.Error(), "file: scheme detected", "Should detect file scheme (decoded)")
+		assert.Contains(t, err.Error(), "dangerous scheme detected", "Should detect file scheme (decoded)")
 	}
 }
