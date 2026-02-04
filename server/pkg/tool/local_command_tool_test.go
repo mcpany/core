@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -200,4 +201,65 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 
 	// This assertion should fail before fix
 	assert.Contains(t, err.Error(), "something went wrong")
+}
+
+func TestLocalCommandTool_Execute_BypassLocalFileCheck(t *testing.T) {
+	// Reproduction of vulnerability where setting container_environment on a local tool
+	// bypasses checkForLocalFileAccess but still executes locally.
+
+	// Setup
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"file": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	toolProto := v1.Tool_builder{
+		Name:        proto.String("test-bypass"),
+		InputSchema: inputSchema,
+	}.Build()
+
+	// Configuration: local=true BUT container_environment is set
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"), // Dummy command
+		Local:   proto.Bool(true),
+		ContainerEnvironment: configv1.ContainerEnvironment_builder{
+			Image: proto.String("alpine:latest"), // Triggers isDocker = true (previously)
+		}.Build(),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("file")}.Build(),
+			}.Build(),
+		},
+		Args: []string{"{{file}}"},
+	}.Build()
+
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "bypass-call")
+
+	// Create an absolute path payload
+	absPath, _ := filepath.Abs("some/sensitive/file")
+
+	req := &ExecutionRequest{
+		ToolName: "test-bypass",
+		Arguments: map[string]interface{}{
+			"file": absPath,
+		},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	// Execute
+	result, err := localTool.Execute(context.Background(), req)
+
+	// Verify that the vulnerability is fixed
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "absolute path detected")
+	}
+	assert.Nil(t, result)
 }

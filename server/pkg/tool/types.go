@@ -1811,7 +1811,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	// Determine execution environment early for validation
-	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
+	// LocalCommandTool explicitly runs commands locally (using NewLocalExecutor below).
+	// Therefore, we must enforce local security policies (like blocking absolute paths)
+	// even if the configuration specifies a container environment (which is ignored for execution here).
+	isDocker := false
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {

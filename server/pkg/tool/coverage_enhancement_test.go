@@ -223,35 +223,6 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestLocalCommandTool_DockerEnv(t *testing.T) {
-    // Test that checking for absolute path is skipped for Docker
-    svcConfig := configv1.CommandLineUpstreamService_builder{
-        Command: proto.String("ls"),
-        ContainerEnvironment: configv1.ContainerEnvironment_builder{
-            Image: proto.String("ubuntu"),
-        }.Build(),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{
-        Args: []string{"{{path}}"},
-        Parameters: []*configv1.CommandLineParameterMapping{
-            configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build()}.Build(),
-        },
-    }.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("docker_tool")}.Build()
-
-    cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
-    ctx := context.Background()
-
-    // Absolute path should be allowed in Docker
-    req := &ExecutionRequest{
-        ToolName: "docker_tool",
-        ToolInputs: []byte(`{"path": "/etc/passwd"}`),
-        DryRun: true,
-    }
-    _, err := cmdTool.Execute(ctx, req)
-    assert.NoError(t, err)
-}
-
 func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpCallDefinition) *HTTPTool {
 	poolManager := pool.NewManager()
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
