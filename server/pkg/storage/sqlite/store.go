@@ -6,10 +6,13 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -281,6 +284,118 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// Logs
+
+// SaveLog saves a log entry.
+//
+// ctx is the context for the request.
+// entry is the log entry.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveLog(ctx context.Context, entry *storage.LogEntry) error {
+	query := `
+	INSERT INTO execution_logs (
+		id, timestamp, method, path, status, duration_ns,
+		request_headers, response_headers, request_body, response_body
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`
+
+	reqHeadersJSON, err := json.Marshal(entry.RequestHeaders)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request headers: %w", err)
+	}
+	respHeadersJSON, err := json.Marshal(entry.ResponseHeaders)
+	if err != nil {
+		return fmt.Errorf("failed to marshal response headers: %w", err)
+	}
+
+	_, err = s.db.ExecContext(ctx, query,
+		entry.ID,
+		entry.Timestamp,
+		entry.Method,
+		entry.Path,
+		entry.Status,
+		entry.Duration.Nanoseconds(),
+		string(reqHeadersJSON),
+		string(respHeadersJSON),
+		entry.RequestBody,
+		entry.ResponseBody,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to save log entry: %w", err)
+	}
+	return nil
+}
+
+// ListLogs retrieves log entries.
+//
+// ctx is the context for the request.
+// limit is the maximum number of entries to return.
+// offset is the offset to start from.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListLogs(ctx context.Context, limit, offset int) ([]*storage.LogEntry, error) {
+	query := `
+	SELECT
+		id, timestamp, method, path, status, duration_ns,
+		request_headers, response_headers, request_body, response_body
+	FROM execution_logs
+	ORDER BY timestamp DESC
+	LIMIT ? OFFSET ?
+	`
+
+	rows, err := s.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query execution logs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []*storage.LogEntry
+	for rows.Next() {
+		var (
+			entry           storage.LogEntry
+			durationNS      int64
+			reqHeadersJSON  string
+			respHeadersJSON string
+		)
+
+		if err := rows.Scan(
+			&entry.ID,
+			&entry.Timestamp,
+			&entry.Method,
+			&entry.Path,
+			&entry.Status,
+			&durationNS,
+			&reqHeadersJSON,
+			&respHeadersJSON,
+			&entry.RequestBody,
+			&entry.ResponseBody,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan log entry: %w", err)
+		}
+
+		entry.Duration = time.Duration(durationNS)
+
+		if reqHeadersJSON != "" {
+			if err := json.Unmarshal([]byte(reqHeadersJSON), &entry.RequestHeaders); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal request headers: %w", err)
+			}
+		}
+		if respHeadersJSON != "" {
+			if err := json.Unmarshal([]byte(respHeadersJSON), &entry.ResponseHeaders); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal response headers: %w", err)
+			}
+		}
+
+		logs = append(logs, &entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return logs, nil
 }
 
 // GetService retrieves an upstream service configuration by name.

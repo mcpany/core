@@ -629,6 +629,13 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
+
+	// Cast storageStore to storage.Storage
+	var logStore storage.Storage
+	if s, ok := storageStore.(storage.Storage); ok {
+		logStore = s
+	}
+
 	standardMiddlewares, err := middleware.InitStandardMiddlewares(
 		mcpSrv.AuthManager(),
 		a.ToolManager,
@@ -638,6 +645,7 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetDlp(),
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
+		logStore,
 	)
 	if err != nil {
 		workerCancel()

@@ -30,7 +30,7 @@ func waitForEntries(t *testing.T, d *Debugger, count int) []DebugEntry {
 }
 
 func TestDebuggerMiddleware(t *testing.T) {
-	debugger := NewDebugger(10)
+	debugger := NewDebugger(10, nil)
 	defer debugger.Close()
 
 	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +63,7 @@ func TestDebuggerMiddleware(t *testing.T) {
 }
 
 func TestDebuggerBodyCapture(t *testing.T) {
-	debugger := NewDebugger(10)
+	debugger := NewDebugger(10, nil)
 	defer debugger.Close()
 
 	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +91,7 @@ func TestDebuggerBodyCapture(t *testing.T) {
 }
 
 func TestDebuggerLargeBodyTruncation(t *testing.T) {
-	debugger := NewDebugger(10)
+	debugger := NewDebugger(10, nil)
 	defer debugger.Close()
 	debugger.maxBodySize = 10 // Very small limit for testing
 

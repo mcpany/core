@@ -120,6 +120,20 @@ func initSchema(db *sql.DB) error {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS execution_logs (
+		id TEXT PRIMARY KEY,
+		timestamp DATETIME NOT NULL,
+		method TEXT NOT NULL,
+		path TEXT NOT NULL,
+		status INTEGER NOT NULL,
+		duration_ns INTEGER NOT NULL,
+		request_headers TEXT,
+		response_headers TEXT,
+		request_body TEXT,
+		response_body TEXT,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {
