@@ -115,6 +115,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 					t.Cleanup(upstreamServerProc.Stop)
 					if upstreamServerProc.Port != 0 {
 						integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+					} else {
+						// Wait for port to be logged if dynamic port allocation (port 0) is used
+						upstreamServerProc.Port = WaitForPort(t, upstreamServerProc)
 					}
 				}
 			}
@@ -251,7 +254,7 @@ func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 		// Try regex on Stdout
 		matches := portRegex.FindStringSubmatch(out)
 		if len(matches) >= 2 {
-			if p, err := strconv.Atoi(matches[1]); err == nil {
+			if p, err := strconv.Atoi(matches[1]); err == nil && p > 0 {
 				port = p
 				t.Logf("WaitForPort: Found regex port %d in Stdout", port)
 				return port
@@ -262,7 +265,7 @@ func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 		outErr := proc.StderrString()
 		matchesErr := portRegex.FindStringSubmatch(outErr)
 		if len(matchesErr) >= 2 {
-			if p, err := strconv.Atoi(matchesErr[1]); err == nil {
+			if p, err := strconv.Atoi(matchesErr[1]); err == nil && p > 0 {
 				port = p
 				t.Logf("WaitForPort: Found regex port %d in Stderr", port)
 				return port
