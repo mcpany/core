@@ -134,6 +134,14 @@ func initSchema(db *sql.DB) error {
 		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (user_id, service_id)
 	);
+
+	CREATE TABLE IF NOT EXISTS user_preferences (
+		user_id TEXT NOT NULL,
+		key TEXT NOT NULL,
+		value TEXT NOT NULL,
+		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (user_id, key)
+	);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

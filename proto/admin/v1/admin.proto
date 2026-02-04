@@ -65,6 +65,25 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
+
+  // ===================================================================
+  // User Preferences
+  // ===================================================================
+
+  // GetUserPreferences returns user preferences.
+  rpc GetUserPreferences(GetUserPreferencesRequest) returns (GetUserPreferencesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user/preferences"
+    };
+  }
+
+  // UpdateUserPreferences updates user preferences.
+  rpc UpdateUserPreferences(UpdateUserPreferencesRequest) returns (UpdateUserPreferencesResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/user/preferences"
+      body: "*"
+    };
+  }
 }
 
 message ClearCacheRequest {}
@@ -186,4 +205,23 @@ message AuditLogEntry {
   string error = 7;
   string duration = 8;
   int64 duration_ms = 9;
+}
+
+// User Preferences
+
+message GetUserPreferencesRequest {
+  string user_id = 1; // Optional, defaults to current user if auth enabled
+}
+
+message GetUserPreferencesResponse {
+  map<string, string> preferences = 1;
+}
+
+message UpdateUserPreferencesRequest {
+  string user_id = 1; // Optional
+  map<string, string> preferences = 2; // Merged with existing
+}
+
+message UpdateUserPreferencesResponse {
+  map<string, string> preferences = 1; // Updated state
 }

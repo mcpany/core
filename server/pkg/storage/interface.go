@@ -131,6 +131,26 @@ type Storage interface {
 	// Returns an error if the operation fails.
 	DeleteUser(ctx context.Context, id string) error
 
+	// User Preferences
+
+	// GetUserPreferences retrieves preferences for a user.
+	//
+	// ctx is the context for the request.
+	// userID is the user ID.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
+	GetUserPreferences(ctx context.Context, userID string) (map[string]string, error)
+
+	// UpdateUserPreferences updates preferences for a user.
+	//
+	// ctx is the context for the request.
+	// userID is the user ID.
+	// preferences is the map of preferences to update.
+	//
+	// Returns an error if the operation fails.
+	UpdateUserPreferences(ctx context.Context, userID string, preferences map[string]string) error
+
 	// Profiles
 	// ListProfiles retrieves all profile definitions.
 	ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error)

@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
+import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
     DropdownMenu,
@@ -32,6 +32,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -61,90 +63,121 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 /**
  * DashboardGrid component.
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
+ * Persists layout to backend user preferences.
  * @returns The rendered component.
  */
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
 
+    // Fetch layout from backend on mount
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
+        const fetchLayout = async () => {
             try {
-                const parsed = JSON.parse(saved);
+                const res = await apiClient.getUserPreferences();
+                const savedLayout = res.preferences?.["dashboard_layout"];
 
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    interface LegacyWidget {
-                        id: string;
-                        title: string;
-                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
-                        hidden?: boolean;
-                    }
-                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                        instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
-                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                        hidden: w.hidden ?? false
-                    }));
-
-                    // Filter out any invalid types
-                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
+                if (savedLayout) {
+                    try {
+                        const parsed = JSON.parse(savedLayout);
+                        // Validate format loosely
+                        if (Array.isArray(parsed)) {
+                            setWidgets(parsed);
+                        } else {
+                            setWidgets(DEFAULT_LAYOUT);
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse dashboard layout", e);
                         setWidgets(DEFAULT_LAYOUT);
-                    } else {
-                        setWidgets(validMigrated);
                     }
                 } else {
-                    // Case 2: Already in new format
-                    setWidgets(parsed);
+                    // Try legacy localStorage migration
+                    const localSaved = localStorage.getItem("dashboard-layout");
+                    if (localSaved) {
+                        try {
+                            const parsed = JSON.parse(localSaved);
+                            // Simple validation
+                            if (Array.isArray(parsed)) {
+                                setWidgets(parsed);
+                                // Trigger a save to backend immediately to migrate?
+                                // We'll let the next effect handle it if we mark it dirty, but effect skips first run.
+                                // Let's just set it and let user save on next interaction, or we could force save.
+                            } else {
+                                setWidgets(DEFAULT_LAYOUT);
+                            }
+                        } catch {
+                            setWidgets(DEFAULT_LAYOUT);
+                        }
+                    } else {
+                        setWidgets(DEFAULT_LAYOUT);
+                    }
                 }
             } catch (e) {
-                console.error("Failed to load dashboard layout", e);
-                setWidgets(DEFAULT_LAYOUT);
+                console.error("Failed to fetch user preferences", e);
+                // Fallback to defaults or localStorage if offline?
+                // For "Portainer" feel, we might want to alert, but for resilience, fallback to local is kind.
+                const localSaved = localStorage.getItem("dashboard-layout");
+                if (localSaved) {
+                    try {
+                        setWidgets(JSON.parse(localSaved));
+                    } catch {
+                        setWidgets(DEFAULT_LAYOUT);
+                    }
+                } else {
+                    setWidgets(DEFAULT_LAYOUT);
+                }
+                toast({
+                    variant: "destructive",
+                    title: "Sync Error",
+                    description: "Could not load cloud layout. Using local/default.",
+                });
+            } finally {
+                setIsLoading(false);
             }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
-        }
-    }, []);
+        };
+
+        fetchLayout();
+    }, [toast]);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
     };
 
-    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
+    // ⚡ BOLT: Debounce API writes to prevent main thread blocking and network spam during drag/resize operations
     // Randomized Selection from Top 5 High-Impact Targets
     const isFirstRun = useRef(true);
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || isLoading) return;
 
-        // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
-        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
-        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
-        // But for initial load, widgets is [].
-
-        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
+        // Prevent saving the initial empty/default state if we haven't touched it.
+        // The fetch effect sets widgets, which triggers this effect.
+        // We want to skip the save triggered by the initial fetch.
         if (isFirstRun.current) {
             isFirstRun.current = false;
-            // If widgets are empty on first run, it's likely the initial state.
-            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
-            // But `isMounted` gate likely delays this enough.
             return;
         }
 
-        const timer = setTimeout(() => {
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+        const timer = setTimeout(async () => {
+            try {
+                const layoutJson = JSON.stringify(widgets);
+                // Save to localStorage as backup/cache
+                localStorage.setItem("dashboard-layout", layoutJson);
+
+                // Save to backend
+                await apiClient.updateUserPreferences({
+                    "dashboard_layout": layoutJson
+                });
+            } catch (e) {
+                console.error("Failed to save dashboard layout", e);
+                // Silent fail or toast? Silent for auto-save usually better, unless persistent failure.
+            }
+        }, 1000); // Increased debounce to 1s for network calls
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted]);
+    }, [widgets, isMounted, isLoading]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
@@ -192,6 +225,15 @@ export function DashboardGrid() {
 
     if (!isMounted) return null;
 
+    if (isLoading && widgets.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-muted-foreground">Loading dashboard...</span>
+            </div>
+        );
+    }
+
     const renderWidget = (widget: WidgetInstance) => {
         const def = getWidgetDefinition(widget.type);
         if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
@@ -217,11 +259,6 @@ export function DashboardGrid() {
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
-                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
-                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
-                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
-                    Let's keep the popover for recovering hidden widgets.
-                */}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="h-8 border-dashed">

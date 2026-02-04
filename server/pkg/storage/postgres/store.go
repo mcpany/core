@@ -130,6 +130,37 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		}
 	}
 
+	// 5. Load Profiles
+	// Assuming profiles table exists (it was in db.go initSchema)
+	profileRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
+	var profiles []*configv1.ProfileDefinition
+	if err == nil {
+		defer func() { _ = profileRows.Close() }()
+		for profileRows.Next() {
+			var configJSON []byte
+			if err := profileRows.Scan(&configJSON); err != nil {
+				continue
+			}
+			var p configv1.ProfileDefinition
+			if err := opts.Unmarshal(configJSON, &p); err == nil {
+				profiles = append(profiles, &p)
+			}
+		}
+		if err := profileRows.Err(); err != nil {
+			return nil, fmt.Errorf("failed to iterate profile rows: %w", err)
+		}
+	}
+
+	// Merge Profiles into Global Settings
+	if len(profiles) > 0 {
+		if settings == nil {
+			settings = configv1.GlobalSettings_builder{}.Build()
+		}
+		current := settings.GetProfileDefinitions()
+		current = append(current, profiles...)
+		settings.SetProfileDefinitions(current)
+	}
+
 	builder := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: services,
 		Users:            users,
@@ -444,6 +475,64 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE id = $1", id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
+	}
+	return nil
+}
+
+// User Preferences
+
+// GetUserPreferences retrieves preferences for a user.
+func (s *Store) GetUserPreferences(ctx context.Context, userID string) (map[string]string, error) {
+	query := "SELECT key, value FROM user_preferences WHERE user_id = $1"
+	rows, err := s.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query user preferences: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	prefs := make(map[string]string)
+	for rows.Next() {
+		var key, value string
+		if err := rows.Scan(&key, &value); err != nil {
+			return nil, fmt.Errorf("failed to scan user preference: %w", err)
+		}
+		prefs[key] = value
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return prefs, nil
+}
+
+// UpdateUserPreferences updates preferences for a user.
+func (s *Store) UpdateUserPreferences(ctx context.Context, userID string, preferences map[string]string) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	query := `
+	INSERT INTO user_preferences (user_id, key, value, updated_at)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+	ON CONFLICT(user_id, key) DO UPDATE SET
+		value = excluded.value,
+		updated_at = excluded.updated_at;
+	`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer func() { _ = stmt.Close() }()
+
+	for key, value := range preferences {
+		if _, err := stmt.ExecContext(ctx, userID, key, value); err != nil {
+			return fmt.Errorf("failed to update user preference %s: %w", key, err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 	return nil
 }
@@ -840,6 +929,112 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 	_, err := s.db.ExecContext(ctx, "DELETE FROM user_tokens WHERE user_id = $1 AND service_id = $2", userID, serviceID)
 	if err != nil {
 		return fmt.Errorf("failed to delete token: %w", err)
+	}
+	return nil
+}
+
+// Credentials
+
+// ListCredentials retrieves all credentials.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query credentials: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var credentials []*configv1.Credential
+	for rows.Next() {
+		var configJSON []byte
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan credential config: %w", err)
+		}
+
+		var cred configv1.Credential
+		if err := protojson.Unmarshal(configJSON, &cred); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+		}
+		credentials = append(credentials, &cred)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return credentials, nil
+}
+
+// GetCredential retrieves a credential by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+	query := "SELECT config_json FROM credentials WHERE id = $1"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON []byte
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan credential: %w", err)
+	}
+
+	var cred configv1.Credential
+	if err := protojson.Unmarshal(configJSON, &cred); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+	}
+	return &cred, nil
+}
+
+// SaveCredential saves a credential.
+//
+// ctx is the context for the request.
+// cred is the cred.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+	if cred.GetId() == "" {
+		return fmt.Errorf("credential ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(cred)
+	if err != nil {
+		return fmt.Errorf("failed to marshal credential: %w", err)
+	}
+
+	query := `
+	INSERT INTO credentials (id, name, config_json, updated_at)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, cred.GetId(), cred.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save credential: %w", err)
+	}
+	return nil
+}
+
+// DeleteCredential deletes a credential by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns an error if the operation fails.
+func (s *Store) DeleteCredential(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM credentials WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete credential: %w", err)
 	}
 	return nil
 }

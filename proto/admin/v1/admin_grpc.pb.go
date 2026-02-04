@@ -22,18 +22,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName         = "/mcpany.admin.v1.AdminService/ClearCache"
-	AdminService_ListServices_FullMethodName       = "/mcpany.admin.v1.AdminService/ListServices"
-	AdminService_GetService_FullMethodName         = "/mcpany.admin.v1.AdminService/GetService"
-	AdminService_ListTools_FullMethodName          = "/mcpany.admin.v1.AdminService/ListTools"
-	AdminService_GetTool_FullMethodName            = "/mcpany.admin.v1.AdminService/GetTool"
-	AdminService_CreateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/CreateUser"
-	AdminService_GetUser_FullMethodName            = "/mcpany.admin.v1.AdminService/GetUser"
-	AdminService_ListUsers_FullMethodName          = "/mcpany.admin.v1.AdminService/ListUsers"
-	AdminService_UpdateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/UpdateUser"
-	AdminService_DeleteUser_FullMethodName         = "/mcpany.admin.v1.AdminService/DeleteUser"
-	AdminService_GetDiscoveryStatus_FullMethodName = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
-	AdminService_ListAuditLogs_FullMethodName      = "/mcpany.admin.v1.AdminService/ListAuditLogs"
+	AdminService_ClearCache_FullMethodName            = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName          = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName            = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_ListTools_FullMethodName             = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName               = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_CreateUser_FullMethodName            = "/mcpany.admin.v1.AdminService/CreateUser"
+	AdminService_GetUser_FullMethodName               = "/mcpany.admin.v1.AdminService/GetUser"
+	AdminService_ListUsers_FullMethodName             = "/mcpany.admin.v1.AdminService/ListUsers"
+	AdminService_UpdateUser_FullMethodName            = "/mcpany.admin.v1.AdminService/UpdateUser"
+	AdminService_DeleteUser_FullMethodName            = "/mcpany.admin.v1.AdminService/DeleteUser"
+	AdminService_GetDiscoveryStatus_FullMethodName    = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
+	AdminService_ListAuditLogs_FullMethodName         = "/mcpany.admin.v1.AdminService/ListAuditLogs"
+	AdminService_GetUserPreferences_FullMethodName    = "/mcpany.admin.v1.AdminService/GetUserPreferences"
+	AdminService_UpdateUserPreferences_FullMethodName = "/mcpany.admin.v1.AdminService/UpdateUserPreferences"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -66,6 +68,10 @@ type AdminServiceClient interface {
 	GetDiscoveryStatus(ctx context.Context, in *GetDiscoveryStatusRequest, opts ...grpc.CallOption) (*GetDiscoveryStatusResponse, error)
 	// ListAuditLogs returns audit logs matching the filter.
 	ListAuditLogs(ctx context.Context, in *ListAuditLogsRequest, opts ...grpc.CallOption) (*ListAuditLogsResponse, error)
+	// GetUserPreferences returns user preferences.
+	GetUserPreferences(ctx context.Context, in *GetUserPreferencesRequest, opts ...grpc.CallOption) (*GetUserPreferencesResponse, error)
+	// UpdateUserPreferences updates user preferences.
+	UpdateUserPreferences(ctx context.Context, in *UpdateUserPreferencesRequest, opts ...grpc.CallOption) (*UpdateUserPreferencesResponse, error)
 }
 
 type adminServiceClient struct {
@@ -196,6 +202,26 @@ func (c *adminServiceClient) ListAuditLogs(ctx context.Context, in *ListAuditLog
 	return out, nil
 }
 
+func (c *adminServiceClient) GetUserPreferences(ctx context.Context, in *GetUserPreferencesRequest, opts ...grpc.CallOption) (*GetUserPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserPreferencesResponse)
+	err := c.cc.Invoke(ctx, AdminService_GetUserPreferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) UpdateUserPreferences(ctx context.Context, in *UpdateUserPreferencesRequest, opts ...grpc.CallOption) (*UpdateUserPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateUserPreferencesResponse)
+	err := c.cc.Invoke(ctx, AdminService_UpdateUserPreferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -226,6 +252,10 @@ type AdminServiceServer interface {
 	GetDiscoveryStatus(context.Context, *GetDiscoveryStatusRequest) (*GetDiscoveryStatusResponse, error)
 	// ListAuditLogs returns audit logs matching the filter.
 	ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error)
+	// GetUserPreferences returns user preferences.
+	GetUserPreferences(context.Context, *GetUserPreferencesRequest) (*GetUserPreferencesResponse, error)
+	// UpdateUserPreferences updates user preferences.
+	UpdateUserPreferences(context.Context, *UpdateUserPreferencesRequest) (*UpdateUserPreferencesResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -271,6 +301,12 @@ func (UnimplementedAdminServiceServer) GetDiscoveryStatus(context.Context, *GetD
 }
 func (UnimplementedAdminServiceServer) ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAuditLogs not implemented")
+}
+func (UnimplementedAdminServiceServer) GetUserPreferences(context.Context, *GetUserPreferencesRequest) (*GetUserPreferencesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserPreferences not implemented")
+}
+func (UnimplementedAdminServiceServer) UpdateUserPreferences(context.Context, *UpdateUserPreferencesRequest) (*UpdateUserPreferencesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserPreferences not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -509,6 +545,42 @@ func _AdminService_ListAuditLogs_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_GetUserPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserPreferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetUserPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetUserPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetUserPreferences(ctx, req.(*GetUserPreferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_UpdateUserPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserPreferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).UpdateUserPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_UpdateUserPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).UpdateUserPreferences(ctx, req.(*UpdateUserPreferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -563,6 +635,14 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListAuditLogs",
 			Handler:    _AdminService_ListAuditLogs_Handler,
+		},
+		{
+			MethodName: "GetUserPreferences",
+			Handler:    _AdminService_GetUserPreferences_Handler,
+		},
+		{
+			MethodName: "UpdateUserPreferences",
+			Handler:    _AdminService_UpdateUserPreferences_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
