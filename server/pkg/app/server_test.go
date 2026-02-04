@@ -1351,6 +1351,18 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	}
 }
 
+// mockCloseCountingListener is a mock net.Listener that wraps a real
+// net.Listener and counts the number of times its Close method is called.
+type mockCloseCountingListener struct {
+	net.Listener
+	closeCount int32
+}
+
+func (l *mockCloseCountingListener) Close() error {
+	atomic.AddInt32(&l.closeCount, 1)
+	return l.Listener.Close()
+}
+
 func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
