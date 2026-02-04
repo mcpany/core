@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDashboard, Density } from "@/components/dashboard/dashboard-context";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -129,13 +130,13 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
  * @param props.history - The historical health data for the service.
  * @returns The rendered health item component.
  */
-const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
+const ServiceHealthItem = memo(function ServiceHealthItem({ service, history, density }: { service: ServiceHealth, history: HealthHistoryPoint[], density: Density }) {
     return (
         <div
-            className="group flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors"
+            className={cn("group flex items-center justify-between hover:bg-muted/50 rounded-lg transition-colors", density === "compact" ? "p-1.5" : "p-3")}
         >
-            <div className="flex items-center space-x-4 flex-1 min-w-0">
-                <div className={cn("p-2 rounded-full bg-background shadow-sm border shrink-0", getStatusColor(service.status).split(" ")[0])}>
+            <div className={cn("flex items-center flex-1 min-w-0", density === "compact" ? "space-x-2" : "space-x-4")}>
+                <div className={cn("rounded-full bg-background shadow-sm border shrink-0", getStatusColor(service.status).split(" ")[0], density === "compact" ? "p-1" : "p-2")}>
                     {getStatusIcon(service.status)}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -180,6 +181,7 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
  */
 export function ServiceHealthWidget() {
   const { services, history, isLoading } = useServiceHealthHistory();
+  const { density } = useDashboard();
 
   const sortedServices = useMemo(() => {
     return Array.isArray(services) ? [...services].sort((a, b) => {
@@ -223,11 +225,11 @@ export function ServiceHealthWidget() {
 
   return (
     <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm transition-all duration-300">
-      <CardHeader>
+      <CardHeader className={cn(density === "compact" ? "p-3 pb-1" : "")}>
         <div className="flex items-center justify-between">
             <div>
-                <CardTitle>System Health</CardTitle>
-                <CardDescription>
+                <CardTitle className={cn(density === "compact" ? "text-lg" : "")}>System Health</CardTitle>
+                <CardDescription className={cn(density === "compact" ? "text-xs" : "")}>
                 Live health checks for {sortedServices.length} connected services.
                 </CardDescription>
             </div>
@@ -237,13 +239,14 @@ export function ServiceHealthWidget() {
             </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-1">
+      <CardContent className={cn(density === "compact" ? "p-3 pt-0" : "")}>
+        <div className={cn("space-y-1", density === "compact" ? "space-y-0" : "")}>
           {sortedServices.map((service) => (
             <ServiceHealthItem
                 key={service.id}
                 service={service}
                 history={history[service.id]}
+                density={density}
             />
           ))}
         </div>

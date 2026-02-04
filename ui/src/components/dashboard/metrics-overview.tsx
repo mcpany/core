@@ -6,7 +6,8 @@
 "use client";
 
 import { useEffect, useState, memo } from "react";
-import { useDashboard } from "@/components/dashboard/dashboard-context";
+import { useDashboard, Density } from "@/components/dashboard/dashboard-context";
+import { cn } from "@/lib/utils";
 import {
   Users,
   Activity,
@@ -43,7 +44,7 @@ const iconMap: Record<string, any> = {
  * @param props.metric - The metric property.
  * @returns The rendered component.
  */
-const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
+const MetricItem = memo(function MetricItem({ metric, density }: { metric: Metric, density: Density }) {
   const Icon = iconMap[metric.icon] || Activity;
   const isPositiveTrend = metric.trend === "up";
   // For latency and errors, down is usually good (green), up is bad (red)
@@ -56,14 +57,14 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
 
   return (
     <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className={cn("flex flex-row items-center justify-between space-y-0 pb-2", density === "compact" ? "p-3 pb-1" : "")}>
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {metric.label}
         </CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+      <CardContent className={cn(density === "compact" ? "p-3 pt-0" : "")}>
+        <div className={cn("font-bold tracking-tight", density === "compact" ? "text-lg" : "text-2xl")}>{metric.value}</div>
         <div className="flex items-center justify-between mt-1">
             {metric.change && (
           <p className={`text-xs flex items-center ${trendColor}`}>
@@ -100,7 +101,7 @@ import { apiClient, Metric } from "@/lib/client";
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
-  const { serviceId } = useDashboard();
+  const { serviceId, density } = useDashboard();
 
   useEffect(() => {
     async function fetchMetrics() {
@@ -139,10 +140,10 @@ export const MetricsOverview = memo(function MetricsOverview() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className={cn("space-y-4", density === "compact" ? "space-y-2" : "")}>
+      <div className={cn("grid gap-4 md:grid-cols-2 lg:grid-cols-4", density === "compact" ? "gap-2" : "")}>
         {metrics.map((metric) => (
-          <MetricItem key={metric.label} metric={metric} />
+          <MetricItem key={metric.label} metric={metric} density={density} />
         ))}
       </div>
       <SystemHealthCard />

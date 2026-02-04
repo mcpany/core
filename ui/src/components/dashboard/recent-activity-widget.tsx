@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
+import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -42,6 +43,7 @@ export function RecentActivityWidget() {
   const [traces, setTraces] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { density } = useDashboard();
 
   const fetchTraces = async () => {
     try {
@@ -84,13 +86,13 @@ export function RecentActivityWidget() {
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className={cn("flex flex-row items-center justify-between space-y-0 pb-2", density === "compact" ? "p-3 pb-1" : "")}>
         <div className="space-y-1">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
+            <CardTitle className={cn("text-base font-medium flex items-center gap-2", density === "compact" ? "text-sm" : "")}>
                 <Activity className="h-4 w-4 text-primary" />
                 Recent Activity
             </CardTitle>
-            <CardDescription>
+            <CardDescription className={cn(density === "compact" ? "text-xs" : "")}>
                 Real-time monitor of tool executions.
             </CardDescription>
         </div>
@@ -98,7 +100,7 @@ export function RecentActivityWidget() {
             View All <ArrowRight className="h-3 w-3" />
         </Link>
       </CardHeader>
-      <CardContent>
+      <CardContent className={cn(density === "compact" ? "p-3 pt-0" : "")}>
         {loading && traces.length === 0 ? (
             <div className="flex items-center justify-center h-[200px] text-muted-foreground">
                 <Loader2 className="h-6 w-6 animate-spin mr-2" /> Loading activity...
@@ -114,11 +116,12 @@ export function RecentActivityWidget() {
                 <p className="text-xs opacity-70 mt-1">Execute a tool to see it here.</p>
             </div>
         ) : (
-            <div className="space-y-4">
+            <div className={cn("space-y-4", density === "compact" ? "space-y-2" : "")}>
                 {traces.map((trace) => (
-                    <div key={trace.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-4">
-                            <div className={cn("rounded-full p-2 bg-muted/50",
+                    <div key={trace.id} className={cn("flex items-center justify-between border-b last:border-0 last:pb-0", density === "compact" ? "pb-2" : "pb-4")}>
+                        <div className={cn("flex items-center", density === "compact" ? "gap-2" : "gap-4")}>
+                            <div className={cn("rounded-full bg-muted/50",
+                                density === "compact" ? "p-1" : "p-2",
                                 trace.status === 'success' ? "text-green-500 bg-green-500/10" :
                                 trace.status === 'error' ? "text-red-500 bg-red-500/10" : "text-yellow-500"
                             )}>
