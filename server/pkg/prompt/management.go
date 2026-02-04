@@ -13,33 +13,48 @@ import (
 )
 
 // ManagerInterface defines the interface for a prompt manager.
+//
+// It provides methods for managing the lifecycle of prompts, including registration,
+// retrieval, and organization by services.
 type ManagerInterface interface {
-	// AddPrompt registers a new prompt.
+	// AddPrompt registers a new prompt with the manager.
 	//
-	// prompt is the prompt.
+	// Parameters:
+	//   - prompt: Prompt. The prompt definition to register.
 	AddPrompt(prompt Prompt)
+
 	// UpdatePrompt updates an existing prompt.
 	//
-	// prompt is the prompt.
+	// Parameters:
+	//   - prompt: Prompt. The updated prompt definition.
 	UpdatePrompt(prompt Prompt)
-	// GetPrompt retrieves a prompt by name.
+
+	// GetPrompt retrieves a prompt by its name.
 	//
-	// name is the name of the resource.
+	// Parameters:
+	//   - name: string. The name of the prompt to retrieve.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Prompt: The prompt instance if found.
+	//   - bool: True if the prompt exists, false otherwise.
 	GetPrompt(name string) (Prompt, bool)
+
 	// ListPrompts returns all registered prompts.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Prompt: A slice of all registered prompt instances.
 	ListPrompts() []Prompt
-	// ClearPromptsForService removes all prompts associated with a service.
+
+	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
 	ClearPromptsForService(serviceID string)
-	// SetMCPServer sets the MCP server provider.
+
+	// SetMCPServer sets the MCP server provider used for callbacks.
 	//
-	// mcpServer is the mcpServer.
+	// Parameters:
+	//   - mcpServer: MCPServerProvider. The provider interface for the MCP server.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 

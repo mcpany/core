@@ -65,18 +65,32 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The underlying protobuf definition of the tool.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition.
 	MCPTool() *mcp.Tool
+
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the tool execution.
+	//   - req: *ExecutionRequest. The request containing tool inputs and metadata.
+	//
+	// Returns:
+	//   - any: The result of the tool execution. The type depends on the tool implementation.
+	//   - error: An error if the tool execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if not configured.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -128,7 +142,7 @@ type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
 	// Parameters:
-	//   - toolName: The name of the tool to retrieve.
+	//   - toolName: string. The name of the tool to retrieve.
 	//
 	// Returns:
 	//   - Tool: The tool instance if found.
@@ -138,7 +152,7 @@ type ServiceRegistry interface {
 	// GetServiceInfo retrieves metadata for a service.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
@@ -183,8 +197,8 @@ type Callable interface {
 	// Call executes the callable with the given request.
 	//
 	// Parameters:
-	//   - ctx: The context for the request.
-	//   - req: The execution request details.
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The execution request details.
 	//
 	// Returns:
 	//   - any: The result of the execution.
@@ -242,6 +256,15 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the execution.
+	//   - req: *ExecutionRequest. The request object.
+	//
+	// Returns:
+	//   - Action: The action to take (Allow/Deny).
+	//   - *ExecutionRequest: A potentially modified request, or nil if unchanged.
+	//   - error: An error if the hook execution fails.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
@@ -249,6 +272,15 @@ type PreCallHook interface {
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the execution.
+	//   - req: *ExecutionRequest. The request object.
+	//   - result: any. The result of the tool execution.
+	//
+	// Returns:
+	//   - any: The potentially modified result.
+	//   - error: An error if the hook execution fails.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 

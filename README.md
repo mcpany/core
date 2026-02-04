@@ -101,7 +101,7 @@ make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs. All exported functions, types, and constants must have comprehensive docstrings specifying parameters, returns, and errors.
 ```bash
 make lint
 ```

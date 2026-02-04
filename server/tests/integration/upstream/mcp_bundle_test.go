@@ -241,6 +241,11 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Verify that we can actually run a container (catches overlayfs/storage driver issues in CI)
+	if err := exec.Command("docker", "run", "--rm", "alpine", "echo", "test").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: failed to run basic container (likely storage driver issue): %v", err)
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
