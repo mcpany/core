@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -41,12 +42,13 @@ export default function ToolsPage() {
   const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const { isPinned, togglePin, isLoaded } = usePinnedTools();
+  const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -101,6 +103,39 @@ export default function ToolsPage() {
         console.error("Failed to toggle tool", e);
         fetchTools(); // Revert
     }
+  };
+
+  const handleBulkToggle = async (names: string[], enabled: boolean) => {
+    // Optimistic update
+    setTools(tools.map(t => names.includes(t.name) ? { ...t, disable: !enabled } : t));
+
+    try {
+        await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
+        toast({
+            title: enabled ? "Tools Enabled" : "Tools Disabled",
+            description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
+        });
+    } catch (e) {
+        console.error("Failed to bulk toggle tools", e);
+        fetchTools(); // Revert
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update some tools."
+        });
+    }
+  };
+
+  const handleBulkPin = (names: string[], pinned: boolean) => {
+      if (pinned) {
+          bulkPin(names);
+      } else {
+          bulkUnpin(names);
+      }
+      toast({
+            title: pinned ? "Tools Pinned" : "Tools Unpinned",
+            description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`
+      });
   };
 
   const toggleCompact = () => {
@@ -232,6 +267,8 @@ export default function ToolsPage() {
               toggleTool={toggleTool}
               openInspector={openInspector}
               usageStats={toolUsage}
+              onBulkToggle={handleBulkToggle}
+              onBulkPin={handleBulkPin}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -254,6 +291,8 @@ export default function ToolsPage() {
                       toggleTool={toggleTool}
                       openInspector={openInspector}
                       usageStats={toolUsage}
+                      onBulkToggle={handleBulkToggle}
+                      onBulkPin={handleBulkPin}
                     />
                   </AccordionContent>
                 </AccordionItem>
