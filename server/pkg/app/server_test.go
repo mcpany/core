@@ -2556,6 +2556,9 @@ func TestRunServerMode_Auth(t *testing.T) {
 	waitForServerReady(t, bindAddress)
 	baseURL := fmt.Sprintf("http://%s", bindAddress)
 
+	// Subtests need to use the parent waitgroup logic or ensure they don't run in parallel with shutdown
+	// We run them sequentially here.
+
 	t.Run("Invalid Path", func(t *testing.T) {
 		resp, err := http.Get(baseURL + "/mcp/u/foo")
 		require.NoError(t, err)

@@ -202,6 +202,9 @@ func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping Docker tests in CI due to dind/overlay issues")
+	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
@@ -350,6 +353,9 @@ func TestDockerExecutor(t *testing.T) {
 func TestCombinedOutput(t *testing.T) {
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+	}
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping Docker tests in CI due to dind/overlay issues")
 	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
