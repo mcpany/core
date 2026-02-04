@@ -46,6 +46,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # User authentication service URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
+# Fix for "UndefinedVar: Usage of undefined variable '$NEXT_PUBLIC_API_URL'" warning in some docker versions
+# ensuring the variable is available during subsequent instructions if needed, though strictly ENV handles it.
+ARG NEXT_PUBLIC_API_URL
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
