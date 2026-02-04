@@ -70,6 +70,7 @@ paths:
 }
 
 func TestOpenAPIUpstream_Register_URL(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

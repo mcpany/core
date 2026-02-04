@@ -167,6 +167,7 @@ func TestConvertGraphQLTypeToJSONSchema(t *testing.T) {
 }
 
 func TestGraphQLUpstream_Register_AddToolError(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -216,6 +217,7 @@ func TestGraphQLUpstream_Register_AddToolError(t *testing.T) {
 }
 
 func TestCallable_Call_NewRequestError(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	c := &Callable{
 		address:       "http://example.com\x7f", // Invalid char
 		authenticator: &dummyAuthenticator{},
