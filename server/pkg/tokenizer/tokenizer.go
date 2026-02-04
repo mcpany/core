@@ -829,7 +829,6 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 	return count, nil
 }
 
-
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.
 	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
@@ -840,7 +839,7 @@ func simpleTokenizeInt64(n int64) int {
 	// Calculate length using if-chain for performance (approx 4x faster than loop).
 	l := 0
 	if n < 0 {
-		l = 1 // count the sign
+		l = 1                          // count the sign
 		if n == -9223372036854775808 { // MinInt64
 			l += 19
 			return (l / 4) // 20 / 4 = 5

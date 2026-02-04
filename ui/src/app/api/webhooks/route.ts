@@ -6,6 +6,12 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * Handles the GET request.
+ *
+ * @summary Handles the GET request.
+ * @returns {any} The result.
+ */
 export async function GET() {
   const webhooks = [
     { id: "wh_1", url: "https://example.com/webhook", events: ["service.up", "service.down"], active: true },

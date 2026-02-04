@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 )

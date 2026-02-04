@@ -6,9 +6,9 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is the definitive gateway for bridging the gap between legacy APIs and AI Agents. It acts as a universal adapter that instantly turns your existing APIs (REST, gRPC, GraphQL, Command-line) into MCP-compliant tools without writing a single line of adapter code.
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. **MCP Any** solves this by consolidating your entire infrastructure into a single, secure, and observable MCP endpoint, defined purely through lightweight configuration files.
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
@@ -21,6 +21,9 @@ MCP Any acts as a centralized middleware between AI Agents (Clients) and your Up
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+
+**Data Flow:**
+When an AI Agent requests a tool execution, the request hits the **Core Server**, which consults the **Service Registry** to find the matching adapter. The **Policy Engine** verifies permissions, and then the **Adapter** translates the request to the upstream protocol. The response follows the reverse path.
 
 ```mermaid
 graph TD
@@ -117,6 +120,12 @@ make lint
 Compile all artifacts (Server binary and UI assets).
 ```bash
 make build
+```
+
+### Cleaning
+Clean build artifacts and temporary files.
+```bash
+make clean
 ```
 
 ### Code Generation

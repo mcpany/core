@@ -53,8 +53,6 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 	}, nil
 }
 
-
-
 // Embed generates an embedding for the given text.
 //
 // ctx is the context for the request.

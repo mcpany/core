@@ -19,15 +19,17 @@ type CallableTool struct {
 // NewCallableTool creates a new CallableTool.
 //
 // Parameters:
-//   toolDef: The definition of the tool.
-//   serviceConfig: The configuration of the service the tool belongs to.
-//   callable: The callable implementation for execution.
-//   inputSchema: The input schema for the tool.
-//   outputSchema: The output schema for the tool.
+//
+//	toolDef: The definition of the tool.
+//	serviceConfig: The configuration of the service the tool belongs to.
+//	callable: The callable implementation for execution.
+//	inputSchema: The input schema for the tool.
+//	outputSchema: The output schema for the tool.
 //
 // Returns:
-//   *CallableTool: A pointer to the created CallableTool.
-//   error: An error if creation fails.
+//
+//	*CallableTool: A pointer to the created CallableTool.
+//	error: An error if creation fails.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {

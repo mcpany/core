@@ -14,6 +14,12 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * Handles the GET request.
+ *
+ * @summary Handles the GET request.
+ * @returns {any} The result.
+ */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');

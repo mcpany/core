@@ -10,13 +10,13 @@ import (
 	"sort"
 	"strings"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -26,12 +26,14 @@ import (
 // Markdown formatted string describing each tool and its input schema.
 //
 // Parameters:
-//   ctx: The context for the operation.
-//   cfg: The server configuration containing upstream service definitions.
+//
+//	ctx: The context for the operation.
+//	cfg: The server configuration containing upstream service definitions.
 //
 // Returns:
-//   A string containing the generated Markdown documentation.
-//   An error if documentation generation fails (e.g., if a service cannot be initialized).
+//
+//	A string containing the generated Markdown documentation.
+//	An error if documentation generation fails (e.g., if a service cannot be initialized).
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

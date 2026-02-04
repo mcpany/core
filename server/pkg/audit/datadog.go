@@ -156,7 +156,6 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-
 // Read implements the Store interface.
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")

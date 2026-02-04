@@ -148,7 +148,6 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-
 // Read implements the Store interface.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
