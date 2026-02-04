@@ -22,15 +22,15 @@ test('layout smoke test', async ({ page }) => {
   await page.waitForURL('**/stacks');
   await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
-  // Check for the "mcpany-system" stack
-  await expect(page.locator('text=mcpany-system')).toBeVisible();
+  // Check for the "default-stack" stack
+  await expect(page.locator('text=default-stack')).toBeVisible();
 
   // Navigate to Stack Detail
   await Promise.all([
-    page.waitForURL(/\/stacks\/system/),
-    page.click('text=mcpany-system'),
+    page.waitForURL(/\/stacks\/default-stack/),
+    page.click('text=default-stack'),
   ]);
-  await expect(page.locator('h2')).toContainText('system');
+  await expect(page.locator('h2')).toContainText('default-stack');
   await expect(page.locator('h2')).toContainText('Stack');
 
   // Check Tabs
