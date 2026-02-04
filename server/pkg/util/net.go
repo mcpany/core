@@ -75,6 +75,9 @@ func NewSafeDialer() *SafeDialer {
 //   - (net.Conn): The established connection.
 //   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+	if d == nil {
+		return nil, fmt.Errorf("SafeDialer is nil")
+	}
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split host and port: %w", err)
@@ -83,6 +86,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 	resolver := d.Resolver
 	if resolver == nil {
 		resolver = net.DefaultResolver
+	}
+	if resolver == nil {
+		resolver = &net.Resolver{}
 	}
 
 	lookupNetwork := "ip"
