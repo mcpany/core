@@ -877,6 +877,9 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	jsonrpcEndpoint := fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
 	grpcRegEndpoint := net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
+	if actualAPIKey != "" {
+		mcpRequestURL += fmt.Sprintf("?api_key=%s", actualAPIKey)
+	}
 
 	// Verify gRPC connection
 	var grpcRegConn *grpc.ClientConn
@@ -1213,8 +1216,9 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	if jsonrpcPort != 0 {
 		jsonrpcEndpoint = fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
-		// API Key is passed via Header now
-		mcpRequestURL = fmt.Sprintf("%s/mcp", jsonrpcEndpoint)
+		// API Key is passed via Header, but we also include it in URL for legacy/SDK clients
+		// that don't support custom headers (loopback-only).
+		mcpRequestURL = fmt.Sprintf("%s/mcp?api_key=%s", jsonrpcEndpoint, apiKey)
 	}
 	if grpcRegPort != 0 {
 		grpcRegEndpoint = net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))

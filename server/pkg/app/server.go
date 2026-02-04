@@ -1648,6 +1648,23 @@ func (a *Application) runServerMode(
 					}
 				}
 
+				// Fallback to query param for Loopback only (Migration/Test Support)
+				if requestKey == "" {
+					queryKey := r.URL.Query().Get("api_key")
+					if queryKey != "" {
+						// Check loopback
+						host, _, err := net.SplitHostPort(r.RemoteAddr)
+						if err != nil {
+							host = r.RemoteAddr
+						}
+						ip := net.ParseIP(host)
+						if ip != nil && ip.IsLoopback() {
+							requestKey = queryKey
+							logging.GetLogger().Warn("Authenticated via query parameter (deprecated/insecure). Please use X-API-Key header.", "remote_addr", r.RemoteAddr)
+						}
+					}
+				}
+
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
 					// Note: We don't inject API Key/Roles/User into ctx here because
