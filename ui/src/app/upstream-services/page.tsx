@@ -24,6 +24,7 @@ import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
+import { BulkUpdates } from "@/components/services/bulk-edit-dialog";
 import { BulkServiceImport } from "@/components/services/bulk-service-import";
 import {
     Dialog,
@@ -164,15 +165,51 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: BulkUpdates) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
         await Promise.all(servicesToUpdate.map(service => {
             const updated = { ...service };
+
+            // Tags
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
             }
-            return apiClient.updateService(updated as any);
+
+            // Timeout
+            if (updates.timeout) {
+                 updated.resilience = {
+                    ...(updated.resilience || {}),
+                    timeout: updates.timeout
+                 };
+            }
+
+            // Authentication
+            if (updates.upstreamAuth) {
+                updated.upstreamAuth = updates.upstreamAuth;
+            }
+
+            // Env Vars (Only for CLI/MCP Stdio)
+            if (updates.env) {
+                const newEnv = Object.entries(updates.env).reduce((acc, [k, v]) => {
+                    acc[k] = { plainText: v };
+                    return acc;
+                }, {} as any);
+
+                if (updated.commandLineService) {
+                    updated.commandLineService.env = {
+                        ...(updated.commandLineService.env || {}),
+                        ...newEnv
+                    };
+                } else if (updated.mcpService?.stdioConnection) {
+                     updated.mcpService.stdioConnection.env = {
+                        ...(updated.mcpService.stdioConnection.env || {}),
+                        ...newEnv
+                    };
+                }
+            }
+
+            return apiClient.updateService(updated);
         }));
         toast({
             title: "Services Updated",

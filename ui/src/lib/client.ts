@@ -239,6 +239,10 @@ export const apiClient = {
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
+            resilience: s.resilience,
+            cache: s.cache,
+            rateLimit: s.rate_limit,
+            authentication: s.authentication,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
@@ -287,6 +291,10 @@ export const apiClient = {
                          commandLineService: s.command_line_service,
                          mcpService: s.mcp_service,
                          upstreamAuth: s.upstream_auth,
+                         resilience: s.resilience,
+                         cache: s.cache,
+                         rateLimit: s.rate_limit,
+                         authentication: s.authentication,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
                          toolExportPolicy: s.tool_export_policy,
@@ -365,6 +373,12 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            connection_pool: config.connectionPool,
+            upstream_auth: config.upstreamAuth,
+            cache: config.cache,
+            rate_limit: config.rateLimit,
+            resilience: config.resilience,
+            authentication: config.authentication,
         };
 
         if (config.httpService) {
@@ -440,6 +454,12 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            connection_pool: config.connectionPool,
+            upstream_auth: config.upstreamAuth,
+            cache: config.cache,
+            rate_limit: config.rateLimit,
+            resilience: config.resilience,
+            authentication: config.authentication,
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
@@ -526,6 +546,12 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            connection_pool: config.connectionPool,
+            upstream_auth: config.upstreamAuth,
+            cache: config.cache,
+            rate_limit: config.rateLimit,
+            resilience: config.resilience,
+            authentication: config.authentication,
         };
 
         if (config.httpService) {
@@ -1422,6 +1448,10 @@ export const apiClient = {
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
+            resilience: s.resilience,
+            cache: s.cache,
+            rateLimit: s.rate_limit,
+            authentication: s.authentication,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             toolExportPolicy: s.tool_export_policy,
@@ -1446,6 +1476,12 @@ export const apiClient = {
             priority: template.priority,
             load_balancing_strategy: template.loadBalancingStrategy,
             tags: template.tags,
+            connection_pool: template.connectionPool,
+            upstream_auth: template.upstreamAuth,
+            cache: template.cache,
+            rate_limit: template.rateLimit,
+            resilience: template.resilience,
+            authentication: template.authentication,
         };
 
         if (template.httpService) {
