@@ -18,8 +18,9 @@ import (
 // from a given store. It orchestrates the reading of the configuration,
 // validates its contents, and returns a sanitized configuration object.
 //
-// If the provided store is empty or contains no configuration files, a default,
-// empty configuration is returned.
+// It acts as a resilient loader that filters out invalid services to allow the server to start
+// even with partial configuration failures. If the provided store is empty or contains no
+// configuration files, a default, empty configuration is returned.
 //
 // Parameters:
 //   - store: The configuration store from which to load the configuration.
