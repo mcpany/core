@@ -16,7 +16,7 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
-**High-Level Overview:**
+**Core Components:**
 1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
@@ -80,6 +80,7 @@ Follow these steps to get up and running immediately.
 
 ### Hello World
 Once the server is running, you can verify it using `curl` or an MCP client.
+
 ```bash
 # Check health
 curl http://localhost:50050/health
