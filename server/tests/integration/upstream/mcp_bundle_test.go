@@ -235,6 +235,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping Docker bundle test in CI due to overlayfs/bind-mount issues")
+	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
