@@ -118,6 +118,30 @@ Audit logs are written as newline-delimited JSON (NDJSON). Each line represents 
 }
 ```
 
+## Exporting Logs
+
+You can export audit logs as a CSV file using the API.
+
+### API Endpoint
+
+`GET /api/v1/audit/export`
+
+**Query Parameters:**
+
+- `start_time` (optional): Filter logs starting from this timestamp (RFC3339 format).
+- `end_time` (optional): Filter logs until this timestamp (RFC3339 format).
+- `tool_name` (optional): Filter by tool name.
+- `user_id` (optional): Filter by user ID.
+- `profile_id` (optional): Filter by profile ID.
+- `limit` (optional): Maximum number of logs to return.
+- `offset` (optional): Offset for pagination.
+
+**Example:**
+
+```bash
+curl -H "X-API-Key: your-api-key" "http://localhost:8080/api/v1/audit/export?start_time=2023-10-27T00:00:00Z" > audit.csv
+```
+
 ## Security Considerations
 
 - **Sensitive Data**: By default, `log_arguments` and `log_results` are disabled. Enable them with caution, as they may expose API keys, PII, or other sensitive information handled by your tools.
