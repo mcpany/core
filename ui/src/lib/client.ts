@@ -1581,5 +1581,32 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    // Dashboard
+
+    /**
+     * Gets the dashboard layout for the current user.
+     * @returns A promise that resolves to the dashboard layout JSON string.
+     */
+    getDashboardLayout: async () => {
+        const res = await fetchWithAuth('/api/v1/dashboard/layout');
+        if (!res.ok) throw new Error('Failed to fetch dashboard layout');
+        return res.json();
+    },
+
+    /**
+     * Saves the dashboard layout for the current user.
+     * @param layoutJson The layout JSON string.
+     * @returns A promise that resolves when the layout is saved.
+     */
+    saveDashboardLayout: async (layoutJson: string) => {
+        const res = await fetchWithAuth('/api/v1/dashboard/layout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ layoutJson })
+        });
+        if (!res.ok) throw new Error('Failed to save dashboard layout');
+        return res.json();
     }
 };

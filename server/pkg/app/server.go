@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/dashboard"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
@@ -2022,6 +2023,10 @@ func (a *Application) runServerMode(
 	// Register Skill Service
 	v1.RegisterSkillServiceServer(grpcServer, NewSkillServiceServer(a.SkillManager))
 
+	// Register Dashboard Service
+	dashboardServer := dashboard.NewServer(store)
+	v1.RegisterDashboardServiceServer(grpcServer, dashboardServer)
+
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
 	wrappedGrpc = grpcweb.WrapServer(grpcServer,
 		grpcweb.WithOriginFunc(func(_ string) bool { return true }),
@@ -2048,6 +2053,8 @@ func (a *Application) runServerMode(
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
 				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
+				} else if err := v1.RegisterDashboardServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register dashboard gateway: %w", err)
 				} else if err := pb_admin.RegisterAdminServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register admin gateway: %w", err)
 				} else {
