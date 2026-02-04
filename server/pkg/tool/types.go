@@ -2857,8 +2857,8 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
+		if strings.ContainsAny(val, "|<>") {
+			return fmt.Errorf("awk injection detected: value contains dangerous character '|', '<', or '>'")
 		}
 	}
 
