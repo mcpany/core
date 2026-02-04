@@ -221,6 +221,7 @@ func GetProjectRoot() (string, error) {
 	findRootOnce.Do(func() {
 		// Allow overriding via environment variable
 		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
+			fmt.Printf("DEBUG: Using MCPANY_PROJECT_ROOT from env: %s\n", envRoot)
 			projectRoot = envRoot
 			return
 		}
@@ -1122,7 +1123,39 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	absMcpAnyBinaryPath, err := filepath.Abs(mcpanyBinary)
 	require.NoError(t, err, "Failed to get absolute path for MCPANY binary: %s", mcpanyBinary)
 	_, err = os.Stat(absMcpAnyBinaryPath)
-	require.NoError(t, err, "MCPANY binary not found at %s. Run 'make build'.", absMcpAnyBinaryPath)
+	if err != nil {
+		t.Logf("MCPANY binary not found at %s. Attempting to find it relative to current directory...", absMcpAnyBinaryPath)
+		// Fallback: Check relative to CWD
+		cwd, _ := os.Getwd()
+		// Try finding build directory by walking up
+		dir := cwd
+		for {
+			candidate := filepath.Join(dir, "build/bin/server")
+			// If we are in server/..., build is ../build
+			// If we are in root, build is build
+			// Check candidate
+			if _, statErr := os.Stat(candidate); statErr == nil {
+				t.Logf("Found MCPANY binary at %s", candidate)
+				absMcpAnyBinaryPath, _ = filepath.Abs(candidate)
+				err = nil
+				break
+			}
+			// Check ../build/bin/server
+			candidateUp := filepath.Join(dir, "../build/bin/server")
+			if _, statErr := os.Stat(candidateUp); statErr == nil {
+				t.Logf("Found MCPANY binary at %s", candidateUp)
+				absMcpAnyBinaryPath, _ = filepath.Abs(candidateUp)
+				err = nil
+				break
+			}
+
+			if dir == "/" || dir == "." {
+				break
+			}
+			dir = filepath.Dir(dir)
+		}
+	}
+	require.NoError(t, err, "MCPANY binary not found at %s or usual locations. Run 'make build'.", absMcpAnyBinaryPath)
 
 	// Generate a random API key for this test
 	apiKey := fmt.Sprintf("test-key-%d", time.Now().UnixNano())
