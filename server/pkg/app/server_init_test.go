@@ -235,6 +235,11 @@ func (m *MockStore) SaveGlobalSettings(ctx context.Context, settings *configv1.G
 	return args.Error(0)
 }
 
+func (m *MockStore) Clear(ctx context.Context) error {
+	args := m.Called(ctx)
+	return args.Error(0)
+}
+
 func (m *MockStore) HasConfigSources() bool {
 	return true
 }

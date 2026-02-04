@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package framework
 
 import (
@@ -9,7 +12,7 @@ import (
 
 // NewFakeUpstream creates a new fake upstream server that responds with the provided JSON.
 func NewFakeUpstream(t *testing.T, response interface{}) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(response); err != nil {
 			t.Errorf("Failed to encode response: %v", err)

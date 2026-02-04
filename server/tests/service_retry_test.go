@@ -255,6 +255,9 @@ func (m *MockStorage) DeleteCredential(ctx context.Context, id string) error { r
 func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
 	return nil
 }
+func (m *MockStorage) Clear(ctx context.Context) error {
+	return nil
+}
 func (m *MockStorage) Close() error {
 	args := m.Called()
 	return args.Error(0)
