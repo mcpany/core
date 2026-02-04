@@ -147,8 +147,9 @@ type Toast = Omit<ToasterToast, "id">
 
 /**
  * Dispatches a new toast notification.
- * @param props The toast properties.
- * @returns Object with id, dismiss, and update functions.
+ *
+ * @param props - The properties of the toast to display (title, description, action, etc.).
+ * @returns An object containing the toast's ID, a dismiss function, and an update function.
  */
 function toast({ ...props }: Toast) {
   const id = genId()
@@ -180,8 +181,9 @@ function toast({ ...props }: Toast) {
 }
 
 /**
- * Hook to manage toast notifications.
- * @returns An object containing the current toasts and functions to manage them.
+ * Hook to access and manage toast notifications.
+ *
+ * @returns An object containing the current list of toasts (`toasts`), the `toast` function to add new ones, and a `dismiss` function.
  */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
