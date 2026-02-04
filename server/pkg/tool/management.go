@@ -119,6 +119,12 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
+	// GetToolCount returns the number of tools registered for a given service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the count.
+	GetToolCount(serviceID string) int
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -920,6 +926,20 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 
 	tm.cachedMCPTools = mcpTools
 	return mcpTools
+}
+
+// GetToolCount returns the number of tools registered for a given service.
+//
+// serviceID is the serviceID.
+//
+// Returns the count.
+func (tm *Manager) GetToolCount(serviceID string) int {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+	if toolIDs, ok := tm.serviceToolIDs[serviceID]; ok {
+		return len(toolIDs)
+	}
+	return 0
 }
 
 // ClearToolsForService removes all tools associated with a given service key from
