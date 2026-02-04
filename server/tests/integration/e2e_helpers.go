@@ -810,7 +810,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	t.Setenv("MCPANY_DB_PATH", dbPath)
+	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
@@ -825,6 +825,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ConfigPaths:     []string{},
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
+			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
