@@ -208,19 +208,36 @@ func checkOIDCReachability(ctx context.Context, oidc *configv1.OIDCAuth) CheckRe
 	// OIDC discovery endpoint
 	discoveryURL := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
 
-	return checkURL(ctx, discoveryURL, nil)
+	return checkURL(ctx, discoveryURL, "GET", 200, nil)
 }
 
 func checkHTTPService(ctx context.Context, s *configv1.HttpUpstreamService, auth *configv1.Authentication) CheckResult {
-	return checkURL(ctx, s.GetAddress(), auth)
+	url := s.GetAddress()
+	method := "GET"
+	expectedCode := 0
+
+	// Apply health check overrides if configured
+	if hc := s.GetHealthCheck(); hc != nil {
+		if hc.GetUrl() != "" {
+			url = hc.GetUrl()
+		}
+		if hc.GetMethod() != "" {
+			method = hc.GetMethod()
+		}
+		if hc.GetExpectedCode() != 0 {
+			expectedCode = int(hc.GetExpectedCode())
+		}
+	}
+
+	return checkURL(ctx, url, method, expectedCode, auth)
 }
 
 func checkGraphQLService(ctx context.Context, s *configv1.GraphQLUpstreamService, auth *configv1.Authentication) CheckResult {
-	return checkURL(ctx, s.GetAddress(), auth)
+	return checkURL(ctx, s.GetAddress(), "GET", 200, auth)
 }
 
 func checkWebRTCService(ctx context.Context, s *configv1.WebrtcUpstreamService, auth *configv1.Authentication) CheckResult {
-	return checkURL(ctx, s.GetAddress(), auth)
+	return checkURL(ctx, s.GetAddress(), "GET", 200, auth)
 }
 
 func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamService, auth *configv1.Authentication) CheckResult {
@@ -232,11 +249,22 @@ func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamSer
 		addr = "https://" + strings.TrimPrefix(addr, "wss://")
 	}
 
-	return checkURL(ctx, addr, auth)
+	if hc := s.GetHealthCheck(); hc != nil && hc.GetUrl() != "" {
+		addr = hc.GetUrl()
+		// If health check URL is http(s), use it. If ws(s), convert it.
+		if strings.HasPrefix(addr, "ws://") {
+			addr = "http://" + strings.TrimPrefix(addr, "ws://")
+		} else if strings.HasPrefix(addr, "wss://") {
+			addr = "https://" + strings.TrimPrefix(addr, "wss://")
+		}
+	}
+
+	// 426 Upgrade Required is typical for WS endpoints when hit with HTTP
+	return checkURL(ctx, addr, "GET", 0, auth)
 }
 
-func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication) CheckResult {
-	req, err := http.NewRequestWithContext(ctx, "GET", urlStr, nil)
+func checkURL(ctx context.Context, urlStr, method string, expectedCode int, auth *configv1.Authentication) CheckResult {
+	req, err := http.NewRequestWithContext(ctx, method, urlStr, nil)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
@@ -279,7 +307,25 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 		}
 	}
 
-	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
+	// Check against expected code if strict checking is requested
+	if expectedCode != 0 {
+		if resp.StatusCode != expectedCode {
+			// Special handling for WS 426 if checking via HTTP
+			if expectedCode == 0 && resp.StatusCode == 426 {
+				return CheckResult{
+					Status:  StatusOk,
+					Message: fmt.Sprintf("Service reachable (Upgrade Required)"),
+				}
+			}
+
+			return CheckResult{
+				Status: StatusError,
+				Message: fmt.Sprintf("Unexpected status code: %d (expected %d)", resp.StatusCode, expectedCode),
+			}
+		}
+	}
+
+	if expectedCode == 0 && resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
 		// We consider 4xx a warning because the service is technically reachable, just maybe not at this path.
 		// However, 5xx is an error.
 		if resp.StatusCode >= 500 {
@@ -347,14 +393,14 @@ func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService
 	if s.GetSpecUrl() != "" {
 		// Check if we can fetch the spec (passing auth if needed? Usually spec might be public, but API isn't)
 		// For now, let's assume spec URL might need auth too if it's on the same server.
-		res := checkURL(ctx, s.GetSpecUrl(), auth)
+		res := checkURL(ctx, s.GetSpecUrl(), "GET", 200, auth)
 		if res.Status != StatusOk {
 			return res
 		}
 	}
 
 	if s.GetAddress() != "" {
-		return checkURL(ctx, s.GetAddress(), auth)
+		return checkURL(ctx, s.GetAddress(), "GET", 0, auth)
 	}
 
 	return CheckResult{
@@ -400,7 +446,7 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService, auth *configv1.Authentication) CheckResult {
 	switch s.WhichConnectionType() {
 	case configv1.McpUpstreamService_HttpConnection_case:
-		return checkURL(ctx, s.GetHttpConnection().GetHttpAddress(), auth)
+		return checkURL(ctx, s.GetHttpConnection().GetHttpAddress(), "GET", 0, auth)
 	case configv1.McpUpstreamService_StdioConnection_case:
 		cmd := s.GetStdioConnection().GetCommand()
 		_, err := exec.LookPath(cmd)

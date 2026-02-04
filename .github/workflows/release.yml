@@ -180,6 +180,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate Protobufs
+        run: |
+          make gen
+
       - name: Get Date
         id: get-date
         run: |
