@@ -53,11 +53,37 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container (catch overlayfs issues in CI)
+	// We use "alpine:latest" as it is likely present or small to pull.
+	// If pull fails, we might still proceed if image is local, but Create check is key.
+	containerConfig := &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}
+	// Try to pull first to avoid "image not found" error during create if not present
+	_, _ = cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+
+	resp, err := cli.ContainerCreate(ctx, containerConfig, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("could not create test container (docker environment may be broken): %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("could not start test container (docker environment may be broken): %v", err)
+		return false
+	}
+
 	return true
 }
 
