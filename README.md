@@ -45,7 +45,7 @@ graph TD
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
-## 3. Getting Started
+## 3. Quick Start
 
 Follow these steps to get up and running immediately.
 
@@ -90,7 +90,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## 4. Developer Workflow
 
 We follow a strict development workflow to ensure quality.
 
