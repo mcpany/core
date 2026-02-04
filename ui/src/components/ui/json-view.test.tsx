@@ -15,13 +15,6 @@ Object.assign(navigator, {
   },
 });
 
-// Mock ResizeObserver which might be used by SyntaxHighlighter or something internal
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
-
 describe('JsonView', () => {
   it('renders JSON string correctly', () => {
     const data = { key: 'value' };
