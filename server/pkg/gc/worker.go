@@ -120,7 +120,11 @@ func (w *Worker) runCleanup(ctx context.Context) {
 		// Ensure we close the file handle.
 		// We use a closure to ensure Close is called before moving to the next path.
 		func() {
-			defer f.Close()
+			defer func() {
+				if err := f.Close(); err != nil {
+					log.Warn("GC: Failed to close directory file handle", "path", cleanPath, "error", err)
+				}
+			}()
 
 			const batchSize = 100
 			for {
