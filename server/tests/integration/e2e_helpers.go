@@ -41,7 +41,8 @@ import (
 
 // SkipIfCI skips the test if running in a CI environment.
 func SkipIfCI(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+	const trueStr = "true"
+	if os.Getenv("CI") == trueStr || os.Getenv("GITHUB_ACTIONS") == trueStr {
 		t.Skip("Skipping test in CI environment to prevent flakiness or resource issues")
 	}
 }
