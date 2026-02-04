@@ -183,7 +183,7 @@ func (a *Application) handleDashboardLayout(w http.ResponseWriter, r *http.Reque
 			http.Error(w, "Failed to read body", http.StatusBadRequest)
 			return
 		}
-		defer r.Body.Close()
+		defer func() { _ = r.Body.Close() }()
 
 		if err := a.Storage.SaveDashboardLayout(ctx, userID, string(body)); err != nil {
 			http.Error(w, "Failed to save dashboard layout", http.StatusInternalServerError)

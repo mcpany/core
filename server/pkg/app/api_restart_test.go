@@ -32,6 +32,14 @@ type MockStoreWithGet struct {
 	service *configv1.UpstreamServiceConfig
 }
 
+func (m *MockStoreWithGet) GetDashboardLayout(ctx context.Context, userID string) (string, error) {
+	return "", nil
+}
+
+func (m *MockStoreWithGet) SaveDashboardLayout(ctx context.Context, userID string, layoutJSON string) error {
+	return nil
+}
+
 func (m *MockStoreWithGet) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	if m.service != nil && m.service.GetName() == name {
 		return m.service, nil

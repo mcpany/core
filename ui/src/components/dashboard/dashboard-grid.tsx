@@ -137,9 +137,11 @@ export function DashboardGrid() {
             return;
         }
 
+        // Persist to local storage immediately for resilience
+        localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
+
         const timer = setTimeout(() => {
             apiClient.saveDashboardLayout(widgets).catch(err => console.error("Failed to save layout", err));
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
         }, 500);
 
         return () => clearTimeout(timer);
