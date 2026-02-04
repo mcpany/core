@@ -191,9 +191,15 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install UI Dependencies
+        run: |
+          cd ui && npm install
+
       - name: Generate Protobufs
         run: |
           make gen
+          echo "Checking for generated TS files..."
+          find proto -name "*.ts" | head -n 5
 
       - name: Get Date
         id: get-date
