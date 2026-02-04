@@ -1167,68 +1167,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
 	// Wait for ports to be assigned and logged
-	var jsonrpcPort, grpcRegPort, metricsPort int
-
-	// Regex patterns to extract ports from logs.
-	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
-	httpPortRegex := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
-	// Matches: msg="gRPC server listening" ... port=127.0.0.1:12345
-	// OR: INFO grpc_weather_server: Listening on port port=43523
-	grpcPortRegex := regexp.MustCompile(`(?:msg="gRPC server listening".*?port=[^:]+:(\d+))|(?:Listening on port port=(\d+))`)
-	// Matches: Metrics server listening on port 12345
-	metricsPortRegex := regexp.MustCompile(`Metrics server listening on port (\d+)`)
-
-	require.Eventually(t, func() bool {
-		stdout := mcpProcess.StdoutString()
-		if jsonrpcPort == 0 {
-			matches := httpPortRegex.FindStringSubmatch(stdout)
-			if len(matches) >= 2 {
-				if _, err := fmt.Sscanf(matches[1], "%d", &jsonrpcPort); err != nil {
-					t.Logf("failed to parse jsonrpc port: %v", err)
-				}
-			}
-		}
-		if grpcRegPort == 0 {
-			matches := grpcPortRegex.FindStringSubmatch(stdout)
-			if len(matches) >= 2 {
-				if _, err := fmt.Sscanf(matches[1], "%d", &grpcRegPort); err != nil {
-					t.Logf("failed to parse grpc port: %v", err)
-				}
-			}
-		}
-		if metricsPort == 0 {
-			matches := metricsPortRegex.FindStringSubmatch(stdout)
-			if len(matches) >= 2 {
-				if _, err := fmt.Sscanf(matches[1], "%d", &metricsPort); err != nil {
-					t.Logf("failed to parse metrics port: %v", err)
-				}
-			}
-		}
-		// If we are stdio mode, we might not get HTTP port if listen address is not set?
-		// But we set --mcp-listen-address explicitly to 0. So it SHOULD listen.
-		// NOTE: if stdio mode is used, we still pass network flags, and the server runs both stdio and http usually?
-		// Or maybe not? runServerMode vs runStdioMode.
-		// If --stdio is passed, `Run` calls `runStdioModeFunc` which DOES NOT start HTTP server for MCP usually?
-		// But in `runServerMode`, we start HTTP.
-		// Let's check `Run` in `server.go`:
-		// if stdio { return a.runStdioModeFunc(...) }
-		// `runStdioMode` only runs stdio transport. NO HTTP server.
-		// So if --stdio is extracted from extraArgs, we won't get HTTP port log.
-
-		isStdio := false
-		for _, arg := range extraArgs {
-			if arg == "--stdio" {
-				isStdio = true
-				break
-			}
-		}
-		if isStdio {
-			// In stdio mode, we don't expect HTTP/gRPC ports to be logged or relevant for *connecting* via network (except maybe metrics?).
-			return true
-		}
-
-		return jsonrpcPort != 0 && grpcRegPort != 0
-	}, McpAnyServerStartupTimeout, RetryInterval, "Failed to discover bound ports from logs.\nStdout: %s\nStderr: %s", mcpProcess.StdoutString(), mcpProcess.StderrString())
+	jsonrpcPort, grpcRegPort, metricsPort := waitForBoundPorts(t, mcpProcess, extraArgs)
 
 	// If stdio, we might not have ports.
 	jsonrpcEndpoint := ""
@@ -2056,4 +1995,60 @@ type MCPJSONRPCError struct {
 // Returns the result.
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
+}
+
+func waitForBoundPorts(t *testing.T, mcpProcess *ManagedProcess, extraArgs []string) (int, int, int) {
+	var jsonrpcPort, grpcRegPort, metricsPort int
+
+	// Regex patterns to extract ports from logs.
+	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
+	httpPortRegex := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
+	// Matches: msg="gRPC server listening" ... port=127.0.0.1:12345
+	// OR: INFO grpc_weather_server: Listening on port port=43523
+	grpcPortRegex := regexp.MustCompile(`(?:msg="gRPC server listening".*?port=[^:]+:(\d+))|(?:Listening on port port=(\d+))`)
+	// Matches: Metrics server listening on port 12345
+	metricsPortRegex := regexp.MustCompile(`Metrics server listening on port (\d+)`)
+
+	require.Eventually(t, func() bool {
+		stdout := mcpProcess.StdoutString()
+		if jsonrpcPort == 0 {
+			matches := httpPortRegex.FindStringSubmatch(stdout)
+			if len(matches) >= 2 {
+				if _, err := fmt.Sscanf(matches[1], "%d", &jsonrpcPort); err != nil {
+					t.Logf("failed to parse jsonrpc port: %v", err)
+				}
+			}
+		}
+		if grpcRegPort == 0 {
+			matches := grpcPortRegex.FindStringSubmatch(stdout)
+			if len(matches) >= 2 {
+				if _, err := fmt.Sscanf(matches[1], "%d", &grpcRegPort); err != nil {
+					t.Logf("failed to parse grpc port: %v", err)
+				}
+			}
+		}
+		if metricsPort == 0 {
+			matches := metricsPortRegex.FindStringSubmatch(stdout)
+			if len(matches) >= 2 {
+				if _, err := fmt.Sscanf(matches[1], "%d", &metricsPort); err != nil {
+					t.Logf("failed to parse metrics port: %v", err)
+				}
+			}
+		}
+
+		isStdio := false
+		for _, arg := range extraArgs {
+			if arg == "--stdio" {
+				isStdio = true
+				break
+			}
+		}
+		if isStdio {
+			return true
+		}
+
+		return jsonrpcPort != 0 && grpcRegPort != 0
+	}, McpAnyServerStartupTimeout, RetryInterval, "Failed to discover bound ports from logs.\nStdout: %s\nStderr: %s", mcpProcess.StdoutString(), mcpProcess.StderrString())
+
+	return jsonrpcPort, grpcRegPort, metricsPort
 }
