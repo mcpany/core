@@ -239,10 +239,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
 	}
 
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
-	}
+	integration.RequireWorkingDocker(t)
 
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
