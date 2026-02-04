@@ -2973,7 +2973,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
-		if char == '\\' {
+		if char == '\\' && !inSingle {
 			escaped = true
 			continue
 		}
