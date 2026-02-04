@@ -162,9 +162,17 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			traceID = uuid.New().String()
 		}
 
+		// Sanitize IDs
+		if len(traceID) > 64 {
+			traceID = traceID[:64]
+		}
+		if len(spanID) > 64 {
+			spanID = spanID[:64]
+		}
+
 		// Capture Request Body
 		var reqBody string
-		if r.Body != nil {
+		if r.Body != nil && r.Body != http.NoBody {
 			bodyBytes, err := io.ReadAll(io.LimitReader(r.Body, d.maxBodySize))
 			if err == nil {
 				reqBody = string(bodyBytes)
