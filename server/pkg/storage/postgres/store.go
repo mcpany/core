@@ -178,6 +178,55 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	return nil
 }
 
+// Dashboard Layouts
+
+// GetDashboardLayout retrieves the dashboard layout for a user.
+//
+// ctx is the context for the request.
+// userID is the user ID.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetDashboardLayout(ctx context.Context, userID string) (string, error) {
+	query := "SELECT layout_json FROM dashboard_layouts WHERE user_id = $1"
+	row := s.db.QueryRowContext(ctx, query, userID)
+
+	var layoutJSON string
+	if err := row.Scan(&layoutJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil // Not found (empty string)
+		}
+		return "", fmt.Errorf("failed to scan layout_json: %w", err)
+	}
+	return layoutJSON, nil
+}
+
+// SaveDashboardLayout saves the dashboard layout for a user.
+//
+// ctx is the context for the request.
+// userID is the user ID.
+// layoutJSON is the layout JSON.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveDashboardLayout(ctx context.Context, userID string, layoutJSON string) error {
+	if userID == "" {
+		return fmt.Errorf("user ID is required")
+	}
+
+	query := `
+	INSERT INTO dashboard_layouts (user_id, layout_json, updated_at)
+	VALUES ($1, $2, CURRENT_TIMESTAMP)
+	ON CONFLICT(user_id) DO UPDATE SET
+		layout_json = excluded.layout_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err := s.db.ExecContext(ctx, query, userID, layoutJSON)
+	if err != nil {
+		return fmt.Errorf("failed to save dashboard layout: %w", err)
+	}
+	return nil
+}
+
 // GetService retrieves an upstream service configuration by name.
 //
 // ctx is the context for the request.

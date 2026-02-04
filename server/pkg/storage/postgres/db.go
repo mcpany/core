@@ -134,6 +134,12 @@ func initSchema(db *sql.DB) error {
 		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (user_id, service_id)
 	);
+
+	CREATE TABLE IF NOT EXISTS dashboard_layouts (
+		user_id TEXT PRIMARY KEY,
+		layout_json TEXT NOT NULL,
+		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

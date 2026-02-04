@@ -1030,6 +1030,31 @@ export const apiClient = {
     },
 
     /**
+     * Gets the dashboard layout.
+     * @returns A promise that resolves to the layout.
+     */
+    getDashboardLayout: async () => {
+        const res = await fetchWithAuth('/api/v1/dashboard/layout');
+        if (!res.ok) throw new Error('Failed to fetch dashboard layout');
+        return res.json();
+    },
+
+    /**
+     * Saves the dashboard layout.
+     * @param layout The layout to save.
+     * @returns A promise that resolves when the layout is saved.
+     */
+    saveDashboardLayout: async (layout: any) => {
+        const res = await fetchWithAuth('/api/v1/dashboard/layout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(layout)
+        });
+        if (!res.ok) throw new Error('Failed to save dashboard layout');
+        return res.json();
+    },
+
+    /**
      * Gets the latest execution traces.
      * @param options Optional parameters.
      * @returns A promise that resolves to the traces list.

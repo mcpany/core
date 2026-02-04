@@ -374,6 +374,35 @@ func TestMemoryStore(t *testing.T) {
 		assert.Nil(t, got)
 	})
 
+	t.Run("DashboardLayouts", func(t *testing.T) {
+		s9 := NewStore()
+		userID := "user-1"
+		layout := `{"widgets": []}`
+
+		// Save
+		err := s9.SaveDashboardLayout(context.Background(), userID, layout)
+		assert.NoError(t, err)
+
+		// Get
+		got, err := s9.GetDashboardLayout(context.Background(), userID)
+		assert.NoError(t, err)
+		assert.Equal(t, layout, got)
+
+		// Get Non-Existent
+		got, err = s9.GetDashboardLayout(context.Background(), "non-existent")
+		assert.NoError(t, err)
+		assert.Empty(t, got)
+
+		// Update
+		newLayout := `{"widgets": [{"id": "1"}]}`
+		err = s9.SaveDashboardLayout(context.Background(), userID, newLayout)
+		assert.NoError(t, err)
+
+		got, err = s9.GetDashboardLayout(context.Background(), userID)
+		assert.NoError(t, err)
+		assert.Equal(t, newLayout, got)
+	})
+
 	t.Run("Close", func(t *testing.T) {
 		err := s.Close()
 		assert.NoError(t, err)

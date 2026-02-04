@@ -31,6 +31,7 @@ type Store struct {
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
+	dashboardLayouts   map[string]string
 }
 
 // NewStore creates a new memory store.
@@ -45,6 +46,7 @@ func NewStore() *Store {
 		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
+		dashboardLayouts:   make(map[string]string),
 	}
 }
 
@@ -571,5 +573,32 @@ func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.credentials, id)
+	return nil
+}
+
+// GetDashboardLayout retrieves the dashboard layout for a user.
+//
+// _ is an unused parameter.
+// userID is the userID.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetDashboardLayout(_ context.Context, userID string) (string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.dashboardLayouts[userID], nil
+}
+
+// SaveDashboardLayout saves the dashboard layout for a user.
+//
+// _ is an unused parameter.
+// userID is the userID.
+// layoutJSON is the layoutJSON.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveDashboardLayout(_ context.Context, userID string, layoutJSON string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.dashboardLayouts[userID] = layoutJSON
 	return nil
 }
