@@ -7,6 +7,11 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
+/**
+ * Represents the density mode of the dashboard.
+ * - comfortable: Standard spacing with more whitespace.
+ * - compact: Reduced spacing for higher information density.
+ */
 export type Density = "comfortable" | "compact";
 
 interface DashboardContextType {
