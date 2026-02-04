@@ -182,95 +182,70 @@ type bundleDockerConn struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
-	var raw json.RawMessage
-	if err := c.decoder.Decode(&raw); err != nil {
+	// ⚡ BOLT: Optimized JSON parsing to avoid triple-unmarshaling.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var rawMap map[string]json.RawMessage
+	if err := c.decoder.Decode(&rawMap); err != nil {
 		c.log.Error("Failed to decode message", "error", err)
 		return nil, err
 	}
-	c.log.Info("Read message", "raw", string(raw))
 
-	var header struct {
-		Method string `json:"method"`
+	// Efficiently determine if it's a request by checking for "method"
+	var method string
+	if m, ok := rawMap["method"]; ok {
+		if err := json.Unmarshal(m, &method); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal method: %w", err)
+		}
 	}
-	if err := json.Unmarshal(raw, &header); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal message header: %w", err)
+
+	isRequest := method != ""
+	if isRequest {
+		c.log.Info("Read request", "method", method)
+	} else {
+		c.log.Info("Read response")
 	}
 
 	var msg jsonrpc.Message
-	isRequest := header.Method != ""
-
-	c.log.Debug("Read raw message", "raw", string(raw))
-
-	var rawMap map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &rawMap); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal into raw map: %w", err)
-	}
 
 	if isRequest {
-		req := &jsonrpc.Request{}
-		if err := json.Unmarshal(raw, req); err != nil {
-			// Try to recover if it failed on ID only?
-			// But json.Unmarshal typically stops on error.
-			// The error "cannot unmarshal number" implies it stopped.
-			// We can try to unmarshal into a struct WITHOUT ID first?
-			// Or just set ID manually AFTER unmarshaling?
-			// If Unmarshal fails, we can't use 'req' reliably.
-			// BUT, SDK types might be used.
-
-			// If error is related to ID, we can ignore it if we fix it later?
-			// json.Unmarshal might return partial result + error.
-			// Let's assume partial result is usable or we can unmarshal into a struct alias without ID?
-			// Actually, partial unmarshal is not guaranteed.
-
-			// Alternative: Unmarshal into a temporary struct that matches Request/Response but with Any ID.
-			// Then copy fields.
-			type requestAnyID struct {
-				Method string          `json:"method"`
-				Params json.RawMessage `json:"params,omitempty"`
-				ID     any             `json:"id,omitempty"`
-			}
-			var rAny requestAnyID
-			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
-				return nil, fmt.Errorf("failed to unmarshal request: %w (and %v)", err2, err)
-			}
-			req = &jsonrpc.Request{
-				Method: rAny.Method,
-				Params: rAny.Params,
-			}
-			if err := setUnexportedID(&req.ID, rAny.ID); err != nil {
-				c.log.Error("Failed to set unexported ID on request", "error", err)
-				// Continue, as ID might be nil or we can proceed without it (though JSON-RPC requires it for requests)
-			}
-			msg = req
-		} else {
-			msg = req
+		req := &jsonrpc.Request{
+			Method: method,
 		}
+		if p, ok := rawMap["params"]; ok {
+			req.Params = p
+		}
+		if idRaw, ok := rawMap["id"]; ok {
+			var idVal any
+			if err := json.Unmarshal(idRaw, &idVal); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal id: %w", err)
+			}
+			if err := setUnexportedID(&req.ID, idVal); err != nil {
+				c.log.Error("Failed to set unexported ID on request", "error", err)
+			}
+		}
+		msg = req
 	} else {
 		resp := &jsonrpc.Response{}
-		if err := json.Unmarshal(raw, resp); err != nil {
-			// Use alias struct
-			type responseAnyID struct {
-				Result json.RawMessage `json:"result,omitempty"`
-				Error  *transportError `json:"error,omitempty"`
-				ID     any             `json:"id,omitempty"`
+		if r, ok := rawMap["result"]; ok {
+			resp.Result = r
+		}
+		if e, ok := rawMap["error"]; ok {
+			var transErr transportError
+			if err := json.Unmarshal(e, &transErr); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal error: %w", err)
 			}
-			var rAny responseAnyID
-			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
-				return nil, fmt.Errorf("failed to unmarshal response: %w (and %v)", err2, err)
+			resp.Error = &transErr
+		}
+		if idRaw, ok := rawMap["id"]; ok {
+			var idVal any
+			if err := json.Unmarshal(idRaw, &idVal); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal id: %w", err)
 			}
-			resp = &jsonrpc.Response{
-				Result: rAny.Result,
-			}
-			if rAny.Error != nil {
-				resp.Error = rAny.Error
-			}
-			if err := setUnexportedID(&resp.ID, rAny.ID); err != nil {
+			if err := setUnexportedID(&resp.ID, idVal); err != nil {
 				c.log.Error("Failed to set unexported ID on response", "error", err)
 			}
-			msg = resp
-		} else {
-			msg = resp
 		}
+		msg = resp
 	}
 
 	return msg, nil

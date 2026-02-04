@@ -122,7 +122,8 @@ func TestBundleDockerConn_Read_Robustness(t *testing.T) {
 
 	_, err = conn2.Read(context.Background())
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to unmarshal message header")
+	// ⚡ BOLT: Updated expectation for optimized map decoding
+	assert.Contains(t, err.Error(), "cannot unmarshal array")
 }
 
 func TestBundleDockerConn_Write_Robustness(t *testing.T) {
