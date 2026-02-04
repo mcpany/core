@@ -146,6 +146,9 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 				profiles = append(profiles, &p)
 			}
 		}
+		if err := profileRows.Err(); err != nil {
+			return nil, fmt.Errorf("failed to iterate profile rows: %w", err)
+		}
 	}
 
 	// Merge Profiles into Global Settings

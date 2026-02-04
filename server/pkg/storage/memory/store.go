@@ -404,11 +404,11 @@ func (s *Store) GetUserPreferences(_ context.Context, userID string) (map[string
 	defer s.mu.RUnlock()
 	if prefs, ok := s.userPreferences[userID]; ok {
 		// Return copy
-		copy := make(map[string]string, len(prefs))
+		prefsCopy := make(map[string]string, len(prefs))
 		for k, v := range prefs {
-			copy[k] = v
+			prefsCopy[k] = v
 		}
-		return copy, nil
+		return prefsCopy, nil
 	}
 	return map[string]string{}, nil
 }
