@@ -1,10 +1,10 @@
-# Services Management
+# Upstream Services Management
 
 **Status:** Implemented
 
 ## Goal
 
-Manage upstream services connected to the MCP Any platform. The Services Dashboard allows operators to view the health of connected services, enable or disable them, and configure connection details including authentications and environment variables.
+Manage upstream services connected to the MCP Any platform. The Upstream Services Dashboard allows operators to view the health of connected services, enable or disable them, and configure connection details including authentications and environment variables.
 
 ## Actors
 
@@ -15,7 +15,7 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
+Navigate to the **Upstream Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 
