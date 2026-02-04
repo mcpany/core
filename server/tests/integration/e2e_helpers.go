@@ -663,6 +663,7 @@ type MCPANYTestServerInfo struct {
 	MetricsEndpoint          string
 	NatsURL                  string
 	SessionID                string
+	APIKey                   string
 	HTTPClient               *http.Client
 	GRPCRegConn              *grpc.ClientConn
 	RegistrationClient       apiv1.RegistrationServiceClient
@@ -906,6 +907,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		HTTPClient:               &http.Client{Timeout: 2 * time.Second},
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
+		APIKey:                   actualAPIKey,
 		CleanupFunc: func() {
 			cancel()
 			if grpcRegConn != nil {
@@ -1282,6 +1284,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		RegistrationClient:       registrationClient,
 		NatsURL:                  natsURL,
 		SessionID:                sessionID,
+		APIKey:                   apiKey,
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {

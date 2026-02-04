@@ -17,8 +17,8 @@ import (
 )
 
 func TestFileUpload(t *testing.T) {
-	// Start the server
-	server := StartInProcessMCPANYServer(t, "FileUploadTest")
+	// Start the server using subprocess to ensure isolation
+	server := StartMCPANYServer(t, "FileUploadTest")
 	defer server.CleanupFunc()
 
 	// Create a dummy file to upload
@@ -49,9 +49,16 @@ func TestFileUpload(t *testing.T) {
 	require.NoError(t, writer.Close())
 
 	// Create a new request
+	// Use the JSONRPC Endpoint base but hit /upload
+	// NOTE: StartMCPANYServer provides JSONRPCEndpoint as "http://ip:port".
 	req, err := http.NewRequest("POST", server.JSONRPCEndpoint+"/upload", body)
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	// Add Authorization if API Key is present
+	if server.APIKey != "" {
+		req.Header.Set("Authorization", "Bearer "+server.APIKey)
+	}
 
 	// Send the request
 	client := &http.Client{}

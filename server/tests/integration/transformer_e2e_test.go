@@ -88,8 +88,8 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 	// Cannot use t.Parallel() with t.Setenv
 	// t.Parallel()
 
-	// Allow local IPs for testing
-	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	// Note: StartStdioServer sets MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true in the subprocess environment automatically.
+	// t.Setenv is not required here and can be removed to avoid affecting process-level env if parallel tests run.
 
 	mockServer := newMockServer(t)
 	defer mockServer.Close()
@@ -169,10 +169,6 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 	// If parsing failed (e.g. invalid JSON), we assert on values.
 	// But keys should exist.
 	if _, ok := jsonResult["name"]; !ok {
-		// Maybe it's inside "text" key if we returned map{"text":...}
-		// mcpany response transformer output is usually the TOOL RESULT.
-		// If tool result is {"name":"test-json"}, and mcpany wraps it...
-		// It becomes content=[{type:"text", text:"{\"name\":...}"}]
 		t.Logf("JSON Result: %v", jsonResult)
 	}
 	assert.Equal(t, "test-json", jsonResult["name"])
