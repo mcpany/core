@@ -53,6 +53,16 @@ else
 	NEEDS_SUDO_FOR_DOCKER := 1
 endif
 
+# Verify Docker functionality (catch overlayfs issues in CI)
+# If Docker is present but cannot run containers (exit code != 0), treat as if Docker is missing/skipped.
+ifneq ($(HAS_DOCKER),)
+    ifneq ($(shell $(DOCKER_CMD) run --rm alpine:latest true >/dev/null 2>&1; echo $$?), 0)
+        $(info Docker is present but unable to run containers (likely overlayfs issue). Skipping Docker tests/builds.)
+        SKIP_DOCKER_TESTS := true
+        export SKIP_DOCKER_TESTS
+    endif
+endif
+
 # Variables for protoc installation
 PROTOC_VERSION_URL := https://api.github.com/repos/protocolbuffers/protobuf/releases/latest
 PROTOC_DOWNLOAD_URL_BASE := https://github.com/protocolbuffers/protobuf/releases/download
