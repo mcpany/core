@@ -82,7 +82,9 @@ func TestDatadogAuditStore(t *testing.T) {
 
 func TestDatadogAuditStore_Batch(t *testing.T) {
 	var totalReceived int32
-	done := make(chan struct{})
+	// ⚡ BOLT: Buffered channel to prevent deadlock when server handler tries to signal
+	// while the test function is blocked on store.Close() (which waits for the server response).
+	done := make(chan struct{}, 1)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var logs []map[string]interface{}
