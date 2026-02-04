@@ -16,6 +16,9 @@ import (
 
 func TestRedisBus_ExternalServer(t *testing.T) {
 	redisAddr, redisCleanup := StartRedisContainer(t)
+	if redisAddr == "" {
+		t.Skip("Skipping Redis test because Redis container could not be started")
+	}
 	defer redisCleanup()
 
 	redisBusConfig := busprotos.RedisBus_builder{

@@ -199,18 +199,18 @@ export interface SystemStatus {
 
 
 const getMetadata = () => {
-    // Metadata for gRPC calls.
-    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-    // we need to be careful.
-    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-    // The gRPC calls should ideally be proxied or use a session token.
-    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-    // if they require the static key.
-    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-    // is also behind the Next.js proxy (rewrites).
-    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-    // If we use that, the middleware WILL run and inject the header!
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('mcp_auth_token');
+        if (token) {
+             return { authorization: `Basic ${token}` };
+        }
+    } else {
+        // Server-side
+        const apiKey = process.env.MCPANY_API_KEY;
+        if (apiKey) {
+            return { 'x-api-key': apiKey };
+        }
+    }
     return undefined;
 };
 

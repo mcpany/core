@@ -28,6 +28,9 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	redisAddr, cleanup := StartRedisContainer(t)
+	if redisAddr == "" {
+		t.Skip("Skipping Redis test because Redis container could not be started")
+	}
 	defer cleanup()
 
 	client := goredis.NewClient(&goredis.Options{
@@ -64,6 +67,9 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	redisAddr, cleanup := StartRedisContainer(t)
+	if redisAddr == "" {
+		t.Skip("Skipping Redis test because Redis container could not be started")
+	}
 	defer cleanup()
 
 	client := goredis.NewClient(&goredis.Options{
@@ -100,6 +106,9 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
 	redisAddr, cleanup := StartRedisContainer(t)
+	if redisAddr == "" {
+		t.Skip("Skipping Redis test because Redis container could not be started")
+	}
 	defer cleanup()
 
 	messageBus := bustypes.MessageBus_builder{}.Build()
@@ -121,6 +130,9 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 	redisAddr, cleanup := StartRedisContainer(t)
+	if redisAddr == "" {
+		t.Skip("Skipping Redis test because Redis container could not be started")
+	}
 	defer cleanup()
 
 	client := goredis.NewClient(&goredis.Options{
@@ -174,6 +186,9 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
 	redisAddr, cleanup := StartRedisContainer(t)
+	if redisAddr == "" {
+		t.Skip("Skipping Redis test because Redis container could not be started")
+	}
 	defer cleanup()
 
 	client := goredis.NewClient(&goredis.Options{
