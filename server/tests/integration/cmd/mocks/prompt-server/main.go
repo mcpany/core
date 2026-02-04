@@ -55,7 +55,8 @@ func main() {
 		addr = fmt.Sprintf("127.0.0.1:%d", *port)
 	}
 
-	l, err := net.Listen("tcp", addr)
+	var lc net.ListenConfig
+	l, err := lc.Listen(context.Background(), "tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -68,7 +69,7 @@ func main() {
 	}
 	log.Printf("Listening on port port=%d", actualPort)
 	// Force flush just in case (though log pkg writes to stderr which is usually unbuffered)
-	os.Stderr.Sync()
+	_ = os.Stderr.Sync()
 
 	// 5. Serve
 	srv := &http.Server{
