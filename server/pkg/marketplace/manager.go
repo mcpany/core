@@ -1,6 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package marketplace provides functionality for managing and retrieving
+// community-contributed MCP servers from a registry.
 package marketplace
 
 import (
@@ -24,7 +26,7 @@ func NewManager() *Manager {
 
 // ListCommunityServers returns the list of community servers.
 // It supports basic filtering.
-func (m *Manager) ListCommunityServers(ctx context.Context) ([]CommunityServer, error) {
+func (m *Manager) ListCommunityServers(_ context.Context) ([]CommunityServer, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -37,9 +39,9 @@ func (m *Manager) ListCommunityServers(ctx context.Context) ([]CommunityServer, 
 
 // Sync updates the registry from external sources (e.g. GitHub Awesome List).
 // For now, it's a no-op as we rely on the static registry.
-func (m *Manager) Sync(ctx context.Context) error {
-    // TODO: Implement fetching from https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md
-    // and merging with known schemas.
+func (m *Manager) Sync(_ context.Context) error {
+	// TODO: Implement fetching from https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md
+	// and merging with known schemas.
 	return nil
 }
 
