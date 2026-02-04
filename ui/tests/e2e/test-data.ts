@@ -118,9 +118,9 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
     }
 };
 
-export const seedUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
+export const seedUser = async (requestContext?: APIRequestContext, username: string = "admin", profileId?: string) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const user = {
+    const user: any = {
         id: username,
         authentication: {
             basic_auth: {
@@ -131,6 +131,9 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         },
         roles: ["admin"]
     };
+    if (profileId) {
+        user.profile_ids = [profileId];
+    }
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
         await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
@@ -147,3 +150,30 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         console.log(`Failed to cleanup user: ${e}`);
     }
 };
+
+export const seedProfile = async (requestContext?: APIRequestContext, name: string, services: string[]) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const profile: any = {
+        name: name,
+        service_config: {}
+    };
+    services.forEach(svc => {
+        // Empty config means allowed
+        profile.service_config[svc] = { enabled: true };
+    });
+
+    try {
+        await context.post('/api/v1/profiles', { data: profile, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed profile: ${e}`);
+    }
+}
+
+export const cleanupProfile = async (requestContext?: APIRequestContext, name: string) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete(`/api/v1/profiles/${name}`, { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup profile: ${e}`);
+    }
+}

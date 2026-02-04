@@ -466,6 +466,11 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 		return ctx, nil
 	}
 
+	// Fallback: Check Global User API Key Auth
+	if ctx, err := am.checkApiKeyWithUsers(ctx, r); err == nil {
+		return ctx, nil
+	}
+
 	// Otherwise, Fail Closed.
 	return ctx, fmt.Errorf("unauthorized: no authentication configured")
 }
@@ -627,6 +632,41 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 	}
 }
 
+// checkApiKeyWithUsers checks if the request has a valid API Key matching any configured user.
+func (am *Manager) checkApiKeyWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
+	am.usersMu.RLock()
+	defer am.usersMu.RUnlock()
+
+	// We have to iterate users because we don't have a secondary index on API keys yet.
+	// Optimization: This should be indexed for large user bases.
+	for _, user := range am.users {
+		apiKeyAuth := user.GetAuthentication().GetApiKey()
+		if apiKeyAuth == nil {
+			continue
+		}
+
+		authenticator := NewAPIKeyAuthenticator(apiKeyAuth)
+		if authenticator == nil {
+			continue
+		}
+
+		// Check if this user's API key matches the request
+		if newCtx, err := authenticator.Authenticate(ctx, r); err == nil {
+			// Key Matched! Set User Context
+			newCtx = ContextWithUser(newCtx, user.GetId())
+			if len(user.GetRoles()) > 0 {
+				newCtx = ContextWithRoles(newCtx, user.GetRoles())
+			}
+			if len(user.GetProfileIds()) > 0 {
+				newCtx = ContextWithProfileID(newCtx, user.GetProfileIds()[0])
+			}
+			return newCtx, nil
+		}
+	}
+
+	return ctx, fmt.Errorf("invalid api key credentials")
+}
+
 // checkBasicAuthWithUsers checks if the request has valid Basic Auth credentials
 // matching any of the configured users.
 func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
@@ -645,6 +685,9 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 				ctx = ContextWithUser(ctx, user.GetId())
 				if len(user.GetRoles()) > 0 {
 					ctx = ContextWithRoles(ctx, user.GetRoles())
+				}
+				if len(user.GetProfileIds()) > 0 {
+					ctx = ContextWithProfileID(ctx, user.GetProfileIds()[0])
 				}
 				return ctx, nil
 			}
