@@ -108,6 +108,11 @@ make test
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+
+**Documentation Standard:**
+*   **Go:** Detailed GoDoc with Summary, Parameters, Returns, and Errors sections.
+*   **TypeScript:** Standard JSDoc with `@param` and `@returns`.
+
 Run the linter to verify your changes:
 ```bash
 make lint
