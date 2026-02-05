@@ -36,9 +36,13 @@ type GlobalRateLimitMiddleware struct {
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
-// config holds the configuration settings.
+// Summary: Initializes a global rate limit middleware that applies across all MCP requests.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.RateLimitConfig. The rate limit configuration.
+//
+// Returns:
+//   - *GlobalRateLimitMiddleware: The initialized middleware.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -48,7 +52,10 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 
 // UpdateConfig updates the rate limit configuration safely.
 //
-// config holds the configuration settings.
+// Summary: Updates the global rate limit configuration at runtime.
+//
+// Parameters:
+//   - config: *configv1.RateLimitConfig. The new configuration.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -60,13 +67,17 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 
 // Execute executes the rate limiting middleware.
 //
-// ctx is the context for the request.
-// method is the method.
-// req is the request object.
-// next is the next.
+// Summary: Enforces the global rate limit for incoming MCP requests.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - method: string. The MCP method being called.
+//   - req: mcp.Request. The request object.
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.Result: The result of the operation.
+//   - error: An error if the rate limit is exceeded or the operation fails.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

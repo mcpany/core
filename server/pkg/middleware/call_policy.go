@@ -20,9 +20,13 @@ type CallPolicyMiddleware struct {
 
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
-// toolManager is the toolManager.
+// Summary: Initializes a middleware that enforces fine-grained access control policies for tool execution.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The manager used to look up service policies.
+//
+// Returns:
+//   - *CallPolicyMiddleware: The initialized middleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
@@ -31,12 +35,16 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 
 // Execute enforces call policies before proceeding to the next handler.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Evaluates configured call policies against the current request and blocks execution if denied.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *tool.ExecutionRequest. The tool execution request (including arguments).
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the policy denies execution or if evaluation fails.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

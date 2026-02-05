@@ -45,9 +45,13 @@ type Debugger struct {
 
 // NewDebugger creates a new Debugger middleware.
 //
-// size is the size.
+// Summary: Initializes a new Debugger instance with a specified ring buffer size.
 //
-// Returns the result.
+// Parameters:
+//   - size: int. The number of debug entries to keep in the ring buffer.
+//
+// Returns:
+//   - *Debugger: The initialized Debugger instance.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -72,6 +76,8 @@ func (d *Debugger) process() {
 }
 
 // Close stops the background processor.
+//
+// Summary: Closes the debugger and its background processing channel.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -132,9 +138,13 @@ type readCloserWrapper struct {
 
 // Handler returns the http handler.
 //
-// next is the next.
+// Summary: Middleware that captures HTTP requests and responses for debugging.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler with debug capture logic.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -251,7 +261,10 @@ func isTextContent(contentType string) bool {
 
 // Entries returns the last captured entries.
 //
-// Returns the result.
+// Summary: Retrieves the captured debug entries from the ring buffer.
+//
+// Returns:
+//   - []DebugEntry: A slice of captured debug entries.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -267,7 +280,10 @@ func (d *Debugger) Entries() []DebugEntry {
 
 // APIHandler returns a http.HandlerFunc to view entries.
 //
-// Returns the result.
+// Summary: Returns an HTTP handler that serves the captured debug entries as JSON.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

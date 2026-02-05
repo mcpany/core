@@ -55,7 +55,14 @@ var (
 )
 
 // PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests.
-// It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
+//
+// Summary: Middleware that tracks request duration, success/failure counts, payload sizes, and token counts.
+//
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer used to estimate token counts.
+//
+// Returns:
+//   - mcp.Middleware: The metrics middleware function.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)

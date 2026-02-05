@@ -30,7 +30,8 @@ type VectorEntry struct {
 }
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
+//
+// Summary: Initializes an in-memory vector store with default limits.
 //
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
@@ -42,13 +43,15 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 }
 
 // Add adds a new entry to the vector store.
-// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
+//
+// Summary: Stores a vector and result in memory, enforcing FIFO eviction if the per-key limit is reached.
 //
 // Parameters:
-//   - key: The key associated with the entry.
-//   - vector: The embedding vector.
-//   - result: The result to cache.
-//   - ttl: The time-to-live for the entry.
+//   - ctx: context.Context. The context (unused).
+//   - key: string. The partition key.
+//   - vector: []float32. The embedding vector.
+//   - result: any. The result to cache.
+//   - ttl: time.Duration. The time-to-live for the entry.
 //
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
@@ -75,16 +78,18 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 }
 
 // Search searches for the most similar entry in the vector store for the given key and query vector.
-// It returns the result, the similarity score, and a boolean indicating if a match was found.
+//
+// Summary: Performs a brute-force cosine similarity search across vectors associated with the key.
 //
 // Parameters:
-//   - key: The key to search for.
-//   - query: The query vector.
+//   - ctx: context.Context. The context (unused).
+//   - key: string. The partition key.
+//   - query: []float32. The query embedding vector.
 //
 // Returns:
-//   - any: The cached result if found.
+//   - any: The best matching cached result.
 //   - float32: The similarity score (cosine similarity).
-//   - bool: True if a match was found, false otherwise.
+//   - bool: True if a match was found.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -119,8 +124,11 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 
 // Prune removes expired entries from the vector store for the given key.
 //
+// Summary: Removes entries that have exceeded their expiration time.
+//
 // Parameters:
-//   - key: The key to prune entries for.
+//   - ctx: context.Context. The context (unused).
+//   - key: string. The partition key.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
