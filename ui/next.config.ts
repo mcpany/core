@@ -117,13 +117,26 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
 
     // Explicitly add alias for @proto to resolve external directory
-    // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
-    const localProto = path.join(__dirname, 'proto');
-    const rootProto = path.join(__dirname, '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+    // In Docker, we copy proto to /proto (system root). Locally, it maps to ../proto.
+    // Use process.cwd() for reliability across environments.
+    const cwd = process.cwd();
+    const localProto = path.join(cwd, 'proto'); // e.g. /app/proto (if copied there)
+    const siblingProto = path.join(cwd, '../proto'); // e.g. /proto (in Docker) or ../proto (local)
+
+    let protoPath = siblingProto;
+    if (fs.existsSync(localProto)) {
+        protoPath = localProto;
+    } else if (fs.existsSync('/proto')) {
+        // Fallback to system root /proto if explicitly present (Docker specific)
+        protoPath = '/proto';
+    }
+
+    if (isServer) {
+        console.log(`[Webpack] Resolving @proto to: ${protoPath}`);
+    }
 
     config.resolve.alias = {
       ...config.resolve.alias,
