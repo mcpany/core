@@ -53,19 +53,25 @@ const JsonViewer = dynamic(() => import("./json-viewer"), {
 });
 
 /**
- * LogLevel type definition.
+ * Defines the severity level of a log entry.
  */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
 /**
- * LogEntry type definition.
+ * Represents a structured log entry received from the server.
  */
 export interface LogEntry {
+  /** Unique identifier for the log entry. */
   id: string
+  /** ISO 8601 timestamp of when the log was generated. */
   timestamp: string
+  /** Severity level of the log. */
   level: LogLevel
+  /** The main log message content. */
   message: string
+  /** Optional source identifier (e.g. service name). */
   source?: string
+  /** Optional key-value pairs for additional context. */
   metadata?: Record<string, unknown>
   // Optimization: Pre-computed lowercase string search performance
   searchStr?: string
@@ -252,8 +258,19 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
- * LogStream component.
- * @returns The rendered component.
+ * A real-time log viewer component that streams logs via WebSocket.
+ *
+ * Features:
+ * - Virtualized list for high performance with thousands of logs.
+ * - Live streaming with Pause/Resume.
+ * - Client-side filtering by Level and Source.
+ * - Text search with highlighting.
+ * - JSON expansion for structured logs.
+ *
+ * @returns The rendered LogStream dashboard.
+ * @remarks
+ * Side Effects:
+ * - Establishes a WebSocket connection to `/api/v1/ws/logs` on mount.
  */
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])

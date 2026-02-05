@@ -39,33 +39,32 @@ const buttonVariants = cva(
 )
 
 /**
- * ButtonProps type definition.
+ * Properties for the Button component.
  */
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
+  /**
+   * If true, renders the button as a `Slot` to delegate rendering to the child element.
+   * Useful for composition with other components like `Link`.
+   */
   asChild?: boolean
 }
 
 /**
- * Button component.
+ * A versatile Button component supporting various variants and sizes.
+ *
+ * Built on top of `radix-ui/react-slot` and styled with `tailwind-merge` and `class-variance-authority`.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * @param props.variant - The visual style of the button (default, destructive, outline, secondary, ghost, link).
+ * @param props.size - The size of the button (default, sm, lg, icon).
+ * @param props.asChild - If true, delegates rendering to the immediate child.
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered button element.
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-/**
- * Comp component.
- * @param props - The component props.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
- */
     const Comp = asChild ? Slot : "button"
     return (
       <Comp

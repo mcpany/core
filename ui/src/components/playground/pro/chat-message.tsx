@@ -39,21 +39,29 @@ const DiffEditor = dynamic(
 );
 
 /**
- * MessageType type definition.
+ * Defines the possible types of messages in the chat interface.
  */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
 /**
- * Message type definition.
+ * Represents a single message object in the chat history.
  */
 export interface Message {
+  /** Unique ID for the message. */
   id: string;
+  /** The type of message (user, assistant, tool, error). */
   type: MessageType;
+  /** The textual content of the message. */
   content?: string;
+  /** The name of the tool being called (if applicable). */
   toolName?: string;
+  /** Arguments passed to the tool (if applicable). */
   toolArgs?: Record<string, unknown>;
+  /** The result returned by the tool (if applicable). */
   toolResult?: unknown;
+  /** The previous result for diffing purposes. */
   previousResult?: unknown;
+  /** The timestamp when the message was created. */
   timestamp: Date;
 }
 
@@ -87,9 +95,20 @@ function analyzeError(error: string): string | null {
 }
 
 /**
- * ChatMessage.
+ * Renders a single chat message based on its type.
  *
- * @param { message - The { message.
+ * Handles various message types including:
+ * - User messages (right aligned)
+ * - Assistant messages (left aligned)
+ * - Tool calls (with syntax highlighting and copy support)
+ * - Tool results (with diff viewer and collapsible content)
+ * - Errors (with analysis suggestions)
+ *
+ * @param props - The component props.
+ * @param props.message - The message object to display.
+ * @param props.onReplay - Callback when a tool call is replayed/loaded into console.
+ * @param props.onRetry - Callback when a failed tool call is retried.
+ * @returns The rendered chat message component.
  */
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);

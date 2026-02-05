@@ -9,8 +9,22 @@ const STORAGE_KEY = "mcpany-recent-tools";
 const MAX_RECENT_TOOLS = 5;
 
 /**
- * Hook for managing recently used tools.
- * @returns The recent tools state and functions.
+ * Manages the history of recently used tools.
+ *
+ * This hook persists a list of recently used tool names in `localStorage`, maintaining a maximum size of 5.
+ * It provides functions to add new usage (which moves the tool to the top) and clear history.
+ *
+ * @returns An object containing the recent tools list and management functions.
+ * - `recentTools`: Array of tool names, most recent first.
+ * - `addRecent`: Function to record a tool usage. Moves tool to front.
+ * - `removeRecent`: Function to remove a tool from history.
+ * - `clearRecent`: Function to clear all history.
+ * - `isLoaded`: Boolean indicating if data has been loaded from storage.
+ *
+ * @remarks
+ * Side Effects:
+ * - Reads from `window.localStorage` on mount.
+ * - Writes to `window.localStorage` whenever the list changes.
  */
 export function useRecentTools() {
   const [recentTools, setRecentTools] = useState<string[]>([]);

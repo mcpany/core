@@ -29,18 +29,19 @@ const badgeVariants = cva(
 )
 
 /**
- * BadgeProps type definition.
+ * Properties for the Badge component.
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
 /**
- * Badge component.
+ * A small status indicator or label.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @returns The rendered component.
+ * @param props.variant - The visual style of the badge (default, secondary, destructive, outline).
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered badge element.
  */
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (

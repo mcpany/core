@@ -40,13 +40,6 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
-// Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
-// server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
-// So we can point to window.location.origin or relative?
-// GrpcWebImpl needs a full URL host usually.
-// If running in browser, we can use empty string or relative?
-// GrpcWebImpl implementation uses `this.host`. If empty?
-// Let's assume we point to the current origin.
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
@@ -98,7 +91,7 @@ export interface SecretDefinition {
 }
 
 /**
- * Content of a resource.
+ * Represents the content of a resource retrieved from an MCP server.
  */
 export interface ResourceContent {
     /** The URI of the resource. */
@@ -146,35 +139,49 @@ export interface DoctorReport {
 }
 
 /**
- * Tool failure statistics.
+ * Statistics regarding tool execution failures.
  */
 export interface ToolFailureStats {
+    /** Name of the tool. */
     name: string;
+    /** ID of the service providing the tool. */
     serviceId: string;
+    /** Percentage of calls that failed (0-100). */
     failureRate: number;
+    /** Total number of calls attempted. */
     totalCalls: number;
 }
 
 /**
- * Tool usage analytics.
+ * Statistics regarding tool usage frequency and success.
  */
 export interface ToolAnalytics {
+    /** Name of the tool. */
     name: string;
+    /** ID of the service providing the tool. */
     serviceId: string;
+    /** Total number of calls executed. */
     totalCalls: number;
+    /** Success rate as a percentage (0-100). */
     successRate: number;
 }
 
 
 /**
- * Metric definition for dashboard.
+ * Definition for a dashboard metric card.
  */
 export interface Metric {
+    /** The label displayed on the card. */
     label: string;
+    /** The value displayed on the card. */
     value: string;
+    /** The change from previous period (e.g. "+5%"). */
     change?: string;
+    /** The trend direction for coloring (up, down, neutral). */
     trend?: "up" | "down" | "neutral";
+    /** The name of the icon to display. */
     icon: string;
+    /** Optional sub-label for additional context. */
     subLabel?: string;
 }
 
@@ -199,18 +206,6 @@ export interface SystemStatus {
 
 
 const getMetadata = () => {
-    // Metadata for gRPC calls.
-    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-    // we need to be careful.
-    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-    // The gRPC calls should ideally be proxied or use a session token.
-    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-    // if they require the static key.
-    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-    // is also behind the Next.js proxy (rewrites).
-    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-    // If we use that, the middleware WILL run and inject the header!
     return undefined;
 };
 
