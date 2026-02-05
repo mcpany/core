@@ -309,21 +309,25 @@ jobs:
           name: image-server
 
       - name: Download HTTP Echo Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo
 
       - name: Download Time Server Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-time-server
 
       - name: Download Cowsay Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-cowsay
 
       - name: Download Everything Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-everything
@@ -370,37 +374,47 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build and Save Images
         run: |
+          # Helper function to save if exists
+          save_if_exists() {
+            if docker image inspect "$1" >/dev/null 2>&1; then
+              echo "Saving $1 to $2..."
+              docker save -o "$2" "$1"
+            else
+              echo "Image $1 not found (skipped?), skipping save."
+            fi
+          }
+
           # Server
           make -C server build-docker
-          docker save -o server.tar mcpany/server:latest
+          save_if_exists mcpany/server:latest server.tar
 
           # HTTP Echo
           make -C server build-http-echo-docker
-          docker save -o http-echo.tar mcpany/http-echo-server:latest
+          save_if_exists mcpany/http-echo-server:latest http-echo.tar
 
           # Time Server
           make -C server build-e2e-timeserver-docker
-          docker save -o time-server.tar mcpany-e2e-time-server
+          save_if_exists mcpany-e2e-time-server time-server.tar
 
           # Cowsay
           make -C server build-cowsay-docker
-          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+          save_if_exists mcpany/e2e-cowsay-server:latest cowsay.tar
 
           # Everything
           make -C server build-everything-docker
-          docker save -o everything.tar mcpany/everything:latest
+          save_if_exists mcpany/everything:latest everything.tar
 
           # UI
           make -C server docker-build-ui
-          docker save -o ui.tar mcpany/ui:latest
+          save_if_exists mcpany/ui:latest ui.tar
 
           # Operator
           make -C server docker-build-operator
-          docker save -o operator.tar mcpany/operator:latest
+          save_if_exists mcpany/operator:latest operator.tar
 
           # UI Test Image
           make -C ui build-test-docker
-          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+          save_if_exists mcpany-ui-e2e:latest ui-test-image.tar
 
       - name: Upload Server Image
         uses: actions/upload-artifact@v4
@@ -415,6 +429,7 @@ jobs:
           name: image-http-echo
           path: http-echo.tar
           retention-days: 1
+          if-no-files-found: ignore
 
       - name: Upload Time Server Image
         uses: actions/upload-artifact@v4
@@ -422,6 +437,7 @@ jobs:
           name: image-time-server
           path: time-server.tar
           retention-days: 1
+          if-no-files-found: ignore
 
       - name: Upload Cowsay Image
         uses: actions/upload-artifact@v4
@@ -429,6 +445,7 @@ jobs:
           name: image-cowsay
           path: cowsay.tar
           retention-days: 1
+          if-no-files-found: ignore
 
       - name: Upload Everything Image
         uses: actions/upload-artifact@v4
@@ -436,6 +453,7 @@ jobs:
           name: image-everything
           path: everything.tar
           retention-days: 1
+          if-no-files-found: ignore
 
       - name: Upload UI Image
         uses: actions/upload-artifact@v4
@@ -502,21 +520,25 @@ jobs:
           name: image-server
 
       - name: Download HTTP Echo Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo
 
       - name: Download Time Server Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-time-server
 
       - name: Download Cowsay Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-cowsay
 
       - name: Download Everything Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-everything
@@ -718,6 +740,7 @@ jobs:
           name: image-ui-test
 
       - name: Download HTTP Echo Image
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo
