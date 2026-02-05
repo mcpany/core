@@ -1,6 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+//go:build !e2e
+
 package tool
 
 import (
@@ -67,9 +69,12 @@ func TestNiceInjection_Bypass(t *testing.T) {
 	// 4. Assert
 	// If the vulnerability exists, err will be nil (execution allowed).
 	// If fixed, err will be "shell injection detected".
+	// Note: If 'nice' is not installed in the environment, Execute() would return "executable file not found".
+	// However, the security check happens BEFORE execution. So we should get "shell injection detected".
+	// If we get "executable file not found", it means the security check was BYPASSED (vulnerability) AND execution failed.
 	assert.Error(t, err, "Expected injection to be blocked")
 	if err != nil {
-		assert.Contains(t, err.Error(), "shell injection detected")
+		assert.Contains(t, err.Error(), "shell injection detected", "Security check should trigger before execution")
 	} else {
 		t.Logf("Vulnerability confirmed: 'nice' allowed execution of '%s'", payload)
 		t.Logf("Result: %v", res)
