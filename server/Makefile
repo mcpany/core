@@ -15,6 +15,11 @@ BUILD_DIR := $(abspath ../build)
 # Use /tmp for bundles to avoid Docker bind mount permission issues in some environments
 MCP_BUNDLE_DIR ?= $(BUILD_DIR)/bundles
 
+# Skip Docker tests in CI to avoid overlayfs issues
+ifneq ($(CI),)
+SKIP_DOCKER_TESTS := true
+endif
+
 # Dockerized Build Logic
 BUILD_MODE ?= local
 DOCKER_COMPOSE_REGULAR_FILE ?= docker/docker-compose.dev.yml
@@ -608,12 +613,16 @@ endif
 
 # Target to build cowsay Docker image for integration tests
 build-cowsay-docker: tests/integration/cmd/mocks/python_cowsay_server/Dockerfile
+ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building cowsay Docker image (mcpany/e2e-cowsay-server:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/cmd/mocks/python_cowsay_server
 else
 	@echo "Docker not found. Cannot build cowsay image."
 	@exit 1
+endif
+else
+	@echo "Skipping cowsay Docker image build..."
 endif
 
 # Target to build operator Docker image
