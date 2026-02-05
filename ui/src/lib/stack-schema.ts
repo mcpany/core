@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * STACK_CONFIG_SCHEMA description.
+ *
+ */
 export const STACK_CONFIG_SCHEMA = {
   uri: "http://mcp-any/stack-config.json",
   fileMatch: ["*"],
