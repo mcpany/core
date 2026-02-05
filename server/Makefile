@@ -530,7 +530,7 @@ build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver te
 ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
+	@$(DOCKER_CMD) build -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver tests/integration/examples
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
@@ -599,7 +599,7 @@ endif
 build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-context
 ifdef HAS_DOCKER
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
+	@$(DOCKER_CMD) build -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server .
 
 else
 	@echo "Docker not found. Cannot build http-echo-server image."
@@ -610,7 +610,7 @@ endif
 build-cowsay-docker: tests/integration/cmd/mocks/python_cowsay_server/Dockerfile
 ifdef HAS_DOCKER
 	@echo "Building cowsay Docker image (mcpany/e2e-cowsay-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/cmd/mocks/python_cowsay_server
+	@$(DOCKER_CMD) build -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile tests/integration/cmd/mocks/python_cowsay_server
 else
 	@echo "Docker not found. Cannot build cowsay image."
 	@exit 1
@@ -683,7 +683,7 @@ endif
 build-everything-docker: docker/Dockerfile.everything
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
-	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
+	@$(DOCKER_CMD) build -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
 	@echo "Everything server Docker image build complete."
 else
 	@echo "Docker not found. Cannot build everything server image."
