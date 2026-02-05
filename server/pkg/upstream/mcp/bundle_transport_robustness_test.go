@@ -27,13 +27,14 @@ import (
 // bundleMockDockerClient for robustness tests
 // Defined here to avoid dependency on other test files which might not be compiled or available in all contexts.
 type bundleMockDockerClient struct {
-	ImagePullFunc       func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
-	ContainerCreateFunc func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
-	ContainerAttachFunc func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
-	ContainerStartFunc  func(ctx context.Context, container string, options container.StartOptions) error
-	ContainerStopFunc   func(ctx context.Context, containerID string, options container.StopOptions) error
-	ContainerRemoveFunc func(ctx context.Context, containerID string, options container.RemoveOptions) error
-	CloseFunc           func() error
+	ImagePullFunc           func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
+	ContainerCreateFunc     func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
+	ContainerAttachFunc     func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
+	ContainerStartFunc      func(ctx context.Context, container string, options container.StartOptions) error
+	ContainerStopFunc       func(ctx context.Context, containerID string, options container.StopOptions) error
+	ContainerRemoveFunc     func(ctx context.Context, containerID string, options container.RemoveOptions) error
+	ImageInspectWithRawFunc func(ctx context.Context, imageID string) (types.ImageInspect, []byte, error)
+	CloseFunc               func() error
 }
 
 func (m *bundleMockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
@@ -76,6 +77,13 @@ func (m *bundleMockDockerClient) ContainerRemove(ctx context.Context, containerI
 		return m.ContainerRemoveFunc(ctx, containerID, options)
 	}
 	return nil
+}
+
+func (m *bundleMockDockerClient) ImageInspectWithRaw(ctx context.Context, imageID string) (types.ImageInspect, []byte, error) {
+	if m.ImageInspectWithRawFunc != nil {
+		return m.ImageInspectWithRawFunc(ctx, imageID)
+	}
+	return types.ImageInspect{}, nil, nil
 }
 
 func (m *bundleMockDockerClient) Close() error {

@@ -15,13 +15,14 @@ import (
 )
 
 type mockDockerClient struct {
-	ImagePullFunc       func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
-	ContainerCreateFunc func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
-	ContainerAttachFunc func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
-	ContainerStartFunc  func(ctx context.Context, container string, options container.StartOptions) error
-	ContainerStopFunc   func(ctx context.Context, containerID string, options container.StopOptions) error
-	ContainerRemoveFunc func(ctx context.Context, containerID string, options container.RemoveOptions) error
-	CloseFunc           func() error
+	ImagePullFunc           func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
+	ContainerCreateFunc     func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
+	ContainerAttachFunc     func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
+	ContainerStartFunc      func(ctx context.Context, container string, options container.StartOptions) error
+	ContainerStopFunc       func(ctx context.Context, containerID string, options container.StopOptions) error
+	ContainerRemoveFunc     func(ctx context.Context, containerID string, options container.RemoveOptions) error
+	ImageInspectWithRawFunc func(ctx context.Context, imageID string) (types.ImageInspect, []byte, error)
+	CloseFunc               func() error
 }
 
 func (m *mockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
@@ -64,6 +65,13 @@ func (m *mockDockerClient) ContainerRemove(ctx context.Context, containerID stri
 		return m.ContainerRemoveFunc(ctx, containerID, options)
 	}
 	return nil
+}
+
+func (m *mockDockerClient) ImageInspectWithRaw(ctx context.Context, imageID string) (types.ImageInspect, []byte, error) {
+	if m.ImageInspectWithRawFunc != nil {
+		return m.ImageInspectWithRawFunc(ctx, imageID)
+	}
+	return types.ImageInspect{}, nil, nil
 }
 
 func (m *mockDockerClient) Close() error {
