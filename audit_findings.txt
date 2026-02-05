@@ -1,0 +1,10 @@
+1. ui/docs/features/server-health-history.md | Status: Correct | Evidence: ui/src/contexts/service-health-context.tsx, ui/src/components/diagnostics/system-health.tsx
+2. ui/docs/features/structured_log_viewer.md | Status: Correct | Evidence: ui/src/components/logs/log-stream.tsx (JSON parse logic)
+3. ui/docs/features/native_file_upload_playground.md | Status: Correct | Evidence: ui/src/components/playground/schema-form.tsx (contentEncoding="base64" logic)
+4. ui/docs/features/tool_search_bar.md | Status: Correct | Evidence: ui/src/components/tools/smart-tool-search.tsx
+5. ui/docs/features/tool-diff.md | Status: Correct | Evidence: ui/src/components/playground/playground-client.tsx (ShowDiff dialog), ui/src/components/playground/pro/chat-message.tsx
+6. server/docs/features/admin_api.md | Status: Documentation Drift | Evidence: server/pkg/admin/server.go (Code has more methods than doc)
+7. server/docs/features/health-checks.md | Status: Correct | Evidence: server/pkg/health/health.go (httpCheckFunc, grpcCheck, etc.)
+8. server/docs/features/dlp.md | Status: Correct | Evidence: server/pkg/middleware/dlp.go (RedactJSON logic)
+9. server/docs/features/context_optimizer.md | Status: Correct | Evidence: server/pkg/middleware/context_optimizer.go (truncation logic)
+10. server/docs/features/config_validator.md | Status: Correct | Evidence: server/pkg/api/rest/handler.go (ValidateConfigHandler)
