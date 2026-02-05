@@ -206,6 +206,22 @@ export default function MarketplacePage() {
           });
       }
 
+      // GitHub
+      if (repoMatch && (repoMatch[2] === "server-github" || server.name.toLowerCase().includes("github"))) {
+          configurationSchema = JSON.stringify({
+              type: "object",
+              title: "GitHub Configuration",
+              properties: {
+                  "GITHUB_PERSONAL_ACCESS_TOKEN": {
+                      type: "string",
+                      title: "GitHub Personal Access Token",
+                      description: "A Personal Access Token (PAT) with 'repo' and 'user' scopes.",
+                  }
+              },
+              required: ["GITHUB_PERSONAL_ACCESS_TOKEN"]
+          });
+      }
+
       const config: UpstreamServiceConfig = {
           id: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
           name: server.name,
