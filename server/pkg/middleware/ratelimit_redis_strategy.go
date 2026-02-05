@@ -76,3 +76,25 @@ func (s *RedisStrategy) getRedisClient(serviceID string, config *bus.RedisBus) (
 	})
 	return client, nil
 }
+
+// ShouldUpdate checks if the limiter needs to be recreated based on the new configuration.
+//
+// limiter is the existing limiter instance.
+// config is the new configuration.
+//
+// Returns true if the limiter should be recreated.
+func (s *RedisStrategy) ShouldUpdate(limiter Limiter, config *configv1.RateLimitConfig) bool {
+	rl, ok := limiter.(interface{ GetConfigHash() string })
+	if !ok {
+		// If existing limiter doesn't support config hash (e.g. was local), we should recreate.
+		return true
+	}
+
+	redisConfig := config.GetRedis()
+	if redisConfig == nil {
+		return true
+	}
+
+	newConfigHash := redisConfig.GetAddress() + "|" + redisConfig.GetPassword() + "|" + strconv.Itoa(int(redisConfig.GetDb()))
+	return rl.GetConfigHash() != newConfigHash
+}

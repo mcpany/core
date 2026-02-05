@@ -46,4 +46,12 @@ type RateLimitStrategy interface {
 	// Returns the result.
 	// Returns an error if the operation fails.
 	Create(ctx context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error)
+
+	// ShouldUpdate checks if the limiter needs to be recreated based on the new configuration.
+	//
+	// limiter is the existing limiter instance.
+	// config is the new configuration.
+	//
+	// Returns true if the limiter should be recreated.
+	ShouldUpdate(limiter Limiter, config *configv1.RateLimitConfig) bool
 }
