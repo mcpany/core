@@ -2837,35 +2837,55 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Python: Check for f-string prefix in template
-	if strings.HasPrefix(base, "python") {
-		// Scan template to find the prefix of the quote containing the placeholder
-		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
-		hasFString := false
-		for i := 0; i < len(template)-1; i++ {
-			if template[i+1] == '\'' || template[i+1] == '"' {
-				prefix := strings.ToLower(getPrefix(template, i+1))
-				if prefix == "f" || prefix == "fr" || prefix == "rf" {
-					hasFString = true
-					break
-				}
-			}
-		}
-		if hasFString {
-			if strings.ContainsAny(val, "{}") {
-				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkPerlPhpNodeInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkDangerousKeywords(val, base, quoteLevel); err != nil {
+		return err
+	}
+	return checkAwkInjection(val, base)
+}
+
+func checkPythonInjection(val, template, base string) error {
+	if !strings.HasPrefix(base, "python") {
+		return nil
+	}
+	// Scan template to find the prefix of the quote containing the placeholder
+	// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+	hasFString := false
+	for i := 0; i < len(template)-1; i++ {
+		if template[i+1] == '\'' || template[i+1] == '"' {
+			prefix := strings.ToLower(getPrefix(template, i+1))
+			if prefix == "f" || prefix == "fr" || prefix == "rf" {
+				hasFString = true
+				break
 			}
 		}
 	}
+	if hasFString {
+		if strings.ContainsAny(val, "{}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+		}
+	}
+	return nil
+}
 
-	// Ruby: #{...} works in double quotes AND backticks
+func checkRubyInjection(val, base string, quoteLevel int) error {
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
+	return nil
+}
 
-	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+func checkPerlPhpNodeInjection(val, base string, quoteLevel int) error {
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
@@ -2881,11 +2901,15 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+	return nil
+}
+
+func checkDangerousKeywords(val, base string, quoteLevel int) error {
+	isPerl := strings.HasPrefix(base, "perl")
+	isRuby := strings.HasPrefix(base, "ruby")
+	isPhp := strings.HasPrefix(base, "php")
 
 	// Sentinel Security Update: Stricter checks for Perl/Ruby/PHP dangerous keywords
-	// These languages allow function calls without parentheses (e.g., system "ls"),
-	// so blocking "system(" is not enough. We must block the keywords themselves.
-	isRuby := strings.HasPrefix(base, "ruby")
 	if (isPerl || isRuby || isPhp) && (quoteLevel == 2 || quoteLevel == 0 || quoteLevel == 3) { // Single, Unquoted, Backtick
 		keywords := []string{"system", "exec", "popen", "eval", "syscall", "open"}
 		valLower := strings.ToLower(val)
@@ -2910,15 +2934,16 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			}
 		}
 	}
+	return nil
+}
 
-	// Awk: Block pipe | to prevent external command execution
+func checkAwkInjection(val, base string) error {
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
 	}
-
 	return nil
 }
 
