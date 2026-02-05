@@ -5,6 +5,7 @@ package discovery
 
 import (
 	"context"
+	"sort"
 	"sync"
 	"time"
 
@@ -99,6 +100,12 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	}
 
 	wg.Wait()
+
+	// ⚡ BOLT: Sort results to ensure determinism after parallel execution.
+	// This prevents test flakiness and ensures consistent UI ordering.
+	sort.Slice(allServices, func(i, j int) bool {
+		return allServices[i].GetName() < allServices[j].GetName()
+	})
 
 	return allServices
 }
