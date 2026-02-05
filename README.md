@@ -2,7 +2,7 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Elevator Pitch
+## Elevator Pitch
 
 **What is this project and why does it exist?**
 
@@ -12,7 +12,7 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Architecture
+## Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
@@ -45,7 +45,7 @@ graph TD
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
-## 3. Getting Started
+## Getting Started
 
 Follow these steps to get up and running immediately.
 
@@ -90,7 +90,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## Development
 
 We follow a strict development workflow to ensure quality.
 
@@ -125,7 +125,7 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
-## 5. Configuration
+## Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files for services.
 
