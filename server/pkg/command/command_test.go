@@ -63,28 +63,21 @@ func canConnectToDocker(t *testing.T) bool {
 	// Verify we can actually run a container.
 	// Some CI environments have a daemon but cannot run containers (e.g. nested overlayfs issues).
 	// We perform a smoke test by creating and starting a lightweight container.
+
+	// Always try to pull first to ensure we have the image and can write to storage
+	reader, err := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+	if err != nil {
+		t.Logf("could not pull alpine:latest: %v", err)
+		return false
+	}
+	_, _ = io.Copy(io.Discard, reader)
+	_ = reader.Close()
+
+	// Use HostConfig to mimic actual executor usage (though empty here, passing struct pointer might trigger defaults)
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: "alpine:latest",
 		Cmd:   []string{"echo", "hello"},
-	}, nil, nil, nil, "")
-
-	if err != nil {
-		// Try pulling if image is missing
-		if client.IsErrNotFound(err) {
-			reader, pullErr := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
-			if pullErr == nil {
-				_, _ = io.Copy(io.Discard, reader)
-				_ = reader.Close()
-				resp, err = cli.ContainerCreate(ctx, &container.Config{
-					Image: "alpine:latest",
-					Cmd:   []string{"echo", "hello"},
-				}, nil, nil, nil, "")
-			} else {
-				t.Logf("could not pull alpine:latest: %v", pullErr)
-				return false
-			}
-		}
-	}
+	}, &container.HostConfig{}, nil, nil, "")
 
 	if err != nil {
 		t.Logf("could not create smoke test container: %v", err)
