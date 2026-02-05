@@ -73,7 +73,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // 3. Step 1: Service Type
     await expect(page.getByText('Service Type')).toBeVisible();
     await page.getByRole('combobox').click();
-    await page.getByRole('option', { name: 'PostgreSQL Database' }).click();
+    await page.getByRole('option', { name: 'PostgreSQL' }).click();
     await page.click('button:has-text("Next")');
 
     // 4. Step 2: Parameters
