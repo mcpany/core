@@ -3078,14 +3078,18 @@ func validateExtraArg(arg string, command string, isDocker bool) error {
 		return err
 	}
 
-	if isShellCommand(command) {
+	// Sentinel Security Update:
+	// Only apply strict argument validation for interpreters (awk, python, etc.) and editors (vim).
+	// General shells (sh, bash) are excluded to avoid breaking tools designed to run shell scripts.
+	if isInterpreter(command) {
 		if err := checkSafeArg(arg, command); err != nil {
 			return err
 		}
-		if isEditorOrPager(command) {
-			if strings.HasPrefix(arg, "+") {
-				return fmt.Errorf("argument injection detected: value starts with '+'")
-			}
+	}
+
+	if isEditorOrPager(command) {
+		if strings.HasPrefix(arg, "+") {
+			return fmt.Errorf("argument injection detected: value starts with '+'")
 		}
 	}
 	return nil
