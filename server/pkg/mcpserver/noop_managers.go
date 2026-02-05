@@ -189,6 +189,11 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 // Returns the result.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
+// ListMCPResources implements resource.ManagerInterface.
+//
+// Returns the result.
+func (m *NoOpResourceManager) ListMCPResources() []*mcp.Resource { return nil }
+
 // OnListChanged implements resource.ManagerInterface.
 //
 // _ is an unused parameter.
