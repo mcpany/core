@@ -4,8 +4,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
-test('layout smoke test', async ({ page }) => {
+test('layout smoke test', async ({ page, request }) => {
+  await seedCollection('mcpany-system', request);
+
   await page.goto('/');
 
   // Check for Sidebar
@@ -27,13 +30,15 @@ test('layout smoke test', async ({ page }) => {
 
   // Navigate to Stack Detail
   await Promise.all([
-    page.waitForURL(/\/stacks\/system/),
+    page.waitForURL(/\/stacks\/mcpany-system/),
     page.click('text=mcpany-system'),
   ]);
-  await expect(page.locator('h2')).toContainText('system');
+  await expect(page.locator('h2')).toContainText('mcpany-system');
   await expect(page.locator('h2')).toContainText('Stack');
 
   // Check Tabs
   await expect(page.locator('button[role="tab"]', { hasText: 'Overview & Status' })).toBeVisible();
   await expect(page.locator('button[role="tab"]', { hasText: 'Editor' })).toBeVisible();
+
+  await cleanupCollection('mcpany-system', request);
 });
