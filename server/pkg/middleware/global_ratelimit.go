@@ -202,6 +202,7 @@ func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) st
 	// Hash the sensitive config to avoid storing connection strings in memory as clear text keys if possible.
 	// This fingerprint is used for cache invalidation, not for authentication.
 	data := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
+	// codeql[go/insecure-password-hash] - SHA256 is used for config fingerprinting/caching, not password storage.
 	fingerprint := sha256.Sum256([]byte(data))
 	return hex.EncodeToString(fingerprint[:])
 }
