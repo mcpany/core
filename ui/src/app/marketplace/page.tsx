@@ -25,6 +25,7 @@ import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
+import { parseGithubUrl } from "@/lib/repo-analyzer";
 
 /**
  * MarketplacePage component.
@@ -101,8 +102,8 @@ export default function MarketplacePage() {
   const handleImportSubmit = async () => {
     if (!importUrl) return;
 
-    // Smart Import Logic: Check if it's a GitHub URL (not JSON)
-    if (importUrl.includes("github.com") && !importUrl.endsWith(".json")) {
+    // Smart Import Logic: Check if it's a valid GitHub URL (not JSON)
+    if (parseGithubUrl(importUrl) && !importUrl.endsWith(".json")) {
         setSelectedRepoUrl(importUrl);
         setSelectedTemplate(undefined);
         setIsInstantiateOpen(true);
