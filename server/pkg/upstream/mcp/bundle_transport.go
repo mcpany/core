@@ -19,6 +19,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/errdefs"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
@@ -89,7 +90,7 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 		log.Info("Docker image found locally, skipping pull", "image", t.Image)
 	} else {
 		// If not found or other error, try to pull
-		if !client.IsErrNotFound(err) {
+		if !errdefs.IsNotFound(err) {
 			log.Debug("Failed to inspect image, proceeding to pull", "image", t.Image, "error", err)
 		}
 		reader, err := cli.ImagePull(ctx, t.Image, image.PullOptions{})

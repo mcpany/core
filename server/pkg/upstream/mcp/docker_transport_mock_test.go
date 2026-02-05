@@ -21,7 +21,7 @@ type mockDockerClient struct {
 	ContainerStartFunc      func(ctx context.Context, container string, options container.StartOptions) error
 	ContainerStopFunc       func(ctx context.Context, containerID string, options container.StopOptions) error
 	ContainerRemoveFunc     func(ctx context.Context, containerID string, options container.RemoveOptions) error
-	ImageInspectWithRawFunc func(ctx context.Context, imageID string) (types.ImageInspect, []byte, error)
+	ImageInspectWithRawFunc func(ctx context.Context, imageID string) (image.InspectResponse, []byte, error)
 	CloseFunc               func() error
 }
 
@@ -67,11 +67,11 @@ func (m *mockDockerClient) ContainerRemove(ctx context.Context, containerID stri
 	return nil
 }
 
-func (m *mockDockerClient) ImageInspectWithRaw(ctx context.Context, imageID string) (types.ImageInspect, []byte, error) {
+func (m *mockDockerClient) ImageInspectWithRaw(ctx context.Context, imageID string) (image.InspectResponse, []byte, error) {
 	if m.ImageInspectWithRawFunc != nil {
 		return m.ImageInspectWithRawFunc(ctx, imageID)
 	}
-	return types.ImageInspect{}, nil, nil
+	return image.InspectResponse{}, nil, nil
 }
 
 func (m *mockDockerClient) Close() error {

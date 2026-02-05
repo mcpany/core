@@ -19,6 +19,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/errdefs"
 	"github.com/docker/docker/pkg/stdcopy"
 	"al.essio.dev/pkg/shellescape"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -38,7 +39,7 @@ type dockerClient interface {
 	ContainerStart(ctx context.Context, container string, options container.StartOptions) error
 	ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error
 	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
-	ImageInspectWithRaw(ctx context.Context, imageID string) (types.ImageInspect, []byte, error)
+	ImageInspectWithRaw(ctx context.Context, imageID string) (image.InspectResponse, []byte, error)
 	Close() error
 }
 
@@ -85,7 +86,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		log.Info("Docker image found locally, skipping pull", "image", img)
 	} else {
 		// If not found or other error, try to pull
-		if !client.IsErrNotFound(err) {
+		if !errdefs.IsNotFound(err) {
 			log.Debug("Failed to inspect image, proceeding to pull", "image", img, "error", err)
 		}
 		reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
