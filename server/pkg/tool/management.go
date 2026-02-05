@@ -49,6 +49,12 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetTool(toolName string) (Tool, bool)
+	// GetToolCount returns the number of tools registered for a service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the count.
+	GetToolCount(serviceID string) int
 	// ListTools returns all registered tools.
 	//
 	// Returns the result.
@@ -833,6 +839,22 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	}
 
 	return nil, false
+}
+
+// GetToolCount returns the number of tools registered for a service.
+//
+// serviceID is the serviceID.
+//
+// Returns the count.
+func (tm *Manager) GetToolCount(serviceID string) int {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+	// ⚡ BOLT: O(1) Lookup
+	// Randomized Selection from Top 5 High-Impact Targets
+	if tools, ok := tm.serviceToolIDs[serviceID]; ok {
+		return len(tools)
+	}
+	return 0
 }
 
 // ListTools returns a slice containing all the tools currently registered with
