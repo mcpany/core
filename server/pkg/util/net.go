@@ -22,7 +22,15 @@ import (
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
-	// It returns a slice of that host's IPv4 and IPv6 addresses.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the lookup.
+	//   - network: string. The network to use for the lookup (e.g., "ip", "ip4", "ip6").
+	//   - host: string. The host to look up.
+	//
+	// Returns:
+	//   - []net.IP: A slice of that host's IPv4 and IPv6 addresses.
+	//   - error: An error if the lookup fails.
 	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
 }
 
@@ -31,6 +39,15 @@ type IPResolver interface {
 type NetDialer interface {
 	// DialContext connects to the address on the named network using
 	// the provided context.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the dial operation.
+	//   - network: string. The network name (e.g., "tcp", "udp").
+	//   - address: string. The address to connect to.
+	//
+	// Returns:
+	//   - net.Conn: The established connection.
+	//   - error: An error if the connection fails.
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
