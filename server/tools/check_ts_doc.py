@@ -55,7 +55,19 @@ def check_file(filepath):
                     j -= 1
                     continue
                 if prev.endswith('*/'):
-                    has_doc = True
+                    # Extract comment block
+                    k = j
+                    comment_lines = []
+                    while k >= 0:
+                        l = lines[k].strip()
+                        comment_lines.insert(0, l)
+                        if l.startswith('/*'):
+                            break
+                        k -= 1
+                    comment_text = " ".join(comment_lines)
+
+                    if "Copyright" not in comment_text and "SPDX-License-Identifier" not in comment_text:
+                        has_doc = True
                 break
 
             if not has_doc:

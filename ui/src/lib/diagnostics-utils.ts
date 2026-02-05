@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents the result of a diagnostic analysis on a connection error.
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;

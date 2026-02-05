@@ -6,6 +6,9 @@
 
 
 
+/**
+ * Configuration for a marketplace item, including command details and environment variables.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
