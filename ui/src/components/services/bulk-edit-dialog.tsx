@@ -15,10 +15,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2 } from "lucide-react";
 import { Authentication } from "@/lib/client";
 
+/**
+ * Definition of updates to apply to multiple services.
+ */
 export interface BulkUpdates {
+    /** Tags to add to the services. */
     tags?: string[];
-    timeout?: string; // Duration string e.g. "30s"
+    /** Timeout duration string (e.g. "30s") to set for resilience policy. */
+    timeout?: string;
+    /** Environment variables to add or update (for CLI/MCP services). */
     env?: Record<string, string>;
+    /** Authentication configuration to set. */
     upstreamAuth?: Authentication;
 }
 
@@ -29,6 +36,17 @@ interface BulkEditDialogProps {
     onApply: (updates: BulkUpdates) => void;
 }
 
+/**
+ * Dialog for editing multiple services at once.
+ * Allows updating tags, timeouts, environment variables, and authentication.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the dialog is open.
+ * @param props.onOpenChange - Callback when open state changes.
+ * @param props.selectedCount - Number of selected services.
+ * @param props.onApply - Callback when changes are applied.
+ * @returns The rendered component.
+ */
 export function BulkEditDialog({ open, onOpenChange, selectedCount, onApply }: BulkEditDialogProps) {
     const [tags, setTags] = useState("");
     const [timeoutSeconds, setTimeoutSeconds] = useState("");

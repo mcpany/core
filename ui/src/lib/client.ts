@@ -472,6 +472,7 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env,
             };
         }
         if (config.mcpService) {
