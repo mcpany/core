@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -644,86 +645,118 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 		return nil, fmt.Errorf("failed to collect config file paths: %w", err)
 	}
 
-	for _, path := range filePaths {
-		var b []byte
-		var err error
-		if isURL(path) {
-			b, err = readURL(ctx, path)
+	// ⚡ BOLT: Parallelize config loading to improve startup performance.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	type loadResult struct {
+		cfg *configv1.McpAnyServerConfig
+		err error
+	}
+	results := make([]loadResult, len(filePaths))
+	var wg sync.WaitGroup
+
+	for i, path := range filePaths {
+		wg.Add(1)
+		go func(i int, path string) {
+			defer wg.Done()
+
+			var b []byte
+			var err error
+			if isURL(path) {
+				b, err = readURL(ctx, path)
+				if err != nil {
+					results[i] = loadResult{err: fmt.Errorf("failed to read config from URL %s: %w", path, err)}
+					return
+				}
+			} else {
+				b, err = afero.ReadFile(s.fs, path)
+				if err != nil {
+					results[i] = loadResult{err: fmt.Errorf("failed to read config file %s: %w", path, err)}
+					return
+				}
+			}
+
+			if len(b) == 0 {
+				return
+			}
+
+			b, err = expand(b)
 			if err != nil {
-				return nil, fmt.Errorf("failed to read config from URL %s: %w", path, err)
+				if !s.IgnoreMissingEnv {
+					results[i] = loadResult{err: WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)}
+					return
+				}
+				logging.GetLogger().Warn("Missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
 			}
-		} else {
-			b, err = afero.ReadFile(s.fs, path)
+
+			engine, err := NewEngine(path)
 			if err != nil {
-				return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
+				if s.skipErrors {
+					logging.GetLogger().Error("Failed to determine config engine, skipping file", "path", path, "error", err)
+					return
+				}
+				results[i] = loadResult{err: err}
+				return
 			}
-		}
 
-		if len(b) == 0 {
-			continue
-		}
-
-		b, err = expand(b)
-		if err != nil {
-			if !s.IgnoreMissingEnv {
-				return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
+			if configurable, ok := engine.(ConfigurableEngine); ok {
+				configurable.SetSkipValidation(s.skipValidation)
 			}
-			logging.GetLogger().Warn("Missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
-		}
 
-		engine, err := NewEngine(path)
-		if err != nil {
-			if s.skipErrors {
-				logging.GetLogger().Error("Failed to determine config engine, skipping file", "path", path, "error", err)
-				continue
-			}
-			return nil, err
-		}
-
-		if configurable, ok := engine.(ConfigurableEngine); ok {
-			configurable.SetSkipValidation(s.skipValidation)
-		}
-
-		cfg := configv1.McpAnyServerConfig_builder{}.Build()
-		if err := engine.Unmarshal(b, cfg); err != nil {
-			logErr := fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
-			if strings.Contains(err.Error(), "is already set") {
-				// Find the service name
-				var raw map[string]interface{}
-				if yaml.Unmarshal(b, &raw) == nil {
-					if services, ok := raw["upstream_services"].([]interface{}); ok {
-						for _, s := range services {
-							if service, ok := s.(map[string]interface{}); ok {
-								if name, ok := service["name"].(string); ok {
-									// Heuristic: if the raw service definition has more than one service type key, it's the culprit
-									keys := 0
-									serviceKeys := []string{"http_service", "grpc_service", "openapi_service", "command_line_service", "websocket_service", "webrtc_service", "graphql_service", "mcp_service"}
-									for _, k := range serviceKeys {
-										if _, ok := service[k]; ok {
-											keys++
+			cfg := configv1.McpAnyServerConfig_builder{}.Build()
+			if err := engine.Unmarshal(b, cfg); err != nil {
+				logErr := fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
+				if strings.Contains(err.Error(), "is already set") {
+					// Find the service name
+					var raw map[string]interface{}
+					if yaml.Unmarshal(b, &raw) == nil {
+						if services, ok := raw["upstream_services"].([]interface{}); ok {
+							for _, s := range services {
+								if service, ok := s.(map[string]interface{}); ok {
+									if name, ok := service["name"].(string); ok {
+										// Heuristic: if the raw service definition has more than one service type key, it's the culprit
+										keys := 0
+										serviceKeys := []string{"http_service", "grpc_service", "openapi_service", "command_line_service", "websocket_service", "webrtc_service", "graphql_service", "mcp_service"}
+										for _, k := range serviceKeys {
+											if _, ok := service[k]; ok {
+												keys++
+											}
 										}
-									}
-									if keys > 1 {
-										logErr = fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
+										if keys > 1 {
+											logErr = fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
+										}
 									}
 								}
 							}
 						}
 					}
 				}
+				if s.skipErrors {
+					logging.GetLogger().Error("Failed to parse config file, skipping", "path", path, "error", logErr)
+					return
+				}
+				results[i] = loadResult{err: logErr}
+				return
 			}
-			if s.skipErrors {
-				logging.GetLogger().Error("Failed to parse config file, skipping", "path", path, "error", logErr)
-				continue
-			}
-			return nil, logErr
+			results[i] = loadResult{cfg: cfg}
+		}(i, path)
+	}
+
+	wg.Wait()
+
+	// Merge results in order to respect precedence
+	for _, res := range results {
+		if res.err != nil {
+			return nil, res.err
+		}
+		if res.cfg == nil {
+			continue
 		}
 
 		if mergedConfig == nil {
-			mergedConfig = cfg
+			mergedConfig = res.cfg
 		} else {
 			// Apply Merge Strategy if defined
-			if ms := cfg.GetMergeStrategy(); ms != nil {
+			if ms := res.cfg.GetMergeStrategy(); ms != nil {
 				if ms.GetUpstreamServiceList() == "replace" {
 					mergedConfig.SetUpstreamServices(nil)
 				}
@@ -738,7 +771,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 				// Handle other lists if needed (e.g., users, collections) based on requirements
 				// For now, adhering to the documented strategies.
 			}
-			proto.Merge(mergedConfig, cfg)
+			proto.Merge(mergedConfig, res.cfg)
 		}
 	}
 
