@@ -53,11 +53,35 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually create a container.
+	// Some CI environments have Docker but broken overlayfs or permissions.
+	// Use a lightweight check without pulling if possible, or assume alpine is present/pullable.
+	// We'll try to create a container with a minimal config.
+	// Note: We use "hello-world" or "alpine" if available, but to be safe against pull limits/network,
+	// we just try to create with "alpine:latest" which the tests rely on anyway.
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("docker environment appears broken (ContainerCreate failed): %v", err)
+		return false
+	}
+
+	// Cleanup
+	_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+
 	return true
 }
 
