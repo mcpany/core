@@ -232,8 +232,9 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	if os.Getenv("SKIP_DOCKER_TESTS") == "true" || os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set or running in CI")
+	// Skip in CI environments to avoid Docker-in-Docker overlay issues
+	if os.Getenv("SKIP_DOCKER_TESTS") != "" || os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" || os.Getenv("INSIDE_DOCKER_CONTAINER") != "" {
+		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set or running in CI/Container")
 	}
 
 	// Check if Docker is available and accessible
