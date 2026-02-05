@@ -33,6 +33,15 @@ service AdminService {
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
 
+  // PreviewServiceConfig generates a preview of the service configuration (e.g. discovered tools)
+  // without saving it.
+  rpc PreviewServiceConfig(PreviewServiceConfigRequest) returns (PreviewServiceConfigResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/services/preview"
+      body: "*"
+    };
+  }
+
   // ===================================================================
   // User Management
   // ===================================================================
@@ -105,6 +114,14 @@ message GetToolRequest {
 
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
+}
+
+message PreviewServiceConfigRequest {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message PreviewServiceConfigResponse {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
 }
 
 // User Management Messages

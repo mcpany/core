@@ -119,47 +119,10 @@ func (u *OpenAPIUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
-	specContent := openapiService.GetSpecContent()
-	if specContent == "" {
-		specURL := openapiService.GetSpecUrl()
-		if specURL != "" {
-			if uURL, err := url.ParseRequestURI(specURL); err != nil {
-				logging.GetLogger().Warn("Invalid OpenAPI spec URL", "url", specURL, "error", err)
-				specURL = ""
-			} else if uURL.Scheme != "http" && uURL.Scheme != "https" {
-				logging.GetLogger().Warn("Invalid OpenAPI spec URL scheme (must be http or https)", "url", specURL)
-				specURL = ""
-			}
-		}
-
-		if specURL != "" {
-			client := &http.Client{
-				Timeout: 30 * time.Second,
-			}
-			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
-			if err != nil {
-				logging.GetLogger().Warn("Failed to create request for OpenAPI spec", "url", specURL, "error", err)
-			}
-			var resp *http.Response
-			if err == nil {
-				resp, err = client.Do(req)
-			}
-			if err != nil {
-				logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "error", err)
-			} else {
-				defer func() { _ = resp.Body.Close() }()
-				if resp.StatusCode != http.StatusOK {
-					logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "status", resp.StatusCode)
-				} else {
-					bodyBytes, err := io.ReadAll(resp.Body)
-					if err != nil {
-						logging.GetLogger().Warn("Failed to read OpenAPI spec body (continuing without tools)", "url", specURL, "error", err)
-					} else {
-						specContent = string(bodyBytes)
-					}
-				}
-			}
-		}
+	specContent, err := u.fetchSpec(ctx, openapiService)
+	if err != nil {
+		logging.GetLogger().Warn("Failed to fetch/read OpenAPI spec", "error", err)
+		// Fallthrough to existing error handling below if content is empty
 	}
 
 	if specContent == "" {
@@ -204,6 +167,87 @@ func (u *OpenAPIUpstream) Register(
 	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded)
 
 	return serviceID, discoveredTools, nil, nil
+}
+
+// Preview parses the OpenAPI spec and returns the discovered tool definitions.
+func (u *OpenAPIUpstream) Preview(
+	ctx context.Context,
+	serviceConfig *configv1.UpstreamServiceConfig,
+) ([]*configv1.ToolDefinition, error) {
+	openapiService := serviceConfig.GetOpenapiService()
+	if openapiService == nil {
+		return nil, fmt.Errorf("openapi service config is nil")
+	}
+
+	specContent, err := u.fetchSpec(ctx, openapiService)
+	if err != nil {
+		return nil, err
+	}
+	if specContent == "" {
+		return nil, fmt.Errorf("OpenAPI spec content is missing")
+	}
+
+	// We don't cache in preview usually, or we use a temp cache key?
+	// For simplicity, parse directly.
+	_, doc, err := parseOpenAPISpec(ctx, []byte(specContent))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse OpenAPI spec: %w", err)
+	}
+
+	mcpOps := extractMcpOperationsFromOpenAPI(doc)
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(mcpOps))
+	for _, op := range mcpOps {
+		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
+			Name:        proto.String(op.OperationID),
+			Description: proto.String(op.Description),
+			// We can also populate CallId to ensure the preview matches Register behavior
+			CallId: proto.String(op.OperationID),
+		}.Build())
+	}
+
+	return discoveredTools, nil
+}
+
+func (u *OpenAPIUpstream) fetchSpec(ctx context.Context, openapiService *configv1.OpenapiUpstreamService) (string, error) {
+	specContent := openapiService.GetSpecContent()
+	if specContent != "" {
+		return specContent, nil
+	}
+
+	specURL := openapiService.GetSpecUrl()
+	if specURL == "" {
+		return "", nil
+	}
+
+	if uURL, err := url.ParseRequestURI(specURL); err != nil {
+		return "", fmt.Errorf("invalid OpenAPI spec URL: %w", err)
+	} else if uURL.Scheme != "http" && uURL.Scheme != "https" {
+		return "", fmt.Errorf("invalid OpenAPI spec URL scheme (must be http or https): %s", specURL)
+	}
+
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch OpenAPI spec: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to fetch OpenAPI spec: status %d", resp.StatusCode)
+	}
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read OpenAPI spec body: %w", err)
+	}
+
+	return string(bodyBytes), nil
 }
 
 // getHTTPClient retrieves or creates an HTTP client for a given service. It

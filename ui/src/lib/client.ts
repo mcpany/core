@@ -636,6 +636,87 @@ export const apiClient = {
         return data;
     },
 
+    /**
+     * Previews a service configuration (e.g. discovers tools for OpenAPI).
+     * @param config The service configuration to preview.
+     * @returns A promise that resolves to the previewed configuration.
+     */
+    previewServiceConfig: async (config: UpstreamServiceConfig) => {
+        // Map camelCase (UI) to snake_case (Server REST)
+        // This is a partial map, sufficient for Preview (OpenAPI mainly)
+        const servicePayload: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
+
+        if (config.httpService) {
+            servicePayload.http_service = { address: config.httpService.address };
+        }
+        if (config.grpcService) {
+            servicePayload.grpc_service = { address: config.grpcService.address };
+        }
+        if (config.commandLineService) {
+            servicePayload.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env
+            };
+        }
+        if (config.mcpService) {
+            servicePayload.mcp_service = { ...config.mcpService };
+        }
+        if (config.openapiService) {
+            servicePayload.openapi_service = {
+                address: config.openapiService.address,
+                spec_url: config.openapiService.specUrl,
+                spec_content: config.openapiService.specContent,
+                // Send existing tools if any, though usually we want to regenerate
+            };
+        }
+
+        const res = await fetchWithAuth('/api/v1/services/preview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service: servicePayload })
+        });
+
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to preview service: ${res.status} ${txt}`);
+        }
+        const data = await res.json();
+        const s = data.service;
+        if (!s) return config;
+
+        // Map back snake_case to camelCase
+        // We are interested in OpenAPIService tools
+        const result = {
+            ...config,
+        };
+
+        if (s.openapi_service) {
+            result.openapiService = {
+                ...config.openapiService!,
+                tools: s.openapi_service.tools?.map((t: any) => ({
+                    name: t.name,
+                    description: t.description,
+                    inputSchema: t.input_schema,
+                    outputSchema: t.output_schema,
+                    serviceId: t.service_id,
+                    callId: t.call_id,
+                    // Map other fields if needed
+                })) || []
+            };
+        }
+
+        return result as UpstreamServiceConfig;
+    },
+
     // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
     // admin.proto has ListTools but we are focusing on RegistrationService first.
     // So keep using fetch for Tools/Secrets/etc for now.

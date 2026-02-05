@@ -22,18 +22,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName         = "/mcpany.admin.v1.AdminService/ClearCache"
-	AdminService_ListServices_FullMethodName       = "/mcpany.admin.v1.AdminService/ListServices"
-	AdminService_GetService_FullMethodName         = "/mcpany.admin.v1.AdminService/GetService"
-	AdminService_ListTools_FullMethodName          = "/mcpany.admin.v1.AdminService/ListTools"
-	AdminService_GetTool_FullMethodName            = "/mcpany.admin.v1.AdminService/GetTool"
-	AdminService_CreateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/CreateUser"
-	AdminService_GetUser_FullMethodName            = "/mcpany.admin.v1.AdminService/GetUser"
-	AdminService_ListUsers_FullMethodName          = "/mcpany.admin.v1.AdminService/ListUsers"
-	AdminService_UpdateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/UpdateUser"
-	AdminService_DeleteUser_FullMethodName         = "/mcpany.admin.v1.AdminService/DeleteUser"
-	AdminService_GetDiscoveryStatus_FullMethodName = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
-	AdminService_ListAuditLogs_FullMethodName      = "/mcpany.admin.v1.AdminService/ListAuditLogs"
+	AdminService_ClearCache_FullMethodName           = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName         = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName           = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_ListTools_FullMethodName            = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName              = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_PreviewServiceConfig_FullMethodName = "/mcpany.admin.v1.AdminService/PreviewServiceConfig"
+	AdminService_CreateUser_FullMethodName           = "/mcpany.admin.v1.AdminService/CreateUser"
+	AdminService_GetUser_FullMethodName              = "/mcpany.admin.v1.AdminService/GetUser"
+	AdminService_ListUsers_FullMethodName            = "/mcpany.admin.v1.AdminService/ListUsers"
+	AdminService_UpdateUser_FullMethodName           = "/mcpany.admin.v1.AdminService/UpdateUser"
+	AdminService_DeleteUser_FullMethodName           = "/mcpany.admin.v1.AdminService/DeleteUser"
+	AdminService_GetDiscoveryStatus_FullMethodName   = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
+	AdminService_ListAuditLogs_FullMethodName        = "/mcpany.admin.v1.AdminService/ListAuditLogs"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -52,6 +53,9 @@ type AdminServiceClient interface {
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error)
+	// PreviewServiceConfig generates a preview of the service configuration (e.g. discovered tools)
+	// without saving it.
+	PreviewServiceConfig(ctx context.Context, in *PreviewServiceConfigRequest, opts ...grpc.CallOption) (*PreviewServiceConfigResponse, error)
 	// CreateUser creates a new user.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	// GetUser returns a specific user by ID.
@@ -120,6 +124,16 @@ func (c *adminServiceClient) GetTool(ctx context.Context, in *GetToolRequest, op
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetToolResponse)
 	err := c.cc.Invoke(ctx, AdminService_GetTool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) PreviewServiceConfig(ctx context.Context, in *PreviewServiceConfigRequest, opts ...grpc.CallOption) (*PreviewServiceConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PreviewServiceConfigResponse)
+	err := c.cc.Invoke(ctx, AdminService_PreviewServiceConfig_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -212,6 +226,9 @@ type AdminServiceServer interface {
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error)
+	// PreviewServiceConfig generates a preview of the service configuration (e.g. discovered tools)
+	// without saving it.
+	PreviewServiceConfig(context.Context, *PreviewServiceConfigRequest) (*PreviewServiceConfigResponse, error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	// GetUser returns a specific user by ID.
@@ -250,6 +267,9 @@ func (UnimplementedAdminServiceServer) ListTools(context.Context, *ListToolsRequ
 }
 func (UnimplementedAdminServiceServer) GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTool not implemented")
+}
+func (UnimplementedAdminServiceServer) PreviewServiceConfig(context.Context, *PreviewServiceConfigRequest) (*PreviewServiceConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PreviewServiceConfig not implemented")
 }
 func (UnimplementedAdminServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -379,6 +399,24 @@ func _AdminService_GetTool_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdminServiceServer).GetTool(ctx, req.(*GetToolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_PreviewServiceConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PreviewServiceConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).PreviewServiceConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_PreviewServiceConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).PreviewServiceConfig(ctx, req.(*PreviewServiceConfigRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -535,6 +573,10 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTool",
 			Handler:    _AdminService_GetTool_Handler,
+		},
+		{
+			MethodName: "PreviewServiceConfig",
+			Handler:    _AdminService_PreviewServiceConfig_Handler,
 		},
 		{
 			MethodName: "CreateUser",
