@@ -887,6 +887,21 @@ export const apiClient = {
     },
 
     /**
+     * Creates a new alert.
+     * @param alert The alert to create.
+     * @returns A promise that resolves to the created alert.
+     */
+    createAlert: async (alert: any) => {
+        const res = await fetchWithAuth('/api/v1/alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alert)
+        });
+        if (!res.ok) throw new Error('Failed to create alert');
+        return res.json();
+    },
+
+    /**
      * Creates a new alert rule.
      * @param rule The rule to create.
      * @returns A promise that resolves to the created rule.

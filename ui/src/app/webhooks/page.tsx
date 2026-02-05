@@ -5,174 +5,157 @@
 
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Webhook, Plus, Play, Trash2 } from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter
-} from "@/components/ui/dialog"
-
-interface WebhookConfig {
-    id: string;
-    url: string;
-    events: string[];
-    active: boolean;
-    lastTriggered?: string;
-    status?: "success" | "failure" | "pending";
-}
-
-const INITIAL_WEBHOOKS: WebhookConfig[] = [
-    { id: "wh-1", url: "https://api.example.com/events", events: ["service.registered", "tool.invoked"], active: true, lastTriggered: "2 mins ago", status: "success" },
-    { id: "wh-2", url: "https://hooks.slack.com/...", events: ["error.occurred"], active: true, lastTriggered: "1 day ago", status: "success" },
-];
+import { Webhook, Zap, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/client";
 
 /**
  * WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [newUrl, setNewUrl] = useState("");
+    const [url, setUrl] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [testing, setTesting] = useState(false);
+    const { toast } = useToast();
 
-    const toggleWebhook = (id: string) => {
-        setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: !w.active } : w));
+    useEffect(() => {
+        loadWebhook();
+    }, []);
+
+    const loadWebhook = async () => {
+        setLoading(true);
+        try {
+            const data = await apiClient.getWebhookURL();
+            setUrl(data.url);
+        } catch (e) {
+            console.error("Failed to load webhook", e);
+            toast({
+                title: "Error",
+                description: "Failed to load webhook configuration.",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const deleteWebhook = (id: string) => {
-        setWebhooks(webhooks.filter(w => w.id !== id));
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await apiClient.saveWebhookURL(url);
+            toast({
+                title: "Configuration Saved",
+                description: "Global webhook URL has been updated."
+            });
+        } catch (e) {
+            console.error("Failed to save webhook", e);
+            toast({
+                title: "Save Failed",
+                description: "Could not save webhook configuration.",
+                variant: "destructive"
+            });
+        } finally {
+            setSaving(false);
+        }
     };
 
-    const addWebhook = () => {
-        if (!newUrl) return;
-        setWebhooks([...webhooks, {
-            id: `wh-${Date.now()}`,
-            url: newUrl,
-            events: ["all"],
-            active: true
-        }]);
-        setNewUrl("");
-        setIsDialogOpen(false);
-    }
+    const handleTest = async () => {
+        if (!url) {
+            toast({
+                title: "Missing URL",
+                description: "Please enter and save a webhook URL first.",
+                variant: "destructive"
+            });
+            return;
+        }
 
-    const testWebhook = (id: string) => {
-        // Simulate test
-        alert(`Testing webhook ${id}...`);
-    }
+        setTesting(true);
+        try {
+            // First ensure it's saved
+            await apiClient.saveWebhookURL(url);
+
+            // Then trigger a test alert
+            await apiClient.createAlert({
+                title: "Test Alert",
+                message: "This is a test alert from the Global Notification Center.",
+                severity: "info",
+                status: "active",
+                service: "system",
+                source: "notification-center",
+                timestamp: new Date().toISOString()
+            });
+
+            toast({
+                title: "Test Alert Sent",
+                description: "A test alert has been created. Check your webhook endpoint."
+            });
+        } catch (e) {
+            console.error("Failed to send test alert", e);
+            toast({
+                title: "Test Failed",
+                description: "Could not send test alert.",
+                variant: "destructive"
+            });
+        } finally {
+            setTesting(false);
+        }
+    };
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Webhooks</h1>
-                    <p className="text-muted-foreground">Configure outbound webhooks for system events.</p>
+                    <p className="text-muted-foreground">Configure system-wide alert delivery.</p>
                 </div>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> New Webhook
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add Webhook</DialogTitle>
-                            <DialogDescription>
-                                Enter the URL where events should be sent.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="url" className="text-right">
-                                    Payload URL
-                                </Label>
-                                <Input
-                                    id="url"
-                                    value={newUrl}
-                                    onChange={(e) => setNewUrl(e.target.value)}
-                                    placeholder="https://..."
-                                    className="col-span-3"
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button onClick={addWebhook}>Add Webhook</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
             </div>
 
-            <Card className="backdrop-blur-sm bg-background/50">
+            <Card className="max-w-2xl backdrop-blur-sm bg-background/50">
                 <CardHeader>
-                    <CardTitle>Configured Webhooks</CardTitle>
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-primary/10 rounded-md">
+                            <Webhook className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                            <CardTitle>Global Webhook</CardTitle>
+                            <CardDescription>
+                                Receive notifications for all system alerts and incidents.
+                            </CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
-                <CardContent>
-                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>URL</TableHead>
-                                <TableHead>Events</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Last Triggered</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {webhooks.map((hook) => (
-                                <TableRow key={hook.id}>
-                                    <TableCell className="font-mono text-xs">{hook.url}</TableCell>
-                                    <TableCell>
-                                        <div className="flex gap-1 flex-wrap">
-                                            {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={hook.active}
-                                                onCheckedChange={() => toggleWebhook(hook.id)}
-                                            />
-                                            <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
-                                                {hook.active ? "Active" : "Inactive"}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground text-xs">
-                                        {hook.lastTriggered || "Never"}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => testWebhook(hook.id)} title="Test Delivery">
-                                                <Play className="h-4 w-4" />
-                                            </Button>
-                                             <Button variant="ghost" size="icon" onClick={() => deleteWebhook(hook.id)} className="text-red-500 hover:text-red-600">
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {webhooks.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
-                                        No webhooks configured.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="url">Payload URL</Label>
+                        <Input
+                            id="url"
+                            placeholder="https://hooks.slack.com/services/..."
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            disabled={loading}
+                        />
+                        <p className="text-[0.8rem] text-muted-foreground">
+                            We will send a POST request with the alert JSON payload to this URL.
+                        </p>
+                    </div>
                 </CardContent>
+                <CardFooter className="flex justify-between border-t p-6 bg-muted/5">
+                    <Button variant="outline" onClick={handleTest} disabled={loading || testing || !url}>
+                        {testing ? <Zap className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
+                        Test Delivery
+                    </Button>
+                    <Button onClick={handleSave} disabled={loading || saving}>
+                        {saving ? <Save className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        Save Changes
+                    </Button>
+                </CardFooter>
             </Card>
         </div>
     );
