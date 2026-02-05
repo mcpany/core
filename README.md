@@ -40,6 +40,13 @@ graph TD
     end
 ```
 
+### Key Features
+*   **Dynamic Tool Registration**: Discover tools from Proto files, OpenAPI specs, or Reflection automatically.
+*   **Universal Adapter**: Support for gRPC, OpenAPI, HTTP, GraphQL, and CLI commands.
+*   **Security Policies**: Block dangerous operations (e.g. `DELETE`) and restrict access to specific URLs.
+*   **Upstream Authentication**: Handle API keys, Bearer tokens, and mTLS securely so the AI doesn't have to see them.
+*   **Multi-Tenancy**: Support for complex multi-user and multi-profile use cases.
+
 ### Key Design Patterns
 *   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
@@ -107,7 +114,28 @@ make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Ensure code adheres to our style guides. We strictly enforce **100% documentation coverage** for all public APIs.
+
+*   **Go**: Standard Go documentation with explicit `Parameters` and `Returns` sections.
+    ```go
+    // FunctionName does something.
+    //
+    // Parameters:
+    //   - param1: Type. Description.
+    //
+    // Returns:
+    //   - Type: Description.
+    ```
+*   **TypeScript**: TSDoc/JSDoc format.
+    ```typescript
+    /**
+     * FunctionName does something.
+     *
+     * @param param1 - Description.
+     * @returns Description.
+     */
+    ```
+
 Run the linter to verify your changes:
 ```bash
 make lint
