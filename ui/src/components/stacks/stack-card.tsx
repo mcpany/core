@@ -21,6 +21,9 @@ import {
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog";
 
+/**
+ * Stack interface defining the structure of a stack object.
+ */
 export interface Stack {
     name: string;
     description?: string;
@@ -32,6 +35,14 @@ interface StackCardProps {
     onDelete: (name: string) => void;
 }
 
+/**
+ * StackCard component displays a single stack's details in a card format.
+ *
+ * @param props - The component props.
+ * @param props.stack - The stack object to display.
+ * @param props.onDelete - Callback function to handle stack deletion.
+ * @returns The rendered card component.
+ */
 export function StackCard({ stack, onDelete }: StackCardProps) {
     return (
         <Card className="hover:shadow-md transition-all border-transparent shadow-sm bg-card hover:bg-muted/50 flex flex-col h-full group">

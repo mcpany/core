@@ -42,6 +42,13 @@ interface CreateStackDialogProps {
     onStackCreated: () => void;
 }
 
+/**
+ * CreateStackDialog component provides a dialog to create a new stack.
+ *
+ * @param props - The component props.
+ * @param props.onStackCreated - Callback function called when a stack is successfully created.
+ * @returns The rendered dialog component.
+ */
 export function CreateStackDialog({ onStackCreated }: CreateStackDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

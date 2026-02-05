@@ -4,19 +4,29 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection } from './e2e/test-data';
+import { seedCollection, cleanupCollection, seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Stacks Management', () => {
+    test.beforeEach(async ({ page, request }) => {
+        // Seed admin user for auth
+        await seedUser(request, "admin");
+        // Set auth token (basic auth for admin:password)
+        await page.addInitScript(() => {
+            localStorage.setItem('mcp_auth_token', btoa('admin:password'));
+        });
+    });
+
     test.afterEach(async ({ request }) => {
         // Cleanup potential leftovers
         await cleanupCollection('New-Stack', request);
         await cleanupCollection('e2e-seed-stack', request);
+        await cleanupUser(request, "admin");
     });
 
     test('should list existing stacks', async ({ page, request }) => {
         await seedCollection('e2e-seed-stack', request);
         await page.goto('/stacks');
-        await expect(page.getByText('e2e-seed-stack')).toBeVisible();
+        await expect(page.locator('.text-2xl', { hasText: 'e2e-seed-stack' })).toBeVisible();
     });
 
     test('should create a new stack', async ({ page }) => {
