@@ -28,7 +28,7 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetFilePath(traversalPath)
 
-	// This should now FAIL because of IsSecurePath check
+	// This should now FAIL because of IsPathTraversalSafe check
 	_, err := util.ResolveSecret(context.Background(), secret)
 	assert.Error(t, err, "ResolveSecret should block traversal paths")
 	if err != nil {

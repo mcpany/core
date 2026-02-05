@@ -343,7 +343,7 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 		}
 	case configv1.SecretValue_FilePath_case:
 		if skipFilesystemCheck {
-			if err := validation.IsSecurePath(secret.GetFilePath()); err != nil {
+			if err := validation.IsPathTraversalSafe(secret.GetFilePath()); err != nil {
 				return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 			}
 		} else {
@@ -755,7 +755,7 @@ func validateContainerEnvironment(ctx context.Context, env *configv1.ContainerEn
 			// We must validate the Host Path (dest) to ensure it is secure.
 			// It must be either relative to the CWD or in the allowed list.
 			if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
-				if err := validation.IsSecurePath(dest); err != nil {
+				if err := validation.IsPathTraversalSafe(dest); err != nil {
 					return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 				}
 			} else {
@@ -1128,7 +1128,7 @@ func validateMtlsAuth(ctx context.Context, mtls *configv1.MTLSAuth) error {
 	skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool)
 	checkPath := func(path, name string) error {
 		if ok && skip {
-			if err := validation.IsSecurePath(path); err != nil {
+			if err := validation.IsPathTraversalSafe(path); err != nil {
 				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
 			}
 		} else {
@@ -1291,7 +1291,7 @@ func validateGCSettings(ctx context.Context, gc *configv1.GCSettings) error {
 			}
 			if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
 				// Just check string safety to prevent traversal, but skip disk checks (IsAllowedPath calls EvalSymlinks)
-				if err := validation.IsSecurePath(path); err != nil {
+				if err := validation.IsPathTraversalSafe(path); err != nil {
 					return fmt.Errorf("gc path %q is not secure: %w", path, err)
 				}
 			} else {

@@ -20,7 +20,7 @@ func TestIsAllowedPath(t *testing.T) {
 		// Relative paths inside CWD should pass
 		{"Default_Relative", "config.yaml", "", false},
 		{"Default_Subdir", "subdir/config.yaml", "", false},
-		// ".." is blocked by IsSecurePath
+		// ".." is blocked by IsPathTraversalSafe
 		{"Default_Traversal", "../config.yaml", "", true},
 		// Absolute path NOT in CWD should fail
 		{"Default_Absolute", "/etc/passwd", "", true},

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestIsSecurePath(t *testing.T) {
+func TestIsPathTraversalSafe(t *testing.T) {
 	tests := []struct {
 		name    string
 		path    string
@@ -32,15 +32,15 @@ func TestIsSecurePath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := IsSecurePath(tt.path)
+			err := IsPathTraversalSafe(tt.path)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("IsSecurePath(%q) error = %v, wantErr %v", tt.path, err, tt.wantErr)
+				t.Errorf("IsPathTraversalSafe(%q) error = %v, wantErr %v", tt.path, err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestIsSecureRelativePath(t *testing.T) {
+func TestIsSafeRelativePath(t *testing.T) {
 	tests := []struct {
 		name    string
 		path    string
@@ -61,9 +61,9 @@ func TestIsSecureRelativePath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := IsSecureRelativePath(tt.path)
+			err := IsSafeRelativePath(tt.path)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("IsSecureRelativePath(%q) error = %v, wantErr %v", tt.path, err, tt.wantErr)
+				t.Errorf("IsSafeRelativePath(%q) error = %v, wantErr %v", tt.path, err, tt.wantErr)
 			}
 		})
 	}

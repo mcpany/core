@@ -37,7 +37,7 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
-		if err := validation.IsSecureRelativePath(assetPath); err != nil {
+		if err := validation.IsSafeRelativePath(assetPath); err != nil {
 			http.Error(w, "Invalid asset path", http.StatusBadRequest)
 			return
 		}

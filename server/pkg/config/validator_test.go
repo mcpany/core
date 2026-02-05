@@ -809,12 +809,12 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil, nil // Exists
 		}
 
-		// Mock validation.IsSecurePath since it checks real FS for absolute paths if needed or uses logic we can't easily bypass
-		// But validation.IsSecurePath is a var in validation package, so we can mock it!
-		oldIsSecure := validation.IsSecurePath
-		defer func() { validation.IsSecurePath = oldIsSecure }()
+		// Mock validation.IsPathTraversalSafe since it checks real FS for absolute paths if needed or uses logic we can't easily bypass
+		// But validation.IsPathTraversalSafe is a var in validation package, so we can mock it!
+		oldIsSecure := validation.IsPathTraversalSafe
+		defer func() { validation.IsPathTraversalSafe = oldIsSecure }()
 
-		validation.IsSecurePath = func(path string) error {
+		validation.IsPathTraversalSafe = func(path string) error {
 			if path == "/etc/cert.pem" {
 				return assert.AnError
 			}

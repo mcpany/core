@@ -130,8 +130,8 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		// Use centralized validation to ensure path is safe and within allowable bounds (which includes checking traversal)
 		// However, validation.IsAllowedPath checks against CWD or AllowedPaths.
 		// Here we specifically want to check if it is inside skillPath.
-		// We can reuse validation.IsSecurePath to check for '..' traversal in the path string itself first.
-		if err = validation.IsSecurePath(r.assetPath); err != nil {
+		// We can reuse validation.IsPathTraversalSafe to check for '..' traversal in the path string itself first.
+		if err = validation.IsPathTraversalSafe(r.assetPath); err != nil {
 			return nil, fmt.Errorf("invalid asset path: %w", err)
 		}
 
