@@ -1765,27 +1765,32 @@ func resolveEffectiveCommand(cmd string, args []string) string {
 		isWrapper := false
 
 		// Simple wrappers that take command as next arg (or after flags)
-		if base == "env" {
+		switch {
+		case base == "env":
 			isWrapper = true
 			// env [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]
 			// Skip flags and variable assignments
 			for len(currentArgs) > 0 {
 				arg := currentArgs[0]
-				if strings.HasPrefix(arg, "-") {
+				switch {
+				case strings.HasPrefix(arg, "-"):
 					currentArgs = currentArgs[1:]
-				} else if strings.Contains(arg, "=") {
+				case strings.Contains(arg, "="):
 					currentArgs = currentArgs[1:]
-				} else {
-					break
+				default:
+					goto EnvLoopEnd
 				}
 			}
-		} else if base == "sudo" || base == "nice" || base == "nohup" || base == "time" || base == "xargs" || base == "watch" {
+		EnvLoopEnd:
+			// Break out of env loop
+			_ = 0
+		case base == "sudo" || base == "nice" || base == "nohup" || base == "time" || base == "xargs" || base == "watch":
 			isWrapper = true
 			// Skip flags
 			for len(currentArgs) > 0 && strings.HasPrefix(currentArgs[0], "-") {
 				currentArgs = currentArgs[1:]
 			}
-		} else if base == "timeout" {
+		case base == "timeout":
 			isWrapper = true
 			// timeout [OPTION] DURATION COMMAND [ARG]...
 			// Skip flags
