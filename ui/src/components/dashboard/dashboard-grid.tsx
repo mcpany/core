@@ -64,9 +64,16 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
  */
+import { Loader2 } from "lucide-react";
+
+/**
+ * DashboardGrid component.
+ * @returns The rendered component.
+ */
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -105,6 +112,7 @@ export function DashboardGrid() {
             } else {
                 setWidgets(DEFAULT_LAYOUT);
             }
+            setIsLoaded(true);
         };
 
         // Try to load from backend first
@@ -115,6 +123,7 @@ export function DashboardGrid() {
                         const parsed = JSON.parse(res.layoutJson);
                         if (Array.isArray(parsed) && parsed.length > 0) {
                             setWidgets(parsed);
+                            setIsLoaded(true);
                             return;
                         }
                     } catch (e) {
@@ -208,7 +217,14 @@ export function DashboardGrid() {
         saveWidgets([newWidget, ...widgets]);
     };
 
-    if (!isMounted) return null;
+    if (!isMounted || !isLoaded) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 min-h-[300px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Loading dashboard...</p>
+            </div>
+        );
+    }
 
     const renderWidget = (widget: WidgetInstance) => {
         const def = getWidgetDefinition(widget.type);

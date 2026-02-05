@@ -419,9 +419,32 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Initialize Settings Manager
+	allowedIPs := cfg.GetGlobalSettings().GetAllowedIps()
+	// Patch for IPv6 loopback if IPv4 loopback is present (fix for CI SSRF)
+	hasLocalhost := false
+	for _, ip := range allowedIPs {
+		if ip == "127.0.0.1" {
+			hasLocalhost = true
+			break
+		}
+	}
+	if hasLocalhost {
+		// Check if ::1 is missing
+		hasIPv6 := false
+		for _, ip := range allowedIPs {
+			if ip == "::1" {
+				hasIPv6 = true
+				break
+			}
+		}
+		if !hasIPv6 {
+			allowedIPs = append(allowedIPs, "::1")
+		}
+	}
+
 	a.SettingsManager = NewGlobalSettingsManager(
 		opts.APIKey,
-		cfg.GetGlobalSettings().GetAllowedIps(),
+		allowedIPs,
 		// Logic for origins default moved to inside NewGlobalSettingsManager or updated here
 		nil,
 	)
