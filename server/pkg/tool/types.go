@@ -2737,9 +2737,37 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
+func detectNestedInterpreter(template string) string {
+	interpreters := []string{"ruby", "perl", "python", "php", "node", "awk", "lua"}
+	for _, interp := range interpreters {
+		if strings.Contains(template, interp) {
+			// Check for -e or -c or typical flags
+			if strings.Contains(template, " -e ") || strings.Contains(template, " -c ") || strings.Contains(template, " --eval ") {
+				return interp
+			}
+			// awk uses 'script' directly usually
+			if interp == "awk" && strings.Contains(template, "'") {
+				return interp
+			}
+			// quoted interpreter? e.g. "ruby" -e
+			if strings.Contains(template, "\""+interp+"\"") || strings.Contains(template, "'"+interp+"'") {
+				return interp
+			}
+		}
+	}
+	return ""
+}
+
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
+
+	// Check for nested interpreter (e.g. sh -c "ruby -e '{{code}}'")
+	if nestedInterp := detectNestedInterpreter(template); nestedInterp != "" {
+		if err := checkInterpreterInjection(val, template, nestedInterp, quoteLevel); err != nil {
+			return fmt.Errorf("nested interpreter injection detected (%s): %w", nestedInterp, err)
+		}
+	}
 
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
@@ -2851,6 +2879,35 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+		}
+	}
+
+	// Sentinel Security Update: Stricter checks for Perl/Ruby/PHP dangerous keywords
+	// These languages allow function calls without parentheses (e.g., system "ls"),
+	// so blocking "system(" is not enough. We must block the keywords themselves.
+	isRuby := strings.HasPrefix(base, "ruby")
+	if (isPerl || isRuby || isPhp) && (quoteLevel == 2 || quoteLevel == 0 || quoteLevel == 3) { // Single, Unquoted, Backtick
+		keywords := []string{"system", "exec", "popen", "eval", "syscall", "open"}
+		valLower := strings.ToLower(val)
+
+		for _, kw := range keywords {
+			// Check if kw appears as a whole word
+			idx := 0
+			for {
+				i := strings.Index(valLower[idx:], kw)
+				if i == -1 {
+					break
+				}
+				pos := idx + i
+				// Check if it's a whole word
+				isStart := pos == 0 || !isWordChar(valLower[pos-1])
+				isEnd := pos+len(kw) == len(valLower) || !isWordChar(valLower[pos+len(kw)])
+
+				if isStart && isEnd {
+					return fmt.Errorf("interpreter injection detected: dangerous keyword %q found", kw)
+				}
+				idx = pos + 1
+			}
 		}
 	}
 
