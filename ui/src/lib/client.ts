@@ -69,7 +69,11 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         }
     } else {
         // Server-side: Inject API Key from env
-        const apiKey = process.env.MCPANY_API_KEY;
+        let apiKey = process.env.MCPANY_API_KEY;
+        // Fallback for CI/Test environments if not set (safe defaults for development)
+        if (!apiKey && process.env.NODE_ENV !== 'production') {
+             apiKey = 'test-token';
+        }
         if (apiKey) {
             headers.set('X-API-Key', apiKey);
         }
