@@ -85,9 +85,6 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 	resolver := d.Resolver
 	if resolver == nil {
-		resolver = net.DefaultResolver
-	}
-	if resolver == nil {
 		resolver = &net.Resolver{}
 	}
 
