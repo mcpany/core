@@ -14,6 +14,10 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { SecretValue } from "@proto/config/v1/auth";
 import { DialogFooter } from "@/components/ui/dialog";
 
+/**
+ * BulkUpdates interface.
+ * Defines the structure for bulk updates to services.
+ */
 export interface BulkUpdates {
     tags?: string[];
     env?: Record<string, SecretValue>;
