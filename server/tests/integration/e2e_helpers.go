@@ -1097,16 +1097,16 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	natsURL, natsCleanup := StartNatsServer(t)
 
 	// Use unique DB path
-	dbFile, err := os.CreateTemp(t.TempDir(), "mcpany-db-*.db")
-	require.NoError(t, err)
-	dbPath := dbFile.Name()
-	_ = dbFile.Close()
+	tempDir := t.TempDir()
+	dbPath := filepath.Join(tempDir, "mcpany.db")
+	dataDir := filepath.Join(tempDir, "data")
 
 	args := []string{
 		"run",
 		"--mcp-listen-address", jsonrpcPortArg,
 		"--grpc-port", grpcRegPortArg,
 		"--db-path", dbPath,
+		"--data-dir", dataDir,
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
