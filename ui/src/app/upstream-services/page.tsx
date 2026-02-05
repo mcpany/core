@@ -164,13 +164,19 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[], resilience?: { timeout?: string } }) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
         await Promise.all(servicesToUpdate.map(service => {
             const updated = { ...service };
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
+            }
+            if (updates.resilience) {
+                updated.resilience = {
+                    ...service.resilience,
+                    ...updates.resilience
+                };
             }
             return apiClient.updateService(updated as any);
         }));

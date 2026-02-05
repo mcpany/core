@@ -33,6 +33,14 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * Resilience configuration (timeout, retries, circuit breaker).
+     */
+    resilience?: {
+        timeout?: string;
+        circuitBreaker?: any;
+        retryPolicy?: any;
+    };
 }
 
 // Re-export generated types
@@ -246,6 +254,11 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            resilience: s.resilience ? {
+                ...s.resilience,
+                circuitBreaker: s.resilience.circuit_breaker,
+                retryPolicy: s.resilience.retry_policy,
+            } : undefined,
             callPolicies: s.call_policies?.map((p: any) => ({
                 defaultAction: p.default_action,
                 rules: p.rules?.map((r: any) => ({
@@ -292,6 +305,11 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         resilience: s.resilience ? {
+                             ...s.resilience,
+                             circuitBreaker: s.resilience.circuit_breaker,
+                             retryPolicy: s.resilience.retry_policy,
+                         } : undefined,
                          callPolicies: s.call_policies?.map((p: any) => ({
                             defaultAction: p.default_action,
                             rules: p.rules?.map((r: any) => ({
@@ -424,6 +442,13 @@ export const apiClient = {
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
         }
+        if (config.resilience) {
+            payload.resilience = {
+                ...config.resilience,
+                circuit_breaker: config.resilience.circuitBreaker,
+                retry_policy: config.resilience.retryPolicy
+            };
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -509,6 +534,13 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                ...config.resilience,
+                circuit_breaker: config.resilience.circuitBreaker,
+                retry_policy: config.resilience.retryPolicy
+            };
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -610,6 +642,13 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                ...config.resilience,
+                circuit_breaker: config.resilience.circuitBreaker,
+                retry_policy: config.resilience.retryPolicy
+            };
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1466,6 +1505,11 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            resilience: s.resilience ? {
+                ...s.resilience,
+                circuitBreaker: s.resilience.circuit_breaker,
+                retryPolicy: s.resilience.retry_policy,
+            } : undefined,
         }));
     },
 
@@ -1517,6 +1561,13 @@ export const apiClient = {
         }
         if (template.resourceExportPolicy) {
             payload.resource_export_policy = template.resourceExportPolicy;
+        }
+        if (template.resilience) {
+            payload.resilience = {
+                ...template.resilience,
+                circuit_breaker: template.resilience.circuitBreaker,
+                retry_policy: template.resilience.retryPolicy
+            };
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {

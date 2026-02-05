@@ -573,16 +573,19 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                          <div className="space-y-2">
-                                            <Label htmlFor="timeout">Timeout (s)</Label>
-                                            {/* Note: Duration handling is complex in proto (seconds/nanos), simplifying to string for now if client helper handles it, or assuming seconds */}
-                                            {/* In proto, it is google.protobuf.Duration. The JSON mapping usually accepts string "10s" */}
-                                            {/* But the client interface we have uses generated types. Check resilience.timeout */}
+                                            <Label htmlFor="timeout">Timeout</Label>
                                             <Input
                                                 id="timeout"
                                                 placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
-                                                defaultValue="30s"
+                                                value={service.resilience?.timeout || ""}
+                                                onChange={(e) => updateService({
+                                                    resilience: {
+                                                        ...service.resilience,
+                                                        timeout: e.target.value
+                                                    }
+                                                })}
                                             />
+                                            <p className="text-xs text-muted-foreground">Example: 30s, 1m, 500ms</p>
                                         </div>
                                     </CardContent>
                                 </Card>
