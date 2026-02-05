@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 /**
  * Defines the role of a user in the system.
@@ -69,7 +69,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = (role: UserRole) => {
+  const login = useCallback((role: UserRole) => {
     const newUser = {
         id: '1',
         name: role === 'admin' ? 'Admin User' : 'Regular User',
@@ -79,15 +79,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
     setUser(newUser);
     localStorage.setItem('mcp_user_role', role);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('mcp_user_role');
-  };
+  }, []);
+
+  // ⚡ BOLT: Memoized context value to prevent unnecessary re-renders.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const value = useMemo(() => ({
+    user,
+    loading,
+    login,
+    logout
+  }), [user, loading, login, logout]);
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );
