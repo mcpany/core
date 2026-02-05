@@ -59,6 +59,7 @@ require (
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/nats-io/nats-server/v2 v2.12.1
 	github.com/nats-io/nats.go v1.47.0
+	github.com/nats-io/nuid v1.0.1
 	github.com/opencontainers/image-spec v1.1.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pion/webrtc/v3 v3.3.6
@@ -214,7 +215,6 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nats-io/jwt/v2 v2.8.0 // indirect
 	github.com/nats-io/nkeys v0.4.11 // indirect
-	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
