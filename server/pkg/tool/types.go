@@ -63,23 +63,45 @@ var (
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
+//
+// Summary: Defines the interface for executable tools.
+//
+// Description:
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Summary: Retrieves the protobuf definition.
+	//
+	// Returns:
+	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Summary: Retrieves the MCP-compliant tool definition.
+	//
+	// Returns:
+	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
+	// Execute runs the tool with the provided context and request.
+	//
+	// Summary: Executes the tool.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the execution.
+	//   - req: *ExecutionRequest. The request details.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if the execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Summary: Retrieves the cache configuration.
+	//
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
 	GetCacheConfig() *configv1.CacheConfig
 }
 

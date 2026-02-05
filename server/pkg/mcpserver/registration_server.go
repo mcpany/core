@@ -80,7 +80,9 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 //   - error: An error if the validation request itself is invalid (e.g. missing config).
 //
 // Side Effects:
-//   - Temporarily creates an upstream connection and then closes it.
+//   - Temporarily creates an upstream connection to the service.
+//   - Performs tool and resource discovery on the upstream service.
+//   - Closes the connection after validation.
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -146,9 +148,15 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 //   - *v1.RegisterServiceResponse: The response containing the registration status, service key, and discovered tools.
 //   - error: An error if the registration fails, times out, or arguments are invalid.
 //
+// Throws/Errors:
+//   - codes.InvalidArgument: If the configuration is missing or invalid.
+//   - codes.DeadlineExceeded: If the registration process times out.
+//   - codes.Internal: If the registration fails internally.
+//
 // Side Effects:
-//   - Publishes a registration request to the event bus.
-//   - Waits for a response on a dedicated result channel.
+//   - Publishes a "service_registration_requests" message to the event bus.
+//   - Subscribes to "service_registration_results" to await the result.
+//   - Logs the registration outcome.
 func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.RegisterServiceRequest) (*v1.RegisterServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")

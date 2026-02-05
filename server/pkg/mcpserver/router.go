@@ -27,7 +27,7 @@ type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error
 // Summary: Manages the registration and retrieval of MCP method handlers.
 //
 // Side Effects:
-//   - Stores handlers in an internal map.
+//   - Stores handlers in an internal map in memory.
 type Router struct {
 	handlers map[string]MethodHandler
 }
@@ -53,6 +53,7 @@ func NewRouter() *Router {
 //   - handler: MethodHandler. The function that will handle the method call.
 //
 // Side Effects:
+//   - Modifies the internal handlers map.
 //   - If a handler for the method already exists, it will be overwritten.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler

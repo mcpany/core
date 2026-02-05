@@ -66,14 +66,23 @@ func NewWebsocketTool(
 
 // Tool returns the protobuf definition of the WebSocket tool.
 //
-// Returns the result.
+// Summary: Retrieves the protobuf definition.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: Retrieves the MCP-compliant tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - Lazily converts the proto definition to MCP format on first call.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -87,14 +96,33 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
-// Returns the result.
+// Summary: Retrieves the cache configuration.
+//
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebSocket tool. It retrieves a connection
-// from the pool, sends the tool inputs as a message, and waits for a single
-// response message, which it then processes and returns.
+// Execute handles the execution of the WebSocket tool.
+//
+// Summary: Executes the tool via a WebSocket connection.
+//
+// Description:
+// It retrieves a connection from the pool, sends the tool inputs as a message,
+// and waits for a single response message, which it then processes and returns.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing inputs.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if connection retrieval, sending, or receiving fails.
+//
+// Side Effects:
+//   - Sends a message over a WebSocket connection.
+//   - Reads a message from a WebSocket connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

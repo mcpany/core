@@ -11,8 +11,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
-// based on the provided ExportPolicy.
+// ShouldExport determines whether a named item (tool, prompt, or resource) should be exported.
+//
+// Summary: Checks if an item should be exported based on the provided policy.
+//
+// Parameters:
+//   - name: string. The name of the item to check.
+//   - policy: *configv1.ExportPolicy. The export policy to apply.
+//
+// Returns:
+//   - bool: True if the item should be exported, false otherwise.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -44,8 +52,22 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 }
 
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
+//
+// Summary: Evaluates security policies for a tool call.
+//
+// Description:
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
+//
+// Parameters:
+//   - policies: []*configv1.CallPolicy. The list of policies to evaluate.
+//   - toolName: string. The name of the tool being called.
+//   - callID: string. The ID of the call.
+//   - arguments: []byte. The arguments for the call (optional).
+//
+// Returns:
+//   - bool: True if the call is allowed, false if denied.
+//   - error: An error if policy evaluation fails.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {

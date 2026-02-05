@@ -141,6 +141,8 @@ type ExecutionMiddleware interface {
 }
 
 // Manager is a thread-safe manager for registering tooling.
+//
+// Summary: Manages the lifecycle and execution of tools.
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
@@ -166,9 +168,13 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
-// bus is the bus.
+// Summary: Initializes a new Tool Manager.
 //
-// Returns the result.
+// Parameters:
+//   - bus: *bus.Provider. The event bus provider.
+//
+// Returns:
+//   - *Manager: The initialized manager.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,
@@ -184,8 +190,14 @@ func NewManager(bus *bus.Provider) *Manager {
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
 //
-// enabled is the enabled.
-// defs is the defs.
+// Summary: Configures active profiles for the manager.
+//
+// Parameters:
+//   - enabled: []string. The list of enabled profile names.
+//   - defs: []*configv1.ProfileDefinition. The profile definitions.
+//
+// Side Effects:
+//   - Updates the internal profile cache and allowed services map.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -433,13 +445,29 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 
 // AddMiddleware adds a middleware to the tool manager.
 //
-// middleware is the middleware.
+// Summary: Registers an execution middleware.
+//
+// Parameters:
+//   - middleware: ExecutionMiddleware. The middleware to add.
+//
+// Side Effects:
+//   - Appends the middleware to the execution chain.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
+//
+// Summary: Sets the MCP server provider.
+//
+// Description:
 // This is necessary for registering tool handlers with the server.
+//
+// Parameters:
+//   - mcpServer: MCPServerProvider. The MCP server provider.
+//
+// Side Effects:
+//   - Updates the mcpServer reference.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -449,10 +477,24 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // ExecuteTool finds a tool by its name and executes it with the provided
 // request context and inputs.
 //
-// ctx is the context for the tool execution.
-// req contains the name of the tool and its inputs.
-// It returns the result of the execution or an error if the tool is not found
-// or if the execution fails.
+// Summary: Executes a registered tool.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the tool execution.
+//   - req: *ExecutionRequest. The request containing tool name and inputs.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the tool is not found, denied by policy, or execution fails.
+//
+// Throws/Errors:
+//   - ErrToolNotFound: If the tool does not exist.
+//   - Error if access is denied by profile or policy.
+//   - Error if the tool execution itself fails.
+//
+// Side Effects:
+//   - Logs execution details.
+//   - Executes pre and post hooks.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -603,8 +645,15 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.
 //
-// serviceID is the unique identifier for the service.
-// info is the ServiceInfo struct containing the service's metadata.
+// Summary: Registers service metadata.
+//
+// Parameters:
+//   - serviceID: string. The unique identifier for the service.
+//   - info: *ServiceInfo. The service metadata.
+//
+// Side Effects:
+//   - Updates the internal service info map.
+//   - Compiles call policies and hooks.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -644,8 +693,14 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 
 // GetServiceInfo retrieves the metadata for a service by its ID.
 //
-// serviceID is the unique identifier for the service.
-// It returns the ServiceInfo and a boolean indicating whether the service was found.
+// Summary: Retrieves service metadata.
+//
+// Parameters:
+//   - serviceID: string. The unique identifier for the service.
+//
+// Returns:
+//   - *ServiceInfo: The service metadata.
+//   - bool: True if the service was found, false otherwise.
 func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	info, ok := tm.serviceInfo.Load(serviceID)
 	if !ok {
@@ -677,12 +732,27 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 	return services
 }
 
-// AddTool registers a new tool with the manager. It generates a unique tool ID
-// and, if an MCP server is configured, registers a handler for the tool with
-// the server.
+// AddTool registers a new tool with the manager.
 //
-// tool is the tool to be added.
-// It returns an error if the tool ID cannot be generated.
+// Summary: Registers a tool and makes it available for execution.
+//
+// Description:
+// It generates a unique tool ID and, if an MCP server is configured,
+// registers a handler for the tool with the server.
+//
+// Parameters:
+//   - tool: Tool. The tool instance to add.
+//
+// Returns:
+//   - error: An error if registration fails.
+//
+// Throws/Errors:
+//   - Error if tool integrity check fails.
+//   - Error if tool name sanitization fails.
+//
+// Side Effects:
+//   - Updates internal tool maps and caches.
+//   - Registers the tool with the underlying MCP server (if configured).
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -845,8 +915,14 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 // GetTool retrieves a tool from the manager by its fully qualified name.
 //
-// toolName is the name of the tool to retrieve.
-// It returns the tool and a boolean indicating whether the tool was found.
+// Summary: Retrieves a tool by name.
+//
+// Parameters:
+//   - toolName: string. The name of the tool to retrieve.
+//
+// Returns:
+//   - Tool: The tool instance.
+//   - bool: True if the tool was found, false otherwise.
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)
