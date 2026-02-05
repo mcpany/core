@@ -15,6 +15,9 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not available")
+	}
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
