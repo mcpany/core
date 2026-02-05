@@ -35,31 +35,35 @@ var (
 	}
 )
 
-// Register registers a HTTP middleware factory.
+// Register registers a new HTTP middleware factory with the global registry.
 //
-// name is the name of the resource.
-// factory is the factory.
+// Parameters:
+//   - name: string. The unique name of the middleware.
+//   - factory: Factory. The factory function to create the middleware.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registers an MCP middleware factory.
+// RegisterMCP registers a new MCP middleware factory with the global registry.
 //
-// name is the name of the resource.
-// factory is the factory.
+// Parameters:
+//   - name: string. The unique name of the middleware.
+//   - factory: MCPFactory. The factory function to create the middleware.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.mcpFactories[name] = factory
 }
 
-// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// GetHTTPMiddlewares retrieves a list of active HTTP middlewares based on the provided configuration, sorted by priority.
 //
-// configs is the configs.
+// Parameters:
+//   - configs: []*configv1.Middleware. The list of middleware configurations.
 //
-// Returns the result.
+// Returns:
+//   - []func(http.Handler) http.Handler: A slice of middleware functions.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -83,11 +87,13 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 	return middlewares
 }
 
-// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// GetMCPMiddlewares retrieves a list of active MCP middlewares based on the provided configuration, sorted by priority.
 //
-// configs is the configs.
+// Parameters:
+//   - configs: []*configv1.Middleware. The list of middleware configurations.
 //
-// Returns the result.
+// Returns:
+//   - []func(mcp.MethodHandler) mcp.MethodHandler: A slice of middleware functions.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -121,20 +127,22 @@ type StandardMiddlewares struct {
 	Cleanup          func() error
 }
 
-// InitStandardMiddlewares registers standard middlewares.
+// InitStandardMiddlewares initializes and registers the set of standard middlewares used by the application.
 //
-// authManager is the authManager.
-// toolManager is the toolManager.
-// auditConfig is the auditConfig.
-// cachingMiddleware is the cachingMiddleware.
-// globalRateLimitConfig is the globalRateLimitConfig.
-// dlpConfig is the dlpConfig.
-// contextOptimizerConfig is the contextOptimizerConfig.
-// debuggerConfig is the debuggerConfig.
-// smartRecoveryConfig is the smartRecoveryConfig.
+// Parameters:
+//   - authManager: *auth.Manager. The authentication manager.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - auditConfig: *configv1.AuditConfig. Configuration for audit logging.
+//   - cachingMiddleware: *CachingMiddleware. The caching middleware instance.
+//   - globalRateLimitConfig: *configv1.RateLimitConfig. Configuration for global rate limiting.
+//   - dlpConfig: *configv1.DLPConfig. Configuration for Data Loss Prevention.
+//   - contextOptimizerConfig: *configv1.ContextOptimizerConfig. Configuration for context optimization.
+//   - debuggerConfig: *configv1.DebuggerConfig. Configuration for the debugger.
+//   - smartRecoveryConfig: *configv1.SmartRecoveryConfig. Configuration for smart recovery.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *StandardMiddlewares: A struct containing references to initialized standard middlewares.
+//   - error: An error if initialization fails.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

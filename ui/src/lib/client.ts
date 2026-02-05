@@ -222,7 +222,8 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     * @returns {Promise<UpstreamServiceConfig[]>} A promise that resolves to a list of services.
+     * @throws {Error} If the fetch fails.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -262,7 +263,8 @@ export const apiClient = {
     /**
      * Gets a single service by its ID.
      * @param id The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     * @returns {Promise<UpstreamServiceConfig>} A promise that resolves to the service configuration.
+     * @throws {Error} If the service is not found or fetch fails.
      */
     getService: async (id: string) => {
          try {
@@ -353,7 +355,8 @@ export const apiClient = {
     /**
      * Registers a new upstream service.
      * @param config The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     * @returns {Promise<UpstreamServiceConfig>} A promise that resolves to the registered service configuration.
+     * @throws {Error} If registration fails.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)

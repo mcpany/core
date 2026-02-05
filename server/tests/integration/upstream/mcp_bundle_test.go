@@ -241,6 +241,13 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Functional Smoke Test: Check if we can actually run a container.
+	// This detects issues like broken overlay storage drivers in CI.
+	// We use alpine:latest as it is used elsewhere in tests.
+	if err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run smoke test failed: %v", err)
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
