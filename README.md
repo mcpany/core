@@ -107,8 +107,8 @@ make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
-Run the linter to verify your changes:
+Ensure code adheres to our style guides (**Godoc** for Go, **TSDoc** for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Run the linter to verify your changes and compliance:
 ```bash
 make lint
 ```
