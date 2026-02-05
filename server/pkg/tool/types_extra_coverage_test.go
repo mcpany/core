@@ -44,11 +44,18 @@ func TestContextHelpers_Extra(t *testing.T) {
 }
 
 func TestCheckForLocalFileAccess(t *testing.T) {
+	// checkForLocalFileAccess now only checks for absolute paths
 	assert.Error(t, checkForLocalFileAccess("/absolute"))
-	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("file:foo"))
+	assert.NoError(t, checkForLocalFileAccess("file:///etc/passwd")) // Allowed by this function, blocked by checkForFileScheme
 	assert.NoError(t, checkForLocalFileAccess("relative"))
+}
+
+func TestCheckForFileScheme(t *testing.T) {
+	assert.Error(t, checkForFileScheme("file:///etc/passwd"))
+	assert.Error(t, checkForFileScheme("FILE:///etc/passwd"))
+	assert.Error(t, checkForFileScheme("file:foo"))
+	assert.NoError(t, checkForFileScheme("http://google.com"))
+	assert.NoError(t, checkForFileScheme("/absolute/path")) // Allowed by this function, blocked by checkForLocalFileAccess if needed
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {
