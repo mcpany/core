@@ -100,12 +100,12 @@ import { apiClient, Metric } from "@/lib/client";
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
-  const { serviceId } = useDashboard();
+  const { serviceId, timeRange } = useDashboard();
 
   useEffect(() => {
     async function fetchMetrics() {
       try {
-        const data = await apiClient.getDashboardMetrics(serviceId);
+        const data = await apiClient.getDashboardMetrics(serviceId, timeRange);
         setMetrics(data);
       } catch (error) {
         console.error("Failed to fetch metrics", error);
@@ -132,7 +132,7 @@ export const MetricsOverview = memo(function MetricsOverview() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [serviceId]);
+  }, [serviceId, timeRange]);
 
   if (metrics.length === 0) {
     return <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>;

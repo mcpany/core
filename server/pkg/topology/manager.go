@@ -188,9 +188,9 @@ func (m *Manager) handleActivity(event activityEvent) {
 		}
 	}
 
-	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
+	// Cleanup old history (older than 31 days) occasionally (every 100 requests roughly)
 	if session.RequestCount%100 == 0 {
-		cutoff := time.Now().Add(-24 * time.Hour).Unix()
+		cutoff := time.Now().Add(-31 * 24 * time.Hour).Unix()
 		for t := range m.trafficHistory {
 			if t < cutoff {
 				delete(m.trafficHistory, t)
@@ -262,6 +262,53 @@ func (m *Manager) GetStats(serviceID string) Stats {
 
 	if totalRequests > 0 {
 		avgLatency = time.Duration(int64(totalLatency) / totalRequests)
+		errorRate = float64(totalErrors) / float64(totalRequests)
+	}
+
+	return Stats{
+		TotalRequests: totalRequests,
+		AvgLatency:    avgLatency,
+		ErrorRate:     errorRate,
+	}
+}
+
+// GetStatsInWindow returns the aggregated stats for the specified time window.
+// serviceID is optional.
+func (m *Manager) GetStatsInWindow(serviceID string, duration time.Duration) Stats {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	var totalRequests int64
+	var totalLatency int64 // ms
+	var totalErrors int64
+
+	cutoff := time.Now().Add(-duration).Unix()
+
+	for t, stats := range m.trafficHistory {
+		if t < cutoff {
+			continue
+		}
+
+		if serviceID != "" {
+			if stats.ServiceStats != nil {
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					totalRequests += sStats.Requests
+					totalLatency += sStats.Latency
+					totalErrors += sStats.Errors
+				}
+			}
+		} else {
+			totalRequests += stats.Requests
+			totalLatency += stats.Latency
+			totalErrors += stats.Errors
+		}
+	}
+
+	var avgLatency time.Duration
+	var errorRate float64
+
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency/totalRequests) * time.Millisecond
 		errorRate = float64(totalErrors) / float64(totalRequests)
 	}
 

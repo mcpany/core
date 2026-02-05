@@ -1019,11 +1019,17 @@ export const apiClient = {
     /**
      * Gets the dashboard metrics.
      * @param serviceId Optional service ID to filter by.
+     * @param timeRange Optional time range to filter by.
      * @returns A promise that resolves to the metrics list.
      */
-    getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
+    getDashboardMetrics: async (serviceId?: string, timeRange?: string): Promise<Metric[]> => {
         let url = '/api/v1/dashboard/metrics';
-        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const params = new URLSearchParams();
+        if (serviceId) params.append('serviceId', serviceId);
+        if (timeRange) params.append('timeRange', timeRange);
+
+        if (params.toString()) url += `?${params.toString()}`;
+
         const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard metrics. Is the server running and authenticated?');
         return res.json();

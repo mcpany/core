@@ -566,3 +566,38 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_GetStatsInWindow(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	now := time.Now()
+
+	m.mu.Lock()
+	m.trafficHistory[now.Add(-30*time.Minute).Truncate(time.Minute).Unix()] = &MinuteStats{Requests: 10, Latency: 100, Errors: 0}
+	m.trafficHistory[now.Add(-90*time.Minute).Truncate(time.Minute).Unix()] = &MinuteStats{Requests: 20, Latency: 200, Errors: 0}
+	m.trafficHistory[now.Add(-25*time.Hour).Truncate(time.Minute).Unix()] = &MinuteStats{Requests: 30, Latency: 300, Errors: 0}
+	m.mu.Unlock()
+
+	// Test 1h window
+	stats1h := m.GetStatsInWindow("", 1*time.Hour)
+	assert.Equal(t, int64(10), stats1h.TotalRequests)
+
+	// Test 2h window
+	stats2h := m.GetStatsInWindow("", 2*time.Hour)
+	assert.Equal(t, int64(30), stats2h.TotalRequests) // 10 + 20
+
+	// Test 24h window
+	stats24h := m.GetStatsInWindow("", 24*time.Hour)
+	assert.Equal(t, int64(30), stats24h.TotalRequests) // 10 + 20 (25h ago is outside)
+
+	// Test 30d window
+	stats30d := m.GetStatsInWindow("", 30*24*time.Hour)
+	assert.Equal(t, int64(60), stats30d.TotalRequests) // 10 + 20 + 30
+
+	// Test Latency Calculation
+	// 1h window: 10 reqs, 100 total latency => 10 ms avg
+	assert.Equal(t, 10*time.Millisecond, stats1h.AvgLatency)
+}
