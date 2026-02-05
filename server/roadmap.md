@@ -38,6 +38,8 @@
   - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
 - **Context Optimizer Middleware**
   - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+- **Data Loss Prevention (DLP)**
+  - **Description**: Configurable regex-based redaction for logs and messages to prevent accidental leakage of sensitive data (API keys, PII).
 
 ## 2. Updated Roadmap
 
@@ -96,7 +98,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 | 44 | **Config Version History** | **Ops**: Keep a history of configuration changes and allow reverting to previous versions via UI. | High |
 | 43 | **Stdio Error Channel** | **DevX**: A dedicated side-channel or structured error output for stdio mode to communicate server status without interfering with JSON-RPC or stderr logging. | Medium |
-| 44 | **Log Redaction Rules** | **Security**: Configurable regex-based redaction for logs to prevent accidental leakage of sensitive data (API keys, PII) in stderr/files. | Medium |
 | 45 | **Remote Schema Validation** | **Feature**: Allow validating schemas that use `$ref` to remote URLs by configuring a custom schema loader with HTTP support. | Medium |
 | 46 | **Schema Validation Caching** | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads. | Low |
 | 46 | **Health Webhooks** | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded). | Medium |
@@ -125,7 +126,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 73 | **Docker Secret Native Support** | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping. | Medium |
 | 75 | **Health Check Flap Damping** | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues. | Medium |
 | 74 | **Environment Variable Wizard** | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing. | Low |
-| 75 | **Global Redaction Policy** | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces. | Medium |
 | 74 | **Tool Search & Filter API** | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend. | Low |
 | 75 | **Tool Execution Trace ID** | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains. | Medium |
 | 76 | **Auto-Discovery Status API** | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing. | Low |

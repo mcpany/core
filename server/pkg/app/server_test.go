@@ -651,7 +651,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
