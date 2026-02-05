@@ -14,10 +14,9 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
-WORKDIR /app
-
-COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+# Create /app implicitly via COPY to avoid WORKDIR layer issues in some runners
+COPY timeserver_patch/requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
 COPY timeserver_patch/main.py /app/main.py
 
