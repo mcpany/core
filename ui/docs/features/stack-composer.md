@@ -10,7 +10,7 @@ Transform "Config-as-Code" into a visual composition experience. The Stack Compo
 
 ### 1. Stack Editor
 
-Navigate to `/stacks`. The editor is divided into three panes:
+Navigate to `/stacks` and select a stack (or create a new one). The editor is divided into three panes:
 
 - **Left**: Service Palette (Templates).
 - **Center**: YAML Editor.

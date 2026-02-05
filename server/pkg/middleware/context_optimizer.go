@@ -92,9 +92,11 @@ func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 					// Note: gjson text.String() handles escape characters correctly for length check
 					if text.Exists() {
 						str := text.String()
-						if len(str) > co.MaxChars {
+						// Convert to runes to handle multi-byte characters safely
+						runes := []rune(str)
+						if len(runes) > co.MaxChars {
 							// Found a text that needs truncation
-							truncated := str[:co.MaxChars] + fmt.Sprintf("...[TRUNCATED %d chars]", len(str)-co.MaxChars)
+							truncated := string(runes[:co.MaxChars]) + fmt.Sprintf("...[TRUNCATED %d chars]", len(runes)-co.MaxChars)
 							// Marshal the truncated string to get valid JSON string representation (with quotes and escapes)
 							replacement, _ := json.Marshal(truncated)
 							mods = append(mods, modification{
