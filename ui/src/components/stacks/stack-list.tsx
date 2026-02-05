@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Layers, Trash2, ArrowRight } from "lucide-react";
 
+/**
+ * Collection represents a stack of services.
+ */
 export interface Collection {
     name: string;
     services?: any[];
@@ -24,6 +27,14 @@ interface StackListProps {
     onDelete: (name: string) => void;
 }
 
+/**
+ * StackList displays a table of available stacks.
+ * @param props The component props.
+ * @param props.stacks The list of stacks to display.
+ * @param props.isLoading Whether the data is loading.
+ * @param props.onDelete Callback when a stack is deleted.
+ * @returns The rendered component.
+ */
 export function StackList({ stacks, isLoading, onDelete }: StackListProps) {
     if (isLoading) {
         return (

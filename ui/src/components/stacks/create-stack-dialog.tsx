@@ -42,6 +42,12 @@ interface CreateStackDialogProps {
     onStackCreated: () => void;
 }
 
+/**
+ * CreateStackDialog displays a dialog to create a new stack.
+ * @param props The component props.
+ * @param props.onStackCreated Callback when a stack is successfully created.
+ * @returns The rendered component.
+ */
 export function CreateStackDialog({ onStackCreated }: CreateStackDialogProps) {
     const [open, setOpen] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
