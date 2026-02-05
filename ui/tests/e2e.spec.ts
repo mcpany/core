@@ -48,9 +48,10 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
+    // seedServices adds 'calculator' and 'process_payment'
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 
@@ -70,7 +71,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Webhooks page displays configuration', async ({ page }) => {
+  test('Webhooks page displays configuration', async ({ page }) => {
     await page.goto('/settings/webhooks');
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
 
@@ -79,11 +80,12 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
     // Check for nodes
+    // seedServices adds Payment Gateway and Math
     await expect(page.locator('text=Payment Gateway')).toBeVisible();
     await expect(page.locator('text=Math')).toBeVisible();
 
@@ -92,8 +94,9 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
+    // seedServices adds "User Service"
     const userService = page.locator('.group', { hasText: 'User Service' });
     await expect(userService).toBeVisible();
 

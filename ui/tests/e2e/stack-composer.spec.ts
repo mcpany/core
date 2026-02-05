@@ -4,46 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection } from './test-data';
 
 test.describe('Stack Composer', () => {
 
-  // Mock the stack config API to prevent backend dependency and race conditions
-  test.beforeEach(async ({ page }) => {
-    // Mock Settings API to bypass "API Key Not Set" warning
-    await page.route('**/api/v1/settings', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          configured: true,
-          initialized: true,
-          allow_anonymous_stats: true,
-          version: '0.1.0'
-        })
-      });
-    });
-
-    // Mock services for the stack
-    await page.route('**/api/v1/collections/*', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                name: 'e2e-test-stack',
-                services: [
-                    {
-                        name: 'weather-service',
-                        mcp_service: {
-                            stdio_connection: {
-                                container_image: 'mcp/weather:latest',
-                                env: { API_KEY: { plain_text: 'test' } }
-                            }
-                        }
-                    }
-                ]
-            })
-        });
-    });
+  test.beforeEach(async ({ request }) => {
+    await seedCollection('e2e-test-stack', request);
   });
 
   test('should load the editor and visualize configuration', async ({ page }) => {
@@ -100,9 +66,6 @@ test.describe('Stack Composer', () => {
   });
 
   test('should update visualizer when template added', async ({ page }) => {
-    // This looks like a duplicate of the above test, but let's keep it if it tests specific behavior (or merge)
-    // It essentially tests the same flow. We can remove it or keep it as regression.
-    // I'll keep it but ensure it passes.
     await page.goto('/stacks/e2e-test-stack');
     if (await page.getByText(/API Key Not Set/i).isVisible()) return;
 
@@ -127,9 +90,7 @@ test.describe('Stack Composer', () => {
     }
   });
 
-  test.skip('should validate invalid YAML', async ({ page }) => {
-    // Skipping this test as it relies on Monaco Editor interaction which is flaky in E2E (CSP/Canvas issues)
-    // and difficult to mock perfectly without full editor loading.
+  test('should validate invalid YAML', async ({ page }) => {
     await page.goto('/stacks/e2e-test-stack');
     if (await page.getByText(/API Key Not Set/i).isVisible()) return;
 

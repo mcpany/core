@@ -9,9 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 test.describe('Feature Screenshot', () => {
-    // Skip if CAPTURE_SCREENSHOTS is not set
-    // Enabled audit screenshots
-    // test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
+    // Audit screenshots should be enabled for CI/E2E runs
 
     const date = new Date().toISOString().split('T')[0];
     const auditDir = path.join(__dirname, '../.audit/ui', date);
@@ -26,6 +24,9 @@ test.describe('Feature Screenshot', () => {
     await page.goto('/logs');
     // Wait for some logs to appear
     await page.waitForTimeout(3000);
-    await page.screenshot({ path: path.join(auditDir, 'log_stream.png') });
+    // If CAPTURE_SCREENSHOTS is true, take screenshot
+    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
+        await page.screenshot({ path: path.join(auditDir, 'log_stream.png') });
+    }
   });
 });
