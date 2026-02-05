@@ -20,14 +20,3 @@ type ValidateConfigResponse struct {
 	// Errors is a list of validation errors, if any.
 	Errors []string `json:"errors,omitempty"`
 }
-
-// ValidationResult represents the result of the validation logic.
-//
-// Summary: Internal representation of the validation outcome.
-// This is used internally to decouple handler from response format if needed.
-type ValidationResult struct {
-	// Valid is true if the configuration is valid.
-	Valid bool
-	// Errors contains a list of error messages if validation failed.
-	Errors []string
-}
