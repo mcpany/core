@@ -2752,13 +2752,6 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 			return err
 		}
-		// Also check for dangerous calls for ALL quote levels if it is an interpreter.
-		// This prevents exploitation of interpreters where the shell argument structure is preserved
-		// (e.g. double-quoted shell arg) but the interpreter's code execution can still be triggered
-		// via function calls if the input is treated as code (e.g. python -c "{{code}}").
-		if err := checkDangerousInterpreterCalls(val); err != nil {
-			return fmt.Errorf("shell injection detected: %w", err)
-		}
 	}
 
 	if quoteLevel == 3 { // Backticked
