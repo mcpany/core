@@ -161,7 +161,6 @@ type Manager struct {
 
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
-	allowedServicesCache map[string]map[string]bool
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -178,7 +177,6 @@ func NewManager(bus *bus.Provider) *Manager {
 		serviceToolIDs:       make(map[string]map[string]struct{}),
 		serviceToolNames:     make(map[string]map[string]struct{}),
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
-		allowedServicesCache: make(map[string]map[string]bool),
 	}
 }
 
@@ -191,19 +189,9 @@ func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinit
 	defer tm.mu.Unlock()
 	tm.enabledProfiles = enabled
 	tm.profileDefs = make(map[string]*configv1.ProfileDefinition)
-	tm.allowedServicesCache = make(map[string]map[string]bool)
 
 	for _, d := range defs {
 		tm.profileDefs[d.GetName()] = d
-
-		// Pre-compute allowed services for this profile
-		allowed := make(map[string]bool)
-		for serviceID, sc := range d.GetServiceConfig() {
-			if sc.GetEnabled() {
-				allowed[serviceID] = true
-			}
-		}
-		tm.allowedServicesCache[d.GetName()] = allowed
 	}
 }
 
@@ -257,6 +245,14 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 			return true
 		}
 	} else {
+		// Fallback: Check Service Tags (Automatic Selection)
+		if info, found := tm.GetServiceInfo(t.GetServiceId()); found && info.Config != nil {
+			if def.GetSelector() != nil && tm.matchesTags(info.Config.GetTags(), def.GetSelector().GetTags()) {
+				// Matched by service tag
+				return true
+			}
+		}
+
 		// Fallback: Check Service Config by Name (retrieved via ServiceInfo)
 		// This handles cases where the Service ID might have been hashed (e.g. if empty in config)
 		// but the profile uses the human-readable Service Name.
@@ -300,14 +296,18 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 		return false
 	}
 
+	// 1. Explicit
 	if sc, ok := def.GetServiceConfig()[serviceID]; ok {
 		return sc.GetEnabled()
 	}
 
-	// Default to false if not explicitly enabled in service_config?
-	// Or check selector? Selectors are for tools, not services?
-	// But if a profile selects tools via tags, the service is implicitly allowed?
-	// Ideally, service should be explicitly enabled.
+	// 2. Tag Matching
+	if info, found := tm.GetServiceInfo(serviceID); found && info.Config != nil {
+		if def.GetSelector() != nil && tm.matchesTags(info.Config.GetTags(), def.GetSelector().GetTags()) {
+			return true
+		}
+	}
+
 	return false
 }
 
@@ -329,13 +329,39 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 //
 // Returns the result.
 // Returns true if successful.
-// Note: The returned map is cached and shared. Do not modify it.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 
-	allowed, ok := tm.allowedServicesCache[profileID]
-	return allowed, ok
+	def, ok := tm.profileDefs[profileID]
+	if !ok {
+		return nil, false
+	}
+
+	allowed := make(map[string]bool)
+
+	// 1. Explicitly enabled in ServiceConfig
+	for svcID, sc := range def.GetServiceConfig() {
+		if sc.GetEnabled() {
+			allowed[svcID] = true
+		}
+	}
+
+	// 2. Iterate all services and check tags
+	// We iterate serviceInfo to find implicitly allowed services
+	tm.serviceInfo.Range(func(key string, value *ServiceInfo) bool {
+		if allowed[key] {
+			return true // Already allowed explicitly
+		}
+		if value.Config != nil && def.GetSelector() != nil {
+			if tm.matchesTags(value.Config.GetTags(), def.GetSelector().GetTags()) {
+				allowed[key] = true
+			}
+		}
+		return true
+	})
+
+	return allowed, true
 }
 
 // GetToolCountForService returns the number of tools for a given service.

@@ -39,7 +39,7 @@
 - [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
 - [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
-- [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
+- [x] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
 - [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.

@@ -180,3 +180,30 @@ func TestManager_Profile_GranularToolDisabling(t *testing.T) {
 	mTool3 := &MockTool{ToolFunc: func() *v1.Tool { return t3 }}
 	assert.True(t, tm.ToolMatchesProfile(mTool3, "p1"), "Tool should be allowed by default service enablement")
 }
+
+func TestManager_Profile_TagBasedServiceAccess(t *testing.T) {
+	tm := NewManager(nil)
+	pTag := configv1.ProfileDefinition_builder{
+		Name: proto.String("pTag"),
+		Selector: configv1.ProfileSelector_builder{
+			Tags: []string{"finance"},
+		}.Build(),
+	}.Build()
+	tm.SetProfiles([]string{"pTag"}, []*configv1.ProfileDefinition{pTag})
+
+	// Register service with tag
+	svc := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("finance-service"),
+		Tags: []string{"finance"},
+		McpService: configv1.McpUpstreamService_builder{}.Build(), // minimal
+	}.Build()
+	tm.AddServiceInfo("finance-service", &ServiceInfo{Config: svc})
+
+	// Assert IsServiceAllowed
+	assert.True(t, tm.IsServiceAllowed("finance-service", "pTag"))
+
+	// Assert GetAllowedServiceIDs
+	allowed, ok := tm.GetAllowedServiceIDs("pTag")
+	assert.True(t, ok)
+	assert.True(t, allowed["finance-service"])
+}
