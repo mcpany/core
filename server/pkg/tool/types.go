@@ -2809,6 +2809,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Sentinel Security Update: Block qx operator in Perl (Only dangerous in unquoted context)
+	if strings.HasPrefix(base, "perl") && quoteLevel == 0 {
+		// qx/.../ executes command. qx is an operator.
+		if containsWord(val, "qx") {
+			return fmt.Errorf("perl qx injection detected: value contains 'qx' operator")
+		}
+	}
+
+	// Sentinel Security Update: Block %x operator in Ruby (Only dangerous in unquoted context)
+	if strings.HasPrefix(base, "ruby") && quoteLevel == 0 {
+		if strings.Contains(val, "%x") {
+			return fmt.Errorf("ruby percent-x injection detected: value contains '%%x'")
+		}
+	}
+
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2917,6 +2932,24 @@ func isInterpreter(command string) bool {
 
 func isWordChar(c byte) bool {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
+}
+
+func containsWord(s, word string) bool {
+	idx := strings.Index(s, word)
+	for idx != -1 {
+		startOk := idx == 0 || !isWordChar(s[idx-1])
+		endOk := idx+len(word) == len(s) || !isWordChar(s[idx+len(word)])
+
+		if startOk && endOk {
+			return true
+		}
+		next := strings.Index(s[idx+1:], word)
+		if next == -1 {
+			break
+		}
+		idx += 1 + next
+	}
+	return false
 }
 
 func getPrefix(s string, idx int) string {
