@@ -602,6 +602,7 @@ endif
 
 # Target to build http-echo-server Docker image
 build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-context
+ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
@@ -609,6 +610,9 @@ ifdef HAS_DOCKER
 else
 	@echo "Docker not found. Cannot build http-echo-server image."
 	@exit 1
+endif
+else
+	@echo "Skipping http-echo-server Docker image build..."
 endif
 
 # Target to build cowsay Docker image for integration tests
@@ -690,6 +694,7 @@ endif
 
 
 build-everything-docker: docker/Dockerfile.everything
+ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
 	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
@@ -697,6 +702,9 @@ ifdef HAS_DOCKER
 else
 	@echo "Docker not found. Cannot build everything server image."
 	@exit 1
+endif
+else
+	@echo "Skipping everything server Docker image build..."
 endif
 
 BUILD_CONTEXT_DIR := .build-context
