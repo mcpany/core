@@ -32,8 +32,7 @@ func (s *Server) GetDashboardLayout(ctx context.Context, _ *pb.GetDashboardLayou
 	// Extract user ID from context
 	userID, ok := auth.UserFromContext(ctx)
 	if !ok || userID == "" {
-		// Fallback for dev mode / no auth - default to "system-admin" or empty
-		userID = "system-admin"
+		return nil, status.Error(codes.Unauthenticated, "unauthenticated")
 	}
 
 	user, err := s.storage.GetUser(ctx, userID)
@@ -54,7 +53,7 @@ func (s *Server) GetDashboardLayout(ctx context.Context, _ *pb.GetDashboardLayou
 func (s *Server) SaveDashboardLayout(ctx context.Context, req *pb.SaveDashboardLayoutRequest) (*pb.SaveDashboardLayoutResponse, error) {
 	userID, ok := auth.UserFromContext(ctx)
 	if !ok || userID == "" {
-		userID = "system-admin"
+		return nil, status.Error(codes.Unauthenticated, "unauthenticated")
 	}
 
 	user, err := s.storage.GetUser(ctx, userID)
