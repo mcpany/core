@@ -43,9 +43,13 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Summary: Functional option to set a custom tokenizer.
 //
-// Returns the result.
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer instance.
+//
+// Returns:
+//   - Option: The configured option.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -54,10 +58,14 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Summary: Creates a new RateLimitMiddleware instance.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The tool manager to retrieve service info.
+//   - opts: ...Option. Optional configuration functions.
+//
+// Returns:
+//   - *RateLimitMiddleware: The new RateLimitMiddleware instance.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -82,12 +90,16 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 
 // Execute executes the rate limiting middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Enforces rate limits on tool execution.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *tool.ExecutionRequest. The request object.
+//   - next: tool.ExecutionFunc. The next function in the chain.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the rate limit is exceeded or execution fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

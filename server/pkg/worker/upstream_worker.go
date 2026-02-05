@@ -27,9 +27,11 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
+// Summary: Creates a new UpstreamWorker.
+//
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+//   - bus: *bus.Provider. The event bus used for receiving requests and publishing results.
+//   - toolManager: tool.ManagerInterface. The tool manager that will handle the actual tool execution.
 //
 // Returns:
 //   - *UpstreamWorker: A new upstream worker.
@@ -44,8 +46,10 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // requests on the event bus and will continue to process them until the
 // provided context is canceled.
 //
+// Summary: Starts the upstream worker.
+//
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+//   - ctx: context.Context. The context that controls the lifecycle of the worker.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")

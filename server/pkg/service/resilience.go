@@ -19,9 +19,13 @@ import (
 
 // UnaryClientInterceptor returns a new unary client interceptor that retries calls.
 //
-// retryConfig is the retryConfig.
+// Summary: Creates a gRPC unary interceptor that implements retry logic with exponential backoff.
 //
-// Returns the result.
+// Parameters:
+//   - retryConfig: *configv1.RetryConfig. The configuration for retry behavior.
+//
+// Returns:
+//   - grpc.UnaryClientInterceptor: The interceptor function.
 func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		b := newBackoff(ctx, retryConfig)

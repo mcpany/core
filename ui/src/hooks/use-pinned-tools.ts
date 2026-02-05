@@ -8,8 +8,9 @@ import { useState, useEffect } from "react";
 const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
- * Hook for pinnedtools.
- * @returns The result.
+ * Hook for managing pinned tools persistence.
+ *
+ * @returns An object containing the list of pinned tools and helper functions to modify them.
  */
 export function usePinnedTools() {
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);
