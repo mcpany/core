@@ -2660,6 +2660,9 @@ func isShellCommand(cmd string) bool {
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
 		"busybox", "expect", "watch", "tmux", "screen",
+		// Execution wrappers and process controls
+		"timeout", "nice", "ionice", "nohup", "taskset", "chroot",
+		"runuser", "sg", "setsid", "stdbuf", "nsenter", "unshare",
 		// Common interpreters and runners that can execute code
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
