@@ -104,6 +104,7 @@ func main() {
 	}
 
 	actualPort := lis.Addr().(*net.TCPAddr).Port
+	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", actualPort)
 	if *port == 0 {
 		fmt.Printf("%d\n", actualPort) // Output port for test runner
 		_ = os.Stdout.Sync()
@@ -116,7 +117,6 @@ func main() {
 	weatherV1.RegisterWeatherServiceServer(s, &server{})
 	reflection.Register(s)
 
-	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", actualPort)
 	fmt.Println("GRPC_SERVER_READY") // Signal that the server is ready
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
