@@ -28,6 +28,18 @@ interface BulkEditDialogProps {
     onCancel: () => void;
 }
 
+/**
+ * BulkEditDialog component.
+ * Allows bulk editing of tags and configuration for multiple services.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the dialog is open.
+ * @param props.onOpenChange - Callback when the dialog open state changes.
+ * @param props.selectedCount - The number of selected services.
+ * @param props.onApply - Callback when changes are applied.
+ * @param props.onCancel - Callback when the dialog is cancelled.
+ * @returns The rendered component.
+ */
 export function BulkEditDialog({ open, onOpenChange, selectedCount, onApply, onCancel }: BulkEditDialogProps) {
     const [tags, setTags] = useState("");
     const [timeout, setTimeout] = useState("");
