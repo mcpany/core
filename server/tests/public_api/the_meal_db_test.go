@@ -101,7 +101,7 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 			break // Success
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "status 500") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
 			t.Logf("Attempt %d/%d: Call to themealdb.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
