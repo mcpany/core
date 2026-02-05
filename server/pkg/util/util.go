@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -625,6 +625,8 @@ func toStringRecursive(v any, depth int) string {
 // Returns:
 //   - float64: A random float64 value.
 func RandomFloat64() float64 {
+	// ⚡ BOLT: Switched to math/rand/v2 to eliminate global lock contention.
+	// Randomized Selection from Top 5 High-Impact Targets
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
 }
 
