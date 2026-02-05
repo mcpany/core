@@ -1,5 +1,7 @@
-// Package config provides configuration management for MCP Any.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package config provides configuration management for MCP Any.
 package config
 
 import (

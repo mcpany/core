@@ -1,5 +1,7 @@
-// Package main implements a demo tool.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main implements a demo tool.
 package main
 
 import (

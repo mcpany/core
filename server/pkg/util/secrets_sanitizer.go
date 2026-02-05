@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (

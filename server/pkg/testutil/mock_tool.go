@@ -1,5 +1,7 @@
-// Package testutil provides test utilities and mocks.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package testutil provides test utilities and mocks.
 package testutil
 
 import (

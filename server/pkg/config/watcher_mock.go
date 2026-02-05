@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package config
 
 // MockWatcher is a mock implementation of the Watcher for testing.

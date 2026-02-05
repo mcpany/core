@@ -1,6 +1,8 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 // Package lint provides functionality for analyzing configuration files
 // to detect potential security issues and best practice violations.
-
 package lint
 
 import (

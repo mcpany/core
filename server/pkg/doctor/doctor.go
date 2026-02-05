@@ -1,5 +1,7 @@
-// Package doctor provides functionality for checking the health and status of upstream services.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package doctor provides functionality for checking the health and status of upstream services.
 package doctor
 
 import (

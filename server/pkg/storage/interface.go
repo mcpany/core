@@ -1,5 +1,7 @@
-// Package storage defines the interface for persisting configuration.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package storage defines the interface for persisting configuration.
 package storage
 
 import (

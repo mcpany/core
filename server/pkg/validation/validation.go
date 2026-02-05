@@ -1,5 +1,7 @@
-// Package validation provides validation utilities for config files and other inputs.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package validation provides validation utilities for config files and other inputs.
 package validation
 
 import (
@@ -152,6 +154,10 @@ func SetAllowedPaths(paths []string) {
 //
 // Summary: Checks if a path is within allowed directories.
 var IsAllowedPath = func(path string) error {
+	// Clean the path first to resolve . and .. components lexically.
+	// This helps ensure consistent behavior before checking security.
+	path = filepath.Clean(path)
+
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
 		return err

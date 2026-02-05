@@ -1,5 +1,7 @@
-// Package webhooks defines the system webhook handlers.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package webhooks defines the system webhook handlers.
 package webhooks
 
 import (

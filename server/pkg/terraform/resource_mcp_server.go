@@ -1,5 +1,7 @@
-// Package terraform provides a Terraform provider skeleton.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package terraform provides a Terraform provider skeleton.
 package terraform
 
 // ResourceMCPServer represents the configuration schema for an MCP Server resource

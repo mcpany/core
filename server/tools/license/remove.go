@@ -1,3 +1,7 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package main is a script to remove license headers from files.
 package main
 
 import (

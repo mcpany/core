@@ -1,5 +1,7 @@
-// Package main provides a mock WebSocket echo server for integration tests.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main provides a mock WebSocket echo server for integration tests.
 package main
 
 import (

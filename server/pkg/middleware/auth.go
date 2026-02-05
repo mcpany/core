@@ -1,5 +1,7 @@
-// Package middleware provides HTTP middleware for the application.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package middleware provides HTTP middleware for the application.
 package middleware
 
 import (

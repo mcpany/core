@@ -1,5 +1,7 @@
-// Package passhash provides password hashing utilities using bcrypt.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package passhash provides password hashing utilities using bcrypt.
 package passhash
 
 import (

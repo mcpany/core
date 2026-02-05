@@ -1,5 +1,7 @@
-// Package main provides a mock HTTP caching server for integration testing.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main provides a mock HTTP caching server for integration testing.
 package main
 
 import (

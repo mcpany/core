@@ -1,5 +1,7 @@
-// Package alerts manages system alerts and incidents.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package alerts manages system alerts and incidents.
 package alerts
 
 import (

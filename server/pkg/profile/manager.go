@@ -1,5 +1,7 @@
-// Package profile provides functionality for managing and resolving profiles.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package profile provides functionality for managing and resolving profiles.
 package profile
 
 import (

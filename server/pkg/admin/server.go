@@ -1,5 +1,7 @@
-// Package admin implements the admin server
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package admin implements the admin server
 package admin
 
 import (

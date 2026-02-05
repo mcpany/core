@@ -1,5 +1,7 @@
-// Package telemetry provides functions for initializing and managing telemetry.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package telemetry provides functions for initializing and managing telemetry.
 package telemetry
 
 import (

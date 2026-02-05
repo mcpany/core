@@ -1,5 +1,7 @@
-// Package integration contains integration tests and helpers
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package integration contains integration tests and helpers
 package integration
 
 import (

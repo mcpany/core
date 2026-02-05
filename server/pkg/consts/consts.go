@@ -1,5 +1,7 @@
-// Package consts defines common constants used across the application.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package consts defines common constants used across the application.
 package consts
 
 const (

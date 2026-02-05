@@ -1,5 +1,7 @@
-// Package pool provides a generic connection pool implementation.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package pool provides a generic connection pool implementation.
 package pool
 
 import (

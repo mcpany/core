@@ -1,5 +1,7 @@
-// Package main implements a mock gRPC authenticated weather server for testing.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main implements a mock gRPC authenticated weather server for testing.
 package main
 
 import (

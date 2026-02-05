@@ -1,5 +1,7 @@
-// Package serviceregistry provides service registry functionality.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package serviceregistry provides service registry functionality.
 package serviceregistry
 
 import (

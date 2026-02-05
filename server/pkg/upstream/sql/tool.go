@@ -1,5 +1,7 @@
-// Package sql provides a SQL upstream implementation.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package sql provides a SQL upstream implementation.
 package sql
 
 import (

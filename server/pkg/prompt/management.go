@@ -1,5 +1,7 @@
-// Package prompt provides prompt management functionality.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package prompt provides prompt management functionality.
 package prompt
 
 import (

@@ -1,5 +1,7 @@
-// Package util provides utility functions for Docker and other shared functionality.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package util provides utility functions for Docker and other shared functionality.
 package util //nolint:revive,nolintlint // Package name 'util' is intentional
 
 import (

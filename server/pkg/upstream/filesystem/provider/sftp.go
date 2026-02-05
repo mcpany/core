@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package provider
 
 import (
@@ -51,6 +54,7 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 		User: config.GetUsername(),
 		Auth: auths,
 		//nolint:gosec // user configuration allows connection to arbitrary hosts
+		// codeql[go/insecure-ssh-host-key-callback] - Host key verification not yet supported in config
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         10 * time.Second,
 	}

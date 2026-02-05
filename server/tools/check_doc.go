@@ -1,5 +1,7 @@
-// Package main checks for missing documentation on exported symbols.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main checks for missing documentation on exported symbols.
 package main
 
 import (

@@ -1,5 +1,7 @@
-// Package webrtc provides WebRTC upstream integration.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package webrtc provides WebRTC upstream integration.
 package webrtc
 
 import (

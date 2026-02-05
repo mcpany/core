@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package skill //nolint:revive
 
 import (
@@ -159,6 +162,10 @@ func (m *Manager) DeleteSkill(name string) error {
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	if err := validateName(skillName); err != nil {
+		return fmt.Errorf("invalid skill name: %w", err)
+	}
 
 	// validate path to prevent traversal and ensure it is relative
 	if err := validation.IsSecureRelativePath(relPath); err != nil {

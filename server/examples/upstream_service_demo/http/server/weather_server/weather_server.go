@@ -1,5 +1,7 @@
-// Package main implements the weather server for the upstream service demo.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main implements the weather server for the upstream service demo.
 package main
 
 import (

@@ -1,5 +1,7 @@
-// Package metrics provides gRPC interceptors for metrics.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package metrics provides gRPC interceptors for metrics.
 package metrics
 
 import (

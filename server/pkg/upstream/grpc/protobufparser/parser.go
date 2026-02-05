@@ -1,5 +1,7 @@
-// Package protobufparser provides a parser for Protocol Buffers.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package protobufparser provides a parser for Protocol Buffers.
 package protobufparser
 
 import (

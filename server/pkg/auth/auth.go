@@ -1,5 +1,7 @@
-// Package auth provides authentication and authorization functionality.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package auth provides authentication and authorization functionality.
 package auth
 
 import (

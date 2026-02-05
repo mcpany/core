@@ -1,5 +1,7 @@
-// Package grpc provides gRPC upstream integration.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package grpc provides gRPC upstream integration.
 package grpc
 
 import (

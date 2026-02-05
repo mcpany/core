@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 
 from datetime import datetime
 import sys

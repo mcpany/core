@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 
 # This script starts the mcpany server and configures it to expose the
 # kubectl tools defined in the ./config/mcpany.yaml file.

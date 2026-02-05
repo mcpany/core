@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package middleware
 
 import (
@@ -196,18 +199,19 @@ func (m *GlobalRateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy c
 }
 
 func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) string {
-	// Hash the sensitive config to avoid storing passwords in memory as clear text keys if possible
+	// Hash the sensitive config to avoid storing connection strings in memory as clear text keys if possible.
+	// This fingerprint is used for cache invalidation, not for authentication.
 	data := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
-	hash := sha256.Sum256([]byte(data))
-	return hex.EncodeToString(hash[:])
+	fingerprint := sha256.Sum256([]byte(data))
+	return hex.EncodeToString(fingerprint[:])
 }
 
 func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.Client {
-	configHash := m.calculateConfigHash(config)
+	configFingerprint := m.calculateConfigHash(config)
 
 	if val, ok := m.redisClients.Load("global"); ok {
 		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
+			if cached.configHash == configFingerprint {
 				return cached.client
 			}
 		}
@@ -221,7 +225,7 @@ func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.
 	client := redisClientCreator(opts)
 	m.redisClients.Store("global", &cachedRedisClient{
 		client:     client,
-		configHash: configHash,
+		configHash: configFingerprint,
 	})
 	return client
 }

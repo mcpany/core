@@ -1,5 +1,7 @@
-// Package update provides functionality for self-updating the application.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package update provides functionality for self-updating the application.
 package update
 
 import (

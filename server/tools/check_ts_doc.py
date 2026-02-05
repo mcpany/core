@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This script checks for missing documentation (JSDoc) on exported symbols in TypeScript files.
 """

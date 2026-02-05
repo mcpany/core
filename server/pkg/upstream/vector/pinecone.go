@@ -1,5 +1,7 @@
-// Package vector provides vector database upstream implementations.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package vector provides vector database upstream implementations.
 package vector
 
 import (

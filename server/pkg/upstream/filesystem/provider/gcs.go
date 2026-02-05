@@ -1,5 +1,7 @@
-// Package provider implements filesystem providers.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package provider implements filesystem providers.
 package provider
 
 import (

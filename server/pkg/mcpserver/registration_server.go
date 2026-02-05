@@ -1,5 +1,7 @@
-// Package mcpserver implements the MCP server functionality.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package mcpserver implements the MCP server functionality.
 package mcpserver
 
 import (

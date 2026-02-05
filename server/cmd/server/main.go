@@ -1,5 +1,7 @@
-// Package main is the mcpany server main
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main is the mcpany server main
 package main
 
 import (

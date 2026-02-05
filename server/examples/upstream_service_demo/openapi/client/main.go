@@ -1,5 +1,7 @@
-// Package main implements an OpenAPI client demo.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
+// Package main implements an OpenAPI client demo.
 package main
 
 import (
