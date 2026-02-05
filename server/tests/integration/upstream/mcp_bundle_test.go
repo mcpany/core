@@ -7,10 +7,12 @@ import (
 	"archive/zip"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -242,6 +244,19 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}
 
 	tempDir := t.TempDir()
+
+	// Probe mount capability to detect overlayfs-on-overlayfs issues in CI
+	probeCmd := exec.Command("docker", "run", "--rm", "-v", fmt.Sprintf("%s:%s", tempDir, tempDir), "alpine", "true")
+	if out, err := probeCmd.CombinedOutput(); err != nil {
+		output := string(out)
+		if strings.Contains(output, "invalid argument") || strings.Contains(output, "mount") || strings.Contains(output, "overlay") {
+			t.Skipf("Skipping due to docker mount failure (likely overlayfs issue): %v. Output: %s", err, output)
+		}
+		// If it failed for other reasons (e.g. image missing), we might want to proceed or skip?
+		// For now, let's assume if simple mount fails, we skip.
+		t.Logf("Docker mount probe failed: %v. Output: %s. Continuing, but test may fail.", err, output)
+	}
+
 	bundlePath := createE2EBundle(t, tempDir)
 
 	toolManager := tool.NewManager(nil)

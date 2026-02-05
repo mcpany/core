@@ -5,6 +5,7 @@ package integration
 
 import (
 	"context"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -15,6 +16,9 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
+	}
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
