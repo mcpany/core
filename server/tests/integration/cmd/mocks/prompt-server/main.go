@@ -48,7 +48,8 @@ func main() {
 
 	// 4. Serve the handler over HTTP
 	addr := fmt.Sprintf("127.0.0.1:%d", *port)
-	listener, err := net.Listen("tcp", addr)
+	lc := net.ListenConfig{}
+	listener, err := lc.Listen(context.Background(), "tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
