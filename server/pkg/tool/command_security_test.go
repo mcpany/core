@@ -1,4 +1,7 @@
-package tool_test
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package tool
 
 import (
 	"context"
@@ -6,7 +9,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,12 +35,12 @@ func TestCommandTool_InterpreterInjection_Python_SingleQuote(t *testing.T) {
 	toolDef := &v1.Tool{}
 	toolDef.SetName("greet")
 
-	commandTool := tool.NewCommandTool(toolDef, svc, callDef, nil, "test-call-id")
+	commandTool := NewCommandTool(toolDef, svc, callDef, nil, "test-call-id")
 
 	// Payload that attempts to inject code: '); import os; print("INJECTED"); print('
 	payload := []byte(`{"name": "'); import os; print(\"INJECTED\"); print('"}`)
 
-	req := &tool.ExecutionRequest{
+	req := &ExecutionRequest{
 		ToolName:   "greet",
 		ToolInputs: payload,
 	}
@@ -74,12 +76,12 @@ func TestCommandTool_InterpreterInjection_Python_DoubleQuote(t *testing.T) {
 	toolDef := &v1.Tool{}
 	toolDef.SetName("greet_double")
 
-	commandTool := tool.NewCommandTool(toolDef, svc, callDef, nil, "test-call-id")
+	commandTool := NewCommandTool(toolDef, svc, callDef, nil, "test-call-id")
 
 	// Payload that attempts to inject code: "); import os; print('INJECTED'); print("
 	payload := []byte(`{"name": "\"); import os; print('INJECTED'); print(\""}`)
 
-	req := &tool.ExecutionRequest{
+	req := &ExecutionRequest{
 		ToolName:   "greet_double",
 		ToolInputs: payload,
 	}
