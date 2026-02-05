@@ -2768,6 +2768,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// the content inside the quotes might be interpreted as code.
 		// Since we cannot know if the inner command is an interpreter, we explicitly block common RCE patterns.
 
+		// If the command is a known interpreter, we must be stricter.
+		// Specifically, we must prevent escaping the closing quote of the interpreter's string literal using backslash.
+		if isInterpreter(command) {
+			if strings.Contains(val, "\\") {
+				return fmt.Errorf("interpreter injection detected: value contains backslash which could escape string usage")
+			}
+		}
+
 		// Block backticks (used by Perl, Ruby, PHP for execution)
 		if strings.Contains(val, "`") {
 			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
