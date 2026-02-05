@@ -109,7 +109,7 @@ Run the E2E verification test:
     ```
 2.  Run the test:
     ```bash
-    go test -v -count=1 -tags=e2e ./docs/features/caching
+    go test -v -count=1 -tags=e2e ./server/docs/features/caching
     ```
 
 ### Metrics
