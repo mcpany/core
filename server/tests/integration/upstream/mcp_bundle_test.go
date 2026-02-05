@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -231,14 +232,37 @@ func createE2EBundle(t *testing.T, dir string) string {
 	return bundlePath
 }
 
+// canRunDockerContainer checks if Docker is functional by running a minimal container.
+// This is more robust than just checking 'docker info' which might succeed even if
+// the overlayfs driver is broken.
+func canRunDockerContainer(t *testing.T) bool {
+	// Basic check first
+	if err := exec.Command("docker", "info").Run(); err != nil {
+		t.Logf("docker info failed: %v", err)
+		return false
+	}
+
+	// Attempt to run a minimal container
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, "docker", "run", "--rm", "alpine:latest", "echo", "hello")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("docker run failed: %v. Output: %s", err, string(output))
+		return false
+	}
+	return true
+}
+
 func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
 
 	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	if !canRunDockerContainer(t) {
+		t.Skip("Skipping Docker tests: unable to run docker containers")
 	}
 
 	tempDir := t.TempDir()

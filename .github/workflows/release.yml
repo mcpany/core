@@ -234,8 +234,8 @@ jobs:
           # Export as tarball for artifact upload
           outputs: type=docker,dest=/tmp/server-image.tar
           cache-from: type=gha,scope=${{ matrix.platform }}
-          # Optimized cache: use mode=max to cache layers
-          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+          # Use mode=min to avoid 502 errors on large cache exports
+          cache-to: type=gha,mode=min,scope=${{ matrix.platform }}
 
       - name: Rename artifact
         run: |
