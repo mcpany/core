@@ -98,6 +98,19 @@ test.describe('MCP Any UI E2E', () => {
   });
 
   test('Middleware page drag and drop', async ({ page }) => {
+    // Mock settings API to ensure middlewares are present
+    await page.route('**/api/v1/settings*', async route => {
+        await route.fulfill({
+            json: {
+                middlewares: [
+                    { name: 'Authentication', priority: 0, disabled: false },
+                    { name: 'Rate Limiter', priority: 1, disabled: false },
+                    { name: 'Logging', priority: 2, disabled: false }
+                ]
+            }
+        });
+    });
+
     await page.goto('/middleware');
 
     // Graceful handling of environment specific 404s
