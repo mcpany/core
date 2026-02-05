@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 // ui/scripts/seed-httpbin.ts
 
 // Polyfill fetch if needed (Node 18+ has it natively)
