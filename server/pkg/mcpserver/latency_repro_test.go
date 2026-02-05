@@ -97,28 +97,51 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check metrics
+	// Use Eventually to wait for metrics to be flushed
+	require.Eventually(t, func() bool {
+		data := sink.Data()
+		if len(data) == 0 {
+			return false
+		}
+		samples := data[0].Samples
+		if len(samples) == 0 {
+			return false
+		}
+
+		// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
+		// But in the buggy version, it DOES exist.
+
+		// Check for unlabelled metric
+		_, unlabelledExists := samples["mcpany.tools.call.latency"]
+
+		if unlabelledExists {
+			// If we are testing for the absence, finding it means we failed the specific check
+			// but Eventually will retry until timeout.
+			// However, since we want to assert it DOES NOT exist, finding it is actually "success" for the metric collection
+			// but failure for the test logic if we were asserting success.
+			// Wait, the test logic is: assert.False(unlabelledExists).
+			// So if unlabelledExists is true, the test fails.
+			// But here we are just waiting for *any* metrics to appear to avoid the "empty map" error.
+			// So we should check for the presence of the *expected* metric to confirm data arrival.
+		}
+
+		// Check for labelled metric (should exist)
+		foundLabelled := false
+		expectedPrefix := "mcpany.tools.call.latency;tool="
+		for k := range samples {
+			if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
+				foundLabelled = true
+				break
+			}
+		}
+		return foundLabelled
+	}, 5*time.Second, 100*time.Millisecond, "Metrics should be recorded")
+
 	data := sink.Data()
 	require.NotEmpty(t, data)
 	samples := data[0].Samples
-	require.NotEmpty(t, samples)
-
-	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
-	// But in the buggy version, it DOES exist.
 
 	// Check for unlabelled metric
 	_, unlabelledExists := samples["mcpany.tools.call.latency"]
-
-	// This assertion should FAIL currently, demonstrating the bug.
 	assert.False(t, unlabelledExists, "Unlabelled metric 'mcpany.tools.call.latency' should not exist")
-
-	// Check for labelled metric (should exist)
-	foundLabelled := false
-	expectedPrefix := "mcpany.tools.call.latency;tool="
-	for k := range samples {
-		if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
-			foundLabelled = true
-			break
-		}
-	}
-	assert.True(t, foundLabelled, "Labelled metric should exist")
 }
