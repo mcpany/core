@@ -72,6 +72,8 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         const apiKey = process.env.MCPANY_API_KEY;
         if (apiKey) {
             headers.set('X-API-Key', apiKey);
+        } else {
+            console.warn(`[Client] SSR Fetch: MCPANY_API_KEY is missing for request to ${input.toString()}`);
         }
     }
     return fetch(input, { ...init, headers });

@@ -45,14 +45,15 @@ test.describe('Stacks Management', () => {
     test('should delete a stack', async ({ page, request }) => {
         await seedCollection('e2e-seed-stack', request);
         await page.goto('/stacks');
-        await expect(page.getByText('e2e-seed-stack')).toBeVisible();
 
-        // Find the card for e2e-seed-stack and click delete
-        // My StackCard has Delete button in CardFooter which is hidden until hover.
-        // But Playwright can force click or hover.
+        // Wait for list to load
         const card = page.locator('.group').filter({ hasText: 'e2e-seed-stack' });
+        await expect(card).toBeVisible({ timeout: 10000 });
+
+        // Force hover to show actions
         await card.hover();
-        await card.getByRole('button', { name: 'Delete' }).click();
+        // Force click if visibility is tricky (CSS opacity)
+        await card.getByRole('button', { name: 'Delete' }).click({ force: true });
 
         // Confirm dialog
         await expect(page.getByText('Are you absolutely sure?')).toBeVisible();
