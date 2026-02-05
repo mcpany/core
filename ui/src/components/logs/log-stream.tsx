@@ -17,7 +17,8 @@ import {
   Unplug,
   Monitor,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Clock
 } from "lucide-react"
 
 import { useSearchParams } from "next/navigation"
@@ -272,6 +273,7 @@ export function LogStream() {
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
   const [filterSource, setFilterSource] = React.useState<string>(initialSource)
+  const [filterTimeRange, setFilterTimeRange] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
@@ -388,14 +390,36 @@ export function LogStream() {
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
     // Optimization: Fast path for when no filters are active.
-    if (filterLevel === "ALL" && filterSource === "ALL" && !deferredSearchQuery) {
+    if (filterLevel === "ALL" && filterSource === "ALL" && filterTimeRange === "ALL" && !deferredSearchQuery) {
       return logs
+    }
+
+    // Calculate time cutoff
+    let timeCutoff: number | null = null;
+    if (filterTimeRange !== "ALL") {
+        const now = Date.now();
+        const rangeMap: Record<string, number> = {
+            "1m": 1 * 60 * 1000,
+            "5m": 5 * 60 * 1000,
+            "15m": 15 * 60 * 1000,
+            "1h": 60 * 60 * 1000,
+            "6h": 6 * 60 * 60 * 1000,
+            "24h": 24 * 60 * 60 * 1000,
+        };
+        if (rangeMap[filterTimeRange]) {
+            timeCutoff = now - rangeMap[filterTimeRange];
+        }
     }
 
     const lowerSearchQuery = deferredSearchQuery.toLowerCase()
     return logs.filter((log) => {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
       const matchesSource = filterSource === "ALL" || log.source === filterSource
+
+      let matchesTime = true;
+      if (timeCutoff !== null) {
+          matchesTime = new Date(log.timestamp).getTime() >= timeCutoff;
+      }
 
       // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
       let matchesSearch: boolean | undefined
@@ -407,9 +431,9 @@ export function LogStream() {
           log.source?.toLowerCase().includes(lowerSearchQuery)
       }
 
-      return matchesLevel && matchesSource && matchesSearch
+      return matchesLevel && matchesSource && matchesTime && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery])
+  }, [logs, filterLevel, filterSource, filterTimeRange, deferredSearchQuery])
 
   const clearLogs = () => setLogs([])
 
@@ -517,6 +541,22 @@ export function LogStream() {
                             <SelectItem value="WARN">Warning</SelectItem>
                             <SelectItem value="ERROR">Error</SelectItem>
                             <SelectItem value="DEBUG">Debug</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Clock className="h-4 w-4 text-muted-foreground ml-2" />
+                    <Select value={filterTimeRange} onValueChange={setFilterTimeRange}>
+                        <SelectTrigger className="w-[120px] bg-background">
+                            <SelectValue placeholder="Time Range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ALL">All Time</SelectItem>
+                            <SelectItem value="1m">Last 1m</SelectItem>
+                            <SelectItem value="5m">Last 5m</SelectItem>
+                            <SelectItem value="15m">Last 15m</SelectItem>
+                            <SelectItem value="1h">Last 1h</SelectItem>
+                            <SelectItem value="6h">Last 6h</SelectItem>
+                            <SelectItem value="24h">Last 24h</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
