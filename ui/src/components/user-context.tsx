@@ -36,8 +36,6 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
-  login: (role: UserRole) => void;
   /** Logs out the current user. */
   logout: () => void;
 }
@@ -56,38 +54,62 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    async function loadUser() {
+      const token = localStorage.getItem('mcp_auth_token');
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Extract username from token (Basic Auth: base64(username:password))
+        // NOTE: Decoding client side is safe here as we only use the username for lookup.
+        // We do NOT use the password.
+        const decoded = atob(token);
+        const username = decoded.split(':')[0];
+
+        const res = await fetch(`/api/v1/users/${username}`, {
+          headers: {
+            'Authorization': `Basic ${token}`,
+            'X-API-Key': '' // Clear explicit API key if any, rely on Basic Auth
+          }
+        });
+
+        if (res.ok) {
+          const userData = await res.json();
+          // Map backend User to UI User
+          const role = (userData.roles && userData.roles.includes('admin')) ? 'admin' : 'viewer';
+          setUser({
+            id: userData.id,
+            name: userData.id, // Fallback to ID as name since proto lacks name
+            email: `${userData.id}@mcp-any.io`, // Mock email for now
+            role: role,
+            avatar: undefined // No avatar in backend
+          });
+        } else {
+          // Token invalid or user not found
+          logout();
+        }
+      } catch (error) {
+        console.error("Failed to load user", error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUser();
   }, []);
 
-  const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
-  };
-
   const logout = () => {
+    localStorage.removeItem('mcp_auth_token');
     setUser(null);
-    localStorage.removeItem('mcp_user_role');
+    window.location.href = '/login';
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout }}>
+    <UserContext.Provider value={{ user, loading, logout }}>
       {children}
     </UserContext.Provider>
   );

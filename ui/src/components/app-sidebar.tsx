@@ -195,7 +195,7 @@ const configItems = [
  */
 export function AppSidebar() {
   const pathname = usePathname()
-  const { user, login } = useUser()
+  const { user, logout } = useUser()
 
   const isAdmin = user?.role === 'admin';
 
@@ -332,16 +332,12 @@ export function AppSidebar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => login(user?.role === 'admin' ? 'viewer' : 'admin')}>
-                   <User className="mr-2 h-4 w-4" />
-                   Switch Role (Demo)
-                </DropdownMenuItem>
                 <DropdownMenuItem>
                    <Settings className="mr-2 h-4 w-4" />
                    Preferences
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
