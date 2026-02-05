@@ -1,10 +1,13 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool
 
 import (
 	"testing"
 )
 
-func TestInterpreterBypass(t *testing.T) {
+func TestInterpreterNestedInjection(t *testing.T) {
 	tests := []struct {
 		name      string
 		command   string
