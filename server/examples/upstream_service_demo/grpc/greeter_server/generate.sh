@@ -1,7 +1,4 @@
 #!/bin/bash
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 
 export PATH
 PATH=$(pwd)/../../../../build/env/bin:$PATH
