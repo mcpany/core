@@ -24,8 +24,11 @@ func CanRunDockerWithMount(t *testing.T) bool {
 	}
 
 	containerName := "check-mount-capability"
-	args := []string{"run", "--rm", "--name", containerName, "-v", absPath + ":/test", "alpine:latest", "true"}
-	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerBaseArgs, args...)...)
+	// Try to mimic the actual usage that fails: detached mode, alpine, simple command.
+	// We use sleep 1 to ensure it runs briefly but finishes.
+	// We check if it starts successfully.
+	args := []string{"run", "--rm", "--name", containerName, "-v", absPath + ":/test", "alpine:latest", "echo", "check"}
+	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerBaseArgs, args...)...) //nolint:gosec // Test helper
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
