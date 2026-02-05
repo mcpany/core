@@ -53,11 +53,38 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer func() { _ = cli.Close() }()
+
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Smoke test: Try to create and start a container to verify storage driver (overlay) works.
+	// This catches "mount source ... invalid argument" errors common in some CI environments.
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+
+	if err != nil {
+		// If image is missing, we might fail here. But usually tests require alpine:latest.
+		t.Logf("docker smoke test failed (create): %v", err)
+		return false
+	}
+
+	// Ensure cleanup
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("docker smoke test failed (start): %v", err)
+		return false
+	}
+
 	return true
 }
 

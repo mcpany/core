@@ -572,16 +572,29 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible and functional.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
+	// 1. Check basic connectivity
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// 2. Functional Smoke Test (Create/Start Container)
+	// This detects issues like broken storage drivers (e.g., overlay on overlay in CI).
+	// We use alpine:latest as it is small and commonly used in these tests.
+	// We use "true" as the command to exit immediately with success.
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
+	smokeCmd := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
+	if output, err := smokeCmd.CombinedOutput(); err != nil {
+		fmt.Printf("Docker smoke test failed: %v. Output: %s\n", err, string(output))
+		return false
+	}
+
 	return true
 }
 
