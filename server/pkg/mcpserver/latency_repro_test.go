@@ -31,7 +31,8 @@ import (
 
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 10*time.Second)
+	// Use a short interval for testing to ensure metrics are flushed
+	sink := metrics.NewInmemSink(10*time.Millisecond, 50*time.Millisecond)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -95,6 +96,9 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 		Name: toolID,
 	})
 	require.NoError(t, err)
+
+	// Wait for metrics to flush
+	time.Sleep(100 * time.Millisecond)
 
 	// Check metrics
 	data := sink.Data()
