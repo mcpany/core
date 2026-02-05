@@ -298,8 +298,5 @@ func ShouldExportCompiled(name string, compiledPolicy *CompiledExportPolicy) boo
 		}
 	}
 
-	if compiledPolicy.policy.GetDefaultAction() == configv1.ExportPolicy_UNEXPORT {
-		return false
-	}
-	return true
+	return compiledPolicy.policy.GetDefaultAction() != configv1.ExportPolicy_UNEXPORT
 }
