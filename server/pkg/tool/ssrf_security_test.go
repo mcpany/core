@@ -55,6 +55,7 @@ func TestCommandTool_DangerousSchemes(t *testing.T) {
 func TestCommandTool_DangerousSchemes_File(t *testing.T) {
 	// Scenario: Config uses curl {{url}}
 	// Input uses file:// to read local files
+	// Environment: Host (no container env) -> Blocked
 
 	svc := &configv1.CommandLineUpstreamService{}
 	svc.SetCommand("curl")
@@ -89,6 +90,51 @@ func TestCommandTool_DangerousSchemes_File(t *testing.T) {
 	if err != nil {
 		assert.Contains(t, err.Error(), "dangerous scheme detected")
 		assert.Contains(t, err.Error(), "file:")
+	}
+}
+
+func TestCommandTool_FileScheme_AllowedInDocker(t *testing.T) {
+	// Scenario: Config uses curl {{url}}
+	// Input uses file:// to read local files
+	// Environment: Docker -> Allowed
+
+	svc := &configv1.CommandLineUpstreamService{}
+	svc.SetCommand("curl")
+
+	// Set container env to make isDocker=true
+	ce := &configv1.ContainerEnvironment{}
+	ce.SetImage("alpine")
+	svc.SetContainerEnvironment(ce)
+
+	callDef := &configv1.CommandLineCallDefinition{}
+	callDef.SetArgs([]string{"{{url}}"})
+
+	paramMapping := &configv1.CommandLineParameterMapping{}
+	paramSchema := &configv1.ParameterSchema{}
+	paramSchema.SetName("url")
+	paramSchema.SetType(configv1.ParameterType_STRING)
+	paramMapping.SetSchema(paramSchema)
+
+	callDef.SetParameters([]*configv1.CommandLineParameterMapping{paramMapping})
+
+	toolDef := &v1.Tool{}
+	toolDef.SetName("fetch_file_docker")
+
+	commandTool := NewCommandTool(toolDef, svc, callDef, nil, "test-ssrf-docker-id")
+
+	// Payload uses file scheme
+	payload := []byte(`{"url": "file:///etc/passwd"}`)
+
+	req := &ExecutionRequest{
+		ToolName:   "fetch_file_docker",
+		ToolInputs: payload,
+	}
+
+	_, err := commandTool.Execute(context.Background(), req)
+
+	// It might fail due to execution issues (no docker), but it should NOT be "dangerous scheme detected"
+	if err != nil {
+		assert.NotContains(t, err.Error(), "dangerous scheme detected", "Should allow file: scheme in Docker")
 	}
 }
 

@@ -51,17 +51,24 @@ func TestCheckForLocalFileAccess(t *testing.T) {
 }
 
 func TestCheckForDangerousSchemes(t *testing.T) {
-	assert.Error(t, checkForDangerousSchemes("file:///etc/passwd"))
-	assert.Error(t, checkForDangerousSchemes("FILE:///etc/passwd"))
-	assert.Error(t, checkForDangerousSchemes("file:foo"))
-	assert.Error(t, checkForDangerousSchemes("gopher://127.0.0.1:6379/_SLAVEOF..."))
-	assert.Error(t, checkForDangerousSchemes("dict://127.0.0.1:2628/quit"))
-	assert.Error(t, checkForDangerousSchemes("ldap://127.0.0.1"))
-	assert.Error(t, checkForDangerousSchemes("tftp://127.0.0.1"))
-	assert.Error(t, checkForDangerousSchemes("expect://id"))
-	assert.NoError(t, checkForDangerousSchemes("http://google.com"))
-	assert.NoError(t, checkForDangerousSchemes("https://google.com"))
-	assert.NoError(t, checkForDangerousSchemes("/absolute/path")) // Handled by checkForLocalFileAccess
+	// Host execution (isDocker=false)
+	assert.Error(t, checkForDangerousSchemes("file:///etc/passwd", false))
+	assert.Error(t, checkForDangerousSchemes("FILE:///etc/passwd", false))
+	assert.Error(t, checkForDangerousSchemes("file:foo", false))
+	assert.Error(t, checkForDangerousSchemes("gopher://127.0.0.1:6379/_SLAVEOF...", false))
+	assert.Error(t, checkForDangerousSchemes("dict://127.0.0.1:2628/quit", false))
+	assert.Error(t, checkForDangerousSchemes("ldap://127.0.0.1", false))
+	assert.Error(t, checkForDangerousSchemes("tftp://127.0.0.1", false))
+	assert.Error(t, checkForDangerousSchemes("expect://id", false))
+	assert.NoError(t, checkForDangerousSchemes("http://google.com", false))
+	assert.NoError(t, checkForDangerousSchemes("https://google.com", false))
+	assert.NoError(t, checkForDangerousSchemes("/absolute/path", false)) // Handled by checkForLocalFileAccess
+
+	// Docker execution (isDocker=true)
+	// file: scheme is allowed in Docker as it might be needed for internal container operations
+	// and container isolation provides some protection.
+	assert.NoError(t, checkForDangerousSchemes("file:///etc/passwd", true))
+	assert.Error(t, checkForDangerousSchemes("gopher://127.0.0.1:6379/_SLAVEOF...", true))
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {

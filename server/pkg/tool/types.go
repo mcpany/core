@@ -2620,13 +2620,22 @@ func checkForLocalFileAccess(val string) error {
 	return nil
 }
 
-func checkForDangerousSchemes(val string) error {
+func checkForDangerousSchemes(val string, isDocker bool) error {
 	valLower := strings.ToLower(val)
 	// Block dangerous schemes
-	// file: prevents SSRF/LFI (e.g. curl file:///etc/passwd)
 	// gopher: prevents SSRF to internal services (e.g. Redis)
 	// dict, ldap, tftp, expect: prevent other SSRF/RCE vectors
-	schemes := []string{"file:", "gopher:", "dict:", "ldap:", "tftp:", "expect:"}
+	schemes := []string{"gopher:", "dict:", "ldap:", "tftp:", "expect:"}
+
+	// Block file: scheme only on host (isDocker=false).
+	// In Docker, accessing local files inside the container might be valid
+	// (e.g. processing a file mounted or generated in a previous step).
+	// We trust that the container isolation and volume mounting configuration
+	// are handled correctly by the deployment.
+	if !isDocker {
+		schemes = append(schemes, "file:")
+	}
+
 	for _, scheme := range schemes {
 		if strings.HasPrefix(valLower, scheme) {
 			return fmt.Errorf("dangerous scheme detected: %s (access to this protocol is not allowed)", scheme)
@@ -3012,11 +3021,11 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
-	if err := checkForDangerousSchemes(val); err != nil {
+	if err := checkForDangerousSchemes(val, isDocker); err != nil {
 		return err
 	}
 	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForDangerousSchemes(decodedVal); err != nil {
+		if err := checkForDangerousSchemes(decodedVal, isDocker); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
