@@ -602,7 +602,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
+	inputs, urlString, secrets, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -663,6 +663,16 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
+			// Sentinel Security: Redact secrets from error message (especially URL in url.Error)
+			if urlErr, ok := err.(*url.Error); ok {
+				urlErr.URL = util.RedactSecrets(urlErr.URL, secrets)
+			} else {
+				// Fallback: Redact the whole error string if it's not a url.Error but might contain secrets
+				safeMsg := util.RedactSecrets(err.Error(), secrets)
+				if safeMsg != err.Error() {
+					return fmt.Errorf("failed to execute http request: %s", safeMsg)
+				}
+			}
 			return fmt.Errorf("failed to execute http request: %w", err)
 		}
 
@@ -782,7 +792,7 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 }
 
-func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, bool, error) {
+func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, []string, bool, error) {
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
@@ -794,7 +804,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
-			return nil, "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
+			return nil, "", nil, false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
 
@@ -807,9 +817,9 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
-	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
+	pathReplacements, queryReplacements, secrets, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
-		return nil, "", false, err
+		return nil, "", nil, false, err
 	}
 	inputsModified = inputsModified || filtered
 
@@ -875,12 +885,13 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	}
 	urlString := buf.String()
 
-	return inputs, urlString, inputsModified, nil
+	return inputs, urlString, secrets, inputsModified, nil
 }
 
-func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
+func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, []string, bool, error) {
 	pathReplacements := make(map[string]string, len(t.parameters))
 	queryReplacements := make(map[string]string, len(t.parameters))
+	var secrets []string
 	inputsModified := false
 
 	for i, param := range t.parameters {
@@ -888,8 +899,9 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				return nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+				return nil, nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
+			secrets = append(secrets, secretValue)
 			if t.paramInPath[i] {
 				pathReplacements[name] = secretValue
 			}
@@ -900,7 +912,7 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 			val, ok := inputs[name]
 			if !ok {
 				if schema.GetIsRequired() {
-					return nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
+					return nil, nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
 				}
 				// If optional and missing, treat as empty string
 				val = ""
@@ -916,12 +928,12 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
 				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
 				if err := checkForPathTraversal(valStr); err != nil {
-					return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+					return nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 				}
 				// Also check decoded value just in case the input was already encoded
 				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
 					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
+						return nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
 					}
 				}
 			}
@@ -939,7 +951,7 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 					// url.PathEscape does NOT escape dots, so ".." remains ".."
 					// and path.Clean will resolve it, potentially allowing path traversal.
 					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+						return nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 					}
 					pathReplacements[name] = url.PathEscape(valStr)
 				}
@@ -949,7 +961,7 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 			}
 		}
 	}
-	return pathReplacements, queryReplacements, inputsModified, nil
+	return pathReplacements, queryReplacements, secrets, inputsModified, nil
 }
 
 type urlSegment struct {
