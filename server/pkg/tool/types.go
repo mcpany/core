@@ -2809,7 +2809,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Python: Check for f-string prefix in template
+	// Python: Check for f-string prefix in template and dangerous functions
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
 		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
@@ -2828,12 +2828,49 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
 			}
 		}
+
+		// Sentinel Security Update: Block __import__, eval, exec
+		if strings.Contains(val, "__import__") {
+			return fmt.Errorf("python injection detected: value contains '__import__'")
+		}
+		if strings.Contains(val, "eval(") {
+			return fmt.Errorf("python injection detected: value contains 'eval('")
+		}
+		if strings.Contains(val, "exec(") {
+			return fmt.Errorf("python injection detected: value contains 'exec('")
+		}
+		// open: Block open(" and open(' to reduce false positives
+		if strings.Contains(val, "open(\"") || strings.Contains(val, "open('") {
+			return fmt.Errorf("python injection detected: value contains 'open(' with quotes")
+		}
 	}
 
 	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+	if strings.HasPrefix(base, "ruby") {
+		if (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+			if strings.Contains(val, "#{") {
+				return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+			}
+		}
+
+		// Sentinel Security Update: Block %x, backticks, exec, system, syscall, spawn
+		if strings.Contains(val, "%x") {
+			return fmt.Errorf("ruby injection detected: value contains '%%x'")
+		}
+		if strings.Contains(val, "`") {
+			return fmt.Errorf("ruby injection detected: value contains backtick")
+		}
+
+		dangerous := []string{"exec", "system", "syscall", "spawn"}
+		for _, d := range dangerous {
+			// Block d(" d(' d( (generic function call)
+			if strings.Contains(val, d+"(") || strings.Contains(val, d+"\"") || strings.Contains(val, d+"'") {
+				return fmt.Errorf("ruby injection detected: value contains dangerous function '%s'", d)
+			}
+			// Block d + space (e.g. "exec ", "system ")
+			if strings.Contains(val, d+" ") {
+				return fmt.Errorf("ruby injection detected: value contains dangerous keyword '%s '", d)
+			}
 		}
 	}
 
@@ -2848,9 +2885,34 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 	// Perl and PHP interpolate variables in both double quotes and backticks
-	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+	if (isPerl || isPhp) {
+		if (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+			if strings.Contains(val, "${") {
+				return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+			}
+		}
+
+		if isPerl {
+			// Sentinel Security Update: Block qx, system, exec, open, backticks
+			if strings.Contains(val, "qx") {
+				return fmt.Errorf("perl injection detected: value contains 'qx'")
+			}
+			if strings.Contains(val, "`") {
+				return fmt.Errorf("perl injection detected: value contains backtick")
+			}
+			if strings.Contains(val, "open(") {
+				return fmt.Errorf("perl injection detected: value contains 'open('")
+			}
+			// Check for system/exec similar to Ruby
+			dangerous := []string{"exec", "system", "syscall"}
+			for _, d := range dangerous {
+				if strings.Contains(val, d+"(") || strings.Contains(val, d+"\"") || strings.Contains(val, d+"'") {
+					return fmt.Errorf("perl injection detected: value contains dangerous function '%s'", d)
+				}
+				if strings.Contains(val, d+" ") {
+					return fmt.Errorf("perl injection detected: value contains dangerous keyword '%s '", d)
+				}
+			}
 		}
 	}
 
@@ -2859,6 +2921,16 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if isAwk {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
+		}
+		// Sentinel Security Update: Block system, getline, >, >>
+		if strings.Contains(val, "system(") || strings.Contains(val, "system ") {
+			return fmt.Errorf("awk injection detected: value contains 'system'")
+		}
+		if strings.Contains(val, "getline") {
+			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+		if strings.Contains(val, ">") {
+			return fmt.Errorf("awk injection detected: value contains '>'")
 		}
 	}
 
