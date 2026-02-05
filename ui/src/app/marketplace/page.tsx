@@ -45,6 +45,7 @@ export default function MarketplacePage() {
   // Instantiate State
   const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<UpstreamServiceConfig | undefined>(undefined);
+  const [selectedRepoUrl, setSelectedRepoUrl] = useState<string | undefined>(undefined);
 
   // Collection Details State
   const [selectedCollection, setSelectedCollection] = useState<ServiceCollection | undefined>(undefined);
@@ -97,8 +98,20 @@ export default function MarketplacePage() {
     }
   }, []);
 
-  const handleImportCollection = async () => {
+  const handleImportSubmit = async () => {
     if (!importUrl) return;
+
+    // Smart Import Logic: Check if it's a GitHub URL (not JSON)
+    if (importUrl.includes("github.com") && !importUrl.endsWith(".json")) {
+        setSelectedRepoUrl(importUrl);
+        setSelectedTemplate(undefined);
+        setIsInstantiateOpen(true);
+        setIsImportDialogOpen(false);
+        setImportUrl("");
+        return;
+    }
+
+    // Fallback to Service Collection Import
     try {
         const col = await marketplaceService.importCollection(importUrl);
         marketplaceService.saveLocalCollection(col);
@@ -136,107 +149,14 @@ export default function MarketplacePage() {
 
   const openInstantiate = (service: UpstreamServiceConfig) => {
       setSelectedTemplate(service);
+      setSelectedRepoUrl(undefined);
       setIsInstantiateOpen(true);
   };
 
   const openInstantiateCommunity = (server: CommunityServer) => {
-      // Best-effort config generation logic
-      const isPython = server.tags.some(t => t.includes('🐍'));
-
-      // Try to extract repo name for npx
-      let command = "";
-      const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
-
-      if (repoMatch) {
-          const owner = repoMatch[1];
-          const repo = repoMatch[2];
-          if (isPython) {
-             command = `uvx ${repo}`;
-          } else {
-             if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
-                 command = `npx -y @modelcontextprotocol/${repo}`;
-             } else {
-                 command = `npx -y ${repo}`;
-             }
-          }
-      } else {
-          command = isPython ? "uvx package-name" : "npx -y package-name";
-      }
-
-      // Smart Schema Injection
-      let configurationSchema = "";
-
-      // Cloudflare
-      if (repoMatch && (repoMatch[2] === "mcp-server-cloudflare" || server.name.toLowerCase().includes("cloudflare"))) {
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "Cloudflare Configuration",
-              properties: {
-                  "CLOUDFLARE_API_TOKEN": {
-                      type: "string",
-                      title: "Cloudflare API Token",
-                      description: "Your Cloudflare API Token (Account.Read permissions required)",
-                  },
-                  "CLOUDFLARE_ACCOUNT_ID": {
-                      type: "string",
-                      title: "Account ID",
-                      description: "Your Cloudflare Account ID"
-                  }
-              },
-              required: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
-          });
-      }
-
-      // Postgres
-      if (repoMatch && (repoMatch[2] === "server-postgres" || server.name.toLowerCase().includes("postgres"))) {
-           // PostgreSQL usually takes args but some wrappers use env.
-           // For the official one, it takes connection string as arg.
-           // But let's assume we can pass it via env if we wrap it, or just for demo of the UI capability.
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "PostgreSQL Configuration",
-              properties: {
-                  "POSTGRES_URL": {
-                      type: "string",
-                      title: "Connection URL",
-                      description: "postgresql://user:pass@host:5432/db",
-                  }
-              },
-              required: ["POSTGRES_URL"]
-          });
-      }
-
-      const config: UpstreamServiceConfig = {
-          id: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-          name: server.name,
-          configurationSchema: configurationSchema,
-          version: "1.0.0",
-          commandLineService: {
-              command: command,
-              env: {},
-              workingDirectory: "",
-              tools: [],
-              resources: [],
-              prompts: [],
-              calls: {},
-              communicationProtocol: 0,
-              local: false
-          },
-          disable: false,
-          sanitizedName: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-          priority: 0,
-          loadBalancingStrategy: 0,
-          callPolicies: [],
-          preCallHooks: [],
-          postCallHooks: [],
-          prompts: [],
-          autoDiscoverTool: true,
-          configError: "",
-          tags: server.tags,
-          readOnly: false
-      };
-
-      setSelectedTemplate(config);
+      // ⚡ Smart Import: Pass the URL to the analyzer instead of hardcoding
+      setSelectedRepoUrl(server.url);
+      setSelectedTemplate(undefined);
       setIsInstantiateOpen(true);
   };
 
@@ -455,9 +375,9 @@ export default function MarketplacePage() {
       <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
           <DialogContent>
               <DialogHeader>
-                  <DialogTitle>Import Service Collection</DialogTitle>
+                  <DialogTitle>Import Service Collection or Repository</DialogTitle>
                   <DialogDescription>
-                      Enter the URL of a Service Collection (JSON) to import.
+                      Enter the URL of a Service Collection (JSON) or a GitHub Repository to import.
                   </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -470,12 +390,12 @@ export default function MarketplacePage() {
                           value={importUrl}
                           onChange={(e) => setImportUrl(e.target.value)}
                           className="col-span-3"
-                          placeholder="https://..."
+                          placeholder="https://github.com/..."
                       />
                   </div>
               </div>
               <DialogFooter>
-                  <Button onClick={handleImportCollection}>Import</Button>
+                  <Button onClick={handleImportSubmit}>Import</Button>
               </DialogFooter>
           </DialogContent>
       </Dialog>
@@ -491,6 +411,7 @@ export default function MarketplacePage() {
         onOpenChange={setIsInstantiateOpen}
         templateConfig={selectedTemplate}
         onComplete={() => {}}
+        repoUrl={selectedRepoUrl}
       />
 
       <CollectionDetailsDialog
