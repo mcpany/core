@@ -29,12 +29,14 @@ type AuditMiddleware struct {
 	broadcaster *logging.Broadcaster
 }
 
-// NewAuditMiddleware creates a new AuditMiddleware.
+// NewAuditMiddleware initializes a new AuditMiddleware with the provided configuration.
 //
-// auditConfig is the auditConfig.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The configuration for audit logging.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *AuditMiddleware: The initialized middleware.
+//   - error: An error if initialization fails.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -92,11 +94,13 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.store = store
 }
 
-// UpdateConfig updates the audit configuration safely.
+// UpdateConfig updates the audit middleware configuration at runtime.
 //
-// auditConfig is the auditConfig.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The new configuration.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the update fails.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -141,12 +145,14 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 
 // Execute intercepts tool execution to log audit events.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *tool.ExecutionRequest. The execution request.
+//   - next: tool.ExecutionFunc. The next function in the execution chain.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the execution fails.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config

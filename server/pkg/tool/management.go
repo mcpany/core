@@ -38,36 +38,45 @@ type MCPServerProvider interface {
 type ManagerInterface interface {
 	// AddTool registers a new tool.
 	//
-	// tool represents the tool definition.
+	// Parameters:
+	//   - tool: Tool. The tool definition.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	AddTool(tool Tool) error
 	// GetTool retrieves a tool by name.
 	//
-	// toolName is the toolName.
+	// Parameters:
+	//   - toolName: string. The name of the tool.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if found, false otherwise.
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Tool: A slice of tools.
 	ListTools() []Tool
 	// ListMCPTools returns all registered tools in MCP format.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*mcp.Tool: A slice of MCP tool definitions.
 	ListMCPTools() []*mcp.Tool
 	// ClearToolsForService removes all tools for a given service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The execution request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if the operation fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer sets the MCP server provider.
 	//
@@ -79,45 +88,56 @@ type ManagerInterface interface {
 	AddMiddleware(middleware ExecutionMiddleware)
 	// AddServiceInfo adds metadata for a service.
 	//
-	// serviceID is the serviceID.
-	// info is the info.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
+	//   - info: *ServiceInfo. The metadata to store.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	// GetServiceInfo retrieves metadata for a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *ServiceInfo: The service metadata.
+	//   - bool: True if the service was found, false otherwise.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 	// ListServices returns all registered services.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*ServiceInfo: A slice of service metadata.
 	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
 	//
-	// enabled is the enabled.
-	// defs is the defs.
+	// Parameters:
+	//   - enabled: []string. The list of enabled profile names.
+	//   - defs: []*configv1.ProfileDefinition. The profile definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 	// IsServiceAllowed checks if a service is allowed for a given profile.
 	//
-	// serviceID is the serviceID.
-	// profileID is the profileID.
+	// Parameters:
+	//   - serviceID: string. The service identifier.
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the service is allowed.
 	IsServiceAllowed(serviceID, profileID string) bool
 	// ToolMatchesProfile checks if a tool matches a given profile.
 	//
-	// tool represents the tool definition.
-	// profileID is the profileID.
+	// Parameters:
+	//   - tool: Tool. The tool to check.
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the tool matches the profile.
 	ToolMatchesProfile(tool Tool, profileID string) bool
 	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
 	//
-	// profileID is the profileID.
+	// Parameters:
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - map[string]bool: A map of allowed service IDs.
+	//   - bool: True if the profile exists.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 }
 
@@ -160,9 +180,11 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
-// bus is the bus.
+// Parameters:
+//   - bus: *bus.Provider. The message bus provider.
 //
-// Returns the result.
+// Returns:
+//   - *Manager: The initialized manager.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,
@@ -178,8 +200,9 @@ func NewManager(bus *bus.Provider) *Manager {
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
 //
-// enabled is the enabled.
-// defs is the defs.
+// Parameters:
+//   - enabled: []string. The list of enabled profile names.
+//   - defs: []*configv1.ProfileDefinition. The profile definitions.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -281,10 +304,12 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 
 // IsServiceAllowed checks if a service is allowed for a given profile.
 //
-// serviceID is the serviceID.
-// profileID is the profileID.
+// Parameters:
+//   - serviceID: string. The service identifier.
+//   - profileID: string. The profile identifier.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if the service is allowed.
 func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -307,10 +332,12 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 
 // ToolMatchesProfile checks if a tool matches a given profile.
 //
-// tool represents the tool definition.
-// profileID is the profileID.
+// Parameters:
+//   - tool: Tool. The tool to check.
+//   - profileID: string. The profile identifier.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if the tool matches the profile.
 func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -319,10 +346,13 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 
 // GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
 //
-// profileID is the profileID.
+// Parameters:
+//   - profileID: string. The profile identifier.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - map[string]bool: A map of allowed service IDs.
+//   - bool: True if the profile exists.
+//
 // Note: The returned map is cached and shared. Do not modify it.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
@@ -404,26 +434,31 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 
 // AddMiddleware adds a middleware to the tool manager.
 //
-// middleware is the middleware.
+// Parameters:
+//   - middleware: ExecutionMiddleware. The middleware to add.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
-// This is necessary for registering tool handlers with the server.
+//
+// Parameters:
+//   - mcpServer: MCPServerProvider. The MCP server instance.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.mcpServer = mcpServer
 }
 
-// ExecuteTool finds a tool by its name and executes it with the provided
-// request context and inputs.
+// ExecuteTool finds a tool by its name and executes it with the provided request context and inputs.
 //
-// ctx is the context for the tool execution.
-// req contains the name of the tool and its inputs.
-// It returns the result of the execution or an error if the tool is not found
-// or if the execution fails.
+// Parameters:
+//   - ctx: context.Context. The context for the tool execution.
+//   - req: *ExecutionRequest. The request containing the tool name and inputs.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the tool is not found or if the execution fails.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -648,12 +683,15 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 	return services
 }
 
-// AddTool registers a new tool with the manager. It generates a unique tool ID
-// and, if an MCP server is configured, registers a handler for the tool with
-// the server.
+// AddTool registers a new tool with the manager.
 //
-// tool is the tool to be added.
-// It returns an error if the tool ID cannot be generated.
+// Summary: Registers a new tool, generates an ID, and registers it with the MCP server if configured.
+//
+// Parameters:
+//   - tool: Tool. The tool to be added.
+//
+// Returns:
+//   - error: An error if the tool cannot be added.
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -816,8 +854,14 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 // GetTool retrieves a tool from the manager by its fully qualified name.
 //
-// toolName is the name of the tool to retrieve.
-// It returns the tool and a boolean indicating whether the tool was found.
+// Summary: Retrieves a tool by its fully qualified name or ID.
+//
+// Parameters:
+//   - toolName: string. The name or ID of the tool.
+//
+// Returns:
+//   - Tool: The tool instance.
+//   - bool: True if the tool was found.
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)
@@ -837,6 +881,11 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 
 // ListTools returns a slice containing all the tools currently registered with
 // the manager.
+//
+// Summary: Lists all registered tools.
+//
+// Returns:
+//   - []Tool: A slice of tools.
 func (tm *Manager) ListTools() []Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedTools != nil {

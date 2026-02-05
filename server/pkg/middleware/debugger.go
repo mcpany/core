@@ -40,11 +40,13 @@ type Debugger struct {
 	done        chan struct{}
 }
 
-// NewDebugger creates a new Debugger middleware.
+// NewDebugger initializes a new Debugger with a specified ring buffer size.
 //
-// size is the size.
+// Parameters:
+//   - size: int. The maximum number of entries to keep in the ring buffer.
 //
-// Returns the result.
+// Returns:
+//   - *Debugger: The initialized Debugger.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -83,12 +85,14 @@ type bodyLogWriter struct {
 	wroteHeader bool
 }
 
-// Write writes the data to the connection and captures it for the log.
+// Write intercepts the response write to capture the body.
 //
-// b is the b.
+// Parameters:
+//   - b: []byte. The data to write.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - int: The number of bytes written.
+//   - error: An error if the write fails.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -127,11 +131,13 @@ type readCloserWrapper struct {
 	io.Closer
 }
 
-// Handler returns the http handler.
+// Handler returns the http handler wrapping the next handler to capture request and response details.
 //
-// next is the next.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
 //
-// Returns the result.
+// Returns:
+//   - http.Handler: The wrapped handler.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
