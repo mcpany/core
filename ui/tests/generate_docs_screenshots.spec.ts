@@ -16,6 +16,18 @@ if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
 test.describe('Generate Detailed Docs Screenshots', () => {
 
   test.beforeEach(async ({ page }) => {
+    // Mock login to ensure the app considers us authenticated
+    // This bypasses the need for a real backend user seed in screenshot tests
+    await page.context().addCookies([{
+        name: 'auth_token',
+        value: 'test-token',
+        domain: 'localhost',
+        path: '/',
+        httpOnly: false,
+        secure: false,
+        sameSite: 'Lax'
+    }]);
+
     // Global mocks to ensure consistent state
     await page.route(/.*\/api\/v1\/services/, async route => {
         if (route.request().method() === 'GET') {

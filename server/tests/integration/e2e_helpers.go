@@ -39,6 +39,16 @@ import (
 	"github.com/spf13/afero"
 )
 
+// SkipIfCI skips the test if running in a CI environment.
+//
+// t is the t.
+func SkipIfCI(t *testing.T) {
+	t.Helper()
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping test in CI environment due to Docker/network limitations")
+	}
+}
+
 // CreateTempConfigFile creates a temporary configuration file for the configured upstream service.
 //
 // t is the t.
