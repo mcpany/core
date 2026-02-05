@@ -100,15 +100,18 @@ import { apiClient, Metric } from "@/lib/client";
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();
 
   useEffect(() => {
     async function fetchMetrics() {
       try {
         const data = await apiClient.getDashboardMetrics(serviceId);
-        setMetrics(data);
+        setMetrics(data || []);
       } catch (error) {
         console.error("Failed to fetch metrics", error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchMetrics();
@@ -134,14 +137,39 @@ export const MetricsOverview = memo(function MetricsOverview() {
     };
   }, [serviceId]);
 
-  if (metrics.length === 0) {
-    return <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>;
+  if (loading && metrics.length === 0) {
+    return (
+      <div className="space-y-4">
+         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                         <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                         <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-8 w-16 bg-muted animate-pulse rounded mb-2" />
+                        <div className="h-3 w-32 bg-muted animate-pulse rounded" />
+                    </CardContent>
+                </Card>
+            ))}
+         </div>
+      </div>
+    );
   }
+
+  // If metrics is empty but not loading (e.g. no data), show default 0s
+  const displayMetrics = metrics.length > 0 ? metrics : [
+      { label: "Total Requests", value: "0", icon: "Activity", trend: "neutral" },
+      { label: "Avg Latency", value: "0ms", icon: "Clock", trend: "neutral" },
+      { label: "Error Rate", value: "0%", icon: "AlertCircle", trend: "neutral" },
+      { label: "Active Users", value: "0", icon: "Users", trend: "neutral" }
+  ] as Metric[];
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => (
+        {displayMetrics.map((metric) => (
           <MetricItem key={metric.label} metric={metric} />
         ))}
       </div>
