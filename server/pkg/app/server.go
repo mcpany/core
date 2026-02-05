@@ -176,36 +176,49 @@ type Runner interface {
 // Summary: The main application container.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
-	PromptManager    prompt.ManagerInterface
-	ToolManager      tool.ManagerInterface
-	ResourceManager  resource.ManagerInterface
-	ServiceRegistry  serviceregistry.ServiceRegistryInterface
-	TopologyManager  *topology.Manager
-	UpstreamFactory  factory.Factory
-	configFiles      map[string]string
-	fs               afero.Fs
-	configPaths      []string
-	Storage          storage.Storage
-	TemplateManager  *TemplateManager
+
+	// PromptManager manages prompts.
+	PromptManager prompt.ManagerInterface
+	// ToolManager manages tools.
+	ToolManager tool.ManagerInterface
+	// ResourceManager manages resources.
+	ResourceManager resource.ManagerInterface
+	// ServiceRegistry manages upstream services.
+	ServiceRegistry serviceregistry.ServiceRegistryInterface
+	// TopologyManager manages the network topology.
+	TopologyManager *topology.Manager
+	// UpstreamFactory creates upstream clients.
+	UpstreamFactory factory.Factory
+
+	configFiles map[string]string
+	fs          afero.Fs
+	configPaths []string
+
+	// Storage is the persistent storage backend.
+	Storage         storage.Storage
+	// TemplateManager manages service templates.
+	TemplateManager *TemplateManager
+
 	// Store explicit API Key passed via CLI args
 	explicitAPIKey string
 
-	// SkillManager manages agent skills
+	// SkillManager manages agent skills.
 	SkillManager *skill.Manager
 
-	// AlertsManager manages system alerts
+	// AlertsManager manages system alerts.
 	AlertsManager *alerts.Manager
 
-	// DiscoveryManager manages auto-discovery providers
+	// DiscoveryManager manages auto-discovery providers.
 	DiscoveryManager *discovery.Manager
 
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
-	// Settings Manager for global settings (dynamic updates)
+
+	// SettingsManager manages global settings (dynamic updates).
 	SettingsManager *GlobalSettingsManager
-	// Profile Manager for dynamic profile updates
+	// ProfileManager manages profiles (dynamic updates).
 	ProfileManager *profile.Manager
-	// Auth Manager (stored here for access in runServerMode, though it is also passed to serviceregistry)
+	// AuthManager manages authentication.
 	// We need to keep a reference to update it on reload.
 	AuthManager *auth.Manager
 	// Middlewares that need manual updates
@@ -2319,15 +2332,23 @@ func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handl
 	})
 }
 
-// startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startGrpcServer starts a gRPC server in a new goroutine.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener for the server.
-// register is a function that registers the gRPC services with the server.
+// Summary: Launches a gRPC server and manages its lifecycle including graceful shutdown.
+//
+// Parameters:
+//   - ctx: context.Context. The context for managing the server's lifecycle.
+//   - wg: *sync.WaitGroup. A WaitGroup to signal when the server has shut down.
+//   - errChan: chan<- error. A channel for reporting errors during startup.
+//   - readyChan: chan<- struct{}. A channel to signal when the server is ready.
+//   - name: string. A descriptive name for the server, used in logging.
+//   - lis: net.Listener. The net.Listener for the server.
+//   - shutdownTimeout: time.Duration. The duration to wait for graceful shutdown.
+//   - server: *gogrpc.Server. The gRPC server instance.
+//
+// Side Effects:
+//   - Starts a goroutine.
+//   - Listens on a network port.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -2393,7 +2414,18 @@ func startGrpcServer(
 	}()
 }
 
-// wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
+// wrapBindError wraps a bind error with user-friendly advice.
+//
+// Summary: Checks if the error is a port conflict and returns a helpful error message.
+//
+// Parameters:
+//   - err: error. The original error.
+//   - serverType: string. The type of server (e.g., "HTTP").
+//   - address: string. The address that failed to bind.
+//   - flag: string. The CLI flag to configure the port.
+//
+// Returns:
+//   - error: A formatted error message with tips.
 func wrapBindError(err error, serverType, address, flag string) error {
 	if strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind: permission denied") {
 		return fmt.Errorf("❌ %s server failed to listen on %s: %w\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
@@ -2401,15 +2433,24 @@ func wrapBindError(err error, serverType, address, flag string) error {
 	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }
 
-// startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startHTTPServer starts an HTTP server in a new goroutine.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener on which the server will listen.
-// handler is the HTTP handler for processing requests.
+// Summary: Launches an HTTP server and manages its lifecycle including graceful shutdown.
+//
+// Parameters:
+//   - ctx: context.Context. The context for managing the server's lifecycle.
+//   - wg: *sync.WaitGroup. A WaitGroup to signal when the server has shut down.
+//   - errChan: chan<- error. A channel for reporting errors during startup.
+//   - readyChan: chan<- struct{}. A channel to signal when the server is ready.
+//   - name: string. A descriptive name for the server, used in logging.
+//   - lis: net.Listener. The net.Listener on which the server will listen.
+//   - handler: http.Handler. The HTTP handler for processing requests.
+//   - shutdownTimeout: time.Duration. The duration to wait for graceful shutdown.
+//   - connState: func(net.Conn, http.ConnState). Optional callback for connection state changes.
+//
+// Side Effects:
+//   - Starts a goroutine.
+//   - Listens on a network port.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,

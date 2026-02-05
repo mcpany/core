@@ -222,7 +222,13 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
+     *
      * @returns A promise that resolves to a list of services.
+     * @throws {Error} If the network request fails or returns a non-200 status.
+     *
+     * @remarks
+     * Side Effects:
+     * - Makes a network request to `/api/v1/services`.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
