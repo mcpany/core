@@ -13,10 +13,11 @@ test.describe('Alerts Page', () => {
     // Seed required alerts if not present. Idempotency is key.
     // Since we don't have unique constraints on title, we might create duplicates if we run multiple times.
     // But for this test, we can just create them and filter by unique text we look for.
+    // Use unique titles to avoid confusion in tests
     await request.post('/api/v1/alerts', {
       data: {
-        id: "alert-cpu", // Force ID to avoid duplicates
-        title: "High CPU Usage",
+        id: "alert-cpu",
+        title: "High CPU Usage - Test",
         message: "CPU usage > 90%",
         severity: "critical",
         status: "active",
@@ -26,8 +27,8 @@ test.describe('Alerts Page', () => {
     });
     await request.post('/api/v1/alerts', {
       data: {
-        id: "alert-latency", // Force ID
-        title: "API Latency Spike",
+        id: "alert-latency",
+        title: "API Latency Spike - Test",
         message: "Latency high",
         severity: "warning",
         status: "active",
@@ -37,8 +38,8 @@ test.describe('Alerts Page', () => {
     });
     await request.post('/api/v1/alerts', {
         data: {
-          id: "alert-disk", // Force ID
-          title: "Disk Space Low",
+          id: "alert-disk",
+          title: "Disk Space Low - Test",
           message: "Disk space low",
           severity: "warning",
           status: "active",
@@ -46,6 +47,84 @@ test.describe('Alerts Page', () => {
           source: "test"
         }
       });
+  });
+
+  test('should load alerts page and display key elements', async ({ page }) => {
+    // Navigate to alerts page
+    await page.goto('/alerts');
+
+    // Check header
+    await expect(page.getByRole('heading', { name: 'Alerts & Incidents' })).toBeVisible();
+
+    // Check stats cards
+    await expect(page.getByText('Active Critical')).toBeVisible();
+    await expect(page.getByText('MTTR (Today)')).toBeVisible();
+
+    // Check table content (seeded data)
+    await expect(page.getByText('High CPU Usage - Test')).toBeVisible();
+    await expect(page.getByText('API Latency Spike - Test')).toBeVisible();
+  });
+
+  test('should filter alerts', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Type in search box - use getByPlaceholder if available, else locator
+    const searchBox = page.locator('input[placeholder="Search alerts by title, message, service..."]');
+    await searchBox.fill('CPU');
+
+    // Should see CPU alert
+    await expect(page.getByText('High CPU Usage - Test')).toBeVisible();
+
+    // Should NOT see Latency alert
+    await expect(page.getByText('API Latency Spike - Test')).toBeHidden();
+  });
+
+  test('should open create rule dialog', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Click "New Alert Rule" button
+    await page.getByRole('button', { name: 'New Alert Rule' }).click();
+
+    // Check dialog opens
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create Alert Rule' })).toBeVisible();
+
+    // Close it
+    await page.getByRole('button', { name: 'Cancel' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden();
+  });
+
+  test('should acknowledge alert via dropdown', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Find an active alert row (mock data usually has some)
+    // We target the row with "High CPU Usage" which is active in mock
+    const row = page.getByRole('row').filter({ hasText: 'High CPU Usage - Test' });
+
+    // Click the "More Actions" dropdown button in that row
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
+    // Click "Acknowledge"
+    await page.getByRole('menuitem', { name: 'Acknowledge' }).click();
+
+    // Verify status changes to "acknowledged"
+    await expect(row.getByText('acknowledged')).toBeVisible();
+  });
+
+  test('should resolve alert via dropdown', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Find an acknowledged or active alert
+    const row = page.getByRole('row').filter({ hasText: 'Disk Space Low - Test' });
+
+    // Click "More Actions"
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
+    // Click "Resolve"
+    await page.getByRole('menuitem', { name: 'Resolve' }).click();
+
+    // Verify status changes to "resolved"
+    await expect(row.getByText('resolved')).toBeVisible();
   });
 
   test('should load alerts page and display key elements', async ({ page }) => {
