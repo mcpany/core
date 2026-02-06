@@ -31,9 +31,11 @@ import (
 
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 10*time.Second)
+	// Use short interval to ensure metrics are flushed during test
+	sink := metrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
+	conf.TimerGranularity = 10 * time.Millisecond
 	_, err := metrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
@@ -97,9 +99,20 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check metrics
-	data := sink.Data()
-	require.NotEmpty(t, data)
-	samples := data[0].Samples
+	// Consolidate samples from all intervals
+	var samples map[string]metrics.SampledValue
+	assert.Eventually(t, func() bool {
+		data := sink.Data()
+		samples = make(map[string]metrics.SampledValue)
+		for _, interval := range data {
+			for k, v := range interval.Samples {
+				samples[k] = v
+			}
+		}
+		// Check if we have any samples
+		return len(samples) > 0
+	}, 2*time.Second, 50*time.Millisecond, "Metrics should be recorded")
+
 	require.NotEmpty(t, samples)
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
@@ -109,6 +122,7 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	_, unlabelledExists := samples["mcpany.tools.call.latency"]
 
 	// This assertion should FAIL currently, demonstrating the bug.
+	// Update: bug fixed by deferring MeasureSinceWithLabels
 	assert.False(t, unlabelledExists, "Unlabelled metric 'mcpany.tools.call.latency' should not exist")
 
 	// Check for labelled metric (should exist)
