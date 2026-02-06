@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/tests/integration"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -235,7 +236,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
+	if integration.IsCI() {
 		t.Skip("Skipping TestE2E_Bundle_Filesystem in CI due to potential Docker-in-Docker mount issues")
 	}
 
