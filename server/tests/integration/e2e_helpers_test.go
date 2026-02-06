@@ -67,8 +67,8 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not available")
+	if !IsDockerFunctional() {
+		t.Skip("Docker is not available or not functional (cannot run containers)")
 	}
 
 	// Test StartDockerContainer
