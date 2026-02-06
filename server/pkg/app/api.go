@@ -244,6 +244,38 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 				jsonMap["tool_count"] = count
 			}
 
+			// Inject Resource Count
+			if a.ResourceManager != nil {
+				resources := a.ResourceManager.ListResources()
+				count := 0
+				svcID := svc.GetId()
+				sanitizedName := svc.GetSanitizedName()
+
+				for _, r := range resources {
+					rSvcID := r.Service()
+					if rSvcID != "" && (rSvcID == svcID || rSvcID == sanitizedName) {
+						count++
+					}
+				}
+				jsonMap["resource_count"] = count
+			}
+
+			// Inject Prompt Count
+			if a.PromptManager != nil {
+				prompts := a.PromptManager.ListPrompts()
+				count := 0
+				svcID := svc.GetId()
+				sanitizedName := svc.GetSanitizedName()
+
+				for _, p := range prompts {
+					pSvcID := p.Service()
+					if pSvcID != "" && (pSvcID == svcID || pSvcID == sanitizedName) {
+						count++
+					}
+				}
+				jsonMap["prompt_count"] = count
+			}
+
 			// Marshal back to JSON
 			if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
 				b = enrichedBytes

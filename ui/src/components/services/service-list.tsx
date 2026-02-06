@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal, Zap, Database, MessageSquare } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -172,6 +172,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Activity</TableHead>
+              <TableHead>Capabilities</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Address / Command</TableHead>
               <TableHead>Version</TableHead>
@@ -366,6 +367,28 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                         />
                     )}
                 </div>
+             </TableCell>
+             <TableCell>
+                 <div className="flex items-center gap-2">
+                     {(service.toolCount || 0) > 0 && (
+                         <Badge variant="outline" className="text-[10px] px-1 h-5 gap-1 border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10" title="Tools">
+                             <Zap className="h-3 w-3" /> {service.toolCount}
+                         </Badge>
+                     )}
+                     {(service.resourceCount || 0) > 0 && (
+                         <Badge variant="outline" className="text-[10px] px-1 h-5 gap-1 border-cyan-500/50 text-cyan-600 dark:text-cyan-400 bg-cyan-500/10" title="Resources">
+                             <Database className="h-3 w-3" /> {service.resourceCount}
+                         </Badge>
+                     )}
+                     {(service.promptCount || 0) > 0 && (
+                         <Badge variant="outline" className="text-[10px] px-1 h-5 gap-1 border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10" title="Prompts">
+                             <MessageSquare className="h-3 w-3" /> {service.promptCount}
+                         </Badge>
+                     )}
+                     {!(service.toolCount || 0) && !(service.resourceCount || 0) && !(service.promptCount || 0) && (
+                         <span className="text-muted-foreground text-xs opacity-50">-</span>
+                     )}
+                 </div>
              </TableCell>
              <TableCell>
                  <div className="flex flex-wrap gap-1">

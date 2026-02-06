@@ -33,6 +33,14 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * The number of resources registered for this service.
+     */
+    resourceCount?: number;
+    /**
+     * The number of prompts registered for this service.
+     */
+    promptCount?: number;
 }
 
 // Re-export generated types
@@ -243,6 +251,8 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
+            resourceCount: s.resource_count,
+            promptCount: s.prompt_count,
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
