@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import path from 'path';
 import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
@@ -16,24 +16,14 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
       await seedTraffic(request);
-      await seedUser(request, "e2e-admin");
-
-      // Login before each test
-      await page.goto('/login');
-      // Wait for page to be fully loaded as it might be transitioning
-      await page.waitForLoadState('networkidle');
-
-      await page.fill('input[name="username"]', 'e2e-admin');
-      await page.fill('input[name="password"]', 'password');
-      await page.click('button[type="submit"]');
-
-      // Wait for redirect to home page and verify
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+      // We don't need to seedUser or login manually via UI because the 'test' fixture
+      // from './fixtures' handles authentication by injecting a valid token for 'admin'.
+      // The default admin is created by the backend on startup if missing.
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
-      await cleanupUser(request, "e2e-admin");
+      // await cleanupUser(request, "e2e-admin"); // No need to cleanup default admin
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
