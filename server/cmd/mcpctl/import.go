@@ -13,12 +13,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
+// ClaudeDesktopConfig represents the structure of the claude_desktop_config.json file.
+//
+// It is used to unmarshal the configuration file from Claude Desktop, which contains
+// a map of MCP server configurations.
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
 // MCPServerConfig represents a single server configuration in Claude Desktop.
+//
+// It contains the command, arguments, and environment variables required to run
+// an MCP server.
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
@@ -26,19 +32,32 @@ type MCPServerConfig struct {
 }
 
 // McpAnyConfig represents the target configuration structure for MCP Any.
+//
+// It defines the schema for the output YAML file, which lists the upstream services
+// that MCP Any should manage.
 type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
+// UpstreamService represents a single upstream service configuration in MCP Any.
+//
+// It maps a named service to its specific MCP configuration.
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
+// McpService represents the MCP-specific configuration for an upstream service.
+//
+// Currently, it supports standard input/output (stdio) connections.
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
+// StdioConnection represents the configuration for a stdio-based MCP connection.
+//
+// It specifies the command to execute, its arguments, and the environment variables
+// to set for the process.
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`
