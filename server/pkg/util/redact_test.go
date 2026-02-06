@@ -343,3 +343,56 @@ func TestRedactJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestRedactURL(t *testing.T) {
+	tests := []struct {
+		name     string
+		url      string
+		expected string
+	}{
+		{
+			name:     "no params",
+			url:      "http://example.com/path",
+			expected: "http://example.com/path",
+		},
+		{
+			name:     "safe params",
+			url:      "http://example.com/path?id=123&name=alice",
+			expected: "http://example.com/path?id=123&name=alice",
+		},
+		{
+			name:     "sensitive params",
+			url:      "http://example.com/path?api_key=secret123&token=abc",
+			expected: "http://example.com/path?api_key=[REDACTED]&token=[REDACTED]",
+		},
+		{
+			name:     "mixed params",
+			url:      "http://example.com/path?id=123&api_key=secret",
+			expected: "http://example.com/path?api_key=[REDACTED]&id=123", // Query param order might change, but that's expected behavior of url.Values.Encode()
+		},
+		{
+			name:     "invalid url",
+			url:      "://invalid",
+			expected: "://invalid",
+		},
+		{
+			name:     "sensitive param case insensitive",
+			url:      "http://example.com?APIKey=secret",
+			expected: "http://example.com?APIKey=[REDACTED]",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := util.RedactURL(tt.url)
+			if tt.name == "mixed params" {
+				// Order of query params is not guaranteed
+				assert.Contains(t, result, "api_key=[REDACTED]")
+				assert.Contains(t, result, "id=123")
+				assert.Contains(t, result, "http://example.com/path?")
+			} else {
+				assert.Equal(t, tt.expected, result)
+			}
+		})
+	}
+}

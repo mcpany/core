@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -242,6 +243,36 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Verify Docker can actually run containers (checks for overlayfs/storage driver issues)
+	// We use 'busybox' or 'alpine' as a lightweight check.
+	// We assume 'node:18-alpine' will be pulled later, so we can try running 'hello-world' or just check if we can run *anything*.
+	// Use 'true' to exit immediately.
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// Using --rm to clean up.
+	// We purposely ignore the image pull error if it happens, assuming the run might fail later.
+	// But if run fails, we skip.
+	// We also mount a volume to verify that mounting works (common failure point in CI with overlayfs).
+	pwd, _ := os.Getwd()
+	mountArg := "-v"
+	// Use current dir or tmp as mount source
+	if pwd == "" {
+		pwd = "/tmp"
+	}
+	mountArg = mountArg + " " + pwd + ":/test_mount"
+
+	// Split mountArg for command
+	mountSrc := pwd
+	mountDst := "/test_mount"
+	mountSpec := mountSrc + ":" + mountDst
+
+	if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "-v", mountSpec, "mirror.gcr.io/library/busybox", "true").Run(); err != nil {
+		// Try fallback image if busybox fails to pull
+		if err := exec.CommandContext(ctxTimeout, "docker", "run", "--rm", "-v", mountSpec, "busybox", "true").Run(); err != nil {
+			t.Skipf("Skipping Docker tests: failed to run minimal container with mount (likely storage driver/overlayfs issue): %v", err)
+		}
 	}
 
 	tempDir := t.TempDir()
