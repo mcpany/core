@@ -9,7 +9,8 @@ import { ServiceHealthWidget } from "@/components/dashboard/service-health-widge
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
+import { DiscoveryWidget } from "@/components/dashboard/widgets/discovery-widget";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Radar } from "lucide-react";
 
 /**
  * Defines the possible sizes for a dashboard widget.
@@ -106,6 +107,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "third",
         component: LazyTopToolsWidget,
         icon: Hash
+    },
+    {
+        type: "discovery",
+        title: "Auto-Discovery",
+        description: "Status of local service discovery (e.g. Ollama).",
+        defaultSize: "third",
+        component: DiscoveryWidget,
+        icon: Radar
     },
 ];
 
