@@ -27,22 +27,32 @@ type MCPServerConfig struct {
 
 // McpAnyConfig represents the target configuration structure for MCP Any.
 type McpAnyConfig struct {
+	// UpstreamServices is a list of upstream services to configure.
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
+// UpstreamService represents a single upstream service configuration.
 type UpstreamService struct {
-	Name       string      `yaml:"name"`
+	// Name is the name of the service.
+	Name string `yaml:"name"`
+	// McpService holds the MCP service details.
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
+// McpService represents the MCP service configuration.
 type McpService struct {
+	// StdioConnection holds the STDIO connection details.
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
+// StdioConnection represents a connection to a local command via standard input/output.
 type StdioConnection struct {
-	Command string            `yaml:"command"`
-	Args    []string          `yaml:"args"`
-	Env     map[string]string `yaml:"env,omitempty"`
+	// Command is the command to execute.
+	Command string `yaml:"command"`
+	// Args are the arguments to pass to the command.
+	Args []string `yaml:"args"`
+	// Env is the environment variables for the command.
+	Env map[string]string `yaml:"env,omitempty"`
 }
 
 func newImportCmd() *cobra.Command {

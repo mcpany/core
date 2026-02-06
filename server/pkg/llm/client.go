@@ -16,6 +16,15 @@ import (
 
 // Client is the interface for an LLM client.
 type Client interface {
+	// ChatCompletion sends a chat completion request to the LLM provider.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - req: ChatRequest. The chat request parameters including model and messages.
+	//
+	// Returns:
+	//   - *ChatResponse: The chat completion response.
+	//   - error: An error if the request fails.
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
 
