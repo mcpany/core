@@ -244,6 +244,15 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Check if we are running in an environment with known OverlayFS issues
+	// This often manifests as "invalid argument" on mount when running Docker-in-Docker or in certain CI envs.
+	// We can try to run a simple hello-world with a mount to check.
+	checkCmd := exec.Command("docker", "run", "--rm", "-v", t.TempDir()+":/test", "alpine:latest", "true")
+	if out, err := checkCmd.CombinedOutput(); err != nil {
+		t.Logf("Docker mount check failed: %v, output: %s", err, out)
+		t.Skip("Skipping Docker bundle tests due to environment mount issues")
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
