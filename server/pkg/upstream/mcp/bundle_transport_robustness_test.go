@@ -310,6 +310,11 @@ func TestSetUnexportedID_Robustness(t *testing.T) {
 }
 
 func TestFixID_Robustness(t *testing.T) {
+	// Helper struct mimicking SDK ID
+	type ID struct {
+		value interface{}
+	}
+
 	tests := []struct {
 		name     string
 		input    interface{}
@@ -323,8 +328,14 @@ func TestFixID_Robustness(t *testing.T) {
 		{"float64_dec", 123.456, 123.456},
 
 		// Structs mimicking SDK ID (unexported field value)
+		// NOTE: In the new implementation, fixID with values uses Regex fallback.
 		{"struct_value_int", struct{ value int }{1}, 1},
 		{"struct_value_string", struct{ value string }{"s1"}, "s1"},
+
+		// Pointer to struct (Safe Reflection path)
+		{"ptr_struct_value_int", &ID{value: 1}, 1},
+		{"ptr_struct_value_string", &ID{value: "s1"}, "s1"},
+		{"ptr_struct_value_string_int", &ID{value: "123"}, 123},
 
 		// Robustness / Edge cases
 		{"struct_wrong_field", struct{ id int }{1}, struct{ id int }{1}},
