@@ -12,7 +12,10 @@ test.describe('Tool Exploration', () => {
         await request.post('/api/v1/services', {
             data: {
                 name: 'weather-service',
-                httpService: { address: 'http://localhost:9999' }, // Dummy address
+                // Use a valid address that won't trigger SSRF or connection issues in CI.
+                // 'ui-http-echo-server' is defined in ui/docker-compose.test.yml
+                // We use port 5678 as defined in docker-compose.test.yml
+                httpService: { address: 'http://ui-http-echo-server:5678' },
                 tools: [
                     {
                         name: 'weather-tool',
@@ -32,7 +35,7 @@ test.describe('Tool Exploration', () => {
         await request.post('/api/v1/services', {
             data: {
                 name: 'math-service',
-                httpService: { address: 'http://localhost:9998' },
+                httpService: { address: 'http://ui-http-echo-server:5678' },
                 tools: [
                     {
                         name: 'calculator',

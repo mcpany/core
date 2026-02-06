@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/protobuf/proto"
 )
@@ -31,7 +32,7 @@ func (a *Application) handleSeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Safety check: Only allow in debug mode or if explicitly enabled
-	if os.Getenv("MCPANY_DEBUG") != "true" {
+	if os.Getenv("MCPANY_DEBUG") != util.TrueStr {
 		logging.GetLogger().Warn("Blocked seed attempt in non-debug mode")
 		http.Error(w, "Seeding only allowed in debug mode", http.StatusForbidden)
 		return
