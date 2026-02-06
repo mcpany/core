@@ -249,6 +249,8 @@ var sensitiveKeys = []string{
 	"passwords", "tokens", "api_keys", "apikeys",
 	"authentication", "authenticator", "credentials", "secrets",
 	"passphrase", "passphrases", "ssh_key",
+	// Sentinel Security Update: Redact stack traces to prevent information leakage
+	"stack_trace", "stacktrace", "traceback", "error_trace",
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
