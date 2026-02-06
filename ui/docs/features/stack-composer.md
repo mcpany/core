@@ -4,7 +4,7 @@
 
 ## Goal
 
-Transform "Config-as-Code" into a visual composition experience. The Stack Composer allows users to assemble complex microservice architectures using a drag-and-drop palette and intelligent YAML editor.
+Transform "Config-as-Code" into a visual composition experience. The Stack Composer allows users to assemble complex microservice architectures using an interactive template palette and intelligent YAML editor.
 
 ## Usage Guide
 
