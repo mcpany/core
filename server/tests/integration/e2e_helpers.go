@@ -36,6 +36,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/mcpany/core/server/pkg/app"
+	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/spf13/afero"
 )
 
@@ -819,7 +820,12 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, dbFile.Close())
 	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
 
+	// Explicitly initialize SQLite DB to avoid global settings race conditions
+	sqliteDB, err := sqlite.NewDB(dbPath)
+	require.NoError(t, err, "Failed to create sqlite DB")
+
 	appRunner := app.NewApplication()
+	appRunner.Storage = sqlite.NewStore(sqliteDB)
 	runErrCh := make(chan error, 1)
 	go func() {
 		defer cancel() // Ensure WaitForStartup doesn't hang if Run returns
@@ -919,6 +925,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			if grpcRegConn != nil {
 				_ = grpcRegConn.Close()
 			}
+			_ = sqliteDB.Close()
 		},
 		T: t,
 	}
