@@ -340,6 +340,14 @@ func (mp *ManagedProcess) Start() error {
 		mp.cmd.Dir = mp.Dir
 	}
 	mp.t.Logf("[%s] Starting process: %s %v", mp.label, mp.cmd.Path, mp.cmd.Args)
+
+	// Verify executable exists if it's an absolute path
+	if filepath.IsAbs(mp.cmd.Path) {
+		if _, err := os.Stat(mp.cmd.Path); err != nil {
+			mp.t.Logf("[%s] Warning: Executable not found at %s: %v", mp.label, mp.cmd.Path, err)
+		}
+	}
+
 	if err := mp.cmd.Start(); err != nil {
 		// Give a tiny moment for stderr to populate on immediate start failure.
 		time.Sleep(50 * time.Millisecond)

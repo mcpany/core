@@ -521,6 +521,19 @@ var (
 	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
 )
 
+var dummyHash string
+
+func init() {
+	// Initialize dummy hash with a cost similar to real hashes (12)
+	// to prevent timing attacks on username enumeration.
+	var err error
+	dummyHash, err = passhash.Password("dummy")
+	if err != nil {
+		// Should never happen with default settings
+		panic(fmt.Sprintf("failed to generate dummy hash: %v", err))
+	}
+}
+
 // ValidateAuthentication validates the authentication request against the provided configuration.
 //
 // Summary: Validates a request against a specific auth configuration.
@@ -638,19 +651,34 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
 
+	var targetHash string
+	var foundUser *configv1.User
+
 	// Direct lookup if user ID matches username
 	if user, ok := am.users[username]; ok {
 		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
-			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
-				ctx = ContextWithUser(ctx, user.GetId())
-				if len(user.GetRoles()) > 0 {
-					ctx = ContextWithRoles(ctx, user.GetRoles())
-				}
-				return ctx, nil
-			}
+			targetHash = basicAuth.GetPasswordHash()
+			foundUser = user
 		}
 	}
 
-	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
+	// Timing Attack Mitigation:
+	// If the user is not found or has no basic auth, we verify against a dummy hash
+	// to ensure the operation takes roughly the same amount of time as a valid verification.
+	if targetHash == "" {
+		targetHash = dummyHash
+	}
+
+	// Check password (always runs)
+	passwordMatch := passhash.CheckPassword(password, targetHash)
+
+	if foundUser != nil && passwordMatch {
+		ctx = ContextWithUser(ctx, foundUser.GetId())
+		if len(foundUser.GetRoles()) > 0 {
+			ctx = ContextWithRoles(ctx, foundUser.GetRoles())
+		}
+		return ctx, nil
+	}
+
 	return ctx, fmt.Errorf("invalid credentials")
 }
