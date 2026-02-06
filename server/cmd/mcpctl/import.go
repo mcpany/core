@@ -30,15 +30,18 @@ type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
+// UpstreamService represents an upstream service configuration.
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
+// McpService represents an MCP service configuration.
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
+// StdioConnection represents a standard input/output connection configuration.
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`
