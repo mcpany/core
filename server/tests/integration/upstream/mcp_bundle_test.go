@@ -257,7 +257,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		// and avoid conflicts with global state or other tests.
 		// Check for MCP_BUNDLE_DIR env var first
 		if envDir := os.Getenv("MCP_BUNDLE_DIR"); envDir != "" {
-			impl.BundleBaseDir = filepath.Join(envDir, "test-bundles", filepath.Base(t.TempDir()))
+			// Use a sibling directory to avoid interference from global GC which scans envDir
+			// We append the test-specific temp dir name to ensure isolation between parallel tests
+			impl.BundleBaseDir = filepath.Join(filepath.Dir(envDir), "test-bundles", filepath.Base(t.TempDir()))
 		} else {
 			impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
 		}
