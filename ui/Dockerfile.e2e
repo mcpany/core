@@ -3,6 +3,10 @@
 
 FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
+# Set npm cache to /tmp to avoid permission issues with /root/.npm whiteouts
+ENV NPM_CONFIG_CACHE=/tmp/npm_cache
+
+RUN mkdir -p /work/ui
 WORKDIR /work/ui
 
 # Copy package files first for caching
