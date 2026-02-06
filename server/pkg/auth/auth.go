@@ -19,6 +19,21 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
+var (
+	// dummyHash is a valid bcrypt hash used to prevent timing attacks during authentication.
+	dummyHash string
+)
+
+func init() {
+	// Generate a dummy hash for timing attack mitigation.
+	// We use a high cost to match the real password hashing cost.
+	var err error
+	dummyHash, err = passhash.Password("invalid_password_placeholder")
+	if err != nil {
+		panic(fmt.Sprintf("failed to generate dummy hash: %v", err))
+	}
+}
+
 type authContextKey string
 
 const (
@@ -638,19 +653,29 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
 
+	var user *configv1.User
+	var validUserWithBasicAuth bool
+	hashToCheck := dummyHash
+
 	// Direct lookup if user ID matches username
-	if user, ok := am.users[username]; ok {
-		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
-			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
-				ctx = ContextWithUser(ctx, user.GetId())
-				if len(user.GetRoles()) > 0 {
-					ctx = ContextWithRoles(ctx, user.GetRoles())
-				}
-				return ctx, nil
-			}
+	if u, ok := am.users[username]; ok {
+		if basicAuth := u.GetAuthentication().GetBasicAuth(); basicAuth != nil {
+			hashToCheck = basicAuth.GetPasswordHash()
+			validUserWithBasicAuth = true
+			user = u
 		}
 	}
 
-	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
+	// Always check password to avoid timing attacks (Username Enumeration)
+	passwordMatch := passhash.CheckPassword(password, hashToCheck)
+
+	if validUserWithBasicAuth && passwordMatch {
+		ctx = ContextWithUser(ctx, user.GetId())
+		if len(user.GetRoles()) > 0 {
+			ctx = ContextWithRoles(ctx, user.GetRoles())
+		}
+		return ctx, nil
+	}
+
 	return ctx, fmt.Errorf("invalid credentials")
 }
