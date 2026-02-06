@@ -90,6 +90,10 @@ func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]boo
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
+func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+	return 0
+}
+
 func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
 	m.Called(middleware)
 }
