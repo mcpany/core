@@ -945,14 +945,27 @@ func StartNatsServer(t *testing.T) (string, func()) {
 		} else {
 			root, err := GetProjectRoot()
 			require.NoError(t, err)
-			natsServerBin = filepath.Join(root, "../build/env/bin/nats-server")
-			if info, err := os.Stat(natsServerBin); err == nil {
-				t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
-			} else {
-				t.Logf("DEBUG: nats-server binary not found at: %s", natsServerBin)
+			// Try multiple paths for robustness
+			candidates := []string{
+				filepath.Join(root, "../build/env/bin/nats-server"), // If root is server/
+				filepath.Join(root, "build/env/bin/nats-server"),    // If root is repo root
+			}
+			found := false
+			for _, c := range candidates {
+				if info, err := os.Stat(c); err == nil {
+					natsServerBin = c
+					t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Logf("DEBUG: nats-server binary not found in candidates: %v", candidates)
+				// Default to first candidate for error message
+				natsServerBin = candidates[0]
 			}
 			_, err = os.Stat(natsServerBin)
-			require.NoError(t, err, "nats-server binary not found at %s or /tools/nats-server. Run 'make prepare'.", natsServerBin)
+			require.NoError(t, err, "nats-server binary not found at %v or /tools/nats-server. Run 'make prepare'.", candidates)
 		}
 	}
 
@@ -1097,7 +1110,22 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpanyBinary := filepath.Join(root, "../build/bin/server")
+
+	// Try multiple paths for server binary
+	candidates := []string{
+		filepath.Join(root, "../build/bin/server"), // If root is server/
+		filepath.Join(root, "build/bin/server"),    // If root is repo root
+	}
+	mcpanyBinary := ""
+	for _, c := range candidates {
+		if _, err := os.Stat(c); err == nil {
+			mcpanyBinary = c
+			break
+		}
+	}
+	if mcpanyBinary == "" {
+		mcpanyBinary = candidates[0] // Fallback for error reporting
+	}
 
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
