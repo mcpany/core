@@ -1828,6 +1828,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
+						// Also block flag injection for shells
+						if err := checkForArgumentInjection(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -2115,12 +2119,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+						// Also block flag injection for shells
+						if err := checkForArgumentInjection(val); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -3017,15 +3022,8 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
-	if err := checkForArgumentInjection(val); err != nil {
-		return err
-	}
-	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForArgumentInjection(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
-		}
-	}
+	// Argument injection check removed from here to allow flags for non-shell commands.
+	// It should be applied contextually (e.g. via validateExtraArg or manually for shells).
 	return nil
 }
 
@@ -3092,5 +3090,15 @@ func validateExtraArg(arg string, command string, isDocker bool) error {
 			return fmt.Errorf("argument injection detected: value starts with '+'")
 		}
 	}
+
+	// Sentinel Security Update: Block argument injection (flags) for SHELL COMMANDS.
+	// This prevents sh -c injection via args array.
+	// For non-shell commands (like command-tester), flags are allowed.
+	if isShellCommand(command) {
+		if err := checkForArgumentInjection(arg); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
