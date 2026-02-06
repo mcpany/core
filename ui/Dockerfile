@@ -22,6 +22,17 @@ COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
 # Copy proto folder into ui (instead of sibling) to ensure Next.js can resolve it within build context
 COPY proto/ /app/proto/
+
+# Install protoc and generate TypeScript definitions because they are gitignored
+RUN apt-get update && apt-get install -y protobuf-compiler && \
+    find /app/proto -name "*.proto" -type f -exec sed -i '/google\/protobuf\/go_features.proto/d' {} + && \
+    find /app/proto -name "*.proto" -type f -exec protoc \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=. \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    --proto_path=/app \
+    {} +
+
 # Update tsconfig to use local proto path
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
 # Symlink node_modules so proto files can find dependencies (if they import from node_modules)
