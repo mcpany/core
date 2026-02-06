@@ -45,6 +45,20 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     { name: "calculator", description: "calc" }
                 ]
             }
+        },
+        {
+            id: "svc_04",
+            name: "Local CLI",
+            version: "v1.0",
+            command_line_service: {
+                command: "echo",
+                env: {
+                    EXISTING_VAR: { plain_text: "old_value" }
+                },
+                tools: [
+                    { name: "echo", description: "echo" }
+                ]
+            }
         }
     ];
 

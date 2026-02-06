@@ -580,8 +580,10 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             <Input
                                                 id="timeout"
                                                 placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
-                                                defaultValue="30s"
+                                                // @ts-ignore - Duration can be string in JSON mapping
+                                                value={service.resilience?.timeout || ""}
+                                                // @ts-ignore - Duration can be string in JSON mapping
+                                                onChange={(e) => updateService({ resilience: { ...service.resilience, timeout: e.target.value } })}
                                             />
                                         </div>
                                     </CardContent>
