@@ -199,6 +199,16 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return resources
 }
 
+func (m *MockResourceManager) ListMCPResources() []*mcp_sdk.Resource {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	resources := make([]*mcp_sdk.Resource, 0, len(m.resources))
+	for _, r := range m.resources {
+		resources = append(resources, r.Resource())
+	}
+	return resources
+}
+
 func (m *MockResourceManager) OnListChanged(_ func()) {}
 
 func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
