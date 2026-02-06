@@ -5,10 +5,10 @@
 
 "use client";
 
-import { apiClient, ToolDefinition } from "@/lib/client";
+import { apiClient, ToolDefinition, PromptDefinition } from "@/lib/client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
+import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -99,7 +99,9 @@ export function PlaygroundClientPro() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
+  const [availablePrompts, setAvailablePrompts] = useState<PromptDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const [promptToConfigure, setPromptToConfigure] = useState<PromptDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -120,6 +122,10 @@ export function PlaygroundClientPro() {
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
         .catch(err => console.error("Failed to load tools:", err));
+
+    apiClient.listPrompts()
+        .then(data => setAvailablePrompts(data.prompts || []))
+        .catch(err => console.error("Failed to load prompts:", err));
   }, []);
 
   useEffect(() => {
@@ -159,6 +165,43 @@ export function PlaygroundClientPro() {
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
     setInput(command);
+  };
+
+  const handlePromptFormSubmit = async (data: Record<string, unknown>) => {
+    if (!promptToConfigure) return;
+    const name = promptToConfigure.name;
+    setPromptToConfigure(null);
+    setIsLoading(true);
+
+    // Add a system note that we are running a prompt
+    setMessages(prev => [...prev, {
+        id: Date.now().toString() + "-prompt-req",
+        type: "user",
+        content: `Running prompt: ${name}`,
+        timestamp: new Date(),
+    }]);
+
+    try {
+        const result = await apiClient.executePrompt(name, data as Record<string, string>);
+
+        const newMessages: Message[] = (result.messages || []).map((msg: any, idx: number) => ({
+             id: Date.now().toString() + `-prompt-${idx}`,
+             type: msg.role === "user" ? "user" : "assistant",
+             content: typeof msg.content === 'string' ? msg.content : msg.content?.text || JSON.stringify(msg.content),
+             timestamp: new Date()
+        }));
+
+        setMessages(prev => [...prev, ...newMessages]);
+    } catch (e: any) {
+        setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            type: "error",
+            content: e.message || "Failed to execute prompt",
+            timestamp: new Date()
+        }]);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   const handleInputChange = (value: string) => {
@@ -355,7 +398,9 @@ export function PlaygroundClientPro() {
          >
              <ToolSidebar
                 tools={availableTools}
+                prompts={availablePrompts}
                 onSelectTool={setToolToConfigure}
+                onSelectPrompt={setPromptToConfigure}
              />
          </ResizablePanel>
 
@@ -530,9 +575,34 @@ export function PlaygroundClientPro() {
             <div className="flex-1 overflow-hidden p-6 pt-2">
                 {toolToConfigure && (
                     <ToolForm
-                        tool={toolToConfigure}
+                        definition={toolToConfigure}
                         onSubmit={handleToolFormSubmit}
                         onCancel={() => setToolToConfigure(null)}
+                    />
+                )}
+            </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!promptToConfigure} onOpenChange={(open) => !open && setPromptToConfigure(null)}>
+        <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
+            <DialogHeader className="p-6 pb-2">
+                <DialogTitle className="flex items-center gap-2 text-xl">
+                    <div className="bg-amber-500/10 p-1.5 rounded-md">
+                        <MessageSquare className="w-5 h-5 text-amber-500" />
+                    </div>
+                    {promptToConfigure?.name}
+                </DialogTitle>
+                <DialogDescription>
+                    Configure arguments for this prompt.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-hidden p-6 pt-2">
+                {promptToConfigure && (
+                    <ToolForm
+                        definition={promptToConfigure}
+                        onSubmit={handlePromptFormSubmit}
+                        onCancel={() => setPromptToConfigure(null)}
                     />
                 )}
             </div>

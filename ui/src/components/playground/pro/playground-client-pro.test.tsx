@@ -11,7 +11,9 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 vi.mock('@/lib/client', () => ({
   apiClient: {
     listTools: vi.fn().mockResolvedValue({ tools: [] }),
+    listPrompts: vi.fn().mockResolvedValue({ prompts: [] }),
     executeTool: vi.fn(),
+    executePrompt: vi.fn(),
   },
 }));
 

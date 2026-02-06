@@ -7,7 +7,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ToolDefinition } from "@/lib/client";
+import { ToolDefinition, PromptDefinition } from "@/lib/client";
 import { SchemaForm } from "./schema-form";
 import { ToolPresets } from "./tool-presets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,7 @@ import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
 
 interface ToolFormProps {
-  tool: ToolDefinition;
+  definition: ToolDefinition | PromptDefinition;
   onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
 }
@@ -27,7 +27,7 @@ interface ToolFormProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
+export function ToolForm({ definition, onSubmit, onCancel }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [jsonInput, setJsonInput] = useState<string>("{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -35,18 +35,18 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
 
   // Initialize AJV and compile schema
   const validate = useMemo(() => {
-    if (!tool.inputSchema || Object.keys(tool.inputSchema).length === 0) {
+    if (!definition.inputSchema || Object.keys(definition.inputSchema).length === 0) {
         return null;
     }
     const ajv = new Ajv({ allErrors: true, strict: false });
     addFormats(ajv);
     try {
-        return ajv.compile(tool.inputSchema);
+        return ajv.compile(definition.inputSchema);
     } catch (e) {
         console.error("Failed to compile schema:", e);
         return null;
     }
-  }, [tool.inputSchema]);
+  }, [definition.inputSchema]);
 
   const mapErrors = (ajvErrors: ErrorObject[] | null | undefined): Record<string, string> => {
       if (!ajvErrors) return {};
@@ -206,20 +206,20 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
                 <TabsTrigger value="schema">Schema</TabsTrigger>
             </TabsList>
             <ToolPresets
-                toolName={tool.name}
+                toolName={definition.name}
                 currentData={getCurrentData()}
                 onSelect={handlePresetSelect}
             />
         </div>
 
         <TabsContent value="form" className="flex-1 overflow-y-auto pr-2 mt-0">
-             {(!tool.inputSchema || !tool.inputSchema.properties || Object.keys(tool.inputSchema.properties).length === 0) ? (
+             {(!definition.inputSchema || !definition.inputSchema.properties || Object.keys(definition.inputSchema.properties).length === 0) ? (
                  <div className="text-sm text-muted-foreground italic p-1">
                      This tool takes no arguments.
                  </div>
              ) : (
                  <SchemaForm
-                    schema={tool.inputSchema}
+                    schema={definition.inputSchema}
                     value={formData}
                     onChange={(val) => {
                         setFormData(val as Record<string, unknown>);
@@ -266,7 +266,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
 
         <TabsContent value="schema" className="flex-1 overflow-hidden mt-0">
             <div className="h-full flex flex-col gap-2">
-                <JsonView data={tool.inputSchema} className="h-full overflow-auto" maxHeight={0} />
+                <JsonView data={definition.inputSchema} className="h-full overflow-auto" maxHeight={0} />
             </div>
         </TabsContent>
       </Tabs>
