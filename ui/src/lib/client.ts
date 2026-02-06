@@ -364,7 +364,16 @@ export const apiClient = {
      * @returns A promise that resolves to the registered service configuration.
      */
     registerService: async (config: UpstreamServiceConfig) => {
-        const payload = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
+        const payload: any = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
+        // Remove read-only fields that might be rejected by the backend
+        delete payload.last_error;
+        delete payload.tool_count;
+        delete payload.config_error;
+        delete payload.read_only;
+        delete payload.sanitized_name;
+        // ID is optional in creation but good to clean if empty
+        if (!payload.id) delete payload.id;
+
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -384,7 +393,14 @@ export const apiClient = {
      * @returns A promise that resolves to the updated service configuration.
      */
     updateService: async (config: UpstreamServiceConfig) => {
-        const payload = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
+        const payload: any = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
+        // Remove read-only fields
+        delete payload.last_error;
+        delete payload.tool_count;
+        delete payload.config_error;
+        delete payload.read_only;
+        delete payload.sanitized_name;
+
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -417,7 +433,14 @@ export const apiClient = {
      * @returns A promise that resolves to the validation result.
      */
     validateService: async (config: UpstreamServiceConfig) => {
-        const payload = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
+        const payload: any = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
+        // Clean up payload
+        delete payload.last_error;
+        delete payload.tool_count;
+        delete payload.config_error;
+        delete payload.read_only;
+        delete payload.sanitized_name;
+
         const response = await fetchWithAuth('/api/v1/services/validate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1285,7 +1308,14 @@ export const apiClient = {
      * @returns A promise that resolves to the saved template.
      */
     saveTemplate: async (template: UpstreamServiceConfig) => {
-        const payload = ProtoUpstreamServiceConfig.toJSON(template as BaseUpstreamServiceConfig);
+        const payload: any = ProtoUpstreamServiceConfig.toJSON(template as BaseUpstreamServiceConfig);
+        // Clean up payload
+        delete payload.last_error;
+        delete payload.tool_count;
+        delete payload.config_error;
+        delete payload.read_only;
+        delete payload.sanitized_name;
+
         const res = await fetchWithAuth('/api/v1/templates', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
