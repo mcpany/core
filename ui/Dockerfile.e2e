@@ -9,7 +9,7 @@ WORKDIR /work/ui
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 
 # Install dependencies
-RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
+RUN npm ci
 
 # Copy the rest of the UI code
 COPY ui/ .

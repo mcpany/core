@@ -87,37 +87,84 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 }
 
 func joinFunc(sep string, input any) (string, error) {
-	a, err := toAnySlice(input)
-	if err != nil {
-		return "", fmt.Errorf("join: %w", err)
+	// ⚡ BOLT: Optimized joinFunc to avoid intermediate slice allocation.
+	// Randomized Selection from Top 5 High-Impact Targets
+
+	// Fast path for []any (common case for JSON data) to avoid reflection overhead
+	if slice, ok := input.([]any); ok {
+		return joinAnySlice(sep, slice)
+	}
+
+	val := reflect.ValueOf(input)
+	kind := val.Kind()
+	if kind != reflect.Slice && kind != reflect.Array {
+		return "", fmt.Errorf("join: expected slice or array, got %T", input)
 	}
 
 	var sb strings.Builder
+	l := val.Len()
 	sepLen := len(sep)
-	var totalLen int
 
-	// First pass: try to calculate total length
-	for i, v := range a {
+	// Estimation: 10 chars per item + separators
+	sb.Grow(l * (10 + sepLen))
+
+	// Scratch buffer for number conversion to avoid allocations
+	var scratch [64]byte
+
+	for i := 0; i < l; i++ {
 		if i > 0 {
-			totalLen += sepLen
+			sb.WriteString(sep)
 		}
 
-		if s, ok := v.(string); ok {
-			totalLen += len(s)
-		} else {
-			// For non-strings, we stop estimating and just guess.
-			// This avoids expensive iteration and type assertions for numbers.
-			remaining := len(a) - i
-			totalLen += remaining * 10
-			// Add separators estimate for remaining items
-			if remaining > 1 {
-				totalLen += (remaining - 1) * sepLen
+		v := val.Index(i)
+
+		// Handle interface wrapping
+		if v.Kind() == reflect.Interface {
+			v = v.Elem()
+		}
+
+		if !v.IsValid() {
+			fmt.Fprint(&sb, "<nil>")
+			continue
+		}
+
+		switch v.Kind() {
+		case reflect.String:
+			sb.WriteString(v.String())
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			sb.Write(strconv.AppendInt(scratch[:0], v.Int(), 10))
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			sb.Write(strconv.AppendUint(scratch[:0], v.Uint(), 10))
+		case reflect.Float32:
+			sb.Write(strconv.AppendFloat(scratch[:0], v.Float(), 'g', -1, 32))
+		case reflect.Float64:
+			sb.Write(strconv.AppendFloat(scratch[:0], v.Float(), 'g', -1, 64))
+		case reflect.Bool:
+			sb.Write(strconv.AppendBool(scratch[:0], v.Bool()))
+		default:
+			// Fallback to Interface() if it's a complex type or Stringer
+			if v.CanInterface() {
+				if s, ok := v.Interface().(fmt.Stringer); ok {
+					sb.WriteString(s.String())
+					continue
+				}
+				fmt.Fprint(&sb, v.Interface())
+			} else {
+				// Should not happen for public fields, but for safety
+				fmt.Fprint(&sb, v.String())
 			}
-			break
 		}
 	}
+	return sb.String(), nil
+}
 
-	sb.Grow(totalLen)
+func joinAnySlice(sep string, a []any) (string, error) {
+	var sb strings.Builder
+	l := len(a)
+	sepLen := len(sep)
+
+	// Estimation: 10 chars per item + separators
+	sb.Grow(l * (10 + sepLen))
 
 	// Scratch buffer for number conversion to avoid allocations
 	var scratch [64]byte
@@ -126,6 +173,12 @@ func joinFunc(sep string, input any) (string, error) {
 		if i > 0 {
 			sb.WriteString(sep)
 		}
+
+		if v == nil {
+			fmt.Fprint(&sb, "<nil>")
+			continue
+		}
+
 		switch val := v.(type) {
 		case string:
 			sb.WriteString(val)
@@ -163,20 +216,4 @@ func joinFunc(sep string, input any) (string, error) {
 		}
 	}
 	return sb.String(), nil
-}
-
-func toAnySlice(input any) ([]any, error) {
-	if s, ok := input.([]any); ok {
-		return s, nil
-	}
-	val := reflect.ValueOf(input)
-	if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
-		return nil, fmt.Errorf("expected slice or array, got %T", input)
-	}
-	l := val.Len()
-	a := make([]any, l)
-	for i := 0; i < l; i++ {
-		a[i] = val.Index(i).Interface()
-	}
-	return a, nil
 }
