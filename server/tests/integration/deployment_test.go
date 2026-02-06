@@ -186,7 +186,7 @@ func TestHelmChart(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		// t.Skip("helm command not found, skipping TestHelmChart.")
+		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
