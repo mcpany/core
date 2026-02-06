@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -1715,8 +1712,26 @@ func NewLocalCommandTool(
 
 	// Check if the command is sed and supports sandbox
 	cmd := service.GetCommand()
-	base := filepath.Base(cmd)
+
+	// Sentinel Security Update: Resolve effective command to detect dangerous tools hidden behind wrappers
+	var staticArgs []string
+	if callDefinition.GetArgs() != nil {
+		staticArgs = callDefinition.GetArgs()
+	}
+	effectiveCmd := resolveEffectiveCommand(cmd, staticArgs)
+
+	base := filepath.Base(effectiveCmd)
 	if base == "sed" || base == "gsed" {
+		// If effective command is sed, but the entry command is NOT sed, it means it is behind a wrapper.
+		// We cannot reliably apply --sandbox to sed if it is wrapped (e.g. `env sed`).
+		// So we strictly block this case.
+		entryBase := filepath.Base(cmd)
+		if entryBase != "sed" && entryBase != "gsed" {
+			t.initError = fmt.Errorf("sed tool detected behind wrapper %q; execution blocked for security (cannot apply sandbox)", entryBase)
+			logging.GetLogger().Error("Blocked sed behind wrapper", "tool", tool.GetName(), "wrapper", entryBase)
+			return t
+		}
+
 		// Check if sed supports --sandbox by running `sed --sandbox --version`
 		// We use exec.Command directly here.
 		// Use --version because it exits successfully if supported.
@@ -1734,6 +1749,69 @@ func NewLocalCommandTool(
 	}
 
 	return t
+}
+
+func resolveEffectiveCommand(cmd string, args []string) string {
+	effectiveCmd := cmd
+	currentArgs := args
+
+	// Peel off wrappers
+	// Limit loop to prevent infinite recursion
+	for i := 0; i < 10; i++ {
+		base := strings.ToLower(filepath.Base(effectiveCmd))
+		isWrapper := false
+
+		// Simple wrappers that take command as next arg (or after flags)
+		switch {
+		case base == "env":
+			isWrapper = true
+			// env [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]
+			// Skip flags and variable assignments
+			for len(currentArgs) > 0 {
+				arg := currentArgs[0]
+				switch {
+				case strings.HasPrefix(arg, "-"):
+					currentArgs = currentArgs[1:]
+				case strings.Contains(arg, "="):
+					currentArgs = currentArgs[1:]
+				default:
+					goto EnvLoopEnd
+				}
+			}
+		EnvLoopEnd:
+			// Break out of env loop
+			_ = 0
+		case base == "sudo" || base == "nice" || base == "nohup" || base == "time" || base == "xargs" || base == "watch":
+			isWrapper = true
+			// Skip flags
+			for len(currentArgs) > 0 && strings.HasPrefix(currentArgs[0], "-") {
+				currentArgs = currentArgs[1:]
+			}
+		case base == "timeout":
+			isWrapper = true
+			// timeout [OPTION] DURATION COMMAND [ARG]...
+			// Skip flags
+			for len(currentArgs) > 0 && strings.HasPrefix(currentArgs[0], "-") {
+				currentArgs = currentArgs[1:]
+			}
+			// Skip duration (assume next arg is duration)
+			if len(currentArgs) > 0 {
+				currentArgs = currentArgs[1:]
+			}
+		}
+
+		if !isWrapper {
+			break
+		}
+
+		if len(currentArgs) == 0 {
+			break
+		}
+
+		effectiveCmd = currentArgs[0]
+		currentArgs = currentArgs[1:]
+	}
+	return effectiveCmd
 }
 
 // Tool returns the protobuf definition of the command-line tool.
@@ -3006,9 +3084,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}

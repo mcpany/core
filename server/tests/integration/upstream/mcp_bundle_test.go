@@ -235,9 +235,6 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
@@ -252,10 +249,16 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	resourceManager := resource.NewManager()
 	upstreamService := mcp.NewUpstream(nil)
 	if impl, ok := upstreamService.(*mcp.Upstream); ok {
-		// Use a test-specific temp directory for bundles to ensure isolation
-		// and avoid conflicts with global state or other tests.
-		// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
-		impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		// Use MCP_BUNDLE_DIR env var if set (e.g. from Makefile in CI to avoid overlayfs issues),
+		// otherwise fallback to a test-specific temp directory.
+		if envDir := os.Getenv("MCP_BUNDLE_DIR"); envDir != "" {
+			// Ensure it is unique for this test execution to avoid collisions if running in parallel
+			impl.BundleBaseDir = filepath.Join(envDir, "e2e_test_"+t.Name())
+		} else {
+			// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
+			impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		}
+
 		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
 			t.Fatalf("Failed to create test bundle dir: %v", err)
 		}
