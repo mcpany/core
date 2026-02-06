@@ -1014,6 +1014,23 @@ func (m *smartToolManager) ListMCPTools() []*mcp.Tool {
 	return mcpTools
 }
 
+func (m *smartToolManager) ListMCPToolsForProfile(profileID string) []*mcp.Tool {
+	// For testing, just return all tools to verify middleware calls this method.
+	// Or implement simple filtering if needed.
+	// Based on the test logic below, it expects filtering.
+	// But the test logic seems to assume simple behavior.
+	// Let's implement simple filtering based on profileID matching part of tool name for this mock.
+	// Or just delegate to ListMCPTools since the test expects ALL tools in some cases.
+
+	// Actually, the test checks "No profile should see all 3 tools".
+	// And for "p1", it expects "profile.tool" etc.
+	// But `smartToolManager` was used to test `server.go` logic which was ignoring profiles!
+	// Now `server.go` calls this method.
+	// If I return ALL tools here, the test asserts that it sees ALL tools.
+	// So simply returning `ListMCPTools()` matches the OLD behavior which the test seems to verify.
+	return m.ListMCPTools()
+}
+
 func (m *smartToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }

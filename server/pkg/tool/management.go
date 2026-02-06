@@ -57,6 +57,10 @@ type ManagerInterface interface {
 	//
 	// Returns the result.
 	ListMCPTools() []*mcp.Tool
+	// ListMCPToolsForProfile returns all registered tools in MCP format, filtered by profile.
+	//
+	// Returns the result.
+	ListMCPToolsForProfile(profileID string) []*mcp.Tool
 	// ClearToolsForService removes all tools for a given service.
 	//
 	// serviceID is the serviceID.
@@ -153,7 +157,9 @@ type Manager struct {
 	// cachedMCPTools caches the list of tools in MCP format to avoid
 	// re-allocating and re-converting them on every request.
 	cachedMCPTools []*mcp.Tool
-	toolsMutex     sync.RWMutex
+	// cachedProfileMCPTools caches filtered tool lists per profile.
+	cachedProfileMCPTools map[string][]*mcp.Tool
+	toolsMutex            sync.RWMutex
 
 	// Indices for O(1) cleanup
 	serviceToolIDs   map[string]map[string]struct{}
@@ -189,6 +195,11 @@ func NewManager(bus *bus.Provider) *Manager {
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
+
+	tm.toolsMutex.Lock()
+	tm.cachedProfileMCPTools = nil
+	tm.toolsMutex.Unlock()
+
 	tm.enabledProfiles = enabled
 	tm.profileDefs = make(map[string]*configv1.ProfileDefinition)
 	tm.allowedServicesCache = make(map[string]map[string]bool)
@@ -745,6 +756,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
 	tm.cachedMCPTools = nil
+	tm.cachedProfileMCPTools = nil
 	tm.toolsMutex.Unlock()
 
 	if tm.mcpServer != nil {
@@ -935,20 +947,67 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	mcpTools := make([]*mcp.Tool, 0, len(tools))
 	for _, t := range tools {
 		if mt := t.MCPTool(); mt != nil {
+			// ⚡ Bolt: Shallow copy to avoid shared state mutation if tool caches the result
+			mtCopy := *mt
 			// Enforce namespacing for the tool list to match AddTool and mcpServer registration
 			if t.Tool().GetServiceId() != "" {
 				expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
-				if mt.Name != expectedName {
+				if mtCopy.Name != expectedName {
 					// Update the name in the cached MCP tool
-					mt.Name = expectedName
+					mtCopy.Name = expectedName
 				}
 			}
-			mcpTools = append(mcpTools, mt)
+			mcpTools = append(mcpTools, &mtCopy)
 		}
 	}
 
 	tm.cachedMCPTools = mcpTools
 	return mcpTools
+}
+
+// ListMCPToolsForProfile returns a slice containing all the tools currently registered with
+// the manager in MCP format, filtered by profile.
+func (tm *Manager) ListMCPToolsForProfile(profileID string) []*mcp.Tool {
+	tm.toolsMutex.RLock()
+	if tm.cachedProfileMCPTools != nil {
+		if list, ok := tm.cachedProfileMCPTools[profileID]; ok {
+			tm.toolsMutex.RUnlock()
+			return list
+		}
+	}
+	tm.toolsMutex.RUnlock()
+
+	// Compute filtered list.
+	// We use ListTools() to ensure we get the up-to-date list of tools (and it handles rebuilding its own cache).
+	// ListTools uses toolsMutex internally, so we don't hold it here.
+	tools := tm.ListTools()
+
+	var filtered []*mcp.Tool
+	for _, t := range tools {
+		// ToolMatchesProfile acquires mu.RLock, so it's safe.
+		if tm.ToolMatchesProfile(t, profileID) {
+			if mt := t.MCPTool(); mt != nil {
+				// ⚡ Bolt: Shallow copy to avoid shared state mutation
+				mtCopy := *mt
+				// Enforce namespacing for the tool list
+				if t.Tool().GetServiceId() != "" {
+					expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
+					if mtCopy.Name != expectedName {
+						mtCopy.Name = expectedName
+					}
+				}
+				filtered = append(filtered, &mtCopy)
+			}
+		}
+	}
+
+	tm.toolsMutex.Lock()
+	defer tm.toolsMutex.Unlock()
+	if tm.cachedProfileMCPTools == nil {
+		tm.cachedProfileMCPTools = make(map[string][]*mcp.Tool)
+	}
+	tm.cachedProfileMCPTools[profileID] = filtered
+	return filtered
 }
 
 // ClearToolsForService removes all tools associated with a given service key from
@@ -988,6 +1047,7 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil
 		tm.cachedMCPTools = nil
+		tm.cachedProfileMCPTools = nil
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
