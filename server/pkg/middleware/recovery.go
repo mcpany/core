@@ -8,6 +8,7 @@ import (
 	"runtime/debug"
 
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // RecoveryMiddleware recovers from panics in the handler chain, logs the panic,
@@ -19,7 +20,7 @@ func RecoveryMiddleware(next http.Handler) http.Handler {
 				// Log the panic with stack trace
 				log := logging.GetLogger()
 				stack := string(debug.Stack())
-				log.Error("Panic recovered", "error", err, "stack", stack, "url", r.URL.String(), "method", r.Method)
+				log.Error("Panic recovered", "error", err, "stack", stack, "url", util.RedactURL(r.URL), "method", r.Method)
 
 				// Return generic 500 error
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
