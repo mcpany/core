@@ -110,13 +110,34 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 				}
 			}
 
-			if strings.Contains(errorMsg, "503 Service Temporarily Unavailable") || strings.Contains(errorMsg, "context deadline exceeded") || strings.Contains(errorMsg, "connection reset by peer") {
+			if strings.Contains(errorMsg, "503 Service Temporarily Unavailable") ||
+				strings.Contains(errorMsg, "context deadline exceeded") ||
+				strings.Contains(errorMsg, "connection reset by peer") ||
+				strings.Contains(errorMsg, "Too Many Requests") {
 				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (MCP error): %s. Retrying...", i+1, maxRetries, errorMsg)
 				time.Sleep(2 * time.Second) // Wait before retrying
 				continue
 			}
 			// If it's a non-transient error, we stop retrying and let the assertions fail
 			break
+		}
+
+		// Check for Soft Failure (IsError: false but content is not JSON, likely 429/Error page returned with 200 OK)
+		if len(res.Content) > 0 {
+			if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
+				var js map[string]interface{}
+				if err := json.Unmarshal([]byte(textContent.Text), &js); err != nil {
+					// Not valid JSON. Check for known error strings.
+					if strings.Contains(textContent.Text, "Too Many Requests") {
+						t.Logf("Attempt %d/%d: Call to catfact.ninja returned non-JSON response (likely rate limit): %s. Retrying...", i+1, maxRetries, textContent.Text)
+						time.Sleep(2 * time.Second)
+						continue
+					}
+					// If it's some other non-JSON response, we might still want to retry if it looks like an error,
+					// but for now we assume it's a failure unless it's a known rate limit.
+					// We will let the final assertion fail with a clear message.
+				}
+			}
 		}
 
 		// Success
@@ -137,6 +158,9 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	var catFactResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &catFactResponse)
+	if err != nil {
+		t.Logf("Failed to unmarshal JSON. Raw body: %s", textContent.Text)
+	}
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	require.NotEmpty(t, catFactResponse["fact"], "The fact should not be empty")

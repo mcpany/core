@@ -641,7 +641,7 @@ func TestMergeSchemaProperties_Recursion(t *testing.T) {
 		},
 	}
 
-	merged, err := mergeSchemaProperties(finalSchema, doc)
+	_, merged, err := mergeSchemaProperties(finalSchema, doc)
 	assert.NoError(t, err)
 	assert.Contains(t, merged, "baseProp")
 	assert.Contains(t, merged, "middleProp")

@@ -190,18 +190,28 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			}
 		}
 
-		properties, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
+		required, properties, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
 		if err != nil {
 			// Use baseOperationID for the error message as toolID is removed.
 			logging.GetLogger().Warn("Failed to convert OpenAPI schema to InputSchema for tool. Input schema will be empty.", "tool", baseOperationID, "error", err)
 			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
 		}
 
+		inputSchemaFields := map[string]*structpb.Value{
+			"type":       structpb.NewStringValue(typeObject),
+			"properties": structpb.NewStructValue(properties),
+		}
+
+		if len(required) > 0 {
+			requiredList := make([]*structpb.Value, len(required))
+			for i, r := range required {
+				requiredList[i] = structpb.NewStringValue(r)
+			}
+			inputSchemaFields["required"] = structpb.NewListValue(&structpb.ListValue{Values: requiredList})
+		}
+
 		inputSchema := &structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue(typeObject),
-				"properties": structpb.NewStructValue(properties),
-			},
+			Fields: inputSchemaFields,
 		}
 
 		// Determine response body schema for output
@@ -286,7 +296,7 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 			}
 
 			if isObject {
-				mergedProps, err := mergeSchemaProperties(bodyActualSchema, doc)
+				_, mergedProps, err := mergeSchemaProperties(bodyActualSchema, doc)
 				if err != nil {
 					logging.GetLogger().Warn("Failed to merge properties", "error", err)
 				}
@@ -319,14 +329,15 @@ func convertOpenAPISchemaToInputSchemaProperties(
 	bodySchemaRef *openapi3.SchemaRef, // Schema for the request body
 	opParameters openapi3.Parameters, // Parameters for the operation (query, path, header)
 	doc *openapi3.T,
-) (*structpb.Struct, error) {
+) ([]string, *structpb.Struct, error) {
 	props := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+	var required []string
 
 	// Process request body schema (if any, typically for application/json)
 	if bodySchemaRef != nil {
 		bodyActualSchema, err := resolveSchemaRef(bodySchemaRef, doc)
 		if err != nil {
-			return nil, fmt.Errorf("could not resolve request body schema reference: %w", err)
+			return nil, nil, fmt.Errorf("could not resolve request body schema reference: %w", err)
 		}
 
 		if bodyActualSchema != nil {
@@ -340,10 +351,11 @@ func convertOpenAPISchemaToInputSchemaProperties(
 			}
 
 			if isObject {
-				mergedProps, err := mergeSchemaProperties(bodyActualSchema, doc)
+				mergedRequired, mergedProps, err := mergeSchemaProperties(bodyActualSchema, doc)
 				if err != nil {
 					logging.GetLogger().Warn("Failed to merge properties", "error", err)
 				}
+				required = append(required, mergedRequired...)
 				for propName, propSchemaRef := range mergedProps {
 					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
 					if err != nil {
@@ -359,6 +371,7 @@ func convertOpenAPISchemaToInputSchemaProperties(
 					logging.GetLogger().Warn("Failed to convert non-object request body schema", "error", err)
 				} else {
 					props.Fields["request_body"] = val
+					required = append(required, "request_body")
 				}
 			}
 		}
@@ -386,10 +399,13 @@ func convertOpenAPISchemaToInputSchemaProperties(
 				continue
 			}
 			props.Fields[param.Name] = val
+			if param.Required {
+				required = append(required, param.Name)
+			}
 		}
 	}
 
-	return props, nil
+	return required, props, nil
 }
 
 // convertSchemaToStructPB converts a single OpenAPI Schema (or SchemaRef) to a *structpb.Value representing its schema.
@@ -436,9 +452,17 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 		fieldSchema["type"] = typeObject
 		nestedProps := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
-		mergedProps, err := mergeSchemaProperties(sVal, doc)
+		mergedRequired, mergedProps, err := mergeSchemaProperties(sVal, doc)
 		if err != nil {
 			logging.GetLogger().Warn("Warning: failed to merge properties for object '%s': %v\n", name, err)
+		}
+
+		if len(mergedRequired) > 0 {
+			requiredList := make([]interface{}, len(mergedRequired))
+			for i, r := range mergedRequired {
+				requiredList[i] = r
+			}
+			fieldSchema["required"] = requiredList
 		}
 
 		for propName, propSchemaRef := range mergedProps {
@@ -481,8 +505,9 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 }
 
 // mergeSchemaProperties returns a merged map of properties from the schema and its AllOf components.
-func mergeSchemaProperties(s *openapi3.Schema, doc *openapi3.T) (map[string]*openapi3.SchemaRef, error) {
+func mergeSchemaProperties(s *openapi3.Schema, doc *openapi3.T) ([]string, map[string]*openapi3.SchemaRef, error) {
 	props := make(map[string]*openapi3.SchemaRef)
+	var required []string
 
 	// Helper to recursively merge properties
 	var merge func(*openapi3.Schema) error
@@ -506,13 +531,14 @@ func mergeSchemaProperties(s *openapi3.Schema, doc *openapi3.T) (map[string]*ope
 		for k, v := range curr.Properties {
 			props[k] = v
 		}
+		required = append(required, curr.Required...)
 		return nil
 	}
 
 	if err := merge(s); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return props, nil
+	return required, props, nil
 }
 
 func resolveSchemaRef(sr *openapi3.SchemaRef, doc *openapi3.T) (*openapi3.Schema, error) {
