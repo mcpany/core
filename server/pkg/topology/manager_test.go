@@ -566,3 +566,43 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_CleanupExpiredSessions(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// 1. Add an active session
+	m.RecordActivity("active-session", nil, 100*time.Millisecond, false, "")
+
+	// 2. Add a session that will be "expired"
+	m.RecordActivity("expired-session", nil, 100*time.Millisecond, false, "")
+
+	// Wait for processing
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists1 := m.sessions["active-session"]
+		_, exists2 := m.sessions["expired-session"]
+		m.mu.RUnlock()
+		return exists1 && exists2
+	}, 1*time.Second, 10*time.Millisecond)
+
+	// 3. Manually expire the session
+	m.mu.Lock()
+	m.sessions["expired-session"].LastActive = time.Now().Add(-2 * time.Hour)
+	m.mu.Unlock()
+
+	// 4. Trigger cleanup (calling private method directly for testing)
+	m.cleanupExpiredSessions()
+
+	// 5. Verify results
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	_, activeExists := m.sessions["active-session"]
+	_, expiredExists := m.sessions["expired-session"]
+
+	assert.True(t, activeExists, "Active session should remain")
+	assert.False(t, expiredExists, "Expired session should be removed")
+}
