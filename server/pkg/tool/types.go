@@ -2773,6 +2773,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
 		}
 
+		// Block Ruby interpolation #{}
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("shell injection detected: value contains '#{' inside single-quoted argument (potential ruby interpolation abuse)")
+		}
+
+		// Block Shell/Perl/PHP/JS interpolation/command substitution ${} and $()
+		// Note: $() is command substitution in shell. ${} is variable expansion.
+		// In Single Quotes, these are literal. But if passed to a nested shell/interpreter, they expand.
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("shell injection detected: value contains '${' inside single-quoted argument (potential interpolation abuse)")
+		}
+		if strings.Contains(val, "$(") {
+			return fmt.Errorf("shell injection detected: value contains '$(' inside single-quoted argument (potential command substitution abuse)")
+		}
+
 		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
 		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
 		// We normalize by removing whitespace to detect "system (" or "system\t(".
