@@ -7,22 +7,50 @@ FROM node:20-bookworm-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-WORKDIR /app
+# Avoid WORKDIR to prevent overlayfs mount issues in CI
+RUN mkdir -p /app
 
 # Install dependencies based on the preferred package manager
-COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
+COPY ui/package.json ui/package-lock.json* ui/.npmrc* /app/
 # Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
-RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
+RUN cd /app && rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
 
 # Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY ui/ .
-COPY --from=deps /app/package-lock.json ./package-lock.json
+RUN mkdir -p /app
+COPY --from=deps /app/node_modules /app/node_modules
+COPY ui/ /app/
+COPY --from=deps /app/package-lock.json /app/package-lock.json
 COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
+
+# Install tools to generate protos inside the container
+RUN apt-get update && apt-get install -y protobuf-compiler curl unzip
+
+# Download googleapis
+RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q googleapis.zip && \
+    mv googleapis-master /googleapis && \
+    rm googleapis.zip
+
+# Generate local protos
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/proto \
+    --proto_path=/googleapis \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
+# Generate standard protos (google/api, google/protobuf)
+RUN find /usr/include/google/protobuf /googleapis/google/api -name "*.proto" -exec protoc \
+    --proto_path=/usr/include \
+    --proto_path=/googleapis \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -33,12 +61,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
-RUN npm run build
-RUN mkdir -p public
+RUN cd /app && npm run build
+RUN mkdir -p /app/public
 
 # Production image, copy all the files and run next
 FROM base AS runner
-WORKDIR /app
+RUN mkdir -p /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -50,17 +78,17 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Handle public directory if it exists
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/public /app/public
 
 
 # Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+RUN mkdir /app/.next
+RUN chown nextjs:nodejs /app/.next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone /app/
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static /app/.next/static
 
 USER nextjs
 
@@ -70,4 +98,4 @@ ENV PORT=3000
 # set hostname to localhost
 ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "cd /app && node server.js"]
