@@ -7,7 +7,6 @@ package sql
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"sync"
@@ -17,10 +16,13 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
+
+var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
 type Tool struct {
@@ -115,7 +117,7 @@ func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, er
 	}
 
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	if err := fastJSON.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		metrics.IncrCounter([]string{"sql", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}

@@ -7,7 +7,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -20,8 +19,11 @@ import (
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/patrickmn/go-cache"
 )
+
+var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // metricRateLimitRequestsTotal is the metric name for rate limit requests.
 // Pre-allocated to avoid allocation on every request.
@@ -186,7 +188,23 @@ func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int 
 	case req.Arguments != nil:
 		args = req.Arguments
 	case len(req.ToolInputs) > 0:
-		if err := json.Unmarshal(req.ToolInputs, &args); err != nil {
+		// ⚡ BOLT: Optimization: If using SimpleTokenizer, we can count tokens directly on the raw JSON bytes
+		// without expensive unmarshaling. The heuristic (len/4) works sufficiently well for rate limiting
+		// on the raw encoded data vs the decoded map.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if _, ok := m.tokenizer.(*tokenizer.SimpleTokenizer); ok {
+			// Cast to []byte to ensure fast path in tokenizer matches (json.RawMessage is a named type)
+			tokens, err := tokenizer.CountTokensInValue(m.tokenizer, []byte(req.ToolInputs))
+			if err != nil {
+				return 1
+			}
+			if tokens < 1 {
+				return 1
+			}
+			return tokens
+		}
+
+		if err := fastJSON.Unmarshal(req.ToolInputs, &args); err != nil {
 			// If unmarshal fails, we can't estimate properly. Return default cost.
 			return 1
 		}

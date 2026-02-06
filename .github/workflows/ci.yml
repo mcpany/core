@@ -333,6 +333,16 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Pre-pull Bundle Images
+        run: |
+          # Pre-pull images used by bundle tests to avoid runtime timeouts/failures
+          docker pull node:18-alpine
+          docker pull python:3.11-slim
+          docker pull ghcr.io/astral-sh/uv:python3.11-bookworm-slim
+          docker pull debian:bookworm-slim
+          docker pull mirror.gcr.io/library/redis:latest
+          docker pull mcr.microsoft.com/playwright:v1.58.0-jammy
+
       - name: Prepare environment
         run: make prepare
 

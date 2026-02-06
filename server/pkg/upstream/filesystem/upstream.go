@@ -8,7 +8,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"io"
 	"sync"
@@ -24,10 +23,13 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
 	"github.com/mcpany/core/server/pkg/util"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
 type Upstream struct {
@@ -196,7 +198,7 @@ type fsCallable struct {
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {
-		if err := json.Unmarshal(req.ToolInputs, &args); err != nil {
+		if err := fastJSON.Unmarshal(req.ToolInputs, &args); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal arguments: %w", err)
 		}
 	}

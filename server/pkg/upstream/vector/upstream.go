@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -19,6 +20,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // ClientFactory is a function that creates a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
@@ -170,7 +173,13 @@ type vectorCallable struct {
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return c.handler(ctx, req.Arguments)
+	args := req.Arguments
+	if args == nil && len(req.ToolInputs) > 0 {
+		if err := fastJSON.Unmarshal(req.ToolInputs, &args); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal arguments: %w", err)
+		}
+	}
+	return c.handler(ctx, args)
 }
 
 type vectorToolDef struct {
