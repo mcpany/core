@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/nats-io/nuid"
 )
 
 // LogEntry is the structure for logs sent over WebSocket.
@@ -65,7 +65,9 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 // Returns an error if the operation fails.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	entry := LogEntry{
-		ID:        uuid.New().String(),
+		// ⚡ BOLT: Replaced UUID with NUID for high-performance ID generation in hot path.
+		// Randomized Selection from Top 5 High-Impact Targets
+		ID:        nuid.Next(),
 		Timestamp: r.Time.Format(time.RFC3339),
 		Level:     r.Level.String(),
 		Message:   r.Message,

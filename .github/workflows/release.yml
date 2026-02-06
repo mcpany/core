@@ -8,8 +8,12 @@ on:
       release_version:
         description: "The release version (e.g., v1.2.3)"
         required: true
-  schedule:
-    - cron: '0 3 * * *'
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 env:
   # Define registries and image names centrally
