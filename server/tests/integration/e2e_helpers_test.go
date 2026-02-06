@@ -72,7 +72,7 @@ func TestDockerHelpers(t *testing.T) {
 	}
 
 	// Test StartDockerContainer
-	imageName := "alpine:latest"
+	imageName := "mirror.gcr.io/library/alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
 	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"}, "sleep", "60")
 	defer cleanup()
