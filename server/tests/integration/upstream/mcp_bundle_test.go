@@ -235,9 +235,6 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
@@ -297,7 +294,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// The upstream Register adds tools to toolManager.
 
 	// Let's call read_file on "hello.txt"
-	// The bundle is mounted at /app/bundle in the container.
+	// The bundle is mounted (or copied) at /app/bundle in the container.
 	// So expected path for hello.txt is /app/bundle/hello.txt
 
 	sanitizedToolName, _ := util.SanitizeToolName("read_file")

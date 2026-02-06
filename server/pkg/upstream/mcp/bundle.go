@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/docker/docker/api/types/mount"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -181,20 +180,17 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	} else {
 		logging.GetLogger().Info("Bundle temp dir exists", "path", tempDir, "mode", stat.Mode())
 	}
+
+	// Use CopyToContainer strategy instead of bind mount to support environments where
+	// bind mounting the temp dir (overlayfs) is problematic (e.g. GitHub Actions).
 	transport := &BundleDockerTransport{
-		Image:      imageName,
-		Command:    command,
-		Args:       args,
-		Env:        envList,
-		WorkingDir: containerMountPath,
-		Mounts: []mount.Mount{
-			{
-				Type:     mount.TypeBind,
-				Source:   tempDir,
-				Target:   containerMountPath,
-				ReadOnly: true,
-			},
-		},
+		Image:            imageName,
+		Command:          command,
+		Args:             args,
+		Env:              envList,
+		WorkingDir:       containerMountPath,
+		BundleContentDir: tempDir,
+		// No Mounts needed for bundle content
 	}
 
 	// 5. Connect and Register
@@ -334,7 +330,7 @@ func unzipBundle(src, dest string) error {
 func inferImage(serverType string) string {
 	switch serverType {
 	case "node":
-		return "node:18-alpine"
+		return "node:18-slim"
 	case "python":
 		return "python:3.11-slim"
 	case "uv":

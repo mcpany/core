@@ -201,6 +201,24 @@ func init() {
 }`,
 			"npx -y @modelcontextprotocol/server-cloudflare",
 		),
+		mkTemplate(
+			"linear",
+			"Linear",
+			`{
+  "type": "object",
+  "title": "Linear Configuration",
+  "properties": {
+    "LINEAR_API_KEY": {
+      "type": "string",
+      "title": "API Key",
+      "description": "Your Linear API Key.",
+      "format": "password"
+    }
+  },
+  "required": ["LINEAR_API_KEY"]
+}`,
+			"npx -y @modelcontextprotocol/server-linear",
+		),
 	}
 }
 
