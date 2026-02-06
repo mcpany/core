@@ -30,8 +30,8 @@ RUN ln -s /app/node_modules /proto/node_modules
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Set default API URL for build time (prerendering) if not provided
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
+ARG NEXT_PUBLIC_API_URL=http://localhost:50050
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # Build the application
 # ⚡ BOLT: Explicitly skip type checking and linting to ensure build succeeds in CI docker environment
@@ -49,7 +49,8 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # User authentication service URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
+ARG NEXT_PUBLIC_API_URL=http://localhost:50050
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
