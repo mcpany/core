@@ -116,6 +116,11 @@ make lint
 ### Building
 Compile all artifacts (Server binary and UI assets).
 ```bash
+make all
+```
+
+Or build just the server:
+```bash
 make build
 ```
 

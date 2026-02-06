@@ -48,24 +48,18 @@ export interface ButtonProps
 }
 
 /**
- * Button component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * Primary UI Button component.
+ * Supports various variants and sizes, and can render as a different element using `asChild`.
+ *
+ * @param props - The button properties.
+ * @param props.className - Additional class names to apply.
+ * @param props.variant - The visual variant of the button (default, destructive, outline, etc.).
+ * @param props.size - The size of the button (default, sm, lg, icon).
+ * @param props.asChild - If true, the component will render its child element as the button (delegating props).
+ * @returns The rendered button component.
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-/**
- * Comp component.
- * @param props - The component props.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
- */
     const Comp = asChild ? Slot : "button"
     return (
       <Comp

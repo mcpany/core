@@ -31,10 +31,14 @@ type AuditMiddleware struct {
 
 // NewAuditMiddleware creates a new AuditMiddleware.
 //
-// auditConfig is the auditConfig.
+// Summary: Creates a new AuditMiddleware.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The audit configuration.
+//
+// Returns:
+//   - *AuditMiddleware: The new AuditMiddleware instance.
+//   - error: An error if the operation fails.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -94,9 +98,13 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 
 // UpdateConfig updates the audit configuration safely.
 //
-// auditConfig is the auditConfig.
+// Summary: Updates the audit configuration safely.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The new audit configuration.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -141,12 +149,16 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 
 // Execute intercepts tool execution to log audit events.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Intercepts tool execution to log audit events.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *tool.ExecutionRequest. The request object.
+//   - next: tool.ExecutionFunc. The next function in the chain.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the operation fails.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
