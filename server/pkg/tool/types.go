@@ -2893,8 +2893,12 @@ func checkUnquotedInjection(val, command string) error {
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 
 	charsToCheck := dangerousChars
-	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
-	if filepath.Base(command) == "env" {
+	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables.
+	// For 'make' and 'awk' variants, '=' allows setting variables which can lead to RCE.
+	base := filepath.Base(command)
+	if base == "env" || base == "make" ||
+		strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") ||
+		strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk") {
 		charsToCheck += "="
 	}
 
