@@ -35,39 +35,67 @@ type MCPServerProvider interface {
 }
 
 // ManagerInterface defines the interface for a tool manager.
+//
+// Summary: Interface for managing the lifecycle and execution of tools.
 type ManagerInterface interface {
 	// AddTool registers a new tool.
 	//
-	// tool represents the tool definition.
+	// Summary: Registers a tool with the manager.
 	//
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - tool: Tool. The tool instance to register.
+	//
+	// Returns:
+	//   - error: An error if registration fails.
 	AddTool(tool Tool) error
+
 	// GetTool retrieves a tool by name.
 	//
-	// toolName is the toolName.
+	// Summary: Look up a tool by its name.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Parameters:
+	//   - toolName: string. The name of the tool.
+	//
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if found, false otherwise.
 	GetTool(toolName string) (Tool, bool)
+
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Summary: Lists all internal tool representations.
+	//
+	// Returns:
+	//   - []Tool: A slice of all registered tools.
 	ListTools() []Tool
+
 	// ListMCPTools returns all registered tools in MCP format.
 	//
-	// Returns the result.
+	// Summary: Lists all tools converted to MCP format.
+	//
+	// Returns:
+	//   - []*mcp.Tool: A slice of MCP tools.
 	ListMCPTools() []*mcp.Tool
+
 	// ClearToolsForService removes all tools for a given service.
 	//
-	// serviceID is the serviceID.
+	// Summary: Removes tools associated with a specific service ID.
+	//
+	// Parameters:
+	//   - serviceID: string. The unique service identifier.
 	ClearToolsForService(serviceID string)
+
 	// ExecuteTool executes a tool with the given request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Summary: Executes a tool.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The execution parameters.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if execution fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer sets the MCP server provider.
 	//

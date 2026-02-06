@@ -12,7 +12,16 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Architecture
+## 2. Key Features
+
+*   **Universal Adapter**: Supports gRPC, HTTP (REST/OpenAPI), GraphQL, and CLI tools.
+*   **Dynamic Tool Registration**: Auto-discovers tools from Proto files, OpenAPI specs, or Reflection.
+*   **Configuration as Code**: Define everything in lightweight YAML/JSON. No code changes required.
+*   **Security First**: Built-in safety policies, strict egress control, and input validation.
+*   **Zero-Trust Authentication**: Handles API keys, Bearer tokens, and mTLS internally, keeping secrets away from AI agents.
+*   **Multi-Tenancy**: Robust support for multiple users and profiles.
+
+## 3. Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
@@ -45,7 +54,7 @@ graph TD
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
-## 3. Getting Started
+## 4. Getting Started
 
 Follow these steps to get up and running immediately.
 
@@ -90,7 +99,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## 5. Development
 
 We follow a strict development workflow to ensure quality.
 
@@ -125,7 +134,7 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
-## 5. Configuration
+## 6. Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files for services.
 
