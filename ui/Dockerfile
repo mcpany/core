@@ -63,11 +63,10 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
 RUN cd /app && npm run build
-RUN mkdir -p /app/public
 
 # Production image, copy all the files and run next
 FROM base AS runner
-# RUN mkdir -p /app
+# Avoid WORKDIR /app. Using absolute paths.
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -75,16 +74,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # User authentication service URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    mkdir -p /app/public && \
+    mkdir -p /app/.next && \
+    chown nextjs:nodejs /app/.next
 
 # Handle public directory if it exists
 COPY --from=builder /app/public /app/public
-
-
-# Set the correct permission for prerender cache
-RUN mkdir -p /app/.next
-RUN chown nextjs:nodejs /app/.next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
