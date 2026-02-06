@@ -852,7 +852,8 @@ func TestBundleDockerConn_Read_Malformed(t *testing.T) {
 	conn.decoder = json.NewDecoder(strings.NewReader(`123`))
 	_, err = conn.Read(context.Background())
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to unmarshal message header")
+	// ⚡ BOLT: Updated expectation for optimized map decoding
+	assert.Contains(t, err.Error(), "cannot unmarshal number")
 }
 
 type mockSessionCoverage struct {

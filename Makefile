@@ -65,6 +65,9 @@ lint:
 run:
 	$(MAKE) -C server run
 
+build:
+	$(MAKE) -C server build
+
 clean:
 	$(MAKE) -C server clean
 	# ui clean if needed, likely just removing node_modules or build artifacts?
