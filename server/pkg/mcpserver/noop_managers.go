@@ -31,6 +31,13 @@ func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 // Returns true if successful.
 func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 
+// GetToolCount implements tool.ManagerInterface.
+//
+// _ is an unused parameter.
+//
+// Returns the count.
+func (m *NoOpToolManager) GetToolCount(_ string) int { return 0 }
+
 // ListTools implements tool.ManagerInterface.
 //
 // Returns the result.

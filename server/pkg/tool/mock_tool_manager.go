@@ -224,6 +224,28 @@ func (mr *MockManagerInterfaceMockRecorder) GetTool(toolName any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTool", reflect.TypeOf((*MockManagerInterface)(nil).GetTool), toolName)
 }
 
+// GetToolCount mocks base method.
+//
+// serviceID is the serviceID.
+//
+// Returns the count.
+func (m *MockManagerInterface) GetToolCount(serviceID string) int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetToolCount", serviceID)
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// GetToolCount indicates an expected call of GetToolCount.
+//
+// serviceID is the serviceID.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) GetToolCount(serviceID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetToolCount", reflect.TypeOf((*MockManagerInterface)(nil).GetToolCount), serviceID)
+}
+
 // IsServiceAllowed mocks base method.
 //
 // serviceID is the serviceID.

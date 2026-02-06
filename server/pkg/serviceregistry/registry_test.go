@@ -67,6 +67,7 @@ type mockToolManager struct {
 func (m *mockToolManager) AddTool(_ tool.Tool) error             { return nil }
 func (m *mockToolManager) ClearToolsForService(_ string)         {}
 func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
+func (m *mockToolManager) GetToolCount(_ string) int             { return 0 }
 func (m *mockToolManager) ListTools() []tool.Tool                { return nil }
 func (m *mockToolManager) ListServices() []*tool.ServiceInfo     { return nil }
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
@@ -447,6 +448,18 @@ func (m *threadSafeToolManager) GetTool(name string) (tool.Tool, bool) {
 	defer m.mu.RUnlock()
 	t, ok := m.tools[name]
 	return t, ok
+}
+
+func (m *threadSafeToolManager) GetToolCount(serviceID string) int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	count := 0
+	for _, t := range m.tools {
+		if t.Tool().GetServiceId() == serviceID {
+			count++
+		}
+	}
+	return count
 }
 
 func (m *threadSafeToolManager) ListTools() []tool.Tool {

@@ -72,6 +72,10 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return t, ok
 }
 
+func (m *MockToolManager) GetToolCount(serviceID string) int {
+	return 0
+}
+
 func (m *MockToolManager) ListTools() []tool.Tool {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -90,6 +90,10 @@ func (m *TestMockToolManager) GetTool(toolID string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
+func (m *TestMockToolManager) GetToolCount(serviceID string) int {
+	return 0
+}
+
 func (m *TestMockToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }

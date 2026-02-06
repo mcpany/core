@@ -42,6 +42,7 @@ type hunterMockToolManager struct {
 func (m *hunterMockToolManager) AddTool(_ tool.Tool) error             { return nil }
 func (m *hunterMockToolManager) ClearToolsForService(_ string)         {}
 func (m *hunterMockToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
+func (m *hunterMockToolManager) GetToolCount(_ string) int             { return 0 }
 func (m *hunterMockToolManager) ListTools() []tool.Tool                { return nil }
 func (m *hunterMockToolManager) ListServices() []*tool.ServiceInfo     { return nil }
 func (m *hunterMockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}

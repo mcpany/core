@@ -29,6 +29,10 @@ func (m *MockToolManagerForRegistry) GetTool(name string) (tool.Tool, bool) {
 	return nil, args.Bool(1)
 }
 
+func (m *MockToolManagerForRegistry) GetToolCount(serviceID string) int {
+	return 0
+}
+
 func (m *MockToolManagerForRegistry) ListTools() []tool.Tool {
 	args := m.Called()
 	return args.Get(0).([]tool.Tool)

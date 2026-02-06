@@ -30,6 +30,10 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return nil, args.Bool(1)
 }
 
+func (m *MockToolManager) GetToolCount(serviceID string) int {
+	return 0
+}
+
 func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 	args := m.Called(id)
 	if s := args.Get(0); s != nil {
