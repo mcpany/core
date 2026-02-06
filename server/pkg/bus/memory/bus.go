@@ -57,12 +57,31 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	defer b.mu.RUnlock()
 
 	if subs, ok := b.subscribers[topic]; ok {
+		// ⚡ BOLT: Reuse timer to avoid allocating a new timer and channel for every subscriber.
+		// Randomized Selection from Top 5 High-Impact Targets
+		timer := time.NewTimer(b.publishTimeout)
+		if !timer.Stop() {
+			select {
+			case <-timer.C:
+			default:
+			}
+		}
+		defer timer.Stop()
+
 		for id, ch := range subs {
+			timer.Reset(b.publishTimeout)
+
 			// Use a non-blocking send with a timeout to avoid blocking the
 			// publisher indefinitely.
 			select {
 			case ch <- msg:
-			case <-time.After(b.publishTimeout):
+				if !timer.Stop() {
+					select {
+					case <-timer.C:
+					default:
+					}
+				}
+			case <-timer.C:
 				// It's important to have a logging strategy for dropped messages.
 				log := logging.GetLogger()
 				log.Warn("Message dropped on topic", "topic", topic, "subscriber_id", id, "timeout", b.publishTimeout)
