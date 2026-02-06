@@ -5,7 +5,7 @@
 
 "use client";
 
-import React from "react";
+import React, { memo, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -25,6 +25,9 @@ interface SchemaFieldProps {
     required?: boolean;
     label?: string;
     level?: number;
+    // Optimization props
+    parentChange?: (key: string, value: unknown) => void;
+    name?: string;
 }
 
 /**
@@ -57,6 +60,8 @@ export function SchemaForm({ schema, value, onChange, errors }: {
     );
 }
 
+// ⚡ BOLT: Memoize SchemaField and use stable callbacks to prevent O(N) re-renders.
+// Randomized Selection from Top 5 High-Impact Targets
 /**
  * SchemaField component.
  * @param props - The component props.
@@ -68,9 +73,24 @@ export function SchemaForm({ schema, value, onChange, errors }: {
  * @param props.required - Whether the field is required.
  * @param props.label - The label property.
  * @param props.level - The level property.
+ * @param props.parentChange - Optimized callback for parent updates.
+ * @param props.name - The field name/key.
  * @returns The rendered component.
  */
-function SchemaField({ path, schema, value, onChange, errors, required, label, level = 0 }: SchemaFieldProps) {
+const SchemaField = memo(function SchemaFieldInner({ path, schema, value, onChange, errors, required, label, level = 0, parentChange, name }: SchemaFieldProps) {
+    // Optimization: Use ref to track value for stable callbacks
+    const valueRef = useRef(value);
+    valueRef.current = value;
+
+    // Optimization: Create a stable change handler
+    const handleChange = useCallback((p: string, v: unknown) => {
+        if (parentChange && name !== undefined) {
+            parentChange(name, v);
+        } else {
+            onChange(p, v);
+        }
+    }, [parentChange, name, onChange]);
+
     const type = schema.type;
     const description = schema.description;
     const isRequired = required;
@@ -79,7 +99,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     if (schema.enum) {
         return (
             <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
-                <Select value={value as string} onValueChange={(v) => onChange(path, v)}>
+                <Select value={value as string} onValueChange={(v) => handleChange(path, v)}>
                     <SelectTrigger id={path} className={cn(errors?.[path] && "border-red-500")}>
                         <SelectValue placeholder="Select..." />
                     </SelectTrigger>
@@ -100,7 +120,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     <FileInput
                         id={path}
                         value={(value as string) || undefined}
-                        onChange={(v) => onChange(path, v)}
+                        onChange={(v) => handleChange(path, v)}
                         accept={schema.contentMediaType}
                         className={cn(errors?.[path] && "border-red-500")}
                     />
@@ -113,7 +133,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                 <Input
                     id={path}
                     value={(value as string) || ""}
-                    onChange={(e) => onChange(path, e.target.value)}
+                    onChange={(e) => handleChange(path, e.target.value)}
                     placeholder={label || "Enter text"}
                     className={cn(errors?.[path] && "border-red-500")}
                 />
@@ -129,7 +149,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     type="number"
                     step={type === "integer" ? "1" : "any"}
                     value={(value as number) || ""}
-                    onChange={(e) => onChange(path, e.target.value === "" ? undefined : Number(e.target.value))}
+                    onChange={(e) => handleChange(path, e.target.value === "" ? undefined : Number(e.target.value))}
                     placeholder="0"
                     className={cn(errors?.[path] && "border-red-500")}
                 />
@@ -144,7 +164,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     <Switch
                         id={path}
                         checked={!!value}
-                        onCheckedChange={(v) => onChange(path, v)}
+                        onCheckedChange={(v) => handleChange(path, v)}
                     />
                     <span className="text-sm text-muted-foreground">{value ? "True" : "False"}</span>
                 </div>
@@ -159,10 +179,18 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         // Ensure value is object
         const objectValue = (value as Record<string, unknown>) || {};
 
-        const handleChildChange = (key: string, childValue: unknown) => {
-            const newValue = { ...objectValue, [key]: childValue };
-            onChange(path, newValue);
-        };
+        // Optimization: Use useCallback with ref to prevent re-creation
+        const handleChildChange = useCallback((key: string, childValue: unknown) => {
+            const currentValue = (valueRef.current as Record<string, unknown>) || {};
+            const newValue = { ...currentValue, [key]: childValue };
+            // We still need to call our 'handleChange' (which calls parent)
+            // But here we are constructing the new object value for *this* field.
+            if (parentChange && name !== undefined) {
+                 parentChange(name, newValue);
+            } else {
+                 onChange(path, newValue);
+            }
+        }, [path, parentChange, name, onChange]);
 
         const content = (
             <div className={cn("space-y-3", level > 0 && "pl-4 border-l my-2")}>
@@ -170,9 +198,11 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     <SchemaField
                         key={key}
                         path={path ? `${path}.${key}` : key}
+                        name={key}
                         schema={properties[key]}
                         value={objectValue[key]}
-                        onChange={(_, v) => handleChildChange(key, v)}
+                        onChange={onChange} // Pass original for fallback, but parentChange takes precedence
+                        parentChange={handleChildChange}
                         errors={errors}
                         required={requiredFields.includes(key)}
                         label={key}
@@ -202,21 +232,29 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         const itemsSchema = schema.items || {};
         const arrayValue: unknown[] = Array.isArray(value) ? value : [];
 
-        const handleAdd = () => {
-            onChange(path, [...arrayValue, undefined]);
-        };
+        // Optimization: Use useCallback with ref
+        const handleAdd = useCallback(() => {
+            const currentArray = Array.isArray(valueRef.current) ? valueRef.current : [];
+            const newArray = [...currentArray, undefined];
+            if (parentChange && name !== undefined) parentChange(name, newArray);
+            else onChange(path, newArray);
+        }, [path, parentChange, name, onChange]);
 
-        const handleRemove = (index: number) => {
-            const newArray = [...arrayValue];
-            newArray.splice(index, 1);
-            onChange(path, newArray);
-        };
+        const handleRemove = useCallback((index: number) => {
+             const currentArray = Array.isArray(valueRef.current) ? valueRef.current : [];
+             const newArray = [...currentArray];
+             newArray.splice(index, 1);
+             if (parentChange && name !== undefined) parentChange(name, newArray);
+             else onChange(path, newArray);
+        }, [path, parentChange, name, onChange]);
 
-        const handleItemChange = (index: number, val: unknown) => {
-            const newArray = [...arrayValue];
-            newArray[index] = val;
-            onChange(path, newArray);
-        };
+        const handleItemChange = useCallback((index: number, val: unknown) => {
+             const currentArray = Array.isArray(valueRef.current) ? valueRef.current : [];
+             const newArray = [...currentArray];
+             newArray[index] = val;
+             if (parentChange && name !== undefined) parentChange(name, newArray);
+             else onChange(path, newArray);
+        }, [path, parentChange, name, onChange]);
 
         return (
             <div className="space-y-2">
@@ -238,6 +276,20 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                             <div className="flex-1">
                                 <SchemaField
                                     path={`${path}[${index}]`}
+                                    name={index.toString()} // Array indices as names?
+                                    // Special handling: parentChange expects (key, value). For array, we need index.
+                                    // But handleItemChange expects (index, val).
+                                    // So we can't directly use parentChange={handleItemChange}.
+                                    // We need to construct a specific callback for each item?
+                                    // Or genericize handleItemChange?
+                                    // Let's rely on standard onChange for array items for now to keep it simple, or fix it.
+                                    // If we use standard onChange, we lose optimization for array items.
+                                    // Let's create a per-index callback? No, that's O(N).
+                                    // Let's adapt handleItemChange.
+                                    // If we pass parentChange={(k, v) => handleItemChange(Number(k), v)}
+                                    // This creates a new function.
+                                    // We can use a custom component for Array Item wrapper?
+                                    // Let's just use `onChange` for Array items for now. Array re-ordering is tricky anyway.
                                     schema={itemsSchema}
                                     value={item}
                                     onChange={(_, v) => handleItemChange(index, v)}
@@ -273,13 +325,14 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
              <Input
                 id={path}
                 value={(value as string) || ""}
-                onChange={(e) => onChange(path, e.target.value)}
+                onChange={(e) => handleChange(path, e.target.value)}
                 placeholder="Unknown Type"
                 className={cn(errors?.[path] && "border-red-500")}
             />
         </FieldWrapper>
     );
-}
+});
+SchemaField.displayName = "SchemaField";
 
 /**
  * FieldWrapper component.
