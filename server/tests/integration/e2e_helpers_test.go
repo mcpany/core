@@ -71,6 +71,14 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// Additional check: Verify if we can actually run containers.
+	// This helps avoid failures in environments where socket is available but execution fails (e.g. storage driver issues).
+	dockerExe, dockerArgs := getDockerCommand()
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...)
+	if err := checkCmd.Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run failed (environment issue?): %v", err)
+	}
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
@@ -78,7 +86,6 @@ func TestDockerHelpers(t *testing.T) {
 	defer cleanup()
 
 	// Verify the container is running
-	dockerExe, dockerArgs := getDockerCommand()
 	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // Test helper
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
