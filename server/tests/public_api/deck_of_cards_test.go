@@ -90,6 +90,18 @@ func TestUpstreamService_DeckOfCards(t *testing.T) {
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 		if err == nil {
+			// Check if result is valid JSON. If the upstream returns HTML (e.g. rate limit page) or plain text error,
+			// the MCP server might pass it through as TextContent, and subsequent Unmarshal will fail.
+			if len(res.Content) > 0 {
+				if txt, ok := res.Content[0].(*mcp.TextContent); ok {
+					var tmp map[string]interface{}
+					if jsonErr := json.Unmarshal([]byte(txt.Text), &tmp); jsonErr != nil {
+						t.Logf("Attempt %d/%d: Call succeeded but returned invalid JSON (likely rate limit/upstream error): %v. Body start: %.50s. Retrying...", i+1, maxRetries, jsonErr, txt.Text)
+						time.Sleep(2 * time.Second)
+						continue
+					}
+				}
+			}
 			break // Success
 		}
 
