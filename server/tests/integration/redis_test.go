@@ -9,17 +9,20 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	busprotos "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/bus/redis"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
-	redisAddr, redisCleanup := StartRedisContainer(t)
-	defer redisCleanup()
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
+	addr := mr.Addr()
 	redisBusConfig := busprotos.RedisBus_builder{
-		Address: &redisAddr,
+		Address: &addr,
 	}.Build()
 
 	bus, err := redis.New[string](redisBusConfig)

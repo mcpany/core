@@ -10,21 +10,24 @@
 
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint, complete with a built-in management UI.
 
 ## 2. Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
 **High-Level Overview:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol (JSON-RPC 2.0).
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+4.  **Management UI**: A Next.js-based dashboard for visualizing topology, monitoring metrics, and testing tools.
+5.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
 
 ```mermaid
 graph TD
     User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+    Admin[Admin User] -->|HTTP| UI[Management UI]
+    UI -->|API| Server
 
     subgraph "MCP Any Core"
         Server --> Registry[Service Registry]
@@ -51,7 +54,7 @@ Follow these steps to get up and running immediately.
 
 ### Prerequisites
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   [Node.js 18+](https://nodejs.org/) (for building the UI)
 *   `make` (for build automation)
 
 ### Installation
@@ -67,7 +70,7 @@ Follow these steps to get up and running immediately.
     make prepare
     ```
 
-3.  **Build the server:**
+3.  **Build the server (includes UI):**
     ```bash
     make build
     ```
@@ -79,16 +82,21 @@ Follow these steps to get up and running immediately.
     ```
 
 ### Hello World
-Once the server is running, you can verify it using `curl` or an MCP client.
-```bash
-# Check health
-curl http://localhost:50050/health
-```
+Once the server is running (default port 50050), you can verify it:
 
-To connect an AI client (like Claude Desktop or Gemini CLI):
-```bash
-gemini mcp add --transport http --trust mcpany http://localhost:50050
-```
+1.  **Health Check:**
+    ```bash
+    curl http://localhost:50050/health
+    ```
+
+2.  **Management UI:**
+    Open [http://localhost:50050](http://localhost:50050) in your browser to view the dashboard.
+
+3.  **Connect an AI Client:**
+    Use an MCP client like Claude Desktop or Gemini CLI:
+    ```bash
+    gemini mcp add --transport http --trust mcpany http://localhost:50050
+    ```
 
 ## 4. Development
 

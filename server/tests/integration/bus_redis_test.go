@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/bus/redis"
 	bustypes "github.com/mcpany/core/proto/bus"
@@ -27,11 +28,12 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 }
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
-	redisAddr, cleanup := StartRedisContainer(t)
-	defer cleanup()
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
 	client := goredis.NewClient(&goredis.Options{
-		Addr: redisAddr,
+		Addr: mr.Addr(),
 	})
 
 	bus := redis.NewWithClient[string](client)
@@ -56,18 +58,19 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	// Wait for subscriber to connect
 	waitForSubscribers(t, client, topic, 1)
 
-	err := bus.Publish(ctx, topic, msg)
+	err = bus.Publish(ctx, topic, msg)
 	assert.NoError(t, err)
 
 	wg.Wait()
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
-	redisAddr, cleanup := StartRedisContainer(t)
-	defer cleanup()
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
 	client := goredis.NewClient(&goredis.Options{
-		Addr: redisAddr,
+		Addr: mr.Addr(),
 	})
 
 	bus := redis.NewWithClient[string](client)
@@ -92,19 +95,20 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	// Wait for subscriber to connect
 	waitForSubscribers(t, client, topic, 1)
 
-	err := bus.Publish(ctx, topic, msg)
+	err = bus.Publish(ctx, topic, msg)
 	assert.NoError(t, err)
 
 	wg.Wait()
 }
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
-	redisAddr, cleanup := StartRedisContainer(t)
-	defer cleanup()
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
 	messageBus := bustypes.MessageBus_builder{}.Build()
 	redisBus := bustypes.RedisBus_builder{}.Build()
-	redisBus.SetAddress(redisAddr)
+	redisBus.SetAddress(mr.Addr())
 	messageBus.SetRedis(redisBus)
 
 	provider, err := bus.NewProvider(messageBus)
@@ -120,11 +124,12 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
-	redisAddr, cleanup := StartRedisContainer(t)
-	defer cleanup()
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
 	client := goredis.NewClient(&goredis.Options{
-		Addr: redisAddr,
+		Addr: mr.Addr(),
 	})
 
 	redisBus := redis.NewWithClient[string](client)
@@ -150,7 +155,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 	// Wait for subscriber to connect
 	waitForSubscribers(t, client, topic, 1)
 
-	err := redisBus.Publish(ctx, topic, msg1)
+	err = redisBus.Publish(ctx, topic, msg1)
 	assert.NoError(t, err)
 
 	// Wait for message 1
@@ -173,11 +178,12 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
-	redisAddr, cleanup := StartRedisContainer(t)
-	defer cleanup()
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
 	client := goredis.NewClient(&goredis.Options{
-		Addr: redisAddr,
+		Addr: mr.Addr(),
 	})
 
 	redisBus := redis.NewWithClient[string](client)

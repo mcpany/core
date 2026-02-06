@@ -14,10 +14,11 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
-WORKDIR /app
+# Avoid WORKDIR to prevent overlayfs issues in CI
+# WORKDIR /app
 
-COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+COPY timeserver_patch/requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
 COPY timeserver_patch/main.py /app/main.py
 
