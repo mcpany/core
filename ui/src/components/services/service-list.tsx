@@ -51,14 +51,30 @@ interface ServiceListProps {
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
   onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkRestart?: (names: string[]) => void;
 }
 
 /**
  * ServiceList.
  *
- * @param onExport - The onExport.
+ * @param props - The component props.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
+export function ServiceList(props: ServiceListProps) {
+  const {
+    services,
+    isLoading,
+    onToggle,
+    onEdit,
+    onDelete,
+    onDuplicate,
+    onExport,
+    onBulkToggle,
+    onBulkDelete,
+    onLogin,
+    onRestart,
+    onBulkEdit,
+    onBulkRestart
+  } = props;
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -141,6 +157,14 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                                      <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
                                  </Button>
                                </>
+                           )}
+                           {onBulkRestart && (
+                               <Button size="sm" variant="outline" onClick={() => {
+                                   onBulkRestart(Array.from(selected));
+                                   setSelected(new Set());
+                               }}>
+                                   <RefreshCw className="mr-2 h-4 w-4" /> Restart
+                               </Button>
                            )}
                            <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
                                <Settings className="mr-2 h-4 w-4" /> Bulk Edit

@@ -64,6 +64,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	loginRateLimiter := middleware.NewHTTPRateLimitMiddleware(1, 5, middleware.WithTrustProxy(trustProxy))
 
 	mux.HandleFunc("/services", a.handleServices(store))
+	mux.HandleFunc("/services/bulk", a.handleServicesBulk(store))
 	mux.HandleFunc("/services/validate", a.handleServiceValidate())
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
@@ -163,6 +164,96 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 
 	return mux
+}
+
+// BulkServiceActionRequest represents a JSON request body for performing bulk actions (delete, enable, disable, restart) on multiple services.
+type BulkServiceActionRequest struct {
+	Action   string   `json:"action"` // "delete", "enable", "disable", "restart"
+	Services []string `json:"services"`
+}
+
+func (a *Application) handleServicesBulk(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req BulkServiceActionRequest
+		body, err := readBodyWithLimit(w, r, 1048576)
+		if err != nil {
+			return
+		}
+		if err := json.Unmarshal(body, &req); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if len(req.Services) == 0 {
+			http.Error(w, "no services specified", http.StatusBadRequest)
+			return
+		}
+
+		ctx := r.Context()
+		logger := logging.GetLogger()
+
+		logger.Info("Processing bulk service action", "action", req.Action, "count", len(req.Services))
+
+		switch req.Action {
+		case "delete":
+			for _, name := range req.Services {
+				if err := store.DeleteService(ctx, name); err != nil {
+					logger.Error("failed to delete service in bulk op", "name", name, "error", err)
+					// We continue to try deleting others
+				}
+			}
+		case "enable", "disable":
+			disable := req.Action == "disable"
+			for _, name := range req.Services {
+				svc, err := store.GetService(ctx, name)
+				if err != nil {
+					logger.Error("failed to get service for bulk update", "name", name, "error", err)
+					continue
+				}
+				if svc == nil {
+					continue
+				}
+				// Avoid update if no change
+				if svc.GetDisable() == disable {
+					continue
+				}
+				svc.SetDisable(disable)
+				if err := store.SaveService(ctx, svc); err != nil {
+					logger.Error("failed to save service in bulk op", "name", name, "error", err)
+				}
+			}
+		case "restart":
+			// Restart means unregister (to stop) then reload (to start)
+			// We unregister all of them first
+			if a.ServiceRegistry != nil {
+				for _, name := range req.Services {
+					if err := a.ServiceRegistry.UnregisterService(ctx, name); err != nil {
+						logger.Error("failed to unregister service during bulk restart", "name", name, "error", err)
+					}
+				}
+			}
+			// Then we fall through to reload
+		default:
+			http.Error(w, "invalid action", http.StatusBadRequest)
+			return
+		}
+
+		// Reload once
+		if err := a.ReloadConfig(ctx, a.fs, a.configPaths); err != nil {
+			logger.Error("failed to reload config after bulk op", "error", err)
+			// We might return 200 but log error, or 500?
+			// Since some ops might have succeeded, 200 is safer but maybe with warning?
+			// For now, logging error is consistent with other handlers.
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("{}"))
+	}
 }
 
 func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
