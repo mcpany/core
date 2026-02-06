@@ -268,6 +268,8 @@ type GRPCTool struct {
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
 	resilienceManager *resilience.Manager
+	validator         *SchemaValidator
+	initError         error
 }
 
 // NewGRPCTool creates a new GRPCTool instance.
@@ -283,7 +285,8 @@ type GRPCTool struct {
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
-	return &GRPCTool{
+	val, err := NewSchemaValidator(tool.GetInputSchema())
+	t := &GRPCTool{
 		tool:              tool,
 		poolManager:       poolManager,
 		serviceID:         serviceID,
@@ -291,7 +294,12 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 		requestMessage:    dynamicpb.NewMessage(method.Input()),
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(resilienceConfig),
+		validator:         val,
 	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to create input validator: %w", err)
+	}
+	return t
 }
 
 // Tool returns the protobuf definition of the gRPC tool.
@@ -331,10 +339,18 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.initError != nil {
+		return nil, t.initError
+	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince(metricGrpcRequestLatency, time.Now())
+
+	if err := t.validator.Validate(req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("invalid tool inputs: %w", err)
+	}
+
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter(metricGrpcRequestError, 1)
@@ -418,6 +434,7 @@ type HTTPTool struct {
 	policies          []*CompiledCallPolicy
 	callID            string
 	allowedParams     map[string]bool
+	validator         *SchemaValidator
 
 	// Cached fields for performance
 	initError            error
@@ -470,6 +487,14 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 	t.policies = compiled
+
+	val, err := NewSchemaValidator(tool.GetInputSchema())
+	if err != nil {
+		if t.initError == nil {
+			t.initError = fmt.Errorf("failed to create input validator: %w", err)
+		}
+	}
+	t.validator = val
 
 	// Cache templates
 	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
@@ -579,6 +604,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince(metricHTTPRequestLatency, time.Now())
+
+	if err := t.validator.Validate(req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("invalid tool inputs: %w", err)
+	}
 
 	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
@@ -1157,6 +1186,7 @@ type MCPTool struct {
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
 	initError            error
+	validator            *SchemaValidator
 }
 
 // NewMCPTool creates a new MCPTool instance.
@@ -1199,6 +1229,15 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 			t.cachedOutputTemplate = tpl
 		}
 	}
+
+	val, err := NewSchemaValidator(tool.GetInputSchema())
+	if err != nil {
+		if t.initError == nil {
+			t.initError = fmt.Errorf("failed to create input validator: %w", err)
+		}
+	}
+	t.validator = val
+
 	return t
 }
 
@@ -1246,6 +1285,11 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
+
+	if err := t.validator.Validate(req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("invalid tool inputs: %w", err)
+	}
+
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
 
@@ -1372,6 +1416,7 @@ type OpenAPITool struct {
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
 	initError            error
+	validator            *SchemaValidator
 }
 
 // NewOpenAPITool creates a new OpenAPITool instance.
@@ -1422,6 +1467,15 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 			t.cachedOutputTemplate = tpl
 		}
 	}
+
+	val, err := NewSchemaValidator(tool.GetInputSchema())
+	if err != nil {
+		if t.initError == nil {
+			t.initError = fmt.Errorf("failed to create input validator: %w", err)
+		}
+	}
+	t.validator = val
+
 	return t
 }
 
@@ -1469,6 +1523,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
+
+	if err := t.validator.Validate(req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("invalid tool inputs: %w", err)
+	}
+
 	var inputs map[string]any
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
 		req.ToolInputs = []byte("{}")
@@ -1634,6 +1693,7 @@ type CommandTool struct {
 	policies        []*CompiledCallPolicy
 	callID          string
 	initError       error
+	validator       *SchemaValidator
 }
 
 // NewCommandTool creates a new CommandTool instance.
@@ -1665,6 +1725,15 @@ func NewCommandTool(
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	val, err := NewSchemaValidator(tool.GetInputSchema())
+	if err != nil {
+		if t.initError == nil {
+			t.initError = fmt.Errorf("failed to create input validator: %w", err)
+		}
+	}
+	t.validator = val
+
 	return t
 }
 
@@ -1681,6 +1750,7 @@ type LocalCommandTool struct {
 	callID         string
 	sandboxArgs    []string
 	initError      error
+	validator      *SchemaValidator
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
@@ -1712,6 +1782,14 @@ func NewLocalCommandTool(
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	val, err := NewSchemaValidator(tool.GetInputSchema())
+	if err != nil {
+		if t.initError == nil {
+			t.initError = fmt.Errorf("failed to create input validator: %w", err)
+		}
+	}
+	t.validator = val
 
 	// Check if the command is sed and supports sandbox
 	cmd := service.GetCommand()
@@ -1781,6 +1859,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
+
+	if err := t.validator.Validate(req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("invalid tool inputs: %w", err)
 	}
 
 	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
@@ -2078,6 +2160,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
+
+	if err := t.validator.Validate(req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("invalid tool inputs: %w", err)
 	}
 
 	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
