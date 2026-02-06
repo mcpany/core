@@ -70,6 +70,8 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// StartDockerContainer now handles capability checks (IsDockerCapable) and skips if needed.
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())

@@ -585,6 +585,25 @@ func IsDockerSocketAccessible() bool {
 	return true
 }
 
+// IsDockerCapable checks if we can connect to Docker AND run a container.
+// This is critical for CI environments (DinD) where the daemon might be reachable
+// but unable to mount overlays/volumes due to storage driver issues.
+func IsDockerCapable(t *testing.T) bool {
+	t.Helper()
+	if !IsDockerSocketAccessible() {
+		return false
+	}
+
+	dockerExe, dockerArgs := getDockerCommand()
+	// Attempt to run a minimal container
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
+	if out, err := checkCmd.CombinedOutput(); err != nil {
+		t.Logf("Docker daemon accessible but unable to run containers (skipping): %v. Output: %s", err, string(out))
+		return false
+	}
+	return true
+}
+
 // --- Mock Service Start Helpers (External Processes) ---
 
 // StartDockerContainer starts a docker container with the given image and args.
@@ -598,6 +617,11 @@ func IsDockerSocketAccessible() bool {
 // Returns the result.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
+
+	if !IsDockerCapable(t) {
+		t.Skip("Skipping Docker test: Docker environment is not capable (e.g. DinD mount issues)")
+	}
+
 	dockerExe, dockerBaseArgs := getDockerCommand()
 
 	// buildArgs safely creates a new slice for command arguments.
@@ -1002,7 +1026,11 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+	// StartDockerContainer will skip if Docker is not capable
+	// But we check here too to avoid confusion in logs if IsDockerSocketAccessible fails
+	if !IsDockerCapable(t) {
+		t.Skip("Skipping Redis test: Docker environment is not capable")
+	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
