@@ -769,9 +769,9 @@ jobs:
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
       - name: Check Results and Comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.ORD_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             // 1. Check for Failures
             const needs = ${{ toJson(needs) }};
