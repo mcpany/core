@@ -15,9 +15,10 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
  * Sanitizes a service configuration by redacting or templating potential secrets.
- * @param service The service configuration to sanitize.
- * @param mode The secret handling mode.
- * @returns A sanitized copy of the configuration.
+ *
+ * @param service - UpstreamServiceConfig. The service configuration to sanitize.
+ * @param mode - SecretHandlingMode. The secret handling mode.
+ * @returns UpstreamServiceConfig. A sanitized copy of the configuration.
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original
