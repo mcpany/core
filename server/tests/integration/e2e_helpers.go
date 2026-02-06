@@ -641,8 +641,9 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	err := startCmd.Run()
 	if err != nil {
 		errOutput := stderr.String()
-		if strings.Contains(errOutput, `mount source: "overlay"`) && strings.Contains(errOutput, "invalid argument") {
-			t.Skipf("Skipping test: Docker overlayfs mount failed (environment issue). Stderr: %s", errOutput)
+		if (strings.Contains(errOutput, `mount source: "overlay"`) && strings.Contains(errOutput, "invalid argument")) ||
+			(strings.Contains(errOutput, "failed to extract layer") && strings.Contains(errOutput, "operation not permitted")) {
+			t.Skipf("Skipping test: Docker overlayfs/extraction failed (environment issue). Stderr: %s", errOutput)
 		}
 		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, errOutput)
 	}
