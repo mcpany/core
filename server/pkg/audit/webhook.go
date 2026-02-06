@@ -29,6 +29,8 @@ type WebhookAuditStore struct {
 	queue      chan Entry
 	wg         sync.WaitGroup
 	done       chan struct{}
+	mu         sync.RWMutex
+	closed     bool
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
@@ -89,6 +91,13 @@ func (s *WebhookAuditStore) worker() {
 
 // Write writes an audit entry to the webhook (buffered).
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	if s.closed {
+		return fmt.Errorf("audit store closed")
+	}
+
 	select {
 	case s.queue <- entry:
 		return nil
@@ -139,12 +148,20 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 
 // Close stops the workers and drains the queue.
 func (s *WebhookAuditStore) Close() error {
+	s.mu.Lock()
+	if s.closed {
+		s.mu.Unlock()
+		return nil
+	}
+	s.closed = true
 	if s.done != nil {
 		close(s.done)
 	}
 	if s.queue != nil {
 		close(s.queue)
 	}
+	s.mu.Unlock()
+
 	s.wg.Wait()
 	return nil
 }

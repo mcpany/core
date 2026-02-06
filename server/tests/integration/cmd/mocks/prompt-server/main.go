@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -47,13 +48,20 @@ func main() {
 
 	// 4. Serve the handler over HTTP
 	addr := fmt.Sprintf("127.0.0.1:%d", *port)
-	log.Printf("server listening at %s", addr)
+	lc := net.ListenConfig{}
+	listener, err := lc.Listen(context.Background(), "tcp", addr)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	// Log the actual address (including dynamic port)
+	log.Printf("server listening at %s", listener.Addr().String())
+
 	srv := &http.Server{
-		Addr:              addr,
 		Handler:           handler,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	if err := srv.ListenAndServe(); err != nil {
+	if err := srv.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

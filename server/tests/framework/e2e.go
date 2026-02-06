@@ -54,6 +54,7 @@ type E2ETestCase struct {
 	GenerateUpstreamConfig       func(_ string) string
 	StartMCPANYServer            func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
 	RegisterUpstreamWithJSONRPC  func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
+	WaitForUpstreamPort          func(t *testing.T, proc *integration.ManagedProcess) int
 }
 
 // ValidateRegisteredTool validates that the expected tool is registered.
@@ -113,7 +114,11 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 					err := upstreamServerProc.Start()
 					require.NoError(t, err, "Failed to start upstream server")
 					t.Cleanup(upstreamServerProc.Stop)
-					if upstreamServerProc.Port != 0 {
+
+					if testCase.WaitForUpstreamPort != nil {
+						port := testCase.WaitForUpstreamPort(t, upstreamServerProc)
+						upstreamServerProc.Port = port
+					} else if upstreamServerProc.Port != 0 {
 						integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
 					}
 				}
