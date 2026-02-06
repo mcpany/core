@@ -4,11 +4,14 @@
 package mcp
 
 import (
+	"archive/tar"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -53,6 +56,11 @@ type BundleDockerTransport struct {
 	Env        []string
 	Mounts     []mount.Mount
 	WorkingDir string
+
+	// BundleContentDir is the local path to the bundle content.
+	// If set, the content will be copied into the container at WorkingDir instead of using a bind mount.
+	// This helps avoid issues with overlayfs mounts in certain environments (e.g. GitHub Actions).
+	BundleContentDir string
 
 	// dockerClientFactory allows injecting a custom docker client for testing.
 	// If nil, newDockerClient is used.
@@ -117,13 +125,24 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 		AttachStderr: true,
 	}
 
-	hostConfig := &container.HostConfig{
-		Mounts: t.Mounts,
+	var hostConfig *container.HostConfig
+	if len(t.Mounts) > 0 {
+		hostConfig = &container.HostConfig{
+			Mounts: t.Mounts,
+		}
 	}
 
 	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create container: %w", err)
+	}
+
+	// Copy bundle content if configured
+	if t.BundleContentDir != "" {
+		if err := copyDirToContainer(ctx, cli, resp.ID, t.BundleContentDir, t.WorkingDir); err != nil {
+			_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+			return nil, fmt.Errorf("failed to copy bundle content to container: %w", err)
+		}
 	}
 
 	hijackedResp, err := cli.ContainerAttach(ctx, resp.ID, container.AttachOptions{
@@ -433,4 +452,73 @@ func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)
 	return len(p), nil
+}
+
+func copyDirToContainer(ctx context.Context, cli dockerClient, containerID, srcPath, dstPath string) error {
+	// Create a tar archive of the source directory
+	tarStream, err := tarDirectory(srcPath)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tarStream.Close() }()
+
+	// Copy to container
+	// Note: CopyToContainer expects the tar content to be extracted relative to the destination path.
+	// If dstPath is /app/bundle, and tar has files at root, they go into /app/bundle.
+	return cli.CopyToContainer(ctx, containerID, dstPath, tarStream, container.CopyToContainerOptions{})
+}
+
+func tarDirectory(srcDir string) (io.ReadCloser, error) {
+	pr, pw := io.Pipe()
+
+	go func() {
+		defer func() { _ = pw.Close() }()
+		tw := tar.NewWriter(pw)
+		defer func() { _ = tw.Close() }()
+
+		err := filepath.Walk(srcDir, func(file string, fi os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			header, err := tar.FileInfoHeader(fi, fi.Name())
+			if err != nil {
+				return err
+			}
+
+			// Update header name to be relative to srcDir
+			relPath, err := filepath.Rel(srcDir, file)
+			if err != nil {
+				return err
+			}
+			// Normalizing path separators to forward slashes for tar
+			header.Name = filepath.ToSlash(relPath)
+
+			if err := tw.WriteHeader(header); err != nil {
+				return err
+			}
+
+			if !fi.Mode().IsRegular() {
+				return nil
+			}
+
+			f, err := os.Open(file)
+			if err != nil {
+				return err
+			}
+			defer func() { _ = f.Close() }()
+
+			if _, err := io.Copy(tw, f); err != nil {
+				return err
+			}
+
+			return nil
+		})
+
+		if err != nil {
+			_ = pw.CloseWithError(err)
+		}
+	}()
+
+	return pr, nil
 }
