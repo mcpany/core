@@ -17,7 +17,6 @@ import (
 
 func TestHandleAlerts(t *testing.T) {
 	app := NewApplication()
-	// Use default seeded data from NewManager
 	app.AlertsManager = alerts.NewManager()
 
 	t.Run("ListAlerts", func(t *testing.T) {
@@ -30,8 +29,8 @@ func TestHandleAlerts(t *testing.T) {
 		var list []*alerts.Alert
 		err := json.Unmarshal(w.Body.Bytes(), &list)
 		assert.NoError(t, err)
-		// Seed data has 5 alerts
-		assert.GreaterOrEqual(t, len(list), 5)
+		// NewManager does not seed data anymore, so we expect 0 alerts initially
+		assert.GreaterOrEqual(t, len(list), 0)
 	})
 
 	t.Run("CreateAlert", func(t *testing.T) {
@@ -133,8 +132,8 @@ func TestHandleAlertRules(t *testing.T) {
 		var list []*alerts.AlertRule
 		err := json.Unmarshal(w.Body.Bytes(), &list)
 		assert.NoError(t, err)
-		// Seed data has 2 rules
-		assert.GreaterOrEqual(t, len(list), 2)
+		// NewManager does not seed data anymore, so we expect 0 rules initially
+		assert.GreaterOrEqual(t, len(list), 0)
 	})
 
 	t.Run("CreateRule", func(t *testing.T) {

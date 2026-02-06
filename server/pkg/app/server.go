@@ -306,6 +306,10 @@ func NewApplication() *Application {
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
+
+	// Inject AlertsManager into health package
+	health.SetGlobalAlertsManager(a.AlertsManager)
+
 	fs, err := setup(opts.Fs)
 	if err != nil {
 		return fmt.Errorf("failed to setup filesystem: %w", err)

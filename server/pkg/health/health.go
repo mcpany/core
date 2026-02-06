@@ -19,6 +19,7 @@ import (
 	"github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/alerts"
 	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -37,6 +38,11 @@ const (
 var (
 	globalAlertConfig   *configv1.AlertConfig
 	globalAlertConfigMu sync.RWMutex
+
+	globalAlertsManager   alerts.ManagerInterface
+	globalAlertsManagerMu sync.RWMutex
+	activeAlerts          = make(map[string]string) // serviceName -> alertID
+	activeAlertsMu        sync.RWMutex
 )
 
 // SetGlobalAlertConfig sets the global alert configuration.
@@ -55,6 +61,13 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
+}
+
+// SetGlobalAlertsManager sets the global alerts manager.
+func SetGlobalAlertsManager(am alerts.ManagerInterface) {
+	globalAlertsManagerMu.Lock()
+	defer globalAlertsManagerMu.Unlock()
+	globalAlertsManager = am
 }
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
@@ -159,6 +172,50 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 			// Record history
 			AddHealthStatus(serviceName, string(state.Status))
+
+			// Create/Resolve Alerts
+			globalAlertsManagerMu.RLock()
+			am := globalAlertsManager
+			globalAlertsManagerMu.RUnlock()
+
+			if am != nil {
+				if state.Status != health.StatusUp {
+					// Create Alert if not already active
+					activeAlertsMu.Lock()
+					_, exists := activeAlerts[serviceName]
+					activeAlertsMu.Unlock()
+
+					if !exists {
+						alert := &alerts.Alert{
+							Title:     fmt.Sprintf("Service %s is %s", serviceName, state.Status),
+							Message:   fmt.Sprintf("Health check failed. Status: %s", state.Status),
+							Severity:  alerts.SeverityCritical,
+							Status:    alerts.StatusActive,
+							Service:   serviceName,
+							Source:    "Health Check",
+							Timestamp: time.Now(),
+						}
+						created := am.CreateAlert(alert)
+
+						activeAlertsMu.Lock()
+						activeAlerts[serviceName] = created.ID
+						activeAlertsMu.Unlock()
+					}
+				} else {
+					// Status is UP
+					activeAlertsMu.Lock()
+					existingID, exists := activeAlerts[serviceName]
+					if exists {
+						delete(activeAlerts, serviceName)
+					}
+					activeAlertsMu.Unlock()
+
+					if exists {
+						// Resolve existing alert
+						am.UpdateAlert(existingID, &alerts.Alert{Status: alerts.StatusResolved})
+					}
+				}
+			}
 
 			globalAlertConfigMu.RLock()
 			alertConfig := globalAlertConfig
