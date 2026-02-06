@@ -1,0 +1,67 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+global_settings:
+  allowed_origins:
+    - "*"
+  profile_definitions:
+    - name: "default"
+      selector:
+        tags: ["e2e"]
+  db_path: "/tmp/mcpany_e2e.db"
+  middlewares:
+    - name: "auth"
+      priority: 1
+      disabled: true
+
+upstream_services:
+  - id: "weather-service"
+    name: "Weather Service"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "get_weather"
+          description: "Get current weather"
+          call_id: "get_weather"
+      calls:
+        get_weather:
+          args: ['{"weather": "sunny"}']
+    post_call_hooks:
+      - name: "webhook-example"
+        webhook:
+          url: "http://localhost:9000/webhook"
+          webhook_secret: "secret"
+          timeout: "5s"
+
+  - id: "calculator-service"
+    name: "Calculator Service"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "add"
+          description: "Add two numbers"
+          call_id: "add"
+        - name: "subtract"
+          description: "Subtract two numbers"
+          call_id: "subtract"
+      calls:
+        add:
+          args: ['{"result": 42}']
+        subtract:
+          args: ['{"result": 10}']
+
+  - id: "topology-node-a"
+    name: "Node A"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "ping_b"
+          description: "Ping Node B"
+
+  - id: "topology-node-b"
+    name: "Node B"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "ping_a"
+          description: "Ping Node A"

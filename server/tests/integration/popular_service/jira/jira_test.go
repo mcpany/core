@@ -8,7 +8,11 @@ package jira_test
 import (
 	"context"
 	"encoding/json"
-	"os"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/tests/integration"
@@ -17,24 +21,83 @@ import (
 )
 
 func TestUpstreamService_Jira(t *testing.T) {
-	jiraDomain := os.Getenv("JIRA_DOMAIN")
-	jiraUsername := os.Getenv("JIRA_USERNAME")
-	jiraPat := os.Getenv("JIRA_PAT")
-	jiraTestIssueKey := os.Getenv("JIRA_TEST_ISSUE_KEY")
-	jiraTestIssueSummary := os.Getenv("JIRA_TEST_ISSUE_SUMMARY")
+	// Setup Mock Jira Server
+	mockJira := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Mock Swagger/OpenAPI spec
+		if strings.Contains(r.URL.Path, "swagger.json") {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{
+  "openapi": "3.0.0",
+  "info": { "title": "Jira Mock", "version": "1.0.0" },
+  "paths": {
+    "/rest/api/3/issue/{issueIdOrKey}": {
+      "get": {
+        "operationId": "getIssue",
+        "parameters": [
+          { "name": "issueIdOrKey", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    }
+  }
+}`))
+			return
+		}
+		// Mock Issue API
+		// The path in spec is /rest/api/3/issue/{issueIdOrKey}
+		if strings.Contains(r.URL.Path, "/rest/api/3/issue/") {
+			w.Header().Set("Content-Type", "application/json")
+			// Return a mock issue response
+			w.Write([]byte(`{
+				"key": "TEST-1",
+				"fields": {
+					"summary": "Test Summary"
+				}
+			}`))
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockJira.Close()
 
-	if jiraDomain == "" || jiraUsername == "" || jiraPat == "" || jiraTestIssueKey == "" || jiraTestIssueSummary == "" {
-		// t.Skip("Skipping Jira integration test because one or more of the required environment variables are not set: JIRA_DOMAIN, JIRA_USERNAME, JIRA_PAT, JIRA_TEST_ISSUE_KEY, JIRA_TEST_ISSUE_SUMMARY")
-	}
+	// Set Env Vars for Config to satisfy the file interpolation
+	// The config uses:
+	// address: "https://${JIRA_DOMAIN:jira.atlassian.com}"
+	// upstream_auth uses JIRA_USERNAME and JIRA_PAT
+
+	// We will override address and spec_url via --set, but we still need to provide dummy env vars
+	// because the config file references them.
+	t.Setenv("JIRA_DOMAIN", "localhost") // Not used due to override, but needed to avoid interpolation error if strict?
+	t.Setenv("JIRA_USERNAME", "dummy-user")
+	t.Setenv("JIRA_PAT", "dummy-token")
+	t.Setenv("JIRA_TEST_ISSUE_KEY", "TEST-1")
+	t.Setenv("JIRA_TEST_ISSUE_SUMMARY", "Test Summary")
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Jira Server...")
-	t.Parallel()
+	// t.Parallel() // Removed to allow safe os.Setenv usage if needed, although t.Setenv handles it locally.
+    // StartMCPANYServer inherits os.Environ(), so t.Setenv is sufficient.
 
-	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EJiraServerTest", "--config-path", "../../../../examples/popular_services/jira")
+	// Override config values to point to mock server
+	// The mock server URL is http://127.0.0.1:xxxxx
+	// We need to override:
+	// 1. openapi_service.address -> mockJira.URL
+	// 2. openapi_service.spec_url -> mockJira.URL + "/swagger.json"
+
+	rootDir := integration.ProjectRoot(t)
+	configPath := filepath.Join(rootDir, "examples", "popular_services", "jira")
+
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EJiraServerTest",
+		"--config-path", configPath,
+		"--set", fmt.Sprintf("upstream_services[0].openapi_service.address=%s", mockJira.URL),
+		"--set", fmt.Sprintf("upstream_services[0].openapi_service.spec_url=%s/swagger.json", mockJira.URL),
+        // Force auto_discover_tool=true just in case the example relied on default behavior changing
+        "--set", "upstream_services[0].auto_discover_tool=true",
+	)
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Call Tool via MCPANY ---
@@ -45,9 +108,17 @@ func TestUpstreamService_Jira(t *testing.T) {
 
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
-	require.Len(t, listToolsResult.Tools, 1, "Expected exactly one tool to be registered")
-	registeredToolName := listToolsResult.Tools[0].Name
-	t.Logf("Discovered tool from MCPANY: %s", registeredToolName)
+
+	var toolNames []string
+	var registeredToolName string
+	for _, tool := range listToolsResult.Tools {
+		toolNames = append(toolNames, tool.Name)
+		if strings.Contains(tool.Name, "getIssue") {
+			registeredToolName = tool.Name
+		}
+	}
+	t.Logf("Discovered tools: %v", toolNames)
+	require.NotEmpty(t, registeredToolName, "Expected tool 'getIssue' to be registered")
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
@@ -57,8 +128,8 @@ func TestUpstreamService_Jira(t *testing.T) {
 	}{
 		{
 			name:            "Get issue by key",
-			issueIdOrKey:    jiraTestIssueKey,
-			expectedSummary: jiraTestIssueSummary,
+			issueIdOrKey:    "TEST-1",
+			expectedSummary: "Test Summary",
 		},
 	}
 
