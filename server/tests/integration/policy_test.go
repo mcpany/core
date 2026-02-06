@@ -34,6 +34,11 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 
+	// Verify server binary exists
+	if _, err := os.Stat(serverBin); os.IsNotExist(err) {
+		t.Fatalf("Server binary not found at %s. Did you run 'make build'?", serverBin)
+	}
+
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
 	cmd.Dir = t.TempDir() // Isolate working directory

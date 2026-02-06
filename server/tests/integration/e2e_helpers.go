@@ -639,6 +639,13 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Use Run instead of Start for 'docker run -d' to ensure the command completes
 	// and the container is running before proceeding.
 	err := startCmd.Run()
+	if err != nil {
+		// If docker run fails, it might be due to missing image or permissions.
+		// Log explicit details.
+		t.Logf("Docker run failed for %s. Args: %v. Stderr: %s", imageName, dockerRunArgs, stderr.String())
+		// If image pull failure, try to pull explicitly?
+		// But docker run should pull automatically.
+	}
 	require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
 
 	cleanupFunc = func() {
