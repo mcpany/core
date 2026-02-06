@@ -164,16 +164,44 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[], timeout?: string, env?: Record<string, string> }) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
-        await Promise.all(servicesToUpdate.map(service => {
-            const updated = { ...service };
+
+        // Use sequential updates to avoid backend concurrency issues
+        for (const service of servicesToUpdate) {
+            // Deep copy to avoid mutation issues
+            const updated = JSON.parse(JSON.stringify(service));
+
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
             }
-            return apiClient.updateService(updated as any);
-        }));
+
+            if (updates.timeout) {
+                if (!updated.resilience) updated.resilience = {};
+                // If the timeout is a number string, append 's', otherwise assume correct format like "30s"
+                // The input placeholder suggests "e.g. 30s", so we take it as is.
+                updated.resilience.timeout = updates.timeout;
+            }
+
+            if (updates.env) {
+                if (updated.commandLineService) {
+                     if (!updated.commandLineService.env) updated.commandLineService.env = {};
+                     Object.entries(updates.env).forEach(([k, v]) => {
+                         // Use both camelCase and snake_case to be safe with protojson behavior
+                         updated.commandLineService.env[k] = { plainText: v, plain_text: v };
+                     });
+                } else if (updated.mcpService?.stdioConnection) {
+                    if (!updated.mcpService.stdioConnection.env) updated.mcpService.stdioConnection.env = {};
+                     Object.entries(updates.env).forEach(([k, v]) => {
+                         updated.mcpService.stdioConnection.env[k] = { plainText: v, plain_text: v };
+                     });
+                }
+            }
+
+            await apiClient.updateService(updated as any);
+        }
+
         toast({
             title: "Services Updated",
             description: `${names.length} services have been updated.`

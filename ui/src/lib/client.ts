@@ -424,6 +424,9 @@ export const apiClient = {
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
         }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -509,6 +512,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {

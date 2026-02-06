@@ -50,7 +50,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
-  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkEdit?: (names: string[], updates: { tags?: string[], timeout?: string, env?: Record<string, string> }) => void;
 }
 
 /**
@@ -63,6 +63,9 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
+  const [bulkTimeout, setBulkTimeout] = useState("");
+  const [bulkEnvKey, setBulkEnvKey] = useState("");
+  const [bulkEnvValue, setBulkEnvValue] = useState("");
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -210,7 +213,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             <DialogHeader>
                 <DialogTitle>Bulk Edit Services</DialogTitle>
                 <DialogDescription>
-                    Update {selected.size} selected services. Currently only supports updating tags.
+                    Update {selected.size} selected services. Changes will be applied to all valid selected services.
                 </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -222,17 +225,58 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                         value={bulkTags}
                         onChange={(e) => setBulkTags(e.target.value)}
                     />
+                    <p className="text-[10px] text-muted-foreground">Tags will be appended to existing tags.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="bulk-timeout">Set Timeout</Label>
+                    <Input
+                        id="bulk-timeout"
+                        placeholder="e.g. 30s, 1m"
+                        value={bulkTimeout}
+                        onChange={(e) => setBulkTimeout(e.target.value)}
+                    />
+                    <p className="text-[10px] text-muted-foreground">Overrides the timeout for all selected services.</p>
+                </div>
+                <div className="space-y-2">
+                     <Label>Add Environment Variable</Label>
+                     <div className="flex items-center gap-2">
+                         <Input
+                            placeholder="Key"
+                            value={bulkEnvKey}
+                            onChange={(e) => setBulkEnvKey(e.target.value)}
+                            className="flex-1"
+                         />
+                         <Input
+                            placeholder="Value"
+                            value={bulkEnvValue}
+                            onChange={(e) => setBulkEnvValue(e.target.value)}
+                            className="flex-1"
+                         />
+                     </div>
+                     <p className="text-[10px] text-muted-foreground">
+                        Added to CLI/Stdio services only. Existing keys will be overwritten.
+                     </p>
                 </div>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        const updates: { tags?: string[], timeout?: string, env?: Record<string, string> } = {};
+                        if (bulkTags) updates.tags = bulkTags.split(",").map(t => t.trim()).filter(Boolean);
+                        if (bulkTimeout) updates.timeout = bulkTimeout;
+                        if (bulkEnvKey && bulkEnvValue) {
+                            updates.env = { [bulkEnvKey]: bulkEnvValue };
+                        }
+
+                        onBulkEdit(Array.from(selected), updates);
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());
                     setBulkTags("");
+                    setBulkTimeout("");
+                    setBulkEnvKey("");
+                    setBulkEnvValue("");
                 }}>Apply Changes</Button>
             </DialogFooter>
         </DialogContent>
