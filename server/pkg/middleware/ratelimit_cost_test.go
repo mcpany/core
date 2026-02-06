@@ -33,6 +33,10 @@ func (m *MockToolManagerForCost) GetTool(name string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
+func (m *MockToolManagerForCost) GetToolCount(serviceID string) int {
+	return 0
+}
+
 func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 	args := m.Called(id)
 	if args.Get(0) == nil {

@@ -22,7 +22,8 @@ type MockToolManager struct{}
 
 func (m *MockToolManager) AddTool(_ tool.Tool) error { return nil }
 func (m *MockToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
-func (m *MockToolManager) ListTools() []tool.Tool { return nil }
+func (m *MockToolManager) GetToolCount(_ string) int          { return 0 }
+func (m *MockToolManager) ListTools() []tool.Tool             { return nil }
 func (m *MockToolManager) ListMCPTools() []*mcp.Tool { return nil }
 func (m *MockToolManager) ClearToolsForService(_ string) {}
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {

@@ -203,6 +203,11 @@ type MockToolManager struct {
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.Called(serviceID, info)
 }
+
+func (m *MockToolManager) GetToolCount(serviceID string) int {
+	return 0
+}
+
 func (m *MockToolManager) AddTool(t tool.Tool) error {
 	args := m.Called(t)
 	return args.Error(0)
