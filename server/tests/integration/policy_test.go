@@ -31,6 +31,20 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	root := ProjectRoot(t)
 	serverBin := filepath.Join(root, "../build/bin/server")
 
+	// Fallback logic for finding binary if not at expected location
+	if _, err := os.Stat(serverBin); err != nil {
+		// Try relative to root (if root is repo root instead of server dir)
+		altPath := filepath.Join(root, "build/bin/server")
+		if _, err := os.Stat(altPath); err == nil {
+			serverBin = altPath
+		} else {
+			// Try finding in PATH
+			if pathBin, err := exec.LookPath("server"); err == nil {
+				serverBin = pathBin
+			}
+		}
+	}
+
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 

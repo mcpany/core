@@ -659,6 +659,22 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	return cleanupFunc
 }
 
+// RequireWorkingDocker checks if Docker is working correctly by running a minimal container.
+// If it fails, it skips the test.
+func RequireWorkingDocker(t *testing.T) {
+	t.Helper()
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker socket is not accessible")
+	}
+
+	dockerExe, dockerBaseArgs := getDockerCommand()
+	runArgs := append(dockerBaseArgs, "run", "--rm", "alpine", "true") //nolint:gocritic // appendAssign
+	cmd := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
+	if output, err := cmd.CombinedOutput(); err != nil {
+		t.Skipf("Docker is not working correctly (failed to run alpine): %v. Output: %s", err, string(output))
+	}
+}
+
 // MCPANYTestServerInfo contains information about a running MCPANY test server.
 // --- MCPANY Server Helper (External Process) ---
 // MCPANYTestServerInfo contains information about a running MCP Any server instance for testing.
@@ -1098,6 +1114,20 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
 	mcpanyBinary := filepath.Join(root, "../build/bin/server")
+
+	// Fallback logic for finding binary if not at expected location
+	if _, err := os.Stat(mcpanyBinary); err != nil {
+		// Try relative to root (if root is repo root instead of server dir)
+		altPath := filepath.Join(root, "build/bin/server")
+		if _, err := os.Stat(altPath); err == nil {
+			mcpanyBinary = altPath
+		} else {
+			// Try finding in PATH
+			if pathBin, err := exec.LookPath("server"); err == nil {
+				mcpanyBinary = pathBin
+			}
+		}
+	}
 
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 

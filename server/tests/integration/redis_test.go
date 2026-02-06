@@ -15,6 +15,8 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	RequireWorkingDocker(t)
+
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 

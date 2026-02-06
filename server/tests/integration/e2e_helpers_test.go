@@ -67,9 +67,8 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not available")
-	}
+
+	RequireWorkingDocker(t)
 
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
