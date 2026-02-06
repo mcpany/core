@@ -5,7 +5,10 @@
 
 import { test, expect } from '@playwright/test';
 
-test('layout smoke test', async ({ page }) => {
+test('layout smoke test', async ({ page, request }) => {
+  // Ensure cleanup of test stack
+  await request.delete('/api/v1/collections/smoke-stack').catch(() => {});
+
   await page.goto('/');
 
   // Check for Sidebar
@@ -22,18 +25,29 @@ test('layout smoke test', async ({ page }) => {
   await page.waitForURL('**/stacks');
   await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
-  // Check for the "mcpany-system" stack
-  await expect(page.locator('text=mcpany-system')).toBeVisible();
+  // Create a stack for the smoke test
+  // Use .first() to avoid ambiguity if empty state also has a button
+  await page.getByRole('button', { name: 'Create Stack' }).first().click();
 
-  // Navigate to Stack Detail
-  await Promise.all([
-    page.waitForURL(/\/stacks\/system/),
-    page.click('text=mcpany-system'),
-  ]);
-  await expect(page.locator('h2')).toContainText('system');
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByLabel('Stack Name').fill('smoke-stack');
+  await page.getByRole('button', { name: 'Create' }).click();
+
+  // Wait for dialog to close (implies success or at least action taken)
+  // Increased timeout for CI stability
+  await expect(page.getByRole('dialog')).toBeHidden({ timeout: 15000 });
+
+  // Navigate to Stack Detail (should happen automatically)
+  // Increase timeout to handle potentially slow server/network
+  await expect(page).toHaveURL(/\/stacks\/smoke-stack/, { timeout: 20000 });
+
+  await expect(page.locator('h2')).toContainText('smoke-stack');
   await expect(page.locator('h2')).toContainText('Stack');
 
   // Check Tabs
   await expect(page.locator('button[role="tab"]', { hasText: 'Overview & Status' })).toBeVisible();
   await expect(page.locator('button[role="tab"]', { hasText: 'Editor' })).toBeVisible();
+
+  // Cleanup
+  await request.delete('/api/v1/collections/smoke-stack').catch(() => {});
 });

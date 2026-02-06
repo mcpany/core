@@ -33,6 +33,15 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
 
+	// Set busy_timeout immediately to handle concurrent access (e.g. during tests or restarts)
+	// This must be done before any other operation that might lock the DB.
+	ctxTimeout, cancelTimeout := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelTimeout()
+	if _, err := db.ExecContext(ctxTimeout, "PRAGMA busy_timeout=5000;"); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
+	}
+
 	// Create table if not exists
 	schema := `
 	CREATE TABLE IF NOT EXISTS semantic_cache_entries (
@@ -63,10 +72,6 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if _, err := db.ExecContext(ctx, "PRAGMA synchronous=NORMAL;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
-	}
-	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
 	store := &SQLiteVectorStore{

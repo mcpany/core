@@ -8,6 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -94,14 +95,28 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 
 	const maxRetries = 3
 	var res *mcp.CallToolResult
+	var errTransient = fmt.Errorf("transient error")
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(drink)})
+
+		// Check for error in result content (MCP server returns 200 OK but content might be error message)
+		if err == nil && res != nil && len(res.Content) > 0 {
+			if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
+				if strings.HasPrefix(textContent.Text, "Tool execution failed") {
+					t.Logf("Attempt %d/%d: Tool returned error content: %s. Retrying...", i+1, maxRetries, textContent.Text)
+					time.Sleep(2 * time.Second)
+					err = errTransient // Treat as transient for loop logic
+					continue
+				}
+			}
+		}
+
 		if err == nil {
 			break // Success
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") || err == errTransient {
 			t.Logf("Attempt %d/%d: Call to thecocktaildb.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
