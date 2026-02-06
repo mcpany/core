@@ -1801,6 +1801,25 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
+	// Sentinel Security Update: Trust Boundary Hardening
+	// Filter out any inputs that are not defined in the tool configuration parameters.
+	// This prevents "Schema Bypass" where undefined inputs could be used for template substitution.
+	allowedParams := make(map[string]bool)
+	for _, param := range t.callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			allowedParams[schema.GetName()] = true
+		}
+	}
+	// 'args' is handled specially later, so we allow it to pass through this filter
+	// if it is present. The logic below will validate if it is allowed by the schema.
+	allowedParams["args"] = true
+
+	for k := range inputs {
+		if !allowedParams[k] {
+			delete(inputs, k)
+		}
+	}
+
 	args := []string{}
 	if len(t.sandboxArgs) > 0 {
 		args = append(args, t.sandboxArgs...)
@@ -2096,6 +2115,25 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Sentinel Security Update: Trust Boundary Hardening
+	// Filter out any inputs that are not defined in the tool configuration parameters.
+	// This prevents "Schema Bypass" where undefined inputs could be used for template substitution.
+	allowedParams := make(map[string]bool)
+	for _, param := range t.callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			allowedParams[schema.GetName()] = true
+		}
+	}
+	// 'args' is handled specially later, so we allow it to pass through this filter
+	// if it is present. The logic below will validate if it is allowed by the schema.
+	allowedParams["args"] = true
+
+	for k := range inputs {
+		if !allowedParams[k] {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}
@@ -2690,6 +2728,7 @@ func isShellCommand(cmd string) bool {
 		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
+		"dart", "dotnet", "nim", "crystal", "zig",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
@@ -2906,7 +2945,7 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk"}
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk", "dart", "dotnet", "nim", "crystal", "zig"}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true

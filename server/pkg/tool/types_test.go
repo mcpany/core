@@ -619,6 +619,11 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	}.Build()
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"{{arg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build(),
+			}.Build(),
+		},
 	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")
@@ -629,9 +634,12 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 		ToolInputs: []byte(`{"arg": "../etc/passwd"}`),
 	}
 
-	_, err := cmdTool.Execute(context.Background(), req)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "path traversal attempt detected")
+	res, err := cmdTool.Execute(context.Background(), req)
+	if err == nil {
+		t.Errorf("Expected error but got nil. Result: %+v", res)
+	} else {
+		assert.Contains(t, err.Error(), "path traversal attempt detected")
+	}
 }
 
 func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
@@ -674,4 +682,83 @@ func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
 	_, err := cmdTool.Execute(context.Background(), req)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "path traversal attempt detected")
+}
+
+func TestLocalCommandTool_Execute_FiltersUndefinedInputs(t *testing.T) {
+	t.Parallel()
+	tool := v1.Tool_builder{
+		Name: proto.String("test-tool-filtering"),
+	}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+		Local:   proto.Bool(true),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"{{secret}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("public")}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	req := &ExecutionRequest{
+		ToolName: "test-tool-filtering",
+		Arguments: map[string]interface{}{
+			"public": "safe",
+			"secret": "leaked",
+		},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	result, err := localTool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resultMap := result.(map[string]interface{})
+	stdout := resultMap["stdout"].(string)
+
+	assert.Contains(t, stdout, "{{secret}}", "Undefined parameter should not be substituted")
+	assert.NotContains(t, stdout, "leaked", "Undefined parameter value should be ignored")
+}
+
+func TestCommandTool_Execute_FiltersUndefinedInputs(t *testing.T) {
+	t.Parallel()
+	tool := v1.Tool_builder{
+		Name: proto.String("test-command-tool-filtering"),
+	}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"{{secret}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("public")}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	commandTool := NewCommandTool(tool, service, callDef, nil, "call-id")
+
+	req := &ExecutionRequest{
+		ToolName: "test-command-tool-filtering",
+		Arguments: map[string]interface{}{
+			"public": "safe",
+			"secret": "leaked",
+		},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	result, err := commandTool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resultMap := result.(map[string]interface{})
+	stdout := resultMap["stdout"].(string)
+
+	assert.Contains(t, stdout, "{{secret}}", "Undefined parameter should not be substituted")
+	assert.NotContains(t, stdout, "leaked", "Undefined parameter value should be ignored")
 }
