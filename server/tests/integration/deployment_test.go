@@ -46,7 +46,14 @@ func TestDockerCompose(t *testing.T) {
 	// t.Parallel() removed to avoid port conflicts with hardcoded 50050 in docker-compose.yml
 
 	rootDir := integration.ProjectRoot(t)
-	dockerComposeFile := filepath.Join(rootDir, "examples/docker-compose-demo/docker-compose.yml")
+	// Handle repo root vs server dir
+	var examplesDir string
+	if filepath.Base(rootDir) == "server" {
+		examplesDir = filepath.Join(rootDir, "examples")
+	} else {
+		examplesDir = filepath.Join(rootDir, "server", "examples")
+	}
+	dockerComposeFile := filepath.Join(examplesDir, "docker-compose-demo/docker-compose.yml")
 
 	dockerCmd := getDockerCommand(t)
 
@@ -179,8 +186,8 @@ func TestDockerCompose(t *testing.T) {
 func TestHelmChart(t *testing.T) {
 	// // t.Skip("Skipping heavy integration test TestHelmChart")
 	// Add build/env/bin to PATH to find helm installed by make
-	rootDir := integration.ProjectRoot(t)
-	buildBin := filepath.Join(rootDir, "../build/env/bin")
+	buildDir := integration.GetBuildDir(t)
+	buildBin := filepath.Join(buildDir, "env/bin")
 	oldPath := os.Getenv("PATH")
 	os.Setenv("PATH", buildBin+string(os.PathListSeparator)+oldPath)
 	defer os.Setenv("PATH", oldPath)
@@ -190,7 +197,14 @@ func TestHelmChart(t *testing.T) {
 	}
 	t.Parallel()
 
-	helmChartPath := filepath.Join(integration.ProjectRoot(t), "../k8s", "helm", "mcpany")
+	rootDir := integration.ProjectRoot(t)
+	var k8sDir string
+	if filepath.Base(rootDir) == "server" {
+		k8sDir = filepath.Join(rootDir, "../k8s")
+	} else {
+		k8sDir = filepath.Join(rootDir, "k8s")
+	}
+	helmChartPath := filepath.Join(k8sDir, "helm", "mcpany")
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")
@@ -226,8 +240,16 @@ func TestK8sFullStack(t *testing.T) {
 	}
 
 	rootDir := integration.ProjectRoot(t)
-	helmChartPath := filepath.Join(rootDir, "../k8s", "helm", "mcpany")
-	uiDir := filepath.Join(rootDir, "../ui")
+	var k8sDir string
+	var uiDir string
+	if filepath.Base(rootDir) == "server" {
+		k8sDir = filepath.Join(rootDir, "../k8s")
+		uiDir = filepath.Join(rootDir, "../ui")
+	} else {
+		k8sDir = filepath.Join(rootDir, "k8s")
+		uiDir = filepath.Join(rootDir, "ui")
+	}
+	helmChartPath := filepath.Join(k8sDir, "helm", "mcpany")
 
 	// Cluster Config
 	clusterName := "mcpany-e2e-" + time.Now().Format("20060102-150405")

@@ -14,8 +14,17 @@ import (
 func TestConfigValidationFailures(t *testing.T) {
 	root, err := GetProjectRoot()
 	require.NoError(t, err)
+	buildDir := GetBuildDir(t)
 
-	mcpanyBinary := filepath.Join(root, "../build/bin/server")
+	mcpanyBinary := filepath.Join(buildDir, "bin/server")
+
+	// Determine if root is server or repo to find tests
+	var testsDir string
+	if filepath.Base(root) == "server" {
+		testsDir = filepath.Join(root, "tests", "integration")
+	} else {
+		testsDir = filepath.Join(root, "server", "tests", "integration")
+	}
 
 	tests := []struct {
 		name          string
@@ -38,7 +47,7 @@ func TestConfigValidationFailures(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
+			absConfigFile := filepath.Join(testsDir, tc.configFile)
 
 			// We use port 0 to avoid binding issues, but since validation fails early, ports might not even be bound.
 			// NewManagedProcess requires arguments.

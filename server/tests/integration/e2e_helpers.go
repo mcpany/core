@@ -249,6 +249,28 @@ func GetProjectRoot() (string, error) {
 	return filepath.Abs(projectRoot)
 }
 
+// GetBuildDir returns the path to the build directory.
+// It attempts to resolve it relative to the project root.
+func GetBuildDir(t *testing.T) string {
+	t.Helper()
+	root := ProjectRoot(t)
+
+	// Case 1: root is server directory, build is sibling (../build)
+	path1 := filepath.Join(root, "../build")
+	if info, err := os.Stat(path1); err == nil && info.IsDir() {
+		return path1
+	}
+
+	// Case 2: root is repo root, build is child (build)
+	path2 := filepath.Join(root, "build")
+	if info, err := os.Stat(path2); err == nil && info.IsDir() {
+		return path2
+	}
+
+	// Fallback to assumption (Case 1) to produce a path for error reporting
+	return path1
+}
+
 // --- Helper: Find Free Port ---.
 var portMutex sync.Mutex
 
@@ -943,15 +965,14 @@ func StartNatsServer(t *testing.T) (string, func()) {
 		if _, err := os.Stat("/tools/nats-server"); err == nil {
 			natsServerBin = "/tools/nats-server"
 		} else {
-			root, err := GetProjectRoot()
-			require.NoError(t, err)
-			natsServerBin = filepath.Join(root, "../build/env/bin/nats-server")
+			buildDir := GetBuildDir(t)
+			natsServerBin = filepath.Join(buildDir, "env/bin/nats-server")
 			if info, err := os.Stat(natsServerBin); err == nil {
 				t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
 			} else {
 				t.Logf("DEBUG: nats-server binary not found at: %s", natsServerBin)
 			}
-			_, err = os.Stat(natsServerBin)
+			_, err := os.Stat(natsServerBin)
 			require.NoError(t, err, "nats-server binary not found at %s or /tools/nats-server. Run 'make prepare'.", natsServerBin)
 		}
 	}
@@ -1095,9 +1116,9 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
-	root, err := GetProjectRoot()
-	require.NoError(t, err, "Failed to get project root")
-	mcpanyBinary := filepath.Join(root, "../build/bin/server")
+	root := ProjectRoot(t)
+	buildDir := GetBuildDir(t)
+	mcpanyBinary := filepath.Join(buildDir, "bin/server")
 
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 

@@ -51,11 +51,20 @@ func TestConfigLoading(t *testing.T) {
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err)
+	buildDir := GetBuildDir(t)
+
+	// Determine if root is server or repo to find tests
+	var testsDir string
+	if filepath.Base(root) == "server" {
+		testsDir = filepath.Join(root, "tests", "integration")
+	} else {
+		testsDir = filepath.Join(root, "server", "tests", "integration")
+	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "../build/bin/server"))
-			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
+			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(buildDir, "bin/server"))
+			absConfigFile := filepath.Join(testsDir, tc.configFile)
 
 
 			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile)
@@ -87,9 +96,17 @@ func TestConfigLoading(t *testing.T) {
 func TestDisabledHierarchyConfig(t *testing.T) {
 	root, err := GetProjectRoot()
 	require.NoError(t, err)
+	buildDir := GetBuildDir(t)
 
-	t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "../build/bin/server"))
-	absConfigFile := filepath.Join(root, "tests", "integration", "testdata", "disabled_hierarchy_config.yaml")
+	var testsDir string
+	if filepath.Base(root) == "server" {
+		testsDir = filepath.Join(root, "tests", "integration")
+	} else {
+		testsDir = filepath.Join(root, "server", "tests", "integration")
+	}
+
+	t.Setenv("MCPANY_BINARY_PATH", filepath.Join(buildDir, "bin/server"))
+	absConfigFile := filepath.Join(testsDir, "testdata", "disabled_hierarchy_config.yaml")
 
 	mcpAny := StartMCPANYServer(t, "config-loading-hierarchy", "--config-path", absConfigFile)
 	defer mcpAny.CleanupFunc()

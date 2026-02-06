@@ -332,11 +332,11 @@ func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	if req, ok := msg.(*jsonrpc.Request); ok {
 		method = req.Method
 		params = req.Params
-		id = fixID(req.ID)
+		id = fixID(&req.ID)
 	} else if resp, ok := msg.(*jsonrpc.Response); ok {
 		result = resp.Result
 		errorObj = resp.Error
-		id = fixID(resp.ID)
+		id = fixID(&resp.ID)
 	}
 
 	wire := map[string]any{
@@ -372,6 +372,12 @@ func fixID(id interface{}) interface{} {
 		return v
 	}
 
+	// ⚡ Bolt Optimization: Use reflection to access unexported field directly.
+	// This avoids expensive fmt.Sprintf and regex matching on every message.
+	if val := getUnexportedID(id); val != nil {
+		return val
+	}
+
 	// If it's the broken struct, print it and parse
 	// This is fragile, but needed until SDK exports ID or provides a way to marshal it.
 	s := fmt.Sprintf("%+v", id)
@@ -401,6 +407,30 @@ func fixID(id interface{}) interface{} {
 
 	// If parsing fails, return the ID as is and hope for the best (it might be marshaled as {})
 	return id
+}
+
+func getUnexportedID(id interface{}) interface{} {
+	if id == nil {
+		return nil
+	}
+	v := reflect.ValueOf(id)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return nil
+	}
+	f := v.FieldByName("value")
+	if !f.IsValid() {
+		return nil
+	}
+	// We need to address it to read unexported field
+	if !f.CanAddr() {
+		return nil
+	}
+
+	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
+	return f.Interface()
 }
 
 // Close closes the connection.

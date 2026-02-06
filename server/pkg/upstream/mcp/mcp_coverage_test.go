@@ -103,11 +103,12 @@ func TestBundleDockerConn_Write(t *testing.T) {
 		Method: "method",
 		Params: json.RawMessage(`{"foo":"bar"}`),
 	}
-	setUnexportedID(&req.ID, "123")
+	// ⚡ Bolt: Updated test to use explicit int64 to verify reflection works correctly
+	// Previous behavior relied on fmt.Sprintf dropping quotes for strings that looked like numbers
+	setUnexportedID(&req.ID, int64(123))
 
 	err := conn.Write(context.Background(), req)
 	assert.NoError(t, err)
-	// Verify output - ID is parsed as int by fixID because it looks like a number
 	assert.Contains(t, string(rwc.written), `"method":"method"`)
 	assert.Contains(t, string(rwc.written), `"id":123`)
 
@@ -118,13 +119,13 @@ func TestBundleDockerConn_Write(t *testing.T) {
 	resp := &jsonrpc.Response{
 		Result: json.RawMessage(`{"result":"ok"}`),
 	}
-	// Use string "456" to align with Request success
+	// Test string ID preservation
 	setUnexportedID(&resp.ID, "456")
 
 	err = conn.Write(context.Background(), resp)
 	assert.NoError(t, err)
 	assert.Contains(t, string(rwc.written), `"result":{"result":"ok"}`)
-	assert.Contains(t, string(rwc.written), `"id":456`)
+	assert.Contains(t, string(rwc.written), `"id":"456"`)
 }
 
 func TestUnzipBundle(t *testing.T) {
