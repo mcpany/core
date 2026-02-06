@@ -4,29 +4,18 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, login } from './test-data';
 
 test.describe('Bulk Service Actions', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock services API
-    await page.route('**/api/v1/services', async route => {
-        await route.fulfill({
-            json: [
-                { name: "service-1", httpService: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-                { name: "service-2", httpService: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-                { name: "service-3", httpService: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
-            ]
-        });
-    });
-
-     // Mock doctor API
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
+  test.beforeEach(async ({ page, request }) => {
+    const services = [
+        { id: "s1", name: "service-1", http_service: { address: "http://example.com/8001" }, disable: false, tags: ["prod"] },
+        { id: "s2", name: "service-2", http_service: { address: "http://example.com/8002" }, disable: true, tags: ["dev"] },
+        { id: "s3", name: "service-3", http_service: { address: "http://example.com/8003" }, disable: false, tags: ["prod"] }
+    ];
+    await seedServices(request, services);
+    await login(page);
   });
 
   test('should select all services and show bulk actions', async ({ page }) => {
@@ -62,17 +51,6 @@ test.describe('Bulk Service Actions', () => {
   });
 
   test('should toggle services', async ({ page }) => {
-      // Mock the toggle API
-      const toggleRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'PUT') {
-              toggleRequests.push(route.request().url());
-              await route.fulfill({ status: 200, json: {} });
-          } else {
-              await route.continue();
-          }
-      });
-
       await page.goto('/upstream-services');
       await expect(page.getByText('service-1')).toBeVisible();
 
@@ -80,27 +58,17 @@ test.describe('Bulk Service Actions', () => {
       await page.getByRole('checkbox', { name: 'Select service-1' }).check();
       await page.getByRole('checkbox', { name: 'Select service-3' }).check();
 
+      // Setup response wait
+      const p1 = page.waitForResponse(resp => resp.url().includes('service-1') && resp.request().method() === 'PUT');
+      const p2 = page.waitForResponse(resp => resp.url().includes('service-3') && resp.request().method() === 'PUT');
+
       // Click Disable
       await page.getByRole('button', { name: 'Disable' }).click();
 
-      // Verify requests
-      await expect.poll(() => toggleRequests.length).toBe(2);
-      expect(toggleRequests.some(url => url.includes('service-1'))).toBeTruthy();
-      expect(toggleRequests.some(url => url.includes('service-3'))).toBeTruthy();
+      await Promise.all([p1, p2]);
   });
 
     test('should delete services', async ({ page }) => {
-      // Mock the delete API
-      const deleteRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'DELETE') {
-            deleteRequests.push(route.request().url());
-            await route.fulfill({ status: 200 });
-          } else {
-            await route.continue();
-          }
-      });
-
       // Handle confirm dialog
       page.on('dialog', dialog => dialog.accept());
 
@@ -110,12 +78,16 @@ test.describe('Bulk Service Actions', () => {
       // Select service-2
       await page.getByRole('checkbox', { name: 'Select service-2' }).check();
 
+      // Setup response wait
+      const p1 = page.waitForResponse(resp => resp.url().includes('service-2') && resp.request().method() === 'DELETE');
+
       // Click Delete
       await page.getByRole('button', { name: 'Delete' }).click();
 
-      // Wait a bit for async calls
-      await expect.poll(() => deleteRequests.length).toBe(1);
-      expect(deleteRequests[0]).toContain('service-2');
+      await p1;
+
+      // Verify it's gone
+      await expect(page.getByText('service-2')).not.toBeVisible();
   });
 
 });
