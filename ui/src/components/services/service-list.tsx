@@ -50,7 +50,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
-  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkEdit?: (names: string[], updates: { tags?: string[], resilience?: { timeout?: string, maxRetries?: number } }) => void;
 }
 
 /**
@@ -63,6 +63,8 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
+  const [bulkTimeout, setBulkTimeout] = useState("");
+  const [bulkRetries, setBulkRetries] = useState("");
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -223,16 +225,50 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                         onChange={(e) => setBulkTags(e.target.value)}
                     />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="bulk-timeout">Timeout (optional)</Label>
+                        <Input
+                            id="bulk-timeout"
+                            placeholder="e.g. 30s"
+                            value={bulkTimeout}
+                            onChange={(e) => setBulkTimeout(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="bulk-retries">Max Retries (optional)</Label>
+                        <Input
+                            id="bulk-retries"
+                            type="number"
+                            placeholder="e.g. 3"
+                            value={bulkRetries}
+                            onChange={(e) => setBulkRetries(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Empty fields will be left unchanged.</p>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        const resilienceUpdates: any = {};
+                        if (bulkTimeout) resilienceUpdates.timeout = bulkTimeout;
+                        if (bulkRetries) resilienceUpdates.maxRetries = parseInt(bulkRetries);
+
+                        onBulkEdit(
+                            Array.from(selected),
+                            {
+                                tags: bulkTags ? bulkTags.split(",").map(t => t.trim()).filter(Boolean) : undefined,
+                                resilience: Object.keys(resilienceUpdates).length > 0 ? resilienceUpdates : undefined
+                            }
+                        );
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());
                     setBulkTags("");
+                    setBulkTimeout("");
+                    setBulkRetries("");
                 }}>Apply Changes</Button>
             </DialogFooter>
         </DialogContent>
