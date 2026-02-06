@@ -17,8 +17,9 @@ import (
 )
 
 func TestFileUpload(t *testing.T) {
-	// Start the server
-	server := StartInProcessMCPANYServer(t, "FileUploadTest")
+	// Start the server with an explicit API key to ensure consistent behavior
+	apiKey := "test-upload-key"
+	server := StartInProcessMCPANYServer(t, "FileUploadTest", apiKey)
 	defer server.CleanupFunc()
 
 	// Create a dummy file to upload
@@ -52,6 +53,8 @@ func TestFileUpload(t *testing.T) {
 	req, err := http.NewRequest("POST", server.JSONRPCEndpoint+"/upload", body)
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+	// Set Authorization header
+	req.Header.Set("Authorization", "Bearer "+apiKey)
 
 	// Send the request
 	client := &http.Client{}
