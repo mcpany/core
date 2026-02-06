@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2809,31 +2806,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Python: Check for f-string prefix in template
-	if strings.HasPrefix(base, "python") {
-		// Scan template to find the prefix of the quote containing the placeholder
-		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
-		hasFString := false
-		for i := 0; i < len(template)-1; i++ {
-			if template[i+1] == '\'' || template[i+1] == '"' {
-				prefix := strings.ToLower(getPrefix(template, i+1))
-				if prefix == "f" || prefix == "fr" || prefix == "rf" {
-					hasFString = true
-					break
-				}
-			}
-		}
-		if hasFString {
-			if strings.ContainsAny(val, "{}") {
-				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
-			}
+	if strings.HasPrefix(base, "perl") {
+		if err := checkPerlInjection(val, quoteLevel); err != nil {
+			return err
 		}
 	}
 
-	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+	if strings.HasPrefix(base, "ruby") {
+		if err := checkRubyInjection(val, quoteLevel); err != nil {
+			return err
+		}
+	}
+
+	if strings.HasPrefix(base, "python") {
+		if err := checkPythonInjection(val, template); err != nil {
+			return err
 		}
 	}
 
@@ -2842,15 +2829,9 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
 
-	if isNode && quoteLevel == 3 { // Backtick
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
-		}
-	}
-	// Perl and PHP interpolate variables in both double quotes and backticks
-	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+	if (isNode || isPerl || isPhp) {
+		if err := checkInterpolationInjection(val, quoteLevel, isNode, isPerl, isPhp); err != nil {
+			return err
 		}
 	}
 
@@ -2862,6 +2843,69 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
+	return nil
+}
+
+func checkPerlInjection(val string, quoteLevel int) error {
+	// Sentinel Security Update: Block qx operator in Perl (Only dangerous in unquoted context)
+	if quoteLevel == 0 {
+		// qx/.../ executes command. qx is an operator.
+		if containsWord(val, "qx") {
+			return fmt.Errorf("perl qx injection detected: value contains 'qx' operator")
+		}
+	}
+	return nil
+}
+
+func checkRubyInjection(val string, quoteLevel int) error {
+	// Sentinel Security Update: Block %x operator in Ruby (Only dangerous in unquoted context)
+	if quoteLevel == 0 {
+		if strings.Contains(val, "%x") {
+			return fmt.Errorf("ruby percent-x injection detected: value contains '%%x'")
+		}
+	}
+	// Ruby: #{...} works in double quotes AND backticks
+	if quoteLevel == 1 || quoteLevel == 3 { // Double Quoted or Backticked
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+		}
+	}
+	return nil
+}
+
+func checkPythonInjection(val, template string) error {
+	// Scan template to find the prefix of the quote containing the placeholder
+	// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+	hasFString := false
+	for i := 0; i < len(template)-1; i++ {
+		if template[i+1] == '\'' || template[i+1] == '"' {
+			prefix := strings.ToLower(getPrefix(template, i+1))
+			if prefix == "f" || prefix == "fr" || prefix == "rf" {
+				hasFString = true
+				break
+			}
+		}
+	}
+	if hasFString {
+		if strings.ContainsAny(val, "{}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+		}
+	}
+	return nil
+}
+
+func checkInterpolationInjection(val string, quoteLevel int, isNode, isPerl, isPhp bool) error {
+	if isNode && quoteLevel == 3 { // Backtick
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+		}
+	}
+	// Perl and PHP interpolate variables in both double quotes and backticks
+	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+		}
+	}
 	return nil
 }
 
@@ -2917,6 +2961,24 @@ func isInterpreter(command string) bool {
 
 func isWordChar(c byte) bool {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
+}
+
+func containsWord(s, word string) bool {
+	idx := strings.Index(s, word)
+	for idx != -1 {
+		startOk := idx == 0 || !isWordChar(s[idx-1])
+		endOk := idx+len(word) == len(s) || !isWordChar(s[idx+len(word)])
+
+		if startOk && endOk {
+			return true
+		}
+		next := strings.Index(s[idx+1:], word)
+		if next == -1 {
+			break
+		}
+		idx += 1 + next
+	}
+	return false
 }
 
 func getPrefix(s string, idx int) string {
@@ -3006,9 +3068,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
