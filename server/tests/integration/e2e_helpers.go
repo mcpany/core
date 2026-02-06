@@ -585,6 +585,27 @@ func IsDockerSocketAccessible() bool {
 	return true
 }
 
+var (
+	dockerFunctional     bool
+	dockerFunctionalOnce sync.Once
+)
+
+// IsDockerFunctional checks if Docker can actually run containers.
+func IsDockerFunctional() bool {
+	dockerFunctionalOnce.Do(func() {
+		if !IsDockerSocketAccessible() {
+			return
+		}
+		dockerExe, dockerArgs := getDockerCommand()
+		// Try running a simple command in a container (alpine is small, usually cached or quick to pull)
+		cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")...) //nolint:gosec // Test helper
+		if err := cmd.Run(); err == nil {
+			dockerFunctional = true
+		}
+	})
+	return dockerFunctional
+}
+
 // --- Mock Service Start Helpers (External Processes) ---
 
 // StartDockerContainer starts a docker container with the given image and args.
@@ -598,6 +619,9 @@ func IsDockerSocketAccessible() bool {
 // Returns the result.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
+	if !IsDockerFunctional() {
+		t.Skip("Docker is not functional (cannot run containers). Skipping test.")
+	}
 	dockerExe, dockerBaseArgs := getDockerCommand()
 
 	// buildArgs safely creates a new slice for command arguments.

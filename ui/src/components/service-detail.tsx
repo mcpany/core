@@ -144,9 +144,12 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 }
 
 /**
- * ServiceDetail.
+ * Displays detailed information about a specific service, including its health,
+ * tools, prompts, and resources.
  *
- * @param { serviceId - The { serviceId.
+ * @param props - The component props.
+ * @param props.serviceId - The unique identifier of the service to display.
+ * @returns A React component rendering the service details.
  */
 export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

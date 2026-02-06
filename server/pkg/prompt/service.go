@@ -19,11 +19,13 @@ type Service struct {
 	mcpServer     *mcp.Server
 }
 
-// NewService creates and returns a new Service instance.
+// NewService creates a new prompt service instance.
 //
-// promptManager is the promptManager.
+// Parameters:
+//   - promptManager: ManagerInterface. The manager responsible for prompt lifecycle and storage.
 //
-// Returns the result.
+// Returns:
+//   - *Service: A new Service instance.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,

@@ -113,6 +113,13 @@ Run the linter to verify your changes:
 make lint
 ```
 
+### Documentation Standard
+We enforce a "Gold Standard" for documentation. Every public API (Go and TypeScript) must have a high-quality docstring including:
+*   **Summary**: A concise action statement.
+*   **Parameters**: Detailed description of each parameter.
+*   **Returns**: Description of return values.
+*   **Errors/Throws**: Explicit list of potential errors.
+
 ### Building
 Compile all artifacts (Server binary and UI assets).
 ```bash
