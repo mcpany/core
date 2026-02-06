@@ -658,86 +658,8 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 		wg.Add(1)
 		go func(i int, path string) {
 			defer wg.Done()
-
-			var b []byte
-			var err error
-			if isURL(path) {
-				b, err = readURL(ctx, path)
-				if err != nil {
-					results[i] = loadResult{err: fmt.Errorf("failed to read config from URL %s: %w", path, err)}
-					return
-				}
-			} else {
-				b, err = afero.ReadFile(s.fs, path)
-				if err != nil {
-					results[i] = loadResult{err: fmt.Errorf("failed to read config file %s: %w", path, err)}
-					return
-				}
-			}
-
-			if len(b) == 0 {
-				return
-			}
-
-			b, err = expand(b)
-			if err != nil {
-				if !s.IgnoreMissingEnv {
-					results[i] = loadResult{err: WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)}
-					return
-				}
-				logging.GetLogger().Warn("Missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
-			}
-
-			engine, err := NewEngine(path)
-			if err != nil {
-				if s.skipErrors {
-					logging.GetLogger().Error("Failed to determine config engine, skipping file", "path", path, "error", err)
-					return
-				}
-				results[i] = loadResult{err: err}
-				return
-			}
-
-			if configurable, ok := engine.(ConfigurableEngine); ok {
-				configurable.SetSkipValidation(s.skipValidation)
-			}
-
-			cfg := configv1.McpAnyServerConfig_builder{}.Build()
-			if err := engine.Unmarshal(b, cfg); err != nil {
-				logErr := fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
-				if strings.Contains(err.Error(), "is already set") {
-					// Find the service name
-					var raw map[string]interface{}
-					if yaml.Unmarshal(b, &raw) == nil {
-						if services, ok := raw["upstream_services"].([]interface{}); ok {
-							for _, s := range services {
-								if service, ok := s.(map[string]interface{}); ok {
-									if name, ok := service["name"].(string); ok {
-										// Heuristic: if the raw service definition has more than one service type key, it's the culprit
-										keys := 0
-										serviceKeys := []string{"http_service", "grpc_service", "openapi_service", "command_line_service", "websocket_service", "webrtc_service", "graphql_service", "mcp_service"}
-										for _, k := range serviceKeys {
-											if _, ok := service[k]; ok {
-												keys++
-											}
-										}
-										if keys > 1 {
-											logErr = fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				if s.skipErrors {
-					logging.GetLogger().Error("Failed to parse config file, skipping", "path", path, "error", logErr)
-					return
-				}
-				results[i] = loadResult{err: logErr}
-				return
-			}
-			results[i] = loadResult{cfg: cfg}
+			cfg, err := s.loadOne(ctx, path)
+			results[i] = loadResult{cfg: cfg, err: err}
 		}(i, path)
 	}
 
@@ -776,6 +698,83 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 	}
 
 	return mergedConfig, nil
+}
+
+func (s *FileStore) loadOne(ctx context.Context, path string) (*configv1.McpAnyServerConfig, error) {
+	var b []byte
+	var err error
+	if isURL(path) {
+		b, err = readURL(ctx, path)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read config from URL %s: %w", path, err)
+		}
+	} else {
+		b, err = afero.ReadFile(s.fs, path)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
+		}
+	}
+
+	if len(b) == 0 {
+		return nil, nil
+	}
+
+	b, err = expand(b)
+	if err != nil {
+		if !s.IgnoreMissingEnv {
+			return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
+		}
+		logging.GetLogger().Warn("Missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
+	}
+
+	engine, err := NewEngine(path)
+	if err != nil {
+		if s.skipErrors {
+			logging.GetLogger().Error("Failed to determine config engine, skipping file", "path", path, "error", err)
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	if configurable, ok := engine.(ConfigurableEngine); ok {
+		configurable.SetSkipValidation(s.skipValidation)
+	}
+
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
+	if err := engine.Unmarshal(b, cfg); err != nil {
+		logErr := fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
+		if strings.Contains(err.Error(), "is already set") {
+			// Find the service name
+			var raw map[string]interface{}
+			if yaml.Unmarshal(b, &raw) == nil {
+				if services, ok := raw["upstream_services"].([]interface{}); ok {
+					for _, s := range services {
+						if service, ok := s.(map[string]interface{}); ok {
+							if name, ok := service["name"].(string); ok {
+								// Heuristic: if the raw service definition has more than one service type key, it's the culprit
+								keys := 0
+								serviceKeys := []string{"http_service", "grpc_service", "openapi_service", "command_line_service", "websocket_service", "webrtc_service", "graphql_service", "mcp_service"}
+								for _, k := range serviceKeys {
+									if _, ok := service[k]; ok {
+										keys++
+									}
+								}
+								if keys > 1 {
+									logErr = fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if s.skipErrors {
+			logging.GetLogger().Error("Failed to parse config file, skipping", "path", path, "error", logErr)
+			return nil, nil
+		}
+		return nil, logErr
+	}
+	return cfg, nil
 }
 
 // httpClient is a safe http client for loading configurations.
