@@ -11,8 +11,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
-# Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
-RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
+# Install dependencies using npm ci for deterministic builds if lockfile exists
+RUN if [ -f package-lock.json ]; then npm ci --no-audit --registry=https://registry.npmjs.org/; else npm install --no-audit --registry=https://registry.npmjs.org/; fi
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -44,6 +44,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # User authentication service URL
+ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
 RUN addgroup --system --gid 1001 nodejs

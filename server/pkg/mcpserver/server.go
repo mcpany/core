@@ -102,6 +102,14 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Errors/Throws:
+//   - Currently always returns nil error, but signature is reserved for future initialization checks.
+//
+// Side Effects:
+//   - Registers built-in tools (e.g., roots tool).
+//   - Configures and attaches middleware to the underlying MCP server.
+//   - Starts listening to resource list changes.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -541,6 +549,9 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //
 // Returns:
 //   None.
+//
+// Side Effects:
+//   - Updates the tool manager's service registry.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -553,6 +564,9 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 // Returns:
 //   - tool.Tool: The tool instance if found.
 //   - bool: A boolean indicating whether the tool was found.
+//
+// Side Effects:
+//   - None.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -561,6 +575,10 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //
 // Returns:
 //   - []tool.Tool: A slice of all available tools.
+//
+// Side Effects:
+//   - Logs the listing action.
+//   - Increments the tools.list.total metric.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -579,6 +597,16 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Errors/Throws:
+//   - Returns error if the tool is not found.
+//   - Returns error if the current profile is denied access to the tool's service.
+//   - Returns error if the underlying tool execution fails.
+//
+// Side Effects:
+//   - Logs the tool execution attempt and result.
+//   - Updates metrics (tools.call.total, tools.call.latency, tools.call.errors).
+//   - Executes the underlying tool, which may have its own side effects (e.g., API calls, command execution).
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -749,6 +777,9 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 //
 // Returns:
 //   - error: An error if the tool cannot be added (e.g., if it already exists).
+//
+// Side Effects:
+//   - Updates the internal tool registry.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -761,6 +792,9 @@ func (s *Server) AddTool(t tool.Tool) error {
 // Returns:
 //   - *tool.ServiceInfo: A pointer to the ServiceInfo if found.
 //   - bool: A boolean indicating whether the service was found.
+//
+// Side Effects:
+//   - None.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -776,6 +810,9 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //
 // Returns:
 //   None.
+//
+// Side Effects:
+//   - Removes tools from the internal registry.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -798,6 +835,12 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Returns:
 //   - error: An error if the reload function fails.
+//
+// Errors/Throws:
+//   - Returns error if the configured reload function fails.
+//
+// Side Effects:
+//   - Triggers a full configuration reload, which may update tools, prompts, resources, and services.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)

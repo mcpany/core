@@ -68,18 +68,50 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The internal protobuf representation of the tool.
+	//
+	// Side Effects:
+	//   - None.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition used by the protocol.
+	//
+	// Side Effects:
+	//   - May lazily initialize the MCP tool definition on first call.
 	MCPTool() *mcp.Tool
+
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request containing tool name and arguments.
+	//
+	// Returns:
+	//   - any: The execution result (usually a map or struct).
+	//   - error: An error if execution fails.
+	//
+	// Errors/Throws:
+	//   - Returns error if inputs are invalid.
+	//   - Returns error if the upstream service call fails.
+	//   - Returns error if policy evaluation denies the execution.
+	//
+	// Side Effects:
+	//   - Executes the underlying tool action (API call, command, etc.).
+	//   - May log execution details.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration settings.
+	//
+	// Side Effects:
+	//   - None.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -330,6 +362,24 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns error if the gRPC pool or client cannot be retrieved.
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if the gRPC call fails.
+//
+// Side Effects:
+//   - Invokes a remote gRPC method.
+//   - Logs execution details.
+//   - Updates metrics (grpc.request.latency, grpc.request.success, grpc.request.error).
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -574,6 +624,25 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns error if policy evaluation blocks the execution.
+//   - Returns error if the HTTP pool or client cannot be retrieved.
+//   - Returns error if input preparation or body construction fails.
+//   - Returns error if the upstream HTTP request fails (non-2xx status, though some are handled).
+//
+// Side Effects:
+//   - Makes an outgoing HTTP request.
+//   - Logs execution details.
+//   - Updates metrics (http.request.latency, http.request.success, http.request.error).
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1239,6 +1308,23 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // including its name and arguments, to the downstream MCP service using the
 // configured client and applies any necessary transformations to the request
 // and response.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns error if inputs are invalid.
+//   - Returns error if the downstream MCP call fails.
+//   - Returns error if output parsing fails.
+//
+// Side Effects:
+//   - Makes a call to a downstream MCP server.
+//   - Logs execution details.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1462,6 +1548,23 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // request based on the operation's method, URL, and parameter definitions,
 // sends the request, and processes the response, applying transformations as
 // needed.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if URL construction fails (unsafe URL).
+//   - Returns error if the HTTP request fails.
+//
+// Side Effects:
+//   - Makes an outgoing HTTP request.
+//   - Logs execution details.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1775,6 +1878,24 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map containing stdout, stderr, etc.).
+//   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns error if policy evaluation blocks the execution.
+//   - Returns error if input validation fails (e.g. path traversal, injection).
+//   - Returns error if the command execution fails to start.
+//
+// Side Effects:
+//   - Spawns a local process.
+//   - Writes to stdout/stderr.
+//   - Logs execution details.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2072,6 +2193,24 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Errors/Throws:
+//   - Returns error if policy evaluation blocks execution.
+//   - Returns error if input validation fails.
+//   - Returns error if command execution fails.
+//
+// Side Effects:
+//   - Spawns a process (local or in container).
+//   - Writes to stdout/stderr.
+//   - Logs execution details.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
