@@ -22,7 +22,7 @@ The dashboard updates in real-time.
 ### 3. Customizable Layout (Widget Gallery)
 The dashboard features a fully customizable layout engine ("Portainer-style").
 
-- **Add Widgets**: Click the **Add Widget** button to open the "Add Widget" sheet and choose from a library of available widgets (e.g., Metrics Overview, Recent Activity, Service Health).
+- **Add Widgets**: Click the **Add Widget** button to open the "Add Widget" sheet and choose from a library of available widgets (e.g., Metrics Overview, Recent Activity, Service Health, Tool Failure Rate).
 - **Drag & Drop**: Freely rearrange widgets on the grid.
 - **Resize**: Click the menu (⋮) on any widget to change its size (Full Width, 1/2, 1/3, etc.).
 - **Persisted State**: Your custom layout is automatically saved to your local browser storage.
