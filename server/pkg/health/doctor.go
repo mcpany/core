@@ -92,11 +92,13 @@ func (d *Doctor) Handler() http.HandlerFunc {
 				Latency: time.Since(start).String(),
 			}
 		}
+		AddHealthStatus("internet", report.Checks["internet"].Status)
 
 		// Auth Checks
 		authChecks := CheckAuth()
 		for k, v := range authChecks {
 			report.Checks[k] = v
+			AddHealthStatus(k, v.Status)
 		}
 
 		// Execute dynamic checks
@@ -104,14 +106,30 @@ func (d *Doctor) Handler() http.HandlerFunc {
 		for name, check := range d.checks {
 			res := check(r.Context())
 			report.Checks[name] = res
+			AddHealthStatus(name, res.Status)
 			if res.Status != "ok" {
 				report.Status = "degraded"
 			}
 		}
 		d.mu.RUnlock()
 
+		// Record overall status
+		AddHealthStatus("system", report.Status)
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(report)
+	}
+}
+
+// HistoryHandler returns the http handler for health history.
+//
+// Returns the result.
+func (d *Doctor) HistoryHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		history := GetHealthHistory()
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(history)
 	}
 }

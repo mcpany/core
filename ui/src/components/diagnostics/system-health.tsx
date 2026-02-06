@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { apiClient, DoctorReport } from "@/lib/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
  */
 export function SystemHealth() {
   const [report, setReport] = useState<DoctorReport | null>(null);
+  const [history, setHistory] = useState<Record<string, { timestamp: number; status: string }[]> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +39,12 @@ export function SystemHealth() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient.getDoctorStatus();
+      const [data, hist] = await Promise.all([
+        apiClient.getDoctorStatus(),
+        apiClient.getDoctorHistory().catch(() => null) // Optional: don't fail if history endpoint missing
+      ]);
       setReport(data);
+      if (hist) setHistory(hist);
     } catch (err) {
       console.error("Failed to fetch system health", err);
       setError("Failed to retrieve diagnostics report. The backend might be unreachable.");
@@ -125,10 +130,12 @@ export function SystemHealth() {
                 </p>
              </div>
           </div>
-          <Button onClick={fetchHealth} disabled={loading} size="lg">
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-            Run Check
-          </Button>
+          <div className="flex flex-col items-end gap-2">
+            <Button onClick={fetchHealth} disabled={loading} size="lg">
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                Run Check
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -154,6 +161,25 @@ export function SystemHealth() {
                      {result.diff && (
                         <div className="mt-2 p-2 bg-muted/50 rounded text-xs font-mono break-all text-red-500">
                              {result.diff}
+                        </div>
+                    )}
+                    {history && history[name] && (
+                        <div className="mt-4 pt-2 border-t">
+                            <div className="text-xs text-muted-foreground mb-1">History</div>
+                            <div className="flex gap-0.5 h-3 items-end">
+                                {history[name].slice(-30).map((pt, i) => (
+                                    <div
+                                        key={i}
+                                        className={cn(
+                                            "flex-1 rounded-sm min-w-[2px]",
+                                            pt.status === 'ok' ? "bg-green-500/80 hover:bg-green-500" :
+                                            pt.status === 'degraded' ? "bg-yellow-500/80 hover:bg-yellow-500" :
+                                            "bg-red-500/80 hover:bg-red-500"
+                                        )}
+                                        title={new Date(pt.timestamp).toLocaleTimeString() + ": " + pt.status}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     )}
                 </CardContent>

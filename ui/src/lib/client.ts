@@ -1553,6 +1553,16 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the doctor history.
+     * @returns A promise that resolves to the doctor history.
+     */
+    getDoctorHistory: async (): Promise<Record<string, {timestamp: number, status: string}[]>> => {
+        const res = await fetchWithAuth('/api/v1/doctor/history');
+        if (!res.ok) throw new Error('Failed to fetch doctor history');
+        return res.json();
+    },
+
     // Audit Logs
 
     /**

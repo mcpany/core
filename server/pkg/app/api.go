@@ -75,6 +75,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	doctor.AddCheck("configuration", a.configHealthCheck)
 	doctor.AddCheck("filesystem", a.filesystemHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
+	mux.Handle("/doctor/history", doctor.HistoryHandler())
 	mux.HandleFunc("/system/status", a.handleSystemStatus)
 	mux.HandleFunc("/audit/export", a.handleAuditExport)
 	mux.HandleFunc("/validate", a.handleValidate())

@@ -99,3 +99,26 @@ func TestDoctor_AddCheck(t *testing.T) {
 	assert.Contains(t, report.Checks, "custom_fail")
 	assert.Equal(t, "error", report.Checks["custom_fail"].Status)
 }
+
+func TestHistoryHandler(t *testing.T) {
+	doctor := NewDoctor()
+
+	// Seed history
+	AddHealthStatus("test-service", "ok")
+	AddHealthStatus("test-service", "error")
+
+	req, _ := http.NewRequest("GET", "/doctor/history", nil)
+	w := httptest.NewRecorder()
+	doctor.HistoryHandler().ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var history map[string][]HistoryPoint
+	err := json.Unmarshal(w.Body.Bytes(), &history)
+	assert.NoError(t, err)
+
+	assert.Contains(t, history, "test-service")
+	assert.GreaterOrEqual(t, len(history["test-service"]), 2)
+	assert.Equal(t, "ok", history["test-service"][0].Status)
+	assert.Equal(t, "error", history["test-service"][1].Status)
+}
