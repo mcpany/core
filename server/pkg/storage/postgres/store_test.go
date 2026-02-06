@@ -533,12 +533,6 @@ func TestPostgresStore(t *testing.T) {
 
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
-
-	t.Run("Close", func(t *testing.T) {
-		mock.ExpectClose()
-		err := store.Close()
-		require.NoError(t, err)
-	})
 }
 
 // initSchema test
@@ -551,6 +545,78 @@ func TestInitSchema(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(0, 0))
 
 	err = initSchema(db)
+	require.NoError(t, err)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostgresStore_Load_Success(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	pgDB := &DB{db}
+	store := NewStore(pgDB)
+
+	mock.MatchExpectationsInOrder(false) // Parallel queries
+
+	// Mock services
+	svcRows := sqlmock.NewRows([]string{"config_json"}).
+		AddRow(`{"name":"svc1","id":"id1"}`)
+	mock.ExpectQuery("SELECT config_json FROM upstream_services").
+		WillReturnRows(svcRows)
+
+	// Mock users
+	userRows := sqlmock.NewRows([]string{"config_json"}).
+		AddRow(`{"id":"user1"}`)
+	mock.ExpectQuery("SELECT config_json FROM users").
+		WillReturnRows(userRows)
+
+	// Mock global settings
+	settingsRows := sqlmock.NewRows([]string{"config_json"}).
+		AddRow(`{"mcp_listen_address":":8080"}`)
+	mock.ExpectQuery("SELECT config_json FROM global_settings").
+		WillReturnRows(settingsRows)
+
+	// Mock collections
+	colRows := sqlmock.NewRows([]string{"config_json"}).
+		AddRow(`{"name":"col1"}`)
+	mock.ExpectQuery("SELECT config_json FROM service_collections").
+		WillReturnRows(colRows)
+
+	cfg, err := store.Load(context.Background())
+	require.NoError(t, err)
+	assert.NotNil(t, cfg)
+
+	assert.Len(t, cfg.GetUpstreamServices(), 1)
+	assert.Equal(t, "svc1", cfg.GetUpstreamServices()[0].GetName())
+
+	assert.Len(t, cfg.GetUsers(), 1)
+	assert.Equal(t, "user1", cfg.GetUsers()[0].GetId())
+
+	assert.NotNil(t, cfg.GetGlobalSettings())
+	assert.Equal(t, ":8080", cfg.GetGlobalSettings().GetMcpListenAddress())
+
+	assert.Len(t, cfg.GetCollections(), 1)
+	assert.Equal(t, "col1", cfg.GetCollections()[0].GetName())
+
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostgresStore_Close(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	// No defer db.Close() here, because we expect store.Close() to do it.
+	// But if test fails, we should close it.
+	// However, sqlmock doesn't allow Close() to be called if ExpectClose() is consumed?
+	// Actually, TestPostgresStore failed because defer called Close() after ExpectClose() was consumed by store.Close().
+	// So here we should ensure we don't double close OR we expect it twice?
+	// Better: Don't defer. If store.Close fails, db might leak in test, but fine for unit test.
+
+	pgDB := &DB{db}
+	store := NewStore(pgDB)
+
+	mock.ExpectClose()
+	err = store.Close()
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
 }

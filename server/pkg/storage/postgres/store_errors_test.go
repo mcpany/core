@@ -24,8 +24,12 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	store := NewStore(pgDB)
 
 	t.Run("QueryError", func(t *testing.T) {
+		mock.MatchExpectationsInOrder(false)
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnError(errors.New("query error"))
+		mock.ExpectQuery("SELECT config_json FROM users").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM global_settings").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM service_collections").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		_, err := store.Load(context.Background())
 		assert.Error(t, err)
@@ -33,11 +37,15 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	})
 
 	t.Run("UnmarshalError", func(t *testing.T) {
+		mock.MatchExpectationsInOrder(false)
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("invalid-json"))
 
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
+		mock.ExpectQuery("SELECT config_json FROM users").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM global_settings").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM service_collections").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		_, err := store.Load(context.Background())
 		assert.Error(t, err)
@@ -45,12 +53,16 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	})
 
 	t.Run("RowsIterationError", func(t *testing.T) {
+		mock.MatchExpectationsInOrder(false)
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("{}")).
 			RowError(0, errors.New("row error"))
 
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
+		mock.ExpectQuery("SELECT config_json FROM users").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM global_settings").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM service_collections").WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		_, err := store.Load(context.Background())
 		// sqlmock RowError on 0th row might cause Scan to fail or Next to return false but Err() to be set?
