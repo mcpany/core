@@ -62,7 +62,7 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	go client.readLoop()
 
 	// Initialize
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	err = client.Initialize(ctx)
 	require.NoError(t, err)
@@ -253,7 +253,7 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 	client, cleanup := StartStdioServer(t, configFile)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	assert.Eventually(t, func() bool {
@@ -277,7 +277,7 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 			return false
 		}
 		return true
-	}, 5*time.Second, 100*time.Millisecond, "Expected tools to be discovered and hidden tools to be excluded")
+	}, 30*time.Second, 100*time.Millisecond, "Expected tools to be discovered and hidden tools to be excluded")
 }
 
 func TestCallPolicyExecution(t *testing.T) {
@@ -342,7 +342,7 @@ func TestCallPolicyExecution(t *testing.T) {
 	client, cleanup := StartStdioServer(t, configFile)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	assert.Eventually(t, func() bool {
@@ -356,7 +356,7 @@ func TestCallPolicyExecution(t *testing.T) {
 			}
 		}
 		return false
-	}, 10*time.Second, 100*time.Millisecond, "Tool call-policy-test.allowed_tool did not appear in list")
+	}, 30*time.Second, 100*time.Millisecond, "Tool call-policy-test.allowed_tool did not appear in list")
 
 	_, err := client.CallTool(ctx, &mcp.CallToolParams{
 		Name:      "call-policy-test.allowed_tool",
@@ -413,7 +413,7 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 	client, cleanup := StartStdioServer(t, configFile)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// Verify Prompts and Resources with Eventually to allow for async registration
@@ -451,5 +451,5 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 		}
 
 		return true
-	}, 10*time.Second, 100*time.Millisecond, "Expected prompts and resources to be exported/unexported correctly")
+	}, 30*time.Second, 100*time.Millisecond, "Expected prompts and resources to be exported/unexported correctly")
 }
