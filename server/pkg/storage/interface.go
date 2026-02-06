@@ -8,12 +8,19 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Storage defines the interface for persisting configuration.
 //
 // Summary: Interface for backend storage operations.
 type Storage interface {
+	// Logs
+	// SaveLog saves a log entry.
+	SaveLog(ctx context.Context, entry *logging.LogEntry) error
+	// ListLogs lists logs matching the filter.
+	ListLogs(ctx context.Context, filter logging.LogFilter) ([]*logging.LogEntry, error)
+
 	// Load retrieves the full server configuration.
 	//
 	// Summary: Loads the entire server configuration.

@@ -6,10 +6,12 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -1050,4 +1052,73 @@ func (s *Store) DeleteCredential(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to delete credential: %w", err)
 	}
 	return nil
+}
+
+// SaveLog saves a log entry.
+func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	query := `
+	INSERT INTO logs (id, timestamp, level, message, source, metadata_json)
+	VALUES (?, ?, ?, ?, ?, ?)
+	`
+	metaJSON, _ := json.Marshal(entry.Metadata)
+	_, err := s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Message, entry.Source, string(metaJSON))
+	return err
+}
+
+// ListLogs lists logs matching the filter.
+func (s *Store) ListLogs(ctx context.Context, filter logging.LogFilter) ([]*logging.LogEntry, error) {
+	query := "SELECT id, timestamp, level, message, source, metadata_json FROM logs WHERE 1=1"
+	var args []any
+
+	if filter.Source != "" {
+		query += " AND source = ?"
+		args = append(args, filter.Source)
+	}
+	if filter.Level != "" {
+		query += " AND level = ?"
+		args = append(args, filter.Level)
+	}
+	if filter.Search != "" {
+		query += " AND (message LIKE ? OR source LIKE ?)"
+		args = append(args, "%"+filter.Search+"%", "%"+filter.Search+"%")
+	}
+	if filter.StartTime != nil {
+		query += " AND timestamp >= ?"
+		args = append(args, filter.StartTime.Format("2006-01-02T15:04:05Z07:00"))
+	}
+	if filter.EndTime != nil {
+		query += " AND timestamp <= ?"
+		args = append(args, filter.EndTime.Format("2006-01-02T15:04:05Z07:00"))
+	}
+
+	query += " ORDER BY timestamp DESC"
+
+	if filter.Limit > 0 {
+		query += " LIMIT ?"
+		args = append(args, filter.Limit)
+	}
+	if filter.Offset > 0 {
+		query += " OFFSET ?"
+		args = append(args, filter.Offset)
+	}
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []*logging.LogEntry
+	for rows.Next() {
+		var l logging.LogEntry
+		var metaJSON string
+		if err := rows.Scan(&l.ID, &l.Timestamp, &l.Level, &l.Message, &l.Source, &metaJSON); err != nil {
+			return nil, err
+		}
+		if metaJSON != "" {
+			_ = json.Unmarshal([]byte(metaJSON), &l.Metadata)
+		}
+		logs = append(logs, &l)
+	}
+	return logs, nil
 }

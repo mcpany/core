@@ -799,6 +799,9 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	// Configure logging storage
+	logging.SetStorage(s)
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {

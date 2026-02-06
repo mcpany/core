@@ -287,6 +287,34 @@ export function LogStream() {
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
   const logBufferRef = React.useRef<LogEntry[]>([])
+  const processedLogIds = React.useRef<Set<string>>(new Set())
+
+  // Initial fetch of historical logs
+  React.useEffect(() => {
+      const fetchHistory = async () => {
+          try {
+              const res = await fetch('/api/v1/logs/history?limit=1000');
+              if (!res.ok) throw new Error('Failed to fetch logs');
+              const history: LogEntry[] = await res.json();
+
+              // Process history logs
+              const processedHistory = history.map(log => {
+                  log.searchStr = (log.message + " " + (log.source || "")).toLowerCase();
+                  log.formattedTime = timeFormatter
+                    ? timeFormatter.format(new Date(log.timestamp))
+                    : new Date(log.timestamp).toLocaleTimeString();
+                  processedLogIds.current.add(log.id);
+                  return log;
+              }).reverse(); // History comes newest first, we want oldest first for the list
+
+              setLogs(processedHistory);
+          } catch (e) {
+              console.error("Failed to fetch log history", e);
+          }
+      };
+
+      fetchHistory();
+  }, []);
 
   React.useEffect(() => {
     // Optimization: Flush buffer periodically to limit re-renders
@@ -295,25 +323,40 @@ export function LogStream() {
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
-          const MAX_LOGS = 1000
+
+          // Deduplicate buffer against existing logs (via ref set)
+          const uniqueBuffer: LogEntry[] = [];
+          for (const log of buffer) {
+              if (!processedLogIds.current.has(log.id)) {
+                  processedLogIds.current.add(log.id);
+                  uniqueBuffer.push(log);
+              }
+          }
+
+          if (uniqueBuffer.length === 0) return prev;
+
+          const MAX_LOGS = 2000 // Increased limit to accommodate history + live
 
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
           // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
 
           // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
+          if (prev.length + uniqueBuffer.length <= MAX_LOGS) {
+            return [...prev, ...uniqueBuffer]
           }
 
           // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
+          if (uniqueBuffer.length >= MAX_LOGS) {
+            // Re-sync processedLogIds to only contain kept logs?
+            // For simplicity/perf we just let the Set grow (it contains strings, not objects).
+            // Maybe clear it occasionally if it gets huge?
+            return uniqueBuffer.slice(uniqueBuffer.length - MAX_LOGS)
           }
 
           // Case 3: Need to trim from prev to make room for buffer
           // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
+          const keepCount = MAX_LOGS - uniqueBuffer.length
+          return [...prev.slice(-keepCount), ...uniqueBuffer]
         })
       }
     }, 100) // Flush every 100ms

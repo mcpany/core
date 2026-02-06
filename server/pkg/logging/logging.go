@@ -5,6 +5,7 @@
 package logging
 
 import (
+	"context"
 	"io"
 	"log/slog"
 	"os"
@@ -19,7 +20,37 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+	logStorage    atomic.Pointer[LogSaver]
 )
+
+// LogSaver interface avoids circular dependency with storage package.
+type LogSaver interface {
+	SaveLog(ctx context.Context, entry *LogEntry) error
+}
+
+// SetStorage sets the storage backend for logs.
+func SetStorage(s LogSaver) {
+	// Wrap interface in a struct because atomic.Pointer requires concrete type or unsafe.Pointer
+	// Actually atomic.Value can hold interface.
+	// But we use atomic.Pointer[LogSaver] which is not valid if LogSaver is interface?
+	// Go 1.19 atomic.Pointer[T] requires T to be any type.
+	// No, T must be the type pointed to.
+	// So we need a struct that holds the interface?
+	// Or just use atomic.Value.
+	// Let's use atomic.Value for interface.
+	logStorageVal.Store(s)
+}
+
+var logStorageVal atomic.Value
+
+// GetStorage returns the current log storage.
+func GetStorage() LogSaver {
+	val := logStorageVal.Load()
+	if val == nil {
+		return nil
+	}
+	return val.(LogSaver)
+}
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
@@ -29,6 +60,7 @@ func ForTestsOnlyResetLogger() {
 	defer mu.Unlock()
 	once = sync.Once{}
 	defaultLogger.Store(nil)
+	logStorageVal.Store(nil)
 }
 
 // Init initializes the application's global logger with a specific log level
