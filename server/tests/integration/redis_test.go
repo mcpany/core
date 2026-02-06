@@ -15,6 +15,10 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	if !IsDockerRunWorking(t) {
+		t.Skip("Docker runtime is not working (e.g. DinD issues), skipping redis integration test")
+	}
+
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
