@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/nats-io/nuid"
 )
 
 // HydrateFromFile reads the last N lines from the given log file,
@@ -34,7 +34,9 @@ func HydrateFromFile(path string) error {
 
 		// Map to LogEntry
 		entry := LogEntry{
-			ID:       uuid.New().String(),
+			// ⚡ BOLT: Replaced UUID with NUID for high-performance ID generation in hot path.
+			// Randomized Selection from Top 5 High-Impact Targets
+			ID:       nuid.Next(),
 			Metadata: make(map[string]any),
 		}
 
