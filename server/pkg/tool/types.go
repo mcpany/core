@@ -2770,9 +2770,18 @@ func checkForShellInjection(val string, template string, placeholder string, com
 
 		// If the command is a known interpreter, we must be stricter.
 		// Specifically, we must prevent escaping the closing quote of the interpreter's string literal using backslash.
+		// We only need to block if the value ends with an odd number of backslashes, which would escape the closing quote.
 		if isInterpreter(command) {
-			if strings.Contains(val, "\\") {
-				return fmt.Errorf("interpreter injection detected: value contains backslash which could escape string usage")
+			trailingBackslashes := 0
+			for i := len(val) - 1; i >= 0; i-- {
+				if val[i] == '\\' {
+					trailingBackslashes++
+				} else {
+					break
+				}
+			}
+			if trailingBackslashes%2 != 0 {
+				return fmt.Errorf("interpreter injection detected: value ends with odd number of backslashes which could escape closing quote")
 			}
 		}
 

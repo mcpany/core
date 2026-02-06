@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool
 
 import (
@@ -32,10 +35,6 @@ func (m *sentinelMockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string,
 }
 
 func TestInterpreterInjectionBypass(t *testing.T) {
-	// Vulnerability: RCE via Backslash Injection in Single Quoted Argument.
-	// We demonstrate that we can inject a backslash to escape the closing quote of a Python string,
-	// allowing us to execute arbitrary code.
-
 	toolDef := v1.Tool_builder{
 		Name: proto.String("python-tool"),
 	}.Build()
@@ -60,55 +59,71 @@ func TestInterpreterInjectionBypass(t *testing.T) {
 		},
 	}.Build()
 
-	// Attack Scenario:
-	// input1 = "\" (Backslash)
-	// input2 = ", open('/etc/passwd')) #" (Code to execute)
-	//
-	// Resulting arg: print('\', ', open('/etc/passwd')) #')
-	//
-	// Python Parse:
-	// String 1: '\', ' (The backslash escapes the first closing quote, so the string eats the comma, space and the opening quote of the second arg!)
-	// Code: , open('/etc/passwd')) #
-	//
-	// Note: We use double quotes in input2 to avoid single quote restriction in Level 2 check.
-	// input2 = `, open("/etc/passwd")) #`
-
-	input1 := "\\"
-	input2 := `, open("/etc/passwd")) #`
-
 	cmdTool := NewCommandTool(toolDef, service, callDef, nil, "call-1")
-
-	// Inject mock executor
 	ct, ok := cmdTool.(*CommandTool)
 	assert.True(t, ok)
 	ct.executorFactory = func(env *configv1.ContainerEnvironment) command.Executor {
 		return &sentinelMockExecutor{}
 	}
 
-	// Construct JSON inputs
-	// input1 needs escaping for JSON: \ -> \\
-	escapedInput1 := strings.ReplaceAll(input1, `\`, `\\`)
-	// input2 needs escaping for JSON: " -> \"
-	escapedInput2 := strings.ReplaceAll(input2, `"`, `\"`)
+	t.Run("Vulnerability_Blocked", func(t *testing.T) {
+		// Attack Scenario: input1 = "\" (Backslash) -> Escapes closing quote
+		input1 := "\\"
+		input2 := `, open("/etc/passwd")) #`
 
-	jsonInputs := `{"input1": "` + escapedInput1 + `", "input2": "` + escapedInput2 + `"}`
+		// Construct JSON inputs
+		escapedInput1 := strings.ReplaceAll(input1, `\`, `\\`)
+		escapedInput2 := strings.ReplaceAll(input2, `"`, `\"`)
+		jsonInputs := `{"input1": "` + escapedInput1 + `", "input2": "` + escapedInput2 + `"}`
 
-	req := &ExecutionRequest{
-		ToolName:   "python-tool",
-		ToolInputs: []byte(jsonInputs),
-	}
-
-	_, err := cmdTool.Execute(context.Background(), req)
-
-	if err == nil {
-		t.Fatal("Vulnerability Confirmed: Backslash injection allowed! The fix is not working.")
-	} else {
-		t.Logf("Execution failed: %v", err)
-		if strings.Contains(err.Error(), "injection detected") {
-			// This is what we expect AFTER the fix
-			t.Log("Secure: Injection detected.")
-		} else {
-			t.Fatalf("Execution failed with unexpected error: %v", err)
+		req := &ExecutionRequest{
+			ToolName:   "python-tool",
+			ToolInputs: []byte(jsonInputs),
 		}
-	}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+
+		if err == nil {
+			t.Fatal("Vulnerability Confirmed: Backslash injection allowed! The fix is not working.")
+		} else {
+			t.Logf("Execution failed: %v", err)
+			if strings.Contains(err.Error(), "injection detected") {
+				t.Log("Secure: Injection detected.")
+			} else {
+				t.Fatalf("Execution failed with unexpected error: %v", err)
+			}
+		}
+	})
+
+	t.Run("Safe_Middle_Backslash_Allowed", func(t *testing.T) {
+		// Safe: "abc\def" -> Python 'abc\def'. Not an escape sequence for '
+		input1 := `abc\def`
+
+		escapedInput1 := strings.ReplaceAll(input1, `\`, `\\`)
+		jsonInputs := `{"input1": "` + escapedInput1 + `", "input2": "safe"}`
+
+		req := &ExecutionRequest{
+			ToolName:   "python-tool",
+			ToolInputs: []byte(jsonInputs),
+		}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+		assert.NoError(t, err, "Safe backslash in middle should be allowed")
+	})
+
+	t.Run("Safe_Double_Backslash_Allowed", func(t *testing.T) {
+		// Safe: "abc\\" -> Python 'abc\\' (literal backslash). Quote is safe.
+		input1 := `abc\\`
+
+		escapedInput1 := strings.ReplaceAll(input1, `\`, `\\`)
+		jsonInputs := `{"input1": "` + escapedInput1 + `", "input2": "safe"}`
+
+		req := &ExecutionRequest{
+			ToolName:   "python-tool",
+			ToolInputs: []byte(jsonInputs),
+		}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+		assert.NoError(t, err, "Double backslash at end should be allowed")
+	})
 }
