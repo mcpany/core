@@ -78,6 +78,17 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
 };
 
 /**
+ * Definition of a webhook.
+ */
+export interface Webhook {
+    id: string;
+    url: string;
+    events: string[];
+    active: boolean;
+    lastTriggered?: string;
+}
+
+/**
  * Definition of a secret stored in the system.
  */
 export interface SecretDefinition {
@@ -1096,6 +1107,65 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to save webhook URL');
         return res.json();
+    },
+
+    /**
+     * Lists all webhooks.
+     * @returns A promise that resolves to a list of webhooks.
+     */
+    listWebhooks: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts/webhooks');
+        if (!res.ok) throw new Error('Failed to fetch webhooks');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+        return list.map((w: any) => ({
+            ...w,
+            lastTriggered: w.last_triggered,
+        }));
+    },
+
+    /**
+     * Creates a new webhook.
+     * @param webhook The webhook to create.
+     * @returns A promise that resolves to the created webhook.
+     */
+    createWebhook: async (webhook: Partial<Webhook>) => {
+        const res = await fetchWithAuth('/api/v1/alerts/webhooks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhook)
+        });
+        if (!res.ok) throw new Error('Failed to create webhook');
+        return res.json();
+    },
+
+    /**
+     * Updates a webhook.
+     * @param webhook The webhook to update.
+     * @returns A promise that resolves to the updated webhook.
+     */
+    updateWebhook: async (webhook: Webhook) => {
+        const payload = { ...webhook, last_triggered: undefined };
+        const res = await fetchWithAuth(`/api/v1/alerts/webhooks/${webhook.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to update webhook');
+        return res.json();
+    },
+
+    /**
+     * Deletes a webhook.
+     * @param id The ID of the webhook to delete.
+     * @returns A promise that resolves when the webhook is deleted.
+     */
+    deleteWebhook: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/webhooks/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete webhook');
+        return {};
     },
 
     // Stack Management (Collections)

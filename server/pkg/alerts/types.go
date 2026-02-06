@@ -51,3 +51,12 @@ type AlertRule struct {
 	Enabled     bool      `json:"enabled"`
 	LastUpdated time.Time `json:"last_updated"`
 }
+
+// Webhook represents an outbound webhook configuration.
+type Webhook struct {
+	ID            string    `json:"id"`
+	URL           string    `json:"url"`
+	Events        []string  `json:"events"`
+	Active        bool      `json:"active"`
+	LastTriggered time.Time `json:"last_triggered,omitempty"`
+}
