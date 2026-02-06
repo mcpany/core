@@ -140,71 +140,33 @@ export default function MarketplacePage() {
   };
 
   const openInstantiateCommunity = (server: CommunityServer) => {
-      // Best-effort config generation logic
-      const isPython = server.tags.some(t => t.includes('🐍'));
+      // Use the command provided by the backend registry, or fall back to heuristics
+      let command = server.command;
 
-      // Try to extract repo name for npx
-      let command = "";
-      const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
+      if (!command) {
+          // Fallback logic for uncertified servers
+          const isPython = server.tags.some(t => t.includes('🐍'));
+          const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
 
-      if (repoMatch) {
-          const owner = repoMatch[1];
-          const repo = repoMatch[2];
-          if (isPython) {
-             command = `uvx ${repo}`;
+          if (repoMatch) {
+              const owner = repoMatch[1];
+              const repo = repoMatch[2];
+              if (isPython) {
+                 command = `uvx ${repo}`;
+              } else {
+                 if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
+                     command = `npx -y @modelcontextprotocol/${repo}`;
+                 } else {
+                     command = `npx -y ${repo}`;
+                 }
+              }
           } else {
-             if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
-                 command = `npx -y @modelcontextprotocol/${repo}`;
-             } else {
-                 command = `npx -y ${repo}`;
-             }
+              command = isPython ? "uvx package-name" : "npx -y package-name";
           }
-      } else {
-          command = isPython ? "uvx package-name" : "npx -y package-name";
       }
 
-      // Smart Schema Injection
-      let configurationSchema = "";
-
-      // Cloudflare
-      if (repoMatch && (repoMatch[2] === "mcp-server-cloudflare" || server.name.toLowerCase().includes("cloudflare"))) {
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "Cloudflare Configuration",
-              properties: {
-                  "CLOUDFLARE_API_TOKEN": {
-                      type: "string",
-                      title: "Cloudflare API Token",
-                      description: "Your Cloudflare API Token (Account.Read permissions required)",
-                  },
-                  "CLOUDFLARE_ACCOUNT_ID": {
-                      type: "string",
-                      title: "Account ID",
-                      description: "Your Cloudflare Account ID"
-                  }
-              },
-              required: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
-          });
-      }
-
-      // Postgres
-      if (repoMatch && (repoMatch[2] === "server-postgres" || server.name.toLowerCase().includes("postgres"))) {
-           // PostgreSQL usually takes args but some wrappers use env.
-           // For the official one, it takes connection string as arg.
-           // But let's assume we can pass it via env if we wrap it, or just for demo of the UI capability.
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "PostgreSQL Configuration",
-              properties: {
-                  "POSTGRES_URL": {
-                      type: "string",
-                      title: "Connection URL",
-                      description: "postgresql://user:pass@host:5432/db",
-                  }
-              },
-              required: ["POSTGRES_URL"]
-          });
-      }
+      // Use the schema provided by the backend registry
+      const configurationSchema = server.configurationSchema || "";
 
       const config: UpstreamServiceConfig = {
           id: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
