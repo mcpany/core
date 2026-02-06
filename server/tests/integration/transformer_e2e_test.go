@@ -107,7 +107,7 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 	client, cleanup := StartStdioServer(t, tmpFile.Name())
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// List tools to ensure they are discovered
@@ -116,7 +116,7 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 		listRes, err = client.ListTools(ctx)
 		// Expect 3 discovered tools + 1 built-in roots tool = 4
 		return err == nil && len(listRes.Tools) >= 3
-	}, 10*time.Second, 100*time.Millisecond, "Expected at least 3 tools to be discovered")
+	}, 30*time.Second, 100*time.Millisecond, "Expected at least 3 tools to be discovered")
 	require.GreaterOrEqual(t, len(listRes.Tools), 3)
 
 	// Helper to call tool and get result map

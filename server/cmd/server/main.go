@@ -269,6 +269,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				ConfigPaths:     configPaths,
 				APIKey:          cfg.APIKey(),
 				ShutdownTimeout: shutdownTimeout,
+				DBPath:          cfg.DBPath(),
 			}); err != nil {
 				log.Error("Application failed", "error", err)
 				return err

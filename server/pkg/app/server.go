@@ -139,6 +139,7 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
+	DBPath          string
 }
 
 // Runner defines the interface for running the application.
@@ -329,7 +330,10 @@ func (a *Application) Run(opts RunOptions) error {
 		dbDriver := config.GlobalSettings().GetDbDriver()
 		switch dbDriver {
 		case "", "sqlite":
-			dbPath := config.GlobalSettings().DBPath()
+			dbPath := opts.DBPath
+			if dbPath == "" {
+				dbPath = config.GlobalSettings().DBPath()
+			}
 			if dbPath == "" {
 				dbPath = "mcpany.db"
 			}
