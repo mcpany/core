@@ -16,7 +16,27 @@ export function estimateTokens(text: string): number {
     // Approximately 4 characters per token for English text.
     // We add some overhead for whitespace and special characters.
     const charCount = text.length;
-    const wordCount = text.trim().split(/\s+/).length;
+
+    // ⚡ BOLT: Optimization - Count words in single pass without allocation.
+    // Randomized Selection from Top 5 High-Impact Targets
+    // Replaces: const wordCount = text.trim().split(/\s+/).length;
+    let wordCount = 0;
+    let inWord = false;
+
+    for (let i = 0; i < charCount; i++) {
+        const code = text.charCodeAt(i);
+        // Common whitespace: Space(32), Tab(9), LF(10), CR(13), NBSP(160)
+        // This covers the vast majority of cases.
+        // We trade full unicode compliance for raw speed and zero allocation.
+        const isSpace = (code === 32 || code === 9 || code === 10 || code === 13 || code === 160);
+
+        if (isSpace) {
+            inWord = false;
+        } else if (!inWord) {
+            inWord = true;
+            wordCount++;
+        }
+    }
 
     // Heuristic 1: 4 chars per token
     // Heuristic 2: 1.3 words per token
@@ -32,7 +52,7 @@ export function estimateTokens(text: string): number {
  * @param messages - Array of message objects with content.
  * @returns Total estimated tokens.
  */
-export function estimateMessageTokens(messages: any[]): number {
+export function estimateMessageTokens(messages: any[]): number { // eslint-disable-line @typescript-eslint/no-explicit-any
     return messages.reduce((acc, msg) => {
         let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content || "");
         if (msg.toolName) content += ` ${msg.toolName}`;
