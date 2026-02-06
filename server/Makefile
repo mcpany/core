@@ -22,7 +22,7 @@ ifeq ($(BUILD_MODE),docker)
 ifneq ($(INSIDE_DOCKER_CONTAINER),1)
 	SHOULD_PROXY_TO_DOCKER := true
 	DOCKER_GID := $(shell getent group docker | cut -d: -f3)
-	DOCKER_PROXY_CMD := env UID=$(shell id -u) GID=$(shell id -g) DOCKER_GID=$(DOCKER_GID) docker compose -f $(DOCKER_COMPOSE_REGULAR_FILE) run --rm dev make INSIDE_DOCKER_CONTAINER=1
+	DOCKER_PROXY_CMD := env UID=$(shell id -u) GID=$(shell id -g) DOCKER_GID=$(DOCKER_GID) CI=$(CI) docker compose -f $(DOCKER_COMPOSE_REGULAR_FILE) run --rm dev make INSIDE_DOCKER_CONTAINER=1
 endif
 endif
 
