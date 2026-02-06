@@ -59,3 +59,9 @@ func TestLocalLimiter_Update(t *testing.T) {
 	assert.Equal(t, rate.Limit(10.0), l.Limit())
 	assert.Equal(t, 5, l.Burst())
 }
+
+func TestLocalStrategy_ShouldUpdate(t *testing.T) {
+	strategy := NewLocalStrategy()
+	// Should always return false
+	assert.False(t, strategy.ShouldUpdate(nil, nil))
+}

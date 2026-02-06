@@ -82,3 +82,14 @@ func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *config
 		Limiter: rate.NewLimiter(rate.Limit(rps), burst),
 	}, nil
 }
+
+// ShouldUpdate checks if the limiter needs to be recreated.
+// For local limiters, we can always just update the rate/burst in place, so we never need to recreate.
+//
+// limiter is the existing limiter instance.
+// config is the new configuration.
+//
+// Returns true if the limiter should be recreated.
+func (s *LocalStrategy) ShouldUpdate(_ Limiter, _ *configv1.RateLimitConfig) bool {
+	return false
+}

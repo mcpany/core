@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	armonmetrics "github.com/armon/go-metrics"
@@ -238,29 +237,11 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 	if val, found := m.limiters.Get(cacheKey); found {
 		limiter := val.(Limiter)
 
-		// We could try to verify if the limiter matches the strategy, but it's hard to do without type assertions on specific implementations.
-		// For now, we assume that if the config changed significantly (storage type change), the strategy would be different.
-		// But here we only have the generic Limiter interface.
-
-		// Ideally the Strategy should handle validation/updating of existing limiter, but GetLimiter interface creates new one.
-		// We can add "Validate" or "Update" to Strategy?
-		// Or we just update the generic properties:
-		limiter.Update(rps, burst)
-
-		// However, for Redis, we need to check if connection changed.
-		// This logic was previously inline.
-		// To keep it clean, let's assume if we retrieved it, it's good, unless we want to do strict checking.
-		// The previous logic checked `GetConfigHash()`.
-		// Let's rely on the strategy to support checking?
-		// Or simply: if it's RedisLimiter, we check.
-
-		if rl, ok := limiter.(interface{ GetConfigHash() string }); ok && storageType == configv1.RateLimitConfig_STORAGE_REDIS && config.GetRedis() != nil {
-			newConfigHash := config.GetRedis().GetAddress() + "|" + config.GetRedis().GetPassword() + "|" + strconv.Itoa(int(config.GetRedis().GetDb()))
-			if rl.GetConfigHash() != newConfigHash {
-				// Config changed, recreate
-				goto Create
-			}
+		if strategy.ShouldUpdate(limiter, config) {
+			goto Create
 		}
+
+		limiter.Update(rps, burst)
 
 		return limiter, nil
 	}

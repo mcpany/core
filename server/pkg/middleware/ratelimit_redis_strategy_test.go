@@ -104,4 +104,50 @@ func TestRedisStrategy(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "redis config is missing")
 	})
+
+	t.Run("ShouldUpdate", func(t *testing.T) {
+		strategy := middleware.NewRedisStrategy()
+		ctx := context.Background()
+
+		config1 := configv1.RateLimitConfig_builder{
+			Redis: busproto.RedisBus_builder{
+				Address:  proto.String("localhost:6379"),
+				Password: proto.String("pass"),
+				Db:       proto.Int32(0),
+			}.Build(),
+			RequestsPerSecond: 10,
+			Burst:             10,
+		}.Build()
+
+		// Create a limiter
+		limiter, err := strategy.Create(ctx, "serviceUpdate", "", "", config1)
+		require.NoError(t, err)
+
+		// 1. Same config -> ShouldUpdate = false
+		assert.False(t, strategy.ShouldUpdate(limiter, config1))
+
+		// 2. Different Redis config -> ShouldUpdate = true
+		config2 := configv1.RateLimitConfig_builder{
+			Redis: busproto.RedisBus_builder{
+				Address:  proto.String("new-host"),
+				Password: proto.String("pass"),
+				Db:       proto.Int32(0),
+			}.Build(),
+			RequestsPerSecond: 10,
+			Burst:             10,
+		}.Build()
+		assert.True(t, strategy.ShouldUpdate(limiter, config2))
+
+		// 3. Missing Redis config -> ShouldUpdate = true
+		config3 := configv1.RateLimitConfig_builder{
+			RequestsPerSecond: 10,
+		}.Build()
+		assert.True(t, strategy.ShouldUpdate(limiter, config3))
+
+		// 4. Non-Redis limiter (mock) passed in -> ShouldUpdate = true
+		// (Simulate if we switched from Local to Redis)
+		// We use NewLocalStrategy to create a valid LocalLimiter (which is a Limiter but not RedisLimiter)
+		localLimiter, _ := middleware.NewLocalStrategy().Create(ctx, "foo", "", "", config1)
+		assert.True(t, strategy.ShouldUpdate(localLimiter, config1))
+	})
 }
