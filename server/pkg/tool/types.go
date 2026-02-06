@@ -2546,6 +2546,57 @@ func checkForPathTraversal(val string) error {
 	return nil
 }
 
+func checkForDangerousCalls(val string) error {
+	// Sentinel Security Update:
+	// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis.
+	// We check for word boundaries to avoid false positives (e.g. "filesystem(s)").
+	// We also handle whitespace between function name and parenthesis.
+
+	valLower := strings.ToLower(val)
+	dangerousCalls := []string{"system", "exec", "popen", "eval"}
+
+	for _, call := range dangerousCalls {
+		// Find all occurrences of the call
+		start := 0
+		for {
+			idx := strings.Index(valLower[start:], call)
+			if idx == -1 {
+				break
+			}
+			absoluteIdx := start + idx
+
+			// Check word boundary before
+			isStartWordBoundary := true
+			if absoluteIdx > 0 {
+				prevChar := valLower[absoluteIdx-1]
+				if isWordChar(prevChar) {
+					isStartWordBoundary = false
+				}
+			}
+
+			if isStartWordBoundary {
+				// Check for '(' after, allowing whitespace
+				afterCall := valLower[absoluteIdx+len(call):]
+				// Skip whitespace
+				firstNonSpace := -1
+				for i, r := range afterCall {
+					if !unicode.IsSpace(r) {
+						firstNonSpace = i
+						break
+					}
+				}
+
+				if firstNonSpace != -1 && afterCall[firstNonSpace] == '(' {
+					return fmt.Errorf("shell injection detected: value contains dangerous function call %q (potential interpreter abuse)", call+"(")
+				}
+			}
+
+			start = absoluteIdx + len(call)
+		}
+	}
+	return nil
+}
+
 // cleanPathPreserveDoubleSlash cleans the path like path.Clean but preserves double slashes.
 // It resolves . and .. segments.
 // It also trims the trailing slash (by removing the final empty segment if present),
@@ -2770,23 +2821,10 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
 		}
 
-		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
-		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
-		// We normalize by removing whitespace to detect "system (" or "system\t(".
-		var b strings.Builder
-		b.Grow(len(val))
-		for _, r := range val {
-			if !unicode.IsSpace(r) {
-				b.WriteRune(r)
-			}
-		}
-		cleanVal := strings.ToLower(b.String())
-
-		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
-		for _, call := range dangerousCalls {
-			if strings.Contains(cleanVal, call) {
-				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
-			}
+		// Check for dangerous function calls (interpreter abuse)
+		// We use word boundaries to avoid false positives (e.g. "filesystem(s)").
+		if err := checkForDangerousCalls(val); err != nil {
+			return err
 		}
 
 		return nil
@@ -2799,6 +2837,12 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
+
+		// Check for dangerous function calls (interpreter abuse)
+		if err := checkForDangerousCalls(val); err != nil {
+			return err
+		}
+
 		return nil
 	}
 
