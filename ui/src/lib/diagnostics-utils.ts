@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * DiagnosticResult description.
+ *
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;

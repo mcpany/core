@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Severity description.
+ *
+ */
 export type Severity = "critical" | "warning" | "info";
 /**
  * AlertStatus type definition.
@@ -26,6 +30,10 @@ export interface Alert {
  * Alert type definition.
  */
 
+/**
+ * AlertRule description.
+ *
+ */
 export interface AlertRule {
   id: string;
   name: string;

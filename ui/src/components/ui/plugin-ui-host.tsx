@@ -20,6 +20,8 @@ interface PluginUIHostProps {
 /**
  * Component to host custom UI provided by server plugins via iframe.
  * Includes security sandboxing and loading states.
+ *
+ * @param serviceId } - PluginUIHostProps. Description.
  */
 export function PluginUIHost({ src, title = "Plugin UI", className, serviceId }: PluginUIHostProps) {
   const [loading, setLoading] = useState(true);

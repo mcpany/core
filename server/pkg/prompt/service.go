@@ -24,6 +24,12 @@ type Service struct {
 // promptManager is the promptManager.
 //
 // Returns the result.
+//
+// Parameters:
+//   - promptManager: ManagerInterface.
+//
+// Returns:
+//   - *Service:
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -51,6 +57,10 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
 // available prompts from the Manager, converts them to the MCP format, and
 // returns them to the client.
+//
+//
+// Returns:
+//   - (:
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -69,6 +79,10 @@ func (s *Service) ListPrompts(
 // prompt by name from the Manager and executes it with the provided
 // arguments, returning the result. If the prompt is not found, it returns a
 // ErrPromptNotFound error.
+//
+//
+// Returns:
+//   - (:
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

@@ -32,6 +32,10 @@ type peerConnectionWrapper struct {
 // Close closes the peer connection.
 //
 // Returns an error if the operation fails.
+//
+//
+// Returns:
+//   - error:
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -44,6 +48,10 @@ func (w *peerConnectionWrapper) Close() error {
 // _ is an unused parameter.
 //
 // Returns true if successful.
+//
+//
+// Returns:
+//   - bool:
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
 		return false
@@ -81,6 +89,10 @@ type WebrtcTool struct {
 // authenticator handles adding authentication credentials to the signaling request.
 // callDefinition contains the configuration for the WebRTC call, such as
 // parameter mappings and transformers.
+//
+//
+// Returns:
+//   - NewWebrtcTool(:
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -137,6 +149,10 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 // Tool returns the protobuf definition of the WebRTC tool.
 //
 // Returns the result.
+//
+//
+// Returns:
+//   - *v1.Tool:
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -144,6 +160,10 @@ func (t *WebrtcTool) Tool() *v1.Tool {
 // MCPTool returns the MCP tool definition.
 //
 // Returns the result.
+//
+//
+// Returns:
+//   - *mcp.Tool:
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -158,6 +178,10 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the WebRTC tool.
 //
 // Returns the result.
+//
+//
+// Returns:
+//   - *configv1.CacheConfig:
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -165,6 +189,11 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the WebRTC tool. It establishes a new peer
 // connection, negotiates the session via an HTTP signaling server, sends the
 // tool inputs over the data channel, and waits for a response.
+//
+//
+// Returns:
+//   - any:
+//   - error:
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
@@ -314,6 +343,10 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 
 // Close is a placeholder for any cleanup logic. Currently, it is a no-op as the
 // peer connection is created and closed within the Execute method.
+//
+//
+// Returns:
+//   - error:
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

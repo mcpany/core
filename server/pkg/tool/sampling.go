@@ -41,6 +41,13 @@ type sessionContextKey struct{}
 // s is the s.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - s: Session.
+//
+// Returns:
+//   - context.Context:
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
@@ -51,6 +58,13 @@ func NewContextWithSession(ctx context.Context, s Session) context.Context {
 //
 // Returns the result.
 // Returns true if successful.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - Session:
+//   - bool:
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok
@@ -59,6 +73,13 @@ func GetSession(ctx context.Context) (Session, bool) {
 // NewContextWithSampler creates a new context with the given Sampler.
 //
 // Deprecated: Use NewContextWithSession instead.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - s: Sampler.
+//
+// Returns:
+//   - context.Context:
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
@@ -66,6 +87,13 @@ func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 // GetSampler retrieves the Sampler from the context.
 //
 // Deprecated: Use GetSession instead.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - Sampler:
+//   - bool:
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

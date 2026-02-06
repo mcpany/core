@@ -6,6 +6,10 @@
 
 
 
+/**
+ * MarketplaceItemConfig description.
+ *
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
