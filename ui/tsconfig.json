@@ -23,13 +23,13 @@
     "paths": {
       "@/*": ["./src/*"],
       "github.com/mcpany/core/*": ["../*"],
-      "@proto/*": ["../proto/*"],
+      "@proto/*": ["../proto/*", "./proto/*"],
       "@bufbuild/protobuf/wire": ["./node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"],
       "@improbable-eng/grpc-web": ["./node_modules/@improbable-eng/grpc-web"],
       "browser-headers": ["./node_modules/browser-headers"],
       "long": ["./node_modules/long"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts", "proto/**/*.ts"],
   "exclude": ["node_modules"]
 }
