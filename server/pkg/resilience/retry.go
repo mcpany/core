@@ -67,10 +67,19 @@ func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) e
 			return err
 		}
 
+		// ⚡ BOLT: Prevented timer leak by replacing time.After with time.NewTimer/Stop.
+		// Randomized Selection from Top 5 High-Impact Targets
+		timer := time.NewTimer(r.backoff(i))
 		select {
 		case <-ctx.Done():
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
 			return ctx.Err()
-		case <-time.After(r.backoff(i)):
+		case <-timer.C:
 			// continue
 		}
 	}
