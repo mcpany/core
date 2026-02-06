@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -25,17 +26,23 @@ const (
 	HeaderWebhookSignature = webhook.HeaderWebhookSignature
 )
 
-// main is the entry point for the Webhook Server.
-// It initializes the webhook registry, sets up handlers, and starts the HTTP server.
-func main() {
-	secret := os.Getenv("WEBHOOK_SECRET")
+// Config holds the configuration for the webhook server.
+type Config struct {
+	WebhookSecret string
+	InsecureMode  bool
+}
+
+// NewHandler creates a new HTTP handler for the webhook server.
+func NewHandler(cfg Config) (http.Handler, error) {
 	var hook *webhook.Webhook
-	if secret != "" {
+	if cfg.WebhookSecret != "" {
 		var err error
-		hook, err = webhook.NewWebhook(secret)
+		hook, err = webhook.NewWebhook(cfg.WebhookSecret)
 		if err != nil {
-			log.Fatalf("Failed to create webhook verify: %v", err)
+			return nil, fmt.Errorf("failed to create webhook verify: %w", err)
 		}
+	} else if !cfg.InsecureMode {
+		return nil, fmt.Errorf("WEBHOOK_SECRET is required unless insecure mode is enabled")
 	}
 
 	reg := webhooks.NewRegistry()
@@ -55,37 +62,70 @@ func main() {
 		http.NotFound(w, r)
 	}
 
-	withVerify := func(h http.HandlerFunc) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			if hook != nil {
-				// Limit body size to 1MB to prevent DoS
-				body, err := io.ReadAll(io.LimitReader(r.Body, 1024*1024))
-				if err != nil {
-					http.Error(w, "Failed to read body", http.StatusInternalServerError)
-					return
-				}
-				// Restore body for handler
-				r.Body = io.NopCloser(bytes.NewReader(body))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Limit body size to 1MB to prevent DoS
+		// We do this BEFORE verification to protect the verification logic (and everything else)
+		// from reading too much.
+		// Use MaxBytesReader to enforce the limit and return 413 if exceeded.
+		r.Body = http.MaxBytesReader(w, r.Body, 1024*1024)
 
-				if err := hook.Verify(body, r.Header); err != nil {
-					http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
-					return
-				}
+		if hook != nil {
+			// We need to read the body for verification.
+			// MaxBytesReader will handle the limit.
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				// If MaxBytesReader hit the limit, it returns an error.
+				// However, http.MaxBytesReader documentation says it stops reading.
+				// We should check if it's "request body too large".
+				// But io.ReadAll returning error usually means 500 or 413 if MaxBytesReader logic kicked in.
+				// The MaxBytesReader sets a flag on response writer to close connection?
+				// Actually, checking err is enough.
+				// "The http.MaxBytesReader ... returns an error when the limit is reached"
+				// Standard-webhooks hook.Verify takes []byte.
+
+				// If we failed to read (e.g. too large), we can't verify.
+				http.Error(w, "Failed to read body or body too large", http.StatusRequestEntityTooLarge)
+				return
 			}
-			h(w, r)
+
+			// Restore body for handler
+			r.Body = io.NopCloser(bytes.NewReader(body))
+
+			if err := hook.Verify(body, r.Header); err != nil {
+				http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
+				return
+			}
 		}
-	}
 
-	http.HandleFunc("/", withVerify(handler))
+		handler(w, r)
+	})
 
+	return mux, nil
+}
+
+// main is the entry point for the Webhook Server.
+// It initializes the webhook registry, sets up handlers, and starts the HTTP server.
+func main() {
+	secret := os.Getenv("WEBHOOK_SECRET")
+	insecure := os.Getenv("MCPANY_INSECURE_DEV_MODE") == "true"
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
+	handler, err := NewHandler(Config{
+		WebhookSecret: secret,
+		InsecureMode:  insecure,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Printf("Starting Webhook Server on 127.0.0.1:%s", port)
 	server := &http.Server{
 		Addr:              "127.0.0.1:" + port,
+		Handler:           handler,
 		ReadHeaderTimeout: 3 * time.Second,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      10 * time.Second,
