@@ -79,3 +79,24 @@ func HydrateFromFile(path string) error {
 
 	return nil
 }
+
+// HydrateFromStore reads the last N logs from the store and populates the broadcaster.
+func HydrateFromStore(store LogStore) error {
+	entries, err := store.Read(1000)
+	if err != nil {
+		return err
+	}
+
+	var msgs [][]byte
+	for _, entry := range entries {
+		data, err := json.Marshal(entry)
+		if err == nil {
+			msgs = append(msgs, data)
+		}
+	}
+
+	if len(msgs) > 0 {
+		GlobalBroadcaster.Hydrate(msgs)
+	}
+	return nil
+}

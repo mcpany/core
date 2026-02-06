@@ -19,7 +19,23 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+	storeMu       sync.RWMutex
+	globalStore   LogStore
 )
+
+// SetStore sets the global log store.
+func SetStore(s LogStore) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+	globalStore = s
+}
+
+// GetStore returns the global log store.
+func GetStore() LogStore {
+	storeMu.RLock()
+	defer storeMu.RUnlock()
+	return globalStore
+}
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different

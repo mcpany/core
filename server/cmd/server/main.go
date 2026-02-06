@@ -126,9 +126,33 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			var logStoreCloser func() error
+			defer func() {
+				if logStoreCloser != nil {
+					_ = logStoreCloser()
+				}
+			}()
+
 			// Track 2: Product Gap - Log Persistence
-			// Hydrate logs from file if configured for JSON.
-			if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON && cfg.LogFile() != "" {
+			// Initialize SQLite Log Store if DB path is configured (default is data/mcpany.db)
+			if cfg.DBPath() != "" {
+				store, err := logging.NewSQLiteLogStore(cfg.DBPath())
+				if err != nil {
+					log.Warn("Failed to initialize SQLite log store", "error", err)
+				} else {
+					logging.SetStore(store)
+					logStoreCloser = store.Close
+					if err := logging.HydrateFromStore(store); err != nil {
+						log.Warn("Failed to hydrate logs from store", "error", err)
+					} else {
+						log.Info("Hydrated log history from SQLite store")
+					}
+				}
+			} else if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON && cfg.LogFile() != "" {
+				// Fallback to file hydration if no DB but LogFile is present (legacy)
 				go func() {
 					if err := logging.HydrateFromFile(cfg.LogFile()); err != nil {
 						log.Warn("Failed to hydrate logs from file", "error", err)
@@ -154,9 +178,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			} else {
 				log.Warn("⚠️  No configuration files provided. Server will run but no tools will be available.")
 			}
-
-			ctx, cancel := context.WithCancel(context.Background())
-			defer cancel()
 
 			go func() {
 				// Wait for an interrupt signal or context cancellation

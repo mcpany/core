@@ -110,6 +110,14 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	}
 
 	h.broadcaster.Broadcast(data)
+
+	// Persist to store if available
+	if store := GetStore(); store != nil {
+		// We ignore error here as logging failure shouldn't crash the application
+		// or recursive log.
+		_ = store.Write(entry)
+	}
+
 	return nil
 }
 
