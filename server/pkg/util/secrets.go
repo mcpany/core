@@ -32,14 +32,12 @@ const maxSecretRecursionDepth = 10
 // remote URLs, Vault, and AWS Secrets Manager.
 //
 // Parameters:
-//
-//	ctx: The context for the secret resolution (used for network requests, etc).
-//	secret: The SecretValue configuration object to resolve.
+//   - ctx: context.Context. The context for the secret resolution (used for network requests, etc).
+//   - secret: *configv1.SecretValue. The SecretValue configuration object to resolve.
 //
 // Returns:
-//
-//	The resolved secret string.
-//	An error if resolution fails (e.g., missing env var, file read error).
+//   - string: The resolved secret string.
+//   - error: An error if resolution fails (e.g., missing env var, file read error).
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(ctx, secret, 0)
 }
@@ -302,15 +300,13 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 // If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
 //
 // Parameters:
-//
-//	ctx: The context for the secret resolution.
-//	secretMap: A map of keys to SecretValue objects.
-//	plainMap: A map of keys to plain string values.
+//   - ctx: context.Context. The context for the secret resolution.
+//   - secretMap: map[string]*configv1.SecretValue. A map of keys to SecretValue objects.
+//   - plainMap: map[string]string. A map of keys to plain string values.
 //
 // Returns:
-//
-//	A single map containing all keys with their resolved string values.
-//	An error if any secret resolution fails.
+//   - map[string]string: A single map containing all keys with their resolved string values.
+//   - error: An error if any secret resolution fails.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {
