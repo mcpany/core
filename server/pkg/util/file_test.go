@@ -94,3 +94,36 @@ func TestReadLastNLines(t *testing.T) {
 		t.Errorf("expected 10 lines, got %d", len(lines))
 	}
 }
+
+func BenchmarkReadLastNLines(b *testing.B) {
+	tmpDir := b.TempDir()
+	path := filepath.Join(tmpDir, "bench.log")
+
+	// Create a large file (approx 10MB)
+	f, err := os.Create(path)
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer f.Close()
+
+	line := []byte("this is a log line for benchmarking purposes\n")
+	// 45 bytes * 250000 = ~11MB
+	for i := 0; i < 250000; i++ {
+		f.Write(line)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		// Read last 5000 lines. This should require multiple chunks (chunkSize is 16KB).
+		// 5000 * 45 = 225KB. 225KB / 16KB = ~14 chunks.
+		// To trigger more chunks, let's read more.
+		// Read last 50000 lines -> 2.25MB -> ~140 chunks.
+		// 140 iterations of append(small, big...) is noticeable but maybe not huge.
+		// Let's read last 200000 lines -> 9MB -> ~560 chunks.
+		// 560^2 is 313,600 copies.
+		_, err := ReadLastNLines(path, 50000)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
