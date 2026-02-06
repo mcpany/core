@@ -97,17 +97,52 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(drink)})
-		if err == nil {
-			break // Success
+
+		var errMsg string
+		isTransient := false
+
+		if err != nil {
+			errMsg = err.Error()
+		} else if res != nil && res.IsError {
+			// Extract error message from content if available
+			if len(res.Content) > 0 {
+				if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
+					errMsg = textContent.Text
+				}
+			}
+			if errMsg == "" {
+				errMsg = "Unknown tool error"
+			}
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "status 500") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to thecocktaildb.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+		if errMsg != "" {
+			if strings.Contains(errMsg, "503 Service Temporarily Unavailable") ||
+			   strings.Contains(errMsg, "status 500") ||
+			   strings.Contains(errMsg, "context deadline exceeded") ||
+			   strings.Contains(errMsg, "connection reset by peer") ||
+			   strings.Contains(errMsg, "upstream HTTP request failed") { // Catch generic upstream failures
+
+				isTransient = true
+			}
+		}
+
+		if errMsg == "" {
+			break // Success (no error returned and IsError is false)
+		}
+
+		if isTransient {
+			t.Logf("Attempt %d/%d: Call to thecocktaildb.com failed with a transient error: %s. Retrying...", i+1, maxRetries, errMsg)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
 
-		require.NoError(t, err, "unrecoverable error calling searchCocktail tool")
+		// If we have an error and it's not transient, we fail.
+		// If err object was present, fail with it.
+		if err != nil {
+			require.NoError(t, err, "unrecoverable error calling searchCocktail tool")
+		}
+		// If result indicates error, break loop to assertions which will fail on content check
+		break
 	}
 
 	if err != nil {

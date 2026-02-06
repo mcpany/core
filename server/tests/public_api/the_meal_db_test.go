@@ -97,17 +97,51 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(meal)})
-		if err == nil {
+
+		var errMsg string
+		isTransient := false
+
+		if err != nil {
+			errMsg = err.Error()
+		} else if res != nil && res.IsError {
+			// Extract error message from content if available
+			if len(res.Content) > 0 {
+				if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
+					errMsg = textContent.Text
+				}
+			}
+			if errMsg == "" {
+				errMsg = "Unknown tool error"
+			}
+		}
+
+		if errMsg != "" {
+			if strings.Contains(errMsg, "503 Service Temporarily Unavailable") ||
+			   strings.Contains(errMsg, "status 500") ||
+			   strings.Contains(errMsg, "context deadline exceeded") ||
+			   strings.Contains(errMsg, "connection reset by peer") ||
+			   strings.Contains(errMsg, "upstream HTTP request failed") {
+
+				isTransient = true
+			}
+		}
+
+		if errMsg == "" {
 			break // Success
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "status 500") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to themealdb.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+		if isTransient {
+			t.Logf("Attempt %d/%d: Call to themealdb.com failed with a transient error: %s. Retrying...", i+1, maxRetries, errMsg)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
 
-		require.NoError(t, err, "unrecoverable error calling searchMeal tool")
+		// If we have an error and it's not transient, we fail.
+		if err != nil {
+			require.NoError(t, err, "unrecoverable error calling searchMeal tool")
+		}
+		// If result indicates error, break loop to assertions which will fail on content check
+		break
 	}
 
 	if err != nil {
