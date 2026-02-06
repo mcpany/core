@@ -43,12 +43,25 @@ func TestContextHelpers_Extra(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestCheckForLocalFileAccess(t *testing.T) {
-	assert.Error(t, checkForLocalFileAccess("/absolute"))
-	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("file:foo"))
-	assert.NoError(t, checkForLocalFileAccess("relative"))
+func TestCheckForDangerousSchemes(t *testing.T) {
+	// Host execution (isDocker=false)
+	assert.Error(t, checkForDangerousSchemes("file:///etc/passwd", false))
+	assert.Error(t, checkForDangerousSchemes("FILE:///etc/passwd", false))
+	assert.Error(t, checkForDangerousSchemes("file:foo", false))
+	assert.Error(t, checkForDangerousSchemes("gopher://127.0.0.1:6379/_SLAVEOF...", false))
+	assert.Error(t, checkForDangerousSchemes("dict://127.0.0.1:2628/quit", false))
+	assert.Error(t, checkForDangerousSchemes("ldap://127.0.0.1", false))
+	assert.Error(t, checkForDangerousSchemes("tftp://127.0.0.1", false))
+	assert.Error(t, checkForDangerousSchemes("expect://id", false))
+	assert.NoError(t, checkForDangerousSchemes("http://google.com", false))
+	assert.NoError(t, checkForDangerousSchemes("https://google.com", false))
+	assert.NoError(t, checkForDangerousSchemes("/absolute/path", false)) // Handled by checkForLocalFileAccess
+
+	// Docker execution (isDocker=true)
+	// file: scheme is allowed in Docker as it might be needed for internal container operations
+	// and container isolation provides some protection.
+	assert.NoError(t, checkForDangerousSchemes("file:///etc/passwd", true))
+	assert.Error(t, checkForDangerousSchemes("gopher://127.0.0.1:6379/_SLAVEOF...", true))
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {

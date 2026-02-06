@@ -2113,15 +2113,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForLocalFileAccess(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
@@ -2155,15 +2147,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2242,11 +2226,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
-			}
+			// We do NOT block absolute paths (checkForLocalFileAccess) anymore.
+			// Legitimate tools might require absolute paths.
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
@@ -2629,14 +2610,26 @@ func cleanPathPreserveDoubleSlash(p string) string {
 	return res
 }
 
-func checkForLocalFileAccess(val string) error {
-	if filepath.IsAbs(val) {
-		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
+func checkForDangerousSchemes(val string, isDocker bool) error {
+	valLower := strings.ToLower(val)
+	// Block dangerous schemes
+	// gopher: prevents SSRF to internal services (e.g. Redis)
+	// dict, ldap, tftp, expect: prevent other SSRF/RCE vectors
+	schemes := []string{"gopher:", "dict:", "ldap:", "tftp:", "expect:"}
+
+	// Block file: scheme only on host (isDocker=false).
+	// In Docker, accessing local files inside the container might be valid
+	// (e.g. processing a file mounted or generated in a previous step).
+	// We trust that the container isolation and volume mounting configuration
+	// are handled correctly by the deployment.
+	if !isDocker {
+		schemes = append(schemes, "file:")
 	}
-	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
-	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
-		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+
+	for _, scheme := range schemes {
+		if strings.HasPrefix(valLower, scheme) {
+			return fmt.Errorf("dangerous scheme detected: %s (access to this protocol is not allowed)", scheme)
+		}
 	}
 	return nil
 }
@@ -2936,7 +2929,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 	if template == "" || placeholder == "" {
 		return 0
 	}
-
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
 	minLevel := 3
 
@@ -3019,17 +3011,20 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
-	if !isDocker {
-		if err := checkForLocalFileAccess(val); err != nil {
-			return err
-		}
-		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForLocalFileAccess(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
-			}
+	if err := checkForDangerousSchemes(val, isDocker); err != nil {
+		return err
+	}
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForDangerousSchemes(decodedVal, isDocker); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
+
+	// We do NOT block absolute paths (checkForLocalFileAccess) anymore for LocalCommandTool (!isDocker).
+	// Legitimate tools (like docker, tar, or even custom scripts) might require absolute paths.
+	// We rely on 'file:' scheme blocking to prevent SSRF in URL-based tools (like curl),
+	// and path traversal checks to prevent breaking out of relative paths if used.
+	// If a tool like 'cat' is exposed, it can read absolute paths, but that is implicit in exposing 'cat'.
 
 	if err := checkForArgumentInjection(val); err != nil {
 		return err

@@ -84,9 +84,9 @@ func TestLocalCommandTool_SecurityChecks(t *testing.T) {
 			wantErr: "path traversal attempt detected",
 		},
 		{
-			name:    "Absolute Path",
+			name:    "Absolute Path Allowed",
 			inputs:  `{"arg": "/etc/passwd"}`,
-			wantErr: "absolute path detected",
+			wantErr: "", // Absolute paths are now allowed for LocalCommandTool
 		},
 		{
 			name:    "Argument Injection",

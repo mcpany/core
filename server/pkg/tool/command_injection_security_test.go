@@ -71,8 +71,10 @@ func TestCommandInjection_Advanced(t *testing.T) {
 	})
 
     // Case 5: Absolute path
+	// Absolute paths are now ALLOWED for LocalCommandTool to support legitimate use cases (e.g. docker -v).
+	// We rely on 'file:' scheme blocking for SSRF protection in URL-based tools.
 	t.Run("absolute_path", func(t *testing.T) {
-		cmd := "cat"
+		cmd := "echo" // Use echo to avoid side effects or permissions issues
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
 			ToolName: "test",
@@ -80,8 +82,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		}
 
 		_, err := tool.Execute(context.Background(), req)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "absolute path detected")
+		assert.NoError(t, err, "Absolute path should be allowed for local execution")
 	})
 
 	// Case 6: Shell injection bypass attempt with versioned binary (e.g. python-3.14)
