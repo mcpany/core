@@ -53,11 +53,35 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Pull alpine:latest to ensure we can create a container
+	reader, err := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+	if err != nil {
+		t.Logf("could not pull alpine:latest: %v", err)
+		return false
+	}
+	_, _ = io.Copy(io.Discard, reader)
+	_ = reader.Close()
+
+	// Try to create a container to verify storage driver works
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("could not create container (storage driver issue?): %v", err)
+		return false
+	}
+
+	// Cleanup
+	_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+
 	return true
 }
 
