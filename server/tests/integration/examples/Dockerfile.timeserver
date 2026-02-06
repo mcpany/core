@@ -12,12 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+# Use debian:bookworm-slim to avoid potential overlayfs issues with python images in some CI runners
+FROM debian:bookworm-slim
 
-# Create /app implicitly via COPY to avoid WORKDIR layer issues in some runners
+# Install Python and Pip
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Implicitly create /app directory via COPY
 COPY timeserver_patch/requirements.txt /app/requirements.txt
-RUN pip install -r /app/requirements.txt
+
+# Install dependencies using --break-system-packages (safe in container)
+RUN pip3 install -r /app/requirements.txt --break-system-packages
 
 COPY timeserver_patch/main.py /app/main.py
 
-CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
+# Set WORKDIR late to avoid early layer issues if any
+WORKDIR /app
+
+CMD ["python3", "-u", "main.py", "--mcp-stdio"]
