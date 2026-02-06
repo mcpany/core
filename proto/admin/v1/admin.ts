@@ -9,6 +9,7 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { grpc } from "@improbable-eng/grpc-web";
 import { BrowserHeaders } from "browser-headers";
 import Long from "long";
+import { ToolPreset } from "../../config/v1/tool_preset";
 import { UpstreamServiceConfig } from "../../config/v1/upstream_service";
 import { User } from "../../config/v1/user";
 import { Tool } from "../../mcp_router/v1/mcp_router";
@@ -62,6 +63,28 @@ export interface GetToolRequest {
 
 export interface GetToolResponse {
   tool?: Tool | undefined;
+}
+
+export interface ListToolPresetsRequest {
+}
+
+export interface ListToolPresetsResponse {
+  presets: ToolPreset[];
+}
+
+export interface CreateToolPresetRequest {
+  preset?: ToolPreset | undefined;
+}
+
+export interface CreateToolPresetResponse {
+  preset?: ToolPreset | undefined;
+}
+
+export interface DeleteToolPresetRequest {
+  presetId: string;
+}
+
+export interface DeleteToolPresetResponse {
 }
 
 export interface CreateUserRequest {
@@ -823,6 +846,336 @@ export const GetToolResponse: MessageFns<GetToolResponse> = {
   fromPartial<I extends Exact<DeepPartial<GetToolResponse>, I>>(object: I): GetToolResponse {
     const message = createBaseGetToolResponse();
     message.tool = (object.tool !== undefined && object.tool !== null) ? Tool.fromPartial(object.tool) : undefined;
+    return message;
+  },
+};
+
+function createBaseListToolPresetsRequest(): ListToolPresetsRequest {
+  return {};
+}
+
+export const ListToolPresetsRequest: MessageFns<ListToolPresetsRequest> = {
+  encode(_: ListToolPresetsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListToolPresetsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListToolPresetsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): ListToolPresetsRequest {
+    return {};
+  },
+
+  toJSON(_: ListToolPresetsRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListToolPresetsRequest>, I>>(base?: I): ListToolPresetsRequest {
+    return ListToolPresetsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListToolPresetsRequest>, I>>(_: I): ListToolPresetsRequest {
+    const message = createBaseListToolPresetsRequest();
+    return message;
+  },
+};
+
+function createBaseListToolPresetsResponse(): ListToolPresetsResponse {
+  return { presets: [] };
+}
+
+export const ListToolPresetsResponse: MessageFns<ListToolPresetsResponse> = {
+  encode(message: ListToolPresetsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.presets) {
+      ToolPreset.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListToolPresetsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListToolPresetsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.presets.push(ToolPreset.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListToolPresetsResponse {
+    return {
+      presets: globalThis.Array.isArray(object?.presets) ? object.presets.map((e: any) => ToolPreset.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: ListToolPresetsResponse): unknown {
+    const obj: any = {};
+    if (message.presets?.length) {
+      obj.presets = message.presets.map((e) => ToolPreset.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListToolPresetsResponse>, I>>(base?: I): ListToolPresetsResponse {
+    return ListToolPresetsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListToolPresetsResponse>, I>>(object: I): ListToolPresetsResponse {
+    const message = createBaseListToolPresetsResponse();
+    message.presets = object.presets?.map((e) => ToolPreset.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseCreateToolPresetRequest(): CreateToolPresetRequest {
+  return { preset: undefined };
+}
+
+export const CreateToolPresetRequest: MessageFns<CreateToolPresetRequest> = {
+  encode(message: CreateToolPresetRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.preset !== undefined) {
+      ToolPreset.encode(message.preset, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateToolPresetRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateToolPresetRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.preset = ToolPreset.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateToolPresetRequest {
+    return { preset: isSet(object.preset) ? ToolPreset.fromJSON(object.preset) : undefined };
+  },
+
+  toJSON(message: CreateToolPresetRequest): unknown {
+    const obj: any = {};
+    if (message.preset !== undefined) {
+      obj.preset = ToolPreset.toJSON(message.preset);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateToolPresetRequest>, I>>(base?: I): CreateToolPresetRequest {
+    return CreateToolPresetRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateToolPresetRequest>, I>>(object: I): CreateToolPresetRequest {
+    const message = createBaseCreateToolPresetRequest();
+    message.preset = (object.preset !== undefined && object.preset !== null)
+      ? ToolPreset.fromPartial(object.preset)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseCreateToolPresetResponse(): CreateToolPresetResponse {
+  return { preset: undefined };
+}
+
+export const CreateToolPresetResponse: MessageFns<CreateToolPresetResponse> = {
+  encode(message: CreateToolPresetResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.preset !== undefined) {
+      ToolPreset.encode(message.preset, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateToolPresetResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateToolPresetResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.preset = ToolPreset.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateToolPresetResponse {
+    return { preset: isSet(object.preset) ? ToolPreset.fromJSON(object.preset) : undefined };
+  },
+
+  toJSON(message: CreateToolPresetResponse): unknown {
+    const obj: any = {};
+    if (message.preset !== undefined) {
+      obj.preset = ToolPreset.toJSON(message.preset);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateToolPresetResponse>, I>>(base?: I): CreateToolPresetResponse {
+    return CreateToolPresetResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateToolPresetResponse>, I>>(object: I): CreateToolPresetResponse {
+    const message = createBaseCreateToolPresetResponse();
+    message.preset = (object.preset !== undefined && object.preset !== null)
+      ? ToolPreset.fromPartial(object.preset)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteToolPresetRequest(): DeleteToolPresetRequest {
+  return { presetId: "" };
+}
+
+export const DeleteToolPresetRequest: MessageFns<DeleteToolPresetRequest> = {
+  encode(message: DeleteToolPresetRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.presetId !== "") {
+      writer.uint32(10).string(message.presetId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteToolPresetRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteToolPresetRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.presetId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteToolPresetRequest {
+    return {
+      presetId: isSet(object.presetId)
+        ? globalThis.String(object.presetId)
+        : isSet(object.preset_id)
+        ? globalThis.String(object.preset_id)
+        : "",
+    };
+  },
+
+  toJSON(message: DeleteToolPresetRequest): unknown {
+    const obj: any = {};
+    if (message.presetId !== "") {
+      obj.presetId = message.presetId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteToolPresetRequest>, I>>(base?: I): DeleteToolPresetRequest {
+    return DeleteToolPresetRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteToolPresetRequest>, I>>(object: I): DeleteToolPresetRequest {
+    const message = createBaseDeleteToolPresetRequest();
+    message.presetId = object.presetId ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteToolPresetResponse(): DeleteToolPresetResponse {
+  return {};
+}
+
+export const DeleteToolPresetResponse: MessageFns<DeleteToolPresetResponse> = {
+  encode(_: DeleteToolPresetResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteToolPresetResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteToolPresetResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): DeleteToolPresetResponse {
+    return {};
+  },
+
+  toJSON(_: DeleteToolPresetResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteToolPresetResponse>, I>>(base?: I): DeleteToolPresetResponse {
+    return DeleteToolPresetResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteToolPresetResponse>, I>>(_: I): DeleteToolPresetResponse {
+    const message = createBaseDeleteToolPresetResponse();
     return message;
   },
 };
@@ -2096,6 +2449,21 @@ export interface AdminService {
   ListTools(request: DeepPartial<ListToolsRequest>, metadata?: grpc.Metadata): Promise<ListToolsResponse>;
   /** GetTool returns a specific tool by name. */
   GetTool(request: DeepPartial<GetToolRequest>, metadata?: grpc.Metadata): Promise<GetToolResponse>;
+  /** ListToolPresets returns all registered tool presets. */
+  ListToolPresets(
+    request: DeepPartial<ListToolPresetsRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<ListToolPresetsResponse>;
+  /** CreateToolPreset creates a new tool preset. */
+  CreateToolPreset(
+    request: DeepPartial<CreateToolPresetRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<CreateToolPresetResponse>;
+  /** DeleteToolPreset deletes a tool preset by ID. */
+  DeleteToolPreset(
+    request: DeepPartial<DeleteToolPresetRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<DeleteToolPresetResponse>;
   /** CreateUser creates a new user. */
   CreateUser(request: DeepPartial<CreateUserRequest>, metadata?: grpc.Metadata): Promise<CreateUserResponse>;
   /** GetUser returns a specific user by ID. */
@@ -2125,6 +2493,9 @@ export class AdminServiceClientImpl implements AdminService {
     this.GetService = this.GetService.bind(this);
     this.ListTools = this.ListTools.bind(this);
     this.GetTool = this.GetTool.bind(this);
+    this.ListToolPresets = this.ListToolPresets.bind(this);
+    this.CreateToolPreset = this.CreateToolPreset.bind(this);
+    this.DeleteToolPreset = this.DeleteToolPreset.bind(this);
     this.CreateUser = this.CreateUser.bind(this);
     this.GetUser = this.GetUser.bind(this);
     this.ListUsers = this.ListUsers.bind(this);
@@ -2152,6 +2523,27 @@ export class AdminServiceClientImpl implements AdminService {
 
   GetTool(request: DeepPartial<GetToolRequest>, metadata?: grpc.Metadata): Promise<GetToolResponse> {
     return this.rpc.unary(AdminServiceGetToolDesc, GetToolRequest.fromPartial(request), metadata);
+  }
+
+  ListToolPresets(
+    request: DeepPartial<ListToolPresetsRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<ListToolPresetsResponse> {
+    return this.rpc.unary(AdminServiceListToolPresetsDesc, ListToolPresetsRequest.fromPartial(request), metadata);
+  }
+
+  CreateToolPreset(
+    request: DeepPartial<CreateToolPresetRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<CreateToolPresetResponse> {
+    return this.rpc.unary(AdminServiceCreateToolPresetDesc, CreateToolPresetRequest.fromPartial(request), metadata);
+  }
+
+  DeleteToolPreset(
+    request: DeepPartial<DeleteToolPresetRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<DeleteToolPresetResponse> {
+    return this.rpc.unary(AdminServiceDeleteToolPresetDesc, DeleteToolPresetRequest.fromPartial(request), metadata);
   }
 
   CreateUser(request: DeepPartial<CreateUserRequest>, metadata?: grpc.Metadata): Promise<CreateUserResponse> {
@@ -2293,6 +2685,75 @@ export const AdminServiceGetToolDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       const value = GetToolResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceListToolPresetsDesc: UnaryMethodDefinitionish = {
+  methodName: "ListToolPresets",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListToolPresetsRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = ListToolPresetsResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceCreateToolPresetDesc: UnaryMethodDefinitionish = {
+  methodName: "CreateToolPreset",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return CreateToolPresetRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = CreateToolPresetResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceDeleteToolPresetDesc: UnaryMethodDefinitionish = {
+  methodName: "DeleteToolPreset",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return DeleteToolPresetRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = DeleteToolPresetResponse.decode(data);
       return {
         ...value,
         toObject() {

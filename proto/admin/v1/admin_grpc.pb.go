@@ -27,6 +27,9 @@ const (
 	AdminService_GetService_FullMethodName         = "/mcpany.admin.v1.AdminService/GetService"
 	AdminService_ListTools_FullMethodName          = "/mcpany.admin.v1.AdminService/ListTools"
 	AdminService_GetTool_FullMethodName            = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_ListToolPresets_FullMethodName    = "/mcpany.admin.v1.AdminService/ListToolPresets"
+	AdminService_CreateToolPreset_FullMethodName   = "/mcpany.admin.v1.AdminService/CreateToolPreset"
+	AdminService_DeleteToolPreset_FullMethodName   = "/mcpany.admin.v1.AdminService/DeleteToolPreset"
 	AdminService_CreateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/CreateUser"
 	AdminService_GetUser_FullMethodName            = "/mcpany.admin.v1.AdminService/GetUser"
 	AdminService_ListUsers_FullMethodName          = "/mcpany.admin.v1.AdminService/ListUsers"
@@ -52,6 +55,12 @@ type AdminServiceClient interface {
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error)
+	// ListToolPresets returns all registered tool presets.
+	ListToolPresets(ctx context.Context, in *ListToolPresetsRequest, opts ...grpc.CallOption) (*ListToolPresetsResponse, error)
+	// CreateToolPreset creates a new tool preset.
+	CreateToolPreset(ctx context.Context, in *CreateToolPresetRequest, opts ...grpc.CallOption) (*CreateToolPresetResponse, error)
+	// DeleteToolPreset deletes a tool preset by ID.
+	DeleteToolPreset(ctx context.Context, in *DeleteToolPresetRequest, opts ...grpc.CallOption) (*DeleteToolPresetResponse, error)
 	// CreateUser creates a new user.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	// GetUser returns a specific user by ID.
@@ -120,6 +129,36 @@ func (c *adminServiceClient) GetTool(ctx context.Context, in *GetToolRequest, op
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetToolResponse)
 	err := c.cc.Invoke(ctx, AdminService_GetTool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) ListToolPresets(ctx context.Context, in *ListToolPresetsRequest, opts ...grpc.CallOption) (*ListToolPresetsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListToolPresetsResponse)
+	err := c.cc.Invoke(ctx, AdminService_ListToolPresets_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) CreateToolPreset(ctx context.Context, in *CreateToolPresetRequest, opts ...grpc.CallOption) (*CreateToolPresetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateToolPresetResponse)
+	err := c.cc.Invoke(ctx, AdminService_CreateToolPreset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) DeleteToolPreset(ctx context.Context, in *DeleteToolPresetRequest, opts ...grpc.CallOption) (*DeleteToolPresetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteToolPresetResponse)
+	err := c.cc.Invoke(ctx, AdminService_DeleteToolPreset_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -212,6 +251,12 @@ type AdminServiceServer interface {
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error)
+	// ListToolPresets returns all registered tool presets.
+	ListToolPresets(context.Context, *ListToolPresetsRequest) (*ListToolPresetsResponse, error)
+	// CreateToolPreset creates a new tool preset.
+	CreateToolPreset(context.Context, *CreateToolPresetRequest) (*CreateToolPresetResponse, error)
+	// DeleteToolPreset deletes a tool preset by ID.
+	DeleteToolPreset(context.Context, *DeleteToolPresetRequest) (*DeleteToolPresetResponse, error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	// GetUser returns a specific user by ID.
@@ -250,6 +295,15 @@ func (UnimplementedAdminServiceServer) ListTools(context.Context, *ListToolsRequ
 }
 func (UnimplementedAdminServiceServer) GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTool not implemented")
+}
+func (UnimplementedAdminServiceServer) ListToolPresets(context.Context, *ListToolPresetsRequest) (*ListToolPresetsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListToolPresets not implemented")
+}
+func (UnimplementedAdminServiceServer) CreateToolPreset(context.Context, *CreateToolPresetRequest) (*CreateToolPresetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateToolPreset not implemented")
+}
+func (UnimplementedAdminServiceServer) DeleteToolPreset(context.Context, *DeleteToolPresetRequest) (*DeleteToolPresetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteToolPreset not implemented")
 }
 func (UnimplementedAdminServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -379,6 +433,60 @@ func _AdminService_GetTool_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdminServiceServer).GetTool(ctx, req.(*GetToolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_ListToolPresets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListToolPresetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).ListToolPresets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_ListToolPresets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).ListToolPresets(ctx, req.(*ListToolPresetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_CreateToolPreset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateToolPresetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).CreateToolPreset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_CreateToolPreset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).CreateToolPreset(ctx, req.(*CreateToolPresetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_DeleteToolPreset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteToolPresetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).DeleteToolPreset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_DeleteToolPreset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).DeleteToolPreset(ctx, req.(*DeleteToolPresetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -535,6 +643,18 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTool",
 			Handler:    _AdminService_GetTool_Handler,
+		},
+		{
+			MethodName: "ListToolPresets",
+			Handler:    _AdminService_ListToolPresets_Handler,
+		},
+		{
+			MethodName: "CreateToolPreset",
+			Handler:    _AdminService_CreateToolPreset_Handler,
+		},
+		{
+			MethodName: "DeleteToolPreset",
+			Handler:    _AdminService_DeleteToolPreset_Handler,
 		},
 		{
 			MethodName: "CreateUser",

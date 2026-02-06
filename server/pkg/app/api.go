@@ -118,6 +118,10 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/users", a.handleUsers(store))
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 
+	// Tool Presets
+	mux.HandleFunc("/tool-presets", a.handleToolPresets(store))
+	mux.HandleFunc("/tool-presets/", a.handleToolPresetDetail(store))
+
 	// Credentials
 	mux.HandleFunc("/credentials", a.listCredentialsHandler)
 	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
@@ -1321,4 +1325,117 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		return true
 	}
 	return false
+}
+
+func (a *Application) handleToolPresets(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			presets, err := store.ListToolPresets(r.Context())
+			if err != nil {
+				logging.GetLogger().Error("failed to list tool presets", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			var buf []byte
+			buf = append(buf, '[')
+			for i, p := range presets {
+				if i > 0 {
+					buf = append(buf, ',')
+				}
+				b, _ := opts.Marshal(p)
+				buf = append(buf, b...)
+			}
+			buf = append(buf, ']')
+			_, _ = w.Write(buf)
+
+		case http.MethodPost:
+			var preset configv1.ToolPreset
+			body, err := readBodyWithLimit(w, r, 1048576)
+			if err != nil {
+				return
+			}
+			if err := protojson.Unmarshal(body, &preset); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if preset.GetId() == "" {
+				// Generate ID if missing? Or require it?
+				// Client usually generates UUID.
+				http.Error(w, "id is required", http.StatusBadRequest)
+				return
+			}
+
+			if err := store.SaveToolPreset(r.Context(), &preset); err != nil {
+				logging.GetLogger().Error("failed to save tool preset", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte("{}"))
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func (a *Application) handleToolPresetDetail(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, "/tool-presets/")
+		if id == "" {
+			http.Error(w, "id required", http.StatusBadRequest)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			preset, err := store.GetToolPreset(r.Context(), id)
+			if err != nil {
+				logging.GetLogger().Error("failed to get tool preset", "id", id, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if preset == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			b, _ := opts.Marshal(preset)
+			_, _ = w.Write(b)
+
+		case http.MethodPut:
+			var preset configv1.ToolPreset
+			body, err := readBodyWithLimit(w, r, 1048576)
+			if err != nil {
+				return
+			}
+			if err := protojson.Unmarshal(body, &preset); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			preset.SetId(id)
+
+			if err := store.SaveToolPreset(r.Context(), &preset); err != nil {
+				logging.GetLogger().Error("failed to save tool preset", "id", id, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
+
+		case http.MethodDelete:
+			if err := store.DeleteToolPreset(r.Context(), id); err != nil {
+				logging.GetLogger().Error("failed to delete tool preset", "id", id, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
+
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
 }

@@ -1,0 +1,20 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "ToolPresetProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+message ToolPreset {
+  string id = 1 [json_name = "id"];
+  string name = 2 [json_name = "name"];
+  string tool_name = 3 [json_name = "tool_name"];
+  string arguments = 4 [json_name = "arguments"]; // JSON string
+  string service_id = 5 [json_name = "service_id"];
+}

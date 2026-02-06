@@ -1051,3 +1051,89 @@ func (s *Store) DeleteCredential(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+// Tool Presets
+
+// SaveToolPreset saves a tool preset.
+func (s *Store) SaveToolPreset(ctx context.Context, preset *configv1.ToolPreset) error {
+	if preset.GetId() == "" {
+		return fmt.Errorf("preset ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(preset)
+	if err != nil {
+		return fmt.Errorf("failed to marshal preset: %w", err)
+	}
+
+	query := `
+	INSERT INTO tool_presets (id, name, tool_name, config_json, updated_at)
+	VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		tool_name = excluded.tool_name,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, preset.GetId(), preset.GetName(), preset.GetToolName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save preset: %w", err)
+	}
+	return nil
+}
+
+// ListToolPresets retrieves all tool presets.
+func (s *Store) ListToolPresets(ctx context.Context) ([]*configv1.ToolPreset, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM tool_presets")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query tool_presets: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var presets []*configv1.ToolPreset
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan preset config: %w", err)
+		}
+
+		var preset configv1.ToolPreset
+		if err := protojson.Unmarshal([]byte(configJSON), &preset); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal preset: %w", err)
+		}
+		presets = append(presets, &preset)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return presets, nil
+}
+
+// GetToolPreset retrieves a tool preset by ID.
+func (s *Store) GetToolPreset(ctx context.Context, id string) (*configv1.ToolPreset, error) {
+	query := "SELECT config_json FROM tool_presets WHERE id = ?"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan preset: %w", err)
+	}
+
+	var preset configv1.ToolPreset
+	if err := protojson.Unmarshal([]byte(configJSON), &preset); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal preset: %w", err)
+	}
+	return &preset, nil
+}
+
+// DeleteToolPreset deletes a tool preset by ID.
+func (s *Store) DeleteToolPreset(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM tool_presets WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete preset: %w", err)
+	}
+	return nil
+}

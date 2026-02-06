@@ -10,83 +10,78 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bookmark, Trash2, Save, Plus } from "lucide-react";
-import { toast } from "sonner";
-
-interface Preset {
-  name: string;
-  data: Record<string, unknown>;
-}
+import { Bookmark, Trash2, Save, Plus, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiClient, ToolPreset } from "@/lib/client";
 
 interface ToolPresetsProps {
   toolName: string;
   currentData: Record<string, unknown>;
   onSelect: (data: Record<string, unknown>) => void;
+  serviceId?: string; // Optional context
 }
 
-/**
- * ToolPresets component.
- * @param props - The component props.
- * @param props.toolName - The name of the tool.
- * @param props.currentData - The data to display.
- * @param props.onSelect - The onSelect property.
- * @returns The rendered component.
- */
-export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProps) {
-  const [presets, setPresets] = useState<Preset[]>([]);
+export function ToolPresets({ toolName, currentData, onSelect, serviceId }: ToolPresetsProps) {
+  const [presets, setPresets] = useState<ToolPreset[]>([]);
+  const [loading, setLoading] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSaveMode, setIsSaveMode] = useState(false);
+  const { toast } = useToast();
 
-  const storageKey = `mcpany-presets-${toolName}`;
-
-  // Load presets on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        setPresets(JSON.parse(stored));
+  const fetchPresets = async () => {
+      setLoading(true);
+      try {
+          const allPresets = await apiClient.listToolPresets();
+          // Filter by tool name
+          setPresets(allPresets.filter(p => p.toolName === toolName));
+      } catch (e) {
+          console.error("Failed to load presets", e);
+          toast({ variant: "destructive", title: "Failed to load presets" });
+      } finally {
+          setLoading(false);
       }
-    } catch (e) {
-      console.error("Failed to load presets", e);
-    }
-  }, [storageKey]);
-
-  const savePreset = () => {
-    if (!newPresetName.trim()) return;
-
-    const newPreset: Preset = {
-      name: newPresetName.trim(),
-      data: currentData,
-    };
-
-    // Check if exists
-    const existingIndex = presets.findIndex((p) => p.name === newPreset.name);
-    let updatedPresets;
-
-    if (existingIndex >= 0) {
-      if (!confirm(`Overwrite existing preset "${newPreset.name}"?`)) {
-          return;
-      }
-      updatedPresets = [...presets];
-      updatedPresets[existingIndex] = newPreset;
-    } else {
-      updatedPresets = [...presets, newPreset];
-    }
-
-    setPresets(updatedPresets);
-    localStorage.setItem(storageKey, JSON.stringify(updatedPresets));
-    setNewPresetName("");
-    setIsSaveMode(false);
-    toast.success("Preset saved");
   };
 
-  const deletePreset = (name: string, e: React.MouseEvent) => {
+  useEffect(() => {
+    if (isOpen) {
+        fetchPresets();
+    }
+  }, [isOpen, toolName]);
+
+  const savePreset = async () => {
+    if (!newPresetName.trim()) return;
+
+    try {
+        await apiClient.createToolPreset({
+            id: crypto.randomUUID(),
+            name: newPresetName.trim(),
+            toolName: toolName,
+            arguments: JSON.stringify(currentData),
+            serviceId: serviceId
+        });
+        toast({ title: "Preset saved" });
+        setNewPresetName("");
+        setIsSaveMode(false);
+        fetchPresets();
+    } catch (e) {
+        console.error("Failed to save preset", e);
+        toast({ variant: "destructive", title: "Failed to save preset" });
+    }
+  };
+
+  const deletePreset = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const updatedPresets = presets.filter((p) => p.name !== name);
-    setPresets(updatedPresets);
-    localStorage.setItem(storageKey, JSON.stringify(updatedPresets));
-    toast.success("Preset deleted");
+    if (!confirm("Are you sure you want to delete this preset?")) return;
+
+    try {
+        await apiClient.deleteToolPreset(id);
+        toast({ title: "Preset deleted" });
+        fetchPresets();
+    } catch (e) {
+        console.error("Failed to delete preset", e);
+        toast({ variant: "destructive", title: "Failed to delete preset" });
+    }
   };
 
   return (
@@ -131,7 +126,11 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
         )}
 
         <ScrollArea className="h-[200px]">
-          {presets.length === 0 ? (
+          {loading ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" /> Loading...
+              </div>
+          ) : presets.length === 0 ? (
             <div className="p-4 text-center text-xs text-muted-foreground">
               No saved presets for this tool.
             </div>
@@ -139,12 +138,17 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
             <div className="flex flex-col p-1">
               {presets.map((preset) => (
                 <div
-                  key={preset.name}
+                  key={preset.id}
                   className="flex items-center justify-between p-2 hover:bg-muted rounded-md cursor-pointer group transition-colors"
                   onClick={() => {
-                      onSelect(preset.data);
-                      setIsOpen(false);
-                      toast.success(`Loaded preset: ${preset.name}`);
+                      try {
+                          const args = JSON.parse(preset.arguments);
+                          onSelect(args);
+                          setIsOpen(false);
+                          toast({ title: `Loaded preset: ${preset.name}` });
+                      } catch (e) {
+                          toast({ variant: "destructive", title: "Failed to parse preset arguments" });
+                      }
                   }}
                 >
                   <span className="text-sm truncate max-w-[180px]">{preset.name}</span>
@@ -152,7 +156,7 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                    onClick={(e) => deletePreset(preset.name, e)}
+                    onClick={(e) => deletePreset(preset.id, e)}
                     title="Delete Preset"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
