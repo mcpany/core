@@ -8,7 +8,7 @@ FROM node:20-bookworm-slim AS base
 # Install dependencies only when needed
 FROM base AS deps
 # Avoid WORKDIR to prevent overlayfs mount issues in CI
-RUN mkdir -p /app
+# Just use default root dir and copy explicitly
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* /app/
@@ -17,7 +17,8 @@ RUN cd /app && rm -f package-lock.json && npm install -g npm@latest && npm insta
 
 # Rebuild the source code only when needed
 FROM base AS builder
-RUN mkdir -p /app
+# Manually create app dir without WORKDIR
+# RUN mkdir -p /app - No need if we copy to it directly, but explicit is fine
 COPY --from=deps /app/node_modules /app/node_modules
 COPY ui/ /app/
 COPY --from=deps /app/package-lock.json /app/package-lock.json
@@ -66,7 +67,7 @@ RUN mkdir -p /app/public
 
 # Production image, copy all the files and run next
 FROM base AS runner
-RUN mkdir -p /app
+# RUN mkdir -p /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -82,7 +83,7 @@ COPY --from=builder /app/public /app/public
 
 
 # Set the correct permission for prerender cache
-RUN mkdir /app/.next
+RUN mkdir -p /app/.next
 RUN chown nextjs:nodejs /app/.next
 
 # Automatically leverage output traces to reduce image size
