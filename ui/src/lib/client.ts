@@ -222,7 +222,10 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     *
+     * Summary: Retrieves all registered upstream services.
+     *
+     * @returns Promise<any[]> - A list of services.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -261,8 +264,11 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     *
+     * Summary: Retrieves a specific service configuration.
+     *
+     * @param id - string. The ID of the service to retrieve.
+     * @returns Promise<any> - The service configuration.
      */
     getService: async (id: string) => {
          try {
@@ -312,9 +318,12 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
-     * @param name The name of the service.
-     * @param disable True to disable the service, false to enable it.
-     * @returns A promise that resolves to the updated service status.
+     *
+     * Summary: Enables or disables a service.
+     *
+     * @param name - string. The name of the service.
+     * @param disable - boolean. True to disable the service, false to enable it.
+     * @returns Promise<any> - The updated service status.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -328,8 +337,11 @@ export const apiClient = {
 
     /**
      * Gets the status of a service.
-     * @param name The name of the service.
-     * @returns A promise that resolves to the service status.
+     *
+     * Summary: Retrieves the current status of a service.
+     *
+     * @param name - string. The name of the service.
+     * @returns Promise<any> - The service status.
      */
     getServiceStatus: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
@@ -339,8 +351,11 @@ export const apiClient = {
 
     /**
      * Restarts a service.
-     * @param name The name of the service to restart.
-     * @returns A promise that resolves when the service is restarted.
+     *
+     * Summary: Triggers a service restart.
+     *
+     * @param name - string. The name of the service to restart.
+     * @returns Promise<object> - An empty object on success.
      */
     restartService: async (name: string) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
@@ -352,8 +367,11 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     *
+     * Summary: Registers a new service configuration.
+     *
+     * @param config - UpstreamServiceConfig. The configuration of the service to register.
+     * @returns Promise<any> - The registered service configuration.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -440,8 +458,11 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
-     * @param config The updated configuration of the service.
-     * @returns A promise that resolves to the updated service configuration.
+     *
+     * Summary: Updates an existing service configuration.
+     *
+     * @param config - UpstreamServiceConfig. The updated configuration of the service.
+     * @returns Promise<any> - The updated service configuration.
      */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
@@ -526,8 +547,11 @@ export const apiClient = {
 
     /**
      * Unregisters (deletes) an upstream service.
-     * @param id The ID of the service to unregister.
-     * @returns A promise that resolves when the service is unregistered.
+     *
+     * Summary: Deletes a service registration.
+     *
+     * @param id - string. The ID of the service to unregister.
+     * @returns Promise<object> - An empty object on success.
      */
     unregisterService: async (id: string) => {
          const response = await fetchWithAuth(`/api/v1/services/${id}`, {
@@ -539,8 +563,11 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
-     * @param config The service configuration to validate.
-     * @returns A promise that resolves to the validation result.
+     *
+     * Summary: Checks if a service configuration is valid.
+     *
+     * @param config - UpstreamServiceConfig. The service configuration to validate.
+     * @returns Promise<any> - The validation result.
      */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -642,7 +669,10 @@ export const apiClient = {
 
     /**
      * Lists all available tools.
-     * @returns A promise that resolves to a list of tools.
+     *
+     * Summary: Retrieves all available tools.
+     *
+     * @returns Promise<any> - A list of tools.
      */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
@@ -661,9 +691,12 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
-     * @param request The execution request (tool name, arguments, etc.).
-     * @param dryRun If true, performs a dry run without side effects.
-     * @returns A promise that resolves to the execution result.
+     *
+     * Summary: Executes a tool.
+     *
+     * @param request - any. The execution request (tool name, arguments, etc.).
+     * @param dryRun - boolean. If true, performs a dry run without side effects.
+     * @returns Promise<any> - The execution result.
      */
     executeTool: async (request: any, dryRun?: boolean) => {
         try {
@@ -697,9 +730,12 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a tool.
-     * @param name The name of the tool.
-     * @param disabled True to disable the tool, false to enable it.
-     * @returns A promise that resolves to the updated tool status.
+     *
+     * Summary: Enables or disables a tool.
+     *
+     * @param name - string. The name of the tool.
+     * @param disabled - boolean. True to disable the tool, false to enable it.
+     * @returns Promise<any> - The updated tool status.
      */
     setToolStatus: async (name: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/tools', {
@@ -713,7 +749,10 @@ export const apiClient = {
 
     /**
      * Lists all available resources.
-     * @returns A promise that resolves to a list of resources.
+     *
+     * Summary: Retrieves all available resources.
+     *
+     * @returns Promise<any> - A list of resources.
      */
     listResources: async () => {
         const res = await fetchWithAuth('/api/v1/resources');
@@ -723,8 +762,11 @@ export const apiClient = {
 
     /**
      * Reads the content of a resource.
-     * @param uri The URI of the resource to read.
-     * @returns A promise that resolves to the resource content.
+     *
+     * Summary: Reads a resource content.
+     *
+     * @param uri - string. The URI of the resource to read.
+     * @returns Promise<ReadResourceResponse> - The resource content.
      */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
@@ -734,9 +776,12 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a resource.
-     * @param uri The URI of the resource.
-     * @param disabled True to disable the resource, false to enable it.
-     * @returns A promise that resolves to the updated resource status.
+     *
+     * Summary: Enables or disables a resource.
+     *
+     * @param uri - string. The URI of the resource.
+     * @param disabled - boolean. True to disable the resource, false to enable it.
+     * @returns Promise<any> - The updated resource status.
      */
     setResourceStatus: async (uri: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/resources', {
@@ -750,7 +795,10 @@ export const apiClient = {
 
     /**
      * Lists all available prompts.
-     * @returns A promise that resolves to a list of prompts.
+     *
+     * Summary: Retrieves all available prompts.
+     *
+     * @returns Promise<any> - A list of prompts.
      */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
@@ -760,9 +808,12 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a prompt.
-     * @param name The name of the prompt.
-     * @param enabled True to enable the prompt, false to disable it.
-     * @returns A promise that resolves to the updated prompt status.
+     *
+     * Summary: Enables or disables a prompt.
+     *
+     * @param name - string. The name of the prompt.
+     * @param enabled - boolean. True to enable the prompt, false to disable it.
+     * @returns Promise<any> - The updated prompt status.
      */
     setPromptStatus: async (name: string, enabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/prompts', {
@@ -775,9 +826,12 @@ export const apiClient = {
 
     /**
      * Executes a prompt with the given arguments.
-     * @param name The name of the prompt.
-     * @param args The arguments for the prompt.
-     * @returns A promise that resolves to the prompt execution result.
+     *
+     * Summary: Executes a prompt.
+     *
+     * @param name - string. The name of the prompt.
+     * @param args - Record<string, string>. The arguments for the prompt.
+     * @returns Promise<any> - The prompt execution result.
      */
     executePrompt: async (name: string, args: Record<string, string>) => {
         const res = await fetch(`/api/v1/prompts/${name}/execute`, {
@@ -794,7 +848,10 @@ export const apiClient = {
 
     /**
      * Lists all stored secrets.
-     * @returns A promise that resolves to a list of secrets.
+     *
+     * Summary: Retrieves all stored secrets.
+     *
+     * @returns Promise<any[]> - A list of secrets.
      */
     listSecrets: async () => {
         const res = await fetchWithAuth('/api/v1/secrets');
@@ -805,8 +862,11 @@ export const apiClient = {
 
     /**
      * Reveals a secret value.
-     * @param id The ID of the secret to reveal.
-     * @returns A promise that resolves to the secret value.
+     *
+     * Summary: Retrieves the value of a secret.
+     *
+     * @param id - string. The ID of the secret to reveal.
+     * @returns Promise<{ value: string }> - The secret value.
      */
     revealSecret: async (id: string): Promise<{ value: string }> => {
         const res = await fetchWithAuth(`/api/v1/secrets/${id}/reveal`, {
@@ -818,8 +878,11 @@ export const apiClient = {
 
     /**
      * Saves a secret.
-     * @param secret The secret definition to save.
-     * @returns A promise that resolves to the saved secret.
+     *
+     * Summary: Creates or updates a secret.
+     *
+     * @param secret - SecretDefinition. The secret definition to save.
+     * @returns Promise<any> - The saved secret.
      */
     saveSecret: async (secret: SecretDefinition) => {
         const res = await fetchWithAuth('/api/v1/secrets', {
@@ -833,8 +896,11 @@ export const apiClient = {
 
     /**
      * Deletes a secret.
-     * @param id The ID of the secret to delete.
-     * @returns A promise that resolves when the secret is deleted.
+     *
+     * Summary: Deletes a secret.
+     *
+     * @param id - string. The ID of the secret to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteSecret: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/secrets/${id}`, {
@@ -848,7 +914,10 @@ export const apiClient = {
 
     /**
      * Gets the global server settings.
-     * @returns A promise that resolves to the global settings.
+     *
+     * Summary: Retrieves global server settings.
+     *
+     * @returns Promise<any> - The global settings.
      */
     getGlobalSettings: async () => {
         const res = await fetchWithAuth('/api/v1/settings');
@@ -858,8 +927,11 @@ export const apiClient = {
 
     /**
      * Saves the global server settings.
-     * @param settings The settings to save.
-     * @returns A promise that resolves when the settings are saved.
+     *
+     * Summary: Updates global server settings.
+     *
+     * @param settings - any. The settings to save.
+     * @returns Promise<void> - Resolves when settings are saved.
      */
     saveGlobalSettings: async (settings: any) => {
         const res = await fetchWithAuth('/api/v1/settings', {
@@ -872,9 +944,12 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
-     * @param serviceId Optional service ID to filter by.
-     * @param timeRange Optional time range to filter by (e.g. "1h", "24h").
-     * @returns A promise that resolves to the traffic history points.
+     *
+     * Summary: Retrieves traffic history metrics.
+     *
+     * @param serviceId - string (optional). Service ID to filter by.
+     * @param timeRange - string (optional). Time range to filter by (e.g. "1h", "24h").
+     * @returns Promise<any> - The traffic history points.
      */
     getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
         let url = '/api/v1/dashboard/traffic';
@@ -891,8 +966,11 @@ export const apiClient = {
 
     /**
      * Gets the top used tools.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the top tools stats.
+     *
+     * Summary: Retrieves top tools usage metrics.
+     *
+     * @param serviceId - string (optional). Service ID to filter by.
+     * @returns Promise<any[]> - The top tools stats.
      */
     getTopTools: async (serviceId?: string) => {
         let url = '/api/v1/dashboard/top-tools';
@@ -907,7 +985,10 @@ export const apiClient = {
 
     /**
      * Lists all alerts.
-     * @returns A promise that resolves to a list of alerts.
+     *
+     * Summary: Retrieves all alerts.
+     *
+     * @returns Promise<any> - A list of alerts.
      */
     listAlerts: async () => {
         const res = await fetchWithAuth('/api/v1/alerts');
@@ -917,7 +998,10 @@ export const apiClient = {
 
     /**
      * Lists all alert rules.
-     * @returns A promise that resolves to a list of alert rules.
+     *
+     * Summary: Retrieves all alert rules.
+     *
+     * @returns Promise<any> - A list of alert rules.
      */
     listAlertRules: async () => {
         const res = await fetchWithAuth('/api/v1/alerts/rules');
@@ -927,8 +1011,11 @@ export const apiClient = {
 
     /**
      * Creates a new alert rule.
-     * @param rule The rule to create.
-     * @returns A promise that resolves to the created rule.
+     *
+     * Summary: Creates an alert rule.
+     *
+     * @param rule - any. The rule to create.
+     * @returns Promise<any> - The created rule.
      */
     createAlertRule: async (rule: any) => {
         const res = await fetchWithAuth('/api/v1/alerts/rules', {
@@ -942,8 +1029,11 @@ export const apiClient = {
 
     /**
      * Gets an alert rule by ID.
-     * @param id The ID of the rule.
-     * @returns A promise that resolves to the rule.
+     *
+     * Summary: Retrieves an alert rule by ID.
+     *
+     * @param id - string. The ID of the rule.
+     * @returns Promise<any> - The rule.
      */
     getAlertRule: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`);
@@ -953,8 +1043,11 @@ export const apiClient = {
 
     /**
      * Updates an alert rule.
-     * @param rule The rule to update.
-     * @returns A promise that resolves to the updated rule.
+     *
+     * Summary: Updates an alert rule.
+     *
+     * @param rule - any. The rule to update.
+     * @returns Promise<any> - The updated rule.
      */
     updateAlertRule: async (rule: any) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${rule.id}`, {
@@ -968,8 +1061,11 @@ export const apiClient = {
 
     /**
      * Deletes an alert rule.
-     * @param id The ID of the rule to delete.
-     * @returns A promise that resolves when the rule is deleted.
+     *
+     * Summary: Deletes an alert rule.
+     *
+     * @param id - string. The ID of the rule to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteAlertRule: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
@@ -981,8 +1077,11 @@ export const apiClient = {
 
     /**
      * Gets the tools with highest failure rates.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the tool failure stats.
+     *
+     * Summary: Retrieves tool failure statistics.
+     *
+     * @param serviceId - string (optional). Service ID to filter by.
+     * @returns Promise<ToolFailureStats[]> - The tool failure stats.
      */
     getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
         let url = '/api/v1/dashboard/tool-failures';
@@ -994,8 +1093,11 @@ export const apiClient = {
 
     /**
      * Gets the tool usage analytics.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the tool usage stats.
+     *
+     * Summary: Retrieves tool usage analytics.
+     *
+     * @param serviceId - string (optional). Service ID to filter by.
+     * @returns Promise<ToolAnalytics[]> - The tool usage stats.
      */
     getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
         let url = '/api/v1/dashboard/tool-usage';
@@ -1008,7 +1110,10 @@ export const apiClient = {
 
     /**
      * Gets the system status.
-     * @returns A promise that resolves to the system status.
+     *
+     * Summary: Retrieves system health and status.
+     *
+     * @returns Promise<SystemStatus> - The system status.
      */
     getSystemStatus: async (): Promise<SystemStatus> => {
         const res = await fetchWithAuth('/api/v1/system/status');
@@ -1018,8 +1123,11 @@ export const apiClient = {
 
     /**
      * Gets the dashboard metrics.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the metrics list.
+     *
+     * Summary: Retrieves dashboard metrics.
+     *
+     * @param serviceId - string (optional). Service ID to filter by.
+     * @returns Promise<Metric[]> - The metrics list.
      */
     getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
         let url = '/api/v1/dashboard/metrics';
@@ -1031,8 +1139,11 @@ export const apiClient = {
 
     /**
      * Gets the latest execution traces.
-     * @param options Optional parameters.
-     * @returns A promise that resolves to the traces list.
+     *
+     * Summary: Retrieves execution traces.
+     *
+     * @param options - { limit?: number } (optional). parameters.
+     * @returns Promise<any[]> - The traces list.
      */
     getTraces: async (options?: { limit?: number }): Promise<any[]> => {
         let url = '/api/v1/traces';
@@ -1046,7 +1157,10 @@ export const apiClient = {
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
-     * @param points The traffic points to seed.
+     *
+     * Summary: Seeds dashboard data for testing.
+     *
+     * @param points - any[]. The traffic points to seed.
      */
     seedTrafficData: async (points: any[]) => {
         const res = await fetchWithAuth('/api/v1/debug/seed_traffic', {
@@ -1059,9 +1173,12 @@ export const apiClient = {
 
     /**
      * Updates an alert status.
-     * @param id The ID of the alert.
-     * @param status The new status.
-     * @returns A promise that resolves to the updated alert.
+     *
+     * Summary: Updates the status of an alert.
+     *
+     * @param id - string. The ID of the alert.
+     * @param status - string. The new status.
+     * @returns Promise<any> - The updated alert.
      */
     updateAlertStatus: async (id: string, status: string) => {
         const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
@@ -1075,7 +1192,10 @@ export const apiClient = {
 
     /**
      * Gets the configured global webhook URL for alerts.
-     * @returns A promise that resolves to the webhook configuration.
+     *
+     * Summary: Retrieves the global webhook URL.
+     *
+     * @returns Promise<{ url: string }> - The webhook configuration.
      */
     getWebhookURL: async (): Promise<{ url: string }> => {
         const res = await fetchWithAuth('/api/v1/alerts/webhook');
@@ -1085,8 +1205,11 @@ export const apiClient = {
 
     /**
      * Saves the configured global webhook URL for alerts.
-     * @param url The webhook URL.
-     * @returns A promise that resolves to the updated webhook configuration.
+     *
+     * Summary: Saves the global webhook URL.
+     *
+     * @param url - string. The webhook URL.
+     * @returns Promise<any> - The updated webhook configuration.
      */
     saveWebhookURL: async (url: string) => {
         const res = await fetchWithAuth('/api/v1/alerts/webhook', {
@@ -1102,7 +1225,10 @@ export const apiClient = {
 
     /**
      * Lists all service collections (stacks).
-     * @returns A promise that resolves to a list of collections.
+     *
+     * Summary: Retrieves all stacks.
+     *
+     * @returns Promise<any> - A list of collections.
      */
     listCollections: async () => {
         const res = await fetchWithAuth('/api/v1/collections');
@@ -1112,8 +1238,11 @@ export const apiClient = {
 
     /**
      * Gets a single service collection (stack) by its name.
-     * @param name The name of the collection.
-     * @returns A promise that resolves to the collection.
+     *
+     * Summary: Retrieves a stack by name.
+     *
+     * @param name - string. The name of the collection.
+     * @returns Promise<any> - The collection.
      */
     getCollection: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/collections/${name}`);
@@ -1123,8 +1252,11 @@ export const apiClient = {
 
     /**
      * Saves a service collection (stack).
-     * @param collection The collection to save.
-     * @returns A promise that resolves when the collection is saved.
+     *
+     * Summary: Creates or updates a stack.
+     *
+     * @param collection - any. The collection to save.
+     * @returns Promise<any> - The saved collection.
      */
     saveCollection: async (collection: any) => {
         // Decide if create or update based on existence?
@@ -1151,8 +1283,11 @@ export const apiClient = {
 
     /**
      * Deletes a service collection (stack).
-     * @param name The name of the collection to delete.
-     * @returns A promise that resolves when the collection is deleted.
+     *
+     * Summary: Deletes a stack.
+     *
+     * @param name - string. The name of the collection to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteCollection: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/collections/${name}`, {
@@ -1164,8 +1299,11 @@ export const apiClient = {
 
     /**
      * Gets the configuration for a stack (Compatibility wrapper).
-     * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration.
+     *
+     * Summary: Retrieves stack configuration.
+     *
+     * @param stackId - string. The ID of the stack.
+     * @returns Promise<any> - The stack configuration.
      */
     getStackConfig: async (stackId: string) => {
         // Map to getCollection
@@ -1174,9 +1312,12 @@ export const apiClient = {
 
     /**
      * Saves the configuration for a stack (Compatibility wrapper).
-     * @param stackId The ID of the stack.
-     * @param config The configuration content (Collection object).
-     * @returns A promise that resolves when the config is saved.
+     *
+     * Summary: Saves stack configuration.
+     *
+     * @param stackId - string. The ID of the stack.
+     * @param config - any. The configuration content (Collection object).
+     * @returns Promise<any> - Resolves when the config is saved.
      */
     saveStackConfig: async (stackId: string, config: any) => {
         // Map to saveCollection. Ensure name is set.
@@ -1190,7 +1331,10 @@ export const apiClient = {
 
     /**
      * Lists all profiles.
-     * @returns A promise that resolves to a list of profiles.
+     *
+     * Summary: Retrieves all profiles.
+     *
+     * @returns Promise<any> - A list of profiles.
      */
     listProfiles: async () => {
         const res = await fetchWithAuth('/api/v1/profiles');
@@ -1200,8 +1344,11 @@ export const apiClient = {
 
     /**
      * Creates a new profile.
-     * @param profile The profile definition.
-     * @returns A promise that resolves to the created profile.
+     *
+     * Summary: Creates a profile.
+     *
+     * @param profile - ProfileDefinition. The profile definition.
+     * @returns Promise<any> - The created profile.
      */
     createProfile: async (profile: ProfileDefinition) => {
         const res = await fetchWithAuth('/api/v1/profiles', {
@@ -1215,8 +1362,11 @@ export const apiClient = {
 
     /**
      * Updates an existing profile.
-     * @param profile The profile definition.
-     * @returns A promise that resolves to the updated profile.
+     *
+     * Summary: Updates a profile.
+     *
+     * @param profile - ProfileDefinition. The profile definition.
+     * @returns Promise<any> - The updated profile.
      */
     updateProfile: async (profile: ProfileDefinition) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${profile.name}`, {
@@ -1230,8 +1380,11 @@ export const apiClient = {
 
     /**
      * Deletes a profile.
-     * @param name The name of the profile to delete.
-     * @returns A promise that resolves when the profile is deleted.
+     *
+     * Summary: Deletes a profile.
+     *
+     * @param name - string. The name of the profile to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteProfile: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${name}`, {
@@ -1245,7 +1398,10 @@ export const apiClient = {
 
     /**
      * Lists all users.
-     * @returns A promise that resolves to a list of users.
+     *
+     * Summary: Retrieves all users.
+     *
+     * @returns Promise<any> - A list of users.
      */
     listUsers: async () => {
         // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
@@ -1265,8 +1421,11 @@ export const apiClient = {
 
     /**
      * Creates a new user.
-     * @param user The user object to create.
-     * @returns A promise that resolves to the created user.
+     *
+     * Summary: Creates a user.
+     *
+     * @param user - any. The user object to create.
+     * @returns Promise<any> - The created user.
      */
     createUser: async (user: any) => {
         const res = await fetchWithAuth('/api/v1/users', {
@@ -1280,8 +1439,11 @@ export const apiClient = {
 
     /**
      * Updates an existing user.
-     * @param user The user object to update.
-     * @returns A promise that resolves to the updated user.
+     *
+     * Summary: Updates a user.
+     *
+     * @param user - any. The user object to update.
+     * @returns Promise<any> - The updated user.
      */
     updateUser: async (user: any) => {
          const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
@@ -1295,8 +1457,11 @@ export const apiClient = {
 
     /**
      * Deletes a user.
-     * @param id The ID of the user to delete.
-     * @returns A promise that resolves when the user is deleted.
+     *
+     * Summary: Deletes a user.
+     *
+     * @param id - string. The ID of the user to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteUser: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/users/${id}`, {
@@ -1311,10 +1476,13 @@ export const apiClient = {
 
     /**
      * Initiates an OAuth flow.
-     * @param serviceID The ID of the service for which to initiate OAuth.
-     * @param redirectURL The URL to redirect to after OAuth completes.
-     * @param credentialID Optional credential ID to associate with the token.
-     * @returns A promise that resolves to the initiation response.
+     *
+     * Summary: Starts an OAuth flow.
+     *
+     * @param serviceID - string. The ID of the service for which to initiate OAuth.
+     * @param redirectURL - string. The URL to redirect to after OAuth completes.
+     * @param credentialID - string (optional). Credential ID to associate with the token.
+     * @returns Promise<any> - The initiation response.
      */
     initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
         const payload: any = { redirect_url: redirectURL };
@@ -1335,11 +1503,14 @@ export const apiClient = {
 
     /**
      * Handles the OAuth callback.
-     * @param serviceID The ID of the service (optional).
-     * @param code The OAuth authorization code.
-     * @param redirectURL The redirect URL used in the initial request.
-     * @param credentialID Optional credential ID.
-     * @returns A promise that resolves to the callback handling result.
+     *
+     * Summary: Processes OAuth callback.
+     *
+     * @param serviceID - string|null. The ID of the service (optional).
+     * @param code - string. The OAuth authorization code.
+     * @param redirectURL - string. The redirect URL used in the initial request.
+     * @param credentialID - string (optional). Credential ID.
+     * @returns Promise<any> - The callback handling result.
      */
     handleOAuthCallback: async (serviceID: string | null, code: string, redirectURL: string, credentialID?: string) => {
         const payload: any = { code, redirect_url: redirectURL };
@@ -1362,7 +1533,10 @@ export const apiClient = {
 
     /**
      * Lists all stored credentials.
-     * @returns A promise that resolves to a list of credentials.
+     *
+     * Summary: Retrieves all credentials.
+     *
+     * @returns Promise<any> - A list of credentials.
      */
     listCredentials: async () => {
         const res = await fetchWithAuth('/api/v1/credentials');
@@ -1373,8 +1547,11 @@ export const apiClient = {
 
     /**
      * Saves (creates or updates) a credential.
-     * @param credential The credential to save.
-     * @returns A promise that resolves to the saved credential.
+     *
+     * Summary: Saves a credential.
+     *
+     * @param credential - Credential. The credential to save.
+     * @returns Promise<any> - The saved credential.
      */
     saveCredential: async (credential: Credential) => {
         // ... (logic omitted for brevity, keeping same) ...
@@ -1383,8 +1560,11 @@ export const apiClient = {
 
     /**
      * Creates a new credential.
-     * @param credential The credential to create.
-     * @returns A promise that resolves to the created credential.
+     *
+     * Summary: Creates a credential.
+     *
+     * @param credential - Credential. The credential to create.
+     * @returns Promise<any> - The created credential.
      */
     createCredential: async (credential: Credential) => {
         const res = await fetchWithAuth('/api/v1/credentials', {
@@ -1398,8 +1578,11 @@ export const apiClient = {
 
     /**
      * Updates an existing credential.
-     * @param credential The credential to update.
-     * @returns A promise that resolves to the updated credential.
+     *
+     * Summary: Updates a credential.
+     *
+     * @param credential - Credential. The credential to update.
+     * @returns Promise<any> - The updated credential.
      */
     updateCredential: async (credential: Credential) => {
         const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
@@ -1413,8 +1596,11 @@ export const apiClient = {
 
     /**
      * Deletes a credential.
-     * @param id The ID of the credential to delete.
-     * @returns A promise that resolves when the credential is deleted.
+     *
+     * Summary: Deletes a credential.
+     *
+     * @param id - string. The ID of the credential to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteCredential: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
@@ -1426,8 +1612,11 @@ export const apiClient = {
 
     /**
      * Tests authentication with the provided parameters.
-     * @param req The authentication test request.
-     * @returns A promise that resolves to the test result.
+     *
+     * Summary: Tests authentication.
+     *
+     * @param req - any. The authentication test request.
+     * @returns Promise<any> - The test result.
      */
     testAuth: async (req: any) => {
         const res = await fetchWithAuth('/api/v1/debug/auth-test', {
@@ -1443,7 +1632,10 @@ export const apiClient = {
 
     /**
      * Lists all service templates.
-     * @returns A promise that resolves to a list of templates.
+     *
+     * Summary: Retrieves all templates.
+     *
+     * @returns Promise<any> - A list of templates.
      */
     listTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
@@ -1471,8 +1663,11 @@ export const apiClient = {
 
     /**
      * Saves a service template.
-     * @param template The template configuration to save.
-     * @returns A promise that resolves to the saved template.
+     *
+     * Summary: Saves a template.
+     *
+     * @param template - UpstreamServiceConfig. The template configuration to save.
+     * @returns Promise<any> - The saved template.
      */
     saveTemplate: async (template: UpstreamServiceConfig) => {
         // Map back to snake_case for saving
@@ -1530,8 +1725,11 @@ export const apiClient = {
 
     /**
      * Deletes a service template.
-     * @param id The ID of the template to delete.
-     * @returns A promise that resolves when the template is deleted.
+     *
+     * Summary: Deletes a template.
+     *
+     * @param id - string. The ID of the template to delete.
+     * @returns Promise<object> - An empty object on success.
      */
     deleteTemplate: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
@@ -1545,7 +1743,10 @@ export const apiClient = {
 
     /**
      * Gets the doctor status report.
-     * @returns A promise that resolves to the doctor report.
+     *
+     * Summary: Retrieves doctor status.
+     *
+     * @returns Promise<DoctorReport> - The doctor report.
      */
     getDoctorStatus: async (): Promise<DoctorReport> => {
         const res = await fetchWithAuth('/api/v1/doctor');
@@ -1557,8 +1758,11 @@ export const apiClient = {
 
     /**
      * Lists audit logs.
-     * @param filters The filters for the audit logs.
-     * @returns A promise that resolves to the list of audit logs.
+     *
+     * Summary: Retrieves audit logs.
+     *
+     * @param filters - object. The filters for the audit logs.
+     * @returns Promise<any> - The list of audit logs.
      */
     listAuditLogs: async (filters: {
         start_time?: string;
