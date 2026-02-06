@@ -121,7 +121,7 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
-	BundleBaseDir string
+	BundleBaseDir  string
 	globalSettings *configv1.GlobalSettings
 
 	mu        sync.RWMutex
@@ -1022,16 +1022,16 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	if newClientImplForTesting != nil {
 		toolClient = newClientImplForTesting(mcpSdkClient, nil, httpAddress, httpClient)
 		promptConnection = &mcpConnection{
-			client:      mcpSdkClient,
-			httpAddress: httpAddress,
-			httpClient:  httpClient,
+			client:          mcpSdkClient,
+			httpAddress:     httpAddress,
+			httpClient:      httpClient,
 			sessionRegistry: u.sessionRegistry,
 		}
 	} else {
 		conn := &mcpConnection{
-			client:      mcpSdkClient,
-			httpAddress: httpAddress,
-			httpClient:  httpClient,
+			client:          mcpSdkClient,
+			httpAddress:     httpAddress,
+			httpClient:      httpClient,
 			sessionRegistry: u.sessionRegistry,
 		}
 		toolClient = conn

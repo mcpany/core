@@ -29,7 +29,8 @@ type Registry struct {
 // NewRegistry creates and initializes a new Registry instance.
 //
 // Returns:
-//   A pointer to a new, empty Registry.
+//
+//	A pointer to a new, empty Registry.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
@@ -40,8 +41,9 @@ func NewRegistry() *Registry {
 // If a handler with the same name already exists, it will be overwritten.
 //
 // Parameters:
-//   name: The name/path to register the handler under.
-//   handler: The Handler instance to register.
+//
+//	name: The name/path to register the handler under.
+//	handler: The Handler instance to register.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -51,11 +53,13 @@ func (r *Registry) Register(name string, handler Handler) {
 // Get retrieves a handler by its name.
 //
 // Parameters:
-//   name: The name of the handler to retrieve.
+//
+//	name: The name of the handler to retrieve.
 //
 // Returns:
-//   Handler: The registered handler, if found.
-//   bool: True if the handler exists, false otherwise.
+//
+//	Handler: The registered handler, if found.
+//	bool: True if the handler exists, false otherwise.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

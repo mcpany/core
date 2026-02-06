@@ -28,8 +28,9 @@ type MarkdownHandler struct{}
 // It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
 //
 // Parameters:
-//   w: The HTTP response writer.
-//   r: The HTTP request.
+//
+//	w: The HTTP response writer.
+//	r: The HTTP request.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -90,8 +91,9 @@ type TruncateHandler struct{}
 // Handle processes the text truncation request.
 //
 // Parameters:
-//   w: The HTTP response writer.
-//   r: The HTTP request.
+//
+//	w: The HTTP response writer.
+//	r: The HTTP request.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -158,8 +160,9 @@ type PaginateHandler struct{}
 // Handle processes the pagination request.
 //
 // Parameters:
-//   w: The HTTP response writer.
-//   r: The HTTP request.
+//
+//	w: The HTTP response writer.
+//	r: The HTTP request.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

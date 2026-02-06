@@ -65,6 +65,9 @@ func TestDockerHelpers(t *testing.T) {
 	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
+	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		t.Skip("Skipping TestDockerHelpers because SKIP_DOCKER_TESTS is set")
+	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")

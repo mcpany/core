@@ -11,8 +11,8 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/core/server/pkg/logging"
 	kafkago "github.com/segmentio/kafka-go"
 )
 

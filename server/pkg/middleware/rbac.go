@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mcpany/core/server/pkg/auth"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 )
 
 // RBACMiddleware provides middleware for Role-Based Access Control.

@@ -47,7 +47,8 @@ var (
 //   - cfg: *configv1.AlertConfig. The new alert configuration.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Updates a global variable protected by a mutex.

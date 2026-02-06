@@ -148,21 +148,21 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 		_, err := w.ResponseWriter.Write(w.buf)
 		return err
 	}
-    if w.headerWritten {
-        return nil
-    }
+	if w.headerWritten {
+		return nil
+	}
 
 	w.headerWritten = true
 
-    // Ensure Content-Type is set if missing
-    if w.Header().Get("Content-Type") == "" {
-        // Use the first 512 bytes of buffer for detection
-        detectBuf := w.buf
-        if len(detectBuf) > 512 {
-            detectBuf = detectBuf[:512]
-        }
-        w.Header().Set("Content-Type", http.DetectContentType(detectBuf))
-    }
+	// Ensure Content-Type is set if missing
+	if w.Header().Get("Content-Type") == "" {
+		// Use the first 512 bytes of buffer for detection
+		detectBuf := w.buf
+		if len(detectBuf) > 512 {
+			detectBuf = detectBuf[:512]
+		}
+		w.Header().Set("Content-Type", http.DetectContentType(detectBuf))
+	}
 
 	if startGzip {
 		w.Header().Del("Content-Length")
@@ -178,16 +178,16 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 			w.buf = nil // Release memory
 			return err
 		}
-        return nil
+		return nil
 	}
 
 	w.ResponseWriter.WriteHeader(w.code)
 	if len(w.buf) > 0 {
 		_, err := w.ResponseWriter.Write(w.buf)
 		w.buf = nil
-        return err
+		return err
 	}
-    return nil
+	return nil
 }
 
 // Close closes the gzip writer and returns it to the pool.
@@ -197,18 +197,18 @@ func (w *gzipResponseWriter) Close() {
 		_ = w.writer.Close()
 		w.pool.Put(w.writer)
 		w.writer = nil
-        return
+		return
 	}
 
-    // If headers haven't been written, it means we are still buffering (Small Response).
-    if !w.headerWritten {
-        // We are at the end, so we know the total size = len(w.buf).
-        // Set Content-Length optimization.
-        if w.Header().Get("Content-Type") == "" {
-             w.Header().Set("Content-Type", http.DetectContentType(w.buf))
-        }
-        w.Header().Set("Content-Length", strconv.Itoa(len(w.buf)))
-    }
+	// If headers haven't been written, it means we are still buffering (Small Response).
+	if !w.headerWritten {
+		// We are at the end, so we know the total size = len(w.buf).
+		// Set Content-Length optimization.
+		if w.Header().Get("Content-Type") == "" {
+			w.Header().Set("Content-Type", http.DetectContentType(w.buf))
+		}
+		w.Header().Set("Content-Length", strconv.Itoa(len(w.buf)))
+	}
 
 	_ = w.flushBuffer(false)
 }
