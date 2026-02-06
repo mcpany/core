@@ -339,7 +339,7 @@ jobs:
 
       - name: run parallel e2e
         run: |
-          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
+          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true SKIP_DOCKER_TESTS=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -546,7 +546,7 @@ jobs:
 
       - name: run sequential e2e
         run: |
-          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
+          make e2e-sequential SKIP_DOCKER_REBUILD=true SKIP_DOCKER_TESTS=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

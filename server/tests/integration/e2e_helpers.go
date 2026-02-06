@@ -154,6 +154,7 @@ const (
 	localHeaderMcpSessionID = "Mcp-Session-Id"
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
+	trueStr                 = "true"
 	// LoopbackIP is the default loopback IP for testing.
 	LoopbackIP              = "127.0.0.1"
 	loopbackIP              = LoopbackIP
@@ -172,7 +173,7 @@ var (
 func getDockerCommand() (string, []string) {
 	dockerOnce.Do(func() {
 		// Environment variable overrides detection.
-		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == "true" || val == "1" {
+		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == trueStr || val == "1" {
 			dockerCommand = sudoCmd
 			dockerArgs = []string{dockerCmd}
 			return
@@ -576,12 +577,12 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
-	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+	if os.Getenv("SKIP_DOCKER_TESTS") == trueStr {
 		return false
 	}
 	// In CI, docker-in-docker often fails with overlayfs mount issues.
 	// We skip Docker tests in CI to avoid flakiness unless explicitly enabled.
-	if os.Getenv("CI") == "true" && os.Getenv("FORCE_DOCKER_TESTS") != "true" {
+	if os.Getenv("CI") == trueStr && os.Getenv("FORCE_DOCKER_TESTS") != trueStr {
 		return false
 	}
 
