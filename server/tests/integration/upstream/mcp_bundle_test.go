@@ -244,6 +244,15 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Check if we can mount a volume (essential for this test)
+	// This often fails in CI environments (e.g. docker-in-docker) if not configured correctly.
+	tempDirCheck := t.TempDir()
+	// Use node:18-alpine as it is used in the test later
+	checkCmd := exec.Command("docker", "run", "--rm", "-v", tempDirCheck+":/test", "node:18-alpine", "true")
+	if out, err := checkCmd.CombinedOutput(); err != nil {
+		t.Skipf("Skipping Docker tests: failed to run container with mount (likely CI environment issue): %v. Output: %s", err, string(out))
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
