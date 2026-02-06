@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { GitHubTokenField } from "@/components/marketplace/fields/github-token-field";
 
 interface SchemaFormProps {
   schema: any;
@@ -36,6 +37,20 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
         const isRequired = schema.required?.includes(key);
         const description = prop.description || "";
         const title = prop.title || key;
+
+        if (key === "GITHUB_PERSONAL_ACCESS_TOKEN") {
+          return (
+            <GitHubTokenField
+              key={key}
+              id={key}
+              value={value[key] || ""}
+              onChange={(v) => handleChange(key, v)}
+              title={title}
+              description={description}
+              required={!!isRequired}
+            />
+          );
+        }
 
         return (
           <div key={key} className="grid gap-2">

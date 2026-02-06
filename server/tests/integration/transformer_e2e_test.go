@@ -136,21 +136,20 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 			require.NotEmpty(t, contentList, "Content list empty")
 			// Assume first item is text and contains JSON?
 			// The transformer should return the extracted DATA.
-			// If it returns {"name": ...}, mcpany might wrap it in TextContent?
-			// Or maybe it returns it as embedded resource?
-			// Let's log it if unsure.
 			item := contentList[0].(map[string]interface{})
 			if text, ok := item["text"].(string); ok {
 				// It's a text content, maybe JSON string?
-				// But transformer "JSON" output format usually implies STRUCTURED result?
-				// mcpany doesn't support structured content unless EmbeddedResource?
-				// If response transformer returns object, mcpany might serialize it to JSON string in TextContent.
+				// mcpany response transformer output is usually the TOOL RESULT.
+				// If tool result is {"name":"test-json"}, and mcpany wraps it...
+				// It becomes content=[{type:"text", text:"{\"name\":...}"}]
 				var extracted map[string]interface{}
 				// Try parsing as JSON
 				if err := json.Unmarshal([]byte(text), &extracted); err == nil {
+					t.Logf("Parsed JSON content: %v", extracted)
 					return extracted
 				}
 				// If not JSON, maybe text IS the value? (for text/plain)
+				t.Logf("Returning raw text content: %s", text)
 				return map[string]interface{}{"text": text}
 			}
 			return item

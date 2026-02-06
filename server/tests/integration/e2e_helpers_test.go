@@ -62,13 +62,15 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
 	}
+
+	t.Log("TestDockerHelpers running: Docker socket is accessible and not in CI")
 
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
