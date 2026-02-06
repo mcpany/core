@@ -597,10 +597,14 @@ func IsDockerFunctional() bool {
 			return
 		}
 		dockerExe, dockerArgs := getDockerCommand()
-		// Try running a simple command in a container (alpine is small, usually cached or quick to pull)
-		cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")...) //nolint:gosec // Test helper
-		if err := cmd.Run(); err == nil {
+		// Try running a simple command in a container with a volume mount to catch overlayfs issues
+		// Use a simple volume mount of /tmp to /tmp
+		args := append(dockerArgs, "run", "--rm", "-v", "/tmp:/tmp", "mirror.gcr.io/library/alpine:latest", "true")
+		cmd := exec.CommandContext(context.Background(), dockerExe, args...) //nolint:gosec // Test helper
+		if output, err := cmd.CombinedOutput(); err == nil {
 			dockerFunctional = true
+		} else {
+			fmt.Printf("IsDockerFunctional check failed: %v, output: %s\n", err, string(output))
 		}
 	})
 	return dockerFunctional

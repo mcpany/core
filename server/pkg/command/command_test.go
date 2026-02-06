@@ -60,12 +60,13 @@ func canConnectToDocker(t *testing.T) bool {
 		return false
 	}
 
-	// Functional check: Try to run a simple container to catch issues like broken overlayfs
+	// Functional check: Try to run a simple container with a volume mount to catch issues like broken overlayfs
 	// We use exec to avoid complexity with image pulling via SDK for this simple check
 	// Use docker command if available
 	dockerPath, err := exec.LookPath("docker")
 	if err == nil {
-		cmd := exec.CommandContext(context.Background(), dockerPath, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")
+		// Use a simple volume mount of /tmp to /tmp to trigger potential overlayfs/mount issues
+		cmd := exec.CommandContext(context.Background(), dockerPath, "run", "--rm", "-v", "/tmp:/tmp", "mirror.gcr.io/library/alpine:latest", "true")
 		if output, err := cmd.CombinedOutput(); err != nil {
 			t.Logf("docker functional check failed: %v, output: %s", err, string(output))
 			return false
