@@ -86,10 +86,24 @@ export interface LogEntry {
  * @param props.regex - The regular expression to match against the text for highlighting.
  * @returns The rendered component with highlighted matches.
  */
-const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
-  if (!regex || !text) return <>{text}</>;
+const HighlightText = React.memo(({ text, regex, maxLength = 2000 }: { text: string; regex: RegExp | null; maxLength?: number }) => {
+  if (!text) return null;
 
-  const parts = text.split(regex);
+  // ⚡ BOLT: Limit DOM nodes for large logs.
+  // Randomized Selection from Top 5 High-Impact Targets.
+  let displayParams = text;
+  if (displayParams.length > maxLength) {
+    displayParams = displayParams.slice(0, maxLength) + "...";
+  }
+
+  if (!regex) return <>{displayParams}</>;
+
+  const parts = displayParams.split(regex);
+
+  // Avoid creating thousands of DOM nodes for dense matches
+  if (parts.length > 200) {
+    return <>{displayParams}</>;
+  }
 
   return (
     <>
