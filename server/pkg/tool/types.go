@@ -2226,11 +2226,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
-			}
+			// We do NOT block absolute paths (checkForLocalFileAccess) anymore.
+			// Legitimate tools might require absolute paths.
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
@@ -2611,13 +2608,6 @@ func cleanPathPreserveDoubleSlash(p string) string {
 	}
 
 	return res
-}
-
-func checkForLocalFileAccess(val string) error {
-	if filepath.IsAbs(val) {
-		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
-	}
-	return nil
 }
 
 func checkForDangerousSchemes(val string, isDocker bool) error {
@@ -3030,17 +3020,11 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
-	if !isDocker {
-		if err := checkForLocalFileAccess(val); err != nil {
-			return err
-		}
-		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForLocalFileAccess(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
-			}
-		}
-	}
+	// We do NOT block absolute paths (checkForLocalFileAccess) anymore for LocalCommandTool (!isDocker).
+	// Legitimate tools (like docker, tar, or even custom scripts) might require absolute paths.
+	// We rely on 'file:' scheme blocking to prevent SSRF in URL-based tools (like curl),
+	// and path traversal checks to prevent breaking out of relative paths if used.
+	// If a tool like 'cat' is exposed, it can read absolute paths, but that is implicit in exposing 'cat'.
 
 	if err := checkForArgumentInjection(val); err != nil {
 		return err

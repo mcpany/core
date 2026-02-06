@@ -43,13 +43,6 @@ func TestContextHelpers_Extra(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestCheckForLocalFileAccess(t *testing.T) {
-	assert.Error(t, checkForLocalFileAccess("/absolute"))
-	// file: scheme is now handled by checkForDangerousSchemes
-	assert.NoError(t, checkForLocalFileAccess("file:///etc/passwd"))
-	assert.NoError(t, checkForLocalFileAccess("relative"))
-}
-
 func TestCheckForDangerousSchemes(t *testing.T) {
 	// Host execution (isDocker=false)
 	assert.Error(t, checkForDangerousSchemes("file:///etc/passwd", false))
