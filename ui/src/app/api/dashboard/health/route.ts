@@ -17,11 +17,17 @@ interface BackendService {
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');
+  const apiKeyHeader = request.headers.get('X-API-Key');
 
   try {
     const headers: HeadersInit = {};
     if (authHeader) {
       headers['Authorization'] = authHeader;
+    }
+    if (apiKeyHeader) {
+        headers['X-API-Key'] = apiKeyHeader;
+    } else if (process.env.MCPANY_API_KEY) {
+        headers['X-API-Key'] = process.env.MCPANY_API_KEY;
     }
 
     const res = await fetch(`${backendUrl}/api/v1/services`, {
