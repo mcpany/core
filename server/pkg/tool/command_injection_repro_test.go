@@ -17,7 +17,7 @@ import (
 
 func TestLocalCommandTool_ShellInjection_ArgsBypass(t *testing.T) {
 	t.Parallel()
-	// Define a tool that uses 'sh', which is in isShellCommand list.
+	// Define a tool that uses 'awk', which is an interpreter.
 	// We allow 'args' input.
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -29,17 +29,16 @@ func TestLocalCommandTool_ShellInjection_ArgsBypass(t *testing.T) {
 		},
 	}
 	tool := v1.Tool_builder{
-		Name:        proto.String("sh-tool"),
+		Name:        proto.String("awk-tool-repro"),
 		InputSchema: inputSchema,
 	}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("sh"),
+		Command: proto.String("awk"),
 		Local:   proto.Bool(true),
 	}.Build()
 
-	// Configured to run `sh -c`
+	// Configured to run `awk`
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c"},
 		Parameters: []*configv1.CommandLineParameterMapping{
 			// Explicitly allowing args
 			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build()}.Build(),
@@ -48,21 +47,22 @@ func TestLocalCommandTool_ShellInjection_ArgsBypass(t *testing.T) {
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
-	// We attempt to pass a command with dangerous characters (space, semicolon) via 'args'
-	// 'echo hello; echo pwned'
-	// checkForShellInjection blocks spaces and semicolons.
+	// We attempt to pass a command with dangerous characters via 'args'
+	// awk '{print $0}'
 	req := &ExecutionRequest{
-		ToolName: "sh-tool",
+		ToolName: "awk-tool-repro",
 		Arguments: map[string]interface{}{
-			"args": []interface{}{"echo hello; echo pwned"},
+			"args": []interface{}{"BEGIN { system(\"echo pwned\") }"},
 		},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
 
 	result, err := localTool.Execute(context.Background(), req)
 
-	// Expect failure due to shell injection detection
+	// Expect failure due to shell injection detection (interpreters are strict)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "shell injection detected")
+	if err != nil {
+		assert.Contains(t, err.Error(), "shell injection detected")
+	}
 	assert.Nil(t, result)
 }

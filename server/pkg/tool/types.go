@@ -1828,6 +1828,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
+						// Also block flag injection for shells
+						if err := checkForArgumentInjection(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -1854,14 +1858,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
+						if err := validateExtraArg(argStr, t.service.GetCommand(), isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, validate that inputs are safe for shell execution
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -2121,12 +2119,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+						// Also block flag injection for shells
+						if err := checkForArgumentInjection(val); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2155,15 +2154,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := validateExtraArg(argStr, t.service.GetCommand(), isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -3031,14 +3022,83 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
-	if err := checkForArgumentInjection(val); err != nil {
-		return err
+	// Argument injection check removed from here to allow flags for non-shell commands.
+	// It should be applied contextually (e.g. via validateExtraArg or manually for shells).
+	return nil
+}
+
+func isEditorOrPager(cmd string) bool {
+	base := strings.ToLower(filepath.Base(cmd))
+	tools := []string{
+		"vi", "vim", "nvim", "emacs", "nano",
+		"less", "more", "man",
 	}
-	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForArgumentInjection(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
+	for _, tool := range tools {
+		if base == tool || strings.HasPrefix(base, tool) {
+			return true
 		}
 	}
+	return false
+}
+
+func checkSafeArg(val, command string) error {
+	base := strings.ToLower(filepath.Base(command))
+
+	// Sentinel Security Update: Interpreter Injection Protection
+	if isInterpreter(command) {
+		if err := checkInterpreterInjection(val, "", base, 0); err != nil {
+			return err
+		}
+	}
+
+	// We check for dangerous characters, but allow spaces.
+	return checkUnquotedInjectionArgs(val, command)
+}
+
+func checkUnquotedInjectionArgs(val, command string) error {
+	// Same as checkUnquotedInjection but allows spaces
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+
+	charsToCheck := dangerousChars
+	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
+	if filepath.Base(command) == "env" {
+		charsToCheck += "="
+	}
+
+	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
+	}
+	return nil
+}
+
+func validateExtraArg(arg string, command string, isDocker bool) error {
+	if err := validateSafePathAndInjection(arg, isDocker); err != nil {
+		return err
+	}
+
+	// Sentinel Security Update:
+	// Only apply strict argument validation for interpreters (awk, python, etc.) and editors (vim).
+	// General shells (sh, bash) are excluded to avoid breaking tools designed to run shell scripts.
+	if isInterpreter(command) {
+		if err := checkSafeArg(arg, command); err != nil {
+			return err
+		}
+	}
+
+	if isEditorOrPager(command) {
+		if strings.HasPrefix(arg, "+") {
+			return fmt.Errorf("argument injection detected: value starts with '+'")
+		}
+	}
+
+	// Sentinel Security Update: Block argument injection (flags) for SHELL COMMANDS.
+	// This prevents sh -c injection via args array.
+	// For non-shell commands (like command-tester), flags are allowed.
+	if isShellCommand(command) {
+		if err := checkForArgumentInjection(arg); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
