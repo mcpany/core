@@ -2284,10 +2284,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				}
 
 				// Check if the request is from a loopback address
+				// Sentinel Security Fix: Restrict implicit admin access to Loopback ONLY.
+				// Previously, IsPrivateIP allowed LAN IPs (192.168.x.x), enabling privilege escalation from adjacent networks.
 				ipAddr := net.ParseIP(host)
-				if !util.IsPrivateIP(ipAddr) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+				if ipAddr == nil || !ipAddr.IsLoopback() {
+					logging.GetLogger().Warn("Blocked remote request because no API Key is configured. Only localhost is allowed.", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Remote access requires an API Key to be configured. Only localhost is allowed when no API Key is set.", http.StatusForbidden)
 					return
 				}
 
