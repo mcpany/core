@@ -19,7 +19,7 @@ import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
-import { BrowserHeaders } from 'browser-headers';
+
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
