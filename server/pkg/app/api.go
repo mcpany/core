@@ -80,6 +80,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/validate", a.handleValidate())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
+	if a.LLMProviderStore != nil {
+		mux.HandleFunc("/settings/llm-providers", a.handleLLMProviders(a.LLMProviderStore))
+		mux.HandleFunc("/autocraft/jobs", a.handleAutoCraftJobs())
+		mux.HandleFunc("/autocraft/jobs/", a.handleGetAutoCraftJob())
+	}
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
 	mux.HandleFunc("/tools", a.handleTools())

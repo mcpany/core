@@ -8,6 +8,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
+import { LLMProviderSettings } from "@/components/settings/llm-provider-settings";
 
 /**
  * SettingsPage component.
@@ -24,12 +25,16 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="general">Global Config</TabsTrigger>
           <TabsTrigger value="auth">Authentication</TabsTrigger>
+          <TabsTrigger value="ai">AI Providers</TabsTrigger>
         </TabsList>
         <TabsContent value="auth">
             <AuthSettingsForm />
         </TabsContent>
         <TabsContent value="general">
              <GlobalSettingsForm />
+        </TabsContent>
+        <TabsContent value="ai">
+             <LLMProviderSettings />
         </TabsContent>
       </Tabs>
     </div>
