@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
-	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -1645,19 +1644,26 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	l, _ := net.Listen("tcp", "127.0.0.1:0")
-	httpPort := l.Addr().(*net.TCPAddr).Port
-	_ = l.Close()
-
 	app := NewApplication()
 	afero.WriteFile(fs, "/config.yaml", []byte("upstream_services: []"), 0o644)
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: fmt.Sprintf("127.0.0.1:%d", httpPort), GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		// Use port 0 to allow the OS to assign a free port, avoiding race conditions
+		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 	}()
 
-	require.NoError(t, app.WaitForStartup(ctx))
+	// Wait for startup or error
+	select {
+	case err := <-errChan:
+		t.Fatalf("App startup failed: %v", err)
+	case <-app.startupCh:
+		// Startup successful
+	case <-time.After(10 * time.Second):
+		t.Fatal("App startup timed out")
+	}
+
+	httpPort := app.BoundHTTPPort.Load()
 	baseURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", httpPort)
 	// Use local HealthCheck polling instead of integration package to avoid cycle
 	require.Eventually(t, func() bool {
