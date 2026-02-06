@@ -634,9 +634,12 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 		ToolInputs: []byte(`{"arg": "../etc/passwd"}`),
 	}
 
-	_, err := cmdTool.Execute(context.Background(), req)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "path traversal attempt detected")
+	res, err := cmdTool.Execute(context.Background(), req)
+	if err == nil {
+		t.Errorf("Expected error but got nil. Result: %+v", res)
+	} else {
+		assert.Contains(t, err.Error(), "path traversal attempt detected")
+	}
 }
 
 func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
