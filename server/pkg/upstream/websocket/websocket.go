@@ -30,6 +30,8 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
+//
+// Summary: WebSocket upstream implementation.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -37,6 +39,8 @@ type Upstream struct {
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
+//
+// Summary: Shuts down the WebSocket upstream service.
 //
 // Parameters:
 //   - ctx: The context for the shutdown operation.
@@ -49,6 +53,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of WebsocketUpstream.
+//
+// Summary: Creates a new instance of WebsocketUpstream.
 //
 // Parameters:
 //   - poolManager: The connection pool manager to be used for managing WebSocket connections.
@@ -64,6 +70,8 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for a WebSocket service. It creates a
 // connection pool and registers tools for each call definition specified in the
 // configuration.
+//
+// Summary: Registers the WebSocket service and its tools.
 //
 // Parameters:
 //   - ctx: The context for the registration process.

@@ -71,6 +71,14 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// Verify we can actually run a container (handle overlay issues in some environments)
+	dockerExe, dockerArgs := getDockerCommand()
+	// Use -d to match the usage in StartDockerContainer, as some environments might fail specifically on detached containers or cleanup
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "-d", "alpine:latest", "sleep", "1")...) //nolint:gosec
+	if err := checkCmd.Run(); err != nil {
+		t.Skipf("Docker available but unable to run containers (overlay/storage driver issue?): %v", err)
+	}
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
@@ -78,7 +86,7 @@ func TestDockerHelpers(t *testing.T) {
 	defer cleanup()
 
 	// Verify the container is running
-	dockerExe, dockerArgs := getDockerCommand()
+	dockerExe, dockerArgs = getDockerCommand()
 	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // Test helper
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))

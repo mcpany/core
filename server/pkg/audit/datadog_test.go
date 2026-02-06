@@ -82,7 +82,9 @@ func TestDatadogAuditStore(t *testing.T) {
 
 func TestDatadogAuditStore_Batch(t *testing.T) {
 	var totalReceived int32
-	done := make(chan struct{})
+	// Use buffered channel to prevent deadlock when store.Close() waits for flushing,
+	// which calls this handler, which tries to send to done, which is read only after store.Close().
+	done := make(chan struct{}, 1)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var logs []map[string]interface{}
@@ -90,7 +92,10 @@ func TestDatadogAuditStore_Batch(t *testing.T) {
 		atomic.AddInt32(&totalReceived, int32(len(logs)))
 		w.WriteHeader(http.StatusAccepted)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
+			select {
+			case done <- struct{}{}:
+			default:
+			}
 		}
 	}))
 	defer ts.Close()

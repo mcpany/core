@@ -16,20 +16,34 @@ import (
 // JSON schema types.
 const (
 	// TypeNumber represents a JSON number type.
+	//
+	// Summary: JSON number type.
 	TypeNumber = "number"
 	// TypeInteger represents a JSON integer type.
+	//
+	// Summary: JSON integer type.
 	TypeInteger = "integer"
 	// TypeBoolean represents a JSON boolean type.
+	//
+	// Summary: JSON boolean type.
 	TypeBoolean = "boolean"
 	// TypeObject represents a JSON object type.
+	//
+	// Summary: JSON object type.
 	TypeObject = "object"
 	// TypeArray represents a JSON array type.
+	//
+	// Summary: JSON array type.
 	TypeArray = "array"
 	// TypeString represents a JSON string type.
+	//
+	// Summary: JSON string type.
 	TypeString = "string"
 )
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+//
+// Summary: Limit for recursion depth.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input

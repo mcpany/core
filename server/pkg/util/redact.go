@@ -109,6 +109,8 @@ func init() {
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 //
+// Summary: Parses a JSON byte slice and redacts sensitive keys.
+//
 // If the input is not valid JSON object or array, it returns the input as is.
 //
 // Parameters:
@@ -134,6 +136,8 @@ func RedactJSON(input []byte) []byte {
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
+//
+// Summary: Recursively redacts sensitive keys in a map.
 //
 // Optimization: This function performs a copy-on-write.
 // If no sensitive keys are found, it returns the original map (zero allocation).
@@ -252,6 +256,8 @@ var sensitiveKeys = []string{
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
+//
+// Summary: Checks if a key name suggests it contains sensitive information.
 //
 // Parameters:
 //   - key: string. The key name to check.
@@ -487,6 +493,8 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
 // RedactDSN redacts the password from a DSN string.
 //
+// Summary: Redacts the password from a DSN string.
+//
 // Supported formats: postgres://user:password@host...
 //
 // Parameters:
@@ -596,6 +604,8 @@ type redactInterval struct {
 }
 
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
+//
+// Summary: Replaces all occurrences of the given secrets in the text with [REDACTED].
 //
 // Parameters:
 //   - text: string. The text to redact.

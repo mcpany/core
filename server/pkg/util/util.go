@@ -272,6 +272,8 @@ func init() {
 }
 
 // TrueStr is a string constant for "true".
+//
+// Summary: String constant for "true".
 const TrueStr = "true"
 
 // GenerateUUID creates a new random (version 4) UUID.

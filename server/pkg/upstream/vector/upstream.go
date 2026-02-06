@@ -21,16 +21,23 @@ import (
 )
 
 // ClientFactory is a function that creates a VectorClient.
+//
+// Summary: Factory function for creating a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
+//
+// Summary: Vector database upstream implementation.
 type Upstream struct {
 	clientFactory ClientFactory
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
 //
-// Returns the result.
+// Summary: Creates a new instance of VectorUpstream.
+//
+// Returns:
+//   - upstream.Upstream: A new upstream instance.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -49,26 +56,34 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// _ is an unused parameter.
+// Summary: Shuts down the upstream service.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
 // Register processes the configuration for a vector service.
 //
-// _ is an unused parameter.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: Registers the vector service and its tools.
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - _ : prompt.ManagerInterface. Unused.
+//   - _ : resource.ManagerInterface. Unused.
+//   - _ : bool. Unused (isReload).
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if the operation fails.
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -167,8 +182,19 @@ type vectorCallable struct {
 }
 
 // Call executes the vector tool with the given arguments.
+//
+// Summary: Executes the vector tool with the given arguments.
+//
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *tool.ExecutionRequest. The execution request containing arguments.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the execution fails.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -182,26 +208,78 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
+//
+// Summary: Interface for vector database clients.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
+	//
+	// Summary: Searches for the nearest vectors in the database.
+	//
 	// It accepts a context, a query vector, the number of results to return (topK),
 	// a metadata filter, and a namespace.
 	// It returns a map containing the search results or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - vector: []float32. The query vector.
+	//   - topK: int64. The number of results to return.
+	//   - filter: map[string]interface{}. A metadata filter.
+	//   - namespace: string. The namespace to query.
+	//
+	// Returns:
+	//   - map[string]interface{}: The search results.
+	//   - error: An error if the operation fails.
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Upsert inserts or updates vectors in the database.
+	//
+	// Summary: Inserts or updates vectors in the database.
+	//
 	// It accepts a context, a list of vectors (each as a map), and a namespace.
 	// It returns a map containing the operation result (e.g., upserted count) or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - vectors: []map[string]interface{}. The list of vectors to upsert.
+	//   - namespace: string. The namespace to upsert into.
+	//
+	// Returns:
+	//   - map[string]interface{}: The operation result.
+	//   - error: An error if the operation fails.
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Delete removes vectors from the database.
+	//
+	// Summary: Removes vectors from the database.
+	//
 	// It accepts a context, a list of IDs to delete, a namespace, and an optional metadata filter.
 	// It returns a map containing the operation result or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - ids: []string. The list of IDs to delete.
+	//   - namespace: string. The namespace to delete from.
+	//   - filter: map[string]interface{}. An optional metadata filter.
+	//
+	// Returns:
+	//   - map[string]interface{}: The operation result.
+	//   - error: An error if the operation fails.
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
 
 	// DescribeIndexStats retrieves statistics about the vector index.
+	//
+	// Summary: Retrieves statistics about the vector index.
+	//
 	// It accepts a context and an optional metadata filter.
 	// It returns a map containing the index statistics or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - filter: map[string]interface{}. An optional metadata filter.
+	//
+	// Returns:
+	//   - map[string]interface{}: The index statistics.
+	//   - error: An error if the operation fails.
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 

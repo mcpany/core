@@ -6,6 +6,9 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import "unicode/utf8"
 
 // LevenshteinDistance calculates the Levenshtein distance between two strings.
+//
+// Summary: Calculates the Levenshtein distance between two strings.
+//
 // It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
 // required to change one string into the other.
 //
@@ -23,6 +26,9 @@ func LevenshteinDistance(s1, s2 string) int {
 }
 
 // LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
+//
+// Summary: Calculates the Levenshtein distance with an upper limit.
+//
 // If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
 //
 // Parameters:

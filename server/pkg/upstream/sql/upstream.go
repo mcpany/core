@@ -23,6 +23,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: SQL upstream implementation.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -30,16 +32,23 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
-// Returns the result.
+// Summary: Creates a new SQL upstream.
+//
+// Returns:
+//   - *Upstream: A new upstream instance.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
 //
-// _ is an unused parameter.
+// Summary: Closes the database connection.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -55,17 +64,21 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration.
 //
-// ctx is the context for the request.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: Registers the SQL service and its tools.
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - _ : prompt.ManagerInterface. Unused.
+//   - _ : resource.ManagerInterface. Unused.
+//   - _ : bool. Unused (isReload).
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

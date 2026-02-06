@@ -32,8 +32,11 @@ import (
 )
 
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
-// are defined by an OpenAPI specification. It parses the spec, discovers the
-// available operations, and registers them as tools.
+// are defined by an OpenAPI specification.
+//
+// Summary: OpenAPI upstream implementation.
+//
+// It parses the spec, discovers the available operations, and registers them as tools.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -41,8 +44,17 @@ type OpenAPIUpstream struct { //nolint:revive
 	serviceID    string
 }
 
-// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
-// services, this typically means closing any persistent connections.
+// Shutdown gracefully terminates the OpenAPI upstream service.
+//
+// Summary: Shuts down the OpenAPI upstream service.
+//
+// For HTTP-based services, this typically means closing any persistent connections.
+//
+// Parameters:
+//   - _ : context.Context. Unused.
+//
+// Returns:
+//   - error: Always returns nil.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -54,8 +66,14 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
-// cache for storing parsed OpenAPI documents to avoid redundant parsing.
+// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream.
+//
+// Summary: Creates a new instance of OpenAPIUpstream.
+//
+// It initializes a cache for storing parsed OpenAPI documents to avoid redundant parsing.
+//
+// Returns:
+//   - upstream.Upstream: A new upstream instance.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -68,9 +86,26 @@ func NewOpenAPIUpstream() upstream.Upstream {
 	}
 }
 
-// Register processes an OpenAPI service configuration. It parses the OpenAPI
-// specification, extracts the operations, converts them into tools, and
+// Register processes an OpenAPI service configuration.
+//
+// Summary: Registers an OpenAPI service.
+//
+// It parses the OpenAPI specification, extracts the operations, converts them into tools, and
 // registers them with the tool manager.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the registration.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - promptManager: prompt.ManagerInterface. The prompt manager.
+//   - resourceManager: resource.ManagerInterface. The resource manager.
+//   - isReload: bool. Whether this is a reload.
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if registration fails.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -253,6 +288,15 @@ type httpClientImpl struct {
 
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
+//
+// Summary: Sends an HTTP request.
+//
+// Parameters:
+//   - req: *http.Request. The HTTP request.
+//
+// Returns:
+//   - *http.Response: The HTTP response.
+//   - error: An error if the request fails.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

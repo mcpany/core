@@ -19,6 +19,9 @@ import (
 )
 
 // IPResolver defines an interface for looking up IP addresses.
+//
+// Summary: Interface for looking up IP addresses.
+//
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
@@ -27,6 +30,9 @@ type IPResolver interface {
 }
 
 // NetDialer defines an interface for dialing network connections.
+//
+// Summary: Interface for dialing network connections.
+//
 // It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using
@@ -35,6 +41,8 @@ type NetDialer interface {
 }
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+//
+// Summary: Provides control over outbound connections to prevent SSRF.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -51,6 +59,9 @@ type SafeDialer struct {
 }
 
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
+//
+// Summary: Creates a new SafeDialer with strict default security settings.
+//
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
 //
 // Returns:
@@ -64,6 +75,9 @@ func NewSafeDialer() *SafeDialer {
 }
 
 // DialContext establishes a network connection to the given address while enforcing egress policies.
+//
+// Summary: Establishes a network connection to the given address while enforcing egress policies.
+//
 // It resolves the host's IP addresses and verifies them against the allowed list before connecting.
 //
 // Parameters:
@@ -135,6 +149,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 }
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
+//
+// Summary: Creates a connection to the given address with strict SSRF protection.
+//
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
 //
 // Parameters:
@@ -150,6 +167,9 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 }
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
+//
+// Summary: Creates a new HTTP client configured to prevent SSRF attacks.
+//
 // It uses a custom Transport backed by SafeDialer.
 //
 // Configuration is loaded from environment variables:
@@ -177,6 +197,9 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: Verifies if a TCP connection can be established to the given address.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
@@ -246,6 +269,9 @@ func CheckConnection(ctx context.Context, address string) error {
 }
 
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
+// Summary: Attempts to listen on the given address with retries to handle transient port conflicts.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //
