@@ -4,46 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection } from './test-data';
 
 test.describe('Stack Composer', () => {
 
-  // Mock the stack config API to prevent backend dependency and race conditions
-  test.beforeEach(async ({ page }) => {
-    // Mock Settings API to bypass "API Key Not Set" warning
-    await page.route('**/api/v1/settings', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          configured: true,
-          initialized: true,
-          allow_anonymous_stats: true,
-          version: '0.1.0'
-        })
-      });
-    });
-
-    // Mock services for the stack
-    await page.route('**/api/v1/collections/*', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                name: 'e2e-test-stack',
-                services: [
-                    {
-                        name: 'weather-service',
-                        mcp_service: {
-                            stdio_connection: {
-                                container_image: 'mcp/weather:latest',
-                                env: { API_KEY: { plain_text: 'test' } }
-                            }
-                        }
-                    }
-                ]
-            })
-        });
-    });
+  test.beforeEach(async ({ page, request }) => {
+    // Seed real stack data
+    await seedCollection("e2e-test-stack", request);
   });
 
   test('should load the editor and visualize configuration', async ({ page }) => {
@@ -127,22 +94,26 @@ test.describe('Stack Composer', () => {
     }
   });
 
-  test.skip('should validate invalid YAML', async ({ page }) => {
-    // Skipping this test as it relies on Monaco Editor interaction which is flaky in E2E (CSP/Canvas issues)
-    // and difficult to mock perfectly without full editor loading.
+  test('should validate invalid YAML', async ({ page }) => {
     await page.goto('/stacks/e2e-test-stack');
     if (await page.getByText(/API Key Not Set/i).isVisible()) return;
 
     await page.getByRole('tab', { name: 'Editor' }).click({ timeout: 30000 });
     const editor = page.locator('.monaco-editor');
-    try {
-        await expect(editor).toBeVisible({ timeout: 15000 });
-    } catch {
-        console.log('Monaco Editor failed to load. Skipping interaction.');
-        return;
-    }
+    await expect(editor).toBeVisible({ timeout: 30000 });
+
     await editor.click();
+    // Clear editor content first or just append?
+    // Just append invalid content at the top
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Backspace');
     await page.keyboard.type('!!!! invalid !!!!\n');
+
+    // We expect the visualizer to likely show an error or "Valid Configuration" to disappear
+    // The previous test checked for "Valid Configuration" NOT visible.
+    // Let's stick to that.
+    // Wait for validation debounce
+    await page.waitForTimeout(1000);
     await expect(page.locator('.stack-visualizer-container').getByText('Valid Configuration')).not.toBeVisible({ timeout: 10000 });
   });
 });
