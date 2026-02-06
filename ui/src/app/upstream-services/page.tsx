@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, ChevronLeft } from "lucide-react";
 import {
     Sheet,
@@ -36,6 +37,7 @@ import {
 import { Download } from "lucide-react";
 import { TemplateConfigForm } from "@/components/services/template-config-form";
 import { applyTemplateFields } from "@/lib/template-utils";
+import { DiscoveryDashboard } from "@/components/services/discovery/discovery-dashboard";
 
 
 /**
@@ -432,28 +434,39 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
-        <CardHeader>
-          <CardTitle>Upstream Services</CardTitle>
-          <CardDescription>Manage your connected upstream services.</CardDescription>
-        </CardHeader>
-        <CardContent>
-             <ServiceList
-                services={services}
-                isLoading={loading}
-                onToggle={toggleService}
-                onEdit={openEdit}
-                onDelete={deleteService}
-                onDuplicate={handleDuplicate}
-                onExport={handleExport}
-                onBulkToggle={bulkToggleService}
-                onBulkDelete={bulkDeleteService}
-                onBulkEdit={handleBulkEdit}
-                onLogin={handleLogin}
-                onRestart={handleRestart}
-             />
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="services" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="services">Managed Services</TabsTrigger>
+          <TabsTrigger value="discovery">Auto-Discovery</TabsTrigger>
+        </TabsList>
+        <TabsContent value="services" className="space-y-4">
+            <Card className="backdrop-blur-sm bg-background/50">
+                <CardHeader>
+                <CardTitle>Upstream Services</CardTitle>
+                <CardDescription>Manage your connected upstream services.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ServiceList
+                        services={services}
+                        isLoading={loading}
+                        onToggle={toggleService}
+                        onEdit={openEdit}
+                        onDelete={deleteService}
+                        onDuplicate={handleDuplicate}
+                        onExport={handleExport}
+                        onBulkToggle={bulkToggleService}
+                        onBulkDelete={bulkDeleteService}
+                        onBulkEdit={handleBulkEdit}
+                        onLogin={handleLogin}
+                        onRestart={handleRestart}
+                    />
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="discovery" className="space-y-4">
+            <DiscoveryDashboard />
+        </TabsContent>
+      </Tabs>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-2xl w-full">

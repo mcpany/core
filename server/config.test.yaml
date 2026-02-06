@@ -1,0 +1,8 @@
+global_settings:
+  allowed_origins:
+    - "*"
+  db_path: "/tmp/mcpany_test.db"
+  auto_discover_local: true
+  middlewares:
+    - name: "auth"
+      disabled: true
