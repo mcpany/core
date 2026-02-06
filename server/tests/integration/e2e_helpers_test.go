@@ -62,8 +62,8 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
+	if os.Getenv("CI") != "" {
+		t.Skipf("Skipping TestDockerHelpers in CI (CI=%q) due to potential rate limiting/network issues", os.Getenv("CI"))
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
