@@ -4,11 +4,14 @@
 package mcp
 
 import (
+	"archive/tar"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -44,6 +47,12 @@ func (e *transportError) Error() string {
 	return e.Message
 }
 
+// CopyFile represents a file or directory to copy into the container.
+type CopyFile struct {
+	Source string
+	Dest   string
+}
+
 // BundleDockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
 type BundleDockerTransport struct {
@@ -52,6 +61,7 @@ type BundleDockerTransport struct {
 	Args       []string
 	Env        []string
 	Mounts     []mount.Mount
+	Files      []CopyFile
 	WorkingDir string
 
 	// dockerClientFactory allows injecting a custom docker client for testing.
@@ -91,15 +101,6 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 	}
 
 	// Construct the shell command (similar to DockerTransport)
-	// We use /bin/sh -c to run the command to handle complex args or shell features if needed,
-	// but mostly to stay consistent with DockerTransport logic.
-	// However, if Command is simple, we might not need sh -c.
-	// But let's stick to the pattern to ensure we can chain commands if needed (though here we just run one).
-	// Actually, if we just want to run the command, we can set Cmd directly.
-	// But existing DockerTransport uses:
-	// mainCommandParts := []string{"exec", command} ... script := ... /bin/sh -c script
-	// This is robust for stdio piping.
-
 	var cmd []string
 	if t.Command != "" {
 		cmd = append([]string{t.Command}, t.Args...)
@@ -124,6 +125,14 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create container: %w", err)
+	}
+
+	// Copy files if specified
+	if len(t.Files) > 0 {
+		if err := copyFilesToContainer(ctx, cli, resp.ID, t.Files); err != nil {
+			_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+			return nil, fmt.Errorf("failed to copy files to container: %w", err)
+		}
 	}
 
 	hijackedResp, err := cli.ContainerAttach(ctx, resp.ID, container.AttachOptions{
@@ -166,6 +175,100 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 		encoder: json.NewEncoder(rwc),
 		log:     log,
 	}, nil
+}
+
+// copyFilesToContainer copies files or directories to the container using CopyToContainer API.
+func copyFilesToContainer(ctx context.Context, cli dockerClient, containerID string, files []CopyFile) error {
+	for _, cf := range files {
+		tarStream, err := archivePath(cf.Source, filepath.Base(cf.Dest))
+		if err != nil {
+			return fmt.Errorf("failed to archive path %s: %w", cf.Source, err)
+		}
+
+		// CopyToContainer expects the destination path to be a directory where the tar content is extracted.
+		// If dest is /app/bundle and we archived with base name "bundle", it will extract to /app/bundle/bundle if we send to /app.
+		// If we send to /app/bundle (parent), and archived with base name "bundle", it works if Dest is /app/bundle.
+
+		// Logic: cli.CopyToContainer extracts the tar stream into the directory specified by dstPath.
+		// If we want to copy /tmp/foo to /app/bundle, we should archive /tmp/foo with name "bundle" (or whatever base of dest is)
+		// and extract to dirname(dest).
+
+		destDir := filepath.Dir(cf.Dest)
+		if err := cli.CopyToContainer(ctx, containerID, destDir, tarStream, container.CopyToContainerOptions{}); err != nil {
+			_ = tarStream.Close()
+			return fmt.Errorf("failed to copy to container %s -> %s: %w", cf.Source, cf.Dest, err)
+		}
+		_ = tarStream.Close()
+	}
+	return nil
+}
+
+// archivePath creates a tar archive of the source path.
+// It sets the name of the root file/dir in the archive to baseName.
+func archivePath(srcPath, baseName string) (io.ReadCloser, error) {
+	_, err := os.Stat(srcPath)
+	if err != nil {
+		return nil, err
+	}
+
+	pr, pw := io.Pipe()
+	go func() {
+		tw := tar.NewWriter(pw)
+		defer func() {
+			_ = tw.Close()
+			_ = pw.Close()
+		}()
+
+		err := filepath.Walk(srcPath, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			// Rename path to be relative to baseName
+			// E.g. srcPath=/tmp/foo, baseName=bundle.
+			// path=/tmp/foo -> bundle
+			// path=/tmp/foo/bar -> bundle/bar
+
+			var relPath string
+			if srcPath == path {
+				relPath = ""
+			} else {
+				relPath, err = filepath.Rel(srcPath, path)
+				if err != nil {
+					return err
+				}
+			}
+
+			headerName := filepath.Join(baseName, relPath)
+
+			header, err := tar.FileInfoHeader(info, info.Name())
+			if err != nil {
+				return err
+			}
+			header.Name = headerName
+
+			if err := tw.WriteHeader(header); err != nil {
+				return err
+			}
+
+			if !info.IsDir() {
+				file, err := os.Open(path) //nolint:gosec // Path is controlled by caller (bundle extraction)
+				if err != nil {
+					return err
+				}
+				defer func() { _ = file.Close() }()
+				if _, err := io.Copy(tw, file); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			_ = pw.CloseWithError(err)
+		}
+	}()
+
+	return pr, nil
 }
 
 type bundleDockerConn struct {

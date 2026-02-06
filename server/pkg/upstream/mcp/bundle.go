@@ -115,7 +115,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// Merge config env (overrides manifest env)
-	// Merge config env (overrides manifest env)
 	resolvedBundleEnv, err := util.ResolveSecretMap(ctx, bundleConfig.GetEnv(), nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to resolve bundle secret env: %w", err)
@@ -187,14 +186,14 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		Args:       args,
 		Env:        envList,
 		WorkingDir: containerMountPath,
-		Mounts: []mount.Mount{
+		// We use CopyToContainer instead of Bind Mounts to avoid DinD overlayfs issues.
+		Files: []CopyFile{
 			{
-				Type:     mount.TypeBind,
-				Source:   tempDir,
-				Target:   containerMountPath,
-				ReadOnly: true,
+				Source: tempDir,
+				Dest:   containerMountPath,
 			},
 		},
+		Mounts: []mount.Mount{},
 	}
 
 	// 5. Connect and Register

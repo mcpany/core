@@ -33,6 +33,7 @@ type bundleMockDockerClient struct {
 	ContainerStartFunc  func(ctx context.Context, container string, options container.StartOptions) error
 	ContainerStopFunc   func(ctx context.Context, containerID string, options container.StopOptions) error
 	ContainerRemoveFunc func(ctx context.Context, containerID string, options container.RemoveOptions) error
+	CopyToContainerFunc func(ctx context.Context, containerID, dstPath string, content io.Reader, options container.CopyToContainerOptions) error
 	CloseFunc           func() error
 }
 
@@ -74,6 +75,13 @@ func (m *bundleMockDockerClient) ContainerStop(ctx context.Context, containerID 
 func (m *bundleMockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
 	if m.ContainerRemoveFunc != nil {
 		return m.ContainerRemoveFunc(ctx, containerID, options)
+	}
+	return nil
+}
+
+func (m *bundleMockDockerClient) CopyToContainer(ctx context.Context, containerID, dstPath string, content io.Reader, options container.CopyToContainerOptions) error {
+	if m.CopyToContainerFunc != nil {
+		return m.CopyToContainerFunc(ctx, containerID, dstPath, content, options)
 	}
 	return nil
 }
