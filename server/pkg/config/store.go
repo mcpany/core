@@ -719,6 +719,13 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			return nil, logErr
 		}
 
+		if isURL(path) {
+			if err := sanitizeRemoteConfig(cfg); err != nil {
+				logging.GetLogger().Error("Forbidden content in remote config", "path", path, "error", err)
+				return nil, err
+			}
+		}
+
 		if mergedConfig == nil {
 			mergedConfig = cfg
 		} else {
@@ -1436,4 +1443,18 @@ func unquoteCSV(s string) string {
 		return strings.ReplaceAll(inner, "\"\"", "\"")
 	}
 	return s
+}
+
+func sanitizeRemoteConfig(cfg *configv1.McpAnyServerConfig) error {
+	for _, svc := range cfg.GetUpstreamServices() {
+		if svc.GetCommandLineService() != nil {
+			return fmt.Errorf("service %q uses command_line_service which is forbidden in remote configurations", svc.GetName())
+		}
+		if mcp := svc.GetMcpService(); mcp != nil {
+			if mcp.GetStdioConnection() != nil {
+				return fmt.Errorf("service %q uses mcp_service.stdio_connection which is forbidden in remote configurations", svc.GetName())
+			}
+		}
+	}
+	return nil
 }
