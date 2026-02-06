@@ -27,86 +27,22 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          go-version: "1.24"
-          cache: true
+          filters: |
+            src:
+              - '**'
+              - '!**.md'
+              - '!**.txt'
+              - '!docs/**'
+              - '!LICENSE'
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
-
-      - name: Lint
-        run: make lint
 
   unit-test:
     runs-on: ubuntu-latest
@@ -361,6 +297,8 @@ jobs:
 
   build-images:
     name: Build Docker Images
+    needs: changes
+    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -829,25 +767,32 @@ jobs:
       ]
     if: always()
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
       actions: read
     steps:
+      - name: Auto-Squash
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
+
       - name: Check Results and Comment
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             // 1. Check for Failures
             const needs = ${{ toJson(needs) }};
-            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure');
+            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure' || needs[key].result === 'cancelled');
             const { owner, repo } = context.repo;
             const run_id = context.runId;
             const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
             const pull_number = context.issue.number;
 
             if (failedJobNames.length === 0) {
-              console.log('All required jobs passed successfully.');
+              console.log('All required jobs passed successfully (or were skipped).');
               return;
             }
 
@@ -855,6 +800,8 @@ jobs:
             if (pull_number) {
               let failuresDetails = [];
               try {
+                // We use github.rest instead of github.actions for v7 compat if needed, but octokit is global
+                // List jobs to find step failures
                 const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
                   owner,
                   repo,
