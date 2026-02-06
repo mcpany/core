@@ -44,6 +44,51 @@ func TestPostgresStore(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
+	// Dashboard Layout Tests
+	t.Run("SaveDashboardLayout", func(t *testing.T) {
+		userID := "user-123"
+		layout := `{"widgets": []}`
+
+		mock.ExpectExec("INSERT INTO dashboard_layouts").
+			WithArgs(userID, layout).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		err := store.SaveDashboardLayout(context.Background(), userID, layout)
+		require.NoError(t, err)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("GetDashboardLayout", func(t *testing.T) {
+		userID := "user-123"
+		layout := `{"widgets": []}`
+
+		rows := sqlmock.NewRows([]string{"layout_json"}).
+			AddRow(layout)
+
+		mock.ExpectQuery("SELECT layout_json FROM dashboard_layouts").
+			WithArgs(userID).
+			WillReturnRows(rows)
+
+		got, err := store.GetDashboardLayout(context.Background(), userID)
+		require.NoError(t, err)
+		assert.Equal(t, layout, got)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("GetDashboardLayout_NotFound", func(t *testing.T) {
+		mock.ExpectQuery("SELECT layout_json FROM dashboard_layouts").
+			WithArgs("unknown").
+			WillReturnError(sql.ErrNoRows)
+
+		got, err := store.GetDashboardLayout(context.Background(), "unknown")
+		require.NoError(t, err)
+		assert.Empty(t, got)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
 	t.Run("SaveService_Error", func(t *testing.T) {
 		svc := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test-service"),

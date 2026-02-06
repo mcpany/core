@@ -1478,6 +1478,15 @@ func (s *MockServiceStore) SaveCredential(ctx context.Context, cred *configv1.Cr
 }
 func (s *MockServiceStore) DeleteCredential(ctx context.Context, id string) error { return nil }
 
+// Dashboard Layouts
+func (s *MockServiceStore) GetDashboardLayout(ctx context.Context, userID string) (string, error) {
+	return "", nil
+}
+
+func (s *MockServiceStore) SaveDashboardLayout(ctx context.Context, userID string, layoutJSON string) error {
+	return nil
+}
+
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
 }

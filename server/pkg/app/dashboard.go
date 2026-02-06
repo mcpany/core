@@ -6,8 +6,11 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
+
+	"github.com/mcpany/core/server/pkg/auth"
 )
 
 // Metric represents a single dashboard metric to be displayed in the UI.
@@ -150,5 +153,46 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(metrics)
+	}
+}
+
+func (a *Application) handleDashboardLayout(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, ok := auth.UserFromContext(ctx)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		layout, err := a.Storage.GetDashboardLayout(ctx, userID)
+		if err != nil {
+			http.Error(w, "Failed to get dashboard layout", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if layout == "" {
+			layout = "[]"
+		}
+		_, _ = w.Write([]byte(layout))
+
+	case http.MethodPost:
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Failed to read body", http.StatusBadRequest)
+			return
+		}
+		defer func() { _ = r.Body.Close() }()
+
+		if err := a.Storage.SaveDashboardLayout(ctx, userID, string(body)); err != nil {
+			http.Error(w, "Failed to save dashboard layout", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status":"ok"}`))
+
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }

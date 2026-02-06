@@ -403,6 +403,32 @@ type Storage interface {
 	//   - error: An error if deletion fails.
 	DeleteCredential(ctx context.Context, id string) error
 
+	// GetDashboardLayout retrieves the dashboard layout for a user.
+	//
+	// Summary: Retrieves the dashboard layout.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - userID: string. The user ID.
+	//
+	// Returns:
+	//   - string: The layout JSON.
+	//   - error: An error if retrieval fails.
+	GetDashboardLayout(ctx context.Context, userID string) (string, error)
+
+	// SaveDashboardLayout saves the dashboard layout for a user.
+	//
+	// Summary: Saves the dashboard layout.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - userID: string. The user ID.
+	//   - layoutJSON: string. The layout JSON.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	SaveDashboardLayout(ctx context.Context, userID string, layoutJSON string) error
+
 	// Close closes the underlying storage connection.
 	//
 	// Summary: Closes the storage connection.

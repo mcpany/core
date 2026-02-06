@@ -1815,6 +1815,7 @@ func (a *Application) runServerMode(
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/api/v1/dashboard/layout", authMiddleware(http.HandlerFunc(a.handleDashboardLayout)))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes

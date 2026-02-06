@@ -252,6 +252,12 @@ func (m *MockStorage) SaveCredential(ctx context.Context, cred *configv1.Credent
 	return nil
 }
 func (m *MockStorage) DeleteCredential(ctx context.Context, id string) error { return nil }
+func (m *MockStorage) GetDashboardLayout(ctx context.Context, userID string) (string, error) {
+	return "", nil
+}
+func (m *MockStorage) SaveDashboardLayout(ctx context.Context, userID string, layoutJSON string) error {
+	return nil
+}
 func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
 	return nil
 }

@@ -93,6 +93,17 @@ func (m *MockStore) DeleteSecret(ctx context.Context, id string) error {
 	return args.Error(0)
 }
 
+// Dashboard Layouts
+func (m *MockStore) GetDashboardLayout(ctx context.Context, userID string) (string, error) {
+	args := m.Called(ctx, userID)
+	return args.String(0), args.Error(1)
+}
+
+func (m *MockStore) SaveDashboardLayout(ctx context.Context, userID string, layoutJSON string) error {
+	args := m.Called(ctx, userID, layoutJSON)
+	return args.Error(0)
+}
+
 // Users
 func (m *MockStore) CreateUser(ctx context.Context, user *configv1.User) error {
 	args := m.Called(ctx, user)

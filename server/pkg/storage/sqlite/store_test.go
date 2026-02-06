@@ -389,6 +389,46 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected token to be nil, got %v", got)
 		}
 	})
+
+	t.Run("DashboardLayouts", func(t *testing.T) {
+		userID := "user-123"
+		layout := `{"widgets": []}`
+
+		// Save
+		err := store.SaveDashboardLayout(context.Background(), userID, layout)
+		if err != nil {
+			t.Fatalf("failed to save dashboard layout: %v", err)
+		}
+
+		// Get
+		got, err := store.GetDashboardLayout(context.Background(), userID)
+		if err != nil {
+			t.Fatalf("failed to get dashboard layout: %v", err)
+		}
+		if got != layout {
+			t.Errorf("expected layout %s, got %s", layout, got)
+		}
+
+		// Get Non-Existent
+		got, err = store.GetDashboardLayout(context.Background(), "non-existent")
+		if err != nil {
+			t.Fatalf("failed to get non-existent dashboard layout: %v", err)
+		}
+		if got != "" {
+			t.Errorf("expected empty layout, got %s", got)
+		}
+
+		// Update
+		newLayout := `{"widgets": [{"id": "1"}]}`
+		err = store.SaveDashboardLayout(context.Background(), userID, newLayout)
+		if err != nil {
+			t.Fatalf("failed to update dashboard layout: %v", err)
+		}
+		got, _ = store.GetDashboardLayout(context.Background(), userID)
+		if got != newLayout {
+			t.Errorf("expected updated layout %s, got %s", newLayout, got)
+		}
+	})
 }
 
 func TestSaveServiceValidation(t *testing.T) {
