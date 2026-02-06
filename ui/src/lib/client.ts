@@ -67,6 +67,11 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         if (token) {
             headers.set('Authorization', `Basic ${token}`);
         }
+        // Support for global API Key in browser (e.g. for E2E tests)
+        const apiKey = localStorage.getItem('mcp_api_key');
+        if (apiKey) {
+            headers.set('X-API-Key', apiKey);
+        }
     } else {
         // Server-side: Inject API Key from env
         const apiKey = process.env.MCPANY_API_KEY;
