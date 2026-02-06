@@ -1864,6 +1864,11 @@ func (a *Application) runServerMode(
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
+	// Register Audit Export Endpoint
+	if standardMiddlewares != nil && standardMiddlewares.Audit != nil {
+		mux.Handle("/api/v1/audit/export", authMiddleware(rest.ExportAuditLogsHandler(standardMiddlewares.Audit)))
+	}
+
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
 	// Wait, we need to handle assets specifically.
