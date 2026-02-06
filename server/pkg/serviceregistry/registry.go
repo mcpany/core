@@ -450,25 +450,38 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 	}
 	r.mu.RUnlock()
 
-	for id, u := range targets {
-		var errStr string
-		if checker, ok := u.(upstream.HealthChecker); ok {
-			// Use a short timeout for health checks
-			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-			if err := checker.CheckHealth(checkCtx); err != nil {
-				errStr = err.Error()
-			}
-			cancel()
-		}
+	// ⚡ BOLT: Parallelize health checks with concurrency limit
+	// Randomized Selection from Top 5 High-Impact Targets
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, 20) // Limit to 20 concurrent checks
 
-		r.mu.Lock()
-		if errStr != "" {
-			r.healthErrors[id] = errStr
-		} else {
-			delete(r.healthErrors, id)
-		}
-		r.mu.Unlock()
+	for id, u := range targets {
+		wg.Add(1)
+		go func(id string, u upstream.Upstream) {
+			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
+			var errStr string
+			if checker, ok := u.(upstream.HealthChecker); ok {
+				// Use a short timeout for health checks
+				checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+				if err := checker.CheckHealth(checkCtx); err != nil {
+					errStr = err.Error()
+				}
+				cancel()
+			}
+
+			r.mu.Lock()
+			if errStr != "" {
+				r.healthErrors[id] = errStr
+			} else {
+				delete(r.healthErrors, id)
+			}
+			r.mu.Unlock()
+		}(id, u)
 	}
+	wg.Wait()
 }
 
 // Close gracefully shuts down all registered services.
