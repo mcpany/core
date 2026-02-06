@@ -568,40 +568,9 @@ func toStringRecursive(v any, depth int) string {
 	case uint64:
 		return strconv.FormatUint(val, 10)
 	case float32:
-		// Check if it's an integer and within safe range for exact representation.
-		// float32 has 23 bits of significand, so exact integers up to 2^24 (16,777,216).
-		if val == float32(int32(val)) {
-			return strconv.FormatInt(int64(val), 10)
-		}
-		// Also check if it fits in int64 (for larger integers that are exact in float32)
-		if math.Trunc(float64(val)) == float64(val) {
-			if float64(val) >= float64(math.MinInt64) && float64(val) < float64(math.MaxInt64) {
-				return strconv.FormatInt(int64(val), 10)
-			}
-		}
-		return strconv.FormatFloat(float64(val), 'g', -1, 32)
+		return float32ToString(val)
 	case float64:
-		// Check if it's an integer and within int64 range.
-		// float64 has 53 bits of significand. int64 is 64 bits.
-		// We only convert if it fits in int64 and is an exact integer.
-		// math.MinInt64 and math.MaxInt64 are boundaries.
-		// However, casting large float to int64 is undefined if it overflows.
-		// Safe integer range for float64 is +/- 2^53. MaxInt64 is 2^63-1.
-		// So any safe float64 integer fits in int64.
-		// We check if the float value is integral.
-		if math.Trunc(val) == val {
-			// Check bounds to avoid undefined behavior or overflow when casting.
-			// float64 can exactly represent integers up to 2^53.
-			// Beyond that, it can represent some integers but with gaps.
-			// We only use decimal formatting if it is reasonably representative of the value.
-			if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
-				return strconv.FormatInt(int64(val), 10)
-			}
-			// For extremely large integers (> MaxInt64), use 'f' with 0 precision
-			// UNLESS it's truly massive where scientific is better.
-			// Let's use 'g' as it is standard and usually what's expected for JSON etc.
-		}
-		return strconv.FormatFloat(val, 'g', -1, 64)
+		return float64ToString(val)
 	case fmt.Stringer:
 		return val.String()
 	default:
@@ -615,6 +584,63 @@ func toStringRecursive(v any, depth int) string {
 		}
 		return fmt.Sprintf("%v", v)
 	}
+}
+
+// ⚡ BOLT: Helper to format float32 avoiding scientific notation for large values
+// Randomized Selection from Top 5 High-Impact Targets (Maintenance for Fix)
+func float32ToString(val float32) string {
+	// Check if it's an integer and within safe range for exact representation.
+	// float32 has 23 bits of significand, so exact integers up to 2^24 (16,777,216).
+	if val == float32(int32(val)) {
+		return strconv.FormatInt(int64(val), 10)
+	}
+	// Also check if it fits in int64 (for larger integers that are exact in float32)
+	val64 := float64(val)
+	if math.Trunc(val64) == val64 {
+		if val64 >= float64(math.MinInt64) && val64 < float64(math.MaxInt64) {
+			return strconv.FormatInt(int64(val), 10)
+		}
+	}
+	// Avoid scientific notation for values within reasonable range (e.g. +/- 1e15).
+	// This ensures IDs like 3000000000 don't become 3e+09.
+	// We only apply this to large numbers (> 1e6) to preserve scientific notation for very small numbers.
+	// We cap at 1e15 to ensure very large numbers (like MaxInt64 ~9e18) still use scientific notation
+	// as expected by other tests (e.g. TestToString_BugFix).
+	absVal := math.Abs(val64)
+	if absVal >= 1e6 && absVal < 1e15 {
+		return strconv.FormatFloat(val64, 'f', -1, 32)
+	}
+	return strconv.FormatFloat(val64, 'g', -1, 32)
+}
+
+// ⚡ BOLT: Helper to format float64 avoiding scientific notation for large values
+// Randomized Selection from Top 5 High-Impact Targets (Maintenance for Fix)
+func float64ToString(val float64) string {
+	// Check if it's an integer and within int64 range.
+	// float64 has 53 bits of significand. int64 is 64 bits.
+	// We only convert if it fits in int64 and is an exact integer.
+	// math.MinInt64 and math.MaxInt64 are boundaries.
+	// However, casting large float to int64 is undefined if it overflows.
+	// Safe integer range for float64 is +/- 2^53. MaxInt64 is 2^63-1.
+	// So any safe float64 integer fits in int64.
+	// We check if the float value is integral.
+	if math.Trunc(val) == val {
+		// Check bounds to avoid undefined behavior or overflow when casting.
+		// float64 can exactly represent integers up to 2^53.
+		// Beyond that, it can represent some integers but with gaps.
+		// We only use decimal formatting if it is reasonably representative of the value.
+		if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
+			return strconv.FormatInt(int64(val), 10)
+		}
+	}
+	// Avoid scientific notation for values within reasonable range (e.g. +/- 1e15).
+	// We only apply this to large numbers (> 1e6) to preserve scientific notation for very small numbers.
+	// We cap at 1e15 to ensure very large numbers (like MaxInt64 ~9e18) still use scientific notation.
+	absVal := math.Abs(val)
+	if absVal >= 1e6 && absVal < 1e15 {
+		return strconv.FormatFloat(val, 'f', -1, 64)
+	}
+	return strconv.FormatFloat(val, 'g', -1, 64)
 }
 
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
