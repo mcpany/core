@@ -164,6 +164,9 @@ var (
 	dockerCommand string
 	dockerArgs    []string
 	dockerOnce    sync.Once
+
+	isDockerAccessible bool
+	dockerCheckOnce    sync.Once
 )
 
 // getDockerCommand returns the command and base arguments for running Docker,
@@ -576,13 +579,29 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
-	dockerExe, dockerArgs := getDockerCommand()
+	dockerCheckOnce.Do(func() {
+		dockerExe, dockerArgs := getDockerCommand()
 
-	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
-	if err := cmd.Run(); err != nil {
-		return false
-	}
-	return true
+		cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
+		if err := cmd.Run(); err != nil {
+			isDockerAccessible = false
+			return
+		}
+
+		// Verify we can actually run a container
+		// This guards against environments where docker socket exists but runtime is broken (e.g. some CI envs)
+		runArgs := append(dockerArgs, "run", "--rm", "hello-world")
+		cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...)
+		cmd.Stdout = nil
+		cmd.Stderr = nil
+		if err := cmd.Run(); err != nil {
+			isDockerAccessible = false
+			return
+		}
+
+		isDockerAccessible = true
+	})
+	return isDockerAccessible
 }
 
 // --- Mock Service Start Helpers (External Processes) ---
@@ -598,6 +617,10 @@ func IsDockerSocketAccessible() bool {
 // Returns the result.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not accessible")
+	}
+
 	dockerExe, dockerBaseArgs := getDockerCommand()
 
 	// buildArgs safely creates a new slice for command arguments.
@@ -1002,7 +1025,9 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not accessible")
+	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
