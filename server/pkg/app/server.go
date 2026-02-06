@@ -1648,6 +1648,23 @@ func (a *Application) runServerMode(
 					}
 				}
 
+				// Fallback to query param for Loopback only (Migration/Test Support)
+				if requestKey == "" {
+					queryKey := r.URL.Query().Get("api_key")
+					if queryKey != "" {
+						// Check loopback
+						host, _, err := net.SplitHostPort(r.RemoteAddr)
+						if err != nil {
+							host = r.RemoteAddr
+						}
+						ip := net.ParseIP(host)
+						if ip != nil && ip.IsLoopback() {
+							requestKey = queryKey
+							logging.GetLogger().Warn("Authenticated via query parameter (deprecated/insecure). Please use X-API-Key header.", "remote_addr", r.RemoteAddr)
+						}
+					}
+				}
+
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
 					// Note: We don't inject API Key/Roles/User into ctx here because
@@ -2228,9 +2245,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			if apiKey != "" {
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
-				}
-				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {
 						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
@@ -2285,8 +2299,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 				// Check if the request is from a loopback address
 				ipAddr := net.ParseIP(host)
-				if !util.IsPrivateIP(ipAddr) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				if !ipAddr.IsLoopback() {
+					logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
 					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 					return
 				}
