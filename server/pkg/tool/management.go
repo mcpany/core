@@ -35,89 +35,157 @@ type MCPServerProvider interface {
 }
 
 // ManagerInterface defines the interface for a tool manager.
+//
+// Summary: Interface for managing the lifecycle, execution, and access control of tools.
 type ManagerInterface interface {
 	// AddTool registers a new tool.
 	//
-	// tool represents the tool definition.
+	// Summary: Adds a tool to the registry.
 	//
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - tool: Tool. The tool definition to register.
+	//
+	// Returns:
+	//   - error: An error if the tool cannot be registered.
 	AddTool(tool Tool) error
+
 	// GetTool retrieves a tool by name.
 	//
-	// toolName is the toolName.
+	// Summary: Looks up a tool by its name.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Parameters:
+	//   - toolName: string. The name of the tool.
+	//
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if the tool was found.
 	GetTool(toolName string) (Tool, bool)
+
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Summary: Lists all currently registered tools.
+	//
+	// Returns:
+	//   - []Tool: A slice of all registered tools.
 	ListTools() []Tool
+
 	// ListMCPTools returns all registered tools in MCP format.
 	//
-	// Returns the result.
+	// Summary: Lists all tools converted to the MCP protocol format.
+	//
+	// Returns:
+	//   - []*mcp.Tool: A slice of MCP tool definitions.
 	ListMCPTools() []*mcp.Tool
+
 	// ClearToolsForService removes all tools for a given service.
 	//
-	// serviceID is the serviceID.
+	// Summary: Removes all tools associated with a specific service ID.
+	//
+	// Parameters:
+	//   - serviceID: string. The ID of the service.
 	ClearToolsForService(serviceID string)
+
 	// ExecuteTool executes a tool with the given request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Summary: Executes a tool and returns the result.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the execution.
+	//   - req: *ExecutionRequest. The request containing tool name and arguments.
+	//
+	// Returns:
+	//   - any: The result of the tool execution.
+	//   - error: An error if execution fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// SetMCPServer sets the MCP server provider.
 	//
-	// mcpServer is the mcpServer.
+	// Summary: Configures the MCP server provider for tool registration.
+	//
+	// Parameters:
+	//   - mcpServer: MCPServerProvider. The provider instance.
 	SetMCPServer(mcpServer MCPServerProvider)
+
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
-	// middleware is the middleware.
+	// Summary: Registers a middleware to intercept tool executions.
+	//
+	// Parameters:
+	//   - middleware: ExecutionMiddleware. The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
+
 	// AddServiceInfo adds metadata for a service.
 	//
-	// serviceID is the serviceID.
-	// info is the info.
+	// Summary: Stores configuration and metadata for an upstream service.
+	//
+	// Parameters:
+	//   - serviceID: string. The unique service ID.
+	//   - info: *ServiceInfo. The service metadata.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
+
 	// GetServiceInfo retrieves metadata for a service.
 	//
-	// serviceID is the serviceID.
+	// Summary: Retrieves stored metadata for a service.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Parameters:
+	//   - serviceID: string. The unique service ID.
+	//
+	// Returns:
+	//   - *ServiceInfo: The service metadata.
+	//   - bool: True if found.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+
 	// ListServices returns all registered services.
 	//
-	// Returns the result.
+	// Summary: Lists all registered upstream services.
+	//
+	// Returns:
+	//   - []*ServiceInfo: A slice of service metadata.
 	ListServices() []*ServiceInfo
+
 	// SetProfiles sets the enabled profiles and their definitions.
 	//
-	// enabled is the enabled.
-	// defs is the defs.
+	// Summary: Configures active profiles and their filtering rules.
+	//
+	// Parameters:
+	//   - enabled: []string. A list of enabled profile names.
+	//   - defs: []*configv1.ProfileDefinition. The profile definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
+
 	// IsServiceAllowed checks if a service is allowed for a given profile.
 	//
-	// serviceID is the serviceID.
-	// profileID is the profileID.
+	// Summary: Verifies if a service is accessible under a profile.
 	//
-	// Returns true if successful.
+	// Parameters:
+	//   - serviceID: string. The service ID.
+	//   - profileID: string. The profile ID.
+	//
+	// Returns:
+	//   - bool: True if access is allowed.
 	IsServiceAllowed(serviceID, profileID string) bool
+
 	// ToolMatchesProfile checks if a tool matches a given profile.
 	//
-	// tool represents the tool definition.
-	// profileID is the profileID.
+	// Summary: Verifies if a tool matches the criteria of a profile.
 	//
-	// Returns true if successful.
+	// Parameters:
+	//   - tool: Tool. The tool definition.
+	//   - profileID: string. The profile ID.
+	//
+	// Returns:
+	//   - bool: True if the tool matches.
 	ToolMatchesProfile(tool Tool, profileID string) bool
+
 	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
 	//
-	// profileID is the profileID.
+	// Summary: Retrieves all service IDs allowed by a profile.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Parameters:
+	//   - profileID: string. The profile ID.
+	//
+	// Returns:
+	//   - map[string]bool: A set of allowed service IDs.
+	//   - bool: True if the profile exists.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 	// GetToolCountForService returns the number of tools for a given service.
 	//
@@ -128,19 +196,27 @@ type ManagerInterface interface {
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
+//
+// Summary: Interface for intercepting and modifying tool execution requests.
 type ExecutionMiddleware interface {
 	// Execute executes the middleware logic.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
-	// next is the next.
+	// Summary: Runs the middleware logic before or after the next handler.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The tool execution request.
+	//   - next: ExecutionFunc. The next handler in the chain.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
 // Manager is a thread-safe manager for registering tooling.
+//
+// Summary: Manages tool registration, execution, and service metadata.
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
@@ -166,9 +242,13 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
-// bus is the bus.
+// Summary: Initializes a new tool Manager.
 //
-// Returns the result.
+// Parameters:
+//   - bus: *bus.Provider. The event bus provider.
+//
+// Returns:
+//   - *Manager: A new Manager instance.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,
@@ -184,8 +264,11 @@ func NewManager(bus *bus.Provider) *Manager {
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
 //
-// enabled is the enabled.
-// defs is the defs.
+// Summary: Configures active profiles and their filtering rules.
+//
+// Parameters:
+//   - enabled: []string. A list of enabled profile names.
+//   - defs: []*configv1.ProfileDefinition. The profile definitions.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -208,7 +291,14 @@ func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinit
 }
 
 // isToolAllowed checks if the tool is allowed based on the enabled profiles.
-// isToolAllowed checks if the tool is allowed based on the enabled profiles.
+//
+// Summary: Internal helper to check tool access against enabled profiles.
+//
+// Parameters:
+//   - t: *v1.Tool. The tool definition from the configuration.
+//
+// Returns:
+//   - bool: True if allowed.
 func (tm *Manager) isToolAllowed(t *v1.Tool) bool {
 	// If no profiles are enabled, allow everything (default behavior).
 	if len(tm.enabledProfiles) == 0 {

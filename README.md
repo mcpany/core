@@ -106,9 +106,13 @@ Run all unit, integration, and end-to-end tests to ensure code correctness.
 make test
 ```
 
-### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
-Run the linter to verify your changes:
+### Linting & Documentation
+We adhere to a **Gold Standard** for documentation. "Undocumented code is broken code."
+
+*   **Go:** We use standard Godoc formatting. Every exported symbol (function, type, method, constant) must have a high-quality docstring including a summary, parameters, returns, and errors.
+*   **TypeScript:** We use TSDoc. Every exported symbol must be documented.
+
+Run the linter to verify your changes and documentation coverage:
 ```bash
 make lint
 ```
