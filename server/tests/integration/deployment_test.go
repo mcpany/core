@@ -213,6 +213,9 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+		t.Skip("Skipping K8s Full Stack test in CI due to resource/Docker requirements")
+	}
 	if os.Getenv("E2E") != "true" {
 		t.Skip("Skipping K8s E2E test (E2E=true not set)")
 	}
