@@ -62,16 +62,15 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
+	// We want to test this even in CI if possible, but safely.
+	// Use CanRunDockerContainers to verify environment capability.
+	if !CanRunDockerContainers() {
+		t.Skip("Docker is not available or cannot run containers (likely overlayfs issue)")
 	}
 	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not available")
-	}
 
 	// Test StartDockerContainer
-	imageName := "alpine:latest"
+	imageName := "mirror.gcr.io/library/alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
 	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"}, "sleep", "60")
 	defer cleanup()
@@ -84,6 +83,7 @@ func TestDockerHelpers(t *testing.T) {
 	assert.Contains(t, string(out), containerName)
 
 	// Test StartRedisContainer
+	// StartRedisContainer already checks CanRunDockerContainers, but we checked it above too.
 	_, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
