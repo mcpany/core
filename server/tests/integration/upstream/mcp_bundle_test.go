@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -244,6 +245,18 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Verify Docker bind mounts work in this environment (avoid overlayfs issues in CI)
+	// We use node:18-alpine as it is required for the test anyway
+	checkDir := t.TempDir()
+	checkCmd := exec.Command("docker", "run", "--rm", "-v", checkDir+":/test", "node:18-alpine", "true")
+	if out, err := checkCmd.CombinedOutput(); err != nil {
+		output := string(out)
+		if strings.Contains(output, "overlay") && strings.Contains(output, "invalid argument") {
+			t.Skipf("Skipping Docker tests: environment does not support overlayfs/bind mounts: %v", output)
+		}
+		t.Logf("Warning: Docker bind mount check failed (continuing): %v. Output: %s", err, output)
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
@@ -254,8 +267,17 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if impl, ok := upstreamService.(*mcp.Upstream); ok {
 		// Use a test-specific temp directory for bundles to ensure isolation
 		// and avoid conflicts with global state or other tests.
-		// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
-		impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		baseDir := os.Getenv("MCP_BUNDLE_DIR")
+		if baseDir != "" {
+			// If MCP_BUNDLE_DIR is set, use a sibling directory to avoid conflict with the global GC
+			// which scans MCP_BUNDLE_DIR for orphaned bundles.
+			// E.g. if MCP_BUNDLE_DIR=/app/build/bundles, use /app/build/bundles_test
+			baseDir = filepath.Join(filepath.Dir(baseDir), "bundles_test")
+		} else {
+			baseDir = t.TempDir()
+		}
+		// We use a subdirectory "TestName" to keep it clean and isolated
+		impl.BundleBaseDir = filepath.Join(baseDir, t.Name())
 		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
 			t.Fatalf("Failed to create test bundle dir: %v", err)
 		}

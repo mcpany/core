@@ -5,7 +5,9 @@
 
 "use client";
 
+import { useState } from "react";
 import { InspectorTable } from "@/components/inspector/inspector-table";
+import { TraceFilter } from "@/components/inspector/trace-filter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCcw, Bug, Unplug, Pause, Play, Trash2 } from "lucide-react";
@@ -26,9 +28,24 @@ export default function InspectorPage() {
       refresh
   } = useTraces();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredTraces = traces.filter(trace => {
+      const matchesSearch = searchQuery === "" ||
+          trace.rootSpan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          trace.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus = statusFilter === "all" || trace.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+  });
+
+  const isFiltered = searchQuery !== "" || statusFilter !== "all";
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Bug className="h-6 w-6" /> Inspector
@@ -54,26 +71,42 @@ export default function InspectorPage() {
             </Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-             <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsPaused(!isPaused)}
-            >
-                {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
-            </Button>
-             <Button variant="outline" size="sm" onClick={clearTraces}>
-                <Trash2 className="mr-2 h-4 w-4" /> Clear
-            </Button>
-            <Button variant="outline" size="sm" onClick={refresh} disabled={loading && !isConnected}>
-            <RefreshCcw className={`mr-2 h-4 w-4 ${loading && !isConnected ? 'animate-spin' : ''}`} />
-            Refresh
-            </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+             <TraceFilter
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+             />
+             <div className="flex items-center gap-2">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsPaused(!isPaused)}
+                >
+                    {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
+                </Button>
+                <Button variant="outline" size="sm" onClick={clearTraces}>
+                    <Trash2 className="mr-2 h-4 w-4" /> Clear
+                </Button>
+                <Button variant="outline" size="sm" onClick={refresh} disabled={loading && !isConnected}>
+                <RefreshCcw className={`mr-2 h-4 w-4 ${loading && !isConnected ? 'animate-spin' : ''}`} />
+                Refresh
+                </Button>
+             </div>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto rounded-md border bg-card">
-        <InspectorTable traces={traces} loading={loading && traces.length === 0} />
+        <InspectorTable
+            traces={filteredTraces}
+            loading={loading && traces.length === 0}
+            isFiltered={isFiltered}
+            onClearFilters={() => {
+                setSearchQuery("");
+                setStatusFilter("all");
+            }}
+        />
       </div>
     </div>
   );

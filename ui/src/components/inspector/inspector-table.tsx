@@ -21,9 +21,10 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 /**
  * Props for the InspectorTable component.
@@ -37,6 +38,14 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Whether the traces are currently filtered.
+   */
+  isFiltered?: boolean;
+  /**
+   * Callback to clear filters.
+   */
+  onClearFilters?: () => void;
 }
 
 /**
@@ -117,9 +126,11 @@ TraceRow.displayName = 'TraceRow';
  * @param props - The component props.
  * @param props.traces - The list of traces to display.
  * @param props.loading - Whether the data is loading.
+ * @param props.isFiltered - Whether traces are filtered.
+ * @param props.onClearFilters - Callback to clear filters.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, isFiltered, onClearFilters }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
@@ -139,7 +150,18 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             {traces.length === 0 && !loading && (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  No traces found.
+                   {isFiltered ? (
+                     <div className="flex flex-col items-center justify-center gap-2 h-full">
+                         <span>No matching traces found.</span>
+                         {onClearFilters && (
+                             <Button variant="outline" size="sm" onClick={onClearFilters}>
+                                 <X className="mr-2 h-4 w-4" /> Clear Filters
+                             </Button>
+                         )}
+                     </div>
+                  ) : (
+                     "No traces found."
+                  )}
                 </TableCell>
               </TableRow>
             )}
