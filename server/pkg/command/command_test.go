@@ -58,6 +58,40 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Try to start a container to verify if the environment actually supports running containers.
+	// This catches issues like "failed to mount ... invalid argument" in nested overlayfs environments.
+	ctx := context.Background()
+	// Use a lightweight image that is likely to be present or small to pull.
+	// If alpine:latest is not found, we attempt to pull it, but failure to pull also means we can't test.
+	_, _, err = cli.ImageInspectWithRaw(ctx, "alpine:latest")
+	if client.IsErrNotFound(err) {
+		reader, err := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+		if err != nil {
+			t.Logf("could not pull alpine:latest: %v", err)
+			return false
+		}
+		defer reader.Close()
+		_, _ = io.Copy(io.Discard, reader)
+	}
+
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("could not create probe container: %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("could not start probe container (environment might be broken): %v", err)
+		return false
+	}
+
 	return true
 }
 
