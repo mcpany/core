@@ -12,6 +12,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestSentinelRCE_AwkInShell(t *testing.T) {
@@ -238,4 +239,152 @@ func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
 	assert.Contains(t, err.Error(), "shell injection detected")
 	// It should fail because it detected dangerous character (semicolon) in unquoted context
 	assert.Contains(t, err.Error(), ";")
+}
+
+func TestLocalCommandTool_InterpreterInjection_DoubleQuotes_Bypass(t *testing.T) {
+	t.Parallel()
+
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"type": structpb.NewStringValue("object"),
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"code": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	tool := v1.Tool_builder{
+		Name:        proto.String("python-eval-tool"),
+		InputSchema: inputSchema,
+	}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("python"),
+		Local:   proto.Bool(true),
+	}.Build()
+
+	// Configured to run: python -c eval("{{code}}")
+	// Note the double quotes around {{code}}
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "eval(\"{{code}}\")"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("code")}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	// Payload: __import__('os').system('id')
+	// This uses single quotes, which are ALLOWED in double quotes context (Level 1).
+	// It contains "system(", which is BLOCKED in single quotes context (Level 2), but was NOT in Level 1 prior to fix.
+	payload := "__import__('os').system('id')"
+
+	req := &ExecutionRequest{
+		ToolName: "python-eval-tool",
+		Arguments: map[string]interface{}{
+			"code": payload,
+		},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	_, err := localTool.Execute(context.Background(), req)
+
+	// We expect the execution to be BLOCKED by the new security check.
+	// err should contain "shell injection detected"
+
+	if err == nil {
+		t.Fatal("Execution succeeded but should have been blocked")
+	}
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "shell injection detected")
+	assert.Contains(t, err.Error(), "dangerous function call")
+}
+
+func TestSentinelRCE_FalsePositive_Filesystem(t *testing.T) {
+	// Verify that valid English words containing "system" are not blocked.
+	// E.g. "filesystem(s)" contains "system(".
+	// We use 'sh' to trigger checkForShellInjection.
+
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("sh"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	// Test case 1: Single Quoted
+	callDefSingle := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "echo '{{text}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("text"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("sh_wrapper_single")
+
+	toolSingle := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDefSingle,
+		nil,
+		"sh_wrapper_single",
+	)
+
+	payload := "Check the filesystem(s)"
+
+	inputMap := map[string]interface{}{
+		"text": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	reqSingle := &ExecutionRequest{
+		ToolName:   "sh_wrapper_single",
+		ToolInputs: inputBytes,
+	}
+
+	res, err := toolSingle.Execute(context.Background(), reqSingle)
+	assert.NoError(t, err)
+	assert.NotNil(t, res)
+
+	// Test case 2: Double Quoted
+	callDefDouble := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "echo \"{{text}}\""},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("text"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProtoDouble := &v1.Tool{}
+	toolProtoDouble.SetName("sh_wrapper_double")
+
+	toolDouble := NewLocalCommandTool(
+		toolProtoDouble,
+		svc,
+		callDefDouble,
+		nil,
+		"sh_wrapper_double",
+	)
+
+	reqDouble := &ExecutionRequest{
+		ToolName:   "sh_wrapper_double",
+		ToolInputs: inputBytes,
+	}
+
+	resDouble, errDouble := toolDouble.Execute(context.Background(), reqDouble)
+	assert.NoError(t, errDouble)
+	assert.NotNil(t, resDouble)
 }
