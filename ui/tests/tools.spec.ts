@@ -48,7 +48,7 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('Perform basic math').first()).toBeVisible({ timeout: 10000 });
     });
 
-    test.skip('should show empty state when no tools', async ({ page }) => {
+    test('should show empty state when no tools', async ({ page }) => {
         // Unroute previous mock from beforeEach
         await page.unroute((url) => url.pathname.includes('/api/v1/tools'));
         await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {

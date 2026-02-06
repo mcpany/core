@@ -53,34 +53,8 @@ function decrypt(encryptedValue: string, iv: string, authTag: string): string {
     return decrypted;
 }
 
-// Initial mock data
-const secret1 = encrypt("sk-mock-openai-key-value-must-be-replaced");
-const secret2 = encrypt("AKIA-mock-aws-key-value-must-be-replaced");
-
-let mockSecrets: Secret[] = [
-    {
-        id: "sec-1",
-        name: "OpenAI API Key",
-        key: "OPENAI_API_KEY",
-        encryptedValue: secret1.encryptedValue,
-        iv: secret1.iv,
-        authTag: secret1.authTag,
-        provider: "openai",
-        createdAt: "2024-01-01T00:00:00Z",
-        lastUsed: "2024-05-10T12:00:00Z"
-    },
-    {
-        id: "sec-2",
-        name: "AWS Access Key",
-        key: "AWS_ACCESS_KEY_ID",
-        encryptedValue: secret2.encryptedValue,
-        iv: secret2.iv,
-        authTag: secret2.authTag,
-        provider: "aws",
-        createdAt: "2024-02-15T00:00:00Z",
-        lastUsed: "2024-05-14T09:30:00Z"
-    }
-];
+// Initial mock data - REMOVED for Real Data Policy
+let mockSecrets: Secret[] = [];
 
 /**
  * The SecretsStore class.
