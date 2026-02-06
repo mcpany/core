@@ -5,6 +5,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"testing"
 
@@ -24,20 +25,45 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	store := NewStore(pgDB)
 
 	t.Run("QueryError", func(t *testing.T) {
+		mock.MatchExpectationsInOrder(false)
+
+		// Fail upstream_services
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnError(errors.New("query error"))
 
+		// Others might run, so allow them (return empty)
+		mock.ExpectQuery("SELECT config_json FROM users").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM global_settings").
+			WillReturnError(sql.ErrNoRows)
+		mock.ExpectQuery("SELECT config_json FROM service_collections").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+
 		_, err := store.Load(context.Background())
 		assert.Error(t, err)
+		// We can't guarantee "query error" is the one returned if context cancellation causes others to error differently.
+		// But usually the first error is returned by errgroup or context error.
+		// If errgroup returns the first non-nil error from the goroutines, it should be "query error".
+		// However, if another goroutine context is canceled, it might return context.Canceled?
+		// errgroup usually returns the error returned by the function.
 		assert.Contains(t, err.Error(), "query error")
 	})
 
 	t.Run("UnmarshalError", func(t *testing.T) {
+		mock.MatchExpectationsInOrder(false)
+
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("invalid-json"))
 
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
+
+		mock.ExpectQuery("SELECT config_json FROM users").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM global_settings").
+			WillReturnError(sql.ErrNoRows)
+		mock.ExpectQuery("SELECT config_json FROM service_collections").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		_, err := store.Load(context.Background())
 		assert.Error(t, err)
@@ -45,6 +71,8 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	})
 
 	t.Run("RowsIterationError", func(t *testing.T) {
+		mock.MatchExpectationsInOrder(false)
+
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("{}")).
 			RowError(0, errors.New("row error"))
@@ -52,10 +80,16 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
 
+		mock.ExpectQuery("SELECT config_json FROM users").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery("SELECT config_json FROM global_settings").
+			WillReturnError(sql.ErrNoRows)
+		mock.ExpectQuery("SELECT config_json FROM service_collections").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+
 		_, err := store.Load(context.Background())
-		// sqlmock RowError on 0th row might cause Scan to fail or Next to return false but Err() to be set?
-		// rows.Next() returns false if error occurs.
 		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "row error")
 	})
 }
 
