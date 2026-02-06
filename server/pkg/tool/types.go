@@ -2869,7 +2869,8 @@ func checkBacktickInjection(val, command string) error {
 	// Backticks in Shell are command substitution (Level 0 danger).
 	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
 	// we must enforce strict checks.
-	if !isInterpreter(command) {
+	// Sentinel Security Update: Enforce strict checks for interpreters that use backticks for execution (Ruby, Perl, PHP).
+	if !isInterpreter(command) || usesBackticksForExecution(command) {
 		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 		if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
@@ -2881,6 +2882,18 @@ func checkBacktickInjection(val, command string) error {
 		return fmt.Errorf("backtick injection detected")
 	}
 	return nil
+}
+
+func usesBackticksForExecution(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	// These interpreters use backticks for shell execution, similar to shell itself.
+	executors := []string{"ruby", "perl", "php"}
+	for _, exe := range executors {
+		if base == exe || strings.HasPrefix(base, exe) {
+			return true
+		}
+	}
+	return false
 }
 
 func checkUnquotedInjection(val, command string) error {
