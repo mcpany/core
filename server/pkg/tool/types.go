@@ -1926,6 +1926,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
+			if err := checkForDangerousEnvValue(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
@@ -2247,6 +2250,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
+			if err := checkForDangerousEnvValue(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
@@ -2548,6 +2554,26 @@ func checkForPathTraversal(val string) error {
 	}
 	return nil
 }
+
+func checkForDangerousEnvValue(val string) error {
+	// Prevent argument injection via environment variables (e.g. " -v")
+	// Scripts using unquoted variables ($VAR) will undergo word splitting.
+	trimmed := strings.TrimSpace(val)
+	if strings.HasPrefix(trimmed, "-") {
+		// Allow negative numbers
+		if _, err := strconv.ParseFloat(trimmed, 64); err != nil {
+			return fmt.Errorf("environment variable argument injection detected: value starts with '-'")
+		}
+	}
+
+	// Block control characters that might confuse scripts or loaders
+	if strings.ContainsAny(val, "\n\r\x00") {
+		return fmt.Errorf("environment variable injection detected: value contains control characters")
+	}
+
+	return nil
+}
+
 
 // cleanPathPreserveDoubleSlash cleans the path like path.Clean but preserves double slashes.
 // It resolves . and .. segments.
