@@ -12,6 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
+import { AdminServiceClientImpl } from '@proto/admin/v1/admin';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
@@ -58,6 +59,7 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
   debug: false,
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
+const adminClient = new AdminServiceClientImpl(rpc);
 
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
@@ -975,6 +977,15 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/system/status');
         if (!res.ok) throw new Error('Failed to fetch system status');
         return res.json();
+    },
+
+    /**
+     * Gets the auto-discovery status.
+     * @returns A promise that resolves to the discovery status.
+     */
+    getDiscoveryStatus: async () => {
+        // Use gRPC client for admin operations
+        return adminClient.GetDiscoveryStatus({}, getMetadata());
     },
 
     /**
