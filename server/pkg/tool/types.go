@@ -259,14 +259,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -2748,10 +2748,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	// Sentinel Security Update: Interpreter Injection Protection
-	if isInterpreter(command) {
-		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
-			return err
-		}
+	// Check for interpreter injection (including nested interpreters like sh -c "awk ...")
+	if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+		return err
 	}
 
 	if quoteLevel == 3 { // Backticked
@@ -2785,7 +2784,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		cleanVal := strings.ToLower(b.String())
 
-		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+		dangerousCalls := []string{"system(", "exec(", "popen(", "eval(", "open("}
 		for _, call := range dangerousCalls {
 			if strings.Contains(cleanVal, call) {
 				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
@@ -2809,6 +2808,17 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Sentinel Security Update: Nested Interpreter Detection
+	// Heuristic: Check if template suggests an interpreter usage
+	// Logic: Parse the first word of template. If it is a known interpreter, use it for injection checks.
+	fields := strings.Fields(template)
+	if len(fields) > 0 {
+		potential := strings.ToLower(filepath.Base(fields[0]))
+		if isInterpreter(potential) {
+			base = potential
+		}
+	}
+
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
