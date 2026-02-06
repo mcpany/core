@@ -340,10 +340,14 @@ export function DashboardGrid() {
 
             {/* Empty State / Onboarding */}
             {visibleWidgets.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
-                    <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium">Your dashboard is empty</h3>
-                    <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
+                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-card/50 backdrop-blur-sm shadow-sm">
+                    <div className="p-4 bg-primary/10 rounded-full mb-4">
+                        <LayoutGrid className="h-10 w-10 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">Your dashboard is empty</h3>
+                    <p className="text-muted-foreground mb-6 max-w-sm text-center">
+                        Add widgets to visualize metrics, monitor services, and manage your MCP ecosystem.
+                    </p>
                     <AddWidgetSheet onAdd={addWidget} />
                 </div>
             )}
