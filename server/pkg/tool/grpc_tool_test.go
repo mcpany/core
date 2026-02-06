@@ -8,9 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net"
-	"os"
-	"path/filepath"
-	"runtime"
 	"testing"
 
 	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
@@ -23,82 +20,31 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoreflect.MethodDescriptor {
 	t.Helper()
 
-	// Try using runtime.Caller to find the test file location
-	_, filename, _, ok := runtime.Caller(0)
-	var path string
-	if ok {
-		baseDir := filepath.Dir(filename)
-		// Assume repo root is 3 levels up from server/pkg/tool
-		path = filepath.Join(baseDir, "../../../build/all.protoset")
-	} else {
-		path = "../../../build/all.protoset"
-	}
+	// Use the generated Go code to find the method descriptor.
+	// This avoids dependency on the external all.protoset file which might be missing in CI/minimal environments.
+	// We use GetWeatherRequest as an anchor to find the file descriptor.
+	fd := (&weatherpb.GetWeatherRequest{}).ProtoReflect().Descriptor().ParentFile()
+	require.NotNil(t, fd, "failed to get file descriptor from generated code")
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// Fallback to absolute path in container
-		path = "/app/build/all.protoset"
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			// Debugging info for CI failure
-			cwd, _ := os.Getwd()
-			t.Logf("Current working directory: %s", cwd)
-			t.Logf("Failed to find protoset at computed path: %s", path)
-
-			// Check what IS available
-			if entries, err := os.ReadDir("../../.."); err == nil {
-				var names []string
-				for _, e := range entries {
-					names = append(names, e.Name())
-				}
-				t.Logf("Entries in ../../..: %v", names)
-			} else {
-				t.Logf("Failed to read ../../..: %v", err)
-			}
-			if entries, err := os.ReadDir("../../../build"); err == nil {
-				var names []string
-				for _, e := range entries {
-					names = append(names, e.Name())
-				}
-				t.Logf("Entries in ../../../build: %v", names)
+	services := fd.Services()
+	for i := 0; i < services.Len(); i++ {
+		service := services.Get(i)
+		if string(service.Name()) == serviceName {
+			method := service.Methods().ByName(protoreflect.Name(methodName))
+			if method != nil {
+				return method
 			}
 		}
 	}
-	b, err := os.ReadFile(path)
-	require.NoError(t, err, "Failed to read protoset file at %s. Ensure 'make gen' has been run.", path)
 
-	fds := &descriptorpb.FileDescriptorSet{}
-	err = proto.Unmarshal(b, fds)
-	require.NoError(t, err, "Failed to unmarshal protoset file")
-
-	files, err := protodesc.NewFiles(fds)
-	require.NoError(t, err)
-
-	var methodDesc protoreflect.MethodDescriptor
-	files.RangeFiles(func(fd protoreflect.FileDescriptor) bool {
-		services := fd.Services()
-		for i := 0; i < services.Len(); i++ {
-			service := services.Get(i)
-			if string(service.Name()) == serviceName {
-				method := service.Methods().ByName(protoreflect.Name(methodName))
-				if method != nil {
-					methodDesc = method
-					return false // stop iterating
-				}
-			}
-		}
-		return true
-	})
-
-	require.NotNil(t, methodDesc, "method %s not found in service %s", methodName, serviceName)
-	return methodDesc
+	require.Fail(t, "method %s not found in service %s", methodName, serviceName)
+	return nil
 }
 
 func TestNewGRPCTool(t *testing.T) {

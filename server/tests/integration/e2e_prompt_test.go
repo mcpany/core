@@ -33,7 +33,18 @@ func BuildPromptServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(root, "../build/test/bin/prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
+	binPath := filepath.Join(root, "../build/test/bin/prompt-server")
+	absBinPath, err := filepath.Abs(binPath)
+	require.NoError(t, err)
+
+	// Check if binary exists
+	info, err := os.Stat(absBinPath)
+	if err != nil {
+		t.Fatalf("prompt-server binary not found at %s (root=%s). Ensure 'make build-e2e-mocks' has been run.", absBinPath, root)
+	}
+	t.Logf("Using prompt-server binary at: %s (size: %d, modtime: %s)", absBinPath, info.Size(), info.ModTime())
+
+	proc := integration.NewManagedProcess(t, "prompt_server", absBinPath, []string{"--port", fmt.Sprintf("%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
