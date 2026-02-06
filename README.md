@@ -2,6 +2,13 @@
 
 **One server, Infinite possibilities.**
 
+## Table of Contents
+- [1. Elevator Pitch](#1-elevator-pitch)
+- [2. Architecture](#2-architecture)
+- [3. Getting Started](#3-getting-started)
+- [4. Development](#4-development)
+- [5. Configuration](#5-configuration)
+
 ## 1. Elevator Pitch
 
 **What is this project and why does it exist?**
@@ -80,11 +87,31 @@ Follow these steps to get up and running immediately.
 
 ### Hello World
 Once the server is running, you can verify it using `curl` or an MCP client.
+
+**Check Health:**
 ```bash
-# Check health
 curl http://localhost:50050/health
 ```
 
+**Call a Tool (Manual JSON-RPC):**
+You can directly interact with the MCP endpoint to verify the `get_weather` tool from the example config:
+```bash
+curl -X POST http://localhost:50050/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_weather",
+      "arguments": {
+        "location": "San Francisco"
+      }
+    },
+    "id": 1
+  }'
+```
+
+**Connect an AI Client:**
 To connect an AI client (like Claude Desktop or Gemini CLI):
 ```bash
 gemini mcp add --transport http --trust mcpany http://localhost:50050

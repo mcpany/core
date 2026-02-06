@@ -92,7 +92,10 @@ func TestDatadogAuditStore_Batch(t *testing.T) {
 		atomic.AddInt32(&totalReceived, int32(len(logs)))
 		w.WriteHeader(http.StatusAccepted)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
+			select {
+			case done <- struct{}{}:
+			default:
+			}
 		}
 	}))
 	defer ts.Close()

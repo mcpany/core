@@ -73,7 +73,8 @@ func TestDockerHelpers(t *testing.T) {
 
 	// Verify we can actually run a container (handle overlay issues in some environments)
 	dockerExe, dockerArgs := getDockerCommand()
-	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec
+	// Use -d to match the usage in StartDockerContainer, as some environments might fail specifically on detached containers or cleanup
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "-d", "alpine:latest", "sleep", "1")...) //nolint:gosec
 	if err := checkCmd.Run(); err != nil {
 		t.Skipf("Docker available but unable to run containers (overlay/storage driver issue?): %v", err)
 	}
