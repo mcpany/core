@@ -4,45 +4,47 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
+import crypto from 'crypto';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
-export const seedServices = async (requestContext?: APIRequestContext) => {
+export const seedServices = async (requestContext?: APIRequestContext, suffix: string = "") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const s = suffix ? `-${suffix}` : "";
     const services = [
         {
-            id: "svc_01",
-            name: "Payment Gateway",
+            id: `svc_01${s}`,
+            name: `Payment Gateway${s}`,
             version: "v1.2.0",
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
+                    { name: `process_payment${s}`, description: "Process a payment" }
                 ]
             }
         },
         {
-            id: "svc_02",
-            name: "User Service",
+            id: `svc_02${s}`,
+            name: `User Service${s}`,
             version: "v1.0",
             http_service: {
                 address: "http://localhost:50051", // Dummy address, visibility checks don't need health
                 tools: [
-                     { name: "get_user", description: "Get user details" }
+                     { name: `get_user${s}`, description: "Get user details" }
                 ]
             }
         },
         // Add a service with calculator for existing test compatibility if desired
         {
-            id: "svc_03",
-            name: "Math",
+            id: `svc_03${s}`,
+            name: `Math${s}`,
             version: "v1.0",
             http_service: {
                 address: "http://localhost:8080", // Dummy
                 tools: [
-                    { name: "calculator", description: "calc" }
+                    { name: `calculator${s}`, description: "calc" }
                 ]
             }
         }
@@ -98,12 +100,13 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
+export const cleanupServices = async (requestContext?: APIRequestContext, suffix: string = "") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const s = suffix ? `-${suffix}` : "";
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete(`/api/v1/services/Payment Gateway${s}`, { headers: HEADERS });
+        await context.delete(`/api/v1/services/User Service${s}`, { headers: HEADERS });
+        await context.delete(`/api/v1/services/Math${s}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }

@@ -43,6 +43,7 @@ services:
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
+      - SKIP_BACKEND_STARTUP="true"
     command: >
       sh -c "
         mkdir -p test-results .audit playwright-report docs &&
