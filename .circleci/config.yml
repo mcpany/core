@@ -41,6 +41,10 @@ jobs:
           command: |
             curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
             sudo apt-get install -y nodejs
+      - restore_cache:
+          keys:
+            - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v1-lint-
       - run:
           name: Prepare Environment
           command: make prepare
@@ -51,6 +55,12 @@ jobs:
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
             make lint
+      - save_cache:
+          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          paths:
+            - "build/env/bin"
+            - "build/.cache"
+            - "venv"
 
 workflows:
   version: 2
