@@ -50,7 +50,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
-  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkEdit?: (names: string[], updates: { tags?: string[], timeout?: string, env?: Record<string, string> }) => void;
 }
 
 /**
@@ -63,6 +63,10 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
+  const [bulkTimeout, setBulkTimeout] = useState("");
+  const [bulkEnv, setBulkEnv] = useState<Record<string, string>>({});
+  const [bulkEnvKey, setBulkEnvKey] = useState("");
+  const [bulkEnvValue, setBulkEnvValue] = useState("");
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -210,7 +214,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             <DialogHeader>
                 <DialogTitle>Bulk Edit Services</DialogTitle>
                 <DialogDescription>
-                    Update {selected.size} selected services. Currently only supports updating tags.
+                    Update {selected.size} selected services.
                 </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -223,16 +227,76 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                         onChange={(e) => setBulkTags(e.target.value)}
                     />
                 </div>
+                <div className="space-y-2">
+                    <Label htmlFor="bulk-timeout">Set Timeout</Label>
+                    <Input
+                        id="bulk-timeout"
+                        placeholder="30s"
+                        value={bulkTimeout}
+                        onChange={(e) => setBulkTimeout(e.target.value)}
+                    />
+                    <p className="text-[10px] text-muted-foreground">Overrides existing timeout for all selected services.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label>Add Environment Variable</Label>
+                    <div className="flex gap-2">
+                        <Input
+                            placeholder="Key"
+                            value={bulkEnvKey}
+                            onChange={(e) => setBulkEnvKey(e.target.value)}
+                        />
+                         <Input
+                            placeholder="Value"
+                            value={bulkEnvValue}
+                            onChange={(e) => setBulkEnvValue(e.target.value)}
+                        />
+                         <Button
+                            variant="outline"
+                            onClick={() => {
+                                if(bulkEnvKey && bulkEnvValue) {
+                                    setBulkEnv({...bulkEnv, [bulkEnvKey]: bulkEnvValue});
+                                    setBulkEnvKey("");
+                                    setBulkEnvValue("");
+                                }
+                            }}
+                        >
+                            Add Env
+                        </Button>
+                    </div>
+                    {Object.keys(bulkEnv).length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {Object.entries(bulkEnv).map(([k, v]) => (
+                                <Badge key={k} variant="secondary" className="gap-1">
+                                    {k}={v}
+                                    <button onClick={() => {
+                                        const next = {...bulkEnv};
+                                        delete next[k];
+                                        setBulkEnv(next);
+                                    }} className="ml-1 hover:text-destructive">
+                                        <XCircle className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            ))}
+                        </div>
+                    )}
+                    <p className="text-[10px] text-muted-foreground">Applied only to Command Line and MCP Stdio services.</p>
+                </div>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        onBulkEdit(Array.from(selected), {
+                            tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean),
+                            timeout: bulkTimeout,
+                            env: bulkEnv
+                        });
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());
                     setBulkTags("");
+                    setBulkTimeout("");
+                    setBulkEnv({});
                 }}>Apply Changes</Button>
             </DialogFooter>
         </DialogContent>
