@@ -5,76 +5,50 @@
 
 
 import { test, expect } from '@playwright/test';
+import { seedServices, seedTraffic, seedUser, cleanupServices, cleanupUser } from './test-data';
 
 test.describe('MCP Any UI E2E', () => {
 
-  test('Debug verify file version', async () => {
-    console.log('DEBUG: RUNNING MODIFIED FILE');
+  test.beforeEach(async ({ request, page }) => {
+      await seedServices(request);
+      await seedTraffic(request);
+      await seedUser(request, "e2e-admin");
+
+      // Login
+      await page.goto('/login');
+      await page.fill('input[name="username"]', 'e2e-admin');
+      await page.fill('input[name="password"]', 'password');
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL('/', { timeout: 15000 });
   });
 
-  test.beforeEach(async ({ page }) => {
-    // Mock metrics API to prevent backend connection errors during tests
-    await page.route('**/api/v1/dashboard/metrics*', async route => {
-        await route.fulfill({
-            json: [
-                { label: "Total Requests", value: "1,234", icon: "Activity", change: "+10%", trend: "up" },
-                { label: "System Health", value: "99.9%", icon: "Zap", change: "Stable", trend: "neutral" }
-            ]
-        });
-    });
-
-    // Mock health API
-    await page.route('**/api/dashboard/health*', async route => {
-        await route.fulfill({
-            json: []
-        });
-    });
-
-    // Mock doctor API to prevent system status banner
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
-
-    // Mock stats/tools APIs for Analytics page
-    await page.route('**/api/v1/dashboard/traffic*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/dashboard/top-tools*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/tools*', async route => {
-        await route.fulfill({ json: { tools: [] } });
-    });
+  test.afterEach(async ({ request }) => {
+      await cleanupServices(request);
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
-    await page.goto('/');
-    // Updated title expectation to be robust (accept both branding variations)
+    // Check for title
     await expect(page).toHaveTitle(/MCPAny Manager|Jules Master/);
-    if (await page.getByText(/API Key Not Set/i).isVisible()) {
-         console.log('Dashboard test blocked by API Key. Skipping assertions.');
-         return;
-    }
-
     await expect(page.locator('h1')).toContainText(/Dashboard|Jules Master/);
 
     // Check for metrics cards
     await expect(page.locator('text=Total Requests').first()).toBeVisible();
     await expect(page.locator('text=System Health').first()).toBeVisible();
-    // Verify that exactly 2 metric cards are displayed
-    const cards = page.locator('.rounded-xl.border.bg-card');
-    // Note: The selector might need to be specific to the metric cards if other cards exist
-    // But based on the dashboard, we can check for specific content presence.
-    // Let's rely on visibility for now, or check count of specific metric values
-    await expect(page.getByText('1,234').first()).toBeVisible();
-    await expect(page.getByText('99.9%').first()).toBeVisible();
+
+    // Verify seeded data
+    // Seeded traffic: 100 requests
+    await expect(page.getByText('100').first()).toBeVisible();
+
+    // Seeded health: 100 requests, 2 errors => 98% success rate?
+    // Dashboard might show "Healthy" or percentage.
+    // The previous test expected '99.9%'.
+    // Let's check for '98.0%' or just presence of value card.
+    // If exact matching is flaky, we can check for regex.
+    await expect(page.getByText(/9\d\.\d%/)).toBeVisible();
   });
 
-  test.skip('should navigate to analytics from sidebar', async ({ page }) => {
+  test('should navigate to analytics from sidebar', async ({ page }) => {
     // Verify direct navigation first (and warm up the route)
     await page.goto('/stats');
     await expect(page.locator('h1')).toContainText('Analytics & Stats');

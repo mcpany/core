@@ -11,11 +11,19 @@ upstream_services:
         echo:
           method: "HTTP_METHOD_POST"
           endpoint_path: "/echo"
+          parameters:
+            - schema:
+                name: "message"
+                type: "STRING"
       tools:
         - name: "echo"
           description: "Echoes back the request body."
           call_id: "echo"
-          input_schema: {}
+          input_schema:
+            type: object
+            properties:
+              message:
+                type: string
       # health_check:
       #   timeout: "2s"
 

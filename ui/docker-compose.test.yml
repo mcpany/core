@@ -14,8 +14,9 @@ services:
       ]
     environment:
       - MCPANY_API_KEY=test-token
-      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
-      - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
+      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
+      - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
+      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true
       - MCPANY_ADMIN_PASSWORD=password
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
