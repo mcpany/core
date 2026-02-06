@@ -232,7 +232,11 @@ export interface Credential {
    * Optional: For interactive OAuth, the persisted session/tokens.
    * This allows the proxy to use this credential by refreshing the token.
    */
-  token?: UserToken | undefined;
+  token?:
+    | UserToken
+    | undefined;
+  /** The ID of the user who owns this credential. */
+  ownerId: string;
 }
 
 function createBaseSecretValue(): SecretValue {
@@ -1838,7 +1842,7 @@ export const UserToken: MessageFns<UserToken> = {
 };
 
 function createBaseCredential(): Credential {
-  return { id: "", name: "", authentication: undefined, token: undefined };
+  return { id: "", name: "", authentication: undefined, token: undefined, ownerId: "" };
 }
 
 export const Credential: MessageFns<Credential> = {
@@ -1854,6 +1858,9 @@ export const Credential: MessageFns<Credential> = {
     }
     if (message.token !== undefined) {
       UserToken.encode(message.token, writer.uint32(34).fork()).join();
+    }
+    if (message.ownerId !== "") {
+      writer.uint32(42).string(message.ownerId);
     }
     return writer;
   },
@@ -1897,6 +1904,14 @@ export const Credential: MessageFns<Credential> = {
           message.token = UserToken.decode(reader, reader.uint32());
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.ownerId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1912,6 +1927,7 @@ export const Credential: MessageFns<Credential> = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
       token: isSet(object.token) ? UserToken.fromJSON(object.token) : undefined,
+      ownerId: isSet(object.owner_id) ? globalThis.String(object.owner_id) : "",
     };
   },
 
@@ -1929,6 +1945,9 @@ export const Credential: MessageFns<Credential> = {
     if (message.token !== undefined) {
       obj.token = UserToken.toJSON(message.token);
     }
+    if (message.ownerId !== "") {
+      obj.owner_id = message.ownerId;
+    }
     return obj;
   },
 
@@ -1945,6 +1964,7 @@ export const Credential: MessageFns<Credential> = {
     message.token = (object.token !== undefined && object.token !== null)
       ? UserToken.fromPartial(object.token)
       : undefined;
+    message.ownerId = object.ownerId ?? "";
     return message;
   },
 };

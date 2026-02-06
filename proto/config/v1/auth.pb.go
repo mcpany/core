@@ -2792,6 +2792,7 @@ type Credential struct {
 	xxx_hidden_Name           *string                `protobuf:"bytes,2,opt,name=name"`
 	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,3,opt,name=authentication"`
 	xxx_hidden_Token          *UserToken             `protobuf:"bytes,4,opt,name=token"`
+	xxx_hidden_OwnerId        *string                `protobuf:"bytes,5,opt,name=owner_id"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -2857,14 +2858,24 @@ func (x *Credential) GetToken() *UserToken {
 	return nil
 }
 
+func (x *Credential) GetOwnerId() string {
+	if x != nil {
+		if x.xxx_hidden_OwnerId != nil {
+			return *x.xxx_hidden_OwnerId
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *Credential) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *Credential) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *Credential) SetAuthentication(v *Authentication) {
@@ -2873,6 +2884,11 @@ func (x *Credential) SetAuthentication(v *Authentication) {
 
 func (x *Credential) SetToken(v *UserToken) {
 	x.xxx_hidden_Token = v
+}
+
+func (x *Credential) SetOwnerId(v string) {
+	x.xxx_hidden_OwnerId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *Credential) HasId() bool {
@@ -2903,6 +2919,13 @@ func (x *Credential) HasToken() bool {
 	return x.xxx_hidden_Token != nil
 }
 
+func (x *Credential) HasOwnerId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
 func (x *Credential) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -2921,6 +2944,11 @@ func (x *Credential) ClearToken() {
 	x.xxx_hidden_Token = nil
 }
 
+func (x *Credential) ClearOwnerId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_OwnerId = nil
+}
+
 type Credential_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2933,6 +2961,8 @@ type Credential_builder struct {
 	// Optional: For interactive OAuth, the persisted session/tokens.
 	// This allows the proxy to use this credential by refreshing the token.
 	Token *UserToken
+	// The ID of the user who owns this credential.
+	OwnerId *string
 }
 
 func (b0 Credential_builder) Build() *Credential {
@@ -2940,15 +2970,19 @@ func (b0 Credential_builder) Build() *Credential {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_Name = b.Name
 	}
 	x.xxx_hidden_Authentication = b.Authentication
 	x.xxx_hidden_Token = b.Token
+	if b.OwnerId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_OwnerId = b.OwnerId
+	}
 	return m0
 }
 
@@ -3053,13 +3087,14 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\b \x01(\tR\n" +
 	"updated_at\x12\x14\n" +
-	"\x05email\x18\t \x01(\tR\x05email\"\xad\x01\n" +
+	"\x05email\x18\t \x01(\tR\x05email\"\xc9\x01\n" +
 	"\n" +
 	"Credential\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12H\n" +
 	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x121\n" +
-	"\x05token\x18\x04 \x01(\v2\x1b.mcpany.config.v1.UserTokenR\x05tokenB;B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\x05token\x18\x04 \x01(\v2\x1b.mcpany.config.v1.UserTokenR\x05token\x12\x1a\n" +
+	"\bowner_id\x18\x05 \x01(\tR\bowner_idB;B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
