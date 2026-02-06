@@ -247,6 +247,7 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	// Admin User Init expectations
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
@@ -348,6 +349,21 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to save default weather service")
+	})
+
+	t.Run("Storage SaveServiceCollection Error", func(t *testing.T) {
+		mockStore := new(MockStore)
+		app := &Application{}
+
+		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
+		mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+		mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(errors.New("save collection error"))
+
+		err := app.initializeDatabase(context.Background(), mockStore)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to save default collection")
 	})
 }
 

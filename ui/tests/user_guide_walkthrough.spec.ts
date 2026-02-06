@@ -106,7 +106,7 @@ test.describe('User Guide Walkthrough', () => {
     await page.goto('/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
     // "Create Stack" button is missing in implementation, check for default stack card instead
-    await expect(page.getByText('mcpany-system')).toBeVisible();
+    await expect(page.getByText('default-stack')).toBeVisible();
   });
 
   test('Webhooks Management', async ({ page }) => {

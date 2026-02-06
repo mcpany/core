@@ -3,32 +3,36 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Layers, Cuboid } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Layers, Cuboid, Loader2 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { apiClient } from "@/lib/client";
+import { ServiceCollection } from "@/lib/marketplace-service";
 
 /**
  * StacksPage component.
  * @returns The rendered component.
  */
 export default function StacksPage() {
-  // In a real Portainer, this would list multiple stacks.
-  // For MCP Any, we assume one main "MCP Any Stack" for now, or maybe files as stacks?
-  // Let's assume one "System" stack.
+  const [stacks, setStacks] = useState<ServiceCollection[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const stacks = [
-    {
-      id: "system",
-      name: "mcpany-system",
-      status: "active",
-      services: "Dynamic",
-      type: "Compose"
-    }
-  ];
+  useEffect(() => {
+    apiClient.listCollections()
+        .then((data) => setStacks(data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+      return <div className="flex h-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold tracking-tight">Stacks</h1>
         <p className="text-muted-foreground">Manage your MCP Any configuration stacks.</p>
@@ -36,7 +40,7 @@ export default function StacksPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {stacks.map((stack) => (
-          <Link key={stack.id} href={`/stacks/${stack.id}`}>
+          <Link key={stack.name} href={`/stacks/${stack.name}`}>
              <Card className="hover:shadow-md transition-all cursor-pointer group border-transparent shadow-sm bg-card hover:bg-muted/50">
                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -51,7 +55,7 @@ export default function StacksPage() {
                     </div>
                     <div>
                         <div className="text-2xl font-bold tracking-tight">{stack.name}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{stack.id}</div>
+                        <div className="text-xs text-muted-foreground font-mono">{stack.version || "1.0.0"}</div>
                     </div>
                  </div>
 
@@ -64,13 +68,19 @@ export default function StacksPage() {
                         Online
                     </div>
                     <div>
-                        {stack.services} Services
+                        {stack.services?.length || 0} Services
                     </div>
                  </div>
                </CardContent>
              </Card>
           </Link>
         ))}
+        {stacks.length === 0 && (
+            <div className="col-span-full flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg text-muted-foreground">
+                <Layers className="h-12 w-12 mb-4 opacity-50" />
+                <p>No stacks found.</p>
+            </div>
+        )}
       </div>
     </div>
   );

@@ -117,6 +117,18 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		if err := s.SaveService(ctx, weatherService); err != nil {
 			return fmt.Errorf("failed to save default weather service: %w", err)
 		}
+
+		// Default Collection (Stack)
+		defaultCollection := configv1.Collection_builder{
+			Name:        proto.String("default-stack"),
+			Description: proto.String("Default stack with weather service"),
+			Version:     proto.String("1.0.0"),
+			Services:    []*configv1.UpstreamServiceConfig{weatherService},
+		}.Build()
+
+		if err := s.SaveServiceCollection(ctx, defaultCollection); err != nil {
+			return fmt.Errorf("failed to save default collection: %w", err)
+		}
 	} else {
 		log.Warn("Store/Storage does not support saving defaults.")
 	}
