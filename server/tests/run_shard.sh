@@ -35,7 +35,7 @@ fi
 # Get list of packages, excluding unwanted ones
 PACKAGES=$(go list $PKG_PATTERN | \
     grep -v /tests/public_api | \
-    grep -v /pkg/command | \
+    grep -v "pkg/command" | \
     grep -v /build | \
     grep -v /tests/e2e_sequential | \
     sort)
