@@ -98,3 +98,64 @@ func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
 		t.Logf("Full Log Output:\n%s", logOutput)
 	}
 }
+
+// TestHTTPTool_Execute_SecretLeakageInError verifies that secrets passed as query parameters
+// are NOT returned in the error message when a connection error occurs.
+func TestHTTPTool_Execute_SecretLeakageInError(t *testing.T) {
+	// Allow local IPs for testing (bypass SSRF protection)
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
+	// Setup Pool
+	poolManager := pool.NewManager()
+	// Use a client that will fail to connect (bad port on localhost)
+	// We use a custom transport or just a bad URL.
+	// Using a bad URL is easier.
+	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: &http.Client{Timeout: 1}}, nil // Fast timeout
+	}, 1, 1, 1, 0, true)
+	require.NoError(t, err)
+	poolManager.Register("test-service", p)
+
+	// Define Tool with Secret Parameter in Query
+	// Use a port that is likely closed/invalid to trigger dial error
+	methodAndURL := "GET http://localhost:54321/api?token={{token}}"
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: &methodAndURL,
+	}.Build()
+
+	paramMapping := configv1.HttpParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{
+			Name: proto.String("token"),
+		}.Build(),
+		Secret: configv1.SecretValue_builder{
+			EnvironmentVariable: proto.String("TOKEN_VAR"),
+		}.Build(),
+	}.Build()
+
+	callDef := configv1.HttpCallDefinition_builder{
+		Method:     configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		Parameters: []*configv1.HttpParameterMapping{paramMapping},
+	}.Build()
+
+	// Mock Secret Resolution via env var
+	t.Setenv("TOKEN_VAR", "my_secret_token_value")
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+
+	// Execute
+	inputs := json.RawMessage(`{}`)
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+	_, err = httpTool.Execute(context.Background(), req)
+	require.Error(t, err)
+
+	// Verify error message
+	errMsg := err.Error()
+	t.Logf("Error message: %s", errMsg)
+
+	// The error message should NOT contain the secret
+	assert.NotContains(t, errMsg, "my_secret_token_value", "Error message leaked the secret token")
+	// Ideally it should contain the redacted version
+	// Depending on implementation, it might just say [REDACTED] or %5BREDACTED%5D
+	// But as long as the secret is NOT there, it's safer.
+}
