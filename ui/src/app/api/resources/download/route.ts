@@ -5,6 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * GET handler for downloading resources.
+ *
+ * @param request - The Next.js request object.
+ * @returns A NextResponse containing the file or an error.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');

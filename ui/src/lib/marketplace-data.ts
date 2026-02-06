@@ -6,6 +6,9 @@
 
 
 
+/**
+ * Configuration for a marketplace item.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];

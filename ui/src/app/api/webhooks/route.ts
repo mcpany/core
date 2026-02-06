@@ -6,6 +6,11 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * GET handler for webhooks.
+ *
+ * @returns A JSON response with a list of webhooks.
+ */
 export async function GET() {
   const webhooks = [
     { id: "wh_1", url: "https://example.com/webhook", events: ["service.up", "service.down"], active: true },
