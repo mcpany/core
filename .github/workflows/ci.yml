@@ -6,8 +6,18 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'docs/**'
+      - 'LICENSE'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'docs/**'
+      - 'LICENSE'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -220,7 +230,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1/4, 2/4, 3/4, 4/4]
+        shard: [1/2, 2/2]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -371,35 +381,35 @@ jobs:
       - name: Build and Save Images
         run: |
           # Server
-          make -C server build-docker
+          make -C server build-docker CACHE_TO=type=gha,mode=max,scope=server CACHE_FROM=type=gha,scope=server
           docker save -o server.tar mcpany/server:latest
 
           # HTTP Echo
-          make -C server build-http-echo-docker
+          make -C server build-http-echo-docker CACHE_TO=type=gha,mode=max,scope=http-echo CACHE_FROM=type=gha,scope=http-echo
           docker save -o http-echo.tar mcpany/http-echo-server:latest
 
           # Time Server
-          make -C server build-e2e-timeserver-docker
+          make -C server build-e2e-timeserver-docker CACHE_TO=type=gha,mode=max,scope=time-server CACHE_FROM=type=gha,scope=time-server
           docker save -o time-server.tar mcpany-e2e-time-server
 
           # Cowsay
-          make -C server build-cowsay-docker
+          make -C server build-cowsay-docker CACHE_TO=type=gha,mode=max,scope=cowsay CACHE_FROM=type=gha,scope=cowsay
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
 
           # Everything
-          make -C server build-everything-docker
+          make -C server build-everything-docker CACHE_TO=type=gha,mode=max,scope=everything CACHE_FROM=type=gha,scope=everything
           docker save -o everything.tar mcpany/everything:latest
 
           # UI
-          make -C server docker-build-ui
+          make -C server docker-build-ui CACHE_TO=type=gha,mode=max,scope=ui CACHE_FROM=type=gha,scope=ui
           docker save -o ui.tar mcpany/ui:latest
 
           # Operator
-          make -C server docker-build-operator
+          make -C server docker-build-operator CACHE_TO=type=gha,mode=max,scope=operator CACHE_FROM=type=gha,scope=operator
           docker save -o operator.tar mcpany/operator:latest
 
           # UI Test Image
-          make -C ui build-test-docker
+          make -C ui build-test-docker CACHE_TO=type=gha,mode=max,scope=ui-test CACHE_FROM=type=gha,scope=ui-test
           docker save -o ui-test-image.tar mcpany-ui-e2e:latest
 
       - name: Upload Server Image
