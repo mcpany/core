@@ -29,6 +29,8 @@ type readerInterface interface {
 }
 
 // Bus is a Kafka-backed implementation of the Bus interface.
+//
+// Summary: A type-safe message bus backed by Apache Kafka.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
@@ -39,10 +41,14 @@ type Bus[T any] struct {
 
 // New creates a new KafkaBus.
 //
-// config holds the configuration settings.
+// Summary: Initializes a new Kafka-backed Bus.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - config: *bus.KafkaBus. The Kafka configuration (brokers, topic prefix, etc.).
+//
+// Returns:
+//   - *Bus[T]: The initialized Bus instance.
+//   - error: An error if the configuration is invalid (e.g. missing brokers).
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	if len(config.GetBrokers()) == 0 {
 		return nil, fmt.Errorf("kafka brokers are missing")
@@ -67,11 +73,15 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 
 // Publish publishes a message to a Kafka topic.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// msg is the msg.
+// Summary: Sends a message to a Kafka topic.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - topic: string. The topic to publish to.
+//   - msg: T. The message to publish.
+//
+// Returns:
+//   - error: An error if serialization or publishing fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -90,11 +100,15 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 
 // Subscribe subscribes to a Kafka topic.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// handler is the handler.
+// Summary: Subscribes to a Kafka topic and processes messages.
 //
-// Returns the result.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic to subscribe to.
+//   - handler: func(T). The function to call when a message is received.
+//
+// Returns:
+//   - func(): A function to unsubscribe and stop processing.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -171,11 +185,15 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 
 // SubscribeOnce subscribes to a topic for a single message.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// handler is the handler.
+// Summary: Subscribes to a topic, processes the first message received, and then unsubscribes.
 //
-// Returns the result.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic to subscribe to.
+//   - handler: func(T). The function to call when the message is received.
+//
+// Returns:
+//   - func(): A function to unsubscribe early.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -195,7 +213,10 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 
 // Close closes the Kafka writer.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the underlying Kafka writer.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

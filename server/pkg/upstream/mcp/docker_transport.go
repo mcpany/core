@@ -31,6 +31,8 @@ import (
 
 // dockerClient is an interface that abstracts the Docker client methods used by DockerTransport.
 // It is used for testing purposes to allow mocking of the Docker client.
+//
+// Summary: Abstract interface for Docker client operations.
 type dockerClient interface {
 	ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
 	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
@@ -41,22 +43,39 @@ type dockerClient interface {
 	Close() error
 }
 
+// newDockerClient creates a new Docker client instance.
+//
+// Summary: Factory function for creating a Docker client.
+//
+// Parameters:
+//   - ops: ...client.Opt. Optional configuration options for the client.
+//
+// Returns:
+//   - dockerClient: The created Docker client interface.
+//   - error: An error if client creation fails.
 var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 	return client.NewClientWithOpts(ops...)
 }
 
 // DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
+//
+// Summary: MCP Transport implementation for Docker containers.
 type DockerTransport struct {
+	// StdioConfig holds the configuration for running the container in stdio mode.
 	StdioConfig *configv1.McpStdioConnection
 }
 
 // Connect establishes a connection to the service within the Docker container.
 //
-// ctx is the context for the request.
+// Summary: Starts the container and establishes a connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - mcp.Connection: The established connection.
+//   - error: An error if the operation fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -189,6 +208,8 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 
 // dockerConn provides a concrete implementation of the mcp.Connection interface,
 // tailored for communication with a service running in a Docker container.
+//
+// Summary: Connection implementation for Docker transport.
 type dockerConn struct {
 	rwc           io.ReadWriteCloser
 	decoder       *json.Decoder
@@ -198,10 +219,14 @@ type dockerConn struct {
 
 // Read decodes a single JSON-RPC message from the container's output stream.
 //
-// _ is an unused parameter.
+// Summary: Reads and decodes the next JSON-RPC message.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The context (unused in this implementation as Read is blocking).
+//
+// Returns:
+//   - jsonrpc.Message: The decoded message (Request or Response).
+//   - error: An error if reading or decoding fails.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -283,10 +308,14 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
 //
-// _ is an unused parameter.
-// msg is the msg.
+// Summary: Encodes and writes a JSON-RPC message.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The context (unused).
+//   - msg: jsonrpc.Message. The message to send.
+//
+// Returns:
+//   - error: An error if encoding or writing fails.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -328,19 +357,27 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the connection.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns a static identifier for the Docker transport session.
 //
-// Returns the result.
+// Summary: Returns the session ID.
+//
+// Returns:
+//   - string: "docker-transport-session".
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
 
 // dockerReadWriteCloser combines an io.Reader and an io.WriteCloser and manages container cleanup.
+//
+// Summary: Helper struct for managing container I/O and lifecycle.
 type dockerReadWriteCloser struct {
 	io.Reader
 	io.WriteCloser
@@ -350,7 +387,10 @@ type dockerReadWriteCloser struct {
 
 // Close closes the underlying connection and removes the associated Docker container.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the connection and cleans up the container.
+//
+// Returns:
+//   - error: An error if closing or cleanup fails.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -374,6 +414,8 @@ func (c *dockerReadWriteCloser) Close() error {
 
 // slogWriter implements the io.Writer interface, allowing it to be used as a
 // destination for log output. It writes each line of the input to a slog.Logger.
+//
+// Summary: Adapts io.Writer to slog.Logger.
 type slogWriter struct {
 	log   *slog.Logger
 	level slog.Level
@@ -381,6 +423,15 @@ type slogWriter struct {
 
 // Write takes a byte slice, scans it for lines, and logs each line
 // individually using the configured slog.Logger and level.
+//
+// Summary: Writes data to the logger.
+//
+// Parameters:
+//   - p: []byte. The data to write.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: Always nil.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
@@ -390,6 +441,8 @@ func (s *slogWriter) Write(p []byte) (n int, err error) {
 }
 
 // tailBuffer is a thread-safe buffer that keeps the last N bytes written to it.
+//
+// Summary: A circular-like buffer that keeps the tail of the data.
 type tailBuffer struct {
 	buf   []byte
 	limit int
@@ -398,10 +451,14 @@ type tailBuffer struct {
 
 // Write writes data to the buffer, maintaining the size limit.
 //
-// p is the p.
+// Summary: Writes data, dropping old data if limit exceeded.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - p: []byte. The data to write.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: Always nil.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -416,7 +473,10 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 
 // String returns the buffered data as a string.
 //
-// Returns the result.
+// Summary: Returns the buffer content as string.
+//
+// Returns:
+//   - string: The buffered data.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

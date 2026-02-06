@@ -113,6 +113,13 @@ Run the linter to verify your changes:
 make lint
 ```
 
+### Documentation Standards
+We enforce a "Gold Standard" for documentation. Undocumented code is considered broken.
+
+*   **Go:** We use a structured GoDoc format. Every exported function must include a **Summary**, **Parameters** list, **Returns** list, and potential **Errors**.
+*   **TypeScript:** We use TSDoc. Every exported function, class, or interface must include `@param`, `@returns`, and `@throws` tags where applicable.
+*   **Completeness:** 100% of the public API surface must be documented.
+
 ### Building
 Compile all artifacts (Server binary and UI assets).
 ```bash
