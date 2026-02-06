@@ -15,14 +15,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { apiClient } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Key, RotateCw, Copy, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, Key, RotateCw, Copy, Check, UserCheck } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProfileDefinition } from "@proto/config/v1/config";
 
 interface User {
   id: string;
   roles: string[];
+  profile_ids?: string[];
   authentication?: {
     basic_auth?: Record<string, never>;
     api_key?: {
@@ -36,6 +45,7 @@ interface User {
 const userSchema = z.object({
   id: z.string().min(3, "Username must be at least 3 characters").max(50, "Username too long").regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and dashes"),
   role: z.string().min(1, "Role is required"),
+  profile_id: z.string().optional(),
   password: z.string().optional(),
 });
 
@@ -47,6 +57,7 @@ type UserValues = z.infer<typeof userSchema>;
  */
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [profiles, setProfiles] = useState<ProfileDefinition[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -59,30 +70,37 @@ export default function UsersPage() {
     defaultValues: {
       id: "",
       role: "",
+      profile_id: "none",
       password: "",
     },
   });
 
-  async function loadUsers() {
+  async function loadData() {
+    setLoading(true);
     try {
-      const resp = await apiClient.listUsers();
-      if (Array.isArray(resp)) {
-        setUsers(resp);
-      } else if (resp && Array.isArray(resp.users)) {
-        setUsers(resp.users);
+      const [usersResp, profilesResp] = await Promise.all([
+          apiClient.listUsers(),
+          apiClient.listProfiles()
+      ]);
+
+      if (Array.isArray(usersResp)) {
+        setUsers(usersResp);
+      } else if (usersResp && Array.isArray(usersResp.users)) {
+        setUsers(usersResp.users);
       } else {
         setUsers([]);
       }
+
+      setProfiles(profilesResp || []);
     } catch (e) {
-      console.error("Failed to list users", e);
-      setUsers([]);
+      console.error("Failed to load data", e);
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadUsers();
+    loadData();
   }, []);
 
   // Reset form when dialog opens/closes or editing user changes
@@ -93,7 +111,8 @@ export default function UsersPage() {
       if (editingUser) {
         form.reset({
           id: editingUser.id,
-          role: editingUser.roles[0] || "",
+          role: editingUser.roles[0] || "viewer",
+          profile_id: (editingUser.profile_ids && editingUser.profile_ids.length > 0) ? editingUser.profile_ids[0] : "none",
           password: "",
         });
         if (editingUser.authentication?.api_key) {
@@ -105,6 +124,7 @@ export default function UsersPage() {
         form.reset({
           id: "",
           role: "viewer",
+          profile_id: "none",
           password: "",
         });
         setAuthType("password");
@@ -126,7 +146,7 @@ export default function UsersPage() {
     if (!confirm("Are you sure you want to delete this user?")) return;
     try {
         await apiClient.deleteUser(id);
-        loadUsers();
+        loadData();
     } catch (e) {
         console.error("Failed to delete user", e);
     }
@@ -161,10 +181,6 @@ export default function UsersPage() {
         }
     } else {
         if (!editingUser && !generatedKey) {
-             // If creating new user with API Key, must generate one
-             // If editing and switching to API Key, must generate one?
-             // If editing and already API Key, user might not want to regenerate.
-             // But if switching from Password to API Key, must generate.
              const alreadyApiKey = editingUser?.authentication?.api_key;
              if (!alreadyApiKey) {
                  // Must generate
@@ -198,10 +214,11 @@ export default function UsersPage() {
             }
         }
 
-        const userPayload = {
+        const userPayload: any = {
             id: data.id,
             roles: data.role ? [data.role] : [],
-            authentication: authConfig
+            authentication: authConfig,
+            profile_ids: (data.profile_id && data.profile_id !== "none") ? [data.profile_id] : []
         };
 
         if (editingUser) {
@@ -210,10 +227,9 @@ export default function UsersPage() {
             await apiClient.createUser(userPayload);
         }
         setIsDialogOpen(false);
-        loadUsers();
+        loadData();
     } catch (e) {
         console.error("Failed to save user", e);
-        // Could set a form error here if API returns a message
     }
   };
 
@@ -222,7 +238,7 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <div>
             <h2 className="text-3xl font-bold tracking-tight">Users</h2>
-            <p className="text-muted-foreground">Manage system access and roles.</p>
+            <p className="text-muted-foreground">Manage system access, roles, and profiles.</p>
         </div>
         <Button onClick={handleCreate}>
             <Plus className="mr-2 h-4 w-4" />
@@ -237,6 +253,7 @@ export default function UsersPage() {
                     <TableRow>
                         <TableHead>User ID</TableHead>
                         <TableHead>Roles</TableHead>
+                        <TableHead>Profile</TableHead>
                         <TableHead>Auth Method</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -251,6 +268,15 @@ export default function UsersPage() {
                                         {role}
                                     </Badge>
                                 ))}
+                            </TableCell>
+                            <TableCell>
+                                {user.profile_ids && user.profile_ids.length > 0 ? (
+                                    <Badge variant="secondary" className="gap-1">
+                                        <UserCheck className="h-3 w-3" /> {user.profile_ids[0]}
+                                    </Badge>
+                                ) : (
+                                    <span className="text-muted-foreground text-sm italic">None</span>
+                                )}
                             </TableCell>
                             <TableCell>
                                 {user.authentication?.basic_auth ? <div className="flex items-center gap-1"><Key className="h-3 w-3"/> Password</div> :
@@ -268,7 +294,7 @@ export default function UsersPage() {
                     ))}
                      {users.length === 0 && !loading && (
                         <TableRow>
-                            <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                            <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
                                 No users found.
                             </TableCell>
                         </TableRow>
@@ -306,7 +332,7 @@ export default function UsersPage() {
                   name="role"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Role</FormLabel>
+                      <FormLabel>Role (Tag)</FormLabel>
                       <FormControl>
                         <Input placeholder="admin, viewer, etc." {...field} />
                       </FormControl>
@@ -315,7 +341,33 @@ export default function UsersPage() {
                   )}
                 />
 
-                <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="profile_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Assigned Profile</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a profile" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">None (Full Access)</SelectItem>
+                          {profiles.map((profile) => (
+                            <SelectItem key={profile.name} value={profile.name}>
+                              {profile.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="space-y-2 pt-2 border-t">
                     <FormLabel>Authentication Method</FormLabel>
                     <Tabs value={authType} onValueChange={(v) => setAuthType(v as any)} className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
