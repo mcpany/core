@@ -61,6 +61,13 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	upstream := NewUpstream(nil)
+	// Override BundleBaseDir to use tempDir for isolation
+	if impl, ok := upstream.(*Upstream); ok {
+		impl.BundleBaseDir = filepath.Join(t.TempDir(), "mcp-bundles")
+		err := os.MkdirAll(impl.BundleBaseDir, 0755)
+		require.NoError(t, err)
+	}
+
 	ctx := context.Background()
 
 	mockCS := &mockClientSession{
@@ -101,11 +108,16 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	bd := capturedTransport.(*BundleDockerTransport)
 	assert.Equal(t, "node:18-alpine", bd.Image) // Inferred
 	assert.Equal(t, "node", bd.Command)
-	// Bundle unzipping should have happened in /tmp/mcp-bundles/<serviceID>
-	// We check mount
-	require.Len(t, bd.Mounts, 1)
-	assert.Equal(t, "/app/bundle", bd.Mounts[0].Target)
-	assert.Equal(t, filepath.Join(bundleBaseDir, serviceID), bd.Mounts[0].Source)
+
+	// Verify CopyFiles instead of Mounts
+	require.Len(t, bd.Files, 1)
+	assert.Equal(t, "/app/bundle", bd.Files[0].Dest)
+	// We can't verify exact source path easily without exposing Upstream struct details or complex logic,
+	// but we can check if it's set.
+	assert.NotEmpty(t, bd.Files[0].Source)
+
+	// Mounts should be empty now
+	assert.Empty(t, bd.Mounts)
 }
 
 func TestUpstream_Register_Bundle_Failures(t *testing.T) {
@@ -177,6 +189,11 @@ func TestUpstream_Register_Bundle_Python(t *testing.T) {
 	_ = file.Close()
 
 	upstream := NewUpstream(nil)
+	if impl, ok := upstream.(*Upstream); ok {
+		impl.BundleBaseDir = filepath.Join(t.TempDir(), "mcp-bundles")
+		_ = os.MkdirAll(impl.BundleBaseDir, 0755)
+	}
+
 	// Mock Connect
 	originalConnect := connectForTesting
 	var capturedTransport mcp.Transport

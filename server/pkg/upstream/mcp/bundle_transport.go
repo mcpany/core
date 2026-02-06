@@ -252,7 +252,7 @@ func archivePath(srcPath, baseName string) (io.ReadCloser, error) {
 			}
 
 			if !info.IsDir() {
-				file, err := os.Open(path)
+				file, err := os.Open(path) //nolint:gosec // Path is controlled by caller (bundle extraction)
 				if err != nil {
 					return err
 				}
