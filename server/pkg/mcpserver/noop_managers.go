@@ -41,6 +41,11 @@ func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 // Returns the result.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
+// ListMCPToolsForProfile implements tool.ManagerInterface.
+//
+// Returns the result.
+func (m *NoOpToolManager) ListMCPToolsForProfile(_ string) []*mcp.Tool { return nil }
+
 // ClearToolsForService implements tool.ManagerInterface.
 //
 // _ is an unused parameter.
