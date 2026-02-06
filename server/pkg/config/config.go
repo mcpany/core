@@ -25,7 +25,7 @@ import (
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   Exits the application with status code 1 if a flag binding operation fails
 //   (e.g., if a flag with the same name already exists).
 func BindRootFlags(cmd *cobra.Command) {
@@ -87,7 +87,7 @@ func BindRootFlags(cmd *cobra.Command) {
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   Exits the application with status code 1 if a flag binding operation fails.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
@@ -134,7 +134,7 @@ func BindServerFlags(cmd *cobra.Command) {
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   Exits the application with status code 1 if a flag binding operation fails.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)

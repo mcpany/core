@@ -425,6 +425,10 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Parameters:
 //   - ctx: context.Context. The context to cancel the loop.
 //   - interval: time.Duration. The check interval.
+//
+// Side Effects:
+//   - Spawns a background goroutine.
+//   - Periodically invokes CheckHealth on upstream services.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -493,6 +497,10 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 //
 // Returns:
 //   - error: Error if any shutdown fails.
+//
+// Side Effects:
+//   - Shuts down all upstream connections.
+//   - Clears internal state.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

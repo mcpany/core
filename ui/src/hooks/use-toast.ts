@@ -181,7 +181,14 @@ function toast({ ...props }: Toast) {
 
 /**
  * Hook to manage toast notifications.
- * @returns An object containing the current toasts and functions to manage them.
+ *
+ * Summary: Provides access to the global toast state and methods to dispatch new toasts.
+ *
+ * @returns Object. An object containing the current toasts and functions to manage them.
+ *
+ * Side Effects:
+ *  - Subscribes to the global memoryState.
+ *  - Updates local state on change.
  */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)

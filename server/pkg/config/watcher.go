@@ -14,8 +14,8 @@ import (
 )
 
 // Watcher monitors configuration files for changes and triggers a reload.
-// It watches the parent directory of specified files to handle atomic saves (rename/move)
-// commonly used by text editors.
+//
+// Summary: Watches the parent directory of specified files to handle atomic saves (rename/move) commonly used by text editors.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -25,9 +25,14 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Summary: Initializes a new file system watcher.
+//
 // Returns:
-//   - A pointer to a new Watcher.
-//   - An error if the watcher creation fails.
+//   - *Watcher: A pointer to a new Watcher instance.
+//   - error: An error if the watcher creation fails.
+//
+// Errors/Throws:
+//   - Returns error if fsnotify.NewWatcher() fails.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -42,12 +47,22 @@ func NewWatcher() (*Watcher, error) {
 
 // Watch starts monitoring the specified configuration paths.
 //
+// Summary: Registers the specified paths for monitoring and triggers the reload callback on changes.
+//
 // Parameters:
-//   - paths: A slice of file or directory paths to watch.
-//   - reloadFunc: The function to call when a change is detected.
+//   - paths: []string. A slice of file or directory paths to watch.
+//   - reloadFunc: func(). The function to call when a change is detected.
 //
 // Returns:
-//   - An error if watching fails.
+//   - error: An error if adding paths to the watcher fails.
+//
+// Errors/Throws:
+//   - Returns error if resolving absolute paths fails.
+//   - Returns error if adding a directory to the watcher fails.
+//
+// Side Effects:
+//   - Starts a goroutine to listen for file system events.
+//   - Logs errors and informational messages.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -161,6 +176,12 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close stops the file watcher and releases resources.
+//
+// Summary: Signals the watcher to stop and closes the underlying fsnotify watcher.
+//
+// Side Effects:
+//   - Closes the done channel.
+//   - Closes the fsnotify watcher.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()
