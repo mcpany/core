@@ -108,7 +108,7 @@ func TestIsAllowedPath_EvalSymlinksError_Permission(t *testing.T) {
 	// However, our code has `if os.IsNotExist(err)`. Permission error is NOT NotExist.
 	// So it should go to `else { return fmt.Errorf("failed to resolve symlinks ...") }`
 
-	// If it succeeds (because root), then err will be nil (if IsSecurePath passes and it resolves to inside CWD).
+	// If it succeeds (because root), then err will be nil (if IsPathTraversalSafe passes and it resolves to inside CWD).
 	// But "noperm/file.txt" -> abs path inside CWD -> isInside CWD -> OK.
 
 	// So to trigger error, we need EvalSymlinks to FAIL.

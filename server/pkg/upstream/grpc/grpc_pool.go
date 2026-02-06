@@ -76,10 +76,10 @@ func NewGrpcPool(
 	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials
 		if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
-			if err := validation.IsSecurePath(mtlsConfig.GetClientCertPath()); err != nil {
+			if err := validation.IsPathTraversalSafe(mtlsConfig.GetClientCertPath()); err != nil {
 				return nil, fmt.Errorf("invalid client certificate path: %w", err)
 			}
-			if err := validation.IsSecurePath(mtlsConfig.GetClientKeyPath()); err != nil {
+			if err := validation.IsPathTraversalSafe(mtlsConfig.GetClientKeyPath()); err != nil {
 				return nil, fmt.Errorf("invalid client key path: %w", err)
 			}
 			certificate, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
@@ -87,7 +87,7 @@ func NewGrpcPool(
 				return nil, err
 			}
 
-			if err := validation.IsSecurePath(mtlsConfig.GetCaCertPath()); err != nil {
+			if err := validation.IsPathTraversalSafe(mtlsConfig.GetCaCertPath()); err != nil {
 				return nil, fmt.Errorf("invalid CA certificate path: %w", err)
 			}
 			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())

@@ -60,21 +60,23 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
-// IsSecurePath checks if a given file path is secure and does not contain any
-// path traversal sequences ("../" or "..\\"). This function is crucial for
-// preventing directory traversal attacks, where a malicious actor could
-// otherwise access or manipulate files outside of the intended directory.
+// IsPathTraversalSafe checks if a given file path is safe from traversal attacks.
+// It ensures the path does not contain any path traversal sequences ("../" or "..\\").
 //
-// Summary: Checks for path traversal attempts.
+// Note: This function DOES NOT check if the path is absolute or relative.
+// It allows absolute paths (e.g. "/etc/passwd").
+// Use IsSafeRelativePath if you need to enforce relative paths.
+//
+// Summary: Checks for path traversal sequences.
 //
 // Parameters:
 //   - path: string. The path to check.
 //
 // Returns:
-//   - error: An error if the path is insecure.
+//   - error: An error if the path contains traversal sequences.
 //
-// IsSecurePath is a variable to allow mocking in tests.
-var IsSecurePath = func(path string) error {
+// IsPathTraversalSafe is a variable to allow mocking in tests.
+var IsPathTraversalSafe = func(path string) error {
 	// ⚡ BOLT: Fast path to avoid expensive string splitting for safe paths.
 	// Randomized Selection from Top 5 High-Impact Targets
 	if strings.Contains(path, "..") {
@@ -97,13 +99,18 @@ var IsSecurePath = func(path string) error {
 	return nil
 }
 
-// IsSecureRelativePath checks if a given file path is secure, relative, and does not contain any
+// IsSecurePath is a deprecated alias for IsPathTraversalSafe.
+//
+// Deprecated: Use IsPathTraversalSafe instead.
+var IsSecurePath = IsPathTraversalSafe
+
+// IsSafeRelativePath checks if a given file path is secure, relative, and does not contain any
 // path traversal sequences. It strictly disallows absolute paths and drive letters.
 //
 // Summary: Checks if a path is secure and relative.
-var IsSecureRelativePath = func(path string) error {
+var IsSafeRelativePath = func(path string) error {
 	// 1. Basic security check (no ..)
-	if err := IsSecurePath(path); err != nil {
+	if err := IsPathTraversalSafe(path); err != nil {
 		return err
 	}
 
@@ -134,6 +141,11 @@ var IsSecureRelativePath = func(path string) error {
 	return nil
 }
 
+// IsSecureRelativePath is a deprecated alias for IsSafeRelativePath.
+//
+// Deprecated: Use IsSafeRelativePath instead.
+var IsSecureRelativePath = IsSafeRelativePath
+
 var (
 	allowedPaths []string
 )
@@ -155,7 +167,7 @@ func SetAllowedPaths(paths []string) {
 // Summary: Checks if a path is within allowed directories.
 var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
-	if err := IsSecurePath(path); err != nil {
+	if err := IsPathTraversalSafe(path); err != nil {
 		return err
 	}
 
@@ -171,7 +183,7 @@ var IsAllowedPath = func(path string) error {
 		if os.IsNotExist(err) {
 			// If file does not exist, we need to check the first existing parent directory.
 			// We want to ensure that even if the file is created later, it won't traverse out.
-			// Since we already checked `IsSecurePath` (no `..`), if the non-existing parts don't have `..`,
+			// Since we already checked `IsPathTraversalSafe` (no `..`), if the non-existing parts don't have `..`,
 			// the only risk is if an existing parent component is a symlink pointing out.
 			current := absPath
 			for {

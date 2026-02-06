@@ -962,9 +962,9 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			// We need to ensure "insecure.pem" exists if we want to pass IsSecurePath FIRST?
-			// IsSecurePath is checked BEFORE FileExists.
-			// So if IsSecurePath fails, we get error immediately.
+			// We need to ensure "insecure.pem" exists if we want to pass IsPathTraversalSafe FIRST?
+			// IsPathTraversalSafe is checked BEFORE FileExists.
+			// So if IsPathTraversalSafe fails, we get error immediately.
 			// "insecure.pem" created as temp file in TestValidate_MtlsInsecure setup.
 
 			errs := Validate(context.Background(), tc.config, Server)

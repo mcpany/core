@@ -164,7 +164,7 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	defer m.mu.Unlock()
 
 	// validate path to prevent traversal and ensure it is relative
-	if err := validation.IsSecureRelativePath(relPath); err != nil {
+	if err := validation.IsSafeRelativePath(relPath); err != nil {
 		return fmt.Errorf("invalid asset path: %w", err)
 	}
 
