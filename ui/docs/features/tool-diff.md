@@ -1,8 +1,10 @@
 # Tool Output Diffing
 
-MCP Any now supports visual diffing for tool execution results. When you execute a tool multiple times with the same arguments, the Playground will automatically detect if the output has changed compared to the previous execution.
+**Status:** Planned (Upcoming)
 
-## How it works
+MCP Any is designing support for visual diffing for tool execution results. When you execute a tool multiple times with the same arguments, the Playground will automatically detect if the output has changed compared to the previous execution.
+
+## Planned Workflow
 
 1.  **Execute a Tool**: Run any tool in the Playground.
 2.  **Re-execute**: Run the same tool again with the exact same arguments.
@@ -11,9 +13,10 @@ MCP Any now supports visual diffing for tool execution results. When you execute
 
 ## Screenshot
 
+*(Mockup)*
 ![Tool Output Diff](../screenshots/diff-feature.png)
 
-## Benefits
+## Intended Benefits
 
 -   **Debugging**: Quickly identify why a tool is returning different data.
 -   **Verification**: Ensure that changes to upstream services are having the intended effect.
