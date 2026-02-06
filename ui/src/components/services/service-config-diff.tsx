@@ -6,11 +6,25 @@
 "use client";
 
 import React from "react";
-import { DiffEditor } from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import yaml from "js-yaml";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
+
+// ⚡ Bolt Optimization: Lazy load Monaco DiffEditor to avoid bundling it in the main chunk.
+// Randomized Selection from Top 5 High-Impact Targets
+const DiffEditor = dynamic(
+  () => import("@monaco-editor/react").then((mod) => mod.DiffEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
+        Loading Editor...
+      </div>
+    ),
+  }
+);
 
 interface ServiceConfigDiffProps {
   original: UpstreamServiceConfig;
