@@ -49,11 +49,11 @@ var fastJSON = jsoniter.Config{
 //   - When set, this function is called synchronously during Server() access.
 var AddReceivingMiddlewareHook func(name string)
 
-// Server is the core of the MCP Any application.
+// Server orchestrates the handling of MCP (Model Context Protocol) requests.
 //
-// It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
-// tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
-// handlers and communicates with backend workers via an event bus.
+// It manages various components such as tools, prompts, resources, and services.
+// It uses an internal router to delegate requests to the appropriate handlers and
+// communicates with backend workers via an event bus.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -71,6 +71,9 @@ type Server struct {
 //
 // It provides access to the core MCP server functionality, which can be used for advanced
 // configurations or direct interaction with the MCP server.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - *mcp.Server: The underlying server instance.
@@ -381,7 +384,7 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
-//   - req: *mcp.GetPromptRequest. The "prompts/get" request from the client, containing the prompt name and arguments.
+//   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
 //
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
@@ -450,7 +453,7 @@ func (s *Server) ListResources(
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
-//   - req: *mcp.ReadResourceRequest. The "resources/read" request from the client, containing the URI of the resource.
+//   - req: *mcp.ReadResourceRequest. The request containing the URI of the resource.
 //
 // Returns:
 //   - *mcp.ReadResourceResult: The content of the resource.
@@ -484,6 +487,9 @@ func (s *Server) ReadResource(
 // It provides access to the authentication manager, which is responsible for handling
 // authentication for incoming requests.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - *auth.Manager: The authentication manager instance.
 func (s *Server) AuthManager() *auth.Manager {
@@ -494,6 +500,9 @@ func (s *Server) AuthManager() *auth.Manager {
 //
 // It provides access to the tool manager, which is responsible for managing the lifecycle
 // and access to tools.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - tool.ManagerInterface: The tool manager interface.
@@ -506,6 +515,9 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 // It provides access to the prompt manager, which is responsible for managing the lifecycle
 // and access to prompts.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - prompt.ManagerInterface: The prompt manager interface.
 func (s *Server) PromptManager() prompt.ManagerInterface {
@@ -517,6 +529,9 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 // It provides access to the resource manager, which is responsible for managing the lifecycle
 // and access to resources.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - resource.ManagerInterface: The resource manager interface.
 func (s *Server) ResourceManager() resource.ManagerInterface {
@@ -526,6 +541,9 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 // ServiceRegistry returns the server's service registry.
 //
 // It provides access to the service registry, which keeps track of all registered upstream services.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - *serviceregistry.ServiceRegistry: The service registry instance.
@@ -559,6 +577,9 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 
 // ListTools returns a list of all available tools.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - []tool.Tool: A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
@@ -579,6 +600,9 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Throws/Errors:
+//   - error: If access is denied or tool execution fails.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -798,6 +822,9 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Returns:
 //   - error: An error if the reload function fails.
+//
+// Throws/Errors:
+//   - error: If the reload function returns an error.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -906,23 +933,37 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 	}, nil
 }
 
-// LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
-// its JSON content only when logged.
+// LazyRedact is a byte slice that implements slog.LogValuer.
+//
+// It lazily redacts its JSON content only when logged.
 type LazyRedact []byte
 
-// LogValue implements slog.LogValuer.
+// LogValue returns the redacted value of the byte slice.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - slog.Value: The redacted string value.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
 // LazyLogResult wraps a tool execution result for efficient logging.
+//
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 type LazyLogResult struct {
 	Value any
 }
 
-// LogValue implements slog.LogValuer.
+// LogValue returns the summarized or redacted value of the result.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - slog.Value: The summarized or redacted log value.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")
