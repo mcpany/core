@@ -8,10 +8,10 @@ Resilience is configured within the `resilience` block.
 
 ### Circuit Breaker Fields
 
-| Field                    | Type     | Description                                                               |
-| ------------------------ | -------- | ------------------------------------------------------------------------- |
-| `failure_rate_threshold` | `double` | The percentage of failures (0.0 - 1.0) that causes the circuit to open.   |
-| `open_duration`          | `string` | How long the circuit remains open before trying to recover (e.g., "10s"). |
+| Field                  | Type      | Description                                                               |
+| ---------------------- | --------- | ------------------------------------------------------------------------- |
+| `consecutive_failures` | `integer` | The number of consecutive failures that causes the circuit to open.       |
+| `open_duration`        | `string`  | How long the circuit remains open before trying to recover (e.g., "10s"). |
 
 ### Configuration Snippet
 
@@ -20,7 +20,7 @@ upstream_services:
   - name: "unstable-service"
     resilience:
       circuit_breaker:
-        failure_rate_threshold: 0.5
+        consecutive_failures: 5
         open_duration: "5s"
     http_service:
       address: "https://unstable.example.com"
@@ -28,7 +28,7 @@ upstream_services:
 
 ## Use Case
 
-If an upstream service starts failing 100% of requests (e.g., it's down), continuing to send requests wastes resources and slows down your server. A circuit breaker will detect this high failure rate and "open", immediately failing subsequent requests locally for a set duration (`open_duration`), giving the upstream service time to recover.
+If an upstream service starts failing 100% of requests (e.g., it's down), continuing to send requests wastes resources and slows down your server. A circuit breaker will detect these consecutive failures and "open", immediately failing subsequent requests locally for a set duration (`open_duration`), giving the upstream service time to recover.
 
 ## Public API Example
 
