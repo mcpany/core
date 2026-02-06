@@ -52,7 +52,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                         name: data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
                         openapiService: {
                             address: importUrl,
-                            specUrl: importUrl,
+                            specSource: { $case: "specUrl", specUrl: importUrl },
                             tools: [], resources: [], calls: {}, prompts: []
                         }
                     }];
