@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, forwardRef } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
@@ -13,6 +13,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { TableVirtuoso, TableVirtuosoProps } from "react-virtuoso";
 
 interface JsonViewProps {
   data: unknown;
@@ -27,6 +28,23 @@ interface JsonViewProps {
    */
   maxHeight?: number;
 }
+
+// ⚡ BOLT: Custom Table components for Virtuoso to match Shadcn UI styling.
+// Randomized Selection from Top 5 High-Impact Targets (Virtualization)
+const VirtuosoTableComponents: TableVirtuosoProps<any, any>['components'] = {
+  Table: ({ style, ...props }: any) => (
+    <table {...props} style={{ ...style, width: "100%" }} className="w-full caption-bottom text-sm" />
+  ),
+  TableBody: forwardRef(({ className, ...props }: any, ref) => (
+    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+  )),
+  TableHead: forwardRef(({ className, ...props }: any, ref) => (
+    <thead ref={ref} className={cn("[&_tr]:border-b bg-muted/50", className)} {...props} />
+  )),
+  TableRow: ({ className, ...props }: any) => (
+    <tr className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", className)} {...props} />
+  ),
+};
 
 /**
  * JsonView component.
@@ -164,49 +182,49 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
     });
     const columns = Array.from(allKeys);
 
+    // ⚡ BOLT: Implemented virtualization for JSON table view using react-virtuoso.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const estimatedHeight = Math.min(tableData.length * 36 + 50, 800);
+    const tableHeight = showCollapse && !isExpanded ? Math.min(maxHeight, estimatedHeight) : estimatedHeight;
+
     return (
-        <div className={cn("rounded-md border overflow-hidden bg-card", className)}>
-             <div
-                className={cn("overflow-auto", showCollapse && !isExpanded ? "relative" : "")}
-                style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
-             >
-                <Table>
-                    <TableHeader className="bg-muted/50 sticky top-0 z-10">
-                        <TableRow>
-                            {columns.map(col => (
-                                <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8 bg-muted/50">
-                                    {col}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tableData.map((row: Record<string, unknown>, idx: number) => (
-                            <TableRow key={idx} className="hover:bg-muted/50">
-                                {columns.map(col => {
-                                    const val = row[col];
-                                    let displayVal = val;
-                                    if (typeof val === 'object' && val !== null) {
-                                        displayVal = JSON.stringify(val);
-                                    } else if (typeof val === 'boolean') {
-                                        displayVal = val ? "true" : "false";
-                                    }
-
-                                    return (
-                                        <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                            {String(displayVal ?? "")}
-                                        </TableCell>
-                                    );
-                                })}
-                            </TableRow>
+        <div className={cn("rounded-md border bg-card", className)}>
+             <TableVirtuoso
+                style={{ height: tableHeight }}
+                data={tableData}
+                initialItemCount={50}
+                components={VirtuosoTableComponents}
+                fixedHeaderContent={() => (
+                   <TableRow>
+                        {columns.map(col => (
+                            <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8 bg-muted/50">
+                                {col}
+                            </TableHead>
                         ))}
-                    </TableBody>
-                </Table>
-
-                 {showCollapse && !isExpanded && (
-                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+                   </TableRow>
                 )}
-            </div>
+                itemContent={(index, row: Record<string, unknown>) => {
+                    if (!row) return <></>;
+                    return (
+                    <>
+                        {columns.map(col => {
+                            const val = row[col];
+                            let displayVal = val;
+                            if (typeof val === 'object' && val !== null) {
+                                displayVal = JSON.stringify(val);
+                            } else if (typeof val === 'boolean') {
+                                displayVal = val ? "true" : "false";
+                            }
+
+                            return (
+                                <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
+                                    {String(displayVal ?? "")}
+                                </TableCell>
+                            );
+                        })}
+                    </>
+                )}}
+             />
 
              <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t flex justify-between items-center">
                 <span>Showing {tableData.length} rows</span>
@@ -217,7 +235,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                         className="h-4 p-0 text-[10px] text-primary"
                         onClick={() => setIsExpanded(!isExpanded)}
                     >
-                        {isExpanded ? "Collapse" : "Expand"}
+                        {isExpanded ? "Collapse" : "Expand Viewport"}
                     </Button>
                  )}
             </div>
