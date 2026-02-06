@@ -99,6 +99,8 @@ var IsPathTraversalSafe = func(path string) error {
 	return nil
 }
 
+// IsSecurePath is a deprecated alias for IsPathTraversalSafe.
+//
 // Deprecated: Use IsPathTraversalSafe instead.
 var IsSecurePath = IsPathTraversalSafe
 
@@ -139,6 +141,8 @@ var IsSafeRelativePath = func(path string) error {
 	return nil
 }
 
+// IsSecureRelativePath is a deprecated alias for IsSafeRelativePath.
+//
 // Deprecated: Use IsSafeRelativePath instead.
 var IsSecureRelativePath = IsSafeRelativePath
 
