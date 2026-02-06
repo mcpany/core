@@ -9,9 +9,8 @@ Acknowledge and investigate system anomalies. The Alerts system centralizes noti
 
 ### 1. View Alerts
 Navigate to `/alerts`.
-- **Active**: Current unresolved issues.
-- **History**: Past resolved alerts.
-- **Severity**: Critical (Red), Warning (Yellow), Info (Blue).
+- **Filters**: Use the dropdown menus to filter by **Severity** (Critical, Warning, Info) or **Status** (Active, Acknowledged, Resolved).
+- **Search**: Filter alerts by title, message, or service name using the search bar.
 
 ![Alerts List](screenshots/alerts_list.png)
 

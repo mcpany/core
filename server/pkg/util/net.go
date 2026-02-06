@@ -75,6 +75,9 @@ func NewSafeDialer() *SafeDialer {
 //   - (net.Conn): The established connection.
 //   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+	if d == nil {
+		return nil, fmt.Errorf("SafeDialer is nil")
+	}
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split host and port: %w", err)
@@ -82,7 +85,7 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 	resolver := d.Resolver
 	if resolver == nil {
-		resolver = net.DefaultResolver
+		resolver = &net.Resolver{}
 	}
 
 	lookupNetwork := "ip"
@@ -136,6 +139,7 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
+// It respects the MCPANY_DANGEROUS_ALLOW_LOCAL_IPS environment variable.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the dial operation.
@@ -146,7 +150,18 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //   - (net.Conn): The established connection.
 //   - (error): An error if the connection is blocked by policy or fails.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
-	return NewSafeDialer().DialContext(ctx, network, addr)
+	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		dialer.AllowPrivate = true
+	}
+	return dialer.DialContext(ctx, network, addr)
 }
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
@@ -155,11 +170,16 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Configuration is loaded from environment variables:
 //   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
+//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow both (dangerous!).
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
 	}
