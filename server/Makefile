@@ -530,7 +530,7 @@ build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver te
 ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
-	-@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples || echo "Warning: Docker build failed, continuing..."
+	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
@@ -571,20 +571,20 @@ ifdef HAS_DOCKER
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
 			CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
-			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push . || echo "Warning: Docker build failed"; \
+			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push .; \
 		else \
 			if [ "$(HAS_BUILDX)" = "1" ]; then \
 				CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
 				if echo "$${PLATFORMS}" | grep -q ','; then \
 					echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} . || echo "Warning: Docker build failed"; \
+					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
 				else \
 					echo "Building single-platform image locally and loading to docker images..."; \
-					$(DOCKER_BUILD_CMD) $${CMD_ARGS} $${CACHE_ARGS} . || echo "Warning: Docker build failed"; \
+					$(DOCKER_BUILD_CMD) $${CMD_ARGS} $${CACHE_ARGS} .; \
 				fi; \
 			else \
 				echo "Building image using legacy docker build..."; \
-				$(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server . || echo "Warning: Docker build failed"; \
+				$(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server .; \
 			fi; \
 		fi; \
 	}
