@@ -2809,46 +2809,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Sentinel Security Update: Block qx operator in Perl (Only dangerous in unquoted context)
-	if strings.HasPrefix(base, "perl") && quoteLevel == 0 {
-		// qx/.../ executes command. qx is an operator.
-		if containsWord(val, "qx") {
-			return fmt.Errorf("perl qx injection detected: value contains 'qx' operator")
+	if strings.HasPrefix(base, "perl") {
+		if err := checkPerlInjection(val, quoteLevel); err != nil {
+			return err
 		}
 	}
 
-	// Sentinel Security Update: Block %x operator in Ruby (Only dangerous in unquoted context)
-	if strings.HasPrefix(base, "ruby") && quoteLevel == 0 {
-		if strings.Contains(val, "%x") {
-			return fmt.Errorf("ruby percent-x injection detected: value contains '%%x'")
+	if strings.HasPrefix(base, "ruby") {
+		if err := checkRubyInjection(val, quoteLevel); err != nil {
+			return err
 		}
 	}
 
-	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
-		// Scan template to find the prefix of the quote containing the placeholder
-		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
-		hasFString := false
-		for i := 0; i < len(template)-1; i++ {
-			if template[i+1] == '\'' || template[i+1] == '"' {
-				prefix := strings.ToLower(getPrefix(template, i+1))
-				if prefix == "f" || prefix == "fr" || prefix == "rf" {
-					hasFString = true
-					break
-				}
-			}
-		}
-		if hasFString {
-			if strings.ContainsAny(val, "{}") {
-				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
-			}
-		}
-	}
-
-	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+		if err := checkPythonInjection(val, template); err != nil {
+			return err
 		}
 	}
 
@@ -2857,15 +2832,9 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
 
-	if isNode && quoteLevel == 3 { // Backtick
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
-		}
-	}
-	// Perl and PHP interpolate variables in both double quotes and backticks
-	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+	if (isNode || isPerl || isPhp) {
+		if err := checkInterpolationInjection(val, quoteLevel, isNode, isPerl, isPhp); err != nil {
+			return err
 		}
 	}
 
@@ -2877,6 +2846,69 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
+	return nil
+}
+
+func checkPerlInjection(val string, quoteLevel int) error {
+	// Sentinel Security Update: Block qx operator in Perl (Only dangerous in unquoted context)
+	if quoteLevel == 0 {
+		// qx/.../ executes command. qx is an operator.
+		if containsWord(val, "qx") {
+			return fmt.Errorf("perl qx injection detected: value contains 'qx' operator")
+		}
+	}
+	return nil
+}
+
+func checkRubyInjection(val string, quoteLevel int) error {
+	// Sentinel Security Update: Block %x operator in Ruby (Only dangerous in unquoted context)
+	if quoteLevel == 0 {
+		if strings.Contains(val, "%x") {
+			return fmt.Errorf("ruby percent-x injection detected: value contains '%%x'")
+		}
+	}
+	// Ruby: #{...} works in double quotes AND backticks
+	if quoteLevel == 1 || quoteLevel == 3 { // Double Quoted or Backticked
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+		}
+	}
+	return nil
+}
+
+func checkPythonInjection(val, template string) error {
+	// Scan template to find the prefix of the quote containing the placeholder
+	// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+	hasFString := false
+	for i := 0; i < len(template)-1; i++ {
+		if template[i+1] == '\'' || template[i+1] == '"' {
+			prefix := strings.ToLower(getPrefix(template, i+1))
+			if prefix == "f" || prefix == "fr" || prefix == "rf" {
+				hasFString = true
+				break
+			}
+		}
+	}
+	if hasFString {
+		if strings.ContainsAny(val, "{}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+		}
+	}
+	return nil
+}
+
+func checkInterpolationInjection(val string, quoteLevel int, isNode, isPerl, isPhp bool) error {
+	if isNode && quoteLevel == 3 { // Backtick
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+		}
+	}
+	// Perl and PHP interpolate variables in both double quotes and backticks
+	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+		}
+	}
 	return nil
 }
 
