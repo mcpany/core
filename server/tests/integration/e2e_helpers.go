@@ -585,6 +585,26 @@ func IsDockerSocketAccessible() bool {
 	return true
 }
 
+// IsDockerUsable checks if Docker can actually run containers.
+// This is necessary because in some CI environments, the socket is accessible
+// but running containers fails (e.g. due to overlayfs issues).
+func IsDockerUsable() bool {
+	if !IsDockerSocketAccessible() {
+		return false
+	}
+
+	dockerExe, dockerArgs := getDockerCommand()
+	// Try running a very lightweight command in a container that should be present or easily pulled.
+	// We use "hello-world" or "alpine" with "true".
+	// "alpine" is used in other tests, so it's likely cached.
+	args := append(dockerArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")
+	cmd := exec.CommandContext(context.Background(), dockerExe, args...) //nolint:gosec // Test helper
+	if err := cmd.Run(); err != nil {
+		return false
+	}
+	return true
+}
+
 // --- Mock Service Start Helpers (External Processes) ---
 
 // StartDockerContainer starts a docker container with the given image and args.
@@ -1002,7 +1022,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+	require.True(t, IsDockerUsable(), "Docker is not running or accessible (or cannot run containers). Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation

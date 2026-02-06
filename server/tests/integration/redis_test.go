@@ -15,6 +15,9 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	if !IsDockerUsable() {
+		t.Skip("Docker is not usable, skipping TestRedisBus_ExternalServer")
+	}
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 

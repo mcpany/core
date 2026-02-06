@@ -66,8 +66,9 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not available")
+	// Use IsDockerUsable instead of IsDockerSocketAccessible to catch overlayfs issues
+	if !IsDockerUsable() {
+		t.Skip("Docker is not usable (socket accessible but run failed)")
 	}
 
 	// Test StartDockerContainer
