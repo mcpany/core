@@ -31,7 +31,8 @@ import (
 
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 10*time.Second)
+	// Use a short interval to ensure metrics are flushed quickly, but long retention to keep them
+	sink := metrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -96,11 +97,31 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Check metrics
-	data := sink.Data()
-	require.NotEmpty(t, data)
-	samples := data[0].Samples
-	require.NotEmpty(t, samples)
+	// Check metrics with retry
+	var samples map[string]metrics.SampledValue
+	expectedPrefix := "mcpany.tools.call.latency;tool="
+
+	require.Eventually(t, func() bool {
+		// Emit a test metric continuously to force interval rotation in InmemSink
+		metrics.IncrCounter([]string{"test", "heartbeat"}, 1)
+
+		data := sink.Data()
+		if len(data) == 0 {
+			return false
+		}
+		// Look for the samples in any interval (likely the latest)
+		for _, interval := range data {
+			for k := range interval.Samples {
+				if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
+					samples = interval.Samples
+					return true
+				}
+			}
+		}
+		return false
+	}, 5*time.Second, 50*time.Millisecond, "Latency metric should be flushed to sink")
+
+	require.NotEmpty(t, samples, "Should have samples containing latency metric")
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
 	// But in the buggy version, it DOES exist.
@@ -113,8 +134,8 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 
 	// Check for labelled metric (should exist)
 	foundLabelled := false
-	expectedPrefix := "mcpany.tools.call.latency;tool="
 	for k := range samples {
+		t.Logf("Metric key: %s", k)
 		if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
 			foundLabelled = true
 			break
