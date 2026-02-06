@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
-import { useServiceHealth } from "@/contexts/service-health-context";
+import { useServiceHistory } from "@/contexts/service-health-context";
 import { Sparkline } from "@/components/charts/sparkline";
 import {
   Dialog,
@@ -288,8 +288,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
         return !!(service.grpcService?.tlsConfig || service.httpService?.tlsConfig || service.mcpService?.httpConnection?.tlsConfig);
     }, [service]);
 
-    const { getServiceHistory } = useServiceHealth();
-    const history = getServiceHistory(service.name);
+    const history = useServiceHistory(service.name);
     const latencies = useMemo(() => history.map(h => h.latencyMs), [history]);
     const maxLatency = useMemo(() => Math.max(...latencies, 50), [latencies]); // Minimum max of 50ms for scale
 

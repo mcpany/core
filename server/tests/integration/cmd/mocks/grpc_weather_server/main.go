@@ -58,7 +58,7 @@ func main() {
 	var err error
 	for i := 0; i < 5; i++ {
 		var lc net.ListenConfig
-	lis, err = lc.Listen(context.Background(), "tcp", address)
+		lis, err = lc.Listen(context.Background(), "tcp", address)
 		if err == nil {
 			break
 		}
@@ -71,9 +71,12 @@ func main() {
 	}
 
 	actualPort := lis.Addr().(*net.TCPAddr).Port
+	// Log the port in the format e2e_helpers.WaitForPort expects
 	slog.Info("grpc_weather_server: Listening on port", "port", actualPort)
 	if *port == 0 {
-		fmt.Printf("%d\n", actualPort) // Output port for test runner
+		// Output simple integer port to stdout, which WaitForPort also accepts
+		fmt.Printf("%d\n", actualPort)
+		// Ignore error from Sync to satisfy linter
 		_ = os.Stdout.Sync()
 	}
 
