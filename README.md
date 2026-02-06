@@ -14,17 +14,20 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 ## 2. Architecture
 
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It features a high-performance **Go** server for the core protocol and a modern **Next.js** dashboard for management and observability.
 
 **High-Level Overview:**
 1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+5.  **Dashboard**: A rich UI for visualizing logs, tracing requests, and managing configurations.
 
 ```mermaid
 graph TD
     User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+    Admin[Admin / Developer] -->|Web UI| UI[Next.js Dashboard]
+    UI -->|gRPC/REST| Server
 
     subgraph "MCP Any Core"
         Server --> Registry[Service Registry]
@@ -50,8 +53,8 @@ graph TD
 Follow these steps to get up and running immediately.
 
 ### Prerequisites
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   [Go 1.23+](https://go.dev/doc/install) (for building the server)
+*   [Node.js 18+](https://nodejs.org/) (for the dashboard)
 *   `make` (for build automation)
 
 ### Installation
@@ -67,11 +70,11 @@ Follow these steps to get up and running immediately.
     make prepare
     ```
 
-3.  **Build the server:**
+3.  **Build the server and UI:**
     ```bash
     make build
     ```
-    This will create the `server` binary in `build/bin/`.
+    This will create the `server` binary in `build/bin/` and build the UI assets.
 
 4.  **Run with an example configuration:**
     ```bash

@@ -7,7 +7,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { UpstreamServiceConfig } from '@/lib/client';
 
 /**
- * WizardStep defines the sequence of steps in the configuration wizard.
+ * Defines the sequence of steps in the configuration wizard.
  */
 export enum WizardStep {
     SERVICE_TYPE = 0,
@@ -18,17 +18,25 @@ export enum WizardStep {
 }
 
 /**
- * WizardState type definition.
+ * Defines the comprehensive state of the configuration wizard, including current step,
+ * the service configuration being built, and temporary UI state.
  */
 export interface WizardState {
+    /** The current active step in the wizard flow. */
     currentStep: WizardStep;
+    /** The partial service configuration being assembled. */
     config: Partial<UpstreamServiceConfig>;
-    // Temporary state for the wizard that might not map 1:1 to config yet
+    /** ID of the selected template if one was chosen. */
     selectedTemplateId?: string;
-    params: Record<string, string>; // Key-Value pairs for parameters/env vars
+    /** Key-Value pairs for parameters or environment variables collected during the process. */
+    params: Record<string, string>;
+    /** List of webhooks to be configured. */
     webhooks: any[]; // TODO: Define webhook type
+    /** List of transformers to be applied. */
     transformers: any[];
+    /** The selected authentication mode (local config or creating a new credential). */
     authType?: 'local' | 'new';
+    /** ID of the credential if selected. */
     authCredentialId?: string;
 }
 
@@ -63,11 +71,22 @@ const defaultState: WizardState = {
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**
- * WizardProvider manages the state of the configuration wizard and provides
- * methods to navigate between steps and update the configuration.
+ * Manages the state of the configuration wizard and provides methods to navigate
+ * between steps and update the configuration.
+ *
+ * It handles:
+ * - State initialization and hydration from sessionStorage.
+ * - Validation logic for each step.
+ * - Navigation (Next/Prev).
+ *
  * @param props - The component props.
  * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered WizardProvider.
+ *
+ * @remarks
+ * Side Effects:
+ * - Reads from `sessionStorage` on mount to restore state.
+ * - Writes to `sessionStorage` on state changes to persist progress.
  */
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WizardState>(defaultState);
@@ -133,17 +152,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     const nextStep = () => {
         const validation = validateStep(state.currentStep);
         if (!validation.valid) {
-            // caller should handle error display, or we throw?
-            // Better to return boolean if possible, but the signature is void.
-            // We'll trust the caller to check validateStep OR we change nextStep signature?
-            // Let's change nextStep to return boolean?
-            // But consumers might expect void.
-            // Let's just return early and let UI handle validation check separately?
-            // Or exposing validateStep is better.
             console.warn("Validation failed:", validation.error);
-            // We won't block here if the UI doesn't check, but we should.
-            // Let's allow movement if we change the nextStep to check it?
-            // Ideally validation is UI concern before calling nextStep.
         }
 
         setState(prev => {
@@ -169,9 +178,10 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * useWizard is a hook to access the wizard context.
+ * Hook to access the wizard context.
+ *
  * @returns The wizard context containing state and navigation methods.
- * @throws Error if used outside of a WizardProvider.
+ * @throws {Error} If used outside of a WizardProvider.
  */
 export function useWizard() {
     const context = useContext(WizardContext);

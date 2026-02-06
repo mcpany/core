@@ -3,40 +3,54 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-
+/**
+ * Configuration parameters for running a marketplace item (tool).
+ */
 export interface MarketplaceItemConfig {
+  /** The command to execute (e.g., npx, docker). */
   command: string;
+  /** Arguments to pass to the command. */
   args: string[];
+  /** Environment variables required by the tool. */
   envVars: EnvVarDefinition[];
 }
 
 /**
- * EnvVarDefinition type definition.
+ * Defines a required environment variable for a tool.
  */
 export interface EnvVarDefinition {
+  /** The name of the environment variable (e.g., GITHUB_TOKEN). */
   name: string;
+  /** A human-readable description for the UI. */
   description: string;
+  /** Whether this variable is mandatory. */
   required: boolean;
+  /** The input type for the UI (text, password, path). */
   type: "text" | "password" | "path";
-  // If true, this value is also appended to the command args
+  /** If true, this value is also appended to the command args. */
   addToArgs?: boolean;
 }
 
 /**
- * MarketplaceItem type definition.
+ * Represents an available tool in the marketplace.
  */
 export interface MarketplaceItem {
+  /** Unique identifier for the item. */
   id: string;
+  /** Display name of the tool. */
   name: string;
+  /** Short description of what the tool does. */
   description: string;
-  icon: string; // We'll map string to Lucide icon in the UI
+  /** Name of the icon to display (mapped to Lucide icons). */
+  icon: string;
+  /** Configuration details for running the tool. */
   config: MarketplaceItemConfig;
 }
 
 /**
- * The MARKETPLACE_ITEMS const.
+ * List of pre-configured tools available in the marketplace.
+ *
+ * These items serve as templates for quickly installing popular MCP servers.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {
