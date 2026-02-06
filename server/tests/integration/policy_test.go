@@ -31,6 +31,18 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	root := ProjectRoot(t)
 	serverBin := filepath.Join(root, "../build/bin/server")
 
+	// Verify binary exists
+	if _, err := os.Stat(serverBin); err != nil {
+		// Try to list the build dir to see what's there
+		buildBinDir := filepath.Dir(serverBin)
+		files, _ := os.ReadDir(buildBinDir)
+		t.Logf("Contents of %s:", buildBinDir)
+		for _, f := range files {
+			t.Logf(" - %s", f.Name())
+		}
+		require.NoError(t, err, "StartStdioServer: Binary NOT FOUND at %s. Run 'make build' first.", serverBin)
+	}
+
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 

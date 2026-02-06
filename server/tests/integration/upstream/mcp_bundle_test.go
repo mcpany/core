@@ -231,6 +231,10 @@ func createE2EBundle(t *testing.T, dir string) string {
 	return bundlePath
 }
 
+import (
+	"github.com/mcpany/core/server/tests/integration"
+)
+
 func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
@@ -239,9 +243,8 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
 	}
 
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	if !integration.IsDockerRunWorking(t) {
+		t.Skip("Skipping Docker tests: Docker runtime is not working")
 	}
 
 	tempDir := t.TempDir()

@@ -592,6 +592,25 @@ func IsDockerSocketAccessible() bool {
 	return true
 }
 
+// IsDockerRunWorking checks if we can actually run a container.
+// This catches DinD issues like overlayfs mount failures.
+func IsDockerRunWorking(t *testing.T) bool {
+	if !IsDockerSocketAccessible() {
+		return false
+	}
+	dockerExe, dockerArgs := getDockerCommand()
+	// Use alpine or hello-world. hello-world is safer as it exits immediately.
+	// We use --rm to clean up.
+	args := append(dockerArgs, "run", "--rm", "hello-world")
+	cmd := exec.CommandContext(context.Background(), dockerExe, args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("IsDockerRunWorking: docker run failed: %v. Output: %s", err, string(output))
+		return false
+	}
+	return true
+}
+
 // --- Mock Service Start Helpers (External Processes) ---
 
 // StartDockerContainer starts a docker container with the given image and args.
