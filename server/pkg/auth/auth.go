@@ -316,6 +316,9 @@ type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
 
+	// dummyHash is used to prevent timing attacks during user enumeration.
+	dummyHash string
+
 	// usersMu protects users map to allow atomic updates (hot-swap).
 	usersMu sync.RWMutex
 	users   map[string]*configv1.User
@@ -332,9 +335,18 @@ type Manager struct {
 // Returns:
 //   - *Manager: A new Manager instance.
 func NewManager() *Manager {
+	// Pre-calculate a dummy hash for timing mitigation.
+	// We use a fixed string. The cost factor is determined by passhash.Password default (12).
+	dummyHash, err := passhash.Password("dummy-password-for-timing-mitigation")
+	if err != nil {
+		// This should practically never happen unless system is OOM.
+		panic(fmt.Sprintf("failed to generate dummy hash: %v", err))
+	}
+
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
 		users:          make(map[string]*configv1.User),
+		dummyHash:      dummyHash,
 	}
 }
 
@@ -638,17 +650,34 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
 
+	var targetUser *configv1.User
+	// Initialize with dummy hash to ensure constant time execution even if user is not found.
+	targetHash := am.dummyHash
+	// validUserFound tracks if we found a user AND they have Basic Auth configured.
+	// This prevents logging in as a user who exists but doesn't have Basic Auth (using the dummy password).
+	validUserFound := false
+
 	// Direct lookup if user ID matches username
 	if user, ok := am.users[username]; ok {
+		targetUser = user
 		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
-			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
-				ctx = ContextWithUser(ctx, user.GetId())
-				if len(user.GetRoles()) > 0 {
-					ctx = ContextWithRoles(ctx, user.GetRoles())
-				}
-				return ctx, nil
-			}
+			targetHash = basicAuth.GetPasswordHash()
+			validUserFound = true
 		}
+	}
+
+	// Always check password to avoid timing attacks (User Enumeration).
+	// If user is not found, we check against dummyHash.
+	// If user is found, we check against their hash.
+	// passhash.CheckPassword (bcrypt) takes ~300ms (cost 12), masking the map lookup time.
+	passwordMatch := passhash.CheckPassword(password, targetHash)
+
+	if validUserFound && passwordMatch {
+		ctx = ContextWithUser(ctx, targetUser.GetId())
+		if len(targetUser.GetRoles()) > 0 {
+			ctx = ContextWithRoles(ctx, targetUser.GetRoles())
+		}
+		return ctx, nil
 	}
 
 	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
