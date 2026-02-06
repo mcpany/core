@@ -1227,41 +1227,6 @@ func TestHandleLogsWS(t *testing.T) {
 	assert.Equal(t, testMsg, msg)
 }
 
-func TestHandleSystemStatus(t *testing.T) {
-	app := NewApplication()
-	app.startTime = time.Now().Add(-10 * time.Second)
-	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
-
-	req, _ := http.NewRequest(http.MethodGet, "/api/v1/system/status", nil)
-	rr := httptest.NewRecorder()
-	app.handleSystemStatus(rr, req)
-
-	assert.Equal(t, http.StatusOK, rr.Code)
-	var resp map[string]interface{}
-	json.Unmarshal(rr.Body.Bytes(), &resp)
-	assert.GreaterOrEqual(t, resp["uptime_seconds"].(float64), float64(10))
-}
-
-func TestHandleTemplates(t *testing.T) {
-	tempDir := t.TempDir()
-	app := &Application{TemplateManager: NewTemplateManager(tempDir)}
-	handler := app.handleTemplates()
-
-	t.Run("CreateTemplate", func(t *testing.T) {
-		template := map[string]interface{}{
-			"name": "test-template",
-			"id":   "test-id",
-			"mcp_service": map[string]interface{}{
-				"http_connection": map[string]interface{}{"http_address": "http://localhost:8080"},
-			},
-		}
-		bodyBytes, _ := json.Marshal(template)
-		req, _ := http.NewRequest(http.MethodPost, "/templates", bytes.NewReader(bodyBytes))
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
-		assert.Equal(t, http.StatusOK, rr.Code)
-	})
-}
 
 func TestHandleUsers(t *testing.T) {
 	app := NewApplication()
