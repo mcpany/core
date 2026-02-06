@@ -47,13 +47,18 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		return lines, nil
 	}
 
-	// Seek backwards
-	// Use a reasonable chunk size
+	// ⚡ BOLT: Optimization - Use chunk accumulation to avoid O(N^2) copying.
+	// Randomized Selection from Top 5 High-Impact Targets
+	return readLastNLinesOptimized(f, filesize, n)
+}
+
+func readLastNLinesOptimized(f *os.File, filesize int64, n int) ([][]byte, error) {
 	const chunkSize = 1024 * 16
 	buf := make([]byte, chunkSize)
 	var cursor = filesize
-
-	var collected []byte
+	var chunks [][]byte
+	var totalSize int
+	var newlineCount int
 
 	for cursor > 0 {
 		toRead := chunkSize
@@ -62,39 +67,44 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		}
 
 		cursor -= int64(toRead)
-		_, err = f.Seek(cursor, io.SeekStart)
-		if err != nil {
+		if _, err := f.Seek(cursor, io.SeekStart); err != nil {
 			return nil, err
 		}
 
-		// Only read the chunk we calculated
-		// We re-slice buf to size needed
 		readBuf := buf[:toRead]
 		if _, err := io.ReadFull(f, readBuf); err != nil {
 			return nil, err
 		}
 
-		// Prepend readBuf to collected
-		collected = append(readBuf, collected...)
+		// Copy data to new slice
+		chunk := make([]byte, len(readBuf))
+		copy(chunk, readBuf)
+		chunks = append(chunks, chunk)
+		totalSize += len(chunk)
 
-		// Count newlines in collected
-		count := 0
-		for _, b := range collected {
+		for _, b := range chunk {
 			if b == '\n' {
-				count++
+				newlineCount++
 			}
 		}
 
-		if count >= n {
+		if newlineCount >= n {
 			break
 		}
 	}
 
-	// Now process 'collected'
+	collected := make([]byte, totalSize)
+	offset := 0
+	// Chunks are stored in reverse order (End of file -> Start of file)
+	// We want to reconstruct file: Start -> End.
+	for i := len(chunks) - 1; i >= 0; i-- {
+		copy(collected[offset:], chunks[i])
+		offset += len(chunks[i])
+	}
+
 	scanner := bufio.NewScanner(bytes.NewReader(collected))
 	var allLines [][]byte
 	for scanner.Scan() {
-		// Copy bytes because scanner reuses buffer
 		b := scanner.Bytes()
 		tmp := make([]byte, len(b))
 		copy(tmp, b)
