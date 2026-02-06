@@ -26,6 +26,8 @@ import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { CallPolicyEditor } from "@/components/services/editor/call-policy-editor";
+import { CallPolicy } from "@proto/config/v1/upstream_service";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -36,6 +38,7 @@ const formSchema = z.object({
   configJson: z.string().optional(), // For advanced mode
   upstreamAuth: z.any().optional(), // Store auth config object
   tags: z.string().optional(),
+  callPolicies: z.array(z.any()).optional(),
 });
 
 interface RegisterServiceDialogProps {
@@ -101,6 +104,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       configJson: JSON.stringify(serviceToEdit, null, 2),
       upstreamAuth: serviceToEdit.upstreamAuth,
       tags: serviceToEdit.tags?.join(", ") || "",
+      callPolicies: serviceToEdit.callPolicies || [],
   } : {
       name: "",
       type: "http" as const,
@@ -109,6 +113,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
       upstreamAuth: undefined,
       tags: "",
+      callPolicies: [],
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -245,7 +250,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           loadBalancingStrategy: 0,
           sanitizedName: "",
           readOnly: false,
-          callPolicies: [],
+          callPolicies: values.callPolicies || [],
           preCallHooks: [],
           postCallHooks: [],
           prompts: [],
@@ -434,9 +439,10 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
             </form>
         ) : (
             <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
                     <TabsTrigger value="auth">Authentication</TabsTrigger>
+                    <TabsTrigger value="policies">Policies</TabsTrigger>
                     <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
                     {isEditing && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
                 </TabsList>
@@ -663,6 +669,24 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                             </div>
                         )}
                     </div>
+                </TabsContent>
+
+                <TabsContent value="policies" className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="callPolicies"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <CallPolicyEditor
+                                        policies={field.value || []}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </TabsContent>
 
                 <TabsContent value="advanced">
