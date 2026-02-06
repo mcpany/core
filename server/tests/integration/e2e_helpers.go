@@ -219,10 +219,14 @@ var (
 func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
-		// Allow overriding via environment variable
+		// Allow overriding via environment variable, but verify it exists
 		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
-			projectRoot = envRoot
-			return
+			if _, statErr := os.Stat(envRoot); statErr == nil {
+				projectRoot = envRoot
+				return
+			}
+			// If env var points to non-existent path (e.g. /app/server inside container vs host), ignore it
+			fmt.Printf("Warning: MCPANY_PROJECT_ROOT set to %s but path does not exist. Falling back to auto-detection.\n", envRoot)
 		}
 
 		// Find the project root by looking for the go.mod file

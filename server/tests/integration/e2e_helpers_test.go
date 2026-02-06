@@ -71,6 +71,11 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// Verify Docker volume mounts work (check for DinD overlayfs issues)
+	if !CanRunDockerWithMount(t) {
+		t.Skip("Skipping Docker tests: Docker volume mounts failing (likely DinD overlayfs issue)")
+	}
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
