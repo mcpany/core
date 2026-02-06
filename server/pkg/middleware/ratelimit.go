@@ -7,7 +7,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -179,24 +178,23 @@ func (m *RateLimitMiddleware) recordMetrics(serviceID, limitType, status string)
 }
 
 func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int {
-	// Use Arguments map if available, otherwise try to unmarshal ToolInputs
-	var args map[string]interface{}
+	// ⚡ BOLT: Optimization: Avoid unmarshalling JSON just to count tokens.
+	// We pass the raw []byte to the tokenizer, which has a fast path for []byte (len/4 heuristic).
+	// This avoids O(N) unmarshal + O(N) recursive traversal.
+	// Randomized Selection from Top 5 High-Impact Targets
 
-	switch {
-	case req.Arguments != nil:
-		args = req.Arguments
-	case len(req.ToolInputs) > 0:
-		if err := json.Unmarshal(req.ToolInputs, &args); err != nil {
-			// If unmarshal fails, we can't estimate properly. Return default cost.
-			return 1
-		}
-		// Cache the parsed arguments to avoid re-parsing in subsequent middleware
-		req.Arguments = args
-	default:
+	var tokens int
+	var err error
+
+	if req.Arguments != nil {
+		tokens, err = tokenizer.CountTokensInValue(m.tokenizer, req.Arguments)
+	} else if len(req.ToolInputs) > 0 {
+		// Cast to []byte to ensure we hit the fast path in tokenizer
+		tokens, err = tokenizer.CountTokensInValue(m.tokenizer, []byte(req.ToolInputs))
+	} else {
 		return 1
 	}
 
-	tokens, err := tokenizer.CountTokensInValue(m.tokenizer, args)
 	if err != nil {
 		return 1
 	}
