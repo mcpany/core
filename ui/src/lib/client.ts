@@ -367,6 +367,10 @@ export const apiClient = {
             tags: config.tags,
         };
 
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+
         if (config.httpService) {
             payload.http_service = { address: config.httpService.address };
         }
@@ -454,6 +458,11 @@ export const apiClient = {
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
         };
+
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
             payload.http_service = { address: config.httpService.address };
@@ -465,6 +474,7 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env
             };
         }
         if (config.mcpService) {
@@ -553,6 +563,10 @@ export const apiClient = {
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
         };
+
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
 
         if (config.httpService) {
             payload.http_service = { address: config.httpService.address };

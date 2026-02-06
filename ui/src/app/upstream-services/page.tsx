@@ -164,16 +164,51 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[], timeout?: string, env?: Record<string, string> }) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
-        await Promise.all(servicesToUpdate.map(service => {
+
+        // Sequential update to avoid database locking issues with SQLite
+        for (const service of servicesToUpdate) {
             const updated = { ...service };
+
+            // 1. Tags
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
             }
-            return apiClient.updateService(updated as any);
-        }));
+
+            // 2. Timeout (Resilience)
+            if (updates.timeout) {
+                 if (!updated.resilience) {
+                    updated.resilience = {};
+                 }
+                 // If using PB Duration in JSON, "30s" string is valid
+                 // @ts-expect-error: Suppress type mismatch if generated type expects object
+                 updated.resilience.timeout = updates.timeout;
+            }
+
+            // 3. Env Vars (CLI or MCP Stdio)
+            if (updates.env && Object.keys(updates.env).length > 0) {
+                 if (updated.commandLineService) {
+                     if (!updated.commandLineService.env) updated.commandLineService.env = {};
+                     // Format for SecretValue: { plainText: "value" }
+                     for (const [k, v] of Object.entries(updates.env)) {
+                         // @ts-expect-error: Suppress type mismatch for SecretValue construction
+                         updated.commandLineService.env[k] = { plainText: v };
+                     }
+                 }
+                 if (updated.mcpService?.stdioConnection) {
+                     if (!updated.mcpService.stdioConnection.env) updated.mcpService.stdioConnection.env = {};
+                     for (const [k, v] of Object.entries(updates.env)) {
+                         // @ts-expect-error: Suppress type mismatch for SecretValue construction
+                         updated.mcpService.stdioConnection.env[k] = { plainText: v };
+                     }
+                 }
+            }
+
+            await apiClient.updateService(updated as any);
+        }
+
         toast({
             title: "Services Updated",
             description: `${names.length} services have been updated.`
