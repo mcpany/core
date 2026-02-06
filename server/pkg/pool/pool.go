@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -209,6 +210,9 @@ func (p *poolImpl[T]) tryAcquire(n int64) bool {
 		if p.activeCount.CompareAndSwap(cur, cur+n) {
 			return true
 		}
+		// ⚡ BOLT: Yield processor to prevent potential livelock/starvation under high contention.
+		// Randomized Selection from Top 5 High-Impact Targets
+		runtime.Gosched()
 	}
 }
 
