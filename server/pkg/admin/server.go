@@ -21,6 +21,7 @@ import (
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream/openapi"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -214,6 +215,38 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
 	return pb.GetToolResponse_builder{Tool: t.Tool()}.Build(), nil
+}
+
+// PreviewServiceConfig generates a preview of the service configuration.
+//
+// ctx is the context for the request.
+// req is the request object.
+//
+// Returns the response.
+// Returns an error if the operation fails.
+func (s *Server) PreviewServiceConfig(ctx context.Context, req *pb.PreviewServiceConfigRequest) (*pb.PreviewServiceConfigResponse, error) {
+	if !req.HasService() {
+		return nil, status.Error(codes.InvalidArgument, "service config is required")
+	}
+	svc := req.GetService()
+
+	// Only handling OpenAPI for now, can be extended for others
+	if svc.GetOpenapiService() != nil {
+		// Create a temporary upstream instance to use logic
+		// We cast to *openapi.OpenAPIUpstream to access Preview method which is specific to it
+		u, ok := openapi.NewOpenAPIUpstream().(*openapi.OpenAPIUpstream)
+		if !ok {
+			return nil, status.Error(codes.Internal, "failed to cast openapi upstream")
+		}
+		tools, err := u.Preview(ctx, svc)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to preview openapi service: %v", err)
+		}
+		// Populate the tools in the response
+		svc.GetOpenapiService().SetTools(tools)
+	}
+
+	return pb.PreviewServiceConfigResponse_builder{Service: svc}.Build(), nil
 }
 
 // CreateUser creates a new user.

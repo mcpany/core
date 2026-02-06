@@ -45,6 +45,7 @@ interface ServiceEditorProps {
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
     const [validating, setValidating] = useState(false);
+    const [previewLoading, setPreviewLoading] = useState(false);
     const [yamlContent, setYamlContent] = useState("");
     const [originalYaml, setOriginalYaml] = useState("");
     const [yamlError, setYamlError] = useState<string | null>(null);
@@ -131,6 +132,27 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
             });
         } finally {
             setValidating(false);
+        }
+    };
+
+    const handlePreview = async () => {
+        setPreviewLoading(true);
+        try {
+            const updatedService = await apiClient.previewServiceConfig(service);
+            onChange(updatedService);
+            toast({
+                title: "Preview Successful",
+                description: `Discovered ${updatedService.openapiService?.tools?.length || 0} tools.`,
+                action: <CheckCircle2 className="h-5 w-5 text-green-500" />
+            });
+        } catch (e: any) {
+            toast({
+                variant: "destructive",
+                title: "Preview Failed",
+                description: e.message || "Failed to preview service.",
+            });
+        } finally {
+            setPreviewLoading(false);
         }
     };
 
@@ -391,15 +413,38 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             placeholder="https://api.example.com"
                                         />
                                     </div>
-                                     <div className="space-y-2">
-                                        <Label htmlFor="openapi-spec">Spec URL</Label>
-                                         <Input
-                                            id="openapi-spec"
-                                            value={service.openapiService.specUrl || ""}
-                                            onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } })}
-                                            placeholder="https://api.example.com/openapi.json"
-                                        />
+                                     <div className="flex items-end gap-2">
+                                         <div className="flex-1 space-y-2">
+                                            <Label htmlFor="openapi-spec">Spec URL</Label>
+                                             <Input
+                                                id="openapi-spec"
+                                                value={service.openapiService.specUrl || ""}
+                                                onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } })}
+                                                placeholder="https://api.example.com/openapi.json"
+                                            />
+                                        </div>
+                                        <Button variant="secondary" onClick={handlePreview} disabled={previewLoading}>
+                                            {previewLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                            Preview & Import
+                                        </Button>
                                     </div>
+
+                                    {/* Tool List Preview */}
+                                    {service.openapiService.tools && service.openapiService.tools.length > 0 && (
+                                        <div className="mt-4">
+                                            <h4 className="text-sm font-medium mb-2">Discovered Tools ({service.openapiService.tools.length})</h4>
+                                            <ScrollArea className="h-[200px] border rounded-md">
+                                                <div className="p-4 space-y-2">
+                                                    {service.openapiService.tools.map((tool, idx) => (
+                                                        <div key={idx} className="flex flex-col gap-1 p-2 bg-muted/50 rounded text-sm">
+                                                            <div className="font-mono font-semibold">{tool.name}</div>
+                                                            <div className="text-muted-foreground text-xs">{tool.description}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </ScrollArea>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </TabsContent>

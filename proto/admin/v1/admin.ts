@@ -64,6 +64,14 @@ export interface GetToolResponse {
   tool?: Tool | undefined;
 }
 
+export interface PreviewServiceConfigRequest {
+  service?: UpstreamServiceConfig | undefined;
+}
+
+export interface PreviewServiceConfigResponse {
+  service?: UpstreamServiceConfig | undefined;
+}
+
 export interface CreateUserRequest {
   user?: User | undefined;
 }
@@ -823,6 +831,126 @@ export const GetToolResponse: MessageFns<GetToolResponse> = {
   fromPartial<I extends Exact<DeepPartial<GetToolResponse>, I>>(object: I): GetToolResponse {
     const message = createBaseGetToolResponse();
     message.tool = (object.tool !== undefined && object.tool !== null) ? Tool.fromPartial(object.tool) : undefined;
+    return message;
+  },
+};
+
+function createBasePreviewServiceConfigRequest(): PreviewServiceConfigRequest {
+  return { service: undefined };
+}
+
+export const PreviewServiceConfigRequest: MessageFns<PreviewServiceConfigRequest> = {
+  encode(message: PreviewServiceConfigRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.service !== undefined) {
+      UpstreamServiceConfig.encode(message.service, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PreviewServiceConfigRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePreviewServiceConfigRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.service = UpstreamServiceConfig.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PreviewServiceConfigRequest {
+    return { service: isSet(object.service) ? UpstreamServiceConfig.fromJSON(object.service) : undefined };
+  },
+
+  toJSON(message: PreviewServiceConfigRequest): unknown {
+    const obj: any = {};
+    if (message.service !== undefined) {
+      obj.service = UpstreamServiceConfig.toJSON(message.service);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PreviewServiceConfigRequest>, I>>(base?: I): PreviewServiceConfigRequest {
+    return PreviewServiceConfigRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PreviewServiceConfigRequest>, I>>(object: I): PreviewServiceConfigRequest {
+    const message = createBasePreviewServiceConfigRequest();
+    message.service = (object.service !== undefined && object.service !== null)
+      ? UpstreamServiceConfig.fromPartial(object.service)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePreviewServiceConfigResponse(): PreviewServiceConfigResponse {
+  return { service: undefined };
+}
+
+export const PreviewServiceConfigResponse: MessageFns<PreviewServiceConfigResponse> = {
+  encode(message: PreviewServiceConfigResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.service !== undefined) {
+      UpstreamServiceConfig.encode(message.service, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PreviewServiceConfigResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePreviewServiceConfigResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.service = UpstreamServiceConfig.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PreviewServiceConfigResponse {
+    return { service: isSet(object.service) ? UpstreamServiceConfig.fromJSON(object.service) : undefined };
+  },
+
+  toJSON(message: PreviewServiceConfigResponse): unknown {
+    const obj: any = {};
+    if (message.service !== undefined) {
+      obj.service = UpstreamServiceConfig.toJSON(message.service);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PreviewServiceConfigResponse>, I>>(base?: I): PreviewServiceConfigResponse {
+    return PreviewServiceConfigResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PreviewServiceConfigResponse>, I>>(object: I): PreviewServiceConfigResponse {
+    const message = createBasePreviewServiceConfigResponse();
+    message.service = (object.service !== undefined && object.service !== null)
+      ? UpstreamServiceConfig.fromPartial(object.service)
+      : undefined;
     return message;
   },
 };
@@ -2096,6 +2224,14 @@ export interface AdminService {
   ListTools(request: DeepPartial<ListToolsRequest>, metadata?: grpc.Metadata): Promise<ListToolsResponse>;
   /** GetTool returns a specific tool by name. */
   GetTool(request: DeepPartial<GetToolRequest>, metadata?: grpc.Metadata): Promise<GetToolResponse>;
+  /**
+   * PreviewServiceConfig generates a preview of the service configuration (e.g. discovered tools)
+   * without saving it.
+   */
+  PreviewServiceConfig(
+    request: DeepPartial<PreviewServiceConfigRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<PreviewServiceConfigResponse>;
   /** CreateUser creates a new user. */
   CreateUser(request: DeepPartial<CreateUserRequest>, metadata?: grpc.Metadata): Promise<CreateUserResponse>;
   /** GetUser returns a specific user by ID. */
@@ -2125,6 +2261,7 @@ export class AdminServiceClientImpl implements AdminService {
     this.GetService = this.GetService.bind(this);
     this.ListTools = this.ListTools.bind(this);
     this.GetTool = this.GetTool.bind(this);
+    this.PreviewServiceConfig = this.PreviewServiceConfig.bind(this);
     this.CreateUser = this.CreateUser.bind(this);
     this.GetUser = this.GetUser.bind(this);
     this.ListUsers = this.ListUsers.bind(this);
@@ -2152,6 +2289,17 @@ export class AdminServiceClientImpl implements AdminService {
 
   GetTool(request: DeepPartial<GetToolRequest>, metadata?: grpc.Metadata): Promise<GetToolResponse> {
     return this.rpc.unary(AdminServiceGetToolDesc, GetToolRequest.fromPartial(request), metadata);
+  }
+
+  PreviewServiceConfig(
+    request: DeepPartial<PreviewServiceConfigRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<PreviewServiceConfigResponse> {
+    return this.rpc.unary(
+      AdminServicePreviewServiceConfigDesc,
+      PreviewServiceConfigRequest.fromPartial(request),
+      metadata,
+    );
   }
 
   CreateUser(request: DeepPartial<CreateUserRequest>, metadata?: grpc.Metadata): Promise<CreateUserResponse> {
@@ -2293,6 +2441,29 @@ export const AdminServiceGetToolDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       const value = GetToolResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServicePreviewServiceConfigDesc: UnaryMethodDefinitionish = {
+  methodName: "PreviewServiceConfig",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return PreviewServiceConfigRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = PreviewServiceConfigResponse.decode(data);
       return {
         ...value,
         toObject() {
