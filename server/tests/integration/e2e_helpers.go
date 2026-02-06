@@ -598,7 +598,11 @@ func CanRunDockerContainers() bool {
 	// We use 'alpine:latest' as it's small and standard.
 	// NOTE: We assume 'alpine:latest' is pullable or present.
 	// If the network is restricted, this might fail, which correctly indicates we can't use Docker for tests.
-	runArgs := append(dockerBaseArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")
+	// Create a new slice to avoid "append result not assigned to the same slice" linter error
+	runArgs := make([]string, 0, len(dockerBaseArgs)+4)
+	runArgs = append(runArgs, dockerBaseArgs...)
+	runArgs = append(runArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")
+
 	cmd := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
