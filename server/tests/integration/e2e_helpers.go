@@ -582,6 +582,15 @@ func IsDockerSocketAccessible() bool {
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// Verify we can actually run a container (e.g. check for runtime issues like overlayfs)
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
+	cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("IsDockerSocketAccessible: docker run failed: %v\n", err)
+		return false
+	}
+
 	return true
 }
 
