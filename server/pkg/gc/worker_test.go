@@ -5,6 +5,7 @@ package gc
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -171,4 +172,46 @@ func TestWorker_Start_DangerousPaths(t *testing.T) {
 	// This shouldn't crash or delete anything important (due to checks)
 	w.Start(ctx)
 	time.Sleep(50 * time.Millisecond)
+}
+
+func TestWorker_LargeDirectory(t *testing.T) {
+	// Create a temporary directory for testing
+	tmpDir, err := os.MkdirTemp("", "gc-test-large-*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	// Create 250 files (batch size is 100, so this forces multiple loops)
+	numFiles := 250
+	oldTime := time.Now().Add(-2 * time.Hour)
+
+	for i := 0; i < numFiles; i++ {
+		// Use a mix of files to ensure order doesn't matter
+		name := filepath.Join(tmpDir, fmt.Sprintf("file_%d.txt", i))
+		err := os.WriteFile(name, []byte("data"), 0644)
+		require.NoError(t, err)
+		err = os.Chtimes(name, oldTime, oldTime)
+		require.NoError(t, err)
+	}
+
+	cfg := Config{
+		Enabled:  true,
+		Interval: 50 * time.Millisecond,
+		TTL:      1 * time.Hour,
+		Paths:    []string{tmpDir},
+	}
+
+	w := New(cfg)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	w.Start(ctx)
+
+	// Wait for cleanup
+	assert.Eventually(t, func() bool {
+		entries, err := os.ReadDir(tmpDir)
+		if err != nil {
+			return false
+		}
+		return len(entries) == 0
+	}, 5*time.Second, 100*time.Millisecond, "all files should be deleted")
 }
