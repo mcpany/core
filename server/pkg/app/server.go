@@ -1896,6 +1896,7 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
+	mux.Handle("/api/v1/debug/reset", authMiddleware(a.handleDebugReset()))
 
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
@@ -2391,6 +2392,58 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+func (a *Application) handleDebugReset() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Safety check: Only allow in Debug mode
+		if !config.GlobalSettings().IsDebug() {
+			logging.GetLogger().Warn("Blocked debug reset request in non-debug mode")
+			http.Error(w, "Debug mode required", http.StatusForbidden)
+			return
+		}
+
+		ctx := r.Context()
+		log := logging.GetLogger()
+
+		// 1. Clear Storage (Persistent State)
+		if a.Storage != nil {
+			if err := a.Storage.Clear(ctx); err != nil {
+				log.Error("Failed to clear storage", "error", err)
+				http.Error(w, fmt.Sprintf("Failed to clear storage: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		// 2. Clear Service Registry (Runtime State)
+		if a.ServiceRegistry != nil {
+			if serviceRegistry, ok := a.ServiceRegistry.(*serviceregistry.ServiceRegistry); ok {
+				if err := serviceRegistry.ClearAllServices(ctx); err != nil {
+					log.Error("Failed to clear services", "error", err)
+					http.Error(w, fmt.Sprintf("Failed to clear services: %v", err), http.StatusInternalServerError)
+					return
+				}
+			}
+		}
+
+		// 3. Clear Auth Manager (Runtime State)
+		if a.AuthManager != nil {
+			a.AuthManager.ClearUsers()
+		}
+
+		// 4. Clear Tool Manager (Runtime State)
+		// ToolManager should be cleared when services are unregistered, but we can double check or clear global tools if any?
+		// Services unregistration handles tool removal.
+
+		log.Info("Debug Reset: System state cleared.")
+		w.WriteHeader(http.StatusOK)
+		_, _ = fmt.Fprintln(w, "System state cleared.")
+	}
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.

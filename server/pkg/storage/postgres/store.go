@@ -33,6 +33,36 @@ func (s *Store) Close() error {
 	return s.db.Close()
 }
 
+// Clear deletes all data from the storage.
+//
+// Returns an error if the operation fails.
+func (s *Store) Clear(ctx context.Context) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	tables := []string{
+		"upstream_services",
+		"users",
+		"global_settings",
+		"service_collections",
+		"profile_definitions",
+		"user_tokens",
+		"credentials",
+		"secrets",
+	}
+
+	for _, table := range tables {
+		if _, err := tx.ExecContext(ctx, fmt.Sprintf("TRUNCATE TABLE %s CASCADE", table)); err != nil {
+			return fmt.Errorf("failed to clear table %s: %w", table, err)
+		}
+	}
+
+	return tx.Commit()
+}
+
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 // For DB stores, we assume they always have a source (the DB itself).
 func (s *Store) HasConfigSources() bool {

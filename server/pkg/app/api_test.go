@@ -1477,6 +1477,7 @@ func (s *MockServiceStore) SaveCredential(ctx context.Context, cred *configv1.Cr
 	return nil
 }
 func (s *MockServiceStore) DeleteCredential(ctx context.Context, id string) error { return nil }
+func (s *MockServiceStore) Clear(ctx context.Context) error                       { return nil }
 
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
@@ -1498,6 +1499,7 @@ func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.
 	return nil, false
 }
 func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+func (m *TestMockServiceRegistry) ClearAllServices(ctx context.Context) error      { return nil }
 
 func TestHandleServices_ToolCount(t *testing.T) {
 	busProvider, _ := bus.NewProvider(nil)

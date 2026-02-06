@@ -410,4 +410,15 @@ type Storage interface {
 	// Returns:
 	//   - error: An error if closing fails.
 	Close() error
+
+	// Clear deletes all data from the storage.
+	//
+	// Summary: Clears all data.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//
+	// Returns:
+	//   - error: An error if clearing fails.
+	Clear(ctx context.Context) error
 }

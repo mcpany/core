@@ -17,6 +17,7 @@ services:
       - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
       - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
       - MCPANY_ADMIN_PASSWORD=password
+      - MCPANY_DEBUG=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s

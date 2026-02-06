@@ -17,7 +17,7 @@ import (
 )
 
 func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
-	t.Skip("Skipping failing Playwright test: tool returns 0 tools in test env (investigated: stdout pollution fixed in docker_transport.go)")
+	// t.Skip("Skipping failing Playwright test: tool returns 0 tools in test env (investigated: stdout pollution fixed in docker_transport.go)")
 
 	testCase := &framework.E2ETestCase{
 		Name:                "playwright server (Stdio)",

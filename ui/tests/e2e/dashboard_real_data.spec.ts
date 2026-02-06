@@ -8,7 +8,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
+        // 0. Reset Backend
+        await request.post('/api/v1/debug/reset');
+
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
