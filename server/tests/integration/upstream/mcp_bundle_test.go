@@ -244,6 +244,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Verify we can run a container (CI environments often have issues with overlayfs/mounts)
+	// We use "alpine" to keep it small, or verify we can run the image we'll need.
+	// We'll use "busybox" or "alpine" if available, or just try running a command.
+	// Since we expect "node:18-alpine" to be used, let's try that to ensure we can pull and run it.
+	if err := exec.Command("docker", "run", "--rm", "node:18-alpine", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run failed (likely environment issue): %v", err)
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
