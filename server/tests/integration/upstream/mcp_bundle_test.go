@@ -9,10 +9,12 @@ import (
 	"encoding/json"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -239,10 +241,34 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
 	}
 
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	// Robustly check if Docker is available and working (storage drivers, permissions, etc.)
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		t.Skipf("Skipping Docker tests: could not create docker client: %v", err)
 	}
+	defer cli.Close()
+
+	ctx := context.Background()
+	if _, err := cli.Ping(ctx); err != nil {
+		t.Skipf("Skipping Docker tests: could not ping docker daemon: %v", err)
+	}
+
+	// Try to pull and create a container to verify storage driver works (CI overlayfs check)
+	reader, err := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+	if err != nil {
+		t.Skipf("Skipping Docker tests: could not pull alpine:latest: %v", err)
+	}
+	_, _ = io.Copy(io.Discard, reader)
+	_ = reader.Close()
+
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Skipf("Skipping Docker tests: could not create container (storage driver issue?): %v", err)
+	}
+	_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
@@ -261,7 +287,6 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		}
 		t.Logf("Using BundleBaseDir: %s", impl.BundleBaseDir)
 	}
-	ctx := context.Background()
 
 	// Usage of real implementation is default, so no need to touch connectForTesting
 
