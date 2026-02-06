@@ -13,36 +13,42 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// State represents the current state of the circuit breaker.
+// State represents the state of the circuit breaker.
 type State int32
 
 const (
-	// StateClosed represents the state where the circuit breaker allows requests to pass through.
+	// StateClosed means requests are allowed.
 	StateClosed State = iota
-	// StateOpen represents the state where the circuit breaker blocks requests immediately.
+	// StateOpen means requests are blocked.
 	StateOpen
-	// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
+	// StateHalfOpen means a limited number of requests are allowed to test backend health.
 	StateHalfOpen
 )
 
-// CircuitBreaker implements the circuit breaker pattern. It prevents the
-// application from performing operations that are likely to fail.
+// CircuitBreaker implements the circuit breaker pattern.
+//
+// Summary: Provides circuit breaker functionality to prevent cascading failures.
+//
+// Side Effects:
+//   - Maintains internal state (Closed, Open, HalfOpen) based on failures.
 type CircuitBreaker struct {
-	mutex sync.Mutex
-
-	state        State // Accessed using atomics for read optimization
-	failures     int32 // Accessed using atomics
-	openTime     time.Time
+	config       *configv1.CircuitBreakerConfig
+	state        State
+	failures     int32
 	halfOpenHits int
-
-	config *configv1.CircuitBreakerConfig
+	openTime     time.Time
+	mutex        sync.Mutex
 }
 
-// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+// NewCircuitBreaker creates a new CircuitBreaker.
 //
-// config holds the configuration settings.
+// Summary: Initializes a new CircuitBreaker instance.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.CircuitBreakerConfig. The configuration for the circuit breaker.
+//
+// Returns:
+//   - *CircuitBreaker: The initialized circuit breaker.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -53,6 +59,18 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // Execute runs the provided work function. If the circuit breaker is open, it
 // returns a CircuitBreakerOpenError immediately. If the work function fails,
 // it tracks the failure and may trip the breaker.
+//
+// Summary: Executes a unit of work within the protection of the circuit breaker.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - work: func(context.Context) error. The function to execute.
+//
+// Returns:
+//   - error: The result of the work function, or CircuitBreakerOpenError if the breaker is open.
+//
+// Side Effects:
+//   - May change the state of the circuit breaker based on success/failure.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 

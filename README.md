@@ -2,6 +2,8 @@
 
 **One server, Infinite possibilities.**
 
+---
+
 ## 1. Elevator Pitch
 
 **What is this project and why does it exist?**

@@ -37,6 +37,10 @@ var initOnce sync.Once
 //
 // Returns:
 //   - An error if the initialization fails.
+//
+// Side Effects:
+//   - Sets the global metrics configuration.
+//   - Starts a background goroutine for the sink.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {

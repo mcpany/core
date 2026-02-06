@@ -41,6 +41,10 @@ func ForTestsOnlyResetLogger() {
 //   - output: The `io.Writer` to which log entries will be written (e.g.,
 //     `os.Stdout`).
 //   - format: Optional format string ("json" or "text"). Defaults to "text".
+//
+// Side Effects:
+//   - Modifies the global logger instance.
+//   - Locks the global mutex.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
