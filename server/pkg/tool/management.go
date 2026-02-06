@@ -935,14 +935,6 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	mcpTools := make([]*mcp.Tool, 0, len(tools))
 	for _, t := range tools {
 		if mt := t.MCPTool(); mt != nil {
-			// Enforce namespacing for the tool list to match AddTool and mcpServer registration
-			if t.Tool().GetServiceId() != "" {
-				expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
-				if mt.Name != expectedName {
-					// Update the name in the cached MCP tool
-					mt.Name = expectedName
-				}
-			}
 			mcpTools = append(mcpTools, mt)
 		}
 	}

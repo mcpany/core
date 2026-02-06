@@ -6,7 +6,8 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, forwardRef } from "react";
+import dynamic from "next/dynamic";
 import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Download, Package, Globe, ExternalLink, Users, Search } from "lucide-react";
 import Link from "next/link";
 
+// ⚡ Bolt Optimization: Lazy load VirtuosoGrid to avoid SSR issues and reduce initial bundle size.
+// react-virtuoso uses window/DOM which can cause hydration mismatches or server-side crashes.
+const VirtuosoGrid = dynamic(() => import("react-virtuoso").then((m) => m.VirtuosoGrid), { ssr: false });
+
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,6 +30,56 @@ import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
+
+// ⚡ BOLT: Extracted CommunityServerCard for cleaner virtualization integration
+function CommunityServerCard({ server, onInstantiate }: { server: CommunityServer; onInstantiate: (s: CommunityServer) => void }) {
+    return (
+        <Card className="flex flex-col h-full">
+            <CardHeader>
+                <div className="flex justify-between items-start gap-2">
+                    <CardTitle className="text-lg truncate" title={server.name}>
+                        {server.name}
+                    </CardTitle>
+                    <a href={server.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                        <ExternalLink className="h-4 w-4" />
+                    </a>
+                </div>
+                <CardDescription className="line-clamp-2 min-h-[40px] text-xs">
+                    {server.description}
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1">
+                <div className="flex flex-wrap gap-1 mb-2">
+                    <Badge variant="outline" className="text-[10px] h-5">{server.category}</Badge>
+                    {server.tags.map((tag, i) => (
+                        <span key={i} className="text-sm" title="Tag">{tag}</span>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button className="w-full" variant="secondary" onClick={() => onInstantiate(server)}>
+                    Install
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+}
+
+const GridLayout = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>((props, ref) => {
+    return (
+        <div
+            {...props}
+            ref={ref}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
+        />
+    );
+});
+GridLayout.displayName = "GridLayout";
+
+const GridItemContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>((props, ref) => {
+    return <div {...props} ref={ref} className="min-w-0" />; // Ensure grid items don't overflow
+});
+GridItemContainer.displayName = "GridItemContainer";
 
 /**
  * MarketplacePage component.
@@ -49,6 +104,9 @@ export default function MarketplacePage() {
   // Collection Details State
   const [selectedCollection, setSelectedCollection] = useState<ServiceCollection | undefined>(undefined);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  // Scroll container ref for virtualization
+  const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null);
 
   // Load Data
   const loadData = async () => {
@@ -245,16 +303,21 @@ export default function MarketplacePage() {
       setIsDetailsOpen(true);
   };
 
+  // ⚡ BOLT: Memoize filtered list to avoid re-calculation on every render
+  // Randomized Selection from Top 5 High-Impact Targets
   // Filter Community Servers
-  const filteredCommunityServers = communityServers.filter(s =>
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      s.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCommunityServers = useMemo(() => {
+      const lowerQuery = searchQuery.toLowerCase();
+      return communityServers.filter(s =>
+          s.name.toLowerCase().includes(lowerQuery) ||
+          s.description.toLowerCase().includes(lowerQuery) ||
+          s.tags.some(t => t.toLowerCase().includes(lowerQuery)) ||
+          s.category.toLowerCase().includes(lowerQuery)
+      );
+  }, [communityServers, searchQuery]);
 
   return (
-    <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
+    <div ref={setScrollContainer} className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Marketplace</h1>
@@ -383,9 +446,9 @@ export default function MarketplacePage() {
             </section>
           </TabsContent>
 
-          <TabsContent value="community" className="mt-6">
-              <section>
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <TabsContent value="community" className="mt-6 h-full min-h-[500px]">
+              <section className="h-full flex flex-col">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 shrink-0">
                       <div>
                         <h2 className="text-xl font-semibold flex items-center gap-2">
                             <Users className="h-5 w-5" />
@@ -406,47 +469,33 @@ export default function MarketplacePage() {
                       </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredCommunityServers.slice(0, 100).map((server, idx) => (
-                          <Card key={idx} className="flex flex-col">
-                              <CardHeader>
-                                  <div className="flex justify-between items-start gap-2">
-                                      <CardTitle className="text-lg truncate" title={server.name}>
-                                          {server.name}
-                                      </CardTitle>
-                                      <a href={server.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
-                                          <ExternalLink className="h-4 w-4" />
-                                      </a>
-                                  </div>
-                                  <CardDescription className="line-clamp-2 min-h-[40px] text-xs">
-                                      {server.description}
-                                  </CardDescription>
-                              </CardHeader>
-                              <CardContent className="flex-1">
-                                  <div className="flex flex-wrap gap-1 mb-2">
-                                      <Badge variant="outline" className="text-[10px] h-5">{server.category}</Badge>
-                                      {server.tags.map((tag, i) => (
-                                          <span key={i} className="text-sm" title="Tag">{tag}</span>
-                                      ))}
-                                  </div>
-                              </CardContent>
-                              <CardFooter>
-                                  <Button className="w-full" variant="secondary" onClick={() => openInstantiateCommunity(server)}>
-                                      Install
-                                  </Button>
-                              </CardFooter>
-                          </Card>
-                      ))}
-                      {filteredCommunityServers.length === 0 && !loading && (
-                          <div className="col-span-full text-center p-12 text-muted-foreground border rounded-lg border-dashed">
-                              No servers found matching "{searchQuery}".
-                          </div>
-                      )}
-                  </div>
-                  {filteredCommunityServers.length > 100 && (
-                      <div className="text-center mt-8 text-muted-foreground text-sm">
-                          Showing first 100 of {filteredCommunityServers.length} results. Use search to find more.
+                  {filteredCommunityServers.length === 0 && !loading && (
+                      <div className="text-center p-12 text-muted-foreground border rounded-lg border-dashed">
+                          No servers found matching "{searchQuery}".
                       </div>
+                  )}
+
+                  {/* ⚡ BOLT: Implemented Virtualization for Community Server List */}
+                  {/* We remove the slice(0, 100) limit as virtualization handles large lists efficiently */}
+                  {filteredCommunityServers.length > 0 && (
+                      <VirtuosoGrid
+                        useWindowScroll={false}
+                        customScrollParent={scrollContainer}
+                        style={{ height: '100%' }} // Let it fill the container? Needs careful CSS.
+                        // Actually, if using customScrollParent, the Virtuoso instance doesn't control height itself the same way.
+                        // But we should ensure the Grid renders.
+                        totalCount={filteredCommunityServers.length}
+                        components={{
+                            List: GridLayout,
+                            Item: GridItemContainer
+                        }}
+                        itemContent={(index) => (
+                            <CommunityServerCard
+                                server={filteredCommunityServers[index]}
+                                onInstantiate={openInstantiateCommunity}
+                            />
+                        )}
+                      />
                   )}
               </section>
           </TabsContent>
