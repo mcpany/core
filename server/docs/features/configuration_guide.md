@@ -47,3 +47,11 @@ Split your configuration using `imports` or directory scanning (if supported) or
 - **Global Settings** at the top.
 - **Group Services** by team or domain (comments help).
 - **Use Validation**: Run `mcpctl config validate config.yaml` before restarting.
+
+## Configuration Validation
+
+The server includes advanced validation features to help catch errors early:
+
+- **Actionable Configuration Errors**: The server provides specific "Fix" suggestions for common issues like missing environment variables or invalid paths.
+- **Environment Variable Fuzzy Matching**: If you misspell an environment variable (e.g., `OPENAI_API_KEY` vs `OPENAI_APIKEY`), the server will suggest the correct variable name if it finds a close match in the environment.
+- **Whitespace URL Validation**: The server automatically detects and warns about hidden leading/trailing whitespace in URLs, which is a common copy-paste error.

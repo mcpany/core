@@ -50,6 +50,8 @@ The execution result is displayed in the chat stream.
 
 - **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
+- **Native File Upload**: Automatically detects base64-encoded fields in the tool schema and provides a native file picker, handling the base64 conversion automatically.
+- **Context Usage Estimator**: Displays the estimated token usage for both arguments and results, helping users prevent context bloat.
 
 ### 5. Session History (Import/Export)
 

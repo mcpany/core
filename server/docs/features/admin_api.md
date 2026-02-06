@@ -43,6 +43,55 @@ Clears the global cache (if caching is enabled).
 - **Request**: `ClearCacheRequest` (empty)
 - **Response**: `ClearCacheResponse` (empty)
 
+#### `CreateUser`
+
+Creates a new user.
+
+- **Request**: `CreateUserRequest` containing `User` object.
+- **Response**: `CreateUserResponse`.
+
+#### `GetUser`
+
+Retrieves a user by ID.
+
+- **Request**: `GetUserRequest` containing `user_id`.
+- **Response**: `GetUserResponse`.
+
+#### `ListUsers`
+
+Lists all users.
+
+- **Request**: `ListUsersRequest`.
+- **Response**: `ListUsersResponse`.
+
+#### `UpdateUser`
+
+Updates an existing user.
+
+- **Request**: `UpdateUserRequest`.
+- **Response**: `UpdateUserResponse`.
+
+#### `DeleteUser`
+
+Deletes a user by ID.
+
+- **Request**: `DeleteUserRequest`.
+- **Response**: `DeleteUserResponse`.
+
+#### `GetDiscoveryStatus`
+
+Returns the status of auto-discovery providers (e.g., Ollama).
+
+- **Request**: `GetDiscoveryStatusRequest`.
+- **Response**: `GetDiscoveryStatusResponse` containing `DiscoveryProviderStatus` list.
+
+#### `ListAuditLogs`
+
+Returns audit logs matching the provided filter.
+
+- **Request**: `ListAuditLogsRequest` (filters by time, tool, user).
+- **Response**: `ListAuditLogsResponse` containing `AuditLogEntry` list.
+
 ## Usage
 
 You can interact with the Admin API using any gRPC client, such as `grpcurl` or by generating a client in your preferred language using the provided protobuf definition.
