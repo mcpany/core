@@ -53,11 +53,34 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container.
+	// This catches issues like "mount source overlay ... invalid argument" in DinD environments.
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("Docker daemon reachable but failed to create container (skipping tests): %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("Docker daemon reachable but failed to start container (skipping tests): %v", err)
+		return false
+	}
+
 	return true
 }
 
