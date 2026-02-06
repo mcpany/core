@@ -363,3 +363,21 @@ func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID a
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)
 }
+
+// OnListChanged mocks base method.
+//
+// f is the callback function.
+func (m *MockManagerInterface) OnListChanged(f func()) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "OnListChanged", f)
+}
+
+// OnListChanged indicates an expected call of OnListChanged.
+//
+// f is the callback function.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) OnListChanged(f any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OnListChanged", reflect.TypeOf((*MockManagerInterface)(nil).OnListChanged), f)
+}
