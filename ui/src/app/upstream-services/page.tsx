@@ -45,6 +45,7 @@ import { applyTemplateFields } from "@/lib/template-utils";
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
+  const [originalService, setOriginalService] = useState<UpstreamServiceConfig | undefined>(undefined);
   const [configuringTemplate, setConfiguringTemplate] = useState<ServiceTemplate | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -191,11 +192,13 @@ export default function ServicesPage() {
 
   const openEdit = useCallback((service: UpstreamServiceConfig) => {
       setSelectedService(service);
+      setOriginalService(JSON.parse(JSON.stringify(service)));
       setIsSheetOpen(true);
   }, []);
 
   const openNew = () => {
       setSelectedService(null);
+      setOriginalService(undefined);
       setConfiguringTemplate(null);
       setIsSheetOpen(true);
   };
@@ -244,6 +247,7 @@ export default function ServicesPage() {
       delete newService.connectionPool; // Runtime status
 
       setSelectedService(newService);
+      setOriginalService(undefined);
       setIsSheetOpen(true);
       toast({
         title: "Service Duplicated",
@@ -356,6 +360,7 @@ export default function ServicesPage() {
             <div className="h-[calc(100vh-140px)]">
                 <ServiceEditor
                     service={selectedService}
+                    originalService={originalService}
                     onChange={setSelectedService}
                     onSave={handleSave}
                     onCancel={() => {

@@ -55,6 +55,15 @@ test.describe('Upstream Service Detail Page', () => {
     const saveButton = page.getByRole('button', { name: 'Save Changes' });
     await saveButton.click();
 
+    // 5a. Verify Diff View (Review Changes)
+    await expect(page.getByText('Review Changes')).toBeVisible();
+    // Use first() if needed, but the text is specific enough
+    await expect(page.getByText('Review the changes you are about to make')).toBeVisible();
+
+    // 5b. Confirm Save
+    const confirmButton = page.getByRole('button', { name: 'Confirm & Save' });
+    await confirmButton.click();
+
     // 6. Verify Toast/Feedback
     // Use first() to avoid strict mode violation if multiple elements match (e.g. title and aria-live region)
     await expect(page.getByText('Service Updated').first()).toBeVisible();

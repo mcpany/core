@@ -29,9 +29,12 @@ import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { SourceEditor } from "@/components/services/editor/source-editor";
 import yaml from "js-yaml";
+import { ServiceConfigDiff } from "@/components/services/service-config-diff";
+import { ArrowLeft } from "lucide-react";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
+    originalService?: UpstreamServiceConfig;
     onChange: (service: UpstreamServiceConfig) => void;
     onSave: () => void;
     onCancel: () => void;
@@ -42,12 +45,13 @@ interface ServiceEditorProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
+export function ServiceEditor({ service, originalService, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
     const [validating, setValidating] = useState(false);
     const [yamlContent, setYamlContent] = useState("");
     const [originalYaml, setOriginalYaml] = useState("");
     const [yamlError, setYamlError] = useState<string | null>(null);
+    const [showDiff, setShowDiff] = useState(false);
     const { toast } = useToast();
 
     // Snapshot original configuration for diffing
@@ -161,6 +165,37 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (service.openapiService) return 'openapi';
         return 'http'; // Default
     };
+
+    const handleSaveClick = () => {
+        if (originalService && service.id && !showDiff) {
+            setShowDiff(true);
+            return;
+        }
+        onSave();
+    };
+
+    if (showDiff && originalService) {
+        return (
+            <div className="flex flex-col h-full">
+                <div className="flex items-center gap-2 p-4 border-b bg-muted/20">
+                    <Button variant="ghost" size="icon" onClick={() => setShowDiff(false)}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <h2 className="text-lg font-semibold">Review Changes</h2>
+                </div>
+                <div className="flex-1 p-4 overflow-hidden bg-muted/10">
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Review the changes you are about to make to <strong>{service.name}</strong>.
+                    </p>
+                    <ServiceConfigDiff original={originalService} modified={service} />
+                </div>
+                <div className="border-t p-4 flex justify-end gap-2 bg-background/95 backdrop-blur">
+                    <Button variant="outline" onClick={() => setShowDiff(false)}>Back to Edit</Button>
+                    <Button onClick={onSave}>Confirm & Save</Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-full">
@@ -623,7 +658,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                     Validate
                 </Button>
                 <Button variant="outline" onClick={onCancel}>Cancel</Button>
-                <Button onClick={onSave}>Save Changes</Button>
+                <Button onClick={handleSaveClick}>Save Changes</Button>
             </div>
         </div>
     );

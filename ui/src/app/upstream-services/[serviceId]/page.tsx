@@ -25,6 +25,7 @@ export default function UpstreamServiceDetailPage() {
     const serviceId = params.serviceId as string;
 
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
+    const [originalService, setOriginalService] = useState<UpstreamServiceConfig | undefined>(undefined);
     const [loading, setLoading] = useState(true);
 
     // Fetch Service
@@ -34,7 +35,9 @@ export default function UpstreamServiceDetailPage() {
             try {
                 // Try fetching by ID (which might be the name based on our Instantiate logic)
                 const data = await apiClient.getService(serviceId);
-                setService(data.service || data); // Adjust based on actual response structure
+                const fetchedService = data.service || data;
+                setService(fetchedService);
+                setOriginalService(JSON.parse(JSON.stringify(fetchedService)));
             } catch (e) {
                 console.error(e);
                 toast({ title: "Failed to load service", description: "Service not found or error occurred.", variant: "destructive" });
@@ -50,6 +53,7 @@ export default function UpstreamServiceDetailPage() {
         if (!service) return;
         try {
             await apiClient.updateService(service);
+            setOriginalService(JSON.parse(JSON.stringify(service)));
             toast({ title: "Service Updated", description: "Configuration saved successfully." });
         } catch (e) {
             toast({ title: "Update Failed", description: String(e), variant: "destructive" });
@@ -110,6 +114,7 @@ export default function UpstreamServiceDetailPage() {
             <div className="flex-1 overflow-hidden">
                 <ServiceEditor
                     service={service}
+                    originalService={originalService}
                     onChange={setService}
                     onSave={handleSave}
                     onCancel={() => router.push("/upstream-services")}
