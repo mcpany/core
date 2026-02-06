@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { ServiceConfigDiff } from "./service-config-diff";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { vi, describe, it, expect } from "vitest";
@@ -60,10 +60,16 @@ const mockServiceModified: UpstreamServiceConfig = {
 };
 
 describe("ServiceConfigDiff", () => {
-  it("renders the diff editor with YAML content", () => {
+  it("renders the diff editor with YAML content", async () => {
     render(<ServiceConfigDiff original={mockServiceOriginal} modified={mockServiceModified} />);
 
-    expect(screen.getByTestId("diff-editor")).toBeInTheDocument();
+    // Expect loading state first
+    expect(screen.getByText("Loading Editor...")).toBeInTheDocument();
+
+    // Wait for dynamic import to resolve
+    await waitFor(() => {
+        expect(screen.getByTestId("diff-editor")).toBeInTheDocument();
+    });
 
     // Check if content contains YAML formatted strings
     const originalContent = screen.getByTestId("original").textContent;
