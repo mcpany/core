@@ -1,6 +1,6 @@
-# mcpctl: The MCP Any CLI
+# mcpany: The MCP Any CLI
 
-`mcpctl` is the command-line interface for managing and debugging your MCP Any installation.
+`mcpany` is the command-line interface for managing and debugging your MCP Any installation.
 
 ## Features
 
@@ -12,11 +12,11 @@
 ### Validation
 
 ```bash
-mcpctl validate --config-path ./config.yaml
+mcpany config validate --config-path ./config.yaml
 ```
 
 ### Doctor
 
 ```bash
-mcpctl doctor
+mcpany doctor
 ```
