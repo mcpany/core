@@ -115,10 +115,11 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     const row = page.locator('tr').filter({ hasText: 'Test OAuth Cred' });
     // Click direct Edit button
-    await row.getByRole('button', { name: 'Edit' }).click({ force: true });
+    await row.getByRole('button', { name: 'Edit' }).click();
 
     await expect(page.getByRole('button', { name: 'Connect Account' })).toBeVisible({ timeout: 15000 });
-    await page.getByRole('button', { name: 'Connect Account' }).click({ force: true });
+    await expect(page.getByRole('button', { name: 'Connect Account' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Connect Account' }).click();
 
     await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 20000 });
     await page.getByRole('button', { name: 'Continue' }).click({ force: true });
