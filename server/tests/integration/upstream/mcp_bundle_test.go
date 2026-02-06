@@ -244,6 +244,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// Verify if we can bind mount. This is required for bundle execution.
+	// In some CI environments (Docker-in-Docker with overlayfs), this fails with "invalid argument".
+	// We use the same image as the test to ensure compatibility.
+	checkMountCmd := exec.Command("docker", "run", "--rm", "-v", os.TempDir()+":/mnt", "node:18-alpine", "ls", "/mnt")
+	if out, err := checkMountCmd.CombinedOutput(); err != nil {
+		t.Skipf("Skipping Docker test: failed to bind mount (likely overlayfs/DinD issue): %v\nOutput: %s", err, string(out))
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 

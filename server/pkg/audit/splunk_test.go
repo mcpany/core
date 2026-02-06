@@ -83,7 +83,7 @@ func TestSplunkAuditStore(t *testing.T) {
 
 func TestSplunkAuditStore_Batch(t *testing.T) {
 	var totalReceived int32
-	done := make(chan struct{})
+	done := make(chan struct{}, 1) // Buffered channel to avoid deadlock
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
@@ -96,7 +96,11 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 		atomic.AddInt32(&totalReceived, int32(count))
 		w.WriteHeader(http.StatusOK)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
+			// Use select to avoid blocking if channel is full or nobody is listening yet
+			select {
+			case done <- struct{}{}:
+			default:
+			}
 		}
 	}))
 	defer ts.Close()
