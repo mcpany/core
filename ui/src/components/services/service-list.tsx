@@ -48,6 +48,7 @@ interface ServiceListProps {
   onExport?: (service: UpstreamServiceConfig) => void;
   onBulkToggle?: (names: string[], enabled: boolean) => void;
   onBulkDelete?: (names: string[]) => void;
+  onBulkRestart?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
   onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
@@ -58,7 +59,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onBulkRestart, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -141,6 +142,14 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                                      <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
                                  </Button>
                                </>
+                           )}
+                           {onBulkRestart && (
+                               <Button size="sm" variant="outline" onClick={() => {
+                                   onBulkRestart(Array.from(selected));
+                                   setSelected(new Set());
+                               }}>
+                                   <RefreshCw className="mr-2 h-4 w-4" /> Restart
+                               </Button>
                            )}
                            <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
                                <Settings className="mr-2 h-4 w-4" /> Bulk Edit

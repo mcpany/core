@@ -636,6 +636,39 @@ export const apiClient = {
         return data;
     },
 
+    /**
+     * Performs a bulk action on multiple services.
+     * @param action The action to perform (delete, enable, disable, restart).
+     * @param services The list of service names.
+     * @returns A promise that resolves when the action is complete.
+     */
+    bulkServiceAction: async (action: 'delete' | 'enable' | 'disable' | 'restart', services: string[]) => {
+        const response = await fetchWithAuth('/api/v1/services/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, services })
+        });
+        if (!response.ok) {
+            const txt = await response.text();
+            // Try to parse JSON error if available
+            try {
+                const json = JSON.parse(txt);
+                if (json.errors) {
+                    throw new Error(`Bulk action failed partially or completely: ${json.errors.join("; ")}`);
+                }
+            } catch (e) {
+                // ignore
+            }
+            throw new Error(`Failed to perform bulk action: ${response.status} ${txt}`);
+        }
+        // Check for partial success in 200 OK response
+        const data = await response.json();
+        if (data.errors && data.errors.length > 0) {
+            throw new Error(`Bulk action completed with errors: ${data.errors.join("; ")}`);
+        }
+        return data;
+    },
+
     // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
     // admin.proto has ListTools but we are focusing on RegistrationService first.
     // So keep using fetch for Tools/Secrets/etc for now.
