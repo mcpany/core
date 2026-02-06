@@ -6,7 +6,12 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SequenceDiagram } from "./sequence-diagram";
 import { Trace } from "@/types/trace";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+// Mock the JsonView component to avoid lazy loading issues and heavy dependencies in tests
+vi.mock("@/components/ui/json-view", () => ({
+  JsonView: ({ data }: any) => <div data-testid="json-view">{JSON.stringify(data)}</div>
+}));
 
 const mockTrace: Trace = {
   id: "trace-123",
@@ -87,7 +92,7 @@ describe("SequenceDiagram", () => {
     expect(screen.getByText("Response")).toBeInTheDocument();
   });
 
-  it("opens dialog on interaction click", () => {
+  it("opens dialog on interaction click", async () => {
     render(<SequenceDiagram trace={mockTrace} />);
     const requestLabel = screen.getByText("Execute Request");
 
@@ -99,7 +104,8 @@ describe("SequenceDiagram", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Client requests execution")).toBeInTheDocument();
     // Check payload
-    expect(screen.getByText(/value/)).toBeInTheDocument();
+    // ⚡ Bolt: Use findByText to wait for lazy-loaded component
+    expect(await screen.findByText(/value/)).toBeInTheDocument();
   });
 
   it("renders nested interactions correctly", () => {
