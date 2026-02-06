@@ -51,7 +51,7 @@ describe('PlaygroundClient', () => {
       // Mock executeTool to take some time
       (apiClient.executeTool as any).mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 50)); // 50ms delay
-          return { result: "success" };
+          return { result: { result: "success" }, traceId: "trace-123" };
       });
 
       render(<PlaygroundClient />);

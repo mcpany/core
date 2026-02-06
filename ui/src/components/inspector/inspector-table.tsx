@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trace, SpanStatus } from "@/types/trace";
 import {
   Table,
@@ -37,6 +37,10 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Initial trace ID to select.
+   */
+  initialSelectedId?: string | null;
 }
 
 /**
@@ -119,8 +123,20 @@ TraceRow.displayName = 'TraceRow';
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, initialSelectedId }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
+
+  // Auto-select trace if ID is provided and trace is found
+  useEffect(() => {
+    if (initialSelectedId && traces.length > 0) {
+        // Only select if not already manually selected (unless we want to force it)
+        // For deep linking, we want to force it once.
+        const found = traces.find(t => t.id === initialSelectedId);
+        if (found && (!selectedTrace || selectedTrace.id !== initialSelectedId)) {
+            setSelectedTrace(found);
+        }
+    }
+  }, [initialSelectedId, traces]); // Re-run when traces load
 
   return (
     <>

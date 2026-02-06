@@ -5,6 +5,8 @@ package middleware
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -160,6 +162,28 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	start := time.Now()
 
+	// Generate Trace ID
+	// Logic matches api_traces.go to ensure consistency
+	var userID, profileID string
+	if u, ok := auth.UserFromContext(ctx); ok {
+		userID = u
+	}
+	if p, ok := auth.ProfileIDFromContext(ctx); ok {
+		profileID = p
+	}
+
+	data := fmt.Sprintf("%d-%s-%s-%s", start.UnixNano(), req.ToolName, userID, profileID)
+	hash := sha256.Sum256([]byte(data))
+	traceID := hex.EncodeToString(hash[:])
+
+	// Inject Trace ID into context so downstream handlers (API) can return it
+	ctx = context.WithValue(ctx, TraceIDKey, traceID)
+
+	// Capture for upstream if requested
+	if ptr, ok := ctx.Value(TraceIDCaptureKey).(*string); ok {
+		*ptr = traceID
+	}
+
 	// Execute the tool
 	result, err := next(ctx, req)
 
@@ -167,17 +191,12 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	// Prepare audit entry
 	entry := audit.Entry{
-		Timestamp:  start,
+		Timestamp:  start, // Must be exact match to start used for ID generation
 		ToolName:   req.ToolName,
 		Duration:   duration.String(),
 		DurationMs: duration.Milliseconds(),
-	}
-
-	if userID, ok := auth.UserFromContext(ctx); ok {
-		entry.UserID = userID
-	}
-	if profileID, ok := auth.ProfileIDFromContext(ctx); ok {
-		entry.ProfileID = profileID
+		UserID:     userID,
+		ProfileID:  profileID,
 	}
 
 	if auditConfig.GetLogArguments() {

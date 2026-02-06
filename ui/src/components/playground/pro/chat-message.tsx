@@ -5,9 +5,10 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare, Activity } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import Link from "next/link";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -53,6 +54,7 @@ export interface Message {
   toolName?: string;
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
+  traceId?: string;
   previousResult?: unknown;
   timestamp: Date;
 }
@@ -218,6 +220,18 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
+                            {message.traceId && (
+                                <Link href={`/inspector?traceId=${message.traceId}`} target="_blank">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-6 px-2 text-[10px] gap-1 border-dashed hover:text-primary hover:bg-primary/10"
+                                    >
+                                        <Activity className="size-3" />
+                                        Trace
+                                    </Button>
+                                </Link>
+                            )}
                             {hasDiff && (
                                 <Button
                                     variant="outline"

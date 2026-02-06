@@ -46,10 +46,10 @@ describe('PlaygroundClient Diff Feature', () => {
       const mockExecute = apiClient.executeTool as any;
 
       // First run: Result A
-      mockExecute.mockResolvedValueOnce({ output: "Result A" });
+      mockExecute.mockResolvedValueOnce({ result: { output: "Result A" }, traceId: "1" });
 
       // Second run: Result B
-      mockExecute.mockResolvedValueOnce({ output: "Result B" });
+      mockExecute.mockResolvedValueOnce({ result: { output: "Result B" }, traceId: "2" });
 
       render(<PlaygroundClient />);
 
@@ -94,7 +94,7 @@ describe('PlaygroundClient Diff Feature', () => {
   it('does NOT display "Show Changes" if output is identical', async () => {
       // Mock executeTool to return SAME results
       const mockExecute = apiClient.executeTool as any;
-      mockExecute.mockResolvedValue({ output: "Result A" }); // Always returns A
+      mockExecute.mockResolvedValue({ result: { output: "Result A" }, traceId: "1" }); // Always returns A
 
       render(<PlaygroundClient />);
       const input = screen.getByPlaceholderText(/e.g. calculator/);

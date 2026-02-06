@@ -665,7 +665,7 @@ export const apiClient = {
      * @param dryRun If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
      */
-    executeTool: async (request: any, dryRun?: boolean) => {
+    executeTool: async (request: any, dryRun?: boolean): Promise<{ result: any; traceId: string | null }> => {
         try {
             const payload = { ...request };
             if (dryRun) {
@@ -688,7 +688,9 @@ export const apiClient = {
                 if (errorMsg) throw new Error(errorMsg);
                 throw new Error(`Failed to execute tool: ${text || res.statusText}`);
             }
-            return res.json();
+            const traceId = res.headers.get('X-Trace-Id');
+            const result = await res.json();
+            return { result, traceId };
         } catch (e) {
             console.warn("DEBUG: fetch failed:", e);
             throw e;

@@ -8,9 +8,10 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -46,6 +47,7 @@ interface Message {
   toolName?: string;
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
+  traceId?: string;
   previousResult?: unknown;
   duration?: number;
   timestamp: Date;
@@ -200,7 +202,7 @@ export function PlaygroundClient() {
 
       try {
           const startTime = performance.now();
-          const result = await apiClient.executeTool({
+          const { result, traceId } = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
           });
@@ -232,6 +234,7 @@ export function PlaygroundClient() {
               type: "tool-result",
               toolName: toolName,
               toolResult: result,
+              traceId: traceId || undefined,
               previousResult,
               duration: duration,
               timestamp: new Date(),
@@ -458,6 +461,19 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                             )}
                         </div>
                         <div className="flex items-center gap-2">
+                            {message.traceId && (
+                                <Link href={`/inspector?traceId=${message.traceId}`} target="_blank">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-5 px-2 text-[10px] gap-1 hover:text-primary hover:bg-primary/10"
+                                        title="View Trace in Inspector"
+                                    >
+                                        <Activity className="size-3" />
+                                        Trace
+                                    </Button>
+                                </Link>
+                            )}
                             {message.previousResult && (
                                 <Button
                                     variant="outline"
