@@ -572,16 +572,26 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible and capable of running containers.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
+	// 1. Check if we can talk to the daemon
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// 2. Check if we can actually run a container (catch dind mount issues)
+	// We use 'alpine' as it is small and used in tests.
+	runArgs := append(dockerArgs, "run", "--rm", "alpine", "true")
+	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...)
+	if err := cmdRun.Run(); err != nil {
+		return false
+	}
+
 	return true
 }
 
