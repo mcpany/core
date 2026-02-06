@@ -20,11 +20,13 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/') || pathname.startsWith('/sse') || pathname.startsWith('/messages') || pathname.startsWith('/mcp/')) {
     // Dynamic Proxying via Middleware to avoid build-time baking of BACKEND_URL
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
-    console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
     // Inject API Key for backend authentication
-    if (process.env.MCPANY_API_KEY) {
-      requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
+    const apiKey = process.env.MCPANY_API_KEY;
+    if (apiKey) {
+      requestHeaders.set('X-API-Key', apiKey);
+    } else {
+        console.warn("[Middleware] MCPANY_API_KEY not set in environment! Requests to backend will likely fail 401.");
     }
 
     const url = new URL(request.url);

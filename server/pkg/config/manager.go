@@ -154,6 +154,22 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 }
 
 func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.Collection) error {
+	// 1. Load inline services
+	for _, service := range collection.GetServices() {
+		priority := collection.GetPriority()
+		if service.HasPriority() {
+			priority = service.GetPriority()
+		}
+		if err := m.addService(service, priority); err != nil {
+			m.log.Warn("Failed to add inline service from collection", "collection", collection.GetName(), "service", service.GetName(), "error", err)
+		}
+	}
+
+	// 2. Load from URL if present
+	if collection.GetHttpUrl() == "" {
+		return nil
+	}
+
 	if isGitHubURL(collection.GetHttpUrl()) {
 		g, err := m.newGitHub(ctx, collection.GetHttpUrl())
 		if err != nil {
