@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { useUser } from "@/components/user-context";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -64,11 +65,28 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * @returns The rendered component.
  */
 export function DashboardGrid() {
+    const { user, updatePreferences } = useUser();
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
+
+        // Priority 1: Backend Preferences
+        if (user?.preferences?.["dashboard_layout"]) {
+            try {
+                const parsed = JSON.parse(user.preferences["dashboard_layout"]);
+                // Basic validation
+                if (Array.isArray(parsed)) {
+                    setWidgets(parsed);
+                    return;
+                }
+            } catch (e) {
+                console.error("Failed to parse backend dashboard layout", e);
+            }
+        }
+
+        // Priority 2: Local Storage (Migration / Backup)
         const saved = localStorage.getItem("dashboard-layout");
         if (saved) {
             try {
@@ -94,8 +112,6 @@ export function DashboardGrid() {
                     // Filter out any invalid types
                     const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
 
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
                     if (validMigrated.length === 0) {
                         setWidgets(DEFAULT_LAYOUT);
                     } else {
@@ -105,46 +121,51 @@ export function DashboardGrid() {
                     // Case 2: Already in new format
                     setWidgets(parsed);
                 }
+                return;
             } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+                console.error("Failed to load dashboard layout from local storage", e);
                 setWidgets(DEFAULT_LAYOUT);
             }
-        } else {
+        }
+
+        // Priority 3: Default
+        // Only set default if we haven't set it yet (widgets is empty) AND we are sure we are done loading user?
+        // But user loading is async.
+        // For now, if no user prefs and no local storage, default.
+        if (!user?.preferences?.["dashboard_layout"] && !saved) {
             setWidgets(DEFAULT_LAYOUT);
         }
-    }, []);
+
+    }, [user]); // Re-run when user loads (preferences arrive)
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
     };
 
-    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
-    // Randomized Selection from Top 5 High-Impact Targets
+    // ⚡ BOLT: Debounce writes to prevent main thread blocking and API spam
     const isFirstRun = useRef(true);
     useEffect(() => {
         if (!isMounted) return;
 
-        // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
-        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
-        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
-        // But for initial load, widgets is [].
-
-        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
         if (isFirstRun.current) {
             isFirstRun.current = false;
-            // If widgets are empty on first run, it's likely the initial state.
-            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
-            // But `isMounted` gate likely delays this enough.
             return;
         }
 
         const timer = setTimeout(() => {
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+            const layoutJson = JSON.stringify(widgets);
+
+            // Save to Backend
+            if (user) {
+                updatePreferences({ "dashboard_layout": layoutJson });
+            }
+
+            // Backup to LocalStorage (for offline / instant load next time before auth)
+            localStorage.setItem("dashboard-layout", layoutJson);
+        }, 1000);
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted]);
+    }, [widgets, isMounted, user, updatePreferences]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
@@ -217,11 +238,6 @@ export function DashboardGrid() {
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
-                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
-                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
-                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
-                    Let's keep the popover for recovering hidden widgets.
-                */}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="h-8 border-dashed">
