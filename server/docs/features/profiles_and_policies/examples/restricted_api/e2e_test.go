@@ -29,7 +29,7 @@ import (
 
 func TestRestrictedApiE2E(t *testing.T) {
 	// Enable local IPs for testing purposes (SSRF protection bypass)
-	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// 1. Setup Mock Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
