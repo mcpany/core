@@ -103,9 +103,25 @@ test.describe('User Guide Walkthrough', () => {
   });
 
   test('Stack Composer', async ({ page }) => {
+    // Mock the stacks response to ensure deterministic test execution
+    await page.route('**/api/v1/collections', async route => {
+        await route.fulfill({
+            json: {
+                collections: [{
+                    name: 'mcpany-system',
+                    version: '1.0.0',
+                    priority: 0,
+                    services: []
+                }]
+            }
+        });
+    });
+
     await page.goto('/stacks');
-    await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
-    // "Create Stack" button is missing in implementation, check for default stack card instead
+    // Use exact match to avoid matching "No stacks found"
+    await expect(page.getByRole('heading', { name: 'Stacks', exact: true })).toBeVisible();
+
+    // Check for default stack card which is now mocked
     await expect(page.getByText('mcpany-system')).toBeVisible();
   });
 

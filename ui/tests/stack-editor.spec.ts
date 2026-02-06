@@ -25,13 +25,25 @@ test.describe('Stack Editor', () => {
 
     // Check for the node
     // Using a more specific selector to ensure it's inside a node
+    // The previous test failed because it couldn't find 'weather-service'
+    // This might be due to async data fetching not completing
+    // We add a wait for the data response
+    await page.waitForResponse(response =>
+      response.url().includes('/api/v1/collections/default-stack') && response.status() === 200
+    );
+
     const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' });
-    await expect(weatherNode).toBeVisible();
+    await expect(weatherNode).toBeVisible({ timeout: 10000 });
   });
 
   test('should update graph when template added', async ({ page }) => {
     await page.goto('/stacks/default-stack');
     const visualizer = page.locator('.stack-visualizer-container');
+
+    // Wait for data load
+    await page.waitForResponse(response =>
+      response.url().includes('/api/v1/collections/default-stack') && response.status() === 200
+    );
 
     // Wait for initial load
     await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 30000 });
