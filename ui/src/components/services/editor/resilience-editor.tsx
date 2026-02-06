@@ -17,6 +17,11 @@ interface ResilienceEditorProps {
     onChange: (config: ResilienceConfig) => void;
 }
 
+/**
+ * Component for editing resilience configuration settings (Circuit Breaker, Retry Policy, etc.).
+ * @param props The component props.
+ * @returns The rendered component.
+ */
 export function ResilienceEditor({ config, onChange }: ResilienceEditorProps) {
     const updateConfig = (updates: Partial<ResilienceConfig>) => {
         onChange({ ...config, ...updates });
