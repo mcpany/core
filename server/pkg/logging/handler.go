@@ -110,6 +110,16 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	}
 
 	h.broadcaster.Broadcast(data)
+
+	// Persist asynchronously
+	if globalPersister.Load() != nil {
+		select {
+		case logPersistenceCh <- entry:
+		default:
+			// Drop log if persistence channel is full to prevent blocking
+		}
+	}
+
 	return nil
 }
 

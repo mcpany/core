@@ -260,6 +260,34 @@ export const apiClient = {
     },
 
     /**
+     * Lists application logs.
+     * @param params Filter parameters.
+     * @returns A promise that resolves to a list of logs and total count.
+     */
+    listLogs: async (params: {
+        limit?: number;
+        offset?: number;
+        level?: string;
+        source?: string;
+        search?: string;
+        startTime?: string;
+        endTime?: string;
+    }) => {
+        const query = new URLSearchParams();
+        if (params.limit) query.set('limit', params.limit.toString());
+        if (params.offset) query.set('offset', params.offset.toString());
+        if (params.level) query.set('level', params.level);
+        if (params.source) query.set('source', params.source);
+        if (params.search) query.set('search', params.search);
+        if (params.startTime) query.set('start_time', params.startTime);
+        if (params.endTime) query.set('end_time', params.endTime);
+
+        const res = await fetchWithAuth(`/api/v1/logs/history?${query.toString()}`);
+        if (!res.ok) throw new Error('Failed to fetch logs');
+        return res.json();
+    },
+
+    /**
      * Gets a single service by its ID.
      * @param id The ID of the service to retrieve.
      * @returns A promise that resolves to the service configuration.

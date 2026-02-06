@@ -799,6 +799,12 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	// Initialize Log Persistence if supported
+	if persister, ok := storageStore.(logging.LogPersister); ok {
+		logging.SetPersister(persister)
+		logging.GetLogger().Info("Log persistence enabled")
+	}
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {
