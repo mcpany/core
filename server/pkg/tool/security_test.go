@@ -141,6 +141,8 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Safe input with special chars
+		// Note: Even though 'Law & Order' is safe in single-quoted args, it is unsafe in unquoted environment variables.
+		// Since we automatically map inputs to env vars, this is now blocked by strict env validation for shells.
 		reqSafe := &ExecutionRequest{
 			ToolName: "test-tool-sh-quoted",
 			Arguments: map[string]interface{}{
@@ -150,9 +152,10 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
 		_, err := localTool.Execute(context.Background(), reqSafe)
-		// Should PASS because it's quoted
+		// Should FAIL because '&' is dangerous in env vars for shells
+		assert.Error(t, err)
 		if err != nil {
-			assert.NotContains(t, err.Error(), "shell injection detected")
+			assert.Contains(t, err.Error(), "shell injection detected")
 		}
 
 		// Breakout attempt
