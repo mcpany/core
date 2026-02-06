@@ -97,19 +97,28 @@ test.describe('MCP Any UI E2E', () => {
     }
   });
 
-  test('Middleware page drag and drop', async ({ page }) => {
-    // Mock settings API to ensure middlewares are present
-    await page.route('**/api/v1/settings*', async route => {
-        await route.fulfill({
-            json: {
-                middlewares: [
-                    { name: 'Authentication', priority: 0, disabled: false },
-                    { name: 'Rate Limiter', priority: 1, disabled: false },
-                    { name: 'Logging', priority: 2, disabled: false }
-                ]
-            }
-        });
+  test('Middleware page drag and drop', async ({ page, request }) => {
+    // Seed settings API to ensure middlewares are present (Real Data)
+    const settings = {
+        middlewares: [
+            { name: 'Authentication', priority: 0, disabled: false },
+            { name: 'Rate Limiter', priority: 1, disabled: false },
+            { name: 'Logging', priority: 2, disabled: false }
+        ]
+    };
+
+    // Use request context to seed data to the backend via the API
+    const response = await request.post('/api/v1/settings', {
+        data: settings
     });
+
+    // If backend is not available (e.g. running against mock-only environment), we might fail here.
+    // But per instructions, we must assume Real Data.
+    // We can also check status to help debugging
+    if (!response.ok()) {
+        console.log(`Failed to seed settings: ${response.status()} ${await response.text()}`);
+        // We continue, but the test will likely fail if data isn't there.
+    }
 
     await page.goto('/middleware');
 
