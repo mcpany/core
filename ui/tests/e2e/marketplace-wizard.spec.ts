@@ -33,7 +33,25 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
 
     // Mock Templates API
-    const templates: any[] = [];
+    const templates: any[] = [
+        {
+            id: 'postgres',
+            name: 'PostgreSQL',
+            version: '1.0.0',
+            command_line_service: {
+                command: 'npx -y @modelcontextprotocol/server-postgres',
+                env: {
+                    "POSTGRES_URL": { plain_text: "postgresql://user:password@localhost:5432/dbname" }
+                }
+            },
+            configuration_schema: JSON.stringify({
+                type: "object",
+                properties: {
+                    "POSTGRES_URL": { type: "string", title: "Connection URL" }
+                }
+            })
+        }
+    ];
     await page.route('/api/v1/templates', async route => {
         if (route.request().method() === 'GET') {
             await route.fulfill({ json: templates });
@@ -74,27 +92,23 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(page.getByText('Service Type')).toBeVisible();
     await page.getByRole('combobox').click();
     await page.getByRole('option', { name: 'PostgreSQL' }).click();
+
+    // Verify selection took effect (Service Name should auto-fill)
+    await expect(page.locator('#service-name')).toHaveValue('PostgreSQL');
+
     await page.click('button:has-text("Next")');
 
+    // Verify transition to Step 2
+    await expect(page.getByText('2. Configure Parameters')).toBeVisible();
+
     // 4. Step 2: Parameters
-    await expect(page.getByRole('heading', { name: 'Environment Variables / Parameters' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Configuration Parameters' })).toBeVisible();
 
     // Check for parameter input existence and edit it
-    // Using specific locator to avoid strict mode violations if multiple inputs exist
-    const paramInput = page.locator('input[value="postgresql://user:password@localhost:5432/dbname"]');
+    // Schema form uses labels from schema
+    const paramInput = page.getByLabel('Connection URL');
     await expect(paramInput).toBeVisible();
     await paramInput.fill('postgresql://test:test@localhost:5432/testdb');
-
-    // Add a new parameter
-    await page.getByRole('button', { name: 'Add Parameter' }).click();
-
-    // Wait for the new input to appear (should have 2 now: POSTGRES_URL + new one)
-    await expect(page.getByPlaceholder('VAR_NAME')).toHaveCount(2);
-
-    const newKeyInput = page.getByPlaceholder('VAR_NAME').last();
-    const newValueInput = page.locator('input[placeholder="Value"]').last();
-    await newKeyInput.fill('MAX_CONNECTIONS');
-    await newValueInput.fill('100');
 
     await page.click('button:has-text("Next")');
 
@@ -126,8 +140,6 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // 7. Step 5: Review
     await expect(page.getByText('Review & Finish')).toBeVisible(); // Title is "5. Review & Finish" in create-config-wizard.tsx
     // Check if JSON contains our changes
-    await expect(page.getByText('"MAX_CONNECTIONS"')).toBeVisible();
-    await expect(page.getByText('"100"')).toBeVisible();
     await expect(page.getByText('postgresql://test:test@localhost:5432/testdb')).toBeVisible();
 
     await page.click('button:has-text("Finish & Save")');

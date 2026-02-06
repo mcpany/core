@@ -236,7 +236,16 @@ export const apiClient = {
             connectionPool: s.connection_pool,
             httpService: s.http_service,
             grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
+            commandLineService: s.command_line_service ? {
+                command: s.command_line_service.command,
+                workingDirectory: s.command_line_service.working_directory,
+                env: s.command_line_service.env ? Object.fromEntries(
+                    Object.entries(s.command_line_service.env).map(([k, v]: [string, any]) => [k, {
+                        plainText: v.plain_text,
+                        validationRegex: v.validation_regex
+                    }])
+                ) : undefined
+            } : undefined,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
@@ -246,6 +255,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            configurationSchema: s.configuration_schema,
             callPolicies: s.call_policies?.map((p: any) => ({
                 defaultAction: p.default_action,
                 rules: p.rules?.map((r: any) => ({
@@ -1458,7 +1468,16 @@ export const apiClient = {
             connectionPool: s.connection_pool,
             httpService: s.http_service,
             grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
+            commandLineService: s.command_line_service ? {
+                command: s.command_line_service.command,
+                workingDirectory: s.command_line_service.working_directory,
+                env: s.command_line_service.env ? Object.fromEntries(
+                    Object.entries(s.command_line_service.env).map(([k, v]: [string, any]) => [k, {
+                        plainText: v.plain_text,
+                        validationRegex: v.validation_regex
+                    }])
+                ) : undefined
+            } : undefined,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
@@ -1466,6 +1485,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            configurationSchema: s.configuration_schema,
         }));
     },
 
