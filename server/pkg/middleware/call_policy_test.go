@@ -69,10 +69,6 @@ func (m *callPolicyMockToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }
 
-func (m *callPolicyMockToolManager) GetToolCountForService(serviceID string) int {
-	return 0
-}
-
 func TestCallPolicyMiddleware(t *testing.T) {
 	const successResult = "success"
 
