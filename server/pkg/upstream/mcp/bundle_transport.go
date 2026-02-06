@@ -332,11 +332,11 @@ func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	if req, ok := msg.(*jsonrpc.Request); ok {
 		method = req.Method
 		params = req.Params
-		id = fixID(req.ID)
+		id = fixID(&req.ID)
 	} else if resp, ok := msg.(*jsonrpc.Response); ok {
 		result = resp.Result
 		errorObj = resp.Error
-		id = fixID(resp.ID)
+		id = fixID(&resp.ID)
 	}
 
 	wire := map[string]any{
@@ -366,6 +366,23 @@ func fixID(id interface{}) interface{} {
 	if id == nil {
 		return nil
 	}
+
+	// ⚡ BOLT: Optimization - Try to read unexported field directly via unsafe reflection
+	// Randomized Selection from Top 5 High-Impact Targets
+	if val, ok := getUnexportedID(id); ok {
+		return val
+	}
+
+	// If we passed a pointer for optimization but it failed (e.g. primitive type),
+	// we must dereference it to allow the fallback logic to work on the value.
+	v := reflect.ValueOf(id)
+	if v.Kind() == reflect.Ptr {
+		if v.IsNil() {
+			return nil
+		}
+		id = v.Elem().Interface()
+	}
+
 	// Check if it's already simple type
 	switch v := id.(type) {
 	case string, int, int64, float64:
@@ -401,6 +418,32 @@ func fixID(id interface{}) interface{} {
 
 	// If parsing fails, return the ID as is and hope for the best (it might be marshaled as {})
 	return id
+}
+
+func getUnexportedID(id interface{}) (interface{}, bool) {
+	v := reflect.ValueOf(id)
+	// Expect a pointer to a struct
+	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
+		return nil, false
+	}
+
+	// Dereference the pointer to get the struct
+	v = v.Elem()
+
+	f := v.FieldByName("value")
+	if !f.IsValid() {
+		return nil, false
+	}
+
+	// We need unsafe to read unexported field
+	// Note: We use UnsafeAddr() which requires the value to be addressable.
+	// Since we passed a pointer to the struct, the struct element is addressable.
+	if !f.CanAddr() {
+		return nil, false
+	}
+
+	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
+	return f.Interface(), true
 }
 
 // Close closes the connection.

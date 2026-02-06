@@ -60,6 +60,29 @@ func TestFixIDOld(t *testing.T) {
 	}
 }
 
+func TestFixID_Reflection(t *testing.T) {
+	id := brokenID{value: 123}
+	// Pass address to trigger reflection path
+	res := fixID(&id)
+	if res != 123 {
+		t.Errorf("Expected 123, got %v", res)
+	}
+}
+
+func TestFixID_Regression_PrimitivePointer(t *testing.T) {
+	str := "hello"
+	res := fixID(&str)
+	if res != "hello" {
+		t.Errorf("Expected 'hello', got %v", res)
+	}
+
+	num := 123
+	resNum := fixID(&num)
+	if resNum != 123 {
+		t.Errorf("Expected 123, got %v", resNum)
+	}
+}
+
 func BenchmarkFixID_RegexPath(b *testing.B) {
 	id := brokenID{value: 123}
 	b.ResetTimer()
@@ -101,10 +124,18 @@ func fixIDOptimized(id interface{}) interface{} {
 	return id
 }
 
-func BenchmarkFixID_Optimized(b *testing.B) {
+func BenchmarkFixID_GlobalRegex(b *testing.B) {
 	id := brokenID{value: 123}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		fixIDOptimized(id)
+	}
+}
+
+func BenchmarkFixID_Reflection(b *testing.B) {
+	id := brokenID{value: 123}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		fixID(&id)
 	}
 }
