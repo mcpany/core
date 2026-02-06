@@ -163,5 +163,6 @@ func (e *SplunkAuditStore) Close() error {
 		close(e.queue)
 	}
 	e.wg.Wait()
+	e.client.CloseIdleConnections()
 	return nil
 }
