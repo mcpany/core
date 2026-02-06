@@ -15,34 +15,48 @@ import (
 
 // ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
 type ClaudeDesktopConfig struct {
+	// MCPServers is a map of server names to their configurations.
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
 // MCPServerConfig represents a single server configuration in Claude Desktop.
 type MCPServerConfig struct {
-	Command string            `json:"command"`
-	Args    []string          `json:"args"`
-	Env     map[string]string `json:"env,omitempty"`
+	// Command is the executable command to run the server.
+	Command string `json:"command"`
+	// Args is the list of arguments to pass to the command.
+	Args []string `json:"args"`
+	// Env is a map of environment variables to set for the server process.
+	Env map[string]string `json:"env,omitempty"`
 }
 
 // McpAnyConfig represents the target configuration structure for MCP Any.
 type McpAnyConfig struct {
+	// UpstreamServices is a list of upstream services to configure in MCP Any.
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
+// UpstreamService represents a single upstream service configuration.
 type UpstreamService struct {
-	Name       string      `yaml:"name"`
+	// Name is the unique identifier for the service.
+	Name string `yaml:"name"`
+	// McpService holds the configuration for an MCP-compatible service.
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
+// McpService represents the configuration for an MCP service.
 type McpService struct {
+	// StdioConnection configures the connection to the service via standard I/O.
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
+// StdioConnection represents the configuration for a stdio-based connection.
 type StdioConnection struct {
-	Command string            `yaml:"command"`
-	Args    []string          `yaml:"args"`
-	Env     map[string]string `yaml:"env,omitempty"`
+	// Command is the executable command to run.
+	Command string `yaml:"command"`
+	// Args is the list of arguments to pass to the command.
+	Args []string `yaml:"args"`
+	// Env is a map of environment variables to set for the process.
+	Env map[string]string `yaml:"env,omitempty"`
 }
 
 func newImportCmd() *cobra.Command {
