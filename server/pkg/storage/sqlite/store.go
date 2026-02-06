@@ -60,6 +60,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	)
 
 	// ⚡ BOLT: Parallelized data loading (5 concurrent queries) to reduce latency.
+	// ⚡ BOLT: Optimized memory usage by scanning directly into []byte to avoid string allocations.
 	// Randomized Selection from Top 5 High-Impact Targets
 
 	wg.Add(5)
@@ -78,7 +79,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		for rows.Next() {
-			var configJSON string
+			var configJSON []byte
 			if err := rows.Scan(&configJSON); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Errorf("failed to scan config_json: %w", err))
@@ -87,7 +88,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 			}
 
 			var service configv1.UpstreamServiceConfig
-			if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
+			if err := opts.Unmarshal(configJSON, &service); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Errorf("failed to unmarshal service config: %w", err))
 				mu.Unlock()
@@ -116,7 +117,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		for userRows.Next() {
-			var configJSON string
+			var configJSON []byte
 			if err := userRows.Scan(&configJSON); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Errorf("failed to scan user config_json: %w", err))
@@ -125,7 +126,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 			}
 
 			var user configv1.User
-			if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
+			if err := opts.Unmarshal(configJSON, &user); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Errorf("failed to unmarshal user config: %w", err))
 				mu.Unlock()
@@ -144,11 +145,11 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	go func() {
 		defer wg.Done()
 		settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
-		var settingsJSON string
+		var settingsJSON []byte
 		if err := settingsRow.Scan(&settingsJSON); err == nil {
 			var s configv1.GlobalSettings
 			opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-			if err := opts.Unmarshal([]byte(settingsJSON), &s); err == nil {
+			if err := opts.Unmarshal(settingsJSON, &s); err == nil {
 				settings = &s
 			}
 		}
@@ -166,12 +167,12 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		for collectionRows.Next() {
-			var configJSON string
+			var configJSON []byte
 			if err := collectionRows.Scan(&configJSON); err != nil {
 				continue
 			}
 			var c configv1.Collection
-			if err := opts.Unmarshal([]byte(configJSON), &c); err == nil {
+			if err := opts.Unmarshal(configJSON, &c); err == nil {
 				collections = append(collections, &c)
 			}
 		}
@@ -196,7 +197,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		for rows.Next() {
-			var configJSON string
+			var configJSON []byte
 			if err := rows.Scan(&configJSON); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Errorf("failed to scan profile config_json: %w", err))
@@ -204,7 +205,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 				return
 			}
 			var p configv1.ProfileDefinition
-			if err := opts.Unmarshal([]byte(configJSON), &p); err != nil {
+			if err := opts.Unmarshal(configJSON, &p); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Errorf("failed to unmarshal profile config: %w", err))
 				mu.Unlock()
@@ -294,7 +295,7 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -303,7 +304,7 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 	}
 
 	var service configv1.UpstreamServiceConfig
-	if err := protojson.Unmarshal([]byte(configJSON), &service); err != nil {
+	if err := protojson.Unmarshal(configJSON, &service); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
 	}
 	return &service, nil
@@ -368,7 +369,7 @@ func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -377,7 +378,7 @@ func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings
 	}
 
 	var settings configv1.GlobalSettings
-	if err := protojson.Unmarshal([]byte(configJSON), &settings); err != nil {
+	if err := protojson.Unmarshal(configJSON, &settings); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal global settings: %w", err)
 	}
 	return &settings, nil
@@ -451,7 +452,7 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 	query := "SELECT config_json FROM users WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -460,7 +461,7 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 	}
 
 	var user configv1.User
-	if err := protojson.Unmarshal([]byte(configJSON), &user); err != nil {
+	if err := protojson.Unmarshal(configJSON, &user); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
 	}
 	return &user, nil
@@ -481,13 +482,13 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 
 	var users []*configv1.User
 	for rows.Next() {
-		var configJSON string
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan user config: %w", err)
 		}
 
 		var user configv1.User
-		if err := protojson.Unmarshal([]byte(configJSON), &user); err != nil {
+		if err := protojson.Unmarshal(configJSON, &user); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
 		}
 		users = append(users, &user)
@@ -567,13 +568,13 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 
 	var secrets []*configv1.Secret
 	for rows.Next() {
-		var configJSON string
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
 		var secret configv1.Secret
-		if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+		if err := protojson.Unmarshal(configJSON, &secret); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
 		}
 		secrets = append(secrets, &secret)
@@ -595,7 +596,7 @@ func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, err
 	query := "SELECT config_json FROM secrets WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -604,7 +605,7 @@ func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, err
 	}
 
 	var secret configv1.Secret
-	if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+	if err := protojson.Unmarshal(configJSON, &secret); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
 	}
 	return &secret, nil
@@ -674,13 +675,13 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 
 	var profiles []*configv1.ProfileDefinition
 	for rows.Next() {
-		var configJSON string
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
 		var profile configv1.ProfileDefinition
-		if err := protojson.Unmarshal([]byte(configJSON), &profile); err != nil {
+		if err := protojson.Unmarshal(configJSON, &profile); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
 		}
 		profiles = append(profiles, &profile)
@@ -702,7 +703,7 @@ func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileD
 	query := "SELECT config_json FROM profile_definitions WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -711,7 +712,7 @@ func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileD
 	}
 
 	var profile configv1.ProfileDefinition
-	if err := protojson.Unmarshal([]byte(configJSON), &profile); err != nil {
+	if err := protojson.Unmarshal(configJSON, &profile); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
 	}
 	return &profile, nil
@@ -781,13 +782,13 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 
 	var collections []*configv1.Collection
 	for rows.Next() {
-		var configJSON string
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
 		var collection configv1.Collection
-		if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
+		if err := protojson.Unmarshal(configJSON, &collection); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
 		}
 		collections = append(collections, &collection)
@@ -809,7 +810,7 @@ func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv
 	query := "SELECT config_json FROM service_collections WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -818,7 +819,7 @@ func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv
 	}
 
 	var collection configv1.Collection
-	if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
+	if err := protojson.Unmarshal(configJSON, &collection); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
 	}
 	return &collection, nil
@@ -916,7 +917,7 @@ func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*config
 	query := "SELECT config_json FROM user_tokens WHERE user_id = ? AND service_id = ?"
 	row := s.db.QueryRowContext(ctx, query, userID, serviceID)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -925,7 +926,7 @@ func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*config
 	}
 
 	var token configv1.UserToken
-	if err := protojson.Unmarshal([]byte(configJSON), &token); err != nil {
+	if err := protojson.Unmarshal(configJSON, &token); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal token: %w", err)
 	}
 	return &token, nil
@@ -963,13 +964,13 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 
 	var credentials []*configv1.Credential
 	for rows.Next() {
-		var configJSON string
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan credential config: %w", err)
 		}
 
 		var cred configv1.Credential
-		if err := protojson.Unmarshal([]byte(configJSON), &cred); err != nil {
+		if err := protojson.Unmarshal(configJSON, &cred); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
 		}
 		credentials = append(credentials, &cred)
@@ -991,7 +992,7 @@ func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credent
 	query := "SELECT config_json FROM credentials WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
 
-	var configJSON string
+	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
@@ -1000,7 +1001,7 @@ func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credent
 	}
 
 	var cred configv1.Credential
-	if err := protojson.Unmarshal([]byte(configJSON), &cred); err != nil {
+	if err := protojson.Unmarshal(configJSON, &cred); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
 	}
 	return &cred, nil
