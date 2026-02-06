@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, UpstreamServiceConfig as ProtoUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -239,6 +239,10 @@ export const apiClient = {
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
+            resilience: s.resilience,
+            cache: s.cache,
+            rateLimit: s.rate_limit,
+            authentication: s.authentication,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
@@ -287,6 +291,10 @@ export const apiClient = {
                          commandLineService: s.command_line_service,
                          mcpService: s.mcp_service,
                          upstreamAuth: s.upstream_auth,
+                         resilience: s.resilience,
+                         cache: s.cache,
+                         rateLimit: s.rate_limit,
+                         authentication: s.authentication,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
                          toolExportPolicy: s.tool_export_policy,
@@ -356,62 +364,7 @@ export const apiClient = {
      * @returns A promise that resolves to the registered service configuration.
      */
     registerService: async (config: UpstreamServiceConfig) => {
-        // Map camelCase (UI) to snake_case (Server REST)
-        const payload: any = {
-            id: config.id,
-            name: config.name,
-            version: config.version,
-            disable: config.disable,
-            priority: config.priority,
-            load_balancing_strategy: config.loadBalancingStrategy,
-            tags: config.tags,
-        };
-
-        if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
-        }
-        if (config.grpcService) {
-            payload.grpc_service = { address: config.grpcService.address };
-        }
-        if (config.commandLineService) {
-            payload.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env,
-                env: config.commandLineService.env
-            };
-        }
-        if (config.mcpService) {
-            payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.preCallHooks) {
-            payload.pre_call_hooks = config.preCallHooks;
-        }
-        if (config.postCallHooks) {
-            payload.post_call_hooks = config.postCallHooks;
-        }
-        if (config.callPolicies) {
-            payload.call_policies = config.callPolicies.map((p: any) => ({
-                default_action: p.defaultAction,
-                rules: p.rules?.map((r: any) => ({
-                    action: r.action,
-                    name_regex: r.nameRegex,
-                    argument_regex: r.argumentRegex,
-                    url_regex: r.urlRegex,
-                    call_id_regex: r.callIdRegex
-                }))
-            }));
-        }
-        if (config.toolExportPolicy) {
-            payload.tool_export_policy = config.toolExportPolicy;
-        }
-        if (config.promptExportPolicy) {
-            payload.prompt_export_policy = config.promptExportPolicy;
-        }
-        if (config.resourceExportPolicy) {
-            payload.resource_export_policy = config.resourceExportPolicy;
-        }
-
+        const payload = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -431,60 +384,7 @@ export const apiClient = {
      * @returns A promise that resolves to the updated service configuration.
      */
     updateService: async (config: UpstreamServiceConfig) => {
-        // Same mapping as register
-        const payload: any = {
-             id: config.id,
-            name: config.name,
-            version: config.version,
-            disable: config.disable,
-            priority: config.priority,
-            load_balancing_strategy: config.loadBalancingStrategy,
-            tags: config.tags,
-        };
-        // Reuse mapping logic or duplicate for now safely
-         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
-        }
-        if (config.grpcService) {
-            payload.grpc_service = { address: config.grpcService.address };
-        }
-        if (config.commandLineService) {
-            payload.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-            };
-        }
-        if (config.mcpService) {
-            payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.preCallHooks) {
-            payload.pre_call_hooks = config.preCallHooks;
-        }
-        if (config.postCallHooks) {
-            payload.post_call_hooks = config.postCallHooks;
-        }
-        if (config.callPolicies) {
-            payload.call_policies = config.callPolicies.map((p: any) => ({
-                default_action: p.defaultAction,
-                rules: p.rules?.map((r: any) => ({
-                    action: r.action,
-                    name_regex: r.nameRegex,
-                    argument_regex: r.argumentRegex,
-                    url_regex: r.urlRegex,
-                    call_id_regex: r.callIdRegex
-                }))
-            }));
-        }
-        if (config.toolExportPolicy) {
-            payload.tool_export_policy = config.toolExportPolicy;
-        }
-        if (config.promptExportPolicy) {
-            payload.prompt_export_policy = config.promptExportPolicy;
-        }
-        if (config.resourceExportPolicy) {
-            payload.resource_export_policy = config.resourceExportPolicy;
-        }
-
+        const payload = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -517,62 +417,7 @@ export const apiClient = {
      * @returns A promise that resolves to the validation result.
      */
     validateService: async (config: UpstreamServiceConfig) => {
-        // Map camelCase (UI) to snake_case (Server REST)
-        const payload: any = {
-            id: config.id,
-            name: config.name,
-            version: config.version,
-            disable: config.disable,
-            priority: config.priority,
-            load_balancing_strategy: config.loadBalancingStrategy,
-            tags: config.tags,
-        };
-
-        if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
-        }
-        if (config.grpcService) {
-            payload.grpc_service = { address: config.grpcService.address };
-        }
-        if (config.commandLineService) {
-            payload.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-                env: config.commandLineService.env,
-                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
-            };
-        }
-        if (config.mcpService) {
-            payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.preCallHooks) {
-            payload.pre_call_hooks = config.preCallHooks;
-        }
-        if (config.postCallHooks) {
-            payload.post_call_hooks = config.postCallHooks;
-        }
-        if (config.callPolicies) {
-            payload.call_policies = config.callPolicies.map((p: any) => ({
-                default_action: p.defaultAction,
-                rules: p.rules?.map((r: any) => ({
-                    action: r.action,
-                    name_regex: r.nameRegex,
-                    argument_regex: r.argumentRegex,
-                    url_regex: r.urlRegex,
-                    call_id_regex: r.callIdRegex
-                }))
-            }));
-        }
-        if (config.toolExportPolicy) {
-            payload.tool_export_policy = config.toolExportPolicy;
-        }
-        if (config.promptExportPolicy) {
-            payload.prompt_export_policy = config.promptExportPolicy;
-        }
-        if (config.resourceExportPolicy) {
-            payload.resource_export_policy = config.resourceExportPolicy;
-        }
-
+        const payload = ProtoUpstreamServiceConfig.toJSON(config as BaseUpstreamServiceConfig);
         const response = await fetchWithAuth('/api/v1/services/validate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1422,6 +1267,10 @@ export const apiClient = {
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
+            resilience: s.resilience,
+            cache: s.cache,
+            rateLimit: s.rate_limit,
+            authentication: s.authentication,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             toolExportPolicy: s.tool_export_policy,
@@ -1436,50 +1285,7 @@ export const apiClient = {
      * @returns A promise that resolves to the saved template.
      */
     saveTemplate: async (template: UpstreamServiceConfig) => {
-        // Map back to snake_case for saving
-        // Reuse registerService mapping logic essentially but for template endpoint
-        const payload: any = {
-            id: template.id,
-            name: template.name,
-            version: template.version,
-            disable: template.disable,
-            priority: template.priority,
-            load_balancing_strategy: template.loadBalancingStrategy,
-            tags: template.tags,
-        };
-
-        if (template.httpService) {
-            payload.http_service = { address: template.httpService.address };
-        }
-        if (template.grpcService) {
-            payload.grpc_service = { address: template.grpcService.address };
-        }
-        if (template.commandLineService) {
-            payload.command_line_service = {
-                command: template.commandLineService.command,
-                working_directory: template.commandLineService.workingDirectory,
-                env: template.commandLineService.env
-            };
-        }
-        if (template.mcpService) {
-            payload.mcp_service = { ...template.mcpService };
-        }
-        if (template.preCallHooks) {
-            payload.pre_call_hooks = template.preCallHooks;
-        }
-        if (template.postCallHooks) {
-            payload.post_call_hooks = template.postCallHooks;
-        }
-        if (template.toolExportPolicy) {
-            payload.tool_export_policy = template.toolExportPolicy;
-        }
-        if (template.promptExportPolicy) {
-            payload.prompt_export_policy = template.promptExportPolicy;
-        }
-        if (template.resourceExportPolicy) {
-            payload.resource_export_policy = template.resourceExportPolicy;
-        }
-
+        const payload = ProtoUpstreamServiceConfig.toJSON(template as BaseUpstreamServiceConfig);
         const res = await fetchWithAuth('/api/v1/templates', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
