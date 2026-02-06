@@ -62,13 +62,19 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
+	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
+	}
+
+	// Verify we can actually run containers (CI environment might have issues with overlayfs)
+	dockerExe, dockerArgs := getDockerCommand()
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...)
+	if err := checkCmd.Run(); err != nil {
+		t.Skipf("Docker available but unable to run containers: %v", err)
 	}
 
 	// Test StartDockerContainer
@@ -78,7 +84,7 @@ func TestDockerHelpers(t *testing.T) {
 	defer cleanup()
 
 	// Verify the container is running
-	dockerExe, dockerArgs := getDockerCommand()
+	dockerExe, dockerArgs = getDockerCommand()
 	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // Test helper
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
