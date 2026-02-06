@@ -57,28 +57,47 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	copy(providers, m.providers)
 	m.mu.RUnlock()
 
-	for _, p := range providers {
-		log.Info("Running auto-discovery", "provider", p.Name())
-		services, err := p.Discover(ctx)
+	// ⚡ BOLT: Parallelize discovery to avoid blocking on slow providers.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var wg sync.WaitGroup
+	results := make([][]*configv1.UpstreamServiceConfig, len(providers))
 
-		m.mu.Lock()
-		status := &ProviderStatus{
-			Name:      p.Name(),
-			LastRunAt: time.Now(),
-		}
+	for i, p := range providers {
+		wg.Add(1)
+		go func(idx int, prov Provider) {
+			defer wg.Done()
+			log.Info("Running auto-discovery", "provider", prov.Name())
+			services, err := prov.Discover(ctx)
 
-		if err != nil {
-			log.Warn("Auto-discovery failed", "provider", p.Name(), "error", err)
-			status.Status = "ERROR"
-			status.LastError = err.Error()
-		} else {
-			log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
-			status.Status = "OK"
-			status.DiscoveredCount = len(services)
-			allServices = append(allServices, services...)
+			// Update status safely
+			m.mu.Lock()
+			status := &ProviderStatus{
+				Name:      prov.Name(),
+				LastRunAt: time.Now(),
+			}
+
+			if err != nil {
+				log.Warn("Auto-discovery failed", "provider", prov.Name(), "error", err)
+				status.Status = "ERROR"
+				status.LastError = err.Error()
+			} else {
+				log.Info("Auto-discovery success", "provider", prov.Name(), "count", len(services))
+				status.Status = "OK"
+				status.DiscoveredCount = len(services)
+				results[idx] = services
+			}
+			m.statuses[prov.Name()] = status
+			m.mu.Unlock()
+		}(i, p)
+	}
+
+	wg.Wait()
+
+	// Aggregate results in order
+	for _, res := range results {
+		if res != nil {
+			allServices = append(allServices, res...)
 		}
-		m.statuses[p.Name()] = status
-		m.mu.Unlock()
 	}
 
 	return allServices

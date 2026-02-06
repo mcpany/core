@@ -71,6 +71,13 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// Pre-check if we can actually run a container (catches permission/mount issues in dind)
+	dockerExe, dockerArgs := getDockerCommand()
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...)
+	if out, err := checkCmd.CombinedOutput(); err != nil {
+		t.Skipf("Skipping TestDockerHelpers: Docker run failed (likely environment issue): %v. Output: %s", err, string(out))
+	}
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
@@ -78,7 +85,6 @@ func TestDockerHelpers(t *testing.T) {
 	defer cleanup()
 
 	// Verify the container is running
-	dockerExe, dockerArgs := getDockerCommand()
 	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // Test helper
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
