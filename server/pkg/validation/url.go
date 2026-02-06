@@ -22,6 +22,19 @@ const trueVal = "true"
 // It is susceptible to DNS rebinding attacks if the check is separated from the connection.
 // For critical security, use a custom Dialer that validates the IP after resolution.
 //
+// lookupIPFunc is a variable to allow mocking DNS resolution in tests.
+var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, error) {
+	return net.DefaultResolver.LookupIP(ctx, network, host)
+}
+
+// IsSafeURL checks if the URL is safe to connect to.
+// It validates the scheme and resolves the host to ensure it doesn't point to
+// loopback, link-local, private, or multicast addresses.
+//
+// NOTE: This function performs DNS resolution to check the IP.
+// It is susceptible to DNS rebinding attacks if the check is separated from the connection.
+// For critical security, use a custom Dialer that validates the IP after resolution.
+//
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
@@ -58,7 +71,7 @@ var IsSafeURL = func(urlStr string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+	ips, err := lookupIPFunc(ctx, "ip", host)
 	if err != nil {
 		return fmt.Errorf("failed to resolve host %q: %w", host, err)
 	}
