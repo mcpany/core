@@ -572,16 +572,36 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible and capable of running containers.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
+	// 1. Check if we can talk to the daemon
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// 2. Check if we can actually run a container (smoke test)
+	// Some environments (like nested overlayfs in CI) allow 'info' but fail 'run'.
+	// We use alpine:latest for a quick check.
+	// We try to pull first to ensure availability.
+	pullArgs := append(dockerArgs, "pull", "alpine:latest")
+	pullCmd := exec.CommandContext(context.Background(), dockerExe, pullArgs...) //nolint:gosec // Test helper
+	if err := pullCmd.Run(); err != nil {
+		// If pull fails, we might still try run if it's local, but usually this means trouble.
+		// Let's assume we need pull to work.
+		// However, to be safe against rate limits, we proceed to run and let it fail if image missing.
+	}
+
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "echo", "hello")
+	runCmd := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
+	if err := runCmd.Run(); err != nil {
+		return false
+	}
+
 	return true
 }
 
