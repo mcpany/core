@@ -6,6 +6,7 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { Trace, SpanStatus } from "@/types/trace";
 import {
   Table,
@@ -25,6 +26,10 @@ import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "luc
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
+// ⚡ Bolt Optimization: Lazy load TableVirtuoso.
+// Randomized Selection from Top 5 High-Impact Targets
+const TableVirtuoso = dynamic(() => import("react-virtuoso").then((m) => m.TableVirtuoso), { ssr: false });
+
 /**
  * Props for the InspectorTable component.
  */
@@ -41,11 +46,6 @@ interface InspectorTableProps {
 
 /**
  * Renders an icon representing the status of a trace span.
- *
- * @param props - The component props.
- * @param props.status - The status of the span (e.g., 'success', 'error').
- * @param props.className - Optional CSS classes.
- * @returns The status icon component.
  */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
@@ -55,11 +55,6 @@ function StatusIcon({ status, className }: { status: SpanStatus, className?: str
 
 /**
  * Renders an icon representing the type of a trace span.
- *
- * @param props - The component props.
- * @param props.type - The type of the span (e.g., 'tool', 'service', 'resource').
- * @param props.className - Optional CSS classes.
- * @returns The type icon component.
  */
 function TypeIcon({ type, className }: { type: string, className?: string }) {
     switch(type) {
@@ -71,15 +66,12 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
 }
 
 /**
- * ⚡ BOLT: Memoized row component to prevent unnecessary re-renders when parent updates.
- * Randomized Selection from Top 5 High-Impact Targets
+ * ⚡ BOLT: Memoized cell content to prevent unnecessary re-renders.
+ * Extracted from TraceRow to support virtualization where the Row wrapper is handled by Virtuoso.
  */
-const TraceRow = React.memo(({ trace, onClick }: { trace: Trace; onClick: (t: Trace) => void }) => {
+const TraceCells = React.memo(({ trace }: { trace: Trace }) => {
   return (
-    <TableRow
-      className="cursor-pointer hover:bg-muted/50"
-      onClick={() => onClick(trace)}
-    >
+    <>
       <TableCell className="font-mono text-xs text-muted-foreground">
         {new Date(trace.timestamp).toLocaleTimeString()}
         <br />
@@ -105,60 +97,65 @@ const TraceRow = React.memo(({ trace, onClick }: { trace: Trace; onClick: (t: Tr
       <TableCell className="text-right font-mono text-xs">
           {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
       </TableCell>
-    </TableRow>
+    </>
   );
 });
-TraceRow.displayName = 'TraceRow';
+TraceCells.displayName = 'TraceCells';
 
 /**
  * A table component for displaying and inspecting traces.
  * Allows clicking on a row to view detailed trace information in a sheet.
- *
- * @param props - The component props.
- * @param props.traces - The list of traces to display.
- * @param props.loading - Whether the data is loading.
- * @returns The rendered table component.
  */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
     <>
-      <div className="rounded-md border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[180px]">Timestamp</TableHead>
-              <TableHead className="w-[50px]">Type</TableHead>
-              <TableHead>Method / Name</TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="w-[100px] text-right">Duration</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {traces.length === 0 && !loading && (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  No traces found.
-                </TableCell>
-              </TableRow>
-            )}
-            {loading && traces.length === 0 && (
-                 <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                      Loading traces...
-                    </TableCell>
-                  </TableRow>
-            )}
-            {traces.map((trace) => (
-              <TraceRow
-                key={trace.id}
-                trace={trace}
-                onClick={setSelectedTrace}
-              />
-            ))}
-          </TableBody>
-        </Table>
+      <div className="rounded-md border bg-card h-[500px]">
+        {traces.length === 0 && !loading && (
+             <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
+                 No traces found.
+             </div>
+        )}
+        {loading && traces.length === 0 && (
+             <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
+                 Loading traces...
+             </div>
+        )}
+
+        {(traces.length > 0 || (loading && traces.length > 0)) && (
+            <TableVirtuoso
+                style={{ height: '100%' }}
+                data={traces}
+                components={{
+                    Table: (props) => <Table {...props} style={{ ...props.style, width: '100%', borderCollapse: 'collapse' }} />,
+                    TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
+                    // @ts-expect-error - item is passed by Virtuoso but not in the standard TableRow props
+                    TableRow: ({ item, ...props }) => (
+                        <TableRow
+                            {...props}
+                            className={cn("cursor-pointer hover:bg-muted/50", props.className)}
+                            onClick={(e) => {
+                                if (props.onClick) props.onClick(e);
+                                if (item) setSelectedTrace(item);
+                            }}
+                        />
+                    ),
+                }}
+                fixedHeaderContent={() => (
+                <TableRow className="hover:bg-transparent pointer-events-none">
+                    <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
+                    <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
+                    <TableHead className="bg-card z-10">Method / Name</TableHead>
+                    <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
+                    <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
+                </TableRow>
+                )}
+                itemContent={(index, trace) => (
+                    <TraceCells trace={trace} />
+                )}
+            />
+        )}
       </div>
 
       <Sheet open={!!selectedTrace} onOpenChange={(open) => !open && setSelectedTrace(null)}>
