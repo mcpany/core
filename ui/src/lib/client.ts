@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, ResilienceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -33,6 +33,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * Resilience configuration.
+     */
+    resilience?: ResilienceConfig;
 }
 
 // Re-export generated types

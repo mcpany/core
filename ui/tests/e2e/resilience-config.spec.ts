@@ -5,22 +5,15 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('Service Resilience Configuration', () => {
-  // "Database"
-  interface MockService {
-      name: string;
-      id: string;
-      [key: string]: any;
-  }
-  const services: MockService[] = [
-    {
-        name: "Resilient Service",
-        id: "resilient-service-123",
-        type: "http",
+test.describe('Service Resilience Configuration (Real Data)', () => {
+  const serviceName = `resilient-service-${Date.now()}`;
+
+  test.beforeEach(async ({ request }) => {
+    // Seed the database with a service using real API
+    const response = await request.post('/api/v1/services', {
+      data: {
+        name: serviceName,
         http_service: { address: "https://api.example.com" },
-        status: "up",
-        version: "v1.0.0",
-        enabled: true,
         resilience: {
             timeout: "30s",
             retry_policy: {
@@ -35,52 +28,22 @@ test.describe('Service Resilience Configuration', () => {
                 half_open_requests: 3
             }
         }
-    }
-  ];
-
-  test.beforeEach(async ({ page }) => {
-    // Mock registration API
-    await page.route(url => url.pathname.includes('/api/v1/services'), async route => {
-        const method = route.request().method();
-        const url = route.request().url();
-
-        if (method === 'GET') {
-            if (url.endsWith('/api/v1/services')) {
-                // List
-                await route.fulfill({ json: { services } });
-            } else {
-                // Get one (by name or ID) - simplified matching
-                const idOrName = url.split('/').pop();
-                const service = services.find(s => s.name === idOrName || s.id === idOrName);
-                if (service) {
-                    await route.fulfill({ json: { service } });
-                } else {
-                    await route.fulfill({ status: 404 });
-                }
-            }
-        } else if (method === 'PUT') {
-            // Update
-            const body = route.request().postDataJSON();
-            const idx = services.findIndex(s => s.name === body.name || s.id === body.id);
-            if (idx !== -1) {
-                services[idx] = { ...services[idx], ...body };
-                await route.fulfill({ json: services[idx] });
-            } else {
-                await route.fulfill({ status: 404 });
-            }
-        } else if (method === 'POST' && url.endsWith('/validate')) {
-             await route.fulfill({ json: { valid: true } });
-        } else {
-            await route.continue();
-        }
+      }
     });
-
-    await page.goto('/upstream-services');
+    expect(response.ok()).toBeTruthy();
   });
 
-  test('should display and edit resilience configuration', async ({ page }) => {
+  test.afterEach(async ({ request }) => {
+      // Clean up
+      await request.delete(`/api/v1/services/${serviceName}`);
+  });
+
+  test('should display and edit resilience configuration', async ({ page, request }) => {
+    await page.goto('/upstream-services');
+
     // 1. Open the service editor
-    const row = page.locator('tr').filter({ hasText: 'Resilient Service' });
+    const row = page.locator('tr').filter({ hasText: serviceName });
+    await expect(row).toBeVisible();
     await row.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('menuitem', { name: 'Edit' }).click();
 
@@ -104,16 +67,15 @@ test.describe('Service Resilience Configuration', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await expect(page.getByRole('dialog')).toBeHidden();
 
-    // 6. Verify "Database" state (Backend verification)
-    // In a real E2E, we would query the API. Here we check our mock DB variable.
-    // However, Playwright runs in a separate process, so we can't access `services` variable directly from here
-    // if the route handler was running in the browser context?
-    // Wait, `page.route` handler runs in the Node.js context of the test runner!
-    // So `services` variable IS accessible and shared!
+    // 6. Verify Backend State via API
+    const response = await request.get(`/api/v1/services/${serviceName}`);
+    expect(response.ok()).toBeTruthy();
+    const data = await response.json();
+    const service = data.service || data; // Handle both wrapper formats if any
 
-    const updatedService = services.find(s => s.name === "Resilient Service");
-    expect(updatedService.resilience.timeout).toBe('60s');
-    expect(updatedService.resilience.retry_policy.number_of_retries).toBe(5);
-    expect(updatedService.resilience.circuit_breaker.failure_rate_threshold).toBe(0.2);
+    expect(service.resilience.timeout).toBe('60s');
+    expect(service.resilience.retry_policy.number_of_retries).toBe(5);
+    // Note: Proto might return floats slightly differently or as numbers, Playwright expect handles it usually
+    expect(service.resilience.circuit_breaker.failure_rate_threshold).toBe(0.2);
   });
 });
