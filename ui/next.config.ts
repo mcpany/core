@@ -136,6 +136,10 @@ const nextConfig: NextConfig = {
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
   // async rewrites() { ... }
+  env: {
+    // Explicitly pass env vars to the build/runtime for use in middleware
+    BACKEND_URL: process.env.BACKEND_URL,
+  },
 };
 
 export default nextConfig;

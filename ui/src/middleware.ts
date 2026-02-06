@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
     if (apiKey) {
       requestHeaders.set('X-API-Key', apiKey);
     } else {
-        console.warn("[Middleware] MCPANY_API_KEY not set in environment!");
+        console.warn("[Middleware] MCPANY_API_KEY not set in environment! Requests to backend will likely fail 401.");
     }
 
     const url = new URL(request.url);

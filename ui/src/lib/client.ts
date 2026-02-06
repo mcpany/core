@@ -67,15 +67,11 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         if (token) {
             headers.set('Authorization', `Basic ${token}`);
         }
-    } else {
-        // Server-side: Inject API Key from env
-        const apiKey = process.env.MCPANY_API_KEY;
-        if (apiKey) {
-            headers.set('X-API-Key', apiKey);
-        } else {
-            console.warn(`[Client] SSR Fetch: MCPANY_API_KEY is missing for request to ${input.toString()}`);
-        }
     }
+    // Note: We do NOT inject MCPANY_API_KEY here for server-side fetches.
+    // The request goes to the Next.js Middleware (or API route), which has access to the environment
+    // and injects the X-API-Key header before proxying to the backend.
+    // Client code should never see or handle the backend secret.
     return fetch(input, { ...init, headers });
 };
 
