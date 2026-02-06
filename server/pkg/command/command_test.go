@@ -12,6 +12,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -58,6 +59,19 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Functional check: Try to run a simple container to catch issues like broken overlayfs
+	// We use exec to avoid complexity with image pulling via SDK for this simple check
+	// Use docker command if available
+	dockerPath, err := exec.LookPath("docker")
+	if err == nil {
+		cmd := exec.CommandContext(context.Background(), dockerPath, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")
+		if output, err := cmd.CombinedOutput(); err != nil {
+			t.Logf("docker functional check failed: %v, output: %s", err, string(output))
+			return false
+		}
+	}
+
 	return true
 }
 

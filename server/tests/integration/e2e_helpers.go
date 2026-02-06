@@ -598,7 +598,7 @@ func IsDockerFunctional() bool {
 		}
 		dockerExe, dockerArgs := getDockerCommand()
 		// Try running a simple command in a container (alpine is small, usually cached or quick to pull)
-		cmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")...)
+		cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "mirror.gcr.io/library/alpine:latest", "true")...) //nolint:gosec // Test helper
 		if err := cmd.Run(); err == nil {
 			dockerFunctional = true
 		}
