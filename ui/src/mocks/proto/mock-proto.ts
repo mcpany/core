@@ -5,6 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Mock implementation of GrpcWebImpl.
+ */
 export class GrpcWebImpl {
     constructor(_host: string, _options: any) {}
 }

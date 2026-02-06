@@ -21,6 +21,7 @@ MCP Any acts as a centralized middleware between AI Agents (Clients) and your Up
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+5.  **Web Dashboard**: A React-based UI for managing services, viewing traces, and debugging.
 
 ```mermaid
 graph TD
@@ -56,6 +57,15 @@ Follow these steps to get up and running immediately.
 
 ### Installation
 
+#### Option A: Docker Compose (Recommended)
+The easiest way to run the full stack (Server, UI, Redis, Prometheus) is via Docker Compose.
+
+```bash
+docker compose up --build
+```
+Access the UI at `http://localhost:3000`.
+
+#### Option B: Local Build
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/mcpany/core.git
@@ -67,13 +77,13 @@ Follow these steps to get up and running immediately.
     make prepare
     ```
 
-3.  **Build the server:**
+3.  **Build the project:**
     ```bash
     make build
     ```
-    This will create the `server` binary in `build/bin/`.
+    This will create the `server` binary in `build/bin/` and build the UI assets.
 
-4.  **Run with an example configuration:**
+4.  **Run the server:**
     ```bash
     ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
     ```
@@ -104,6 +114,14 @@ make prepare
 Run all unit, integration, and end-to-end tests to ensure code correctness.
 ```bash
 make test
+```
+
+### UI Development
+To develop the UI, run the development server:
+```bash
+cd ui
+npm install
+npm run dev
 ```
 
 ### Linting
