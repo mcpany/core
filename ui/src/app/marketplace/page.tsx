@@ -19,8 +19,9 @@ import Link from "next/link";
 
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
+import { AutoCraftWizard } from "@/components/marketplace/wizard/auto-craft-wizard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Sparkles } from "lucide-react";
 import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
@@ -40,6 +41,7 @@ export default function MarketplacePage() {
   const [importUrl, setImportUrl] = useState("");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [isAutoCraftOpen, setIsAutoCraftOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Instantiate State
@@ -116,11 +118,20 @@ export default function MarketplacePage() {
           await apiClient.saveTemplate(config);
           toast({ title: "Config Saved", description: `${config.name} saved to Backend Templates.` });
           setIsWizardOpen(false);
+          setIsAutoCraftOpen(false);
           loadData();
       } catch (e) {
           console.error(e);
           toast({ title: "Failed to save template", variant: "destructive", description: String(e) });
       }
+  };
+
+  const handleAutoCraftComplete = (config: any) => {
+      // Ensure ID exists
+      if (!config.id && config.name) {
+          config.id = config.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      }
+      handleWizardComplete(config);
   };
 
   const deleteTemplate = async (templateSvc: UpstreamServiceConfig) => {
@@ -267,6 +278,13 @@ export default function MarketplacePage() {
             <Button onClick={() => setIsImportDialogOpen(true)} variant="outline">
                 <Download className="mr-2 h-4 w-4" />
                 Import from URL
+            </Button>
+            <Button
+                onClick={() => setIsAutoCraftOpen(true)}
+                className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
+            >
+                <Sparkles className="h-4 w-4" />
+                Auto Craft
             </Button>
             <Button onClick={() => setIsWizardOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
@@ -484,6 +502,12 @@ export default function MarketplacePage() {
         open={isWizardOpen}
         onOpenChange={setIsWizardOpen}
         onComplete={handleWizardComplete}
+      />
+
+      <AutoCraftWizard
+        open={isAutoCraftOpen}
+        onOpenChange={setIsAutoCraftOpen}
+        onComplete={handleAutoCraftComplete}
       />
 
       <InstantiateDialog

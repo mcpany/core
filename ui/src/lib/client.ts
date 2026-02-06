@@ -746,6 +746,18 @@ export const apiClient = {
         return res.json();
     },
 
+    submitAutoCraftJob: async (data: any): Promise<{ jobId: string }> => {
+        const res = await fetchWithAuth('/autocraft/jobs', {
+            method: "POST",
+            body: JSON.stringify(data),
+        });
+        return (await res.json()) as { jobId: string };
+    },
+
+    getAutoCraftJob: async (jobId: string): Promise<any> => {
+        return fetchWithAuth(`/autocraft/jobs/${jobId}`);
+    },
+
     // Prompts
 
     /**
@@ -1580,6 +1592,33 @@ export const apiClient = {
 
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
+        return res.json();
+    },
+
+    // LLM Providers
+
+    /**
+     * Gets configured LLM providers.
+     * @returns A promise that resolves to the list of providers.
+     */
+    getLLMProviders: async () => {
+        const res = await fetchWithAuth('/api/v1/settings/llm-providers');
+        if (!res.ok) throw new Error('Failed to fetch LLM providers');
+        return res.json();
+    },
+
+    /**
+     * Saves an LLM provider configuration.
+     * @param config The provider configuration.
+     * @returns A promise that resolves to the saved configuration.
+     */
+    saveLLMProvider: async (config: any) => {
+        const res = await fetchWithAuth('/api/v1/settings/llm-providers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        if (!res.ok) throw new Error('Failed to save LLM provider');
         return res.json();
     }
 };

@@ -36,6 +36,7 @@ import (
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/llm"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -255,9 +256,15 @@ type Application struct {
 	// Defaults to prometheus.DefaultGatherer.
 	MetricsGatherer prometheus.Gatherer
 
+	// LLMProviderStore manages LLM API keys and configurations
+	LLMProviderStore *llm.ProviderStore
+
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
+
+	// AutoCraftJobs stores results of auto-craft jobs
+	AutoCraftJobs sync.Map
 }
 
 type statsCacheEntry struct {
@@ -457,6 +464,19 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.SkillManager = skillManager
 
+	// Initialize LLM Provider Store
+	dataDir := "data"
+	if dbPath := config.GlobalSettings().DBPath(); dbPath != "" {
+		dataDir = filepath.Dir(dbPath)
+	}
+	llmStorePath := filepath.Join(dataDir, "llm_providers.json")
+	llmStore, err := llm.NewProviderStore(llmStorePath)
+	if err != nil {
+		return fmt.Errorf("failed to initialize LLM provider store: %w", err)
+	}
+	a.LLMProviderStore = llmStore
+
+
 	// Initialize auth manager
 	authManager := auth.NewManager()
 	users := cfg.GetUsers()
@@ -545,6 +565,31 @@ func (a *Application) Run(opts RunOptions) error {
 		inProcessWorker.Start(workerCtx)
 		defer inProcessWorker.Stop()
 	}
+
+	// Initialize and start Auto Craft Worker
+	// We run this independently of the general worker to ensure it has dedicated resources/queues if needed,
+	// or we could merge it. For now, separate is safer to guarantee it runs.
+	autoCraftWorker := worker.New(busProvider, &worker.Config{
+		MaxWorkers:   2,
+		MaxQueueSize: 20,
+	})
+	autoCraftWorker.StartAutoCraftWorker(workerCtx, a.LLMProviderStore)
+	defer autoCraftWorker.Stop()
+
+	// Start Auto Craft Result Listener
+	// This listens for results from the worker and stores them in memory for API access
+	acResBus, err := bus.GetBus[*worker.AutoCraftResult](busProvider, "auto_craft_result")
+	if err == nil {
+		// Subscribe to ALL results
+		// Note: We ignore the unsubscribe function here as we want this to run for the lifetime of the server
+		acResBus.Subscribe(workerCtx, "auto_craft_result", func(res *worker.AutoCraftResult) {
+			// Store the result using correlation ID (which is the Job ID)
+			a.AutoCraftJobs.Store(res.CID, res)
+		})
+	} else {
+		logging.GetLogger().Error("Failed to get auto craft result bus", "error", err)
+	}
+
 
 	// Initialize and start Global GC Worker
 	gcSettings := cfg.GetGlobalSettings().GetGcSettings()
