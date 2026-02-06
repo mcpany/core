@@ -6,9 +6,9 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is the **universal adapter** that instantly transforms your existing APIs into MCP-compliant tools. It acts as a configuration-driven gateway, bridging the gap between *any* backend (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+**Why it exists:** Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool integration. MCP Any solves this by providing a single, unified runtime that acts as a gateway to multiple services, defined purely through lightweight declarative configuration files.
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
