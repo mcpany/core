@@ -234,3 +234,69 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 	}
 	return true, nil
 }
+
+// compiledExportPolicyRule holds the pre-compiled regex for an export policy rule.
+type compiledExportPolicyRule struct {
+	nameRegex *regexp.Regexp
+	rule      *configv1.ExportRule
+}
+
+// CompiledExportPolicy holds a compiled version of an export policy.
+type CompiledExportPolicy struct {
+	policy        *configv1.ExportPolicy
+	compiledRules []compiledExportPolicyRule
+}
+
+// CompileExportPolicy compiles an export policy.
+//
+// policy is the policy.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func CompileExportPolicy(policy *configv1.ExportPolicy) (*CompiledExportPolicy, error) {
+	if policy == nil {
+		return nil, nil
+	}
+	compiledRules := make([]compiledExportPolicyRule, 0, len(policy.GetRules()))
+	for _, rule := range policy.GetRules() {
+		var nameRe *regexp.Regexp
+		var err error
+
+		if rule.GetNameRegex() != "" {
+			nameRe, err = regexp.Compile(rule.GetNameRegex())
+			if err != nil {
+				logging.GetLogger().Error("Invalid regex in export policy", "regex", rule.GetNameRegex(), "error", err)
+				continue
+			}
+		}
+
+		compiledRules = append(compiledRules, compiledExportPolicyRule{
+			nameRegex: nameRe,
+			rule:      rule,
+		})
+	}
+	return &CompiledExportPolicy{
+		policy:        policy,
+		compiledRules: compiledRules,
+	}, nil
+}
+
+// ShouldExportCompiled determines whether a named item should be exported
+// based on the provided CompiledExportPolicy.
+// ⚡ BOLT: Optimized version of ShouldExport that uses pre-compiled regexes.
+// Randomized Selection from Top 5 High-Impact Targets.
+func ShouldExportCompiled(name string, compiledPolicy *CompiledExportPolicy) bool {
+	if compiledPolicy == nil || compiledPolicy.policy == nil {
+		return true
+	}
+
+	for _, cRule := range compiledPolicy.compiledRules {
+		if cRule.nameRegex != nil {
+			if cRule.nameRegex.MatchString(name) {
+				return cRule.rule.GetAction() == configv1.ExportPolicy_EXPORT
+			}
+		}
+	}
+
+	return compiledPolicy.policy.GetDefaultAction() != configv1.ExportPolicy_UNEXPORT
+}

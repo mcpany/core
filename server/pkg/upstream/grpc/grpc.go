@@ -240,6 +240,13 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		return nil, fmt.Errorf("failed to create protodesc files: %w", err)
 	}
 
+	// ⚡ BOLT: Compile export policy once before iteration.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	toolExportPolicy, err := tool.CompileExportPolicy(serviceInfo.Config.GetToolExportPolicy())
+	if err != nil {
+		log.Error("Failed to compile tool export policy", "error", err)
+	}
+
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(parsedData.Tools))
 	for _, toolDef := range parsedData.Tools {
 		if disabledTools[toolDef.Name] {
@@ -247,8 +254,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 			continue
 		}
 		// Check Export Policy
-		serviceInfo, _ := tm.GetServiceInfo(serviceID)
-		if serviceInfo != nil && !tool.ShouldExport(toolDef.Name, serviceInfo.Config.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(toolDef.Name, toolExportPolicy) {
 			log.Info("Skipping non-exported tool (annotation)", "toolName", toolDef.Name)
 			continue
 		}
@@ -426,6 +432,12 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 		return nil, fmt.Errorf("failed to create protodesc files: %w", err)
 	}
 
+	// ⚡ BOLT: Compile export policy once before iteration.
+	toolExportPolicy, err := tool.CompileExportPolicy(serviceInfo.Config.GetToolExportPolicy())
+	if err != nil {
+		log.Error("Failed to compile tool export policy", "error", err)
+	}
+
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(grpcService.GetTools()))
 	definitions := grpcService.GetTools()
 	calls := grpcService.GetCalls()
@@ -436,8 +448,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 		// Check Export Policy
-		serviceInfo, _ := tm.GetServiceInfo(serviceID)
-		if serviceInfo != nil && !tool.ShouldExport(definition.GetName(), serviceInfo.Config.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(definition.GetName(), toolExportPolicy) {
 			log.Info("Skipping non-exported tool (config)", "toolName", definition.GetName())
 			continue
 		}
@@ -527,6 +538,12 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 	}
 	grpcService := serviceInfo.Config.GetGrpcService()
 
+	// ⚡ BOLT: Compile export policy once before iteration.
+	promptExportPolicy, err := tool.CompileExportPolicy(serviceInfo.Config.GetPromptExportPolicy())
+	if err != nil {
+		log.Error("Failed to compile prompt export policy", "error", err)
+	}
+
 	for _, promptDef := range grpcService.GetPrompts() {
 		if promptDef.GetName() == "" {
 			log.Error("Skipping prompt with missing name")
@@ -537,7 +554,7 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(promptDef.GetName(), serviceInfo.Config.GetPromptExportPolicy()) {
+		if !tool.ShouldExportCompiled(promptDef.GetName(), promptExportPolicy) {
 			continue
 		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)

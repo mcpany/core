@@ -303,6 +303,13 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		return nil
 	}
 
+	// ⚡ BOLT: Compile export policy once before iteration.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	toolExportPolicy, err := tool.CompileExportPolicy(serviceConfig.GetToolExportPolicy())
+	if err != nil {
+		log.Error("Failed to compile tool export policy", "error", err)
+	}
+
 	for _, callID := range sortedCallIDs {
 		httpDef := calls[callID]
 
@@ -328,7 +335,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		}
 
 		// Check Export Policy
-		if !tool.ShouldExport(toolNamePart, serviceConfig.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(toolNamePart, toolExportPolicy) {
 			log.Info("Skipping non-exported tool", "toolName", toolNamePart)
 			continue
 		}
@@ -690,13 +697,19 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 
+	// ⚡ BOLT: Compile export policy once before iteration.
+	resourceExportPolicy, err := tool.CompileExportPolicy(serviceConfig.GetResourceExportPolicy())
+	if err != nil {
+		log.Error("Failed to compile resource export policy", "error", err)
+	}
+
 	for _, resourceDef := range httpService.GetResources() {
 		if resourceDef.GetDisable() {
 			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(resourceDef.GetName(), serviceConfig.GetResourceExportPolicy()) {
+		if !tool.ShouldExportCompiled(resourceDef.GetName(), resourceExportPolicy) {
 			log.Info("Skipping non-exported resource", "resourceName", resourceDef.GetName())
 			continue
 		}
@@ -739,13 +752,20 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
+
+	// ⚡ BOLT: Compile export policy once before iteration.
+	promptExportPolicy, err := tool.CompileExportPolicy(serviceConfig.GetPromptExportPolicy())
+	if err != nil {
+		log.Error("Failed to compile prompt export policy", "error", err)
+	}
+
 	for _, promptDef := range httpService.GetPrompts() {
 		if promptDef.GetDisable() {
 			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(promptDef.GetName(), serviceConfig.GetPromptExportPolicy()) {
+		if !tool.ShouldExportCompiled(promptDef.GetName(), promptExportPolicy) {
 			log.Info("Skipping non-exported prompt", "promptName", promptDef.GetName())
 			continue
 		}
