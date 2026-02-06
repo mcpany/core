@@ -12,20 +12,20 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Play, RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Editor from "@monaco-editor/react";
+import { useRouter } from "next/navigation";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -55,6 +55,8 @@ export function AuditLogViewer() {
     const [userId, setUserId] = useState("");
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+    const router = useRouter();
 
     const fetchLogs = useCallback(async () => {
         setLoading(true);
@@ -91,13 +93,25 @@ export function AuditLogViewer() {
     }, [fetchLogs]);
 
     const formatJson = (jsonStr: string) => {
-        if (!jsonStr) return null;
+        if (!jsonStr) return "";
         try {
             const obj = JSON.parse(jsonStr);
             return JSON.stringify(obj, null, 2);
         } catch (e) {
             return jsonStr;
         }
+    };
+
+    const handleReplay = (log: AuditLogEntry) => {
+        let args = log.arguments;
+        // Verify it's valid JSON to avoid breaking URL?
+        // Actually, playground expects raw string usually if it's simple, but "arguments" is JSON string.
+        // If it fails parsing, we send it as is.
+        // But PlaygroundClientPro expects `tool` and `args` in query params.
+        const params = new URLSearchParams();
+        params.set("tool", log.toolName);
+        params.set("args", args);
+        router.push(`/playground?${params.toString()}`);
     };
 
     return (
@@ -234,71 +248,111 @@ export function AuditLogViewer() {
                 </CardContent>
             </Card>
 
-            <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Audit Log Detail</DialogTitle>
-                        <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
-                        </DialogDescription>
-                    </DialogHeader>
+            <Sheet open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+                <SheetContent className="sm:max-w-xl md:max-w-2xl w-full flex flex-col h-full p-0 gap-0">
+                    <SheetHeader className="p-6 pb-4 border-b">
+                        <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                                <SheetTitle className="flex items-center gap-2">
+                                    {selectedLog?.toolName}
+                                    {selectedLog?.error ? (
+                                        <Badge variant="destructive" className="text-[10px] h-5 px-1.5">Failed</Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="text-[10px] h-5 px-1.5 text-green-500 border-green-500/50">Success</Badge>
+                                    )}
+                                </SheetTitle>
+                                <SheetDescription>
+                                    Executed at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                                </SheetDescription>
+                            </div>
+                            {selectedLog && (
+                                <Button size="sm" onClick={() => handleReplay(selectedLog)} className="gap-2">
+                                    <RefreshCcw className="h-4 w-4" />
+                                    Replay
+                                </Button>
+                            )}
+                        </div>
+                    </SheetHeader>
+
                     {selectedLog && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                            <div className="grid grid-cols-2 gap-4 text-sm bg-muted/20 p-4 rounded-lg border">
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">User</span>
+                                    <div className="font-mono text-xs">{selectedLog.userId || "N/A"}</div>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Profile</span>
+                                    <div className="font-mono text-xs">{selectedLog.profileId || "N/A"}</div>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Duration</span>
+                                    <div className="font-mono text-xs">{selectedLog.duration} ({selectedLog.durationMs}ms)</div>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Status</span>
-                                    {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Status</span>
+                                    {selectedLog.error ? <span className="text-red-500 font-medium">Failed</span> : <span className="text-green-500 font-medium">Success</span>}
                                 </div>
                             </div>
 
                             {selectedLog.error && (
-                                <div className="bg-red-900/20 border border-red-900/50 rounded-md p-3 text-red-200 text-sm">
-                                    <span className="font-semibold block mb-1">Error:</span>
-                                    {selectedLog.error}
+                                <div className="bg-red-900/10 border border-red-900/30 rounded-md p-4 text-red-400 text-sm">
+                                    <span className="font-semibold block mb-2 flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4" /> Error Details
+                                    </span>
+                                    <pre className="whitespace-pre-wrap font-mono text-xs">{selectedLog.error}</pre>
                                 </div>
                             )}
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Arguments</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vscDarkPlus}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                            <div className="space-y-2">
+                                <h4 className="text-sm font-medium flex items-center gap-2">
+                                    Arguments
+                                </h4>
+                                <div className="h-[200px] border rounded-md overflow-hidden bg-[#1e1e1e]">
+                                    <Editor
+                                        height="100%"
+                                        defaultLanguage="json"
+                                        value={formatJson(selectedLog.arguments)}
+                                        theme="vs-dark"
+                                        options={{
+                                            readOnly: true,
+                                            minimap: { enabled: false },
+                                            fontSize: 12,
+                                            scrollBeyondLastLine: false,
+                                            folding: true,
+                                            lineNumbers: "off",
+                                            renderLineHighlight: "none"
+                                        }}
+                                    />
                                 </div>
                             </div>
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Result</h4>
-                                <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vscDarkPlus}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                            <div className="space-y-2">
+                                <h4 className="text-sm font-medium flex items-center gap-2">
+                                    Result
+                                </h4>
+                                <div className="h-[300px] border rounded-md overflow-hidden bg-[#1e1e1e]">
+                                     <Editor
+                                        height="100%"
+                                        defaultLanguage="json"
+                                        value={formatJson(selectedLog.result)}
+                                        theme="vs-dark"
+                                        options={{
+                                            readOnly: true,
+                                            minimap: { enabled: false },
+                                            fontSize: 12,
+                                            scrollBeyondLastLine: false,
+                                            folding: true,
+                                            lineNumbers: "off",
+                                            renderLineHighlight: "none"
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </div>
                     )}
-                </DialogContent>
-            </Dialog>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 }
