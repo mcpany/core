@@ -16,10 +16,10 @@ import (
 	"unsafe"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/containerd/errdefs"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
-	"github.com/docker/docker/errdefs"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
