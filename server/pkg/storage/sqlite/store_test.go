@@ -389,6 +389,49 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected token to be nil, got %v", got)
 		}
 	})
+
+	t.Run("ToolPresets", func(t *testing.T) {
+		preset := configv1.ToolPreset_builder{
+			Id:        proto.String("preset-1"),
+			Name:      proto.String("My Preset"),
+			ToolName:  proto.String("weather_tool"),
+			Arguments: proto.String("{\"city\": \"London\"}"),
+		}.Build()
+
+		// Save
+		err := store.SaveToolPreset(context.Background(), preset)
+		if err != nil {
+			t.Fatalf("failed to save preset: %v", err)
+		}
+
+		// Get
+		got, err := store.GetToolPreset(context.Background(), "preset-1")
+		if err != nil {
+			t.Fatalf("failed to get preset: %v", err)
+		}
+		if got.GetName() != "My Preset" {
+			t.Errorf("expected name My Preset, got %s", got.GetName())
+		}
+
+		// List
+		presets, err := store.ListToolPresets(context.Background())
+		if err != nil {
+			t.Fatalf("failed to list presets: %v", err)
+		}
+		if len(presets) != 1 {
+			t.Errorf("expected 1 preset, got %d", len(presets))
+		}
+
+		// Delete
+		err = store.DeleteToolPreset(context.Background(), "preset-1")
+		if err != nil {
+			t.Fatalf("failed to delete preset: %v", err)
+		}
+		got, _ = store.GetToolPreset(context.Background(), "preset-1")
+		if got != nil {
+			t.Errorf("expected preset to be nil, got %v", got)
+		}
+	})
 }
 
 func TestSaveServiceValidation(t *testing.T) {

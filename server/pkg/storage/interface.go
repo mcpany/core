@@ -403,6 +403,55 @@ type Storage interface {
 	//   - error: An error if deletion fails.
 	DeleteCredential(ctx context.Context, id string) error
 
+	// SaveToolPreset saves a tool preset.
+	//
+	// Summary: Persists a tool preset.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - preset: *configv1.ToolPreset. The preset to save.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	SaveToolPreset(ctx context.Context, preset *configv1.ToolPreset) error
+
+	// ListToolPresets retrieves all tool presets.
+	//
+	// Summary: Lists all tool presets.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//
+	// Returns:
+	//   - []*configv1.ToolPreset: A list of presets.
+	//   - error: An error if listing fails.
+	ListToolPresets(ctx context.Context) ([]*configv1.ToolPreset, error)
+
+	// GetToolPreset retrieves a tool preset by ID.
+	//
+	// Summary: Retrieves a tool preset by ID.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - id: string. The preset ID.
+	//
+	// Returns:
+	//   - *configv1.ToolPreset: The preset.
+	//   - error: An error if retrieval fails.
+	GetToolPreset(ctx context.Context, id string) (*configv1.ToolPreset, error)
+
+	// DeleteToolPreset deletes a tool preset by ID.
+	//
+	// Summary: Deletes a tool preset.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - id: string. The preset ID to delete.
+	//
+	// Returns:
+	//   - error: An error if deletion fails.
+	DeleteToolPreset(ctx context.Context, id string) error
+
 	// Close closes the underlying storage connection.
 	//
 	// Summary: Closes the storage connection.

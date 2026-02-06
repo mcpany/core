@@ -131,4 +131,96 @@ test.describe('Playground Tool Configuration', () => {
     await expect(page.getByRole('textbox', { name: /enter command/i })).toHaveValue(/timeout_tool/);
   });
 
+  test('should create, list and use presets', async ({ page }) => {
+    page.on('console', msg => console.log(`[Browser Console] ${msg.text()}`));
+
+    // Mock Tools
+    await page.route('/api/v1/tools', async route => {
+      await route.fulfill({
+        json: {
+          tools: [{
+            name: 'weather_tool',
+            description: 'Get weather info',
+            inputSchema: {
+              type: 'object',
+              properties: { city: { type: 'string' } },
+              required: ['city']
+            }
+          }]
+        }
+      });
+    });
+
+    // Mock Presets CRUD
+    let presets: any[] = [];
+    await page.route('**/api/v1/tool-presets', async route => {
+        console.log('Mock hit:', route.request().method(), route.request().url());
+        if (route.request().method() === 'GET') {
+            await route.fulfill({ json: presets });
+        } else if (route.request().method() === 'POST') {
+            const data = route.request().postDataJSON();
+            data.id = 'preset-' + Date.now();
+            presets.push(data);
+            await route.fulfill({ json: data });
+        } else {
+             await route.continue();
+        }
+    });
+
+    await page.route('**/api/v1/tool-presets/*', async route => {
+        console.log('Mock hit detail:', route.request().method(), route.request().url());
+        if (route.request().method() === 'DELETE') {
+            const id = route.request().url().split('/').pop();
+            presets = presets.filter(p => p.id !== id);
+            await route.fulfill({ json: {} });
+        } else {
+             await route.continue();
+        }
+    });
+
+    await page.goto('/playground');
+
+    // 1. Create a preset
+    await expect(page.getByText('weather_tool')).toBeVisible();
+    await page.getByRole('button', { name: 'Use', exact: true }).click();
+
+    // Fill form
+    await page.getByLabel('city').fill('New York');
+
+    // Open Presets Popover in Form
+    await page.getByTitle('Manage Presets').click();
+
+    // Click Create New
+    await page.getByTitle('Create New Preset').click();
+
+    // Fill Name and Save
+    await page.getByPlaceholder('Preset Name').fill('NYC Weather');
+    // Save button (icon only)
+    const saveBtn = page.locator('button:has(svg.lucide-save)');
+    await expect(saveBtn).toBeEnabled();
+    await saveBtn.click();
+
+    // Verify Toast
+    // Wait for either success or failure to debug
+    await expect(page.getByText(/Preset saved|Failed to save/)).toBeVisible();
+    await expect(page.getByText('Preset saved')).toBeVisible();
+
+    // Close Dialog
+    await page.getByRole('button', { name: 'Cancel' }).click();
+
+    // 2. Use Preset from Sidebar
+    // Switch to Presets Tab
+    await page.getByRole('tab', { name: 'Presets' }).click();
+
+    // Verify Preset is listed
+    await expect(page.getByText('NYC Weather')).toBeVisible();
+
+    // Click Preset
+    await page.getByText('NYC Weather').click();
+
+    // Verify Dialog opens with pre-filled data
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByLabel('city')).toHaveValue('New York');
+  });
+
 });

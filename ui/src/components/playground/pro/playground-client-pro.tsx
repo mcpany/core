@@ -100,6 +100,7 @@ export function PlaygroundClientPro() {
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const [toolInitialValues, setToolInitialValues] = useState<Record<string, unknown> | undefined>(undefined);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -173,8 +174,23 @@ export function PlaygroundClientPro() {
   };
 
   const selectSuggestion = (tool: ToolDefinition) => {
+      setToolInitialValues(undefined);
       setToolToConfigure(tool);
       setShowSuggestions(false);
+  };
+
+  const handlePresetSelect = (toolName: string, args: Record<string, unknown>) => {
+      const tool = availableTools.find(t => t.name === toolName);
+      if (tool) {
+          setToolInitialValues(args);
+          setToolToConfigure(tool);
+      } else {
+          toast({
+              title: "Tool Not Found",
+              description: `Tool "${toolName}" not found.`,
+              variant: "destructive"
+          });
+      }
   };
 
   const handleReplay = (toolName: string, args: Record<string, unknown>) => {
@@ -355,7 +371,11 @@ export function PlaygroundClientPro() {
          >
              <ToolSidebar
                 tools={availableTools}
-                onSelectTool={setToolToConfigure}
+                onSelectTool={(tool) => {
+                    setToolInitialValues(undefined);
+                    setToolToConfigure(tool);
+                }}
+                onSelectPreset={handlePresetSelect}
              />
          </ResizablePanel>
 
@@ -514,7 +534,12 @@ export function PlaygroundClientPro() {
          </ResizablePanel>
       </ResizablePanelGroup>
 
-      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
+      <Dialog open={!!toolToConfigure} onOpenChange={(open) => {
+          if (!open) {
+              setToolToConfigure(null);
+              setToolInitialValues(undefined);
+          }
+      }}>
         <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
             <DialogHeader className="p-6 pb-2">
                 <DialogTitle className="flex items-center gap-2 text-xl">
@@ -531,8 +556,12 @@ export function PlaygroundClientPro() {
                 {toolToConfigure && (
                     <ToolForm
                         tool={toolToConfigure}
+                        initialValues={toolInitialValues}
                         onSubmit={handleToolFormSubmit}
-                        onCancel={() => setToolToConfigure(null)}
+                        onCancel={() => {
+                            setToolToConfigure(null);
+                            setToolInitialValues(undefined);
+                        }}
                     />
                 )}
             </div>

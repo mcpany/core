@@ -167,6 +167,17 @@ export interface ToolAnalytics {
 
 
 /**
+ * Definition of a tool preset.
+ */
+export interface ToolPreset {
+    id: string;
+    name: string;
+    toolName: string;
+    arguments: string; // JSON string
+    serviceId?: string;
+}
+
+/**
  * Metric definition for dashboard.
  */
 export interface Metric {
@@ -1581,5 +1592,46 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    // Tool Presets
+
+    /**
+     * Lists all tool presets.
+     * @returns A promise that resolves to a list of presets.
+     */
+    listToolPresets: async (): Promise<ToolPreset[]> => {
+        const res = await fetchWithAuth('/api/v1/tool-presets');
+        if (!res.ok) throw new Error('Failed to list tool presets');
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+    },
+
+    /**
+     * Creates a new tool preset.
+     * @param preset The preset to create.
+     * @returns A promise that resolves to the created preset.
+     */
+    createToolPreset: async (preset: ToolPreset) => {
+        const res = await fetchWithAuth('/api/v1/tool-presets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(preset)
+        });
+        if (!res.ok) throw new Error('Failed to create tool preset');
+        return res.json();
+    },
+
+    /**
+     * Deletes a tool preset.
+     * @param id The ID of the preset to delete.
+     * @returns A promise that resolves when the preset is deleted.
+     */
+    deleteToolPreset: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/tool-presets/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete tool preset');
+        return {};
     }
 };

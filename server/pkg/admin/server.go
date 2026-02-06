@@ -216,6 +216,34 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 	return pb.GetToolResponse_builder{Tool: t.Tool()}.Build(), nil
 }
 
+// ListToolPresets returns all registered tool presets.
+func (s *Server) ListToolPresets(ctx context.Context, _ *pb.ListToolPresetsRequest) (*pb.ListToolPresetsResponse, error) {
+	presets, err := s.storage.ListToolPresets(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list tool presets: %v", err)
+	}
+	return pb.ListToolPresetsResponse_builder{Presets: presets}.Build(), nil
+}
+
+// CreateToolPreset creates a new tool preset.
+func (s *Server) CreateToolPreset(ctx context.Context, req *pb.CreateToolPresetRequest) (*pb.CreateToolPresetResponse, error) {
+	if !req.HasPreset() {
+		return nil, status.Error(codes.InvalidArgument, "preset is required")
+	}
+	if err := s.storage.SaveToolPreset(ctx, req.GetPreset()); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create tool preset: %v", err)
+	}
+	return pb.CreateToolPresetResponse_builder{Preset: req.GetPreset()}.Build(), nil
+}
+
+// DeleteToolPreset deletes a tool preset by ID.
+func (s *Server) DeleteToolPreset(ctx context.Context, req *pb.DeleteToolPresetRequest) (*pb.DeleteToolPresetResponse, error) {
+	if err := s.storage.DeleteToolPreset(ctx, req.GetPresetId()); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete tool preset: %v", err)
+	}
+	return &pb.DeleteToolPresetResponse{}, nil
+}
+
 // CreateUser creates a new user.
 //
 // ctx is the context for the request.

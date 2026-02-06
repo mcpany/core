@@ -120,6 +120,15 @@ func initSchema(db *sql.DB) error {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS tool_presets (
+		id TEXT PRIMARY KEY,
+		name TEXT NOT NULL,
+		tool_name TEXT NOT NULL,
+		config_json TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

@@ -8,6 +8,7 @@ package mcpany.admin.v1;
 import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/user.proto";
+import "proto/config/v1/tool_preset.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
 import "google/protobuf/go_features.proto";
 
@@ -32,6 +33,15 @@ service AdminService {
 
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
+
+  // ListToolPresets returns all registered tool presets.
+  rpc ListToolPresets(ListToolPresetsRequest) returns (ListToolPresetsResponse);
+
+  // CreateToolPreset creates a new tool preset.
+  rpc CreateToolPreset(CreateToolPresetRequest) returns (CreateToolPresetResponse);
+
+  // DeleteToolPreset deletes a tool preset by ID.
+  rpc DeleteToolPreset(DeleteToolPresetRequest) returns (DeleteToolPresetResponse);
 
   // ===================================================================
   // User Management
@@ -106,6 +116,26 @@ message GetToolRequest {
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
 }
+
+message ListToolPresetsRequest {}
+
+message ListToolPresetsResponse {
+  repeated mcpany.config.v1.ToolPreset presets = 1;
+}
+
+message CreateToolPresetRequest {
+  mcpany.config.v1.ToolPreset preset = 1;
+}
+
+message CreateToolPresetResponse {
+  mcpany.config.v1.ToolPreset preset = 1;
+}
+
+message DeleteToolPresetRequest {
+  string preset_id = 1;
+}
+
+message DeleteToolPresetResponse {}
 
 // User Management Messages
 
