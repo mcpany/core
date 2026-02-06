@@ -119,6 +119,10 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
+	// OnListChanged registers a callback to be invoked when the list of tools changes.
+	//
+	// f is the callback function.
+	OnListChanged(f func())
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -156,6 +160,7 @@ type Manager struct {
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
 	allowedServicesCache map[string]map[string]bool
+	onListChangedFunc    func()
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -199,6 +204,17 @@ func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinit
 		}
 		tm.allowedServicesCache[d.GetName()] = allowed
 	}
+
+	if tm.onListChangedFunc != nil {
+		tm.onListChangedFunc()
+	}
+}
+
+// OnListChanged registers a callback to be invoked when the list of tools changes.
+func (tm *Manager) OnListChanged(f func()) {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+	tm.onListChangedFunc = f
 }
 
 // isToolAllowed checks if the tool is allowed based on the enabled profiles.
@@ -811,6 +827,11 @@ func (tm *Manager) AddTool(tool Tool) error {
 		}
 		tm.mcpServer.Server().AddTool(mcpTool, handler)
 	}
+
+	if tm.onListChangedFunc != nil {
+		tm.onListChangedFunc()
+	}
+
 	return nil
 }
 
@@ -961,5 +982,10 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		tm.cachedMCPTools = nil
 		tm.toolsMutex.Unlock()
 	}
+
+	if tm.onListChangedFunc != nil {
+		tm.onListChangedFunc()
+	}
+
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
 }

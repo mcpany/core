@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log/slog"
+	"sync"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -65,6 +66,9 @@ type Server struct {
 	bus             *bus.Provider
 	reloadFunc      func(context.Context) error
 	debug           bool
+
+	cachedFilteredTools   map[string][]*mcp.Tool
+	cachedFilteredToolsMu sync.RWMutex
 }
 
 // Server returns the underlying *mcp.Server instance.
@@ -121,6 +125,7 @@ func NewServer(
 		serviceRegistry: serviceRegistry,
 		bus:             bus,
 		debug:           debug,
+		cachedFilteredTools: make(map[string][]*mcp.Tool),
 	}
 
 	s.router.Register(
@@ -245,6 +250,12 @@ func NewServer(
 		}
 	})
 
+	s.toolManager.OnListChanged(func() {
+		s.cachedFilteredToolsMu.Lock()
+		s.cachedFilteredTools = make(map[string][]*mcp.Tool)
+		s.cachedFilteredToolsMu.Unlock()
+	})
+
 	// Register DLP middleware
 	// Note: config.GlobalSettings() returns *configv1.GlobalSettings
 	s.server.AddReceivingMiddleware(middleware.DLPMiddleware(config.GlobalSettings().GetDlp(), logging.GetLogger()))
@@ -284,6 +295,15 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 				return &mcp.ListToolsResult{Tools: s.toolManager.ListMCPTools()}, nil
 			}
 
+			// ⚡ Bolt: Check the filtered cache
+			// Randomized Selection from Top 5 High-Impact Targets
+			s.cachedFilteredToolsMu.RLock()
+			if cached, ok := s.cachedFilteredTools[profileID]; ok {
+				s.cachedFilteredToolsMu.RUnlock()
+				return &mcp.ListToolsResult{Tools: cached}, nil
+			}
+			s.cachedFilteredToolsMu.RUnlock()
+
 			// The tool manager is the authoritative source of tools. We iterate over the
 			// tools in the manager to ensure that the list is always up-to-date and
 			// reflects the current state of the system.
@@ -321,6 +341,12 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 					// We continue instead of failing the whole request.
 				}
 			}
+
+			// Cache the result
+			s.cachedFilteredToolsMu.Lock()
+			s.cachedFilteredTools[profileID] = refreshedTools
+			s.cachedFilteredToolsMu.Unlock()
+
 			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
 		}
 		return next(ctx, method, req)
