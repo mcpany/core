@@ -15,139 +15,207 @@ import { Tool } from "../../mcp_router/v1/mcp_router";
 
 export const protobufPackage = "mcpany.admin.v1";
 
+/** ClearCacheRequest represents a request to clear the server cache. */
 export interface ClearCacheRequest {
 }
 
+/** ClearCacheResponse represents the response after clearing the cache. */
 export interface ClearCacheResponse {
 }
 
+/** ListServicesRequest represents a request to list all services. */
 export interface ListServicesRequest {
 }
 
+/** ListServicesResponse contains the list of services and their states. */
 export interface ListServicesResponse {
-  /** @deprecated */
+  /**
+   * Deprecated: Use service_states instead.
+   *
+   * @deprecated
+   */
   services: UpstreamServiceConfig[];
+  /** The list of service states. */
   serviceStates: ServiceState[];
 }
 
+/** ServiceState describes the current state of a service. */
 export interface ServiceState {
+  /** The configuration of the service. */
   config?:
     | UpstreamServiceConfig
     | undefined;
-  /** "OK", "ERROR", "CONNECTING" */
+  /** The status of the service (e.g., "OK", "ERROR", "CONNECTING"). */
   status: string;
+  /** Any error message associated with the service status. */
   error: string;
 }
 
+/** GetServiceRequest represents a request to retrieve a specific service. */
 export interface GetServiceRequest {
+  /** The ID of the service to retrieve. */
   serviceId: string;
 }
 
+/** GetServiceResponse contains the requested service information. */
 export interface GetServiceResponse {
-  /** @deprecated */
-  service?: UpstreamServiceConfig | undefined;
+  /**
+   * Deprecated: Use service_state instead.
+   *
+   * @deprecated
+   */
+  service?:
+    | UpstreamServiceConfig
+    | undefined;
+  /** The state of the requested service. */
   serviceState?: ServiceState | undefined;
 }
 
+/** ListToolsRequest represents a request to list all tools. */
 export interface ListToolsRequest {
 }
 
+/** ListToolsResponse contains the list of tools. */
 export interface ListToolsResponse {
+  /** The list of tools. */
   tools: Tool[];
 }
 
+/** GetToolRequest represents a request to retrieve a specific tool. */
 export interface GetToolRequest {
+  /** The name of the tool to retrieve. */
   toolName: string;
 }
 
+/** GetToolResponse contains the requested tool definition. */
 export interface GetToolResponse {
+  /** The tool definition. */
   tool?: Tool | undefined;
 }
 
+/** CreateUserRequest represents a request to create a new user. */
 export interface CreateUserRequest {
+  /** The user definition to create. */
   user?: User | undefined;
 }
 
+/** CreateUserResponse contains the created user definition. */
 export interface CreateUserResponse {
+  /** The created user. */
   user?: User | undefined;
 }
 
+/** GetUserRequest represents a request to retrieve a user. */
 export interface GetUserRequest {
+  /** The ID of the user to retrieve. */
   userId: string;
 }
 
+/** GetUserResponse contains the requested user definition. */
 export interface GetUserResponse {
+  /** The user definition. */
   user?: User | undefined;
 }
 
+/** ListUsersRequest represents a request to list all users. */
 export interface ListUsersRequest {
 }
 
+/** ListUsersResponse contains the list of users. */
 export interface ListUsersResponse {
+  /** The list of users. */
   users: User[];
 }
 
+/** UpdateUserRequest represents a request to update a user. */
 export interface UpdateUserRequest {
-  /** Field mask to specify which fields to update (optional for now, full replace). */
+  /** The user definition with updated fields. */
   user?: User | undefined;
 }
 
+/** UpdateUserResponse contains the updated user definition. */
 export interface UpdateUserResponse {
+  /** The updated user. */
   user?: User | undefined;
 }
 
+/** DeleteUserRequest represents a request to delete a user. */
 export interface DeleteUserRequest {
+  /** The ID of the user to delete. */
   userId: string;
 }
 
+/** DeleteUserResponse represents the response after deleting a user. */
 export interface DeleteUserResponse {
 }
 
+/** GetDiscoveryStatusRequest represents a request to get auto-discovery status. */
 export interface GetDiscoveryStatusRequest {
 }
 
+/** GetDiscoveryStatusResponse contains the status of discovery providers. */
 export interface GetDiscoveryStatusResponse {
+  /** The list of discovery provider statuses. */
   providers: DiscoveryProviderStatus[];
 }
 
+/** DiscoveryProviderStatus describes the status of a single discovery provider. */
 export interface DiscoveryProviderStatus {
+  /** The name of the provider. */
   name: string;
-  /** "OK", "ERROR" */
+  /** The status of the provider (e.g., "OK", "ERROR"). */
   status: string;
+  /** The last error message, if any. */
   lastError: string;
-  /** ISO 8601 */
+  /** The timestamp of the last run in ISO 8601 format. */
   lastRunAt: string;
+  /** The number of services discovered in the last run. */
   discoveredCount: number;
 }
 
+/** ListAuditLogsRequest represents a request to list audit logs. */
 export interface ListAuditLogsRequest {
-  /** ISO 8601 */
+  /** The start time for the query (ISO 8601). */
   startTime: string;
-  /** ISO 8601 */
+  /** The end time for the query (ISO 8601). */
   endTime: string;
+  /** Filter by tool name. */
   toolName: string;
+  /** Filter by user ID. */
   userId: string;
+  /** Filter by profile ID. */
   profileId: string;
+  /** The maximum number of logs to return. */
   limit: number;
+  /** The offset for pagination. */
   offset: number;
 }
 
+/** ListAuditLogsResponse contains the list of audit log entries. */
 export interface ListAuditLogsResponse {
+  /** The list of audit log entries. */
   entries: AuditLogEntry[];
 }
 
+/** AuditLogEntry represents a single audit log event. */
 export interface AuditLogEntry {
-  /** ISO 8601 */
+  /** The timestamp of the event (ISO 8601). */
   timestamp: string;
+  /** The name of the tool executed. */
   toolName: string;
+  /** The ID of the user who initiated the action. */
   userId: string;
+  /** The ID of the profile used. */
   profileId: string;
-  /** JSON string */
+  /** The arguments passed to the tool (JSON string). */
   arguments: string;
-  /** JSON string */
+  /** The result returned by the tool (JSON string). */
   result: string;
+  /** Any error that occurred during execution. */
   error: string;
+  /** The duration of the execution as a string. */
   duration: string;
+  /** The duration of the execution in milliseconds. */
   durationMs: Long;
 }
 

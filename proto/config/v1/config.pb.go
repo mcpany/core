@@ -25,6 +25,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// LogLevel defines the severity of logs to emit.
 type GlobalSettings_LogLevel int32
 
 const (
@@ -75,6 +76,7 @@ func (x GlobalSettings_LogLevel) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// LogFormat defines the format of the logs.
 type GlobalSettings_LogFormat int32
 
 const (
@@ -119,6 +121,7 @@ func (x GlobalSettings_LogFormat) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// StorageType defines where audit logs are stored.
 type AuditConfig_StorageType int32
 
 const (
@@ -322,6 +325,7 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	return m0
 }
 
+// MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.
 type MergeStrategyConfig struct {
 	state                          protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UpstreamServiceList *string                `protobuf:"bytes,1,opt,name=upstream_service_list"`
@@ -719,6 +723,7 @@ func (b0 Secret_builder) Build() *Secret {
 	return m0
 }
 
+// SecretList is a container for a list of secrets.
 type SecretList struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Secrets *[]*Secret             `protobuf:"bytes,1,rep,name=secrets"`
@@ -767,6 +772,7 @@ func (x *SecretList) SetSecrets(v []*Secret) {
 type SecretList_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of secrets.
 	Secrets []*Secret
 }
 
@@ -778,6 +784,7 @@ func (b0 SecretList_builder) Build() *SecretList {
 	return m0
 }
 
+// GlobalSettings defines server-wide operational parameters.
 type GlobalSettings struct {
 	state                         protoimpl.MessageState   `protogen:"opaque.v1"`
 	xxx_hidden_McpListenAddress   *string                  `protobuf:"bytes,1,opt,name=mcp_listen_address"`
@@ -1567,6 +1574,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	return m0
 }
 
+// SmartRecoveryConfig configures automatic error recovery using an LLM.
 type SmartRecoveryConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -1760,6 +1768,7 @@ func (x *SmartRecoveryConfig) ClearBaseUrl() {
 type SmartRecoveryConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Whether smart recovery is enabled.
 	Enabled *bool
 	// The provider to use (e.g., "openai", "ollama").
 	Provider *string
@@ -1801,6 +1810,7 @@ func (b0 SmartRecoveryConfig_builder) Build() *SmartRecoveryConfig {
 	return m0
 }
 
+// AlertConfig configures system alerts.
 type AlertConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -1911,6 +1921,7 @@ func (b0 AlertConfig_builder) Build() *AlertConfig {
 	return m0
 }
 
+// ContextOptimizerConfig configures the context optimization middleware.
 type ContextOptimizerConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_MaxChars    int32                  `protobuf:"varint,1,opt,name=max_chars"`
@@ -1972,6 +1983,7 @@ func (x *ContextOptimizerConfig) ClearMaxChars() {
 type ContextOptimizerConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The maximum number of characters allowed in the context.
 	MaxChars *int32
 }
 
@@ -1986,6 +1998,7 @@ func (b0 ContextOptimizerConfig_builder) Build() *ContextOptimizerConfig {
 	return m0
 }
 
+// DebuggerConfig configures the debugging middleware.
 type DebuggerConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -2072,8 +2085,10 @@ func (x *DebuggerConfig) ClearSize() {
 type DebuggerConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Whether the debugger is enabled.
 	Enabled *bool
-	Size    *int32
+	// The maximum size of the debug buffer.
+	Size *int32
 }
 
 func (b0 DebuggerConfig_builder) Build() *DebuggerConfig {
@@ -2091,6 +2106,7 @@ func (b0 DebuggerConfig_builder) Build() *DebuggerConfig {
 	return m0
 }
 
+// TelemetryConfig configures tracing and metrics.
 type TelemetryConfig struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_TracesExporter  *string                `protobuf:"bytes,1,opt,name=traces_exporter"`
@@ -2239,13 +2255,13 @@ func (x *TelemetryConfig) ClearServiceName() {
 type TelemetryConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Tracing configuration
+	// Tracing configuration (e.g. "otlp", "stdout", "none").
 	TracesExporter *string
-	// Metrics configuration
+	// Metrics configuration (e.g. "otlp", "stdout", "none").
 	MetricsExporter *string
-	// OTLP endpoint (shared for now, or can be split)
+	// OTLP endpoint (shared for now, or can be split).
 	OtlpEndpoint *string
-	// Service name override (optional)
+	// Service name override (optional).
 	ServiceName *string
 }
 
@@ -2272,6 +2288,7 @@ func (b0 TelemetryConfig_builder) Build() *TelemetryConfig {
 	return m0
 }
 
+// OIDCConfig configures OpenID Connect authentication.
 type OIDCConfig struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Issuer       *string                `protobuf:"bytes,1,opt,name=issuer"`
@@ -2420,10 +2437,14 @@ func (x *OIDCConfig) ClearRedirectUrl() {
 type OIDCConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Issuer       *string
-	ClientId     *string
+	// The OIDC issuer URL.
+	Issuer *string
+	// The client ID.
+	ClientId *string
+	// The client secret.
 	ClientSecret *string
-	RedirectUrl  *string
+	// The redirect URL after authentication.
+	RedirectUrl *string
 }
 
 func (b0 OIDCConfig_builder) Build() *OIDCConfig {
@@ -2449,6 +2470,7 @@ func (b0 OIDCConfig_builder) Build() *OIDCConfig {
 	return m0
 }
 
+// GCSettings configures the garbage collection worker.
 type GCSettings struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -2610,6 +2632,7 @@ func (b0 GCSettings_builder) Build() *GCSettings {
 	return m0
 }
 
+// DLPConfig configures Data Loss Prevention (redaction).
 type DLPConfig struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled        bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -2702,6 +2725,7 @@ func (b0 DLPConfig_builder) Build() *DLPConfig {
 	return m0
 }
 
+// AuditConfig configures audit logging.
 type AuditConfig struct {
 	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_Enabled        bool                    `protobuf:"varint,1,opt,name=enabled"`
@@ -3008,6 +3032,7 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	return m0
 }
 
+// SplunkConfig configures Splunk integration for audit logs.
 type SplunkConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_HecUrl      *string                `protobuf:"bytes,1,opt,name=hec_url"`
@@ -3184,10 +3209,15 @@ func (x *SplunkConfig) ClearSourcetype() {
 type SplunkConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	HecUrl     *string
-	Token      *string
-	Index      *string
-	Source     *string
+	// The HTTP Event Collector URL.
+	HecUrl *string
+	// The HEC token.
+	Token *string
+	// The index to send events to.
+	Index *string
+	// The source value for events.
+	Source *string
+	// The sourcetype value for events.
 	Sourcetype *string
 }
 
@@ -3218,6 +3248,7 @@ func (b0 SplunkConfig_builder) Build() *SplunkConfig {
 	return m0
 }
 
+// DatadogConfig configures Datadog integration for audit logs.
 type DatadogConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key"`
@@ -3366,10 +3397,14 @@ func (x *DatadogConfig) ClearTags() {
 type DatadogConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ApiKey  *string
-	Site    *string
+	// The Datadog API key.
+	ApiKey *string
+	// The Datadog site (e.g. "datadoghq.com").
+	Site *string
+	// The service name for logs.
 	Service *string
-	Tags    *string
+	// Tags to attach to logs.
+	Tags *string
 }
 
 func (b0 DatadogConfig_builder) Build() *DatadogConfig {
@@ -3395,6 +3430,7 @@ func (b0 DatadogConfig_builder) Build() *DatadogConfig {
 	return m0
 }
 
+// ProfileDefinition defines a user profile and its permissions.
 type ProfileDefinition struct {
 	state                       protoimpl.MessageState           `protogen:"opaque.v1"`
 	xxx_hidden_Name             *string                          `protobuf:"bytes,1,opt,name=name"`
@@ -3530,7 +3566,9 @@ func (x *ProfileDefinition) ClearSelector() {
 type ProfileDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name     *string
+	// The unique name of the profile.
+	Name *string
+	// The selector criteria for tools associated with this profile.
 	Selector *ProfileSelector
 	// List of roles required to access this profile.
 	RequiredRoles []string
@@ -3558,6 +3596,7 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	return m0
 }
 
+// ProfileSelector defines criteria for selecting tools.
 type ProfileSelector struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tags           []string               `protobuf:"bytes,1,rep,name=tags"`
@@ -3616,7 +3655,9 @@ func (x *ProfileSelector) SetToolProperties(v map[string]string) {
 type ProfileSelector_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Tags           []string
+	// List of tags to match.
+	Tags []string
+	// Key-value pairs of tool properties to match.
 	ToolProperties map[string]string
 }
 
@@ -3629,6 +3670,7 @@ func (b0 ProfileSelector_builder) Build() *ProfileSelector {
 	return m0
 }
 
+// Middleware configures a specific middleware in the request pipeline.
 type Middleware struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`

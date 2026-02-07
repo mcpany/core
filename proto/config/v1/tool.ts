@@ -16,7 +16,7 @@ export const protobufPackage = "mcpany.config.v1";
 export interface ToolDefinition {
   /** The name of the tool, which will be used to invoke it. */
   name: string;
-  /** The input schema for the tool. */
+  /** The input schema for the tool, defining expected arguments. */
   inputSchema?:
     | { [key: string]: any }
     | undefined;
@@ -56,16 +56,19 @@ export interface ToolDefinition {
   openWorldHint: boolean;
   /** The ID of the call definition to use for this tool. */
   callId: string;
-  /** If true, this tool is disabled. */
+  /** If true, this tool is disabled and will not be exposed. */
   disable: boolean;
   /** A list of profiles this tool belongs to. */
   profiles: Profile[];
+  /** The strategy to use when merging this tool definition with others. */
   mergeStrategy: ToolDefinition_MergeStrategy;
+  /** Tags associated with the tool for filtering and organization. */
   tags: string[];
   /** Integrity check for the tool definition. */
   integrity?: Integrity | undefined;
 }
 
+/** MergeStrategy defines how tool definitions should be merged. */
 export enum ToolDefinition_MergeStrategy {
   MERGE_STRATEGY_UNSPECIFIED = 0,
   MERGE_STRATEGY_MERGE = 1,
@@ -105,9 +108,11 @@ export function toolDefinition_MergeStrategyToJSON(object: ToolDefinition_MergeS
   }
 }
 
+/** Integrity defines a checksum for verifying the tool definition. */
 export interface Integrity {
+  /** The hash value. */
   hash: string;
-  /** e.g. "sha256" */
+  /** The algorithm used to generate the hash (e.g., "sha256"). */
   algorithm: string;
 }
 
