@@ -216,37 +216,91 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 	})
 }
 
-func TestHandleAlertWebhook(t *testing.T) {
+func TestHandleWebhooks(t *testing.T) {
 	app := NewApplication()
 
-	t.Run("GetWebhookURL_Default", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/webhook", nil)
+	t.Run("ListWebhooks", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/alerts/webhooks", nil)
 		w := httptest.NewRecorder()
 
-		app.handleAlertWebhook()(w, req)
+		app.handleWebhooks()(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		var resp map[string]string
-		err := json.Unmarshal(w.Body.Bytes(), &resp)
+		var list []*alerts.Webhook
+		err := json.Unmarshal(w.Body.Bytes(), &list)
 		assert.NoError(t, err)
-		assert.Equal(t, "", resp["url"])
+		assert.Equal(t, 0, len(list))
 	})
 
-	t.Run("SetWebhookURL", func(t *testing.T) {
-		payload := map[string]string{"url": "http://example.com/webhook"}
-		body, _ := json.Marshal(payload)
-		req := httptest.NewRequest(http.MethodPost, "/alerts/webhook", bytes.NewReader(body))
+	t.Run("CreateWebhook", func(t *testing.T) {
+		webhook := &alerts.Webhook{
+			URL:    "http://example.com/webhook",
+			Events: []string{"all"},
+			Active: true,
+		}
+		body, _ := json.Marshal(webhook)
+		req := httptest.NewRequest(http.MethodPost, "/alerts/webhooks", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
-		app.handleAlertWebhook()(w, req)
+		app.handleWebhooks()(w, req)
+
+		assert.Equal(t, http.StatusCreated, w.Code)
+		var created alerts.Webhook
+		err := json.Unmarshal(w.Body.Bytes(), &created)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, created.ID)
+		assert.Equal(t, "http://example.com/webhook", created.URL)
+	})
+}
+
+func TestHandleWebhookDetail(t *testing.T) {
+	app := NewApplication()
+	webhook := &alerts.Webhook{
+		ID:     "wh-123",
+		URL:    "http://example.com",
+		Active: true,
+	}
+	app.AlertsManager.CreateWebhook(webhook)
+
+	t.Run("GetWebhook", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/alerts/webhooks/wh-123", nil)
+		w := httptest.NewRecorder()
+
+		app.handleWebhookDetail()(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		var resp map[string]string
-		err := json.Unmarshal(w.Body.Bytes(), &resp)
+		var got alerts.Webhook
+		err := json.Unmarshal(w.Body.Bytes(), &got)
 		assert.NoError(t, err)
-		assert.Equal(t, "http://example.com/webhook", resp["url"])
+		assert.Equal(t, "wh-123", got.ID)
+	})
 
-		// Verify it persisted
-		assert.Equal(t, "http://example.com/webhook", app.AlertsManager.GetWebhookURL())
+	t.Run("UpdateWebhook", func(t *testing.T) {
+		updates := &alerts.Webhook{
+			URL:    "http://updated.com",
+			Active: false,
+		}
+		body, _ := json.Marshal(updates)
+		req := httptest.NewRequest(http.MethodPatch, "/alerts/webhooks/wh-123", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+
+		app.handleWebhookDetail()(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var updated alerts.Webhook
+		err := json.Unmarshal(w.Body.Bytes(), &updated)
+		assert.NoError(t, err)
+		assert.Equal(t, "http://updated.com", updated.URL)
+		assert.False(t, updated.Active)
+	})
+
+	t.Run("DeleteWebhook", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodDelete, "/alerts/webhooks/wh-123", nil)
+		w := httptest.NewRecorder()
+
+		app.handleWebhookDetail()(w, req)
+
+		assert.Equal(t, http.StatusNoContent, w.Code)
+		assert.Nil(t, app.AlertsManager.GetWebhook("wh-123"))
 	})
 }
