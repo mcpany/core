@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2893,8 +2890,12 @@ func checkUnquotedInjection(val, command string) error {
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 
 	charsToCheck := dangerousChars
-	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
-	if filepath.Base(command) == "env" {
+	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables.
+	// For 'make' and 'awk' variants, '=' allows setting variables which can lead to RCE.
+	base := filepath.Base(command)
+	if base == "env" || base == "make" ||
+		strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") ||
+		strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk") {
 		charsToCheck += "="
 	}
 
@@ -3006,9 +3007,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
