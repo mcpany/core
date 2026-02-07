@@ -30,8 +30,8 @@ import (
 )
 
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
-	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 10*time.Second)
+	// Initialize metrics with an in-memory sink with a short interval for testing
+	sink := metrics.NewInmemSink(100*time.Millisecond, 10*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -97,10 +97,17 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check metrics
-	data := sink.Data()
-	require.NotEmpty(t, data)
+	// Wait for metrics to be flushed
+	var data []*metrics.IntervalMetrics
+	require.Eventually(t, func() bool {
+		data = sink.Data()
+		if len(data) == 0 {
+			return false
+		}
+		return len(data[0].Samples) > 0
+	}, 2*time.Second, 50*time.Millisecond, "Metrics should be flushed")
+
 	samples := data[0].Samples
-	require.NotEmpty(t, samples)
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
 	// But in the buggy version, it DOES exist.

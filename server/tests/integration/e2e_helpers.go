@@ -590,8 +590,10 @@ func IsDockerSocketAccessible() bool {
 
 		// Verify we can actually run a container
 		// This guards against environments where docker socket exists but runtime is broken (e.g. some CI envs)
-		runArgs := append(dockerArgs, "run", "--rm", "hello-world")
-		cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...)
+		runArgs := make([]string, 0, len(dockerArgs)+3)
+		runArgs = append(runArgs, dockerArgs...)
+		runArgs = append(runArgs, "run", "--rm", "hello-world")
+		cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 		cmd.Stdout = nil
 		cmd.Stderr = nil
 		if err := cmd.Run(); err != nil {
