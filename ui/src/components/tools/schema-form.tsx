@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Schema represents a JSON Schema object for form generation.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;
@@ -76,6 +79,17 @@ const NumberInput = ({ value, onChange, ...props }: { value: number | undefined,
     return <Input type="number" value={localValue} onChange={handleChange} {...props} />;
 };
 
+/**
+ * SchemaForm generates a form from a JSON Schema.
+ * @param props - The component props.
+ * @param props.schema - The JSON schema to render.
+ * @param props.value - The current value of the form.
+ * @param props.onChange - Callback when the value changes.
+ * @param props.name - Optional name for the field.
+ * @param props.required - Whether the field is required.
+ * @param props.depth - Recursion depth.
+ * @returns The rendered form component.
+ */
 export function SchemaForm({ schema, value, onChange, name, required, depth = 0 }: SchemaFormProps) {
     // Determine effective type
     const type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
