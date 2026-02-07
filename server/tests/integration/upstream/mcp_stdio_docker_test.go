@@ -18,6 +18,9 @@ import (
 )
 
 func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+		t.Skip("Skipping Docker-in-Docker test in CI environment")
+	}
 	if !integration.IsDockerSocketAccessible() {
 		// t.Skip("Docker socket not accessible, skipping test")
 	}
