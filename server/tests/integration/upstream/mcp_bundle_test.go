@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -274,7 +275,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}.Build()
 
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
-	if err != nil && strings.Contains(err.Error(), "mount source: \"overlay\"") && strings.Contains(err.Error(), "invalid argument") {
+	if err != nil && strings.Contains(err.Error(), "overlay") && strings.Contains(err.Error(), "invalid argument") {
 		t.Skipf("Skipping Docker bundle test due to overlay mount issue (likely Docker-in-Docker incompatibility): %v", err)
 	}
 	require.NoError(t, err)
