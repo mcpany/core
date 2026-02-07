@@ -72,7 +72,7 @@ if [ "$HTTP_CODE" -eq 200 ]; then
 else
     echo "      Debug endpoint not found. Simulating traffic..."
     # Simulate some calls to generate metrics
-    for i in {1..5}; do
+    for _ in {1..5}; do
         curl -s "$API_URL/services/demo-weather/tools/get_weather/call" \
             -H "Content-Type: application/json" \
             -d '{"city": "London"}' > /dev/null &
