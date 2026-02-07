@@ -368,7 +368,31 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools?.map((t: any) => ({
+                    ...t,
+                    input_schema: t.inputSchema,
+                    call_id: t.callId,
+                    service_id: t.serviceId,
+                    is_stream: t.isStream,
+                    read_only_hint: t.readOnlyHint,
+                    destructive_hint: t.destructiveHint,
+                    idempotent_hint: t.idempotentHint,
+                    open_world_hint: t.openWorldHint,
+                    merge_strategy: t.mergeStrategy
+                })),
+                calls: config.httpService.calls ? Object.fromEntries(
+                    Object.entries(config.httpService.calls).map(([k, v]: [string, any]) => [k, {
+                        ...v,
+                        endpoint_path: v.endpointPath,
+                        input_transformer: v.inputTransformer,
+                        output_transformer: v.outputTransformer,
+                        input_schema: v.inputSchema,
+                        output_schema: v.outputSchema
+                    }])
+                ) : undefined,
+            };
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
@@ -456,7 +480,31 @@ export const apiClient = {
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools?.map((t: any) => ({
+                    ...t,
+                    input_schema: t.inputSchema,
+                    call_id: t.callId,
+                    service_id: t.serviceId,
+                    is_stream: t.isStream,
+                    read_only_hint: t.readOnlyHint,
+                    destructive_hint: t.destructiveHint,
+                    idempotent_hint: t.idempotentHint,
+                    open_world_hint: t.openWorldHint,
+                    merge_strategy: t.mergeStrategy
+                })),
+                calls: config.httpService.calls ? Object.fromEntries(
+                    Object.entries(config.httpService.calls).map(([k, v]: [string, any]) => [k, {
+                        ...v,
+                        endpoint_path: v.endpointPath,
+                        input_transformer: v.inputTransformer,
+                        output_transformer: v.outputTransformer,
+                        input_schema: v.inputSchema,
+                        output_schema: v.outputSchema
+                    }])
+                ) : undefined,
+            };
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
