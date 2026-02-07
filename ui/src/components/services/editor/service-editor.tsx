@@ -19,15 +19,15 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Key, FileDiff } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Key } from "lucide-react";
 import { SecretPicker } from "@/components/secrets/secret-picker";
-import { DiffViewer } from "@/components/services/editor/diff-viewer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { SourceEditor } from "@/components/services/editor/source-editor";
+import { ResilienceEditor } from "@/components/services/editor/resilience-editor";
 import yaml from "js-yaml";
 
 interface ServiceEditorProps {
@@ -46,24 +46,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
     const [activeTab, setActiveTab] = useState("general");
     const [validating, setValidating] = useState(false);
     const [yamlContent, setYamlContent] = useState("");
-    const [originalYaml, setOriginalYaml] = useState("");
     const [yamlError, setYamlError] = useState<string | null>(null);
     const { toast } = useToast();
-
-    // Snapshot original configuration for diffing
-    useEffect(() => {
-        try {
-            const cleanService = { ...service };
-            // Remove runtime fields to only compare configuration
-            delete cleanService.connectionPool;
-            delete cleanService.lastError;
-            delete cleanService.toolCount;
-
-            setOriginalYaml(yaml.dump(cleanService));
-        } catch (e) {
-            console.error("Failed to dump original YAML", e);
-        }
-    }, [service.id]);
 
     const updateService = (updates: Partial<UpstreamServiceConfig>) => {
         onChange({ ...service, ...updates });
@@ -175,39 +159,11 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
                             <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
                             {service.id && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
-                            <TabsTrigger value="changes">Changes</TabsTrigger>
                             <TabsTrigger value="source">Source</TabsTrigger>
                         </TabsList>
                     </div>
 
                     <div className="p-4 space-y-6">
-                        <TabsContent value="changes" className="space-y-4 mt-0">
-                             <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-medium flex items-center gap-2">
-                                        <FileDiff className="h-5 w-5" /> Configuration Changes
-                                    </h3>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    Compare your current changes with the original configuration.
-                                </p>
-                                <DiffViewer
-                                    original={originalYaml}
-                                    modified={(() => {
-                                        try {
-                                            const cleanService = { ...service };
-                                            delete cleanService.connectionPool;
-                                            delete cleanService.lastError;
-                                            delete cleanService.toolCount;
-                                            return yaml.dump(cleanService);
-                                        } catch {
-                                            return "";
-                                        }
-                                    })()}
-                                />
-                            </div>
-                        </TabsContent>
-
                         <TabsContent value="source" className="space-y-4 mt-0">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -565,30 +521,18 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             </Card>
                         </TabsContent>
 
-                        <TabsContent value="advanced" className="space-y-4 mt-0">
+                        <TabsContent value="advanced" className="space-y-6 mt-0">
+                            <ResilienceEditor
+                                config={service.resilience}
+                                onChange={(resilience) => updateService({ resilience })}
+                            />
+
+                            <Separator />
+
                             <div className="grid grid-cols-2 gap-4">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Resilience</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                         <div className="space-y-2">
-                                            <Label htmlFor="timeout">Timeout (s)</Label>
-                                            {/* Note: Duration handling is complex in proto (seconds/nanos), simplifying to string for now if client helper handles it, or assuming seconds */}
-                                            {/* In proto, it is google.protobuf.Duration. The JSON mapping usually accepts string "10s" */}
-                                            {/* But the client interface we have uses generated types. Check resilience.timeout */}
-                                            <Input
-                                                id="timeout"
-                                                placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
-                                                defaultValue="30s"
-                                            />
-                                        </div>
-                                    </CardContent>
-                                </Card>
                                  <Card>
                                     <CardHeader>
-                                        <CardTitle>Export Policy</CardTitle>
+                                        <CardTitle>Discovery</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div className="flex items-center space-x-2">

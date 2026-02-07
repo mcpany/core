@@ -12,12 +12,13 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, ResilienceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { formatDuration, parseDuration } from '@/lib/duration-utils';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -40,13 +41,6 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
-// Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
-// server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
-// So we can point to window.location.origin or relative?
-// GrpcWebImpl needs a full URL host usually.
-// If running in browser, we can use empty string or relative?
-// GrpcWebImpl implementation uses `this.host`. If empty?
-// Let's assume we point to the current origin.
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
@@ -75,6 +69,49 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         }
     }
     return fetch(input, { ...init, headers });
+};
+
+/**
+ * Helper function to map snake_case resilience from backend to camelCase ResilienceConfig
+ */
+const mapResilience = (r: any): ResilienceConfig | undefined => {
+    if (!r) return undefined;
+    return {
+        timeout: parseDuration(r.timeout),
+        circuitBreaker: r.circuit_breaker ? {
+            failureRateThreshold: r.circuit_breaker.failure_rate_threshold,
+            consecutiveFailures: r.circuit_breaker.consecutive_failures,
+            openDuration: parseDuration(r.circuit_breaker.open_duration),
+            halfOpenRequests: r.circuit_breaker.half_open_requests,
+        } : undefined,
+        retryPolicy: r.retry_policy ? {
+            numberOfRetries: r.retry_policy.number_of_retries,
+            baseBackoff: parseDuration(r.retry_policy.base_backoff),
+            maxBackoff: parseDuration(r.retry_policy.max_backoff),
+            maxElapsedTime: parseDuration(r.retry_policy.max_elapsed_time),
+        } : undefined,
+    };
+};
+
+/**
+ * Helper function to map camelCase ResilienceConfig to snake_case payload
+ */
+const mapResiliencePayload = (resilience: ResilienceConfig) => {
+    return {
+        timeout: resilience.timeout ? formatDuration(resilience.timeout) : undefined,
+        circuit_breaker: resilience.circuitBreaker ? {
+            failure_rate_threshold: resilience.circuitBreaker.failureRateThreshold,
+            consecutive_failures: resilience.circuitBreaker.consecutiveFailures,
+            open_duration: resilience.circuitBreaker.openDuration ? formatDuration(resilience.circuitBreaker.openDuration) : undefined,
+            half_open_requests: resilience.circuitBreaker.halfOpenRequests,
+        } : undefined,
+        retry_policy: resilience.retryPolicy ? {
+            number_of_retries: resilience.retryPolicy.numberOfRetries,
+            base_backoff: resilience.retryPolicy.baseBackoff ? formatDuration(resilience.retryPolicy.baseBackoff) : undefined,
+            max_backoff: resilience.retryPolicy.maxBackoff ? formatDuration(resilience.retryPolicy.maxBackoff) : undefined,
+            max_elapsed_time: resilience.retryPolicy.maxElapsedTime ? formatDuration(resilience.retryPolicy.maxElapsedTime) : undefined,
+        } : undefined,
+    };
 };
 
 /**
@@ -199,18 +236,6 @@ export interface SystemStatus {
 
 
 const getMetadata = () => {
-    // Metadata for gRPC calls.
-    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-    // we need to be careful.
-    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-    // The gRPC calls should ideally be proxied or use a session token.
-    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-    // if they require the static key.
-    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-    // is also behind the Next.js proxy (rewrites).
-    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-    // If we use that, the middleware WILL run and inject the header!
     return undefined;
 };
 
@@ -246,6 +271,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            resilience: mapResilience(s.resilience),
             callPolicies: s.call_policies?.map((p: any) => ({
                 defaultAction: p.default_action,
                 rules: p.rules?.map((r: any) => ({
@@ -292,6 +318,7 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         resilience: mapResilience(s.resilience),
                          callPolicies: s.call_policies?.map((p: any) => ({
                             defaultAction: p.default_action,
                             rules: p.rules?.map((r: any) => ({
@@ -384,19 +411,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -423,6 +437,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = mapResiliencePayload(config.resilience);
         }
 
         const response = await fetchWithAuth('/api/v1/services', {
@@ -470,19 +487,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -509,6 +513,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = mapResiliencePayload(config.resilience);
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -571,19 +578,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -610,6 +604,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = mapResiliencePayload(config.resilience);
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1466,6 +1463,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            resilience: mapResilience(s.resilience),
         }));
     },
 
@@ -1517,6 +1515,9 @@ export const apiClient = {
         }
         if (template.resourceExportPolicy) {
             payload.resource_export_policy = template.resourceExportPolicy;
+        }
+        if (template.resilience) {
+            payload.resilience = mapResiliencePayload(template.resilience);
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {
