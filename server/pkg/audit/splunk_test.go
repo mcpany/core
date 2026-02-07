@@ -96,9 +96,15 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 		atomic.AddInt32(&totalReceived, int32(count))
 		w.WriteHeader(http.StatusOK)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
+			// Non-blocking send to avoid deadlock if channel is full or no receiver
+			select {
+			case done <- struct{}{}:
+			default:
+			}
 		}
 	}))
+	// Disable keep-alives to ensure Close() doesn't hang on idle connections
+	ts.Config.SetKeepAlivesEnabled(false)
 	defer ts.Close()
 
 	config := &configv1.SplunkConfig{}
