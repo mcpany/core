@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal, Plus, Minus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,7 +50,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
-  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkEdit?: (names: string[], updates: { tags?: string[], timeout?: string, env?: Record<string, string> }) => void;
 }
 
 /**
@@ -63,6 +63,8 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
+  const [bulkTimeout, setBulkTimeout] = useState("");
+  const [bulkEnv, setBulkEnv] = useState<{ key: string, value: string }[]>([]);
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -206,14 +208,14 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
         </Table>
       </div>
       <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
             <DialogHeader>
                 <DialogTitle>Bulk Edit Services</DialogTitle>
                 <DialogDescription>
-                    Update {selected.size} selected services. Currently only supports updating tags.
+                    Update {selected.size} selected services.
                 </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
                 <div className="space-y-2">
                     <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
                     <Input
@@ -223,16 +225,75 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                         onChange={(e) => setBulkTags(e.target.value)}
                     />
                 </div>
+                <div className="space-y-2">
+                    <Label htmlFor="bulk-timeout">Set Timeout (e.g. 30s)</Label>
+                    <Input
+                        id="bulk-timeout"
+                        placeholder="30s"
+                        value={bulkTimeout}
+                        onChange={(e) => setBulkTimeout(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                         <Label>Add Environment Variables</Label>
+                         <Button variant="ghost" size="sm" onClick={() => setBulkEnv([...bulkEnv, { key: "", value: "" }])}>
+                             <Plus className="h-4 w-4" /> Add Variable
+                         </Button>
+                    </div>
+                    {bulkEnv.map((env, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                            <Input
+                                placeholder="Key"
+                                value={env.key}
+                                onChange={(e) => {
+                                    const newEnv = [...bulkEnv];
+                                    newEnv[index].key = e.target.value;
+                                    setBulkEnv(newEnv);
+                                }}
+                            />
+                            <Input
+                                placeholder="Value"
+                                value={env.value}
+                                onChange={(e) => {
+                                    const newEnv = [...bulkEnv];
+                                    newEnv[index].value = e.target.value;
+                                    setBulkEnv(newEnv);
+                                }}
+                            />
+                             <Button variant="ghost" size="icon" onClick={() => {
+                                 const newEnv = bulkEnv.filter((_, i) => i !== index);
+                                 setBulkEnv(newEnv);
+                             }}>
+                                 <Minus className="h-4 w-4 text-muted-foreground" />
+                             </Button>
+                        </div>
+                    ))}
+                    {bulkEnv.length === 0 && (
+                        <div className="text-xs text-muted-foreground italic">No environment variables added.</div>
+                    )}
+                </div>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        const envUpdates: Record<string, string> = {};
+                        bulkEnv.forEach(e => {
+                            if (e.key) envUpdates[e.key] = e.value;
+                        });
+
+                        onBulkEdit(Array.from(selected), {
+                            tags: bulkTags ? bulkTags.split(",").map(t => t.trim()).filter(Boolean) : undefined,
+                            timeout: bulkTimeout || undefined,
+                            env: Object.keys(envUpdates).length > 0 ? envUpdates : undefined
+                        });
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());
                     setBulkTags("");
+                    setBulkTimeout("");
+                    setBulkEnv([]);
                 }}>Apply Changes</Button>
             </DialogFooter>
         </DialogContent>
