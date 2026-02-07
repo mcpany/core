@@ -1,0 +1,13 @@
+upstream_services:
+  - name: "simple"
+    command_line_service:
+      command: ["echo", "hello"]
+      tools:
+        - name: "echo_tool"
+          description: "Echoes back"
+          input_schema:
+            type: "object"
+            properties:
+              msg:
+                type: "string"
+                description: "The message"
