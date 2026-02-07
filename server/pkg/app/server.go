@@ -124,9 +124,9 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions configuration for starting the MCP Any application.
+// RunOptions contains configuration for starting the MCP Any application.
 //
-// Summary: Options for configuring the application runtime.
+// Summary: Defines the runtime configuration options for the server, including ports, security settings, and paths.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -139,35 +139,34 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
-	DBPath          string
 }
 
-// Runner defines the interface for running the application.
+// Runner defines the interface for running the application lifecycle.
 //
-// Summary: Interface for application execution and management.
+// Summary: Interface for application execution, management, and dynamic configuration reloading.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
-	// Summary: Starts the application.
+	// Summary: Initializes and starts the application server and all its components.
 	//
 	// Parameters:
-	//   - opts: RunOptions. The configuration for running.
+	//   - opts: RunOptions. The configuration for running the application.
 	//
 	// Returns:
-	//   - error: An error if startup or execution fails.
+	//   - error: An error if startup or execution fails (e.g., port binding failure).
 	Run(opts RunOptions) error
 
-	// ReloadConfig reloads the application configuration.
+	// ReloadConfig reloads the application configuration from source.
 	//
-	// Summary: Triggers a configuration reload.
+	// Summary: specific triggers a configuration reload without restarting the server.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the operation.
-	//   - fs: afero.Fs. The filesystem.
-	//   - configPaths: []string. Paths to configuration files.
+	//   - fs: afero.Fs. The filesystem interface to read config files from.
+	//   - configPaths: []string. Paths to the configuration files to reload.
 	//
 	// Returns:
-	//   - error: An error if reload fails.
+	//   - error: An error if the reload fails (e.g., config validation error).
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
@@ -330,10 +329,7 @@ func (a *Application) Run(opts RunOptions) error {
 		dbDriver := config.GlobalSettings().GetDbDriver()
 		switch dbDriver {
 		case "", "sqlite":
-			dbPath := opts.DBPath
-			if dbPath == "" {
-				dbPath = config.GlobalSettings().DBPath()
-			}
+			dbPath := config.GlobalSettings().DBPath()
 			if dbPath == "" {
 				dbPath = "mcpany.db"
 			}

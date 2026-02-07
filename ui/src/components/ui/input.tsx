@@ -8,11 +8,12 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Input component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.type - The type definition.
- * @returns The rendered component.
+ * Renders an input field with standard styling.
+ *
+ * @param props - The HTML attributes for the input element.
+ * @param props.className - Additional CSS classes to apply.
+ * @param props.type - The HTML input type (e.g., "text", "password", "email").
+ * @returns The rendered input component.
  */
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {

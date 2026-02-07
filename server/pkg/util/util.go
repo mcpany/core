@@ -512,8 +512,6 @@ func IsNil(i any) bool {
 // ToString converts a value to a string representation efficiently.
 // It handles common types like string, json.Number, int, float, and bool
 // without using reflection when possible.
-// Optimization: We manually handle all standard Go numeric types to avoid the overhead
-// of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 //
 // Summary: Converts any value to a string efficiently.
 //
@@ -632,7 +630,7 @@ func RandomFloat64() float64 {
 // It removes any directory components, null bytes, and restricts characters
 // to alphanumeric, dots, dashes, and underscores.
 //
-// Summary: Sanitizes a filename.
+// Summary: Sanitizes a filename to prevent path traversal and shell injection.
 //
 // Parameters:
 //   - filename: string. The filename to sanitize.
