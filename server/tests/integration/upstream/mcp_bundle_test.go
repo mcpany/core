@@ -7,6 +7,7 @@ import (
 	"archive/zip"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -193,6 +194,18 @@ const manifestJSON = `
 }
 `
 
+func verifyDockerMount(t *testing.T) error {
+	tempDir := t.TempDir()
+	// Try to mount this temp dir into a container.
+	// We use node:18-alpine because it is the image used by the test.
+	cmd := exec.Command("docker", "run", "--rm", "-v", tempDir+":/test", "node:18-alpine", "ls", "/test")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("docker run failed: %v, output: %s", err, string(output))
+	}
+	return nil
+}
+
 func createE2EBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "e2e_test.mcpb")
 	file, err := os.Create(bundlePath) //nolint:gosec // Test file
@@ -235,13 +248,15 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Verify volume mounting works (often fails in dind)
+	if err := verifyDockerMount(t); err != nil {
+		t.Skipf("Skipping Docker tests: volume mounting failed (likely dind issue): %v", err)
 	}
 
 	tempDir := t.TempDir()
