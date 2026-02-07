@@ -53,11 +53,55 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Try running a minimal container to verify filesystem/overlay compatibility
+	// This catches the "invalid argument" mount error seen in some CI environments (overlay-on-overlay)
+	// We use "hello-world" or "alpine" to test. Since "alpine" is used in tests, let's try that.
+	// However, pulling might be slow. Let's assume if Ping works, we try a Create.
+	// Note: We use "alpine:latest" as it is used in the tests.
+	// If the image is not present, Create might fail or trigger a pull (if we were running).
+	// But Create itself validates mount points if we ask for them, or just the rootfs.
+	// Actually, the error happens during Create or Start.
+	// Let's try to Create a simple container.
+
+	// Use a lightweight check: just ensure we can create a container.
+	// We won't start it to avoid pull overhead if possible, but the error "mount source... invalid argument"
+	// usually comes from the graph driver during Create or Start.
+	// Let's try to run a very simple container.
+
+	// Attempt to create a container to verify filesystem support (overlay issue check)
+	// We use "hello-world" as it is very small, but "alpine" is used in tests so it's likely cached.
+	// We just try to Create, not Start, to avoid execution overhead, but the error usually happens
+	// during graph driver layer creation which happens at Create (or Pull + Create).
+
+	// Use a minimal config
+	resp, err := cli.ContainerCreate(ctx,
+		&container.Config{
+			Image: "alpine:latest",
+			Cmd:   []string{"true"},
+		},
+		nil, nil, nil, "")
+
+	if err != nil {
+		t.Logf("Docker check failed (skipping tests): %v", err)
+		return false
+	}
+
+	// Clean up the container
+	defer func() {
+		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+	}()
+
 	return true
 }
 
