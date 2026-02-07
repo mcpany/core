@@ -619,6 +619,11 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	}.Build()
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"{{arg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build(),
+			}.Build(),
+		},
 	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")

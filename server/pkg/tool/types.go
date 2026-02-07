@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -1634,6 +1631,7 @@ type CommandTool struct {
 	policies        []*CompiledCallPolicy
 	callID          string
 	initError       error
+	allowedParams   map[string]bool
 }
 
 // NewCommandTool creates a new CommandTool instance.
@@ -1661,10 +1659,18 @@ func NewCommandTool(
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
+		allowedParams:  make(map[string]bool, len(callDefinition.GetParameters())),
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	for _, param := range callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			t.allowedParams[schema.GetName()] = true
+		}
+	}
+
 	return t
 }
 
@@ -1681,6 +1687,7 @@ type LocalCommandTool struct {
 	callID         string
 	sandboxArgs    []string
 	initError      error
+	allowedParams  map[string]bool
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
@@ -1708,9 +1715,16 @@ func NewLocalCommandTool(
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
+		allowedParams:  make(map[string]bool, len(callDefinition.GetParameters())),
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+
+	for _, param := range callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			t.allowedParams[schema.GetName()] = true
+		}
 	}
 
 	// Check if the command is sed and supports sandbox
@@ -1799,6 +1813,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	for k := range inputs {
+		if !t.allowedParams[k] && k != "args" {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}
@@ -2096,6 +2117,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	for k := range inputs {
+		if !t.allowedParams[k] && k != "args" {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}
@@ -3006,9 +3034,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
