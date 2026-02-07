@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	// modernc.org/sqlite is a pure Go SQLite driver.
@@ -28,7 +29,20 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
 
-	db, err := sql.Open("sqlite", path)
+	// Ensure query parameters are used for PRAGMA settings to apply them to all connections in the pool.
+	// This prevents race conditions where a new connection is created without the timeout setting.
+	dsn := path
+	if strings.Contains(path, "?") {
+		dsn += "&"
+	} else {
+		dsn += "?"
+	}
+	// _pragma=busy_timeout=5000: Wait up to 5000ms for a lock
+	// _pragma=journal_mode=WAL: Use Write-Ahead Logging for concurrency
+	// _pragma=synchronous=NORMAL: Faster writes, safe in WAL mode
+	dsn += "_pragma=busy_timeout=5000&_pragma=journal_mode=WAL&_pragma=synchronous=NORMAL"
+
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
@@ -52,22 +66,9 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		return nil, fmt.Errorf("failed to create semantic_cache_entries table: %w", err)
 	}
 
-	// Optimize SQLite performance
+	// Prepare context for loading
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
-	if _, err := db.ExecContext(ctx, "PRAGMA journal_mode=WAL;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
-	}
-	if _, err := db.ExecContext(ctx, "PRAGMA synchronous=NORMAL;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
-	}
-	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
-	}
 
 	store := &SQLiteVectorStore{
 		memoryStore: NewSimpleVectorStore(),
