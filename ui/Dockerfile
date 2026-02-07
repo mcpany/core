@@ -24,14 +24,14 @@ COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /app/proto/
 
 # Install protoc and generate TypeScript definitions because they are gitignored
-RUN apt-get update && apt-get install -y protobuf-compiler && \
-    find /app/proto -name "*.proto" -type f -exec sed -i '/google\/protobuf\/go_features.proto/d' {} + && \
-    find /app/proto -name "*.proto" -type f -exec protoc \
-    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=. \
-    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
-    --proto_path=/app \
-    {} +
+RUN apt-get update && apt-get install -y protobuf-compiler libprotobuf-dev curl && \
+    mkdir -p /app/proto/google/api && \
+    curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto -o /app/proto/google/api/annotations.proto && \
+    curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto -o /app/proto/google/api/http.proto && \
+    find /usr/include/google/protobuf -name "*.proto" -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/app/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/usr/include {} + && \
+    find /app/proto/google/api -name "*.proto" -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/app/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/app/proto {} + && \
+    find /app/proto -name "*.proto" -not -path "/app/proto/google/*" -type f -exec sed -i '/google\/protobuf\/go_features.proto/d' {} + && \
+    find /app/proto -name "*.proto" -not -path "/app/proto/google/*" -type f -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/app/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/app/proto --proto_path=/usr/include {} +
 
 # Update tsconfig to use local proto path
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json

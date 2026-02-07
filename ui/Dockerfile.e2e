@@ -17,17 +17,28 @@ RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
 
 # Copy the rest of the UI code
 COPY ui/ .
-COPY proto/ /work/proto/
-# Symlink node_modules so proto files can find dependencies
-RUN ln -s /work/ui/node_modules /work/proto/node_modules
-# Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
-RUN cp -r /work/proto /work/ui/proto
+COPY proto/ /work/ui/proto/
+
+# Install protoc and generate TypeScript definitions because they are gitignored
+# Playwright image uses Ubuntu (jammy), so apt-get works.
+RUN apt-get update && apt-get install -y protobuf-compiler libprotobuf-dev curl && \
+    mkdir -p /work/ui/proto/google/api && \
+    curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto -o /work/ui/proto/google/api/annotations.proto && \
+    curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto -o /work/ui/proto/google/api/http.proto && \
+    find /usr/include/google/protobuf -name "*.proto" -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/work/ui/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/usr/include {} + && \
+    find /work/ui/proto/google/api -name "*.proto" -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/work/ui/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/work/ui/proto {} + && \
+    find /work/ui/proto -name "*.proto" -not -path "/work/ui/proto/google/*" -type f -exec sed -i '/google\/protobuf\/go_features.proto/d' {} + && \
+    find /work/ui/proto -name "*.proto" -not -path "/work/ui/proto/google/*" -type f -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=. --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/work/ui/proto --proto_path=/usr/include {} +
+
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
+# Symlink node_modules so proto files can find dependencies
+RUN ln -s /work/ui/node_modules /work/ui/proto/node_modules
+
 # Recursively chmod, but skip node_modules and symlinks to avoid errors
 RUN find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmod 777 {} +
 # Ensure proto directory is also writable/accessible
-RUN chmod -R 777 /work/proto
+RUN chmod -R 777 /work/ui/proto
 
 # Clean up any copied .next directory to avoid permission issues, then create fresh
 RUN rm -rf .next &&     touch next-env.d.ts &&     mkdir -p .next node_modules/.cache test-results playwright-report &&     chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
