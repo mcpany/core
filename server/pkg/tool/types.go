@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2768,6 +2765,23 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// the content inside the quotes might be interpreted as code.
 		// Since we cannot know if the inner command is an interpreter, we explicitly block common RCE patterns.
 
+		// If the command is a known interpreter, we must be stricter.
+		// Specifically, we must prevent escaping the closing quote of the interpreter's string literal using backslash.
+		// We only need to block if the value ends with an odd number of backslashes, which would escape the closing quote.
+		if isInterpreter(command) {
+			trailingBackslashes := 0
+			for i := len(val) - 1; i >= 0; i-- {
+				if val[i] == '\\' {
+					trailingBackslashes++
+				} else {
+					break
+				}
+			}
+			if trailingBackslashes%2 != 0 {
+				return fmt.Errorf("interpreter injection detected: value ends with odd number of backslashes which could escape closing quote")
+			}
+		}
+
 		// Block backticks (used by Perl, Ruby, PHP for execution)
 		if strings.Contains(val, "`") {
 			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
@@ -3006,9 +3020,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
