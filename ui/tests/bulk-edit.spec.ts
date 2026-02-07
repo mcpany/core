@@ -38,7 +38,6 @@ test('Bulk Edit services updates timeout for multiple services', async ({ page, 
   await page.goto('/upstream-services');
 
   // 3. Select both services
-  // We use filter to find the row by text
   const row1 = page.getByRole('row').filter({ hasText: 'bulk-test-1' });
   const row2 = page.getByRole('row').filter({ hasText: 'bulk-test-2' });
 
@@ -46,12 +45,15 @@ test('Bulk Edit services updates timeout for multiple services', async ({ page, 
   await expect(row1).toBeVisible();
   await expect(row2).toBeVisible();
 
-  // Check the checkboxes
-  await row1.getByRole('checkbox').click();
-  await row2.getByRole('checkbox').click();
+  // Check the checkboxes safely
+  await row1.getByRole('checkbox').check();
+  await row2.getByRole('checkbox').check();
 
   // 4. Open Bulk Edit Dialog
-  await page.getByRole('button', { name: 'Bulk Edit' }).click();
+  // Ensure the button is visible and active (it depends on selection state)
+  const bulkEditBtn = page.getByRole('button', { name: 'Bulk Edit' });
+  await expect(bulkEditBtn).toBeVisible();
+  await bulkEditBtn.click();
 
   const dialog = page.getByRole('dialog', { name: 'Bulk Edit Services' });
   await expect(dialog).toBeVisible();
@@ -65,22 +67,23 @@ test('Bulk Edit services updates timeout for multiple services', async ({ page, 
   // 7. Apply Changes
   await dialog.getByRole('button', { name: 'Apply Changes' }).click();
 
-  // 8. Verify Toast or success state
-  // Toast might be transient, but we can verify backend state immediately
+  // 8. Verify dialog closes
   await expect(dialog).toBeHidden();
 
-  // 9. Verify Backend State
-  const verify1 = await request.get('/api/v1/services/bulk-test-1');
-  const json1 = await verify1.json();
-  // Backend returns structure { service: ... } or just service object depending on endpoint
-  // getService in client.ts expects { service: ... } from REST usually
-  const s1 = json1.service || json1;
-  expect(s1.resilience.timeout).toBe('60s');
+  // 9. Verify Backend State with retries (in case of async update lag)
+  await expect(async () => {
+      const verify1 = await request.get('/api/v1/services/bulk-test-1');
+      const json1 = await verify1.json();
+      const s1 = json1.service || json1;
+      expect(s1.resilience.timeout).toBe('60s');
+  }).toPass({ timeout: 5000 });
 
-  const verify2 = await request.get('/api/v1/services/bulk-test-2');
-  const json2 = await verify2.json();
-  const s2 = json2.service || json2;
-  expect(s2.resilience.timeout).toBe('60s');
+  await expect(async () => {
+      const verify2 = await request.get('/api/v1/services/bulk-test-2');
+      const json2 = await verify2.json();
+      const s2 = json2.service || json2;
+      expect(s2.resilience.timeout).toBe('60s');
+  }).toPass({ timeout: 5000 });
 
   // Cleanup
   await request.delete('/api/v1/services/bulk-test-1');
