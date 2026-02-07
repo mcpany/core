@@ -11,6 +11,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 type mockToolManager struct {
@@ -80,6 +81,10 @@ func (m *mockResourceManager) AddResource(r resource.Resource) {
 func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) {
 	r, ok := m.resources[uri]
 	return r, ok
+}
+
+func (m *mockResourceManager) ListMCPResources() []*mcp_sdk.Resource {
+	return nil
 }
 
 func (m *mockResourceManager) OnListChanged(_ func()) {}
