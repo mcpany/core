@@ -578,14 +578,17 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
+	// First check basic connectivity
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
 
-	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
-	if err := runCmd.Run(); err != nil {
+	// Then check if we can actually run a container (e.g. check for overlayfs issues)
+	// We use alpine:latest as it is small and likely cached or fast to pull.
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
+	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...)
+	if err := cmdRun.Run(); err != nil {
 		return false
 	}
 
@@ -817,7 +820,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
+	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
@@ -832,7 +835,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ConfigPaths:     []string{},
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
-			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
@@ -1011,7 +1013,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
+		t.Skip("Docker is not running or accessible. Skipping test that requires Redis container.")
 	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
