@@ -12,6 +12,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
@@ -467,6 +468,45 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		err := u.Shutdown(context.Background())
 		assert.NoError(t, err)
 	})
+}
+
+func TestFilesystemUpstream_Prompts(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "fs_prompts_test")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("fs_prompts"),
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			RootPaths: map[string]string{
+				"/data": tempDir,
+			},
+			Os: configv1.OsFs_builder{}.Build(),
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{
+					Name:        proto.String("test_prompt"),
+					Description: proto.String("A test prompt"),
+				}.Build(),
+			},
+		}.Build(),
+	}.Build()
+
+	u := NewUpstream()
+	b, _ := bus.NewProvider(nil)
+	tm := tool.NewManager(b)
+	pm := prompt.NewManager()
+
+	id, _, _, err := u.Register(context.Background(), config, tm, pm, nil, false)
+	require.NoError(t, err)
+	assert.NotEmpty(t, id)
+
+	// Verify prompt was registered
+	p, ok := pm.GetPrompt(id + ".test_prompt")
+	assert.True(t, ok, "Prompt should be registered with service ID prefix")
+	if ok {
+		assert.Equal(t, "A test prompt", p.Prompt().Description)
+		assert.Equal(t, id, p.Service())
+	}
 }
 
 func TestFilesystemUpstream_MemMapFs(t *testing.T) {
