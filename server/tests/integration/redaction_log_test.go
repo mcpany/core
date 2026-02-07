@@ -18,9 +18,11 @@ import (
 )
 
 func TestRedactionInLogs(t *testing.T) {
+	t.Log("Starting TestRedactionInLogs")
 	// Use external process to isolate logs and avoid global state modification
 	// This prevents race conditions with other tests running in parallel
-	serverInfo := StartMCPANYServer(t, "redaction-test")
+	// Pass --log-level=info to reduce noise, we only need INFO logs for redaction check
+	serverInfo := StartMCPANYServer(t, "redaction-test", "--log-level=info")
 	defer serverInfo.CleanupFunc()
 
 	// Create a dummy upstream service
@@ -92,4 +94,5 @@ func TestRedactionInLogs(t *testing.T) {
 	if !strings.Contains(logs, "[REDACTED]") {
 		t.Fatalf("Expected '[REDACTED]' in logs, but not found. Logs snippet: %s", logs)
 	}
+	t.Log("TestRedactionInLogs passed")
 }
