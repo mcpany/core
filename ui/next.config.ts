@@ -130,6 +130,9 @@ const nextConfig: NextConfig = {
       '@proto': protoPath,
       '@google': path.join(protoPath, 'google'),
     };
+
+    // Ensure .ts/.tsx extensions are resolved for @proto imports
+    config.resolve.extensions.push('.ts', '.tsx');
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
     config.resolve.symlinks = false;
     return config;

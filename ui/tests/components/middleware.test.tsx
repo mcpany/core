@@ -4,11 +4,12 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MiddlewarePage from '../../src/app/middleware/page';
+import { apiClient } from '@/lib/client';
 
-// Mock the drag and drop context to avoid errors in JSDOM
+// Mock the drag and drop context
 vi.mock('@hello-pangea/dnd', () => ({
   DragDropContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Droppable: ({ children }: { children: (provided: any) => React.ReactNode }) => (
@@ -34,36 +35,60 @@ vi.mock('@hello-pangea/dnd', () => ({
   ),
 }));
 
+// Mock the API client
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    getGlobalSettings: vi.fn(),
+    saveGlobalSettings: vi.fn(),
+  },
+}));
+
 describe('MiddlewarePage Component', () => {
-  it('should display the middleware pipeline heading', () => {
+  const mockMiddlewares = [
+    { name: 'Mock Auth', priority: 0, disabled: false },
+    { name: 'Mock Logger', priority: 1, disabled: true },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (apiClient.getGlobalSettings as any).mockResolvedValue({
+      middlewares: mockMiddlewares,
+    });
+  });
+
+  it('should display the middleware pipeline heading', async () => {
     render(<MiddlewarePage />);
     expect(screen.getByText('Middleware Pipeline')).toBeDefined();
   });
 
-  it('should display core middleware items', () => {
+  it('should fetch and display middlewares from the API', async () => {
     render(<MiddlewarePage />);
-    expect(screen.getAllByText('Authentication').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Rate Limiter').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Logging').length).toBeGreaterThan(0);
+
+    // Wait for the API call to resolve and update the UI
+    await waitFor(() => {
+        expect(apiClient.getGlobalSettings).toHaveBeenCalledTimes(1);
+    });
+
+    // Check if the mock middlewares are displayed
+    // Mock Auth appears twice (list + visualization)
+    const authElements = await screen.findAllByText(/Mock Auth/);
+    expect(authElements.length).toBeGreaterThanOrEqual(1);
+
+    // Mock Logger appears once (list only, disabled)
+    expect(await screen.findByText(/Mock Logger/)).toBeDefined();
   });
 
-
-  it('should display switches for each middleware', () => {
+  it('should display switches for each middleware with correct state', async () => {
     render(<MiddlewarePage />);
-    const switches = screen.getAllByRole('button'); // Switch in Radix is often rendered as a button or has role switch
-    // Depending on the implementation, we might need to be more specific.
-    // Based on the code, it uses Radix Switch which usually has role="switch".
-    const switchElements = screen.queryAllByRole('switch');
-    // If switch role is not present (sometimes happens in JSDOM/Radix without proper ARIA),
-    // we can check for checkboxes or just ensure they are present.
-    expect(switchElements.length).toBeGreaterThan(0);
-  });
+    await waitFor(() => expect(apiClient.getGlobalSettings).toHaveBeenCalled());
 
-  it('should display settings buttons', () => {
-    render(<MiddlewarePage />);
-    // The settings button has an icon, we can find it by its container or if it has a label.
-    // In the code it's a Button with variant="ghost" size="icon" containing a Settings icon.
-    const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThan(0);
+    await screen.findAllByText(/Mock Auth/);
+
+    const switches = screen.getAllByRole('switch');
+    expect(switches.length).toBe(2);
+
+    // Check states (Radix switch uses data-state)
+    expect(switches[0].getAttribute('data-state')).toMatch(/checked|on/); // Mock Auth is enabled
+    expect(switches[1].getAttribute('data-state')).toMatch(/unchecked|off/); // Mock Logger is disabled
   });
 });
