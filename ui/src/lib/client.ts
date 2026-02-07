@@ -66,6 +66,12 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         const token = localStorage.getItem('mcp_auth_token');
         if (token) {
             headers.set('Authorization', `Basic ${token}`);
+        } else {
+            // Fallback to public API key if available (e.g. for development/tests)
+            const publicApiKey = process.env.NEXT_PUBLIC_MCPANY_API_KEY;
+            if (publicApiKey) {
+                headers.set('X-API-Key', publicApiKey);
+            }
         }
     } else {
         // Server-side: Inject API Key from env
@@ -384,19 +390,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -469,19 +462,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -570,19 +550,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;

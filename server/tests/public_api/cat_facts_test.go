@@ -8,7 +8,8 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -22,12 +23,23 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
+	// Unskipped and mocked for stability
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
 	t.Parallel()
+
+	// --- Mock Upstream ---
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/fact" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"fact": "Cats are cool", "length": 13}`))
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer mockServer.Close()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
@@ -35,7 +47,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	// --- 2. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
+	catFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -43,7 +55,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/fact"),
-		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET).Enum(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -91,40 +103,13 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 
-		// Check for SDK error
 		if err != nil {
-			if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (SDK error): %v. Retrying...", i+1, maxRetries, err)
-				time.Sleep(2 * time.Second) // Wait before retrying
-				continue
-			}
-			require.NoError(t, err, "unrecoverable error calling getCatFact tool")
+			// Should not happen with mock server
+			t.Logf("Attempt %d/%d failed: %v", i+1, maxRetries, err)
+			time.Sleep(100 * time.Millisecond)
+			continue
 		}
-
-		// Check for MCP protocol error (isError: true)
-		if res.IsError {
-			var errorMsg string
-			if len(res.Content) > 0 {
-				if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
-					errorMsg = textContent.Text
-				}
-			}
-
-			if strings.Contains(errorMsg, "503 Service Temporarily Unavailable") || strings.Contains(errorMsg, "context deadline exceeded") || strings.Contains(errorMsg, "connection reset by peer") {
-				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (MCP error): %s. Retrying...", i+1, maxRetries, errorMsg)
-				time.Sleep(2 * time.Second) // Wait before retrying
-				continue
-			}
-			// If it's a non-transient error, we stop retrying and let the assertions fail
-			break
-		}
-
-		// Success
 		break
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getCatFact tool")
@@ -139,8 +124,8 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &catFactResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.NotEmpty(t, catFactResponse["fact"], "The fact should not be empty")
-	require.NotEmpty(t, catFactResponse["length"], "The length should not be empty")
+	require.Equal(t, "Cats are cool", catFactResponse["fact"])
+	require.Equal(t, float64(13), catFactResponse["length"])
 	t.Logf("SUCCESS: Received a cat fact: %s", textContent.Text)
 
 	t.Log("INFO: E2E Test Scenario for Cat Facts Server Completed Successfully!")

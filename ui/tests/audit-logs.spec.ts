@@ -11,7 +11,7 @@ import * as fs from 'fs';
 test.describe('Feature Screenshot', () => {
     // Skip if CAPTURE_SCREENSHOTS is not set
     // Enabled audit screenshots
-    // test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
+    // test(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
 
     const date = new Date().toISOString().split('T')[0];
     const auditDir = path.join(__dirname, '../.audit/ui', date);

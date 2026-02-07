@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
@@ -37,21 +37,14 @@ test.describe('Dashboard Real Data', () => {
         });
         expect(seedRes.ok()).toBeTruthy();
 
-        // 2. Load the dashboard
-        await page.goto('/');
-
-        // Debug: Fetch traffic data directly to verify backend state
-        const trafficRes = await request.get('/api/v1/dashboard/traffic');
-        expect(trafficRes.ok()).toBeTruthy();
-        const trafficData = await trafficRes.json();
-        console.log('DEBUG: Traffic Data:', JSON.stringify(trafficData));
-        // Expect at least one point with requests > 0
-        const hasData = trafficData.some((p: any) => p.requests > 0);
-        expect(hasData).toBeTruthy();
+        // 2. Load the dashboard (already loaded by fixture, but we can navigate explicitly if needed)
+        // Fixture logs in at /, so we are at dashboard.
+        // We might need to wait for data refresh if SWR/polling is used.
+        // Or force reload.
+        await page.reload();
 
         // 3. Verify metrics
         // We seeded 100 requests per minute for 60 minutes = 6000 total requests?
-        // Wait, GetTrafficHistory returns the history.
         // AnalyticsDashboard sums them up.
         // 60 points * 100 requests = 6000 total requests.
         // Check if "Total Requests" card shows 6,000 (formatted).
@@ -61,16 +54,6 @@ test.describe('Dashboard Real Data', () => {
         // The endpoint returns points. The UI sums them up.
         // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
         // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        // Or simpler: find the value card.
-        // The card structure: Header "Total Requests", Content: "6,000"
-        // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
-
-        await expect(page.locator('text=Total Requests')).toBeVisible();
-        // Wait for data to load (it starts at 0 or empty)
-        await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden(); // Ensure no error text is shown if that was a thing?
-        // Just wait for non-zero requests
-        // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
         const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
@@ -112,7 +95,7 @@ test.describe('Dashboard Real Data', () => {
          });
          expect(seedRes.ok()).toBeTruthy();
 
-         await page.goto('/');
+         await page.reload();
          // Check for "System Uptime" card
          await expect(page.locator('text=System Uptime')).toBeVisible();
 

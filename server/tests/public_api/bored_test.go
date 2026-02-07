@@ -8,8 +8,8 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -23,11 +23,31 @@ import (
 )
 
 func TestUpstreamService_Bored(t *testing.T) {
+	// Unskipped and mocked for stability
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Bored Server...")
 	t.Parallel()
+
+	// --- Mock Upstream ---
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/activity" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{
+				"activity": "Write a Playwright test",
+				"type": "education",
+				"participants": 1,
+				"price": 0,
+				"link": "",
+				"key": "123456",
+				"accessibility": 0
+			}`))
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer mockServer.Close()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EBoredServerTest")
@@ -35,7 +55,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 
 	// --- 2. Register Bored Server with MCPANY ---
 	const boredServiceID = "e2e_bored"
-	boredServiceEndpoint := "https://www.boredapi.com"
+	boredServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", boredServiceID, boredServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -43,7 +63,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/api/activity"),
-		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET).Enum(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -90,34 +110,12 @@ func TestUpstreamService_Bored(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-		if err == nil && res != nil && res.IsError {
-			// Convert to error for retry check
-			if len(res.Content) > 0 {
-				if txt, ok := res.Content[0].(*mcp.TextContent); ok {
-					err = fmt.Errorf("tool returned error: %s", txt.Text)
-				} else {
-					err = fmt.Errorf("tool returned error result")
-				}
-			} else {
-				err = fmt.Errorf("tool returned error result with no content")
-			}
-		}
-
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "no such host") || strings.Contains(err.Error(), "tool returned error") {
-			t.Logf("Attempt %d/%d: Call to boredapi.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
+		if err != nil {
+			t.Logf("Attempt %d/%d failed: %v", i+1, maxRetries, err)
+			time.Sleep(100 * time.Millisecond)
 			continue
 		}
-
-		require.NoError(t, err, "unrecoverable error calling getActivity tool")
-	}
-
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to boredapi.com failed with transient errors. Last error: %v", maxRetries, err)
+		break
 	}
 
 	require.NoError(t, err, "Error calling getActivity tool")
@@ -132,16 +130,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &boredResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.NotEmpty(t, boredResponse["activity"], "The activity should not be empty")
-	require.NotEmpty(t, boredResponse["type"], "The type should not be empty")
-	require.NotEmpty(t, boredResponse["participants"], "The participants should not be empty")
-	require.NotEmpty(t, boredResponse["price"], "The price should not be empty")
-	require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
-	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
-	require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty")
-	if err != nil {
-		// t.Skipf("Skipping test due to transient error from boredapi.com: %v", err)
-	}
+	require.Equal(t, "Write a Playwright test", boredResponse["activity"])
 	t.Logf("SUCCESS: Received an activity: %s", textContent.Text)
 
 	t.Log("INFO: E2E Test Scenario for Bored Server Completed Successfully!")

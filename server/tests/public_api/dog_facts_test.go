@@ -8,7 +8,8 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -22,12 +23,23 @@ import (
 )
 
 func TestUpstreamService_DogFacts(t *testing.T) {
-	// t.SkipNow()
+	// Unskipped and mocked for stability
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Dog Facts Server...")
 	t.Parallel()
+
+	// --- Mock Upstream ---
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/facts" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"facts": ["Dogs are great."], "success": true}`))
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer mockServer.Close()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EDogFactsServerTest")
@@ -35,7 +47,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	// --- 2. Register Dog Facts Server with MCPANY ---
 	const dogFactsServiceID = "e2e_dogfacts"
-	dogFactsServiceEndpoint := "https://dog-api.kinduff.com"
+	dogFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", dogFactsServiceID, dogFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -43,7 +55,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/api/facts"),
-		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET).Enum(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -90,21 +102,12 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to dog-api.kinduff.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
+		if err != nil {
+			t.Logf("Attempt %d/%d failed: %v", i+1, maxRetries, err)
+			time.Sleep(100 * time.Millisecond)
 			continue
 		}
-
-		require.NoError(t, err, "unrecoverable error calling getDogFact tool")
-	}
-
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to dog-api.kinduff.com failed with transient errors. Last error: %v", maxRetries, err)
+		break
 	}
 
 	require.NoError(t, err, "Error calling getDogFact tool")
@@ -120,9 +123,6 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	require.NotNil(t, dogFactResponse["facts"], "The facts should not be nil")
-	if !dogFactResponse["success"].(bool) {
-		t.Skipf("Skipping test due to transient error from dog-api.kinduff.com: success is false")
-	}
 	require.Equal(t, true, dogFactResponse["success"], "The success should be true")
 	t.Logf("SUCCESS: Received a dog fact: %s", textContent.Text)
 
