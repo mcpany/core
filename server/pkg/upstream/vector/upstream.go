@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -170,7 +171,16 @@ type vectorCallable struct {
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return c.handler(ctx, req.Arguments)
+	args := req.Arguments
+	if args == nil && len(req.ToolInputs) > 0 {
+		// Lazy unmarshal if Arguments are missing
+		var parsed map[string]interface{}
+		if err := json.Unmarshal(req.ToolInputs, &parsed); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal arguments: %w", err)
+		}
+		args = parsed
+	}
+	return c.handler(ctx, args)
 }
 
 type vectorToolDef struct {

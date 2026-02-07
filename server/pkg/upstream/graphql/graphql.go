@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strings"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/machinebox/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -181,7 +182,20 @@ type Callable struct {
 // Returns an error if the operation fails.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
-	for key, value := range req.Arguments {
+
+	args := req.Arguments
+	if args == nil && len(req.ToolInputs) > 0 {
+		// Lazy unmarshal if Arguments are missing (e.g. RateLimit optimization skipped it)
+		// We ignore errors here as we might just have empty inputs or invalid JSON that strictly isn't args
+		// But for GraphQL variables, we generally expect a JSON object.
+		var parsed map[string]interface{}
+		// ⚡ Bolt: Use json-iterator for consistency
+		if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(req.ToolInputs, &parsed); err == nil {
+			args = parsed
+		}
+	}
+
+	for key, value := range args {
 		graphqlReq.Var(key, value)
 	}
 	if c.authenticator != nil {

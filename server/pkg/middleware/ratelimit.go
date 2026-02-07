@@ -186,12 +186,13 @@ func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int 
 	var tokens int
 	var err error
 
-	if req.Arguments != nil {
+	switch {
+	case req.Arguments != nil:
 		tokens, err = tokenizer.CountTokensInValue(m.tokenizer, req.Arguments)
-	} else if len(req.ToolInputs) > 0 {
+	case len(req.ToolInputs) > 0:
 		// Cast to []byte to ensure we hit the fast path in tokenizer
 		tokens, err = tokenizer.CountTokensInValue(m.tokenizer, []byte(req.ToolInputs))
-	} else {
+	default:
 		return 1
 	}
 
