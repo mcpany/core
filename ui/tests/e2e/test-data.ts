@@ -45,6 +45,15 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     { name: "calculator", description: "calc" }
                 ]
             }
+        },
+        // Real functional service for tool discovery tests
+        {
+            id: "svc_memory",
+            name: "Memory",
+            command_line_service: {
+                command: "npx",
+                args: ["-y", "@modelcontextprotocol/server-memory"]
+            }
         }
     ];
 
@@ -104,6 +113,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete('/api/v1/services/Memory', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
@@ -145,5 +155,14 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup user: ${e}`);
+    }
+};
+
+export const seedWebhook = async (requestContext?: APIRequestContext, url: string = "https://example.com/webhook") => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.post('/api/v1/alerts/webhook', { data: { url }, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed webhook: ${e}`);
     }
 };

@@ -4,71 +4,50 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, cleanupServices } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
-    test.beforeEach(async ({ page }) => {
-        // Mock tools endpoint directly (matching ToolsPage fetch)
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({
-                json: {
-                    tools: [
-                        {
-                            name: 'weather-tool',
-                            description: 'Get weather for a location',
-                            source: 'configured',
-                            serviceId: 'weather-service',
-                            inputSchema: {
-                                type: 'object',
-                                properties: {
-                                    location: { type: 'string', description: 'City name' }
-                                }
-                            }
-                        },
-                        {
-                            name: 'calculator',
-                            description: 'Perform basic math',
-                            source: 'discovered',
-                            serviceId: 'math-service'
-                        }
-                    ]
-                }
-            });
-        });
+    test.beforeEach(async ({ request }) => {
+        await seedServices(request);
+    });
+
+    test.afterEach(async ({ request }) => {
+        await cleanupServices(request);
     });
 
     test('should list available tools', async ({ page }) => {
         await page.goto('/tools');
-        // Wait for loading to finish (if applicable, though mock is instant)
-        // Adjust selector if you add a specific loading state for tools
 
-        await expect(page.getByText('weather-tool').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Get weather for a location').first()).toBeVisible({ timeout: 10000 });
-
-        await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Perform basic math').first()).toBeVisible({ timeout: 10000 });
+        // Expect seeded tools (Memory)
+        await expect(page.getByText('read_graph').first()).toBeVisible({ timeout: 10000 });
     });
 
-    test.skip('should show empty state when no tools', async ({ page }) => {
-        // Unroute previous mock from beforeEach
-        await page.unroute((url) => url.pathname.includes('/api/v1/tools'));
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({ json: { tools: [] } });
-        });
+    test('should show empty state when no tools', async ({ page, request }) => {
+        // Cleanup tools for this test
+        await cleanupServices(request);
+        // Also ensure no other tools are lingering (Memory service ID is not in cleanupServices helper yet? Check test-data.ts)
+        // seedServices adds "Memory", cleanupServices removes "Payment Gateway", "User Service", "Math".
+        // I need to update cleanupServices in test-data.ts or handle it here.
+        // Assuming I updated test-data.ts, but I didn't update cleanupServices to include Memory!
+        // I must update test-data.ts first or do manual cleanup.
+        // Let's do manual cleanup for Memory here to be safe or update test-data.ts in next step?
+        // Wait, I can update test-data.ts now? No, I am editing tools.spec.ts.
+        // I will use raw request to delete Memory service.
+        await request.delete('/api/v1/services/Memory', { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } });
 
         await page.goto('/tools');
+        await page.reload(); // Ensure fresh state
+
         // The table shows one row with "No tools found." when empty
-        await expect(page.locator('table tbody tr')).toHaveCount(1);
-        await expect(page.locator('text=No tools found.')).toBeVisible();
+        await expect(page.locator('text=No tools found.')).toBeVisible({ timeout: 10000 });
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
-        // Inspection relies on schema being present in the tool definition
-        // The mock in beforeEach includes a basic definition
-        const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
+        const toolRow = page.locator('tr').filter({ hasText: 'read_graph' });
         await toolRow.getByText('Inspect').click();
 
         await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('weather-tool').first()).toBeVisible();
+        await expect(page.getByText('read_graph').first()).toBeVisible();
     });
 });
