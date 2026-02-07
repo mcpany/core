@@ -84,10 +84,12 @@ export function ServiceInspector({ service }: ServiceInspectorProps) {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-0">
-                <div className="border-t">
-                    <InspectorTable traces={filteredTraces} loading={loading && filteredTraces.length === 0} />
-                </div>
+            <CardContent className="flex-1 min-h-0 p-0">
+                <InspectorTable
+                    traces={filteredTraces}
+                    loading={loading && filteredTraces.length === 0}
+                    className="border-0 border-t rounded-none"
+                />
             </CardContent>
         </Card>
     );
