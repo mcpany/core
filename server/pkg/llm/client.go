@@ -5,7 +5,6 @@
 package llm
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -74,16 +73,30 @@ type openAIChatResponse struct {
 // ChatCompletion performs a chat completion request.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
-	bodyBytes, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+
+	// ⚡ BOLT: Stream request body to avoid full JSON allocation in memory.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	// We define a generator to support http.Request.GetBody for retries/redirects.
+	bodyGen := func() (io.ReadCloser, error) {
+		pr, pw := io.Pipe()
+		go func() {
+			if err := json.NewEncoder(pw).Encode(reqBody); err != nil {
+				_ = pw.CloseWithError(fmt.Errorf("failed to encode request: %w", err))
+			} else {
+				_ = pw.Close()
+			}
+		}()
+		return pr, nil
 	}
 
+	body, _ := bodyGen() // Error is always nil from bodyGen
 	url := fmt.Sprintf("%s/chat/completions", c.baseURL)
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(bodyBytes))
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, body)
 	if err != nil {
+		_ = body.Close()
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
+	httpReq.GetBody = bodyGen
 
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
