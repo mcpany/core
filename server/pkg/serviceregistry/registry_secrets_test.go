@@ -47,7 +47,6 @@ func (m *hunterMockToolManager) ListServices() []*tool.ServiceInfo     { return 
 func (m *hunterMockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 func (m *hunterMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return nil, nil }
 func (m *hunterMockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *hunterMockToolManager) GetToolCountForService(_ string) int { return 0 }
 
 func TestServiceRegistry_SecretsLeak(t *testing.T) {
 	f := &hunterMockFactory{}
