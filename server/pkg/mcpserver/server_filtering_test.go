@@ -56,6 +56,14 @@ func (m *mockResourceManager) ListResources() []resource.Resource {
 	return m.resources
 }
 
+func (m *mockResourceManager) ListMCPResources() []*mcp.Resource {
+	var list []*mcp.Resource
+	for _, r := range m.resources {
+		list = append(list, r.Resource())
+	}
+	return list
+}
+
 func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) {
 	for _, r := range m.resources {
 		if r.Resource().URI == uri {

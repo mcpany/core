@@ -42,6 +42,11 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return args.Get(0).([]resource.Resource)
 }
 
+func (m *MockResourceManager) ListMCPResources() []*mcp.Resource {
+	args := m.Called()
+	return args.Get(0).([]*mcp.Resource)
+}
+
 func (m *MockResourceManager) OnListChanged(f func()) {
 	m.Called(f)
 }
@@ -139,10 +144,6 @@ func (m *TestMockToolManager) IsServiceAllowed(serviceID, profileID string) bool
 
 func (m *TestMockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	return nil, true
-}
-
-func (m *TestMockToolManager) GetToolCountForService(serviceID string) int {
-	return 0
 }
 
 func TestRegisterDynamicResources_Detailed(t *testing.T) {

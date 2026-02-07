@@ -42,6 +42,11 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return args.Get(0).([]resource.Resource)
 }
 
+func (m *MockResourceManager) ListMCPResources() []*mcp.Resource {
+	args := m.Called()
+	return args.Get(0).([]*mcp.Resource)
+}
+
 func (m *MockResourceManager) OnListChanged(f func()) {
 	m.Called(f)
 }

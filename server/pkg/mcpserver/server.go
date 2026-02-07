@@ -993,28 +993,34 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodResourcesList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+
+			// ⚡ Bolt Optimization: Use cached MCP resources list if no profile filtering is required
+			// to avoid N allocations and conversions.
+			// Randomized Selection from Top 5 High-Impact Targets.
+			if profileID == "" {
+				return &mcp.ListResourcesResult{Resources: s.resourceManager.ListMCPResources()}, nil
+			}
+
+			// Profile filtering required.
+			// ListResources() is now optimized to return the cached slice without allocation.
 			managedResources := s.resourceManager.ListResources()
 			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
+			// We know profileID is not empty here
+			allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
 
 			for _, resourceInstance := range managedResources {
-				// Profile filtering
-				if profileID != "" {
-					serviceID := resourceInstance.Service()
-					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
+				serviceID := resourceInstance.Service()
+				// Optimized O(1) map lookup
+				if allowedServices != nil {
+					if !allowedServices[serviceID] {
 						continue
 					}
+				} else {
+					continue
 				}
 
 				if res := resourceInstance.Resource(); res != nil {

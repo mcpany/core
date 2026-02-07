@@ -118,15 +118,6 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, false
 }
 
-// GetToolCountForService implements tool.ManagerInterface.
-//
-// _ is an unused parameter.
-//
-// Returns the result.
-func (m *NoOpToolManager) GetToolCountForService(_ string) int {
-	return 0
-}
-
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
 type NoOpPromptManager struct{}
 
@@ -188,6 +179,11 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 //
 // Returns the result.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
+
+// ListMCPResources implements resource.ManagerInterface.
+//
+// Returns the result.
+func (m *NoOpResourceManager) ListMCPResources() []*mcp.Resource { return nil }
 
 // OnListChanged implements resource.ManagerInterface.
 //

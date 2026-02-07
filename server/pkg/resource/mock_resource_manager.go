@@ -13,6 +13,7 @@ import (
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
+	mcp "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // MockManagerInterface is a mock of ManagerInterface interface.
@@ -135,6 +136,24 @@ func (m *MockManagerInterface) ListResources() []Resource {
 func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResources", reflect.TypeOf((*MockManagerInterface)(nil).ListResources))
+}
+
+// ListMCPResources mocks base method.
+//
+// Returns the result.
+func (m *MockManagerInterface) ListMCPResources() []*mcp.Resource {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMCPResources")
+	ret0, _ := ret[0].([]*mcp.Resource)
+	return ret0
+}
+
+// ListMCPResources indicates an expected call of ListMCPResources.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) ListMCPResources() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPResources", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPResources))
 }
 
 // OnListChanged mocks base method.

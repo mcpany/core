@@ -101,10 +101,6 @@ func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, true
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
-	return 0
-}
-
 // MockPromptManager is a mock implementation of the PromptManagerInterface.
 type MockPromptManager struct {
 	mu      sync.Mutex
@@ -195,6 +191,16 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	resources := make([]resource.Resource, 0, len(m.resources))
 	for _, r := range m.resources {
 		resources = append(resources, r)
+	}
+	return resources
+}
+
+func (m *MockResourceManager) ListMCPResources() []*mcp_sdk.Resource {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	resources := make([]*mcp_sdk.Resource, 0, len(m.resources))
+	for _, r := range m.resources {
+		resources = append(resources, r.Resource())
 	}
 	return resources
 }
