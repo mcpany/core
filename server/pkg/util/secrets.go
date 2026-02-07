@@ -94,11 +94,6 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 
-		// Ensure path is relative or safe before reading
-		if strings.Contains(path, "..") {
-			return "", fmt.Errorf("path contains '..', which is not allowed")
-		}
-
 		// File reading is blocking and generally fast, but technically could verify context.
 		// For simplicity and standard library limits, we just read.
 		content, err := os.ReadFile(path)
