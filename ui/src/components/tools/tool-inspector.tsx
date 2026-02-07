@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -48,6 +49,7 @@ interface AuditLogEntry {
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   const [input, setInput] = useState("{}");
+  const [formValues, setFormValues] = useState<any>({});
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
@@ -98,10 +100,27 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   useEffect(() => {
       if (open && tool) {
           fetchMetrics();
+          setInput("{}");
+          setFormValues({});
       }
   }, [open, tool]);
 
   if (!tool) return null;
+
+  const handleJsonChange = (val: string) => {
+      setInput(val);
+      try {
+          const parsed = JSON.parse(val);
+          setFormValues(parsed);
+      } catch (e) {
+          // Ignore parse errors while typing
+      }
+  };
+
+  const handleFormChange = (val: any) => {
+      setFormValues(val);
+      setInput(JSON.stringify(val, null, 2));
+  };
 
 
   const handleExecute = async () => {
@@ -152,34 +171,54 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
 
             <TabsContent value="testing" className="space-y-4">
                 <div className="grid gap-2">
-                    <Label>Schema</Label>
-                    <Tabs defaultValue="visual" className="w-full">
-                      <TabsList className="grid w-[200px] grid-cols-2 h-8">
-                        <TabsTrigger value="visual" className="text-xs">Visual</TabsTrigger>
-                        <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="visual" className="mt-2">
-                         <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/20">
-                            <SchemaViewer schema={tool.inputSchema as any} />
-                         </ScrollArea>
-                      </TabsContent>
-                      <TabsContent value="json" className="mt-2">
-                        <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/50">
-                            <pre className="text-xs">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
-                        </ScrollArea>
-                      </TabsContent>
-                    </Tabs>
-                </div>
+                    <Tabs defaultValue="form" className="w-full">
+                        <div className="flex items-center justify-between mb-2">
+                            <Label>Arguments</Label>
+                             <TabsList className="h-8">
+                                <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
+                                <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                                <TabsTrigger value="schema" className="text-xs">Schema</TabsTrigger>
+                              </TabsList>
+                        </div>
 
-                <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                        <TabsContent value="form" className="mt-0">
+                             <ScrollArea className="h-[350px] w-full rounded-md border p-4 bg-muted/10">
+                                <SchemaForm
+                                    schema={tool.inputSchema as any}
+                                    value={formValues}
+                                    onChange={handleFormChange}
+                                />
+                             </ScrollArea>
+                        </TabsContent>
+
+                        <TabsContent value="json" className="mt-0">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => handleJsonChange(e.target.value)}
+                                className="font-mono text-sm h-[350px]"
+                            />
+                        </TabsContent>
+
+                        <TabsContent value="schema" className="mt-0">
+                             <Tabs defaultValue="visual" className="w-full">
+                                  <TabsList className="grid w-[200px] grid-cols-2 h-8 mb-2">
+                                    <TabsTrigger value="visual" className="text-xs">Visual</TabsTrigger>
+                                    <TabsTrigger value="raw" className="text-xs">Raw</TabsTrigger>
+                                  </TabsList>
+                                  <TabsContent value="visual" className="mt-0">
+                                     <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-muted/20">
+                                        <SchemaViewer schema={tool.inputSchema as any} />
+                                     </ScrollArea>
+                                  </TabsContent>
+                                  <TabsContent value="raw" className="mt-0">
+                                    <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-muted/50">
+                                        <pre className="text-xs">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
+                                    </ScrollArea>
+                                  </TabsContent>
+                             </Tabs>
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
