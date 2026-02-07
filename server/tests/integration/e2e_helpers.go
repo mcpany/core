@@ -587,7 +587,10 @@ func IsDockerSocketAccessible() bool {
 	// 2. Check if we can actually run a container (catches overlayfs/permission issues)
 	// We use alpine:latest as it's small and commonly available.
 	// We use --rm to clean up.
-	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "echo", "hello")
+	runArgs := make([]string, 0, len(dockerArgs)+5)
+	runArgs = append(runArgs, dockerArgs...)
+	runArgs = append(runArgs, "run", "--rm", "alpine:latest", "echo", "hello")
+
 	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	if output, err := cmdRun.CombinedOutput(); err != nil {
 		fmt.Printf("IsDockerSocketAccessible: failed to run container: %v, output: %s\n", err, string(output))
@@ -1014,7 +1017,9 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not running or accessible (or broken). Skipping Redis test.")
+	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
