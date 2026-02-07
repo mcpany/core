@@ -90,6 +90,19 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
+### Claude Desktop Integration
+Add the following to your `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "mcpany": {
+      "command": "/absolute/path/to/server",
+      "args": ["run", "--stdio", "--config-path", "/absolute/path/to/config.yaml"]
+    }
+  }
+}
+```
+
 ## 4. Development
 
 We follow a strict development workflow to ensure quality.
@@ -142,6 +155,9 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_GRPC_PORT` | Port for the gRPC registration server | Disabled |
 | `MCPANY_STDIO` | Enable stdio mode for JSON-RPC communication | `false` |
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
+| `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
+| `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
+| `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
 
 ### Required Secrets
 Sensitive information (like upstream API keys) should **never** be hardcoded in configuration files. Instead, use environment variables referencing them.
