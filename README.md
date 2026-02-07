@@ -142,6 +142,11 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_GRPC_PORT` | Port for the gRPC registration server | Disabled |
 | `MCPANY_STDIO` | Enable stdio mode for JSON-RPC communication | `false` |
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
+| `MCPANY_LOGFILE` | Path to a file to write logs to | Stdout |
+| `MCPANY_SET` | Set configuration values (key=value) | `[]` |
+| `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+| `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 
 ### Required Secrets
 Sensitive information (like upstream API keys) should **never** be hardcoded in configuration files. Instead, use environment variables referencing them.
