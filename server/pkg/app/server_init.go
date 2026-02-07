@@ -51,6 +51,18 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 
 	log.Info("Database appears empty, initializing with default configuration...")
 
+	// Default Dashboard Layout (matches frontend defaults)
+	defaultLayout := `[
+		{"instanceId":"metrics-1","type":"metrics","title":"Metrics Overview","size":"full","hidden":false},
+		{"instanceId":"quick-actions-1","type":"quick-actions","title":"Quick Actions","size":"third","hidden":false},
+		{"instanceId":"service-health-1","type":"service-health","title":"Service Health","size":"third","hidden":false},
+		{"instanceId":"failure-rate-1","type":"failure-rate","title":"Tool Failure Rates","size":"third","hidden":false},
+		{"instanceId":"activity-1","type":"recent-activity","title":"Recent Activity","size":"half","hidden":false},
+		{"instanceId":"uptime-1","type":"uptime","title":"System Uptime","size":"half","hidden":false},
+		{"instanceId":"request-volume-1","type":"request-volume","title":"Request Volume","size":"half","hidden":false},
+		{"instanceId":"top-tools-1","type":"top-tools","title":"Top Tools","size":"third","hidden":false}
+	]`
+
 	// Default Configuration
 	defaultGS := configv1.GlobalSettings_builder{
 		ProfileDefinitions: []*configv1.ProfileDefinition{
@@ -69,6 +81,9 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 				Disabled: proto.Bool(false),
 			}.Build(),
 		},
+		Dashboard: configv1.DashboardConfig_builder{
+			LayoutJson: proto.String(defaultLayout),
+		}.Build(),
 	}.Build()
 	// panic("DEBUG: initializeDatabase called") // Commented out to avoid crashing, but using error log as panic alternative if needed.
 	// actually, use fmt.Println to bypass logger if logger is borked

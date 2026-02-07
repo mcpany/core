@@ -139,6 +139,12 @@ message GlobalSettings {
   AlertConfig alerts = 27 [json_name = "alerts"];
   // Smart Recovery configuration.
   SmartRecoveryConfig smart_recovery = 28 [json_name = "smart_recovery"];
+  // Dashboard configuration.
+  DashboardConfig dashboard = 29 [json_name = "dashboard"];
+}
+
+message DashboardConfig {
+  string layout_json = 1 [json_name = "layout_json"];
 }
 
 message SmartRecoveryConfig {
