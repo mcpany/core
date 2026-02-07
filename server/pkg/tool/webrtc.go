@@ -136,14 +136,23 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 
 // Tool returns the protobuf definition of the WebRTC tool.
 //
-// Returns the result.
+// Summary: Retrieves the protobuf definition.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: Retrieves the MCP-compliant tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - Lazily converts the proto definition to MCP format on first call.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -157,14 +166,34 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the WebRTC tool.
 //
-// Returns the result.
+// Summary: Retrieves the cache configuration.
+//
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebRTC tool. It establishes a new peer
-// connection, negotiates the session via an HTTP signaling server, sends the
-// tool inputs over the data channel, and waits for a response.
+// Execute handles the execution of the WebRTC tool.
+//
+// Summary: Executes the tool via a WebRTC data channel.
+//
+// Description:
+// It establishes a new peer connection, negotiates the session via an HTTP signaling server,
+// sends the tool inputs over the data channel, and waits for a response.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing inputs.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if connection, negotiation, or execution fails.
+//
+// Side Effects:
+//   - Creates a WebRTC PeerConnection.
+//   - Makes an HTTP request to the signaling server.
+//   - Sends data over a WebRTC Data Channel.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

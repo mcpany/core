@@ -14,6 +14,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// baseTool provides a common implementation for the Tool interface.
+//
+// Summary: Common base structure for tools.
 type baseTool struct {
 	tool          *v1.Tool
 	mcpTool       *mcp.Tool
@@ -22,6 +25,20 @@ type baseTool struct {
 	callable      Callable
 }
 
+// newBaseTool creates a new baseTool.
+//
+// Summary: Initializes a new baseTool.
+//
+// Parameters:
+//   - toolDef: *configv1.ToolDefinition. The tool definition configuration.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - callable: Callable. The callable implementation.
+//   - inputSchema: *structpb.Struct. The input schema.
+//   - outputSchema: *structpb.Struct. The output schema.
+//
+// Returns:
+//   - *baseTool: A new baseTool instance.
+//   - error: An error if the tool definition conversion fails.
 func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*baseTool, error) {
 	pbTool, err := ConvertToolDefinitionToProto(toolDef, inputSchema, outputSchema)
 	if err != nil {
@@ -36,7 +53,7 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 
 // Tool returns the protobuf definition of the tool.
 //
-// Summary: Retrieves the protobuf definition.
+// Summary: Retrieves the protobuf definition of the tool.
 //
 // Returns:
 //   - *v1.Tool: The protobuf tool definition.

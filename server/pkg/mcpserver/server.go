@@ -579,6 +579,15 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Throws/Errors:
+//   - Returns an error if the tool name is invalid or the tool is not found.
+//   - Returns an error if the user profile denies access to the tool.
+//   - Returns an error if the underlying tool execution fails.
+//
+// Side Effects:
+//   - Logs the tool execution details (redacting sensitive data).
+//   - Updates tool usage metrics (calls, errors, latency).
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.

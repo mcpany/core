@@ -8,6 +8,10 @@ import (
 )
 
 // TemporaryToolManager is a tool manager that stores service info temporarily.
+//
+// Summary: Implements a transient tool manager for validation purposes.
+//
+// Description:
 // It is intended for use in ValidateService where we need to store service info
 // for the duration of the validation request but discard it afterwards.
 type TemporaryToolManager struct {
@@ -16,13 +20,27 @@ type TemporaryToolManager struct {
 }
 
 // NewTemporaryToolManager creates a new TemporaryToolManager.
+//
+// Summary: Initializes a new TemporaryToolManager.
+//
+// Returns:
+//   - *TemporaryToolManager: A new instance of TemporaryToolManager.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),
 	}
 }
 
-// AddServiceInfo implements tool.ManagerInterface.
+// AddServiceInfo adds service information to the temporary storage.
+//
+// Summary: Stores service information in memory.
+//
+// Parameters:
+//   - serviceID: string. The unique identifier of the service.
+//   - info: *tool.ServiceInfo. The service information to store.
+//
+// Side Effects:
+//   - Updates the internal map of service information.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	if m.serviceInfo == nil {
 		m.serviceInfo = make(map[string]*tool.ServiceInfo)
@@ -30,16 +48,20 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 	m.serviceInfo[serviceID] = info
 }
 
-// GetServiceInfo implements tool.ManagerInterface.
+// GetServiceInfo retrieves service information from the temporary storage.
+//
+// Summary: Retrieves stored service information by ID.
+//
+// Parameters:
+//   - serviceID: string. The unique identifier of the service.
+//
+// Returns:
+//   - *tool.ServiceInfo: The stored service information if found.
+//   - bool: A boolean indicating whether the service information was found.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	if m.serviceInfo == nil {
 		return nil, false
 	}
 	info, ok := m.serviceInfo[serviceID]
 	return info, ok
-}
-
-// GetToolCountForService implements tool.ManagerInterface.
-func (m *TemporaryToolManager) GetToolCountForService(_ string) int {
-	return 0
 }
