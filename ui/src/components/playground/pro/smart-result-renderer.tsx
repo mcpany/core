@@ -8,7 +8,7 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon } from "lucide-react";
+import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 
 /**
@@ -18,6 +18,70 @@ interface SmartResultRendererProps {
     /** The result object to render. Can be a JSON string, an object, or an array. */
     result: any;
 }
+
+// Helper to check if it looks like MCP content array
+const isMcpContent = (content: any): content is any[] => {
+    if (!Array.isArray(content)) return false;
+    // Check if it has any item with explicit type 'image' or 'resource' or 'text'
+    // And specifically if it contains non-text content or multiple items, we should treat it as rich content.
+    return content.some(item =>
+        typeof item === 'object' && item !== null &&
+        (item.type === 'image' || item.type === 'resource' || (item.type === 'text' && content.length > 1))
+    );
+};
+
+const RichContentRenderer = ({ content }: { content: any[] }) => {
+    return (
+        <div className="flex flex-col gap-4">
+            {content.map((item, idx) => {
+                if (item.type === 'image' && item.data && item.mimeType) {
+                    return (
+                        <div key={idx} className="rounded-lg overflow-hidden border bg-muted/20">
+                            <div className="text-[10px] text-muted-foreground px-2 py-1 bg-muted/30 border-b flex justify-between items-center">
+                                <span className="flex items-center gap-1"><ImageIcon className="w-3 h-3" /> Image {idx + 1}</span>
+                                <span className="font-mono opacity-70">{item.mimeType}</span>
+                            </div>
+                            <div className="p-2 flex justify-center bg-[url('/transparent-bg.svg')] bg-repeat">
+                                <img
+                                    src={`data:${item.mimeType};base64,${item.data}`}
+                                    alt={`Tool Output ${idx}`}
+                                    className="max-w-full max-h-[500px] object-contain shadow-sm"
+                                />
+                            </div>
+                        </div>
+                    );
+                }
+                if (item.type === 'text' && item.text) {
+                     return (
+                        <div key={idx} className="flex flex-col gap-0 rounded-md border overflow-hidden">
+                            <div className="text-[10px] text-muted-foreground px-2 py-1 bg-muted/30 border-b flex items-center gap-1">
+                                <FileText className="w-3 h-3" /> Text
+                            </div>
+                            <div className="bg-muted/10 p-3 text-sm whitespace-pre-wrap font-mono">
+                                {item.text}
+                            </div>
+                        </div>
+                     )
+                }
+                 if (item.type === 'resource') {
+                     return (
+                        <div key={idx} className="bg-muted/30 p-3 rounded-md border text-sm font-mono">
+                            <div className="font-semibold text-xs text-muted-foreground mb-1">Resource: {item.resource?.uri}</div>
+                            <JsonView data={item.resource} />
+                        </div>
+                     )
+                }
+                // Fallback for other types or invalid items
+                return (
+                     <div key={idx} className="bg-muted/30 p-2 rounded-md border text-xs">
+                        <JsonView data={item} />
+                     </div>
+                );
+            })}
+        </div>
+    );
+};
+
 
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
@@ -30,8 +94,44 @@ interface SmartResultRendererProps {
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
 
+    // Check for Rich Content (Images/Mixed) FIRST
+    const richContent = useMemo(() => {
+        let content: any = null;
+
+         // 1. Unwrap CallToolResult structure
+        if (result && typeof result === 'object' && Array.isArray(result.content)) {
+            content = result.content;
+        }
+        // 2. Handle Command Output wrapper (parse stdout)
+        else if (result && typeof result === 'object' && result.stdout && typeof result.stdout === 'string') {
+             try {
+                 const inner = JSON.parse(result.stdout);
+                 // If parsed stdout is an array (potentially content array)
+                 // or an object with content array (e.g. CallToolResult)
+                 if (Array.isArray(inner)) {
+                     // Check if elements look like content items
+                     const isContentArray = inner.every(item => typeof item === 'object' && item.type);
+                     if (isContentArray) {
+                        content = inner;
+                     }
+                 } else if (inner && typeof inner === 'object' && Array.isArray(inner.content)) {
+                     content = inner.content;
+                 }
+             } catch (e) {
+                 // stdout is not JSON
+             }
+        }
+
+        if (isMcpContent(content)) {
+            return content;
+        }
+        return null;
+    }, [result]);
+
     // Attempt to parse a tabular structure from the result
     const tableData = useMemo(() => {
+        if (richContent) return null;
+
         let content = result;
 
         // 1. Unwrap CallToolResult structure
@@ -79,15 +179,19 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         }
 
         return null;
-    }, [result]);
+    }, [result, richContent]);
 
-    const hasSmartView = tableData !== null;
+    const hasSmartView = tableData !== null || richContent !== null;
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
     );
 
     const renderSmart = () => {
+        if (richContent) {
+            return <RichContentRenderer content={richContent} />;
+        }
+
         if (!tableData) return renderRaw();
 
         // Determine columns from all keys in the first 10 rows (to be reasonably safe)
@@ -149,7 +253,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             className="h-6 px-2 text-[10px] gap-1"
                             onClick={() => setViewMode("smart")}
                          >
-                             <TableIcon className="size-3" /> Table
+                             {richContent ? <ImageIcon className="size-3" /> : <TableIcon className="size-3" />}
+                             {richContent ? " Preview" : " Table"}
                          </Button>
                          <Button
                             variant={viewMode === "raw" ? "secondary" : "ghost"}
