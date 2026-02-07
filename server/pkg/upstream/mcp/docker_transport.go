@@ -16,6 +16,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/containerd/errdefs"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
@@ -38,6 +39,7 @@ type dockerClient interface {
 	ContainerStart(ctx context.Context, container string, options container.StartOptions) error
 	ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error
 	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
+	ImageInspectWithRaw(ctx context.Context, imageID string) (image.InspectResponse, []byte, error)
 	Close() error
 }
 
@@ -77,12 +79,23 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		return nil, fmt.Errorf("container_image must be specified for docker transport")
 	}
 
-	reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
-	if err != nil {
-		log.Warn("Failed to pull docker image, will try to use local image if available", "image", img, "error", err)
+	// ⚡ BOLT: Check if image exists locally to avoid unnecessary pull latency.
+	// Randomized Selection from Top 5 High-Impact Targets
+	_, _, err = cli.ImageInspectWithRaw(ctx, img)
+	if err == nil {
+		log.Info("Docker image found locally, skipping pull", "image", img)
 	} else {
-		_, _ = io.Copy(io.Discard, reader)
-		log.Info("Successfully pulled docker image", "image", img)
+		// If not found or other error, try to pull
+		if !errdefs.IsNotFound(err) {
+			log.Debug("Failed to inspect image, proceeding to pull", "image", img, "error", err)
+		}
+		reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
+		if err != nil {
+			log.Warn("Failed to pull docker image, will try to use local image if available", "image", img, "error", err)
+		} else {
+			_, _ = io.Copy(io.Discard, reader)
+			log.Info("Successfully pulled docker image", "image", img)
+		}
 	}
 
 	setupCmds := t.StdioConfig.GetSetupCommands()

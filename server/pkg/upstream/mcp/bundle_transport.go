@@ -16,6 +16,7 @@ import (
 	"unsafe"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/containerd/errdefs"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
@@ -82,12 +83,23 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 		return nil, fmt.Errorf("image must be specified for bundle docker transport")
 	}
 
-	reader, err := cli.ImagePull(ctx, t.Image, image.PullOptions{})
-	if err != nil {
-		log.Warn("Failed to pull docker image, will try to use local image if available", "image", t.Image, "error", err)
+	// ⚡ BOLT: Check if image exists locally to avoid unnecessary pull latency.
+	// Randomized Selection from Top 5 High-Impact Targets
+	_, _, err = cli.ImageInspectWithRaw(ctx, t.Image)
+	if err == nil {
+		log.Info("Docker image found locally, skipping pull", "image", t.Image)
 	} else {
-		_, _ = io.Copy(io.Discard, reader)
-		log.Info("Successfully pulled docker image", "image", t.Image)
+		// If not found or other error, try to pull
+		if !errdefs.IsNotFound(err) {
+			log.Debug("Failed to inspect image, proceeding to pull", "image", t.Image, "error", err)
+		}
+		reader, err := cli.ImagePull(ctx, t.Image, image.PullOptions{})
+		if err != nil {
+			log.Warn("Failed to pull docker image, will try to use local image if available", "image", t.Image, "error", err)
+		} else {
+			_, _ = io.Copy(io.Discard, reader)
+			log.Info("Successfully pulled docker image", "image", t.Image)
+		}
 	}
 
 	// Construct the shell command (similar to DockerTransport)
