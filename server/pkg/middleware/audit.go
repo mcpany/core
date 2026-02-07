@@ -31,10 +31,12 @@ type AuditMiddleware struct {
 
 // NewAuditMiddleware creates a new AuditMiddleware.
 //
-// auditConfig is the auditConfig.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The configuration for audit logging.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *AuditMiddleware: The initialized audit middleware.
+//   - error: An error if the audit store cannot be initialized.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -94,9 +96,11 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 
 // UpdateConfig updates the audit configuration safely.
 //
-// auditConfig is the auditConfig.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The new audit configuration.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the new configuration cannot be applied or store re-initialization fails.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -141,12 +145,14 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 
 // Execute intercepts tool execution to log audit events.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next middleware/handler in the chain.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - any: The execution result.
+//   - error: An error if the execution fails.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -276,9 +282,10 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close closes the underlying store.
+// Close closes the underlying audit store.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the store cannot be closed.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

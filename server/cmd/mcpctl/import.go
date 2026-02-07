@@ -30,15 +30,30 @@ type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
+// UpstreamService represents a single upstream service configuration in MCP Any.
+//
+// Fields:
+//   - Name: The name of the service.
+//   - McpService: The MCP service configuration, if applicable.
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
+// McpService represents the configuration for an MCP-based upstream service.
+//
+// Fields:
+//   - StdioConnection: The configuration for connecting via standard I/O, if applicable.
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
+// StdioConnection represents the configuration for a standard I/O connection.
+//
+// Fields:
+//   - Command: The command to execute to start the service.
+//   - Args: The arguments to pass to the command.
+//   - Env: The environment variables to set for the command.
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`

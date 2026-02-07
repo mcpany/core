@@ -21,10 +21,12 @@ type FileAuditStore struct {
 
 // NewFileAuditStore creates a new FileAuditStore.
 //
-// path is the path.
+// Parameters:
+//   - path: string. The path to the audit log file. If empty, logs to stdout.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *FileAuditStore: The initialized audit store.
+//   - error: An error if the file cannot be opened.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -44,10 +46,12 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 
 // Write writes an audit entry to the file.
 //
-// _ is an unused parameter.
-// entry is the entry.
+// Parameters:
+//   - ctx: context.Context. Unused.
+//   - entry: Entry. The audit entry to write.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the write operation fails.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -62,14 +66,23 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	return json.NewEncoder(w).Encode(entry)
 }
 
-// Read implements the Store interface.
+// Read reads audit entries from the file.
+//
+// Parameters:
+//   - ctx: context.Context. Unused.
+//   - filter: Filter. Unused.
+//
+// Returns:
+//   - []Entry: Nil.
+//   - error: An error indicating that read is not implemented for file audit store.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
 // Close closes the file.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the file cannot be closed.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
