@@ -66,6 +66,7 @@ Follow these steps to get up and running immediately.
     ```bash
     make prepare
     ```
+    This installs necessary tools (protoc, golangci-lint, pre-commit hooks) into `build/env/bin`.
 
 3.  **Build the server:**
     ```bash
@@ -106,12 +107,13 @@ Run all unit, integration, and end-to-end tests to ensure code correctness.
 make test
 ```
 
-### Linting
+### Linting & Documentation
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
 Run the linter to verify your changes:
 ```bash
 make lint
 ```
+This command runs `golangci-lint` and our custom documentation checkers (`check-go-doc`, `check-ts-doc`).
 
 ### Building
 Compile all artifacts (Server binary and UI assets).
