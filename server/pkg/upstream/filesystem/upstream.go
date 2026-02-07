@@ -80,9 +80,9 @@ func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
-	_ prompt.ManagerInterface,
+	promptManager prompt.ManagerInterface,
 	_ resource.ManagerInterface,
-	_ bool,
+	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 
@@ -184,7 +184,38 @@ func (u *Upstream) Register(
 	}
 
 	log.Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools))
+
+	u.createAndRegisterPrompts(ctx, serviceID, fsService, promptManager, serviceConfig, isReload)
+
 	return serviceID, discoveredTools, nil, nil
+}
+
+func (u *Upstream) createAndRegisterPrompts(
+	_ context.Context,
+	serviceID string,
+	fsService *configv1.FilesystemUpstreamService,
+	promptManager prompt.ManagerInterface,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	_ bool,
+) {
+	if promptManager == nil {
+		return
+	}
+	log := logging.GetLogger()
+	for _, promptDef := range fsService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
+		// Check Export Policy
+		if !tool.ShouldExport(promptDef.GetName(), serviceConfig.GetPromptExportPolicy()) {
+			log.Info("Skipping non-exported prompt", "promptName", promptDef.GetName())
+			continue
+		}
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name)
+	}
 }
 
 type fsCallable struct {
