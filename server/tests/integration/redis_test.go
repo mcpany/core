@@ -17,7 +17,7 @@ import (
 
 func TestRedisBus_ExternalServer(t *testing.T) {
 	// Skip in CI environments where Docker might not be available or fully functional
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping TestRedisBus_ExternalServer in CI environment")
 	}
 

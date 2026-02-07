@@ -28,7 +28,7 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 }
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping TestRedisBus_Integration_Subscribe in CI environment")
 	}
 	redisAddr, cleanup := StartRedisContainer(t)
@@ -67,7 +67,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping TestRedisBus_Integration_SubscribeOnce in CI environment")
 	}
 	redisAddr, cleanup := StartRedisContainer(t)
@@ -106,7 +106,7 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 }
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping TestBusProvider_Integration_Redis in CI environment")
 	}
 	redisAddr, cleanup := StartRedisContainer(t)
@@ -130,7 +130,7 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping TestRedisBus_Integration_Unsubscribe in CI environment")
 	}
 	redisAddr, cleanup := StartRedisContainer(t)
@@ -186,7 +186,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
-	if os.Getenv("CI") == "true" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping TestRedisBus_Integration_Concurrent in CI environment")
 	}
 	redisAddr, cleanup := StartRedisContainer(t)
