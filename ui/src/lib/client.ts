@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, ResilienceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -33,6 +33,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * Resilience configuration.
+     */
+    resilience?: ResilienceConfig;
 }
 
 // Re-export generated types
@@ -214,6 +218,47 @@ const getMetadata = () => {
     return undefined;
 };
 
+const mapResilienceFromBackend = (r: any) => {
+    if (!r) return undefined;
+    return {
+        timeout: r.timeout,
+        circuitBreaker: r.circuit_breaker ? {
+            failureRateThreshold: r.circuit_breaker.failure_rate_threshold,
+            consecutiveFailures: r.circuit_breaker.consecutive_failures,
+            openDuration: r.circuit_breaker.open_duration,
+            halfOpenRequests: r.circuit_breaker.half_open_requests,
+        } : undefined,
+        retryPolicy: r.retry_policy ? {
+            numberOfRetries: r.retry_policy.number_of_retries,
+            baseBackoff: r.retry_policy.base_backoff,
+            maxBackoff: r.retry_policy.max_backoff,
+            maxElapsedTime: r.retry_policy.max_elapsed_time,
+        } : undefined,
+    };
+};
+
+const mapResilienceToBackend = (r: any) => {
+    if (!r) return undefined;
+    const res: any = { timeout: r.timeout };
+    if (r.circuitBreaker) {
+        res.circuit_breaker = {
+            failure_rate_threshold: r.circuitBreaker.failureRateThreshold,
+            consecutive_failures: r.circuitBreaker.consecutiveFailures,
+            open_duration: r.circuitBreaker.openDuration,
+            half_open_requests: r.circuitBreaker.halfOpenRequests,
+        };
+    }
+    if (r.retryPolicy) {
+        res.retry_policy = {
+            number_of_retries: r.retryPolicy.numberOfRetries,
+            base_backoff: r.retryPolicy.baseBackoff,
+            max_backoff: r.retryPolicy.maxBackoff,
+            max_elapsed_time: r.retryPolicy.maxElapsedTime,
+        };
+    }
+    return res;
+};
+
 /**
  * API Client for interacting with the MCP Any server.
  */
@@ -239,6 +284,7 @@ export const apiClient = {
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
+            resilience: mapResilienceFromBackend(s.resilience),
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
@@ -287,6 +333,7 @@ export const apiClient = {
                          commandLineService: s.command_line_service,
                          mcpService: s.mcp_service,
                          upstreamAuth: s.upstream_auth,
+                         resilience: mapResilienceFromBackend(s.resilience),
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
                          toolExportPolicy: s.tool_export_policy,
@@ -384,19 +431,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -423,6 +457,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = mapResilienceToBackend(config.resilience);
         }
 
         const response = await fetchWithAuth('/api/v1/services', {
@@ -470,19 +507,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -509,6 +533,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = mapResilienceToBackend(config.resilience);
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -571,19 +598,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -610,6 +624,9 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = mapResilienceToBackend(config.resilience);
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1466,6 +1483,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            resilience: mapResilienceFromBackend(s.resilience),
         }));
     },
 
@@ -1517,6 +1535,9 @@ export const apiClient = {
         }
         if (template.resourceExportPolicy) {
             payload.resource_export_policy = template.resourceExportPolicy;
+        }
+        if (template.resilience) {
+            payload.resilience = mapResilienceToBackend(template.resilience);
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {
