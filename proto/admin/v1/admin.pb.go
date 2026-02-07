@@ -27,6 +27,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ClearCacheRequest represents a request to clear the server cache.
 type ClearCacheRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -70,6 +71,7 @@ func (b0 ClearCacheRequest_builder) Build() *ClearCacheRequest {
 	return m0
 }
 
+// ClearCacheResponse represents the response after clearing the cache.
 type ClearCacheResponse struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -113,6 +115,7 @@ func (b0 ClearCacheResponse_builder) Build() *ClearCacheResponse {
 	return m0
 }
 
+// ListServicesRequest represents a request to list all services.
 type ListServicesRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -156,6 +159,7 @@ func (b0 ListServicesRequest_builder) Build() *ListServicesRequest {
 	return m0
 }
 
+// ListServicesResponse contains the list of services and their states.
 type ListServicesResponse struct {
 	state                    protoimpl.MessageState       `protogen:"opaque.v1"`
 	xxx_hidden_Services      *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
@@ -220,8 +224,11 @@ func (x *ListServicesResponse) SetServiceStates(v []*ServiceState) {
 type ListServicesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Deprecated: Use service_states instead.
+	//
 	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
-	Services      []*v1.UpstreamServiceConfig
+	Services []*v1.UpstreamServiceConfig
+	// The list of service states.
 	ServiceStates []*ServiceState
 }
 
@@ -234,6 +241,7 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 	return m0
 }
 
+// ServiceState describes the current state of a service.
 type ServiceState struct {
 	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Config      *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
@@ -349,9 +357,12 @@ func (x *ServiceState) ClearError() {
 type ServiceState_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The configuration of the service.
 	Config *v1.UpstreamServiceConfig
+	// The status of the service (e.g., "OK", "ERROR", "CONNECTING").
 	Status *string
-	Error  *string
+	// Any error message associated with the service status.
+	Error *string
 }
 
 func (b0 ServiceState_builder) Build() *ServiceState {
@@ -370,6 +381,7 @@ func (b0 ServiceState_builder) Build() *ServiceState {
 	return m0
 }
 
+// GetServiceRequest represents a request to retrieve a specific service.
 type GetServiceRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServiceId   *string                `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
@@ -434,6 +446,7 @@ func (x *GetServiceRequest) ClearServiceId() {
 type GetServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The ID of the service to retrieve.
 	ServiceId *string
 }
 
@@ -448,6 +461,7 @@ func (b0 GetServiceRequest_builder) Build() *GetServiceRequest {
 	return m0
 }
 
+// GetServiceResponse contains the requested service information.
 type GetServiceResponse struct {
 	state                   protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Service      *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service"`
@@ -532,8 +546,11 @@ func (x *GetServiceResponse) ClearServiceState() {
 type GetServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Deprecated: Use service_state instead.
+	//
 	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
-	Service      *v1.UpstreamServiceConfig
+	Service *v1.UpstreamServiceConfig
+	// The state of the requested service.
 	ServiceState *ServiceState
 }
 
@@ -546,6 +563,7 @@ func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
 	return m0
 }
 
+// ListToolsRequest represents a request to list all tools.
 type ListToolsRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -589,6 +607,7 @@ func (b0 ListToolsRequest_builder) Build() *ListToolsRequest {
 	return m0
 }
 
+// ListToolsResponse contains the list of tools.
 type ListToolsResponse struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tools *[]*v11.Tool           `protobuf:"bytes,1,rep,name=tools"`
@@ -637,6 +656,7 @@ func (x *ListToolsResponse) SetTools(v []*v11.Tool) {
 type ListToolsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of tools.
 	Tools []*v11.Tool
 }
 
@@ -648,6 +668,7 @@ func (b0 ListToolsResponse_builder) Build() *ListToolsResponse {
 	return m0
 }
 
+// GetToolRequest represents a request to retrieve a specific tool.
 type GetToolRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ToolName    *string                `protobuf:"bytes,1,opt,name=tool_name,json=toolName"`
@@ -712,6 +733,7 @@ func (x *GetToolRequest) ClearToolName() {
 type GetToolRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the tool to retrieve.
 	ToolName *string
 }
 
@@ -726,6 +748,7 @@ func (b0 GetToolRequest_builder) Build() *GetToolRequest {
 	return m0
 }
 
+// GetToolResponse contains the requested tool definition.
 type GetToolResponse struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tool *v11.Tool              `protobuf:"bytes,1,opt,name=tool"`
@@ -783,6 +806,7 @@ func (x *GetToolResponse) ClearTool() {
 type GetToolResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The tool definition.
 	Tool *v11.Tool
 }
 
@@ -794,6 +818,7 @@ func (b0 GetToolResponse_builder) Build() *GetToolResponse {
 	return m0
 }
 
+// CreateUserRequest represents a request to create a new user.
 type CreateUserRequest struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
@@ -851,6 +876,7 @@ func (x *CreateUserRequest) ClearUser() {
 type CreateUserRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The user definition to create.
 	User *v1.User
 }
 
@@ -862,6 +888,7 @@ func (b0 CreateUserRequest_builder) Build() *CreateUserRequest {
 	return m0
 }
 
+// CreateUserResponse contains the created user definition.
 type CreateUserResponse struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
@@ -919,6 +946,7 @@ func (x *CreateUserResponse) ClearUser() {
 type CreateUserResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The created user.
 	User *v1.User
 }
 
@@ -930,6 +958,7 @@ func (b0 CreateUserResponse_builder) Build() *CreateUserResponse {
 	return m0
 }
 
+// GetUserRequest represents a request to retrieve a user.
 type GetUserRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UserId      *string                `protobuf:"bytes,1,opt,name=user_id,json=userId"`
@@ -994,6 +1023,7 @@ func (x *GetUserRequest) ClearUserId() {
 type GetUserRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The ID of the user to retrieve.
 	UserId *string
 }
 
@@ -1008,6 +1038,7 @@ func (b0 GetUserRequest_builder) Build() *GetUserRequest {
 	return m0
 }
 
+// GetUserResponse contains the requested user definition.
 type GetUserResponse struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
@@ -1065,6 +1096,7 @@ func (x *GetUserResponse) ClearUser() {
 type GetUserResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The user definition.
 	User *v1.User
 }
 
@@ -1076,6 +1108,7 @@ func (b0 GetUserResponse_builder) Build() *GetUserResponse {
 	return m0
 }
 
+// ListUsersRequest represents a request to list all users.
 type ListUsersRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1119,6 +1152,7 @@ func (b0 ListUsersRequest_builder) Build() *ListUsersRequest {
 	return m0
 }
 
+// ListUsersResponse contains the list of users.
 type ListUsersResponse struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Users *[]*v1.User            `protobuf:"bytes,1,rep,name=users"`
@@ -1167,6 +1201,7 @@ func (x *ListUsersResponse) SetUsers(v []*v1.User) {
 type ListUsersResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of users.
 	Users []*v1.User
 }
 
@@ -1178,6 +1213,7 @@ func (b0 ListUsersResponse_builder) Build() *ListUsersResponse {
 	return m0
 }
 
+// UpdateUserRequest represents a request to update a user.
 type UpdateUserRequest struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
@@ -1235,6 +1271,7 @@ func (x *UpdateUserRequest) ClearUser() {
 type UpdateUserRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The user definition with updated fields.
 	User *v1.User
 }
 
@@ -1246,6 +1283,7 @@ func (b0 UpdateUserRequest_builder) Build() *UpdateUserRequest {
 	return m0
 }
 
+// UpdateUserResponse contains the updated user definition.
 type UpdateUserResponse struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
@@ -1303,6 +1341,7 @@ func (x *UpdateUserResponse) ClearUser() {
 type UpdateUserResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The updated user.
 	User *v1.User
 }
 
@@ -1314,6 +1353,7 @@ func (b0 UpdateUserResponse_builder) Build() *UpdateUserResponse {
 	return m0
 }
 
+// DeleteUserRequest represents a request to delete a user.
 type DeleteUserRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UserId      *string                `protobuf:"bytes,1,opt,name=user_id,json=userId"`
@@ -1378,6 +1418,7 @@ func (x *DeleteUserRequest) ClearUserId() {
 type DeleteUserRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The ID of the user to delete.
 	UserId *string
 }
 
@@ -1392,6 +1433,7 @@ func (b0 DeleteUserRequest_builder) Build() *DeleteUserRequest {
 	return m0
 }
 
+// DeleteUserResponse represents the response after deleting a user.
 type DeleteUserResponse struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1435,6 +1477,7 @@ func (b0 DeleteUserResponse_builder) Build() *DeleteUserResponse {
 	return m0
 }
 
+// GetDiscoveryStatusRequest represents a request to get auto-discovery status.
 type GetDiscoveryStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1478,6 +1521,7 @@ func (b0 GetDiscoveryStatusRequest_builder) Build() *GetDiscoveryStatusRequest {
 	return m0
 }
 
+// GetDiscoveryStatusResponse contains the status of discovery providers.
 type GetDiscoveryStatusResponse struct {
 	state                protoimpl.MessageState      `protogen:"opaque.v1"`
 	xxx_hidden_Providers *[]*DiscoveryProviderStatus `protobuf:"bytes,1,rep,name=providers"`
@@ -1526,6 +1570,7 @@ func (x *GetDiscoveryStatusResponse) SetProviders(v []*DiscoveryProviderStatus) 
 type GetDiscoveryStatusResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of discovery provider statuses.
 	Providers []*DiscoveryProviderStatus
 }
 
@@ -1537,6 +1582,7 @@ func (b0 GetDiscoveryStatusResponse_builder) Build() *GetDiscoveryStatusResponse
 	return m0
 }
 
+// DiscoveryProviderStatus describes the status of a single discovery provider.
 type DiscoveryProviderStatus struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name            *string                `protobuf:"bytes,1,opt,name=name"`
@@ -1710,10 +1756,15 @@ func (x *DiscoveryProviderStatus) ClearDiscoveredCount() {
 type DiscoveryProviderStatus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name            *string
-	Status          *string
-	LastError       *string
-	LastRunAt       *string
+	// The name of the provider.
+	Name *string
+	// The status of the provider (e.g., "OK", "ERROR").
+	Status *string
+	// The last error message, if any.
+	LastError *string
+	// The timestamp of the last run in ISO 8601 format.
+	LastRunAt *string
+	// The number of services discovered in the last run.
 	DiscoveredCount *int32
 }
 
@@ -1744,6 +1795,7 @@ func (b0 DiscoveryProviderStatus_builder) Build() *DiscoveryProviderStatus {
 	return m0
 }
 
+// ListAuditLogsRequest represents a request to list audit logs.
 type ListAuditLogsRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_StartTime   *string                `protobuf:"bytes,1,opt,name=start_time,json=startTime"`
@@ -1970,13 +2022,20 @@ func (x *ListAuditLogsRequest) ClearOffset() {
 type ListAuditLogsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The start time for the query (ISO 8601).
 	StartTime *string
-	EndTime   *string
-	ToolName  *string
-	UserId    *string
+	// The end time for the query (ISO 8601).
+	EndTime *string
+	// Filter by tool name.
+	ToolName *string
+	// Filter by user ID.
+	UserId *string
+	// Filter by profile ID.
 	ProfileId *string
-	Limit     *int32
-	Offset    *int32
+	// The maximum number of logs to return.
+	Limit *int32
+	// The offset for pagination.
+	Offset *int32
 }
 
 func (b0 ListAuditLogsRequest_builder) Build() *ListAuditLogsRequest {
@@ -2014,6 +2073,7 @@ func (b0 ListAuditLogsRequest_builder) Build() *ListAuditLogsRequest {
 	return m0
 }
 
+// ListAuditLogsResponse contains the list of audit log entries.
 type ListAuditLogsResponse struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Entries *[]*AuditLogEntry      `protobuf:"bytes,1,rep,name=entries"`
@@ -2062,6 +2122,7 @@ func (x *ListAuditLogsResponse) SetEntries(v []*AuditLogEntry) {
 type ListAuditLogsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of audit log entries.
 	Entries []*AuditLogEntry
 }
 
@@ -2073,6 +2134,7 @@ func (b0 ListAuditLogsResponse_builder) Build() *ListAuditLogsResponse {
 	return m0
 }
 
+// AuditLogEntry represents a single audit log event.
 type AuditLogEntry struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Timestamp   *string                `protobuf:"bytes,1,opt,name=timestamp"`
@@ -2358,14 +2420,23 @@ func (x *AuditLogEntry) ClearDurationMs() {
 type AuditLogEntry_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Timestamp  *string
-	ToolName   *string
-	UserId     *string
-	ProfileId  *string
-	Arguments  *string
-	Result     *string
-	Error      *string
-	Duration   *string
+	// The timestamp of the event (ISO 8601).
+	Timestamp *string
+	// The name of the tool executed.
+	ToolName *string
+	// The ID of the user who initiated the action.
+	UserId *string
+	// The ID of the profile used.
+	ProfileId *string
+	// The arguments passed to the tool (JSON string).
+	Arguments *string
+	// The result returned by the tool (JSON string).
+	Result *string
+	// Any error that occurred during execution.
+	Error *string
+	// The duration of the execution as a string.
+	Duration *string
+	// The duration of the execution in milliseconds.
 	DurationMs *int64
 }
 

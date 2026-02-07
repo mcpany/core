@@ -36,6 +36,7 @@ message McpAnyServerConfig {
   MergeStrategyConfig merge_strategy = 5 [json_name = "merge_strategy"];
 }
 
+// MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.
 message MergeStrategyConfig {
   // Strategy for merging upstream_services list ("extend" or "replace").
   string upstream_service_list = 1 [json_name = "upstream_service_list"];
@@ -61,11 +62,15 @@ message Secret {
   string created_at = 7;
 }
 
+// SecretList is a container for a list of secrets.
 message SecretList {
+  // The list of secrets.
   repeated Secret secrets = 1;
 }
 
+// GlobalSettings defines server-wide operational parameters.
 message GlobalSettings {
+  // LogLevel defines the severity of logs to emit.
   enum LogLevel {
     LOG_LEVEL_UNSPECIFIED = 0;
     LOG_LEVEL_INFO = 1;
@@ -74,6 +79,7 @@ message GlobalSettings {
     LOG_LEVEL_DEBUG = 4;
   }
 
+  // LogFormat defines the format of the logs.
   enum LogFormat {
     LOG_FORMAT_UNSPECIFIED = 0;
     LOG_FORMAT_TEXT = 1;
@@ -141,7 +147,9 @@ message GlobalSettings {
   SmartRecoveryConfig smart_recovery = 28 [json_name = "smart_recovery"];
 }
 
+// SmartRecoveryConfig configures automatic error recovery using an LLM.
 message SmartRecoveryConfig {
+  // Whether smart recovery is enabled.
   bool enabled = 1 [json_name = "enabled"];
   // The provider to use (e.g., "openai", "ollama").
   string provider = 2 [json_name = "provider"];
@@ -155,6 +163,7 @@ message SmartRecoveryConfig {
   string base_url = 6 [json_name = "base_url"];
 }
 
+// AlertConfig configures system alerts.
 message AlertConfig {
   // Whether alerts are enabled.
   bool enabled = 1 [json_name = "enabled"];
@@ -162,33 +171,45 @@ message AlertConfig {
   string webhook_url = 2 [json_name = "webhook_url"];
 }
 
+// ContextOptimizerConfig configures the context optimization middleware.
 message ContextOptimizerConfig {
+  // The maximum number of characters allowed in the context.
   int32 max_chars = 1 [json_name = "max_chars"];
 }
 
+// DebuggerConfig configures the debugging middleware.
 message DebuggerConfig {
+  // Whether the debugger is enabled.
   bool enabled = 1 [json_name = "enabled"];
+  // The maximum size of the debug buffer.
   int32 size = 2 [json_name = "size"];
 }
 
+// TelemetryConfig configures tracing and metrics.
 message TelemetryConfig {
-  // Tracing configuration
-  string traces_exporter = 1 [json_name = "traces_exporter"]; // "otlp", "stdout", "none"
-  // Metrics configuration
-  string metrics_exporter = 2 [json_name = "metrics_exporter"]; // "otlp", "stdout", "none"
-  // OTLP endpoint (shared for now, or can be split)
+  // Tracing configuration (e.g. "otlp", "stdout", "none").
+  string traces_exporter = 1 [json_name = "traces_exporter"];
+  // Metrics configuration (e.g. "otlp", "stdout", "none").
+  string metrics_exporter = 2 [json_name = "metrics_exporter"];
+  // OTLP endpoint (shared for now, or can be split).
   string otlp_endpoint = 3 [json_name = "otlp_endpoint"];
-  // Service name override (optional)
+  // Service name override (optional).
   string service_name = 4 [json_name = "service_name"];
 }
 
+// OIDCConfig configures OpenID Connect authentication.
 message OIDCConfig {
+  // The OIDC issuer URL.
   string issuer = 1 [json_name = "issuer"];
+  // The client ID.
   string client_id = 2 [json_name = "client_id"];
+  // The client secret.
   string client_secret = 3 [json_name = "client_secret"];
+  // The redirect URL after authentication.
   string redirect_url = 4 [json_name = "redirect_url"];
 }
 
+// GCSettings configures the garbage collection worker.
 message GCSettings {
   // Whether the global GC worker is enabled.
   bool enabled = 1 [json_name = "enabled"];
@@ -202,6 +223,7 @@ message GCSettings {
   repeated string paths = 4 [json_name = "paths"];
 }
 
+// DLPConfig configures Data Loss Prevention (redaction).
 message DLPConfig {
   // Whether DLP is enabled.
   bool enabled = 1 [json_name = "enabled"];
@@ -210,7 +232,9 @@ message DLPConfig {
   repeated string custom_patterns = 2 [json_name = "custom_patterns"];
 }
 
+// AuditConfig configures audit logging.
 message AuditConfig {
+  // StorageType defines where audit logs are stored.
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;
     STORAGE_TYPE_FILE = 1;
@@ -241,23 +265,37 @@ message AuditConfig {
   DatadogConfig datadog = 9 [json_name = "datadog"];
 }
 
+// SplunkConfig configures Splunk integration for audit logs.
 message SplunkConfig {
+  // The HTTP Event Collector URL.
   string hec_url = 1 [json_name = "hec_url"];
+  // The HEC token.
   string token = 2 [json_name = "token"];
+  // The index to send events to.
   string index = 3 [json_name = "index"];
+  // The source value for events.
   string source = 4 [json_name = "source"];
+  // The sourcetype value for events.
   string sourcetype = 5 [json_name = "sourcetype"];
 }
 
+// DatadogConfig configures Datadog integration for audit logs.
 message DatadogConfig {
+  // The Datadog API key.
   string api_key = 1 [json_name = "api_key"];
+  // The Datadog site (e.g. "datadoghq.com").
   string site = 2 [json_name = "site"];
+  // The service name for logs.
   string service = 3 [json_name = "service"];
+  // Tags to attach to logs.
   string tags = 4 [json_name = "tags"];
 }
 
+// ProfileDefinition defines a user profile and its permissions.
 message ProfileDefinition {
+  // The unique name of the profile.
   string name = 1;
+  // The selector criteria for tools associated with this profile.
   ProfileSelector selector = 2;
   // List of roles required to access this profile.
   repeated string required_roles = 3 [json_name = "required_roles"];
@@ -269,11 +307,15 @@ message ProfileDefinition {
   map<string, SecretValue> secrets = 6 [json_name = "secrets"];
 }
 
+// ProfileSelector defines criteria for selecting tools.
 message ProfileSelector {
+  // List of tags to match.
   repeated string tags = 1;
+  // Key-value pairs of tool properties to match.
   map<string, string> tool_properties = 2 [json_name = "tool_properties"];
 }
 
+// Middleware configures a specific middleware in the request pipeline.
 message Middleware {
   // The name of the middleware (e.g., "logging", "auth", "ratelimit").
   string name = 1 [json_name = "name"];

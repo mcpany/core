@@ -28,6 +28,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// RegisterServiceRequest represents a request to register a new upstream service.
 type RegisterServiceRequest struct {
 	state             protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Config *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
@@ -85,6 +86,7 @@ func (x *RegisterServiceRequest) ClearConfig() {
 type RegisterServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The configuration of the upstream service to register.
 	Config *v1.UpstreamServiceConfig
 }
 
@@ -96,6 +98,7 @@ func (b0 RegisterServiceRequest_builder) Build() *RegisterServiceRequest {
 	return m0
 }
 
+// RegisterServiceResponse represents the response after registering a service.
 type RegisterServiceResponse struct {
 	state                          protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Message             string                    `protobuf:"bytes,1,opt,name=message"`
@@ -182,9 +185,13 @@ func (x *RegisterServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinit
 type RegisterServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Message             string
-	DiscoveredTools     []*v1.ToolDefinition
-	ServiceKey          string
+	// A status message indicating success or failure details (e.g., "Service registered successfully").
+	Message string
+	// A list of tools discovered during the registration process.
+	DiscoveredTools []*v1.ToolDefinition
+	// The generated unique key for the registered service.
+	ServiceKey string
+	// A list of resources discovered during the registration process.
 	DiscoveredResources []*v1.ResourceDefinition
 }
 
@@ -199,6 +206,7 @@ func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
 	return m0
 }
 
+// ValidateServiceRequest represents a request to validate a service configuration without registering it.
 type ValidateServiceRequest struct {
 	state             protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Config *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
@@ -256,6 +264,7 @@ func (x *ValidateServiceRequest) ClearConfig() {
 type ValidateServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The configuration of the upstream service to validate.
 	Config *v1.UpstreamServiceConfig
 }
 
@@ -267,6 +276,7 @@ func (b0 ValidateServiceRequest_builder) Build() *ValidateServiceRequest {
 	return m0
 }
 
+// ValidateServiceResponse represents the result of a service validation request.
 type ValidateServiceResponse struct {
 	state                          protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Valid               bool                      `protobuf:"varint,1,opt,name=valid"`
@@ -353,9 +363,13 @@ func (x *ValidateServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinit
 type ValidateServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Valid               bool
-	Message             string
-	DiscoveredTools     []*v1.ToolDefinition
+	// Indicates whether the service configuration is valid.
+	Valid bool
+	// A message describing the validation result or error details.
+	Message string
+	// A list of tools that would be discovered if registered.
+	DiscoveredTools []*v1.ToolDefinition
+	// A list of resources that would be discovered if registered.
 	DiscoveredResources []*v1.ResourceDefinition
 }
 
@@ -370,6 +384,7 @@ func (b0 ValidateServiceResponse_builder) Build() *ValidateServiceResponse {
 	return m0
 }
 
+// ListServicesRequest represents a request to list all registered services.
 type ListServicesRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -413,6 +428,7 @@ func (b0 ListServicesRequest_builder) Build() *ListServicesRequest {
 	return m0
 }
 
+// ListServicesResponse contains the list of registered services.
 type ListServicesResponse struct {
 	state               protoimpl.MessageState       `protogen:"opaque.v1"`
 	xxx_hidden_Services *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
@@ -461,6 +477,7 @@ func (x *ListServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
 type ListServicesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of registered upstream service configurations.
 	Services []*v1.UpstreamServiceConfig
 }
 
@@ -472,6 +489,7 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 	return m0
 }
 
+// InitiateOAuth2FlowRequest represents a request to start an OAuth2 flow.
 type InitiateOAuth2FlowRequest struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServiceId    string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
@@ -554,10 +572,14 @@ func (x *InitiateOAuth2FlowRequest) SetRedirectUrl(v string) {
 type InitiateOAuth2FlowRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ServiceId    string
-	Namespace    string
+	// The ID of the service to authenticate with.
+	ServiceId string
+	// The namespace of the service.
+	Namespace string
+	// The ID of the credential to use or create.
 	CredentialId string
-	RedirectUrl  string
+	// The URL to redirect to after successful authentication.
+	RedirectUrl string
 }
 
 func (b0 InitiateOAuth2FlowRequest_builder) Build() *InitiateOAuth2FlowRequest {
@@ -571,6 +593,7 @@ func (b0 InitiateOAuth2FlowRequest_builder) Build() *InitiateOAuth2FlowRequest {
 	return m0
 }
 
+// InitiateOAuth2FlowResponse contains the information needed to proceed with OAuth2.
 type InitiateOAuth2FlowResponse struct {
 	state                       protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_AuthorizationUrl string                 `protobuf:"bytes,1,opt,name=authorization_url,json=authorizationUrl"`
@@ -629,8 +652,10 @@ func (x *InitiateOAuth2FlowResponse) SetState(v string) {
 type InitiateOAuth2FlowResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The URL the user should visit to authorize access.
 	AuthorizationUrl string
-	State            string
+	// The state parameter used for CSRF protection.
+	State string
 }
 
 func (b0 InitiateOAuth2FlowResponse_builder) Build() *InitiateOAuth2FlowResponse {
@@ -642,6 +667,7 @@ func (b0 InitiateOAuth2FlowResponse_builder) Build() *InitiateOAuth2FlowResponse
 	return m0
 }
 
+// UnregisterServiceRequest represents a request to unregister a service.
 type UnregisterServiceRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
@@ -700,8 +726,10 @@ func (x *UnregisterServiceRequest) SetNamespace(v string) {
 type UnregisterServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The user-defined unique ID (name) of the service to deregister.
 	ServiceName string
-	Namespace   string
+	// The namespace of the service (optional).
+	Namespace string
 }
 
 func (b0 UnregisterServiceRequest_builder) Build() *UnregisterServiceRequest {
@@ -713,6 +741,7 @@ func (b0 UnregisterServiceRequest_builder) Build() *UnregisterServiceRequest {
 	return m0
 }
 
+// UnregisterServiceResponse represents the response after unregistering a service.
 type UnregisterServiceResponse struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Message string                 `protobuf:"bytes,1,opt,name=message"`
@@ -759,6 +788,7 @@ func (x *UnregisterServiceResponse) SetMessage(v string) {
 type UnregisterServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// A message indicating success or details about the operation.
 	Message string
 }
 
@@ -770,6 +800,7 @@ func (b0 UnregisterServiceResponse_builder) Build() *UnregisterServiceResponse {
 	return m0
 }
 
+// RegisterToolsRequest represents a request to manually register tools for a service.
 type RegisterToolsRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
@@ -842,9 +873,12 @@ func (x *RegisterToolsRequest) SetTools(v []*v1.ToolDefinition) {
 type RegisterToolsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the service to register tools for.
 	ServiceName string
-	Namespace   string
-	Tools       []*v1.ToolDefinition
+	// The namespace of the service.
+	Namespace string
+	// The list of tool definitions to register.
+	Tools []*v1.ToolDefinition
 }
 
 func (b0 RegisterToolsRequest_builder) Build() *RegisterToolsRequest {
@@ -857,6 +891,7 @@ func (b0 RegisterToolsRequest_builder) Build() *RegisterToolsRequest {
 	return m0
 }
 
+// RegisterToolsResponse represents the response after registering tools.
 type RegisterToolsResponse struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Message         string                 `protobuf:"bytes,1,opt,name=message"`
@@ -915,7 +950,9 @@ func (x *RegisterToolsResponse) SetToolsRegistered(v int32) {
 type RegisterToolsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Message         string
+	// A message indicating success.
+	Message string
+	// The number of tools that were successfully registered.
 	ToolsRegistered int32
 }
 
@@ -928,6 +965,7 @@ func (b0 RegisterToolsResponse_builder) Build() *RegisterToolsResponse {
 	return m0
 }
 
+// GetServiceRequest represents a request to retrieve a service configuration.
 type GetServiceRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
@@ -974,6 +1012,7 @@ func (x *GetServiceRequest) SetServiceName(v string) {
 type GetServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the service to retrieve.
 	ServiceName string
 }
 
@@ -985,6 +1024,7 @@ func (b0 GetServiceRequest_builder) Build() *GetServiceRequest {
 	return m0
 }
 
+// GetServiceResponse contains the requested service configuration.
 type GetServiceResponse struct {
 	state              protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Service *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service"`
@@ -1042,6 +1082,7 @@ func (x *GetServiceResponse) ClearService() {
 type GetServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The configuration of the requested service.
 	Service *v1.UpstreamServiceConfig
 }
 
@@ -1053,6 +1094,7 @@ func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
 	return m0
 }
 
+// GetServiceStatusRequest represents a request to retrieve service status.
 type GetServiceStatusRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
@@ -1111,8 +1153,10 @@ func (x *GetServiceStatusRequest) SetNamespace(v string) {
 type GetServiceStatusRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the service.
 	ServiceName string
-	Namespace   string
+	// The namespace of the service.
+	Namespace string
 }
 
 func (b0 GetServiceStatusRequest_builder) Build() *GetServiceStatusRequest {
@@ -1124,6 +1168,7 @@ func (b0 GetServiceStatusRequest_builder) Build() *GetServiceStatusRequest {
 	return m0
 }
 
+// GetServiceStatusResponse contains the status and metrics of a service.
 type GetServiceStatusResponse struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tools   *[]*v1.ToolDefinition  `protobuf:"bytes,1,rep,name=tools"`
@@ -1184,7 +1229,9 @@ func (x *GetServiceStatusResponse) SetMetrics(v map[string]int64) {
 type GetServiceStatusResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Tools   []*v1.ToolDefinition
+	// The list of tools currently available for this service.
+	Tools []*v1.ToolDefinition
+	// Key-value pairs of metrics for the service (e.g., "uptime", "requests").
 	Metrics map[string]int64
 }
 

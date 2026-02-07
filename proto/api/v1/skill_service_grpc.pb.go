@@ -32,11 +32,18 @@ const (
 // SkillServiceClient is the client API for SkillService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// SkillService provides methods for managing skills (reusable capabilities).
 type SkillServiceClient interface {
+	// ListSkills returns a list of all registered skills.
 	ListSkills(ctx context.Context, in *ListSkillsRequest, opts ...grpc.CallOption) (*ListSkillsResponse, error)
+	// GetSkill retrieves a specific skill by its name.
 	GetSkill(ctx context.Context, in *GetSkillRequest, opts ...grpc.CallOption) (*GetSkillResponse, error)
+	// CreateSkill registers a new skill.
 	CreateSkill(ctx context.Context, in *CreateSkillRequest, opts ...grpc.CallOption) (*CreateSkillResponse, error)
+	// UpdateSkill updates an existing skill definition.
 	UpdateSkill(ctx context.Context, in *UpdateSkillRequest, opts ...grpc.CallOption) (*UpdateSkillResponse, error)
+	// DeleteSkill removes a skill by its name.
 	DeleteSkill(ctx context.Context, in *DeleteSkillRequest, opts ...grpc.CallOption) (*DeleteSkillResponse, error)
 }
 
@@ -101,11 +108,18 @@ func (c *skillServiceClient) DeleteSkill(ctx context.Context, in *DeleteSkillReq
 // SkillServiceServer is the server API for SkillService service.
 // All implementations must embed UnimplementedSkillServiceServer
 // for forward compatibility.
+//
+// SkillService provides methods for managing skills (reusable capabilities).
 type SkillServiceServer interface {
+	// ListSkills returns a list of all registered skills.
 	ListSkills(context.Context, *ListSkillsRequest) (*ListSkillsResponse, error)
+	// GetSkill retrieves a specific skill by its name.
 	GetSkill(context.Context, *GetSkillRequest) (*GetSkillResponse, error)
+	// CreateSkill registers a new skill.
 	CreateSkill(context.Context, *CreateSkillRequest) (*CreateSkillResponse, error)
+	// UpdateSkill updates an existing skill definition.
 	UpdateSkill(context.Context, *UpdateSkillRequest) (*UpdateSkillResponse, error)
+	// DeleteSkill removes a skill by its name.
 	DeleteSkill(context.Context, *DeleteSkillRequest) (*DeleteSkillResponse, error)
 	mustEmbedUnimplementedSkillServiceServer()
 }

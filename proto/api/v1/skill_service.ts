@@ -13,43 +13,61 @@ import { Skill } from "../../config/v1/skill";
 
 export const protobufPackage = "mcpany.api.v1";
 
+/** ListSkillsRequest represents a request to list available skills. */
 export interface ListSkillsRequest {
 }
 
+/** ListSkillsResponse contains the list of skills. */
 export interface ListSkillsResponse {
+  /** The list of skill definitions. */
   skills: Skill[];
 }
 
+/** GetSkillRequest represents a request to retrieve a skill. */
 export interface GetSkillRequest {
+  /** The unique name of the skill to retrieve. */
   name: string;
 }
 
+/** GetSkillResponse contains the requested skill definition. */
 export interface GetSkillResponse {
+  /** The skill definition. */
   skill?: Skill | undefined;
 }
 
+/** CreateSkillRequest represents a request to create a new skill. */
 export interface CreateSkillRequest {
+  /** The definition of the skill to create. */
   skill?: Skill | undefined;
 }
 
+/** CreateSkillResponse contains the created skill definition. */
 export interface CreateSkillResponse {
+  /** The created skill definition. */
   skill?: Skill | undefined;
 }
 
+/** UpdateSkillRequest represents a request to update an existing skill. */
 export interface UpdateSkillRequest {
+  /** The name of the skill to update. */
   name: string;
+  /** The new definition of the skill. */
   skill?: Skill | undefined;
 }
 
+/** UpdateSkillResponse contains the updated skill definition. */
 export interface UpdateSkillResponse {
+  /** The updated skill definition. */
   skill?: Skill | undefined;
 }
 
+/** DeleteSkillRequest represents a request to delete a skill. */
 export interface DeleteSkillRequest {
+  /** The name of the skill to delete. */
   name: string;
 }
 
-/** Empty */
+/** DeleteSkillResponse represents the response after deleting a skill. */
 export interface DeleteSkillResponse {
 }
 
@@ -621,11 +639,17 @@ export const DeleteSkillResponse: MessageFns<DeleteSkillResponse> = {
   },
 };
 
+/** SkillService provides methods for managing skills (reusable capabilities). */
 export interface SkillService {
+  /** ListSkills returns a list of all registered skills. */
   ListSkills(request: DeepPartial<ListSkillsRequest>, metadata?: grpc.Metadata): Promise<ListSkillsResponse>;
+  /** GetSkill retrieves a specific skill by its name. */
   GetSkill(request: DeepPartial<GetSkillRequest>, metadata?: grpc.Metadata): Promise<GetSkillResponse>;
+  /** CreateSkill registers a new skill. */
   CreateSkill(request: DeepPartial<CreateSkillRequest>, metadata?: grpc.Metadata): Promise<CreateSkillResponse>;
+  /** UpdateSkill updates an existing skill definition. */
   UpdateSkill(request: DeepPartial<UpdateSkillRequest>, metadata?: grpc.Metadata): Promise<UpdateSkillResponse>;
+  /** DeleteSkill removes a skill by its name. */
   DeleteSkill(request: DeepPartial<DeleteSkillRequest>, metadata?: grpc.Metadata): Promise<DeleteSkillResponse>;
 }
 
