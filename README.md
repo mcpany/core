@@ -2,17 +2,13 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Elevator Pitch
-
-**What is this project and why does it exist?**
-
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is the universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io) compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and AI agents.
 
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Architecture
+## 1. Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
@@ -45,7 +41,7 @@ graph TD
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
-## 3. Getting Started
+## 2. Getting Started
 
 Follow these steps to get up and running immediately.
 
@@ -80,6 +76,7 @@ Follow these steps to get up and running immediately.
 
 ### Hello World
 Once the server is running, you can verify it using `curl` or an MCP client.
+
 ```bash
 # Check health
 curl http://localhost:50050/health
@@ -90,7 +87,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## 3. Development
 
 We follow a strict development workflow to ensure quality.
 
@@ -106,9 +103,12 @@ Run all unit, integration, and end-to-end tests to ensure code correctness.
 make test
 ```
 
-### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
-Run the linter to verify your changes:
+### Linting & Documentation
+We strictly enforce **100% documentation coverage** for all public APIs.
+*   **Go:** Follows standard Godoc conventions.
+*   **TypeScript:** Follows TSDoc/JSDoc standards.
+
+Run the linter to verify your code and documentation:
 ```bash
 make lint
 ```
@@ -125,7 +125,7 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
-## 5. Configuration
+## 4. Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files for services.
 

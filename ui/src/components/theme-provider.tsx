@@ -11,7 +11,10 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
 /**
  * Provides theme context to the application using next-themes.
  *
- * @param ...props - The ...props.
+ * Summary: Wraps the application or component tree with the theme provider to enable light/dark mode switching.
+ *
+ * @param props - The properties for the ThemeProvider (children, defaultTheme, etc.).
+ * @returns The wrapped component tree with theme context.
  */
 export function ThemeProvider({ children, ...props }: React.ComponentProps<typeof NextThemesProvider>) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>

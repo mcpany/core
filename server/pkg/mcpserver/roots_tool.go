@@ -15,7 +15,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// RootsTool implements the Tool interface for listing roots.
+// RootsTool implements the Tool interface for listing client-side roots.
+//
+// Summary: A built-in tool that allows the server to query the client for its file system roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -23,7 +25,10 @@ type RootsTool struct {
 
 // NewRootsTool creates a new RootsTool.
 //
-// Returns the result.
+// Summary: Initializes the "mcp:list_roots" tool.
+//
+// Returns:
+//   - *RootsTool: The initialized tool instance.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -47,25 +52,38 @@ func NewRootsTool() *RootsTool {
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns the result.
+// Summary: Retrieves the protobuf representation of the tool.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: Retrieves the MCP SDK representation of the tool.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
 // Execute executes the tool.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Summary: Invokes the "list_roots" capability on the client session.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - _: *tool.ExecutionRequest. Unused parameters as this tool takes no arguments.
+//
+// Returns:
+//   - any: The result of the client's list_roots call (*mcp.ListRootsResult).
+//   - error: An error if no session is available or the call fails.
+//
+// Throws/Errors:
+//   - Returns an error if "no active session available".
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -80,9 +98,12 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig returns nil as this tool shouldn't be cached aggressively or depends on client state.
+// GetCacheConfig returns the cache configuration for this tool.
 //
-// Returns the result.
+// Summary: Returns nil to indicate this tool should not be cached.
+//
+// Returns:
+//   - *configv1.CacheConfig: Always nil.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

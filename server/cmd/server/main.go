@@ -32,7 +32,8 @@ import (
 )
 
 var (
-	// Version is set at build time.
+	// Version holds the current version of the application.
+	// It is typically set at build time using linker flags (-ldflags).
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )
