@@ -11,6 +11,9 @@ test.describe('Service Resilience Configuration (Real Data)', () => {
   test.beforeEach(async ({ request }) => {
     // Seed the database with a service using real API
     const response = await request.post('/api/v1/services', {
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+      },
       data: {
         name: serviceName,
         http_service: { address: "https://api.example.com" },
@@ -35,7 +38,11 @@ test.describe('Service Resilience Configuration (Real Data)', () => {
 
   test.afterEach(async ({ request }) => {
       // Clean up
-      await request.delete(`/api/v1/services/${serviceName}`);
+      await request.delete(`/api/v1/services/${serviceName}`, {
+        headers: {
+          'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+        }
+      });
   });
 
   test('should display and edit resilience configuration', async ({ page, request }) => {
@@ -68,7 +75,11 @@ test.describe('Service Resilience Configuration (Real Data)', () => {
     await expect(page.getByRole('dialog')).toBeHidden();
 
     // 6. Verify Backend State via API
-    const response = await request.get(`/api/v1/services/${serviceName}`);
+    const response = await request.get(`/api/v1/services/${serviceName}`, {
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+      }
+    });
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
     const service = data.service || data; // Handle both wrapper formats if any
