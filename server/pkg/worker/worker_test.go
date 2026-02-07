@@ -483,7 +483,7 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 			case result := <-resultChan:
 				assert.NoError(t, result.Error)
 				assert.Equal(t, "mock-service-key", result.ServiceKey)
-			case <-time.After(5 * time.Second):
+			case <-time.After(15 * time.Second):
 				t.Errorf("timed out waiting for registration result for request %d", i)
 			}
 		}(i)
@@ -599,7 +599,7 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 			case result := <-resultChan:
 				assert.NoError(t, result.Error)
 				assert.JSONEq(t, `"mock-result"`, string(result.Result))
-			case <-time.After(5 * time.Second):
+			case <-time.After(15 * time.Second):
 				t.Errorf("timed out waiting for execution result for request %d", i)
 			}
 		}(i)

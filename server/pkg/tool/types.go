@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -46,9 +47,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -259,14 +257,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -2809,6 +2807,41 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+
+	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+
+	// Sentinel Security Update: Block dangerous keywords in Perl/Ruby/PHP even without parentheses
+	// e.g. exec "cmd", system "cmd"
+	isRuby := strings.HasPrefix(base, "ruby")
+	isPerl := strings.HasPrefix(base, "perl")
+	isPhp := strings.HasPrefix(base, "php")
+	if isPerl || isPhp || isRuby {
+		if err := checkInterpreterKeywords(val); err != nil {
+			return err
+		}
+	}
+
+	// Awk: Block pipe | to prevent external command execution
+	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
+	if isAwk {
+		if strings.Contains(val, "|") {
+			return fmt.Errorf("awk injection detected: value contains '|'")
+		}
+	}
+
+	return nil
+}
+
+func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2829,14 +2862,20 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			}
 		}
 	}
+	return nil
+}
 
+func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
+	return nil
+}
 
+func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
@@ -2853,15 +2892,21 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+	return nil
+}
 
-	// Awk: Block pipe | to prevent external command execution
-	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
-		}
+// Compile regex once.
+var interpreterDangerousKeywordRegex = regexp.MustCompile(`(?i)\b(exec|system|popen|syscall|eval|passthru|proc_open|shell_exec|require|include|open)\b`)
+
+func checkInterpreterKeywords(val string) error {
+	// Check for dangerous keywords using word boundaries
+	// This prevents "execution" from matching "exec", but catches "exec echo" or "exec(..."
+	// (?i) makes it case-insensitive.
+	if interpreterDangerousKeywordRegex.MatchString(val) {
+		// Find which one matched for the error message
+		match := interpreterDangerousKeywordRegex.FindString(val)
+		return fmt.Errorf("interpreter injection detected: value contains dangerous keyword %q", match)
 	}
-
 	return nil
 }
 
@@ -3006,9 +3051,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
