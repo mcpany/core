@@ -8,6 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -97,11 +98,24 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(drink)})
+
+		// Check for soft failure (successful tool call, but content indicates failure)
+		if err == nil && len(res.Content) > 0 {
+			if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
+				if strings.Contains(textContent.Text, "upstream HTTP request failed with status 500") {
+					err = fmt.Errorf("upstream 500 error: %s", textContent.Text)
+				}
+			}
+		}
+
 		if err == nil {
 			break // Success
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") ||
+			strings.Contains(err.Error(), "context deadline exceeded") ||
+			strings.Contains(err.Error(), "connection reset by peer") ||
+			strings.Contains(err.Error(), "upstream 500 error") {
 			t.Logf("Attempt %d/%d: Call to thecocktaildb.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
