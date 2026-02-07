@@ -4,8 +4,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
-test('layout smoke test', async ({ page }) => {
+test('layout smoke test', async ({ page, request }) => {
+  await seedCollection('mcpany-system', request);
+
   await page.goto('/');
 
   // Check for Sidebar
@@ -20,20 +23,24 @@ test('layout smoke test', async ({ page }) => {
   // Navigate to Stacks
   await page.locator('a[href="/stacks"]').first().click();
   await page.waitForURL('**/stacks');
-  await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
+  // Use exact match to differentiate from "No stacks found" empty state if present
+  await expect(page.getByRole('heading', { name: 'Stacks', exact: true })).toBeVisible({ timeout: 10000 });
 
   // Check for the "mcpany-system" stack
-  await expect(page.locator('text=mcpany-system')).toBeVisible();
+  await expect(page.locator('text=mcpany-system').first()).toBeVisible();
 
   // Navigate to Stack Detail
   await Promise.all([
-    page.waitForURL(/\/stacks\/system/),
-    page.click('text=mcpany-system'),
+    page.waitForURL(/\/stacks\/mcpany-system/),
+    page.locator('text=mcpany-system').first().click(),
   ]);
-  await expect(page.locator('h2')).toContainText('system');
+  // The seeded stack name is "mcpany-system", ID is usually same if passed to seedCollection
+  await expect(page.locator('h2')).toContainText('mcpany-system');
   await expect(page.locator('h2')).toContainText('Stack');
 
   // Check Tabs
   await expect(page.locator('button[role="tab"]', { hasText: 'Overview & Status' })).toBeVisible();
   await expect(page.locator('button[role="tab"]', { hasText: 'Editor' })).toBeVisible();
+
+  await cleanupCollection('mcpany-system', request);
 });
