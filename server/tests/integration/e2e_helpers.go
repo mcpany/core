@@ -951,9 +951,8 @@ func StartNatsServer(t *testing.T) (string, func()) {
 					natsServerBin = path
 					found = true
 					break
-				} else {
-					t.Logf("DEBUG: nats-server binary not found at: %s", path)
 				}
+				t.Logf("DEBUG: nats-server binary not found at: %s", path)
 			}
 			require.True(t, found, "nats-server binary not found in any expected location: %v. Run 'make prepare'.", possiblePaths)
 		}
