@@ -22,6 +22,9 @@ import { Plus, Trash2, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+/**
+ * Schema definition for JSON Schema validation and form generation.
+ */
 export interface Schema {
   type?: string;
   description?: string;
