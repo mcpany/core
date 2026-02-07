@@ -41,6 +41,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 
 /**
  * SecretsManager component.
@@ -51,6 +53,7 @@ export function SecretsManager() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [selectedSecrets, setSelectedSecrets] = useState<Set<string>>(new Set());
     const { toast } = useToast();
 
     // Form state
@@ -68,6 +71,7 @@ export function SecretsManager() {
         try {
             const data = await apiClient.listSecrets();
             setSecrets(data);
+            setSelectedSecrets(new Set()); // Reset selection on reload
         } catch (error) {
             console.error("Failed to load secrets", error);
             toast({
@@ -137,6 +141,32 @@ export function SecretsManager() {
         }
     };
 
+    const handleBulkDelete = async () => {
+        if (!confirm(`Are you sure you want to delete ${selectedSecrets.size} secrets?`)) return;
+
+        try {
+            // Process deletions sequentially to avoid SQLite locking issues
+            const ids = Array.from(selectedSecrets);
+            for (const id of ids) {
+                await apiClient.deleteSecret(id);
+            }
+
+            toast({
+                title: "Success",
+                description: `${selectedSecrets.size} secrets deleted successfully.`,
+            });
+            loadSecrets();
+        } catch (e) {
+             console.error("Failed to bulk delete secrets", e);
+             toast({
+                title: "Error",
+                description: "Failed to delete some secrets.",
+                variant: "destructive",
+            });
+            loadSecrets(); // Refresh to see what's left
+        }
+    };
+
     const resetForm = () => {
         setNewSecretName("");
         setNewSecretKey("");
@@ -150,6 +180,25 @@ export function SecretsManager() {
         s.key.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedSecrets(new Set(filteredSecrets.map(s => s.id)));
+        } else {
+            setSelectedSecrets(new Set());
+        }
+    };
+
+    const handleSelectOne = (id: string, checked: boolean) => {
+        setSelectedSecrets(prev => {
+            const next = new Set(prev);
+            if (checked) next.add(id);
+            else next.delete(id);
+            return next;
+        });
+    };
+
+    const isAllSelected = filteredSecrets.length > 0 && selectedSecrets.size === filteredSecrets.length;
+
     return (
         <div className="space-y-4 h-full flex flex-col">
             <div className="flex items-center justify-between">
@@ -159,70 +208,77 @@ export function SecretsManager() {
                         Manage secure credentials for your upstream services.
                     </p>
                 </div>
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button onClick={resetForm}>
-                            <Plus className="mr-2 h-4 w-4" /> Add Secret
+                <div className="flex gap-2">
+                    {selectedSecrets.size > 0 && (
+                        <Button variant="destructive" onClick={handleBulkDelete} className="animate-in fade-in slide-in-from-right-4 duration-300">
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete ({selectedSecrets.size})
                         </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add New Secret</DialogTitle>
-                            <DialogDescription>
-                                Securely store an API key or credential.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="provider">Provider</Label>
-                                <Select value={newSecretProvider} onValueChange={setNewSecretProvider}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select provider" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="custom">Custom</SelectItem>
-                                        <SelectItem value="openai">OpenAI</SelectItem>
-                                        <SelectItem value="anthropic">Anthropic</SelectItem>
-                                        <SelectItem value="aws">AWS</SelectItem>
-                                        <SelectItem value="gcp">Google Cloud</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                    )}
+                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button onClick={resetForm}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Secret
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add New Secret</DialogTitle>
+                                <DialogDescription>
+                                    Securely store an API key or credential.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="provider">Provider</Label>
+                                    <Select value={newSecretProvider} onValueChange={setNewSecretProvider}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select provider" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="custom">Custom</SelectItem>
+                                            <SelectItem value="openai">OpenAI</SelectItem>
+                                            <SelectItem value="anthropic">Anthropic</SelectItem>
+                                            <SelectItem value="aws">AWS</SelectItem>
+                                            <SelectItem value="gcp">Google Cloud</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="name">Friendly Name</Label>
+                                    <Input
+                                        id="name"
+                                        placeholder="e.g. Production OpenAI Key"
+                                        value={newSecretName}
+                                        onChange={(e) => setNewSecretName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="key">Key Name (Env Var)</Label>
+                                    <Input
+                                        id="key"
+                                        placeholder="e.g. OPENAI_API_KEY"
+                                        value={newSecretKey}
+                                        onChange={(e) => setNewSecretKey(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="value">Secret Value</Label>
+                                    <Input
+                                        id="value"
+                                        type="password"
+                                        placeholder="sk-..."
+                                        value={newSecretValue}
+                                        onChange={(e) => setNewSecretValue(e.target.value)}
+                                    />
+                                </div>
                             </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Friendly Name</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="e.g. Production OpenAI Key"
-                                    value={newSecretName}
-                                    onChange={(e) => setNewSecretName(e.target.value)}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="key">Key Name (Env Var)</Label>
-                                <Input
-                                    id="key"
-                                    placeholder="e.g. OPENAI_API_KEY"
-                                    value={newSecretKey}
-                                    onChange={(e) => setNewSecretKey(e.target.value)}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="value">Secret Value</Label>
-                                <Input
-                                    id="value"
-                                    type="password"
-                                    placeholder="sk-..."
-                                    value={newSecretValue}
-                                    onChange={(e) => setNewSecretValue(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={handleSaveSecret}>Save Secret</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+                                <Button onClick={handleSaveSecret}>Save Secret</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
 
             <Card className="flex-1 flex flex-col overflow-hidden bg-background/50 backdrop-blur-sm border-muted/50">
@@ -239,7 +295,7 @@ export function SecretsManager() {
                 </CardHeader>
                 <CardContent className="p-0 flex-1 overflow-hidden">
                     <ScrollArea className="h-full">
-                        {loading ? (
+                         {loading ? (
                             <div className="flex items-center justify-center h-40 text-muted-foreground gap-2">
                                 <RefreshCw className="h-4 w-4 animate-spin" /> Loading secrets...
                             </div>
@@ -249,11 +305,34 @@ export function SecretsManager() {
                                 <p>No secrets found.</p>
                             </div>
                         ) : (
-                            <div className="divide-y">
-                                {filteredSecrets.map((secret) => (
-                                    <SecretItem key={secret.id} secret={secret} onDelete={handleDeleteSecret} />
-                                ))}
-                            </div>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[50px]">
+                                            <Checkbox
+                                                checked={isAllSelected}
+                                                onCheckedChange={(c) => handleSelectAll(!!c)}
+                                                aria-label="Select all"
+                                            />
+                                        </TableHead>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Key</TableHead>
+                                        <TableHead>Value</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredSecrets.map((secret) => (
+                                        <SecretRow
+                                            key={secret.id}
+                                            secret={secret}
+                                            isSelected={selectedSecrets.has(secret.id)}
+                                            onSelect={handleSelectOne}
+                                            onDelete={handleDeleteSecret}
+                                        />
+                                    ))}
+                                </TableBody>
+                            </Table>
                         )}
                     </ScrollArea>
                 </CardContent>
@@ -263,13 +342,20 @@ export function SecretsManager() {
 }
 
 /**
- * SecretItem component.
+ * SecretRow component.
  * @param props - The component props.
  * @param props.secret - The secret property.
+ * @param props.isSelected - The isSelected property.
+ * @param props.onSelect - The onSelect property.
  * @param props.onDelete - The onDelete property.
  * @returns The rendered component.
  */
-function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
+function SecretRow({ secret, isSelected, onSelect, onDelete }: {
+    secret: SecretDefinition;
+    isSelected: boolean;
+    onSelect: (id: string, checked: boolean) => void;
+    onDelete: (id: string) => void
+}) {
     const [revealedValue, setRevealedValue] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -318,26 +404,32 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
     };
 
     return (
-        <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
-            <div className="flex items-center gap-4">
-                <div className="bg-primary/10 p-2 rounded-full text-primary">
-                    <Key className="h-4 w-4" />
-                </div>
-                <div>
-                    <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-sm">{secret.name}</h4>
-                        <Badge variant="outline" className="text-[10px] h-5 font-mono">
+        <TableRow className="group">
+            <TableCell>
+                <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(c) => onSelect(secret.id, !!c)}
+                    aria-label={`Select ${secret.name}`}
+                />
+            </TableCell>
+            <TableCell>
+                 <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 p-1.5 rounded-full text-primary">
+                        <Key className="h-3 w-3" />
+                    </div>
+                    <div>
+                        <div className="font-medium text-sm">{secret.name}</div>
+                        <Badge variant="outline" className="text-[10px] h-4 font-mono px-1 py-0">
                             {secret.provider}
                         </Badge>
                     </div>
-                    <div className="text-xs text-muted-foreground font-mono mt-1">
-                        {secret.key}
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
+                 </div>
+            </TableCell>
+            <TableCell className="font-mono text-xs text-muted-foreground">
+                {secret.key}
+            </TableCell>
+            <TableCell>
+                 <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
                     <span className="truncate">
                         {loading ? <RefreshCw className="h-3 w-3 animate-spin" /> :
                             revealedValue ? revealedValue : "•".repeat(24)}
@@ -353,13 +445,17 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
                         {revealedValue ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
-                    <Copy className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
-                    <Trash2 className="h-4 w-4" />
-                </Button>
-            </div>
-        </div>
+            </TableCell>
+            <TableCell className="text-right">
+                <div className="flex items-center justify-end gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
+                        <Copy className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            </TableCell>
+        </TableRow>
     );
 }
