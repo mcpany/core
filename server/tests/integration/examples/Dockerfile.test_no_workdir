@@ -1,0 +1,2 @@
+FROM python:3.11-slim
+COPY timeserver_patch/requirements.txt /requirements.txt
