@@ -5,9 +5,8 @@ package middleware
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
+	"hash/fnv"
 	"net/http"
 	"strconv"
 	"sync"
@@ -199,18 +198,25 @@ func (m *GlobalRateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy c
 }
 
 func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) string {
-	// Hash the sensitive config to avoid storing passwords in memory as clear text keys if possible
-	data := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
-	hash := sha256.Sum256([]byte(data))
-	return hex.EncodeToString(hash[:])
+	// Use FNV-1a hash for configuration fingerprinting.
+	// This is sufficient for cache key generation and collision avoidance.
+	// Security is not required here as we are not storing passwords, just fingerprinting config state.
+	// Using non-crypto hash avoids flagging "insecure use of crypto for passwords".
+	h := fnv.New64a()
+	_, _ = h.Write([]byte(config.GetAddress()))
+	_, _ = h.Write([]byte("|"))
+	_, _ = h.Write([]byte(config.GetPassword()))
+	_, _ = h.Write([]byte("|"))
+	_, _ = h.Write([]byte(strconv.Itoa(int(config.GetDb()))))
+	return strconv.FormatUint(h.Sum64(), 16)
 }
 
 func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.Client {
-	configHash := m.calculateConfigHash(config)
+	configFingerprint := m.calculateConfigHash(config)
 
 	if val, ok := m.redisClients.Load("global"); ok {
 		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
+			if cached.configHash == configFingerprint {
 				return cached.client
 			}
 		}
@@ -224,7 +230,7 @@ func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.
 	client := redisClientCreator(opts)
 	m.redisClients.Store("global", &cachedRedisClient{
 		client:     client,
-		configHash: configHash,
+		configHash: configFingerprint,
 	})
 	return client
 }

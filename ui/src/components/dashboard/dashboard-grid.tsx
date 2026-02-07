@@ -32,6 +32,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
+import { getCurrentUserId } from "@/lib/auth";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -66,52 +68,71 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    interface LegacyWidget {
-                        id: string;
-                        title: string;
-                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
-                        hidden?: boolean;
+        const fetchLayout = async () => {
+            const userId = getCurrentUserId();
+            if (userId) {
+                try {
+                    const user = await apiClient.getUser(userId);
+                    if (user.dashboardLayout) {
+                         const parsed = JSON.parse(user.dashboardLayout);
+                         setWidgets(parsed);
+                         setLoading(false);
+                         return;
                     }
-                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                        instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
-                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                        hidden: w.hidden ?? false
-                    }));
-
-                    // Filter out any invalid types
-                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
-                        setWidgets(DEFAULT_LAYOUT);
-                    } else {
-                        setWidgets(validMigrated);
-                    }
-                } else {
-                    // Case 2: Already in new format
-                    setWidgets(parsed);
+                } catch (e) {
+                    console.error("Failed to fetch dashboard layout", e);
                 }
-            } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+            }
+
+            // Fallback to localStorage or default
+            const saved = localStorage.getItem("dashboard-layout");
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+
+                    // Migration Logic
+                    // Case 1: Legacy format (DashboardWidget[]) where id matches type
+                    if (parsed.length > 0 && !parsed[0].instanceId) {
+                        interface LegacyWidget {
+                            id: string;
+                            title: string;
+                            type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+                            hidden?: boolean;
+                        }
+                        const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
+                            instanceId: crypto.randomUUID(),
+                            type: w.id, // In legacy, id was effectively the type
+                            title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                            size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                            hidden: w.hidden ?? false
+                        }));
+
+                        // Filter out any invalid types
+                        const validMigrated = migrated.filter((w: WidgetInstance) => getWidgetDefinition(w.type));
+
+                        if (validMigrated.length === 0) {
+                            setWidgets(DEFAULT_LAYOUT);
+                        } else {
+                            setWidgets(validMigrated);
+                        }
+                    } else {
+                        // Case 2: Already in new format
+                        setWidgets(parsed);
+                    }
+                } catch (e) {
+                    console.error("Failed to load dashboard layout", e);
+                    setWidgets(DEFAULT_LAYOUT);
+                }
+            } else {
                 setWidgets(DEFAULT_LAYOUT);
             }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
-        }
+            setLoading(false);
+        };
+        fetchLayout();
     }, []);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
@@ -122,7 +143,7 @@ export function DashboardGrid() {
     // Randomized Selection from Top 5 High-Impact Targets
     const isFirstRun = useRef(true);
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || loading) return;
 
         // Prevent saving the initial empty state if it's the very first mounted render
         // But we must allow saving if we just loaded/migrated data.
@@ -139,12 +160,26 @@ export function DashboardGrid() {
             return;
         }
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
+            // Save to localStorage as backup/cache
             localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+
+             // Save to Backend
+             const userId = getCurrentUserId();
+             if (userId) {
+                 try {
+                     const user = await apiClient.getUser(userId);
+                     // We need to send the full user object with the updated field
+                     user.dashboardLayout = JSON.stringify(widgets);
+                     await apiClient.updateUser(user);
+                 } catch (e) {
+                     console.error("Failed to save dashboard layout", e);
+                 }
+             }
+        }, 1000);
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted]);
+    }, [widgets, isMounted, loading]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;

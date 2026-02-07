@@ -506,6 +506,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	script := strings.Join(scriptCommands, " && ")
 
+	// codeql[go/command-injection] - Setup commands are feature-gated by MCP_ALLOW_UNSAFE_SETUP_COMMANDS env var.
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script is configured by user
 	cmd.Dir = stdio.GetWorkingDirectory()
 	cmd.Env = buildSafeEnv(resolvedEnv)

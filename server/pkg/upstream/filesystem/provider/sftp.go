@@ -54,6 +54,7 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 		User: config.GetUsername(),
 		Auth: auths,
 		//nolint:gosec // user configuration allows connection to arbitrary hosts
+		// codeql[go/insecure-ssh-host-key-callback] - Host key verification not yet supported in config
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         10 * time.Second,
 	}

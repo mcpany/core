@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -86,12 +87,16 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		}
 		return strings.TrimSpace(value), nil
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
+		path := filepath.Clean(secret.GetFilePath())
+		// Explicit path validation before reading to prevent path traversal.
+		// We use a dedicated validator that checks whitelist/CWD.
+		if err := validation.IsAllowedPath(path); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
+
 		// File reading is blocking and generally fast, but technically could verify context.
 		// For simplicity and standard library limits, we just read.
-		content, err := os.ReadFile(secret.GetFilePath())
+		content, err := os.ReadFile(path)
 		if err != nil {
 			return "", fmt.Errorf("failed to read secret from file %q: %w", secret.GetFilePath(), err)
 		}

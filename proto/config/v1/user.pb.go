@@ -25,15 +25,16 @@ const (
 )
 
 type User struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,2,opt,name=authentication"`
-	xxx_hidden_ProfileIds     []string               `protobuf:"bytes,3,rep,name=profile_ids"`
-	xxx_hidden_Roles          []string               `protobuf:"bytes,4,rep,name=roles"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id              *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Authentication  *Authentication        `protobuf:"bytes,2,opt,name=authentication"`
+	xxx_hidden_ProfileIds      []string               `protobuf:"bytes,3,rep,name=profile_ids"`
+	xxx_hidden_Roles           []string               `protobuf:"bytes,4,rep,name=roles"`
+	xxx_hidden_DashboardLayout *string                `protobuf:"bytes,5,opt,name=dashboard_layout"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
@@ -92,9 +93,19 @@ func (x *User) GetRoles() []string {
 	return nil
 }
 
+func (x *User) GetDashboardLayout() string {
+	if x != nil {
+		if x.xxx_hidden_DashboardLayout != nil {
+			return *x.xxx_hidden_DashboardLayout
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *User) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *User) SetAuthentication(v *Authentication) {
@@ -107,6 +118,11 @@ func (x *User) SetProfileIds(v []string) {
 
 func (x *User) SetRoles(v []string) {
 	x.xxx_hidden_Roles = v
+}
+
+func (x *User) SetDashboardLayout(v string) {
+	x.xxx_hidden_DashboardLayout = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *User) HasId() bool {
@@ -123,6 +139,13 @@ func (x *User) HasAuthentication() bool {
 	return x.xxx_hidden_Authentication != nil
 }
 
+func (x *User) HasDashboardLayout() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
 func (x *User) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -130,6 +153,11 @@ func (x *User) ClearId() {
 
 func (x *User) ClearAuthentication() {
 	x.xxx_hidden_Authentication = nil
+}
+
+func (x *User) ClearDashboardLayout() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_DashboardLayout = nil
 }
 
 type User_builder struct {
@@ -143,6 +171,8 @@ type User_builder struct {
 	ProfileIds []string
 	// The list of roles assigned to the user.
 	Roles []string
+	// The dashboard layout configuration (JSON string).
+	DashboardLayout *string
 }
 
 func (b0 User_builder) Build() *User {
@@ -150,12 +180,16 @@ func (b0 User_builder) Build() *User {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Authentication = b.Authentication
 	x.xxx_hidden_ProfileIds = b.ProfileIds
 	x.xxx_hidden_Roles = b.Roles
+	if b.DashboardLayout != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_DashboardLayout = b.DashboardLayout
+	}
 	return m0
 }
 
@@ -163,12 +197,13 @@ var File_proto_config_v1_user_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\"\x98\x01\n" +
+	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\"\xc4\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05rolesB;B\tUserProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\x05roles\x18\x04 \x03(\tR\x05roles\x12*\n" +
+	"\x10dashboard_layout\x18\x05 \x01(\tR\x10dashboard_layoutB;B\tUserProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_user_proto_goTypes = []any{
