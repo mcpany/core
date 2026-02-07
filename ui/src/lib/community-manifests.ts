@@ -16,6 +16,9 @@ export interface CommunityManifest {
     description?: string;
 }
 
+/**
+ * A registry of known community servers and their recommended default configurations.
+ */
 export const COMMUNITY_MANIFESTS: Record<string, CommunityManifest> = {
     // Git
     "mcp-server-git": {
