@@ -36,6 +36,7 @@ func (m *MockToolManager) ListServices() []*tool.ServiceInfo { return nil }
 func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool { return true }
 func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+func (m *MockToolManager) GetToolCountForService(serviceID string) int { return 0 }
 
 func TestUpstreamWorker_Stop(t *testing.T) {
 	// Setup bus

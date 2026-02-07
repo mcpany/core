@@ -152,6 +152,18 @@ func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, true
 }
 
+func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	count := 0
+	for _, tool := range m.tools {
+		if tool.Tool().GetServiceId() == serviceID {
+			count++
+		}
+	}
+	return count
+}
+
 func TestNewGRPCUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)

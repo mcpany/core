@@ -78,6 +78,24 @@ func (m *rateLimitMockToolManager) IsServiceAllowed(serviceID, profileID string)
 	return true
 }
 
+// Add missing methods to satisfy interface
+func (m *rateLimitMockToolManager) ListTools() []tool.Tool { return nil }
+func (m *rateLimitMockToolManager) ListMCPTools() []*mcp.Tool { return nil }
+func (m *rateLimitMockToolManager) AddTool(t tool.Tool) error { return nil }
+func (m *rateLimitMockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *rateLimitMockToolManager) ClearToolsForService(serviceID string) {}
+func (m *rateLimitMockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+func (m *rateLimitMockToolManager) SetMCPServer(server tool.MCPServerProvider) {}
+func (m *rateLimitMockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {}
+func (m *rateLimitMockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {}
+func (m *rateLimitMockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+func (m *rateLimitMockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	return nil, false
+}
+func (m *rateLimitMockToolManager) GetToolCountForService(serviceID string) int { return 0 }
+
 func TestRateLimitMiddleware(t *testing.T) {
 	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {

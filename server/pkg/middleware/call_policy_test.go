@@ -69,6 +69,25 @@ func (m *callPolicyMockToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }
 
+// Add stub methods to satisfy interface
+func (m *callPolicyMockToolManager) ListMCPTools() []*mcp.Tool                                            { return nil }
+func (m *callPolicyMockToolManager) ListTools() []tool.Tool                                               { return nil }
+func (m *callPolicyMockToolManager) AddTool(t tool.Tool) error                                            { return nil }
+func (m *callPolicyMockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo)              {}
+func (m *callPolicyMockToolManager) ClearToolsForService(serviceID string)                                {}
+func (m *callPolicyMockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+func (m *callPolicyMockToolManager) SetMCPServer(server tool.MCPServerProvider) {}
+func (m *callPolicyMockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {}
+func (m *callPolicyMockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {}
+func (m *callPolicyMockToolManager) IsServiceAllowed(serviceID, profileID string) bool { return true }
+func (m *callPolicyMockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+func (m *callPolicyMockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	return nil, false
+}
+func (m *callPolicyMockToolManager) GetToolCountForService(serviceID string) int { return 0 }
+
 func TestCallPolicyMiddleware(t *testing.T) {
 	const successResult = "success"
 

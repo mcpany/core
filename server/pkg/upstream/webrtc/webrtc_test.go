@@ -101,6 +101,18 @@ func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, true
 }
 
+func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	count := 0
+	for _, t := range m.tools {
+		if t.Tool().GetServiceId() == serviceID {
+			count++
+		}
+	}
+	return count
+}
+
 // MockPromptManager is a mock implementation of the PromptManagerInterface.
 type MockPromptManager struct {
 	mu      sync.Mutex

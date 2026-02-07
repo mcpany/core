@@ -112,6 +112,18 @@ func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) b
 	return true
 }
 
+func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	count := 0
+	for _, t := range m.tools {
+		if t.Tool().GetServiceId() == serviceID {
+			count++
+		}
+	}
+	return count
+}
+
 func TestUpstream_Register_DisabledTool(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()
