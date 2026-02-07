@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -103,6 +104,18 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
 
   if (!tool) return null;
 
+  const parsedInput = useMemo(() => {
+    try {
+        return JSON.parse(input);
+    } catch {
+        return null;
+    }
+  }, [input]);
+
+  const handleFormChange = (newVal: any) => {
+    setInput(JSON.stringify(newVal, null, 2));
+  };
+
 
   const handleExecute = async () => {
     setLoading(true);
@@ -172,14 +185,35 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <Label>Arguments</Label>
+                    <Tabs defaultValue="form" className="w-full">
+                        <TabsList className="grid w-[200px] grid-cols-2 h-8">
+                            <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
+                            <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="form" className="mt-2">
+                             <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-muted/20">
+                                {parsedInput !== null ? (
+                                    <SchemaForm
+                                        schema={tool.inputSchema as any}
+                                        value={parsedInput}
+                                        onChange={handleFormChange}
+                                    />
+                                ) : (
+                                    <div className="text-red-500 text-sm">Invalid JSON in raw view. Please fix it to use the form.</div>
+                                )}
+                             </ScrollArea>
+                        </TabsContent>
+                        <TabsContent value="json" className="mt-2">
+                             <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm"
+                                rows={15}
+                            />
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
