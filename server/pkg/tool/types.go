@@ -2752,6 +2752,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 			return err
 		}
+		// Sentinel Security Update: Interpreter Strict Mode
+		// Block dangerous function calls and keywords commonly used for RCE
+		// in both single and double-quoted strings (which might be evaluated).
+		if quoteLevel == 1 || quoteLevel == 2 {
+			if err := checkInterpreterFunctionCalls(val); err != nil {
+				return err
+			}
+		}
 	}
 
 	if quoteLevel == 3 { // Backticked
@@ -2762,11 +2770,6 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
-
-		// Sentinel Security Update:
-		// Even if single-quoted, if the shell command invokes an interpreter (like awk, perl, ruby, python),
-		// the content inside the quotes might be interpreted as code.
-		// Since we cannot know if the inner command is an interpreter, we explicitly block common RCE patterns.
 
 		// Block backticks (used by Perl, Ruby, PHP for execution)
 		if strings.Contains(val, "`") {
@@ -2806,6 +2809,37 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	return checkUnquotedInjection(val, command)
+}
+
+func checkInterpreterFunctionCalls(val string) error {
+	// Normalize value to detect obfuscation (e.g. system ( ) )
+	var b strings.Builder
+	b.Grow(len(val))
+	for _, r := range val {
+		if !unicode.IsSpace(r) {
+			b.WriteRune(r)
+		}
+	}
+	cleanVal := strings.ToLower(b.String())
+
+	dangerousKeywords := []string{
+		"system", "exec", "popen", "eval",
+		"spawn", "fork",
+		"import", "require",
+		"subprocess", "child_process", "os", "sys",
+		"open", "read", "write",
+	}
+
+	for _, kw := range dangerousKeywords {
+		if strings.Contains(cleanVal, kw+"(") {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+		}
+	}
+
+	if strings.Contains(cleanVal, "__import__") {
+		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
+	}
+	return nil
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
@@ -2869,7 +2903,7 @@ func checkBacktickInjection(val, command string) error {
 	// Backticks in Shell are command substitution (Level 0 danger).
 	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
 	// we must enforce strict checks.
-	if !isInterpreter(command) {
+	if !isSafeBacktickLanguage(command) {
 		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 		if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
@@ -2881,6 +2915,18 @@ func checkBacktickInjection(val, command string) error {
 		return fmt.Errorf("backtick injection detected")
 	}
 	return nil
+}
+
+func isSafeBacktickLanguage(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	// Only JS/TS runtimes treat backticks as strings (template literals)
+	safe := []string{"node", "nodejs", "bun", "deno"}
+	for _, s := range safe {
+		if base == s || strings.HasPrefix(base, s) {
+			return true
+		}
+	}
+	return false
 }
 
 func checkUnquotedInjection(val, command string) error {
@@ -2906,7 +2952,20 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk"}
+	interpreters := []string{
+		// Shells
+		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
+		"busybox",
+		// Interpreters
+		"python", "ruby", "perl", "php",
+		"node", "nodejs", "bun", "deno",
+		"lua", "java", "R", "julia", "elixir", "go",
+		"awk", "gawk", "nawk", "mawk",
+		"expect", "tclsh", "wish",
+		"groovy", "jshell", "scala", "kotlin", "swift",
+		"erl", "escript", "ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
@@ -3002,6 +3061,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 		return 0 // Should not happen if called correctly, fallback to strict
 	}
 
+	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
 	return minLevel
 }
 
