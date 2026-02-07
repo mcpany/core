@@ -633,11 +633,14 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// and the container is running before proceeding.
 	err := startCmd.Run()
 	if err != nil {
+		errOutput := stderr.String()
 		// Check for overlayfs mount error (common in restricted Docker environments)
-		if strings.Contains(stderr.String(), "overlay") && strings.Contains(stderr.String(), "invalid argument") {
-			t.Skipf("Skipping test due to Docker overlayfs issue: %v", err)
+		// Case insensitive check to be robust
+		lowerOutput := strings.ToLower(errOutput)
+		if strings.Contains(lowerOutput, "overlay") && (strings.Contains(lowerOutput, "invalid argument") || strings.Contains(lowerOutput, "operation not supported")) {
+			t.Skipf("Skipping test due to Docker overlayfs issue: %v. Stderr: %s", err, errOutput)
 		}
-		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
+		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, errOutput)
 	}
 
 	cleanupFunc = func() {
