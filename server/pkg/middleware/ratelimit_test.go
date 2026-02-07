@@ -78,10 +78,6 @@ func (m *rateLimitMockToolManager) IsServiceAllowed(serviceID, profileID string)
 	return true
 }
 
-func (m *rateLimitMockToolManager) GetToolCountForService(serviceID string) int {
-	return 0
-}
-
 func TestRateLimitMiddleware(t *testing.T) {
 	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {
