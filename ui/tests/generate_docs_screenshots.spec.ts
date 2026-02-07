@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
 
-const DOCS_SCREENSHOTS_DIR = path.resolve(__dirname, '../docs/screenshots');
+const DOCS_SCREENSHOTS_DIR = path.resolve(__dirname, '../../.audit/ui/' + new Date().toISOString().split('T')[0]);
 
 if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
   fs.mkdirSync(DOCS_SCREENSHOTS_DIR, { recursive: true });
@@ -287,6 +287,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     // 4. Verify Dialog opens and Diff Editor is present
     await expect(page.getByText('Output Difference')).toBeVisible();
     await expect(page.locator('.monaco-diff-editor')).toBeVisible();
+
+    // Ensure directory exists for audit screenshots
+    const auditDir = path.resolve(__dirname, '../../.audit/ui/' + new Date().toISOString().split('T')[0]);
+    if (!fs.existsSync(auditDir)) {
+      fs.mkdirSync(auditDir, { recursive: true });
+    }
 
     // Take screenshot
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diff-feature.png') });

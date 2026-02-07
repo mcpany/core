@@ -213,7 +213,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             <DialogHeader>
                 <DialogTitle>Bulk Edit Services</DialogTitle>
                 <DialogDescription>
-                    Update {selected.size} selected services. Currently only supports updating tags.
+                    Update {selected.size} selected services.
                 </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
