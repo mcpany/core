@@ -169,6 +169,36 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "cmd.exe should block injection even in single quotes")
 	})
+
+	// Case 10: Safe tools (like git) should allow spaces in arguments
+	t.Run("safe_tool_space_allowed", func(t *testing.T) {
+		cmd := "git"
+		toolDef := v1.Tool_builder{Name: proto.String("git-commit")}.Build()
+		service := configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}.Build()
+		callDef := configv1.CommandLineCallDefinition_builder{
+			Args: []string{"commit", "-m", "{{msg}}"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build(),
+				}.Build(),
+			},
+		}.Build()
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+
+		req := &ExecutionRequest{
+			ToolName: "git-commit",
+			ToolInputs: []byte(`{"msg": "hello world"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		// Should NOT detect shell injection
+		if err != nil {
+			assert.NotContains(t, err.Error(), "shell injection detected")
+		}
+	})
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {
