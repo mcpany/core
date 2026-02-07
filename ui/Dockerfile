@@ -31,11 +31,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Set default API URL for build time (prerendering) if not provided
 ARG NEXT_PUBLIC_API_URL
-# Use a separate ENV to avoid self-referential expansion issues if ARG is unset
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-
-# Debug: Check if proto files are present
-RUN find /proto -name "*.ts" | head -n 5
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
 RUN npm run build
 RUN mkdir -p public
