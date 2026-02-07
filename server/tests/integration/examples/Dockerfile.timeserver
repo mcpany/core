@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 WORKDIR /app
 
 COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY timeserver_patch/main.py /app/main.py
 
