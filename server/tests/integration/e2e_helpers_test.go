@@ -61,6 +61,19 @@ func TestWaitForText(t *testing.T) {
 	mp.Stop()
 }
 
+func verifyDockerMount(t *testing.T) error {
+	tempDir := t.TempDir()
+	// Try to mount this temp dir into a container.
+	// We use node:18-alpine because it is commonly available or alpine.
+	// Use alpine:latest as it is used in TestDockerHelpers.
+	cmd := exec.Command("docker", "run", "--rm", "-v", tempDir+":/test", "alpine:latest", "ls", "/test")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("docker run failed: %v, output: %s", err, string(output))
+	}
+	return nil
+}
+
 func TestDockerHelpers(t *testing.T) {
 	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
@@ -68,6 +81,11 @@ func TestDockerHelpers(t *testing.T) {
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
+	}
+
+	// Verify volume mounting works (often fails in dind)
+	if err := verifyDockerMount(t); err != nil {
+		t.Skipf("Skipping Docker tests: volume mounting failed (likely dind issue): %v", err)
 	}
 
 	// Test StartDockerContainer
