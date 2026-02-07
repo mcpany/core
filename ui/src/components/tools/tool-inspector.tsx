@@ -12,12 +12,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, RefreshCw } from "lucide-react";
+import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm, Schema } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -51,6 +52,18 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+
+  const parsedArgs = useMemo(() => {
+    try {
+        return JSON.parse(input);
+    } catch {
+        return null;
+    }
+  }, [input]);
+
+  const handleFormChange = (newValue: any) => {
+      setInput(JSON.stringify(newValue, null, 2));
+  };
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -172,14 +185,38 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <div className="flex items-center justify-between">
+                         <Label>Arguments</Label>
+                    </div>
+                    <Tabs defaultValue="form" className="w-full">
+                         <TabsList className="grid w-[200px] grid-cols-2 h-8 mb-2">
+                            <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
+                            <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                         </TabsList>
+                         <TabsContent value="form" className="mt-0 border rounded-md p-4 bg-muted/10 min-h-[150px]">
+                            {parsedArgs !== null ? (
+                                <SchemaForm
+                                    schema={tool.inputSchema as Schema}
+                                    value={parsedArgs}
+                                    onChange={handleFormChange}
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-destructive text-sm p-4">
+                                    <AlertTriangle className="mr-2 h-4 w-4" />
+                                    Invalid JSON in source. Please fix in JSON tab.
+                                </div>
+                            )}
+                         </TabsContent>
+                         <TabsContent value="json" className="mt-0">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm"
+                                rows={10}
+                            />
+                         </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
