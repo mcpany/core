@@ -545,7 +545,9 @@ else
 	@exit 1
 endif
 else
-	@echo "Skipping E2E time server Docker image build..."
+	@echo "Skipping real E2E time server Docker image build (creating dummy for CI)..."
+	@$(DOCKER_CMD) pull alpine:latest
+	@$(DOCKER_CMD) tag alpine:latest mcpany-e2e-time-server
 endif
 
 
