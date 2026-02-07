@@ -328,6 +328,28 @@ type Manager struct {
 	storage storage.Storage
 }
 
+var (
+	// dummyHash is used to prevent timing attacks during user enumeration.
+	// It is computed lazily once.
+	dummyHash     string
+	dummyHashOnce sync.Once
+)
+
+// getDummyHash returns the cached dummy hash.
+func getDummyHash() string {
+	dummyHashOnce.Do(func() {
+		// Pre-calculate a dummy hash for timing mitigation.
+		// We use a fixed string. The cost factor is determined by passhash.Password default (12).
+		var err error
+		dummyHash, err = passhash.Password("dummy-password-for-timing-mitigation")
+		if err != nil {
+			// This should practically never happen unless system is OOM.
+			panic(fmt.Sprintf("failed to generate dummy hash: %v", err))
+		}
+	})
+	return dummyHash
+}
+
 // NewManager creates and initializes a new Manager with an empty authenticator registry.
 //
 // Summary: Initializes a new Authentication Manager.
@@ -335,18 +357,10 @@ type Manager struct {
 // Returns:
 //   - *Manager: A new Manager instance.
 func NewManager() *Manager {
-	// Pre-calculate a dummy hash for timing mitigation.
-	// We use a fixed string. The cost factor is determined by passhash.Password default (12).
-	dummyHash, err := passhash.Password("dummy-password-for-timing-mitigation")
-	if err != nil {
-		// This should practically never happen unless system is OOM.
-		panic(fmt.Sprintf("failed to generate dummy hash: %v", err))
-	}
-
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
 		users:          make(map[string]*configv1.User),
-		dummyHash:      dummyHash,
+		dummyHash:      getDummyHash(),
 	}
 }
 
