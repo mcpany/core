@@ -46,6 +46,9 @@ func TestServiceRegistrationWorker_Start_BusErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			globalTestLock.Lock()
+			defer globalTestLock.Unlock()
+
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 

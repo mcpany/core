@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package worker_test
+package worker
 
 import (
 	"context"
@@ -14,7 +14,6 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/worker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -75,13 +74,16 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 }
 
 func TestServiceRegistrationWorker_Stop(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	// Setup bus
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
 	// Setup worker
 	registry := &MockServiceRegistry{}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	w.Start(ctx)
@@ -98,6 +100,9 @@ func TestServiceRegistrationWorker_Stop(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -111,7 +116,7 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 			return "test-service-id", []*configv1.ToolDefinition{tool1}, []*configv1.ResourceDefinition{res1}, nil
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
@@ -151,6 +156,9 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -160,7 +168,7 @@ func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
 			return "", nil, nil, expectedErr
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
@@ -197,6 +205,9 @@ func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Unregister(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -212,7 +223,7 @@ func TestServiceRegistrationWorker_Unregister(t *testing.T) {
 			return nil
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
@@ -253,6 +264,9 @@ func TestServiceRegistrationWorker_Unregister(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_List(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -266,7 +280,7 @@ func TestServiceRegistrationWorker_List(t *testing.T) {
 			return services, nil
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
@@ -300,6 +314,9 @@ func TestServiceRegistrationWorker_List(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Get(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -313,7 +330,7 @@ func TestServiceRegistrationWorker_Get(t *testing.T) {
 			return nil, false
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
@@ -347,6 +364,9 @@ func TestServiceRegistrationWorker_Get(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Get_NotFound(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -355,7 +375,7 @@ func TestServiceRegistrationWorker_Get_NotFound(t *testing.T) {
 			return nil, false
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
@@ -389,6 +409,9 @@ func TestServiceRegistrationWorker_Get_NotFound(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Register_Timeout(t *testing.T) {
+	globalTestLock.Lock()
+	defer globalTestLock.Unlock()
+
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
@@ -405,7 +428,7 @@ func TestServiceRegistrationWorker_Register_Timeout(t *testing.T) {
 			return "timeout-service", nil, nil, nil
 		},
 	}
-	w := worker.NewServiceRegistrationWorker(b, registry)
+	w := NewServiceRegistrationWorker(b, registry)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Start(ctx)
