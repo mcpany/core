@@ -585,7 +585,9 @@ func IsDockerSocketAccessible() bool {
 
 	// Try running a minimal container to ensure filesystem mounts work (e.g. overlay support)
 	// We use 'hello-world' as it is tiny.
-	runArgs := append(dockerArgs, "run", "--rm", "hello-world")
+	runArgs := make([]string, len(dockerArgs), len(dockerArgs)+3)
+	copy(runArgs, dockerArgs)
+	runArgs = append(runArgs, "run", "--rm", "hello-world")
 	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	if err := cmdRun.Run(); err != nil {
 		return false
@@ -1011,7 +1013,9 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not running or accessible (or functional). Skipping test.")
+	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
