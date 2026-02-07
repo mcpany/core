@@ -33,6 +33,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
+# Debug: List proto files to verify copy
+RUN find /app/proto -maxdepth 4 || echo "Proto directory not found or listing failed"
+
 RUN npm run build
 RUN mkdir -p public
 

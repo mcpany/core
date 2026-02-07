@@ -30,6 +30,6 @@
       "long": ["./node_modules/long"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts", "proto/**/*.ts"],
   "exclude": ["node_modules"]
 }

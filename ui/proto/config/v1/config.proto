@@ -1,0 +1,284 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "proto/bus/bus.proto";
+import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/auth.proto";
+import "proto/config/v1/profile.proto";
+import "proto/config/v1/collection.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "ConfigProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// ===================================================================
+// Root Server Configuration
+// ===================================================================
+
+import "proto/config/v1/user.proto";
+
+// McpAnyServerConfig is the root configuration for the entire MCPANY server.
+message McpAnyServerConfig {
+  // Server-wide operational parameters.
+  GlobalSettings global_settings = 1 [json_name = "global_settings"];
+  // A list of all configured upstream services that MCP Any can proxy to.
+  repeated UpstreamServiceConfig upstream_services = 2 [json_name = "upstream_services"];
+  // A list of upstream service collections to load from.
+  repeated Collection collections = 3 [json_name = "collections"];
+  // A list of users authorized to access the server.
+  repeated User users = 4 [json_name = "users"];
+  // Configuration for how to merge lists when loading from multiple sources.
+  MergeStrategyConfig merge_strategy = 5 [json_name = "merge_strategy"];
+}
+
+message MergeStrategyConfig {
+  // Strategy for merging upstream_services list ("extend" or "replace").
+  string upstream_service_list = 1 [json_name = "upstream_service_list"];
+  // Strategy for merging profiles list ("extend" or "replace").
+  string profile_list = 2 [json_name = "profile_list"];
+}
+
+// Secret defines a secret value.
+message Secret {
+  // name is the human-readable name of the secret.
+  string name = 1;
+  // id is the unique identifier for the secret.
+  string id = 2;
+  // key is the key used to reference the secret (e.g. env var name).
+  string key = 3;
+  // value is the secret value (encrypted or raw depending on context).
+  string value = 4;
+  // provider is the source of the secret (e.g. "openai", "aws").
+  string provider = 5;
+  // last_used is the timestamp when the secret was last used using RFC3339 format.
+  string last_used = 6;
+  // created_at is the timestamp when the secret was created using RFC3339 format.
+  string created_at = 7;
+}
+
+message SecretList {
+  repeated Secret secrets = 1;
+}
+
+message GlobalSettings {
+  enum LogLevel {
+    LOG_LEVEL_UNSPECIFIED = 0;
+    LOG_LEVEL_INFO = 1;
+    LOG_LEVEL_WARN = 2;
+    LOG_LEVEL_ERROR = 3;
+    LOG_LEVEL_DEBUG = 4;
+  }
+
+  enum LogFormat {
+    LOG_FORMAT_UNSPECIFIED = 0;
+    LOG_FORMAT_TEXT = 1;
+    LOG_FORMAT_JSON = 2;
+  }
+
+  // The address the MCP server listens on.
+  string mcp_listen_address = 1 [json_name = "mcp_listen_address"];
+  // The log level for the server.
+  LogLevel log_level = 2 [json_name = "log_level"];
+  // The API key used for authentication.
+  string api_key = 3 [json_name = "api_key"];
+  // The log format for the server.
+  LogFormat log_format = 4 [json_name = "log_format"];
+  // The path to the database file.
+  string db_path = 5 [json_name = "db_path"];
+  // The database connection string (DSN).
+  string db_dsn = 6 [json_name = "db_dsn"];
+  // The database driver (sqlite, postgres).
+  string db_driver = 7 [json_name = "db_driver"];
+  // GitHub API URL for self-updates (optional).
+  string github_api_url = 8 [json_name = "github_api_url"];
+  // Whether to use sudo for Docker commands.
+  bool use_sudo_for_docker = 9 [json_name = "use_sudo_for_docker"];
+
+  // The message bus configuration.
+  bus.MessageBus message_bus = 10 [json_name = "message_bus"];
+  // Audit logging configuration.
+  AuditConfig audit = 11 [json_name = "audit"];
+  // DLP configuration.
+  DLPConfig dlp = 12 [json_name = "dlp"];
+  // Garbage Collection configuration.
+  GCSettings gc_settings = 13 [json_name = "gc_settings"];
+  // OIDC Configuration.
+  OIDCConfig oidc = 14 [json_name = "oidc"];
+  // Rate limiting configuration for the server.
+  RateLimitConfig rate_limit = 15 [json_name = "rate_limit"];
+  // Telemetry configuration.
+  TelemetryConfig telemetry = 16 [json_name = "telemetry"];
+
+  // The profiles to enable.
+  repeated string profiles = 17 [json_name = "profiles"];
+  // The allowed IPs to access the server.
+  repeated string allowed_ips = 18 [json_name = "allowed_ips"];
+  // The definitions of profiles.
+  repeated ProfileDefinition profile_definitions = 19 [json_name = "profile_definitions"];
+  // The list of middlewares to enable and their configuration.
+  repeated Middleware middlewares = 20 [json_name = "middlewares"];
+  // Allowed file paths for validation.
+  repeated string allowed_file_paths = 21 [json_name = "allowed_file_paths"];
+  // Allowed origins for CORS.
+  repeated string allowed_origins = 22 [json_name = "allowed_origins"];
+  // Context Optimizer configuration.
+  ContextOptimizerConfig context_optimizer = 23 [json_name = "context_optimizer"];
+  // Debugger configuration.
+  DebuggerConfig debugger = 24 [json_name = "debugger"];
+  // If true, the configuration is read-only (e.g., loaded from a file).
+  // @inject_tag: yaml:"-"
+  bool read_only = 25 [json_name = "read_only"];
+  // Whether to auto-discover local services (e.g. Ollama).
+  bool auto_discover_local = 26 [json_name = "auto_discover_local"];
+  // Alert configuration.
+  AlertConfig alerts = 27 [json_name = "alerts"];
+  // Smart Recovery configuration.
+  SmartRecoveryConfig smart_recovery = 28 [json_name = "smart_recovery"];
+}
+
+message SmartRecoveryConfig {
+  bool enabled = 1 [json_name = "enabled"];
+  // The provider to use (e.g., "openai", "ollama").
+  string provider = 2 [json_name = "provider"];
+  // The API key or secret for the provider.
+  SecretValue api_key = 3 [json_name = "api_key"];
+  // The model to use.
+  string model = 4 [json_name = "model"];
+  // Maximum number of retries.
+  int32 max_retries = 5 [json_name = "max_retries"];
+  // Base URL for the provider (optional).
+  string base_url = 6 [json_name = "base_url"];
+}
+
+message AlertConfig {
+  // Whether alerts are enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // The webhook URL to send alerts to.
+  string webhook_url = 2 [json_name = "webhook_url"];
+}
+
+message ContextOptimizerConfig {
+  int32 max_chars = 1 [json_name = "max_chars"];
+}
+
+message DebuggerConfig {
+  bool enabled = 1 [json_name = "enabled"];
+  int32 size = 2 [json_name = "size"];
+}
+
+message TelemetryConfig {
+  // Tracing configuration
+  string traces_exporter = 1 [json_name = "traces_exporter"]; // "otlp", "stdout", "none"
+  // Metrics configuration
+  string metrics_exporter = 2 [json_name = "metrics_exporter"]; // "otlp", "stdout", "none"
+  // OTLP endpoint (shared for now, or can be split)
+  string otlp_endpoint = 3 [json_name = "otlp_endpoint"];
+  // Service name override (optional)
+  string service_name = 4 [json_name = "service_name"];
+}
+
+message OIDCConfig {
+  string issuer = 1 [json_name = "issuer"];
+  string client_id = 2 [json_name = "client_id"];
+  string client_secret = 3 [json_name = "client_secret"];
+  string redirect_url = 4 [json_name = "redirect_url"];
+}
+
+message GCSettings {
+  // Whether the global GC worker is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // How often the GC worker runs (e.g., "1h", "10m").
+  string interval = 2 [json_name = "interval"];
+  // The time-to-live for temporary files (e.g., "24h").
+  // Files older than this duration will be deleted.
+  string ttl = 3 [json_name = "ttl"];
+  // A list of absolute paths to directories that should be scanned for cleanup.
+  // The worker will not traverse outside these directories.
+  repeated string paths = 4 [json_name = "paths"];
+}
+
+message DLPConfig {
+  // Whether DLP is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // Additional regex patterns to redact.
+  // Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+  repeated string custom_patterns = 2 [json_name = "custom_patterns"];
+}
+
+message AuditConfig {
+  enum StorageType {
+    STORAGE_TYPE_UNSPECIFIED = 0;
+    STORAGE_TYPE_FILE = 1;
+    STORAGE_TYPE_SQLITE = 2;
+    STORAGE_TYPE_POSTGRES = 3;
+    STORAGE_TYPE_WEBHOOK = 4;
+    STORAGE_TYPE_SPLUNK = 5;
+    STORAGE_TYPE_DATADOG = 6;
+  }
+
+  // Whether audit logging is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // The file path to write audit logs to.
+  string output_path = 2 [json_name = "output_path"];
+  // Whether to log input arguments (caution: might contain secrets).
+  bool log_arguments = 3 [json_name = "log_arguments"];
+  // Whether to log output results (caution: might contain sensitive data).
+  bool log_results = 4 [json_name = "log_results"];
+  // The storage type to use.
+  StorageType storage_type = 5 [json_name = "storage_type"];
+  // The webhook URL for STORAGE_TYPE_WEBHOOK.
+  string webhook_url = 6 [json_name = "webhook_url"];
+  // Additional headers to send with the webhook.
+  map<string, string> webhook_headers = 7 [json_name = "webhook_headers"];
+  // Splunk configuration.
+  SplunkConfig splunk = 8 [json_name = "splunk"];
+  // Datadog configuration.
+  DatadogConfig datadog = 9 [json_name = "datadog"];
+}
+
+message SplunkConfig {
+  string hec_url = 1 [json_name = "hec_url"];
+  string token = 2 [json_name = "token"];
+  string index = 3 [json_name = "index"];
+  string source = 4 [json_name = "source"];
+  string sourcetype = 5 [json_name = "sourcetype"];
+}
+
+message DatadogConfig {
+  string api_key = 1 [json_name = "api_key"];
+  string site = 2 [json_name = "site"];
+  string service = 3 [json_name = "service"];
+  string tags = 4 [json_name = "tags"];
+}
+
+message ProfileDefinition {
+  string name = 1;
+  ProfileSelector selector = 2;
+  // List of roles required to access this profile.
+  repeated string required_roles = 3 [json_name = "required_roles"];
+  // Parent profile IDs for inheritance.
+  repeated string parent_profile_ids = 4 [json_name = "parent_profile_ids"];
+  // Service-specific configurations for this profile.
+  map<string, ProfileServiceConfig> service_config = 5 [json_name = "service_config"];
+  // Secrets available to services in this profile.
+  map<string, SecretValue> secrets = 6 [json_name = "secrets"];
+}
+
+message ProfileSelector {
+  repeated string tags = 1;
+  map<string, string> tool_properties = 2 [json_name = "tool_properties"];
+}
+
+message Middleware {
+  // The name of the middleware (e.g., "logging", "auth", "ratelimit").
+  string name = 1 [json_name = "name"];
+  // The priority of the middleware. Lower values run first (outermost).
+  int32 priority = 2 [json_name = "priority"];
+  // Whether this middleware is disabled.
+  bool disabled = 3 [json_name = "disabled"];
+}
