@@ -51,6 +51,9 @@ type SafeDialer struct {
 }
 
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
+//
+// Summary: Creates a new SafeDialer with strict security defaults.
+//
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
 //
 // Returns:
@@ -64,6 +67,9 @@ func NewSafeDialer() *SafeDialer {
 }
 
 // DialContext establishes a network connection to the given address while enforcing egress policies.
+//
+// Summary: Establishes a network connection with SSRF protection.
+//
 // It resolves the host's IP addresses and verifies them against the allowed list before connecting.
 //
 // Parameters:
@@ -135,6 +141,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 }
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
+//
+// Summary: Creates a connection with strict SSRF protection (convenience wrapper).
+//
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
 //
 // Parameters:
@@ -150,6 +159,9 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 }
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
+//
+// Summary: Creates a new HTTP client with SSRF protection.
+//
 // It uses a custom Transport backed by SafeDialer.
 //
 // Configuration is loaded from environment variables:
@@ -177,6 +189,9 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: Verifies TCP connectivity to an address with policy enforcement.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
@@ -246,6 +261,9 @@ func CheckConnection(ctx context.Context, address string) error {
 }
 
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
+// Summary: Attempts to listen on an address with retries.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //
