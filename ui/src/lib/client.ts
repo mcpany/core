@@ -15,6 +15,7 @@ import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/regist
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
+import { HttpCallDefinition } from '@proto/config/v1/call';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
@@ -368,7 +369,15 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools?.map((t: any) => ToolDefinition.toJSON(t)),
+                calls: config.httpService.calls ? Object.fromEntries(
+                    Object.entries(config.httpService.calls).map(([k, v]: [string, any]) => [k, HttpCallDefinition.toJSON(v)])
+                ) : undefined,
+                prompts: config.httpService.prompts,
+                resources: config.httpService.resources
+            };
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
@@ -456,7 +465,15 @@ export const apiClient = {
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools?.map((t: any) => ToolDefinition.toJSON(t)),
+                calls: config.httpService.calls ? Object.fromEntries(
+                    Object.entries(config.httpService.calls).map(([k, v]: [string, any]) => [k, HttpCallDefinition.toJSON(v)])
+                ) : undefined,
+                prompts: config.httpService.prompts,
+                resources: config.httpService.resources
+            };
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
@@ -555,7 +572,15 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools?.map((t: any) => ToolDefinition.toJSON(t)),
+                calls: config.httpService.calls ? Object.fromEntries(
+                    Object.entries(config.httpService.calls).map(([k, v]: [string, any]) => [k, HttpCallDefinition.toJSON(v)])
+                ) : undefined,
+                prompts: config.httpService.prompts,
+                resources: config.httpService.resources
+            };
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
