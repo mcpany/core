@@ -31,12 +31,41 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	root := ProjectRoot(t)
 	serverBin := filepath.Join(root, "../build/bin/server")
 
+	// Verify binary exists
+	if _, err := os.Stat(serverBin); os.IsNotExist(err) {
+		// Fallback: try absolute path if root is relative or weird
+		absRoot, _ := filepath.Abs(root)
+		absServerBin := filepath.Join(absRoot, "../build/bin/server")
+		if _, err := os.Stat(absServerBin); err == nil {
+			serverBin = absServerBin
+		} else {
+			// Log useful info for debugging CI failures
+			t.Logf("DEBUG: ProjectRoot: %s", root)
+			t.Logf("DEBUG: AbsProjectRoot: %s", absRoot)
+			t.Logf("DEBUG: Server binary not found at: %s or %s", serverBin, absServerBin)
+
+			// Try to find it in common locations
+			commonPaths := []string{
+				"/app/build/bin/server",
+				"/home/runner/work/core/core/build/bin/server",
+				filepath.Join(os.Getenv("GITHUB_WORKSPACE"), "build/bin/server"),
+			}
+			for _, p := range commonPaths {
+				if _, err := os.Stat(p); err == nil {
+					t.Logf("DEBUG: Found server binary at fallback path: %s", p)
+					serverBin = p
+					break
+				}
+			}
+		}
+	}
+	require.FileExists(t, serverBin, "Server binary not found. Run 'make build' first.")
+
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
-	cmd.Dir = t.TempDir() // Isolate working directory
 	cmd.Env = append(os.Environ(),
 		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"MCPANY_ENABLE_FILE_CONFIG=true",

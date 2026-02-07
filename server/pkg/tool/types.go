@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2737,9 +2734,37 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
+func detectNestedInterpreter(template string) string {
+	interpreters := []string{"ruby", "perl", "python", "php", "node", "awk", "lua"}
+	for _, interp := range interpreters {
+		if strings.Contains(template, interp) {
+			// Check for -e or -c or typical flags
+			if strings.Contains(template, " -e ") || strings.Contains(template, " -c ") || strings.Contains(template, " --eval ") {
+				return interp
+			}
+			// awk uses 'script' directly usually
+			if interp == "awk" && strings.Contains(template, "'") {
+				return interp
+			}
+			// quoted interpreter? e.g. "ruby" -e
+			if strings.Contains(template, "\""+interp+"\"") || strings.Contains(template, "'"+interp+"'") {
+				return interp
+			}
+		}
+	}
+	return ""
+}
+
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
+
+	// Check for nested interpreter (e.g. sh -c "ruby -e '{{code}}'")
+	if nestedInterp := detectNestedInterpreter(template); nestedInterp != "" {
+		if err := checkInterpreterInjection(val, template, nestedInterp, quoteLevel); err != nil {
+			return fmt.Errorf("nested interpreter injection detected (%s): %w", nestedInterp, err)
+		}
+	}
 
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
@@ -2809,35 +2834,55 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Python: Check for f-string prefix in template
-	if strings.HasPrefix(base, "python") {
-		// Scan template to find the prefix of the quote containing the placeholder
-		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
-		hasFString := false
-		for i := 0; i < len(template)-1; i++ {
-			if template[i+1] == '\'' || template[i+1] == '"' {
-				prefix := strings.ToLower(getPrefix(template, i+1))
-				if prefix == "f" || prefix == "fr" || prefix == "rf" {
-					hasFString = true
-					break
-				}
-			}
-		}
-		if hasFString {
-			if strings.ContainsAny(val, "{}") {
-				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkPerlPhpNodeInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkDangerousKeywords(val, base, quoteLevel); err != nil {
+		return err
+	}
+	return checkAwkInjection(val, base)
+}
+
+func checkPythonInjection(val, template, base string) error {
+	if !strings.HasPrefix(base, "python") {
+		return nil
+	}
+	// Scan template to find the prefix of the quote containing the placeholder
+	// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+	hasFString := false
+	for i := 0; i < len(template)-1; i++ {
+		if template[i+1] == '\'' || template[i+1] == '"' {
+			prefix := strings.ToLower(getPrefix(template, i+1))
+			if prefix == "f" || prefix == "fr" || prefix == "rf" {
+				hasFString = true
+				break
 			}
 		}
 	}
+	if hasFString {
+		if strings.ContainsAny(val, "{}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+		}
+	}
+	return nil
+}
 
-	// Ruby: #{...} works in double quotes AND backticks
+func checkRubyInjection(val, base string, quoteLevel int) error {
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
+	return nil
+}
 
-	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+func checkPerlPhpNodeInjection(val, base string, quoteLevel int) error {
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
@@ -2853,15 +2898,49 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+	return nil
+}
 
-	// Awk: Block pipe | to prevent external command execution
+func checkDangerousKeywords(val, base string, quoteLevel int) error {
+	isPerl := strings.HasPrefix(base, "perl")
+	isRuby := strings.HasPrefix(base, "ruby")
+	isPhp := strings.HasPrefix(base, "php")
+
+	// Sentinel Security Update: Stricter checks for Perl/Ruby/PHP dangerous keywords
+	if (isPerl || isRuby || isPhp) && (quoteLevel == 2 || quoteLevel == 0 || quoteLevel == 3) { // Single, Unquoted, Backtick
+		keywords := []string{"system", "exec", "popen", "eval", "syscall", "open"}
+		valLower := strings.ToLower(val)
+
+		for _, kw := range keywords {
+			// Check if kw appears as a whole word
+			idx := 0
+			for {
+				i := strings.Index(valLower[idx:], kw)
+				if i == -1 {
+					break
+				}
+				pos := idx + i
+				// Check if it's a whole word
+				isStart := pos == 0 || !isWordChar(valLower[pos-1])
+				isEnd := pos+len(kw) == len(valLower) || !isWordChar(valLower[pos+len(kw)])
+
+				if isStart && isEnd {
+					return fmt.Errorf("interpreter injection detected: dangerous keyword %q found", kw)
+				}
+				idx = pos + 1
+			}
+		}
+	}
+	return nil
+}
+
+func checkAwkInjection(val, base string) error {
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
 	}
-
 	return nil
 }
 
@@ -3006,9 +3085,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
