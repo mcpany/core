@@ -66,6 +66,12 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         const token = localStorage.getItem('mcp_auth_token');
         if (token) {
             headers.set('Authorization', `Basic ${token}`);
+        } else {
+            // Fallback to public API key if available (e.g. for development/tests)
+            const publicApiKey = process.env.NEXT_PUBLIC_MCPANY_API_KEY;
+            if (publicApiKey) {
+                headers.set('X-API-Key', publicApiKey);
+            }
         }
     } else {
         // Server-side: Inject API Key from env
