@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -103,6 +104,19 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
 
   if (!tool) return null;
 
+  // Safe JSON parsing for the form
+  const { parsedInput, isValidJson } = useMemo(() => {
+    try {
+        const parsed = JSON.parse(input);
+        return { parsedInput: parsed, isValidJson: true };
+    } catch {
+        return { parsedInput: {}, isValidJson: false };
+    }
+  }, [input]);
+
+  const handleFormChange = (newValue: any) => {
+    setInput(JSON.stringify(newValue, null, 2));
+  };
 
   const handleExecute = async () => {
     setLoading(true);
@@ -172,14 +186,39 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <Label>Arguments</Label>
+                    <Tabs defaultValue="form" className="w-full">
+                        <TabsList className="grid w-[200px] grid-cols-2 h-8">
+                            <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
+                            <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="form" className="mt-2">
+                            {isValidJson ? (
+                                <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-muted/20">
+                                    <SchemaForm
+                                        schema={tool.inputSchema as any}
+                                        value={parsedInput}
+                                        onChange={handleFormChange}
+                                    />
+                                </ScrollArea>
+                            ) : (
+                                <div className="h-[300px] w-full rounded-md border p-4 bg-destructive/10 border-destructive/50 text-destructive flex items-center justify-center text-sm">
+                                    Cannot render form: Invalid JSON in Arguments. Please fix syntax errors in the JSON tab.
+                                </div>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="json" className="mt-2">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm"
+                                rows={15}
+                            />
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
