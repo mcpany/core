@@ -20,6 +20,8 @@ import {
 /**
  * A dropdown menu button to toggle between light, dark, and system themes.
  *
+ * Summary: Renders a dropdown menu that allows the user to switch the application's theme.
+ *
  * @returns {JSX.Element} The rendered theme toggle component.
  */
 export function ThemeToggle() {
