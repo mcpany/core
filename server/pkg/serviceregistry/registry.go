@@ -28,80 +28,66 @@ import (
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
-	// Summary: Registers a new service.
-	//
 	// Parameters:
-	//   - ctx: context.Context. The registration context.
-	//   - serviceConfig: *config.UpstreamServiceConfig. The service configuration.
+	//   ctx (context.Context): The registration context.
+	//   serviceConfig (*config.UpstreamServiceConfig): The service configuration. Must not be nil.
 	//
 	// Returns:
-	//   - string: The generated service ID.
-	//   - []*config.ToolDefinition: Discovered tools.
-	//   - []*config.ResourceDefinition: Discovered resources.
-	//   - error: Error if registration fails.
+	//   (string): The generated service ID.
+	//   ([]*config.ToolDefinition): Discovered tools.
+	//   ([]*config.ResourceDefinition): Discovered resources.
+	//   (error): Error if registration fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 
 	// UnregisterService removes a service from the registry and shuts down its upstream connection.
 	//
-	// Summary: Unregisters a service.
-	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the operation.
-	//   - serviceName: string. The name of the service to remove.
+	//   ctx (context.Context): The context for the operation.
+	//   serviceName (string): The name of the service to remove.
 	//
 	// Returns:
-	//   - error: Error if the service is not found or shutdown fails.
+	//   (error): Error if the service is not found or shutdown fails.
 	UnregisterService(ctx context.Context, serviceName string) error
 
 	// GetAllServices returns a list of all registered services.
 	//
-	// Summary: Lists all registered services.
-	//
 	// Returns:
-	//   - []*config.UpstreamServiceConfig: List of service configurations.
-	//   - error: Error if retrieval fails.
+	//   ([]*config.UpstreamServiceConfig): List of service configurations.
+	//   (error): Error if retrieval fails.
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
 	//
-	// Summary: Retrieves service metadata by ID.
-	//
 	// Parameters:
-	//   - serviceID: string. The service ID.
+	//   serviceID (string): The service ID.
 	//
 	// Returns:
-	//   - *tool.ServiceInfo: The service metadata.
-	//   - bool: True if found.
+	//   (*tool.ServiceInfo): The service metadata.
+	//   (bool): True if found.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 
 	// GetServiceConfig returns the configuration for a given service key.
 	//
-	// Summary: Retrieves service configuration by ID.
-	//
 	// Parameters:
-	//   - serviceID: string. The service ID.
+	//   serviceID (string): The service ID.
 	//
 	// Returns:
-	//   - *config.UpstreamServiceConfig: The service configuration.
-	//   - bool: True if found.
+	//   (*config.UpstreamServiceConfig): The service configuration.
+	//   (bool): True if found.
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the registration error for a service, if any.
 	//
-	// Summary: Retrieves the last error associated with a service.
-	//
 	// Parameters:
-	//   - serviceID: string. The service ID.
+	//   serviceID (string): The service ID.
 	//
 	// Returns:
-	//   - string: The error message.
-	//   - bool: True if an error exists.
+	//   (string): The error message.
+	//   (bool): True if an error exists.
 	GetServiceError(serviceID string) (string, bool)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream services.
-//
-// Summary: Central registry for upstream services.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -118,17 +104,15 @@ type ServiceRegistry struct {
 
 // New creates a new ServiceRegistry instance.
 //
-// Summary: Initializes a new ServiceRegistry.
-//
 // Parameters:
-//   - factory: factory.Factory. The factory for creating upstreams.
-//   - toolManager: tool.ManagerInterface. The tool manager.
-//   - promptManager: prompt.ManagerInterface. The prompt manager.
-//   - resourceManager: resource.ManagerInterface. The resource manager.
-//   - authManager: *auth.Manager. The authentication manager.
+//   factory (factory.Factory): The factory for creating upstreams.
+//   toolManager (tool.ManagerInterface): The tool manager.
+//   promptManager (prompt.ManagerInterface): The prompt manager.
+//   resourceManager (resource.ManagerInterface): The resource manager.
+//   authManager (*auth.Manager): The authentication manager.
 //
 // Returns:
-//   - *ServiceRegistry: The initialized registry.
+//   (*ServiceRegistry): The initialized registry.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
@@ -146,17 +130,15 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 
 // RegisterService handles the registration of a new upstream service.
 //
-// Summary: Registers a service and discovers its capabilities.
-//
 // Parameters:
-//   - ctx: context.Context. The registration context.
-//   - serviceConfig: *config.UpstreamServiceConfig. The service configuration.
+//   ctx (context.Context): The registration context.
+//   serviceConfig (*config.UpstreamServiceConfig): The service configuration. Must not be nil.
 //
 // Returns:
-//   - string: The service ID.
-//   - []*config.ToolDefinition: Discovered tools.
-//   - []*config.ResourceDefinition: Discovered resources.
-//   - error: Error if registration fails.
+//   (string): The service ID.
+//   ([]*config.ToolDefinition): Discovered tools.
+//   ([]*config.ResourceDefinition): Discovered resources.
+//   (error): Error if registration fails.
 //
 // Side Effects:
 //   - Creates an upstream connection.
@@ -288,11 +270,9 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.
 //
-// Summary: Registers service metadata.
-//
 // Parameters:
-//   - serviceID: string. The service ID.
-//   - info: *tool.ServiceInfo. The service metadata.
+//   serviceID (string): The service ID.
+//   info (*tool.ServiceInfo): The service metadata.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -301,14 +281,12 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 
 // GetServiceInfo retrieves the metadata for a service by its ID.
 //
-// Summary: Retrieves service metadata by ID.
-//
 // Parameters:
-//   - serviceID: string. The service ID.
+//   serviceID (string): The service ID.
 //
 // Returns:
-//   - *tool.ServiceInfo: The service metadata.
-//   - bool: True if found.
+//   (*tool.ServiceInfo): The service metadata.
+//   (bool): True if found.
 func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -330,14 +308,12 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 
 // GetServiceConfig returns the configuration for a given service key.
 //
-// Summary: Retrieves service configuration by ID.
-//
 // Parameters:
-//   - serviceID: string. The service ID.
+//   serviceID (string): The service ID.
 //
 // Returns:
-//   - *config.UpstreamServiceConfig: The service configuration.
-//   - bool: True if found.
+//   (*config.UpstreamServiceConfig): The service configuration.
+//   (bool): True if found.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -356,11 +332,11 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 // Summary: Removes a service from the registry and shuts it down.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - serviceName: string. The name of the service.
+//   ctx (context.Context): The context for the operation.
+//   serviceName (string): The name of the service.
 //
 // Returns:
-//   - error: Error if not found or shutdown fails.
+//   (error): Error if not found or shutdown fails.
 //
 // Side Effects:
 //   - Stops the upstream connection.
@@ -400,14 +376,12 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 
 // GetServiceError returns the registration error for a service, if any.
 //
-// Summary: Retrieves the last known error for a service.
-//
 // Parameters:
-//   - serviceID: string. The service ID.
+//   serviceID (string): The service ID.
 //
 // Returns:
-//   - string: The error message.
-//   - bool: True if an error exists.
+//   (string): The error message.
+//   (bool): True if an error exists.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -420,11 +394,9 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 
 // StartHealthChecks starts a background loop to periodically check the health of registered upstream services.
 //
-// Summary: Starts background health checks.
-//
 // Parameters:
-//   - ctx: context.Context. The context to cancel the loop.
-//   - interval: time.Duration. The check interval.
+//   ctx (context.Context): The context to cancel the loop.
+//   interval (time.Duration): The check interval.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -450,49 +422,34 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 	}
 	r.mu.RUnlock()
 
-	// ⚡ BOLT: Parallelize health checks with concurrency limit
-	// Randomized Selection from Top 5 High-Impact Targets
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, 20) // Limit to 20 concurrent checks
-
 	for id, u := range targets {
-		wg.Add(1)
-		go func(id string, u upstream.Upstream) {
-			defer wg.Done()
-			sem <- struct{}{}
-			defer func() { <-sem }()
-
-			var errStr string
-			if checker, ok := u.(upstream.HealthChecker); ok {
-				// Use a short timeout for health checks
-				checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-				if err := checker.CheckHealth(checkCtx); err != nil {
-					errStr = err.Error()
-				}
-				cancel()
+		var errStr string
+		if checker, ok := u.(upstream.HealthChecker); ok {
+			// Use a short timeout for health checks
+			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			if err := checker.CheckHealth(checkCtx); err != nil {
+				errStr = err.Error()
 			}
+			cancel()
+		}
 
-			r.mu.Lock()
-			if errStr != "" {
-				r.healthErrors[id] = errStr
-			} else {
-				delete(r.healthErrors, id)
-			}
-			r.mu.Unlock()
-		}(id, u)
+		r.mu.Lock()
+		if errStr != "" {
+			r.healthErrors[id] = errStr
+		} else {
+			delete(r.healthErrors, id)
+		}
+		r.mu.Unlock()
 	}
-	wg.Wait()
 }
 
 // Close gracefully shuts down all registered services.
 //
-// Summary: Closes all upstream connections.
-//
 // Parameters:
-//   - ctx: context.Context. The shutdown context.
+//   ctx (context.Context): The shutdown context.
 //
 // Returns:
-//   - error: Error if any shutdown fails.
+//   (error): Error if any shutdown fails.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -515,8 +472,8 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Summary: Lists all services with redacted secrets.
 //
 // Returns:
-//   - []*config.UpstreamServiceConfig: List of service configs.
-//   - error: Error if retrieval fails.
+//   ([]*config.UpstreamServiceConfig): List of service configs.
+//   (error): Error if retrieval fails.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -551,14 +508,15 @@ func (r *ServiceRegistry) injectRuntimeInfo(config *config.UpstreamServiceConfig
 	}
 
 	// Tool Count
-	// ⚡ BOLT: Optimized from O(N*M) to O(N) by using indexed lookup instead of iterating all tools.
-	// Randomized Selection from Top 5 High-Impact Targets
-	// Note: Tools are indexed by Service ID (hash), which might differ from the registry key (Sanitized Name).
-	toolKey := config.GetId()
-	if toolKey == "" {
-		toolKey = key
+	// r.toolManager is thread-safe (xsync.Map based) so calling ListTools is safe.
+	// However, ListTools acquires its own locks.
+	tools := r.toolManager.ListTools()
+	count := 0
+	for _, t := range tools {
+		if t.Tool().GetServiceId() == key {
+			count++
+		}
 	}
-	count := r.toolManager.GetToolCountForService(toolKey)
 	//nolint:gosec // Tool count is unlikely to exceed int32 max
 	config.SetToolCount(int32(count))
 }

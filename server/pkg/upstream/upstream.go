@@ -22,33 +22,29 @@ import (
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
-	// Summary: Terminates the upstream connection.
-	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
+	//   ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - error: An error if the operation fails.
+	//   (error): An error if the operation fails.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
 	// discovers its capabilities, and registers them.
 	//
-	// Summary: Connects to upstream and registers capabilities.
-	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the registration process.
-	//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration for the upstream service.
-	//   - toolManager: tool.ManagerInterface. The manager where discovered tools will be registered.
-	//   - promptManager: prompt.ManagerInterface. The manager where discovered prompts will be registered.
-	//   - resourceManager: resource.ManagerInterface. The manager where discovered resources will be registered.
-	//   - isReload: bool. Indicates whether this is an initial registration or a reload.
+	//   ctx (context.Context): The context for the registration process.
+	//   serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+	//   toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+	//   promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
+	//   resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
+	//   isReload (bool): Indicates whether this is an initial registration or a reload.
 	//
 	// Returns:
-	//   - string: A unique service key.
-	//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
-	//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
-	//   - error: An error if registration fails.
+	//   (string): A unique service key.
+	//   ([]*configv1.ToolDefinition): A list of discovered tool definitions.
+	//   ([]*configv1.ResourceDefinition): A list of discovered resource definitions.
+	//   (error): An error if registration fails.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
@@ -66,12 +62,10 @@ type Upstream interface {
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//
-	// Summary: Checks the health of the upstream.
-	//
 	// Parameters:
-	//   - ctx: context.Context. The check context.
+	//   ctx (context.Context): The check context.
 	//
 	// Returns:
-	//   - error: nil if healthy, error if unhealthy.
+	//   (error): nil if healthy, error if unhealthy.
 	CheckHealth(ctx context.Context) error
 }
