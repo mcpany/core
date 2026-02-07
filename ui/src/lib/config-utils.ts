@@ -6,7 +6,8 @@
 import { UpstreamServiceConfig } from "./client";
 
 /**
- * Defines the mode for handling secrets in configurations.
+ * Summary: Defines the mode for handling secrets in configurations.
+ *
  * - 'redact': Replaces secrets with '<REDACTED>'.
  * - 'template': Replaces secrets with template placeholders (e.g., '${API_KEY}').
  * - 'unsafe': Leaves secrets as plain text (use with caution).
@@ -14,10 +15,11 @@ import { UpstreamServiceConfig } from "./client";
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
- * Sanitizes a service configuration by redacting or templating potential secrets.
- * @param service The service configuration to sanitize.
- * @param mode The secret handling mode.
- * @returns A sanitized copy of the configuration.
+ * Summary: Sanitizes a service configuration by redacting or templating potential secrets.
+ *
+ * @param service - UpstreamServiceConfig. The service configuration to sanitize.
+ * @param mode - SecretHandlingMode. The secret handling mode.
+ * @returns UpstreamServiceConfig - A sanitized copy of the configuration.
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original
