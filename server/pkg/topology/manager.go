@@ -100,12 +100,18 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 
 // processLoop handles asynchronous activity recording to avoid locking the request path.
 func (m *Manager) processLoop() {
+	// ⚡ BOLT: Run cleanup every 5 minutes
+	cleanupTicker := time.NewTicker(5 * time.Minute)
+	defer cleanupTicker.Stop()
+
 	for {
 		select {
 		case <-m.shutdownCh:
 			return
 		case event := <-m.activityCh:
 			m.handleActivity(event)
+		case <-cleanupTicker.C:
+			m.cleanupExpiredSessions()
 		}
 	}
 }
@@ -231,6 +237,26 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 // Close stops the background worker.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
+}
+
+// cleanupExpiredSessions removes sessions that have been inactive for more than 1 hour.
+// ⚡ BOLT: Periodic cleanup to prevent memory leaks in long-running instances.
+// Randomized Selection from Top 5 High-Impact Targets
+func (m *Manager) cleanupExpiredSessions() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	now := time.Now()
+	expiredCount := 0
+	for id, session := range m.sessions {
+		if now.Sub(session.LastActive) > 1*time.Hour {
+			delete(m.sessions, id)
+			expiredCount++
+		}
+	}
+	if expiredCount > 0 {
+		logging.GetLogger().Debug("Cleaned up expired sessions", "count", expiredCount)
+	}
 }
 
 // GetStats returns the aggregated stats.

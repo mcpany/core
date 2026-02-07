@@ -62,8 +62,7 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
+	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
@@ -83,6 +82,7 @@ func TestDockerHelpers(t *testing.T) {
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
 	assert.Contains(t, string(out), containerName)
+}
 
 	// Test StartRedisContainer
 	_, redisCleanup := StartRedisContainer(t)

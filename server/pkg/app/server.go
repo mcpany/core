@@ -139,7 +139,6 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
-	DBPath          string
 }
 
 // Runner defines the interface for running the application.
@@ -330,10 +329,7 @@ func (a *Application) Run(opts RunOptions) error {
 		dbDriver := config.GlobalSettings().GetDbDriver()
 		switch dbDriver {
 		case "", "sqlite":
-			dbPath := opts.DBPath
-			if dbPath == "" {
-				dbPath = config.GlobalSettings().DBPath()
-			}
+			dbPath := config.GlobalSettings().DBPath()
 			if dbPath == "" {
 				dbPath = "mcpany.db"
 			}
@@ -584,6 +580,7 @@ func (a *Application) Run(opts RunOptions) error {
 		workerCancel()
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
+		a.TopologyManager.Close()
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
 
@@ -609,6 +606,7 @@ func (a *Application) Run(opts RunOptions) error {
 			workerCancel()
 			upstreamWorker.Stop()
 			registrationWorker.Stop()
+			a.TopologyManager.Close()
 			return fmt.Errorf("failed to get registration bus: %w", err)
 		}
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
@@ -648,6 +646,7 @@ func (a *Application) Run(opts RunOptions) error {
 		workerCancel()
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
+		a.TopologyManager.Close()
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
 
@@ -775,6 +774,7 @@ func (a *Application) Run(opts RunOptions) error {
 		workerCancel()
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
+		a.TopologyManager.Close()
 		return err
 	}
 
@@ -827,6 +827,7 @@ func (a *Application) Run(opts RunOptions) error {
 		workerCancel()
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
+		a.TopologyManager.Close()
 		return err
 	}
 
@@ -834,6 +835,9 @@ func (a *Application) Run(opts RunOptions) error {
 	workerCancel()
 	upstreamWorker.Stop()
 	registrationWorker.Stop()
+	if a.TopologyManager != nil {
+		a.TopologyManager.Close()
+	}
 
 	return nil
 }
