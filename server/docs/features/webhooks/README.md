@@ -33,6 +33,50 @@ upstream_services:
           url: "http://my-webhook-service/audit"
 ```
 
+## Standard Webhook Sidecar
+
+MCP Any includes a production-ready sidecar binary that provides common webhook utilities out-of-the-box.
+
+### Features
+
+-   **/markdown**: Converts HTML input to Markdown (Post-Call Hook).
+-   **/truncate**: Truncates long strings to a specified length (Post-Call Hook).
+-   **/paginate**: Splits long strings into pages (Post-Call Hook).
+
+### Usage
+
+1.  **Build the Sidecar**:
+    ```bash
+    go build -o webhook-sidecar ./server/cmd/webhooks
+    ```
+
+2.  **Run the Sidecar**:
+    ```bash
+    ./webhook-sidecar -port 8081
+    ```
+
+3.  **Configure MCP Any**:
+    Update your `config.yaml` to point to the sidecar:
+
+    ```yaml
+    upstream_services:
+      - name: "my-service"
+        # ...
+        post_call_hooks:
+          - name: "convert-html"
+            webhook:
+              url: "http://localhost:8081/markdown"
+    ```
+
+### Signature Verification
+
+To secure your webhooks, set the `WEBHOOK_SECRET` environment variable for both the MCP Any server and the Sidecar.
+
+```bash
+export WEBHOOK_SECRET="my-secret-value"
+./webhook-sidecar
+```
+
 ## Examples
 
 We provide ready-to-run examples to demonstrate the power of webhooks.
