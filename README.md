@@ -113,6 +113,10 @@ Run the linter to verify your changes:
 make lint
 ```
 
+**Documentation Standard:**
+*   **Go:** Strict GoDoc with `Summary`, `Parameters`, `Returns`, `Errors`, and `Side Effects` sections.
+*   **TypeScript:** TSDoc with strict type checking.
+
 ### Building
 Compile all artifacts (Server binary and UI assets).
 ```bash
