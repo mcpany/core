@@ -70,6 +70,11 @@ func TestDockerHelpers(t *testing.T) {
 		t.Skip("Docker is not available")
 	}
 
+	// Verify docker run works (catches overlayfs/mount issues)
+	if err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").Run(); err != nil {
+		t.Skipf("Docker available but unable to run containers (likely mount/overlay issue): %v", err)
+	}
+
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
