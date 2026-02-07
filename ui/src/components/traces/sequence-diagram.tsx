@@ -16,8 +16,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { JsonView } from "@/components/ui/json-view";
 import { Badge } from "@/components/ui/badge";
+import dynamic from "next/dynamic";
+
+// ⚡ BOLT: Lazy load JsonView to reduce initial bundle size.
+// Randomized Selection from Top 5 High-Impact Targets
+const JsonView = dynamic(() => import("@/components/ui/json-view").then(mod => mod.JsonView), {
+  loading: () => <div className="text-xs text-muted-foreground p-4">Loading viewer...</div>,
+  ssr: false
+});
 
 interface SequenceDiagramProps {
   trace: Trace;
