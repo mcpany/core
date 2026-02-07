@@ -115,6 +115,10 @@ const nodeTypes = {
 /**
  * StackGraph component.
  * Visualizes the stack configuration as a graph.
+ *
+ * @param props - The component props.
+ * @param props.yamlContent - The raw YAML content of the stack configuration.
+ * @returns A React component that renders the stack graph.
  */
 export function StackGraph({ yamlContent }: StackGraphProps) {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
