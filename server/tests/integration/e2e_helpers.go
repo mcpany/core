@@ -632,7 +632,13 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Use Run instead of Start for 'docker run -d' to ensure the command completes
 	// and the container is running before proceeding.
 	err := startCmd.Run()
-	require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
+	if err != nil {
+		// Check for Docker-in-Docker overlayfs mount issue (common in CI/Actions)
+		if strings.Contains(stderr.String(), "failed to mount") && strings.Contains(stderr.String(), "invalid argument") {
+			t.Skipf("Skipping test due to Docker mount issue (likely DinD overlayfs limitation): %v. Stderr: %s", err, stderr.String())
+		}
+		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
+	}
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
