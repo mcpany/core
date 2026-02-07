@@ -57,7 +57,6 @@ func readLastNLinesOptimized(f *os.File, filesize int64, n int) ([][]byte, error
 	buf := make([]byte, chunkSize)
 	var cursor = filesize
 	var chunks [][]byte
-	var totalSize int
 	var newlineCount int
 
 	for cursor > 0 {
@@ -80,7 +79,6 @@ func readLastNLinesOptimized(f *os.File, filesize int64, n int) ([][]byte, error
 		chunk := make([]byte, len(readBuf))
 		copy(chunk, readBuf)
 		chunks = append(chunks, chunk)
-		totalSize += len(chunk)
 
 		for _, b := range chunk {
 			if b == '\n' {
@@ -93,16 +91,18 @@ func readLastNLinesOptimized(f *os.File, filesize int64, n int) ([][]byte, error
 		}
 	}
 
-	collected := make([]byte, totalSize)
-	offset := 0
+	// ⚡ BOLT: Zero-copy assembly using MultiReader
 	// Chunks are stored in reverse order (End of file -> Start of file)
-	// We want to reconstruct file: Start -> End.
-	for i := len(chunks) - 1; i >= 0; i-- {
-		copy(collected[offset:], chunks[i])
-		offset += len(chunks[i])
+	// We construct a MultiReader that reads them in correct order (Start -> End)
+	readers := make([]io.Reader, len(chunks))
+	for i, chunk := range chunks {
+		// chunks[0] is the last block (end of file)
+		// chunks[len-1] is the first block (start of read area)
+		// We want readers[0] to be chunks[len-1]
+		readers[len(chunks)-1-i] = bytes.NewReader(chunk)
 	}
 
-	scanner := bufio.NewScanner(bytes.NewReader(collected))
+	scanner := bufio.NewScanner(io.MultiReader(readers...))
 	var allLines [][]byte
 	for scanner.Scan() {
 		b := scanner.Bytes()
