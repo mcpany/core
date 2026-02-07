@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2739,7 +2736,7 @@ func isVersionSuffix(s string) bool {
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
-	quoteLevel := analyzeQuoteContext(template, placeholder)
+	quoteLevel, isNestedDouble := analyzeQuoteContext(template, placeholder)
 
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
@@ -2761,6 +2758,15 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	if quoteLevel == 2 { // Single Quoted
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		}
+
+		// Sentinel Security Update: Nested Quote Protection
+		// If the placeholder appears inside double quotes that are themselves inside single quotes (e.g. python -c 'print("{{input}}")'),
+		// we must prevent breaking out of the inner double quotes.
+		if isNestedDouble {
+			if strings.Contains(val, "\"") {
+				return fmt.Errorf("nested quote injection detected: value contains double quote inside double-quoted context within single quotes")
+			}
 		}
 
 		// Sentinel Security Update:
@@ -2932,17 +2938,19 @@ func getPrefix(s string, idx int) string {
 	return s[start+1 : idx]
 }
 
-func analyzeQuoteContext(template, placeholder string) int {
+func analyzeQuoteContext(template, placeholder string) (int, bool) {
 	if template == "" || placeholder == "" {
-		return 0
+		return 0, false
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
 	minLevel := 3
+	hasNestedDouble := false
 
 	inSingle := false
 	inDouble := false
 	inBacktick := false
+	nestedDouble := false // Tracks double quotes inside single quotes
 	escaped := false
 
 	foundAny := false
@@ -2955,6 +2963,9 @@ func analyzeQuoteContext(template, placeholder string) int {
 			switch {
 			case inSingle:
 				currentLevel = 2
+				if nestedDouble {
+					hasNestedDouble = true
+				}
 			case inDouble:
 				currentLevel = 1
 			case inBacktick:
@@ -2986,9 +2997,15 @@ func analyzeQuoteContext(template, placeholder string) int {
 		case '\'':
 			if !inDouble && !inBacktick {
 				inSingle = !inSingle
+				// Reset nested state when leaving single quote
+				if !inSingle {
+					nestedDouble = false
+				}
 			}
 		case '"':
-			if !inSingle && !inBacktick {
+			if inSingle {
+				nestedDouble = !nestedDouble
+			} else if !inBacktick {
 				inDouble = !inDouble
 			}
 		case '`':
@@ -2999,16 +3016,13 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	if !foundAny {
-		return 0 // Should not happen if called correctly, fallback to strict
+		return 0, false // Should not happen if called correctly, fallback to strict
 	}
 
-	return minLevel
+	return minLevel, hasNestedDouble
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}

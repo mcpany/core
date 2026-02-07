@@ -582,13 +582,6 @@ func IsDockerSocketAccessible() bool {
 	if err := cmd.Run(); err != nil {
 		return false
 	}
-
-	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
-	if err := runCmd.Run(); err != nil {
-		return false
-	}
-
 	return true
 }
 
@@ -817,7 +810,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
+	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
@@ -832,7 +825,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ConfigPaths:     []string{},
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
-			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
@@ -945,14 +937,27 @@ func StartNatsServer(t *testing.T) (string, func()) {
 		} else {
 			root, err := GetProjectRoot()
 			require.NoError(t, err)
-			natsServerBin = filepath.Join(root, "../build/env/bin/nats-server")
-			if info, err := os.Stat(natsServerBin); err == nil {
-				t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
-			} else {
-				t.Logf("DEBUG: nats-server binary not found at: %s", natsServerBin)
+			// Try multiple paths for robustness
+			candidates := []string{
+				filepath.Join(root, "../build/env/bin/nats-server"), // If root is server/
+				filepath.Join(root, "build/env/bin/nats-server"),    // If root is repo root
+			}
+			found := false
+			for _, c := range candidates {
+				if info, err := os.Stat(c); err == nil {
+					natsServerBin = c
+					t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Logf("DEBUG: nats-server binary not found in candidates: %v", candidates)
+				// Default to first candidate for error message
+				natsServerBin = candidates[0]
 			}
 			_, err = os.Stat(natsServerBin)
-			require.NoError(t, err, "nats-server binary not found at %s or /tools/nats-server. Run 'make prepare'.", natsServerBin)
+			require.NoError(t, err, "nats-server binary not found at %v or /tools/nats-server. Run 'make prepare'.", candidates)
 		}
 	}
 
@@ -1010,9 +1015,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
-	}
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
@@ -1097,7 +1100,22 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpanyBinary := filepath.Join(root, "../build/bin/server")
+
+	// Try multiple paths for server binary
+	candidates := []string{
+		filepath.Join(root, "../build/bin/server"), // If root is server/
+		filepath.Join(root, "build/bin/server"),    // If root is repo root
+	}
+	mcpanyBinary := ""
+	for _, c := range candidates {
+		if _, err := os.Stat(c); err == nil {
+			mcpanyBinary = c
+			break
+		}
+	}
+	if mcpanyBinary == "" {
+		mcpanyBinary = candidates[0] // Fallback for error reporting
+	}
 
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
