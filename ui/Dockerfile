@@ -34,6 +34,9 @@ ARG NEXT_PUBLIC_API_URL
 # Use a separate ENV to avoid self-referential expansion issues if ARG is unset
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+# Debug: Check if proto files are present
+RUN find /proto -name "*.ts" | head -n 5
+
 RUN npm run build
 RUN mkdir -p public
 
