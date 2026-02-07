@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"path/filepath"
 	"testing"
 	"time"
@@ -73,8 +74,22 @@ func TestDockerHelpers(t *testing.T) {
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
-	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"}, "sleep", "60")
-	defer cleanup()
+	cleanup := func() {}
+	defer func() { cleanup() }()
+
+	defer func() {
+		if r := recover(); r != nil {
+			// Check if panic was due to Docker start failure (likely overlayfs issue in CI)
+			errStr := fmt.Sprintf("%v", r)
+			if strings.Contains(errStr, "failed to mount") && strings.Contains(errStr, "overlay") {
+				t.Skipf("Skipping TestDockerHelpers due to Docker overlayfs mount error: %v", errStr)
+			} else {
+				panic(r) // Re-panic if it's a different error
+			}
+		}
+	}()
+
+	cleanup = StartDockerContainer(t, imageName, containerName, []string{"-d"}, "sleep", "60")
 
 	// Verify the container is running
 	dockerExe, dockerArgs := getDockerCommand()
