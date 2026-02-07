@@ -9,8 +9,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Eye, EyeOff, Lock, Unlock, Key } from "lucide-react";
+import { Plus, X, Eye, EyeOff, Lock, Unlock, Key, Sparkles } from "lucide-react";
 import { SecretPicker } from "@/components/secrets/secret-picker";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EnvVar {
   key: string;
@@ -18,12 +20,14 @@ interface EnvVar {
   // If true, this variable is backed by a Secret ID (not plain text)
   isSecretRef: boolean;
   secretId?: string;
+  isSuggested?: boolean;
 }
 
 import { SecretValue } from "@proto/config/v1/auth";
 
 interface EnvVarEditorProps {
   initialEnv?: Record<string, SecretValue>;
+  suggestedKeys?: Record<string, string>; // Key -> Description
   onChange: (env: Record<string, SecretValue>) => void;
 }
 
@@ -32,22 +36,45 @@ interface EnvVarEditorProps {
  *
  * @param onChange - The onChange.
  */
-export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
+export function EnvVarEditor({ initialEnv, suggestedKeys, onChange }: EnvVarEditorProps) {
   const [envVars, setEnvVars] = useState<EnvVar[]>(() => {
-      if (!initialEnv) return [];
-      return Object.entries(initialEnv).map(([key, val]) => {
-          // explicit secretId check
-          if (val.secretId) {
-              return { key, value: val.secretId, isSecretRef: true, secretId: val.secretId };
-          }
-          // Heuristic: if plainText starts with ${ and ends with }, treat as secret ref
-          const plainText = val.plainText || "";
-          const secretMatch = plainText.match(/^\$\{(.+)\}$/);
-          if (secretMatch) {
-               return { key, value: secretMatch[1], isSecretRef: true, secretId: secretMatch[1] };
-          }
-          return { key, value: plainText, isSecretRef: false };
-      });
+      const vars: EnvVar[] = [];
+      const usedKeys = new Set<string>();
+
+      // Load initial env
+      if (initialEnv) {
+          Object.entries(initialEnv).forEach(([key, val]) => {
+              usedKeys.add(key);
+              if (val.secretId) {
+                  vars.push({ key, value: val.secretId, isSecretRef: true, secretId: val.secretId });
+              } else {
+                  // Heuristic: if plainText starts with ${ and ends with }, treat as secret ref
+                  const plainText = val.plainText || "";
+                  const secretMatch = plainText.match(/^\$\{(.+)\}$/);
+                  if (secretMatch) {
+                       vars.push({ key, value: secretMatch[1], isSecretRef: true, secretId: secretMatch[1] });
+                  } else {
+                       vars.push({ key, value: plainText, isSecretRef: false });
+                  }
+              }
+          });
+      }
+
+      // Merge suggestions
+      if (suggestedKeys) {
+          Object.keys(suggestedKeys).forEach(key => {
+              if (!usedKeys.has(key)) {
+                  vars.push({
+                      key,
+                      value: "",
+                      isSecretRef: false,
+                      isSuggested: true
+                  });
+              }
+          });
+      }
+
+      return vars;
   });
 
   const [showValues, setShowValues] = useState<Record<number, boolean>>({});
@@ -83,6 +110,11 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
               // If user edits value of a secret ref, it becomes plain text unless we implement secret picker
               if (field === 'secretId') {
                   updated.secretId = value as string;
+              }
+              // If user edits key, it's no longer a suggested entry tied to the original suggestion logic
+              // but we keep isSuggested true until they save? No, let's clear it if they change the key.
+              if (field === 'key' && v.isSuggested && value !== v.key) {
+                  updated.isSuggested = false;
               }
               return updated;
           }
@@ -132,12 +164,31 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
       <div className="space-y-2">
           {envVars.map((v, i) => (
               <div key={i} className="flex items-center gap-2">
-                  <Input
-                      placeholder="KEY"
-                      value={v.key}
-                      onChange={(e) => updateVar(i, "key", e.target.value)}
-                      className="flex-1"
-                  />
+                   <div className="relative flex-1">
+                      <Input
+                          placeholder="KEY"
+                          value={v.key}
+                          onChange={(e) => updateVar(i, "key", e.target.value)}
+                          className={v.isSuggested ? "border-blue-300 dark:border-blue-700 bg-blue-50/10" : ""}
+                      />
+                      {v.isSuggested && suggestedKeys && suggestedKeys[v.key] && (
+                           <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="absolute right-2 top-1/2 -translate-y-1/2 cursor-help">
+                                            <Badge variant="secondary" className="text-[10px] h-4 px-1 flex items-center gap-1">
+                                                <Sparkles className="h-2 w-2 text-primary" /> Suggested
+                                            </Badge>
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{suggestedKeys[v.key]}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                           </TooltipProvider>
+                      )}
+                   </div>
+
                   <div className="relative flex-1">
                       {v.isSecretRef ? (
                            <SecretPicker
@@ -149,7 +200,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                                         value={v.secretId || ""}
                                         readOnly
                                         className="pr-8 bg-muted/50 cursor-pointer text-primary font-medium focus-visible:ring-primary"
-                                        placeholder="Select a secret..."
+                                        placeholder={suggestedKeys?.[v.key] ? "Set secret..." : "Select a secret..."}
                                     />
                                     <Key className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
@@ -157,7 +208,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                       ) : (
                           <>
                            <Input
-                              placeholder="VALUE"
+                              placeholder={suggestedKeys?.[v.key] || "VALUE"}
                               type={showValues[i] ? "text" : "password"}
                               value={v.value}
                               onChange={(e) => updateVar(i, "value", e.target.value)}

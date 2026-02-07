@@ -16,6 +16,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { SchemaForm } from "./schema-form";
 import { SecretValue } from "@proto/config/v1/auth";
+import { COMMUNITY_MANIFESTS } from "@/lib/community-manifests";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Sparkles } from "lucide-react";
 
 interface InstantiateDialogProps {
     open: boolean;
@@ -46,6 +49,11 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
     const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
     const [isSchemaValid, setIsSchemaValid] = useState(true);
 
+    // Manifest State
+    const [manifestApplied, setManifestApplied] = useState<string | null>(null);
+    const [manifestDescription, setManifestDescription] = useState<string | null>(null);
+    const [suggestedKeys, setSuggestedKeys] = useState<Record<string, string>>({});
+
     // Helper to determine if we should show CLI options
     // Community servers (which are created dynamically) usually have commandLineService populated.
     const isCommandLine = !!templateConfig?.commandLineService;
@@ -54,14 +62,17 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         if (open && templateConfig) {
             setName(`${templateConfig.name}-copy`);
             setAuthId("none");
+            setManifestApplied(null);
+            setManifestDescription(null);
+            setSuggestedKeys({});
+
+            let initialCommand = "";
+            const newEnv: Record<string, SecretValue> = {};
+            const initialSchemaValues: Record<string, string> = {};
 
             if (templateConfig.commandLineService) {
                 // Initialize command
-                setCommand(templateConfig.commandLineService.command || "");
-
-                // Initialize env vars
-                const newEnv: Record<string, SecretValue> = {};
-                const initialSchemaValues: Record<string, string> = {};
+                initialCommand = templateConfig.commandLineService.command || "";
 
                 if (templateConfig.commandLineService.env) {
                     Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {
@@ -81,15 +92,35 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                         initialSchemaValues[k] = val;
                     });
                 }
-                setEnvVars(newEnv);
-                setSchemaValues(initialSchemaValues);
-            } else {
-                setCommand("");
-                setEnvVars({});
-                setSchemaValues({});
             }
 
-            // Parse Schema if available
+            // Check for Community Manifest match
+            const manifest = COMMUNITY_MANIFESTS[templateConfig.name] ||
+                             COMMUNITY_MANIFESTS[templateConfig.sanitizedName] ||
+                             Object.entries(COMMUNITY_MANIFESTS).find(([k]) => templateConfig.name.includes(k))?.[1];
+
+            if (manifest && !templateConfig.configurationSchema) {
+                // Apply manifest if no schema exists
+                setManifestApplied(templateConfig.name);
+                if (manifest.description) setManifestDescription(manifest.description);
+
+                // Merge command if current is generic "npx -y package" or similar, or just prefer manifest
+                // We trust the manifest more for command structure
+                if (manifest.command) {
+                    initialCommand = manifest.command;
+                }
+
+                // Prepare suggested keys
+                if (manifest.env) {
+                    setSuggestedKeys(manifest.env);
+                }
+            }
+
+            setCommand(initialCommand);
+            setEnvVars(newEnv);
+            setSchemaValues(initialSchemaValues);
+
+            // Parse Schema if available (Overrides manifest)
             if (templateConfig.configurationSchema) {
                 try {
                     const schema = JSON.parse(templateConfig.configurationSchema);
@@ -112,6 +143,10 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     });
                     setEnvVars(envWithDefaults);
                     checkSchemaValidity(valuesWithDefaults, schema);
+
+                    // Reset manifest if schema present
+                    setManifestApplied(null);
+                    setSuggestedKeys({});
 
                 } catch (e) {
                     console.error("Failed to parse configuration schema", e);
@@ -175,6 +210,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
             await apiClient.registerService(newConfig);
             toast({ title: "Service Instantiated", description: `${name} is now running.` });
             onOpenChange(false);
+            if (onComplete) onComplete();
 
             // Redirect to the new service page
             router.push(`/upstream-services/${name}`);
@@ -202,6 +238,17 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
                     {isCommandLine && (
                         <>
+                            {manifestApplied && (
+                                <Alert className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                                    <Sparkles className="h-4 w-4 text-blue-500" />
+                                    <AlertTitle className="text-blue-700 dark:text-blue-300">Configuration Auto-Detected</AlertTitle>
+                                    <AlertDescription className="text-blue-600/80 dark:text-blue-400/80 text-xs">
+                                        We've pre-filled the configuration based on community standards.
+                                        {manifestDescription && <span className="block mt-1 font-medium">{manifestDescription}</span>}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+
                             <div className="grid gap-2">
                                 <Label htmlFor="command-input">Command</Label>
                                 <Textarea
@@ -223,7 +270,12 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                                         <SchemaForm schema={parsedSchema} value={schemaValues} onChange={handleSchemaChange} />
                                     </>
                                 ) : (
-                                    <EnvVarEditor initialEnv={envVars} onChange={setEnvVars} />
+                                    <EnvVarEditor
+                                        key={name}
+                                        initialEnv={envVars}
+                                        suggestedKeys={suggestedKeys}
+                                        onChange={setEnvVars}
+                                    />
                                 )}
                             </div>
                         </>
