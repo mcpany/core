@@ -19,9 +19,6 @@ import (
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
 	ID              string        `json:"id"`
-	TraceID         string        `json:"trace_id"`
-	SpanID          string        `json:"span_id"`
-	ParentID        string        `json:"parent_id,omitempty"`
 	Timestamp       time.Time     `json:"timestamp"`
 	Method          string        `json:"method"`
 	Path            string        `json:"path"`
@@ -45,9 +42,13 @@ type Debugger struct {
 
 // NewDebugger creates a new Debugger middleware.
 //
-// size is the size.
+// Summary: Initializes a new Debugger instance with a specified ring buffer size.
 //
-// Returns the result.
+// Parameters:
+//   - size: int. The number of debug entries to keep in the ring buffer.
+//
+// Returns:
+//   - *Debugger: The initialized Debugger instance.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -72,6 +73,8 @@ func (d *Debugger) process() {
 }
 
 // Close stops the background processor.
+//
+// Summary: Closes the debugger and its background processing channel.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -132,37 +135,17 @@ type readCloserWrapper struct {
 
 // Handler returns the http handler.
 //
-// next is the next.
+// Summary: Middleware that captures HTTP requests and responses for debugging.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler with debug capture logic.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		reqID := uuid.New().String()
-
-		// Trace Context Extraction (W3C Trace Context)
-		// Format: 00-traceid-parentid-flags
-		var traceID, parentID, spanID string
-		traceParent := r.Header.Get("traceparent")
-		if traceParent != "" {
-			parts := strings.Split(traceParent, "-")
-			if len(parts) == 4 {
-				traceID = parts[1]
-				parentID = parts[2]
-			}
-		}
-
-		// Fallback to X-Trace-ID if available
-		if traceID == "" {
-			traceID = r.Header.Get("X-Trace-ID")
-		}
-
-		// Generate if missing
-		if traceID == "" {
-			traceID = strings.ReplaceAll(uuid.New().String(), "-", "")
-		}
-		// Generate new SpanID for this request
-		spanID = strings.ReplaceAll(uuid.New().String(), "-", "")[:16]
 
 		// Capture Request Body
 		var reqBody string
@@ -214,9 +197,6 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 
 		entry := DebugEntry{
 			ID:              reqID,
-			TraceID:         traceID,
-			SpanID:          spanID,
-			ParentID:        parentID,
 			Timestamp:       start,
 			Method:          r.Method,
 			Path:            r.URL.Path,
@@ -251,7 +231,10 @@ func isTextContent(contentType string) bool {
 
 // Entries returns the last captured entries.
 //
-// Returns the result.
+// Summary: Retrieves the captured debug entries from the ring buffer.
+//
+// Returns:
+//   - []DebugEntry: A slice of captured debug entries.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -267,7 +250,10 @@ func (d *Debugger) Entries() []DebugEntry {
 
 // APIHandler returns a http.HandlerFunc to view entries.
 //
-// Returns the result.
+// Summary: Returns an HTTP handler that serves the captured debug entries as JSON.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

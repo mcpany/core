@@ -46,7 +46,7 @@ test: gen
 	$(MAKE) -C k8s test
 
 
-docker-build-all:
+docker-build-all: gen
 	$(MAKE) -C server docker-build-server docker-build-dev docker-build-http-echo
 	$(MAKE) -C ui docker-build-ui build-test-docker
 test-proto:
@@ -154,7 +154,7 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+		cd ui && npm install || (echo "Failed to install UI dependencies"; exit 1); \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
@@ -183,7 +183,8 @@ gen: clean-protos prepare-proto
 		fi; \
 		echo "Standard TypeScript Protobuf generation complete."; \
 	else \
-		echo "Warning: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. Skipping TypeScript generation."; \
+		echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TS generation failed."; \
+		exit 1; \
 	fi
 
 update-screenshots:

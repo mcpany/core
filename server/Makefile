@@ -393,12 +393,12 @@ e2e-parallel: build-test-images build build-examples build-e2e-mocks
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@mkdir -p $(BUILD_DIR)/bundles
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
 	@-pkill -f file-upload-server
 
 e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
@@ -545,7 +545,7 @@ endif
 # Set PLATFORMS to specify target platforms, e.g., linux/amd64,linux/arm64.
 # If PLATFORMS is not set, it defaults to the host architecture.
 # For single-platform local builds, --load is added automatically.
-build-docker: docker/Dockerfile.server prepare-docker-context
+build-docker: gen docker/Dockerfile.server prepare-docker-context
 ifdef HAS_DOCKER
 	@{ \
 		PLATFORMS="$(PLATFORMS)"; \
@@ -663,6 +663,7 @@ endif
 # Target to run the UI Docker smoke test
 # Target to build UI Docker image (wrapper for CI)
 docker-build-ui:
+	$(MAKE) -C .. gen
 	$(MAKE) -C ../ui docker-build-ui
 
 docker-smoke-test-ui:

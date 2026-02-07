@@ -6,21 +6,21 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is the universal adapter that instantly transforms your existing APIs into Model Context Protocol (MCP) compliant tools. It serves as a configuration-driven gateway, bridging the gap between *any* API—whether REST, gRPC, GraphQL, or Command-line—and AI agents.
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+Traditional MCP adoption often suffers from "binary fatigue," requiring a separate server binary for every tool. **MCP Any** eliminates this burden by allowing you to run a single, unified binary that acts as a secure gateway to multiple services, all defined purely through lightweight configuration files.
 
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**The Solution:** Stop writing code just to expose your APIs to AI. Configure them instead. MCP Any unifies your backend services into a single, secure, observable, and standard MCP endpoint.
 
 ## 2. Architecture
 
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. Built with **Go** for high performance and concurrency, it employs a modular architecture to support diverse upstream protocols seamlessly.
 
 **High-Level Overview:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+1.  **Core Server**: A robust Go-based runtime that speaks the MCP protocol fluently.
+2.  **Service Registry**: Dynamically loads tool definitions from local or remote configuration files.
+3.  **Adapters**: specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to protect your infrastructure.
 
 ```mermaid
 graph TD
@@ -41,17 +41,17 @@ graph TD
 ```
 
 ### Key Design Patterns
-*   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
-*   **Configuration as Code**: All services are defined in declarative YAML/JSON.
-*   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
+*   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics, ensuring flexibility.
+*   **Configuration as Code**: All services are defined in declarative YAML/JSON, enabling version control and reproducibility.
+*   **Sidecar/Gateway**: Deploys flexibly as a standalone gateway or a Kubernetes sidecar.
 
 ## 3. Getting Started
 
-Follow these steps to get up and running immediately.
+Follow these steps to go from zero to a running server.
 
 ### Prerequisites
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized execution)
 *   `make` (for build automation)
 
 ### Installation
@@ -71,7 +71,7 @@ Follow these steps to get up and running immediately.
     ```bash
     make build
     ```
-    This will create the `server` binary in `build/bin/`.
+    This generates the `server` binary in `build/bin/`.
 
 4.  **Run with an example configuration:**
     ```bash
@@ -79,48 +79,48 @@ Follow these steps to get up and running immediately.
     ```
 
 ### Hello World
-Once the server is running, you can verify it using `curl` or an MCP client.
+Verify the server is running and responsive:
+
 ```bash
 # Check health
 curl http://localhost:50050/health
 ```
 
-To connect an AI client (like Claude Desktop or Gemini CLI):
+Connect an AI client (like Claude Desktop or Gemini CLI):
 ```bash
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
 ## 4. Development
 
-We follow a strict development workflow to ensure quality.
+We adhere to a strict development workflow to ensure code quality and stability.
 
 ### Setup
-Before running tests or building locally, ensure all dependencies and tools are installed.
+Ensure all dependencies and tools are installed before starting:
 ```bash
 make prepare
 ```
 
 ### Testing
-Run all unit, integration, and end-to-end tests to ensure code correctness.
+Run the comprehensive test suite to verify logic:
 ```bash
 make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
-Run the linter to verify your changes:
+We enforce **100% documentation coverage** for the public API surface. Run the linter to verify compliance with style guides (Godoc, etc.):
 ```bash
 make lint
 ```
 
 ### Building
-Compile all artifacts (Server binary and UI assets).
+Compile all artifacts, including the server binary and UI assets:
 ```bash
 make build
 ```
 
 ### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
+Regenerate Protocol Buffers and other auto-generated files if `.proto` definitions change:
 ```bash
 make gen
 ```
@@ -144,9 +144,9 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
 
 ### Required Secrets
-Sensitive information (like upstream API keys) should **never** be hardcoded in configuration files. Instead, use environment variables referencing them.
+**Security Warning:** Sensitive information (like upstream API keys) should **never** be hardcoded in configuration files. Use environment variable references instead.
 
-Example Config:
+**Example Config:**
 ```yaml
 upstreamAuth:
   apiKey:

@@ -8,8 +8,12 @@ on:
       release_version:
         description: "The release version (e.g., v1.2.3)"
         required: true
-  schedule:
-    - cron: '0 3 * * *'
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 env:
   # Define registries and image names centrally
@@ -175,6 +179,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Generate Protobufs
+        run: |
+          # make gen handles downloading protoc and generating files
+          make gen
 
       - name: Get Date
         id: get-date
