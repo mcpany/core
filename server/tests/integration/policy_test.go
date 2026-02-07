@@ -28,15 +28,13 @@ import (
 func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	t.Helper()
 
-	root := ProjectRoot(t)
-	serverBin := filepath.Join(root, "../build/bin/server")
+	serverBin := GetServerBinaryPath(t)
 
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
-	cmd.Dir = t.TempDir() // Isolate working directory
 	cmd.Env = append(os.Environ(),
 		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"MCPANY_ENABLE_FILE_CONFIG=true",
