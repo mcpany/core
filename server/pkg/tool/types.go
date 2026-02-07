@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2671,9 +2668,11 @@ func isShellCommand(cmd string) bool {
 		// Additional shells/runners found missing
 		"busybox", "expect", "tclsh", "wish",
 		"irb", "php-cgi", "perl5",
-		"openssl",
+		// Editors and pagers that can execute commands
+		"vi", "vim", "nvim", "emacs", "nano",
+		"less", "more", "man",
 		// Build tools and others that can execute commands
-		"find", "xargs",
+		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Additional interpreters and compilers that can execute code
@@ -2684,7 +2683,7 @@ func isShellCommand(cmd string) bool {
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
-		"gdb", "lldb",
+		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2999,9 +2998,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
