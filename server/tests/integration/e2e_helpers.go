@@ -585,8 +585,10 @@ func IsDockerSocketAccessible() bool {
 
 	// Also check if we can run a simple container (overlayfs check)
 	// We use 'alpine' if available, or just try to run 'hello-world'.
-	runArgs := append(dockerArgs, "run", "--rm", "alpine", "true")
-	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...)
+	runArgs := make([]string, len(dockerArgs), len(dockerArgs)+4)
+	copy(runArgs, dockerArgs)
+	runArgs = append(runArgs, "run", "--rm", "alpine", "true")
+	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	if err := cmdRun.Run(); err != nil {
 		return false
 	}
@@ -646,7 +648,13 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Use Run instead of Start for 'docker run -d' to ensure the command completes
 	// and the container is running before proceeding.
 	err := startCmd.Run()
-	require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
+	if err != nil {
+		errStr := stderr.String()
+		if strings.Contains(errStr, `mount source: "overlay"`) && strings.Contains(errStr, "invalid argument") {
+			t.Skipf("Skipping test due to Docker overlayfs error: %v. Stderr: %s", err, errStr)
+		}
+		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, errStr)
+	}
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
