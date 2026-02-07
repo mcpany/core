@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -63,55 +64,79 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
  */
+import { Loader2 } from "lucide-react";
+
+/**
+ * DashboardGrid component.
+ * @returns The rendered component.
+ */
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
 
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    interface LegacyWidget {
-                        id: string;
-                        title: string;
-                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
-                        hidden?: boolean;
-                    }
-                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                        instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
-                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                        hidden: w.hidden ?? false
-                    }));
-
-                    // Filter out any invalid types
-                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
-                        setWidgets(DEFAULT_LAYOUT);
+        const loadFromLocalStorage = () => {
+            const saved = localStorage.getItem("dashboard-layout");
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Migration Logic
+                    // Case 1: Legacy format (DashboardWidget[]) where id matches type
+                    if (parsed.length > 0 && !parsed[0].instanceId) {
+                        interface LegacyWidget {
+                            id: string;
+                            title: string;
+                            type: string;
+                            hidden?: boolean;
+                        }
+                        const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
+                            instanceId: crypto.randomUUID(),
+                            type: w.id,
+                            title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                            size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                            hidden: w.hidden ?? false
+                        }));
+                        const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
+                        setWidgets(validMigrated.length > 0 ? validMigrated : DEFAULT_LAYOUT);
                     } else {
-                        setWidgets(validMigrated);
+                        // Case 2: Already in new format
+                        setWidgets(parsed);
                     }
-                } else {
-                    // Case 2: Already in new format
-                    setWidgets(parsed);
+                } catch (e) {
+                    console.error("Failed to load dashboard layout locally", e);
+                    setWidgets(DEFAULT_LAYOUT);
                 }
-            } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+            } else {
                 setWidgets(DEFAULT_LAYOUT);
             }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
-        }
+            setIsLoaded(true);
+        };
+
+        // Try to load from backend first
+        apiClient.getDashboardLayout()
+            .then(res => {
+                if (res && res.layoutJson) {
+                    try {
+                        const parsed = JSON.parse(res.layoutJson);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            setWidgets(parsed);
+                            setIsLoaded(true);
+                            return;
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse remote layout", e);
+                    }
+                }
+                // Fallback to local storage if remote is empty or failed
+                loadFromLocalStorage();
+            })
+            .catch(err => {
+                console.warn("Failed to load remote layout", err);
+                loadFromLocalStorage();
+            });
     }, []);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
@@ -140,7 +165,9 @@ export function DashboardGrid() {
         }
 
         const timer = setTimeout(() => {
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
+            const json = JSON.stringify(widgets);
+            localStorage.setItem("dashboard-layout", json);
+            apiClient.saveDashboardLayout(json).catch(e => console.error("Failed to save layout remotely", e));
         }, 500);
 
         return () => clearTimeout(timer);
@@ -190,7 +217,14 @@ export function DashboardGrid() {
         saveWidgets([newWidget, ...widgets]);
     };
 
-    if (!isMounted) return null;
+    if (!isMounted || !isLoaded) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 min-h-[300px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Loading dashboard...</p>
+            </div>
+        );
+    }
 
     const renderWidget = (widget: WidgetInstance) => {
         const def = getWidgetDefinition(widget.type);

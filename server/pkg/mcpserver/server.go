@@ -180,14 +180,7 @@ func NewServer(
 
 				res, err := s.CallTool(ctx, execReq)
 				if err != nil {
-					return &mcp.CallToolResult{
-						Content: []mcp.Content{
-							&mcp.TextContent{
-								Text: fmt.Sprintf("Tool execution failed: %v", err),
-							},
-						},
-						IsError: true,
-					}, nil
+					return nil, err
 				}
 				if result, ok := res.(mcp.Result); ok {
 					return result, nil

@@ -1,0 +1,36 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package mcpany.api.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/mcpany/core/proto/api/v1";
+
+service DashboardService {
+  rpc GetDashboardLayout(GetDashboardLayoutRequest) returns (GetDashboardLayoutResponse) {
+    option (google.api.http) = {
+      get: "/v1/dashboard/layout"
+    };
+  }
+  rpc SaveDashboardLayout(SaveDashboardLayoutRequest) returns (SaveDashboardLayoutResponse) {
+    option (google.api.http) = {
+      post: "/v1/dashboard/layout"
+      body: "*"
+    };
+  }
+}
+
+message GetDashboardLayoutRequest {}
+
+message GetDashboardLayoutResponse {
+  string layout_json = 1;
+}
+
+message SaveDashboardLayoutRequest {
+  string layout_json = 1;
+}
+
+message SaveDashboardLayoutResponse {}

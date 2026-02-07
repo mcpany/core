@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/dashboard"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
@@ -139,7 +140,6 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
-	DBPath          string
 }
 
 // Runner defines the interface for running the application.
@@ -330,10 +330,7 @@ func (a *Application) Run(opts RunOptions) error {
 		dbDriver := config.GlobalSettings().GetDbDriver()
 		switch dbDriver {
 		case "", "sqlite":
-			dbPath := opts.DBPath
-			if dbPath == "" {
-				dbPath = config.GlobalSettings().DBPath()
-			}
+			dbPath := config.GlobalSettings().DBPath()
 			if dbPath == "" {
 				dbPath = "mcpany.db"
 			}
@@ -418,9 +415,32 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Initialize Settings Manager
+	allowedIPs := cfg.GetGlobalSettings().GetAllowedIps()
+	// Patch for IPv6 loopback if IPv4 loopback is present (fix for CI SSRF)
+	hasLocalhost := false
+	for _, ip := range allowedIPs {
+		if ip == "127.0.0.1" {
+			hasLocalhost = true
+			break
+		}
+	}
+	if hasLocalhost {
+		// Check if ::1 is missing
+		hasIPv6 := false
+		for _, ip := range allowedIPs {
+			if ip == "::1" {
+				hasIPv6 = true
+				break
+			}
+		}
+		if !hasIPv6 {
+			allowedIPs = append(allowedIPs, "::1")
+		}
+	}
+
 	a.SettingsManager = NewGlobalSettingsManager(
 		opts.APIKey,
-		cfg.GetGlobalSettings().GetAllowedIps(),
+		allowedIPs,
 		// Logic for origins default moved to inside NewGlobalSettingsManager or updated here
 		nil,
 	)
@@ -2022,6 +2042,10 @@ func (a *Application) runServerMode(
 	// Register Skill Service
 	v1.RegisterSkillServiceServer(grpcServer, NewSkillServiceServer(a.SkillManager))
 
+	// Register Dashboard Service
+	dashboardServer := dashboard.NewServer(store)
+	v1.RegisterDashboardServiceServer(grpcServer, dashboardServer)
+
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
 	wrappedGrpc = grpcweb.WrapServer(grpcServer,
 		grpcweb.WithOriginFunc(func(_ string) bool { return true }),
@@ -2048,6 +2072,8 @@ func (a *Application) runServerMode(
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
 				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
+				} else if err := v1.RegisterDashboardServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register dashboard gateway: %w", err)
 				} else if err := pb_admin.RegisterAdminServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register admin gateway: %w", err)
 				} else {
