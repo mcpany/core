@@ -19,6 +19,15 @@ import (
 // ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
 // representation, into a protobuf-defined *pb.Tool with a structured input
 // schema. This is used to standardize tool definitions within the system.
+//
+// Summary: Converts an MCP tool definition to a protobuf tool definition.
+//
+// Parameters:
+//   - tool: *mcp.Tool. The MCP tool definition to convert.
+//
+// Returns:
+//   - *pb.Tool: The converted protobuf tool definition.
+//   - error: An error if conversion fails.
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -82,6 +91,15 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 
 // convertJSONSchemaToStruct converts a JSON schema, represented as an `any` type,
 // into a `*structpb.Struct`.
+//
+// Summary: Converts a JSON schema map to a protobuf Struct.
+//
+// Parameters:
+//   - schema: any. The JSON schema (usually map[string]any).
+//
+// Returns:
+//   - *structpb.Struct: The protobuf Struct representation.
+//   - error: An error if conversion fails.
 func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil
@@ -101,6 +119,15 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
 // represent fields from a protobuf message, into a structpb.Struct that can be
 // used as the `properties` field in a JSON schema.
+//
+// Summary: Converts protobuf fields to JSON schema properties.
+//
+// Parameters:
+//   - fields: []*protobufparser.McpField. The list of protobuf fields.
+//
+// Returns:
+//   - *structpb.Struct: The JSON schema properties.
+//   - error: An error if conversion fails.
 func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
@@ -127,6 +154,17 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 // *pb.Tool.
+//
+// Summary: Converts a tool definition configuration to a protobuf tool definition.
+//
+// Parameters:
+//   - toolDef: *configv1.ToolDefinition. The tool definition configuration.
+//   - inputSchema: *structpb.Struct. The input schema.
+//   - outputSchema: *structpb.Struct. The output schema.
+//
+// Returns:
+//   - *pb.Tool: The converted protobuf tool definition.
+//   - error: An error if conversion fails.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
@@ -169,6 +207,16 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
 // "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
 // is a helper function for building JSON schemas from protobuf definitions.
+//
+// Summary: Maps protobuf scalar types to JSON schema types.
+//
+// Parameters:
+//   - scalarType: string. The protobuf scalar type.
+//   - description: string. The description of the field.
+//
+// Returns:
+//   - *jsonschema.Schema: The JSON schema.
+//   - error: An error if the type is unsupported.
 func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
 		Description: description,
@@ -197,6 +245,15 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
 // exposing internally defined tools to the outside world.
+//
+// Summary: Converts a protobuf tool definition to an MCP tool definition.
+//
+// Parameters:
+//   - pbTool: *pb.Tool. The protobuf tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//   - error: An error if conversion fails.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")
