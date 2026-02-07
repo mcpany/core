@@ -119,6 +119,11 @@ Compile all artifacts (Server binary and UI assets).
 make build
 ```
 
+To build the Docker image:
+```bash
+make build-docker
+```
+
 ### Code Generation
 Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
 ```bash
