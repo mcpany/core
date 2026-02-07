@@ -30,16 +30,15 @@ def check_file(filepath):
     # export interface Name
     # export type Name
     # export const Name
-
-    # We want to catch:
-    # export default function ...
-    # export default class ...
-
     pattern = re.compile(r'^\s*export\s+(default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
+
+    # Regex for "export { ... }" blocks (naive check)
+    export_block_pattern = re.compile(r'^\s*export\s+\{(.*)\}')
 
     missing_docs = []
 
     for i, line in enumerate(lines):
+        # standard exports
         match = pattern.match(line)
         if match:
             name = match.group(3)
@@ -51,7 +50,7 @@ def check_file(filepath):
                 if not prev:
                     j -= 1
                     continue
-                if prev.startswith('@'): # decorators
+                if prev.startswith('@') or prev.startswith('//'): # decorators or comments
                     j -= 1
                     continue
                 if prev.endswith('*/'):
@@ -60,6 +59,54 @@ def check_file(filepath):
 
             if not has_doc:
                 missing_docs.append((i + 1, name))
+
+        # export blocks
+        block_match = export_block_pattern.match(line)
+        if block_match:
+            # For export { ... }, we need to check if the symbols are documented where they are defined.
+            # This is hard to do with regex without parsing the whole file.
+            # For now, we assume if they are defined in this file, they should be documented.
+            # We can just warn about them or try to find the definition.
+            # Let's try to find the definition.
+            symbols = [s.strip() for s in block_match.group(1).split(',')]
+            for sym in symbols:
+                # Handle "foo as bar"
+                if " as " in sym:
+                    sym = sym.split(" as ")[0].strip()
+
+                # Look for definition in the file
+                # const sym = ...
+                # function sym(...) ...
+                # class sym ...
+                # interface sym ...
+                # type sym ...
+
+                # Simple check: search for definition line
+                def_pattern = re.compile(r'^\s*(const|function|class|interface|type|enum)\s+' + re.escape(sym) + r'\b')
+                found_def = False
+                for k, l in enumerate(lines):
+                    if def_pattern.match(l):
+                        found_def = True
+                        # Check docs above definition
+                        has_doc = False
+                        m = k - 1
+                        while m >= 0:
+                            prev = lines[m].strip()
+                            if not prev:
+                                m -= 1
+                                continue
+                            if prev.startswith('@') or prev.startswith('//'):
+                                m -= 1
+                                continue
+                            if prev.endswith('*/'):
+                                has_doc = True
+                            break
+
+                        if not has_doc:
+                             missing_docs.append((i + 1, f"{sym} (via export {{}} at line {i+1})"))
+                        break
+
+                # If not found definition, maybe it's imported? We ignore imports for now.
 
     return missing_docs
 
