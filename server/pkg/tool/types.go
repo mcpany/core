@@ -2862,6 +2862,21 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
+	// Ruby and Perl: Block pipe | to prevent open("|cmd") RCE
+	// Although checking content isn't perfect, blocking | in user input for these interpreters is a high-value defense.
+	if strings.HasPrefix(base, "ruby") {
+		// Ruby Kernel#open only executes if the string starts with '|'
+		if strings.HasPrefix(val, "|") {
+			return fmt.Errorf("ruby injection detected: value starts with '|' (blocks open(\"|cmd\") RCE)")
+		}
+	} else if isPerl {
+		// Perl open() executes if string starts OR ends with '|', and often trims whitespace.
+		trimmed := strings.TrimSpace(val)
+		if strings.HasPrefix(trimmed, "|") || strings.HasSuffix(trimmed, "|") {
+			return fmt.Errorf("perl injection detected: value contains '|' at start/end (blocks open() RCE)")
+		}
+	}
+
 	return nil
 }
 
