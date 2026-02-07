@@ -7,42 +7,41 @@ import { request, APIRequestContext } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
-const HEADERS = { 'X-API-Key': API_KEY };
+const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
         {
-            id: "svc_01",
-            name: "Payment Gateway",
+            id: "svc_01_new",
+            name: "Payment Gateway New",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            command_line_service: {
+                command: "echo",
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
             }
         },
         {
-            id: "svc_02",
-            name: "User Service",
+            id: "svc_02_new",
+            name: "User Service New",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+            command_line_service: {
+                command: "echo",
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
-            id: "svc_03",
-            name: "Math",
+            id: "svc_03_new",
+            name: "Math New",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            command_line_service: {
+                command: "echo",
                 tools: [
-                    { name: "calculator", description: "calc" }
+                    { name: "calculator", description: "Perform basic math" }
                 ]
             }
         }
@@ -50,7 +49,11 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            await context.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS }).catch(() => {});
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) {
+                console.log(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
+            }
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
         }
@@ -77,7 +80,8 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
         ]
     };
     try {
-        const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
+        await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS }).catch(() => {});
+        const res = await context.put(`/api/v1/collections/${name}`, { data: collection, headers: HEADERS });
         if (!res.ok()) {
             console.log(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
         }
@@ -88,11 +92,28 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
-    ];
+
+    const now = new Date();
+    const trafficPoints = [];
+
+    // Seed last 15 minutes
+    for (let i = 14; i >= 0; i--) {
+        const t = new Date(now.getTime() - i * 60000);
+        const localTimeStr = t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
+
+        trafficPoints.push({
+            time: localTimeStr,
+            requests: 100 + Math.floor(Math.random() * 50),
+            errors: i % 5 === 0 ? 5 : 0,
+            latency: 50 + Math.floor(Math.random() * 20)
+        });
+    }
+
     try {
-        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        const res = await context.post('/api/v1/debug/seed_traffic', { data: trafficPoints, headers: HEADERS });
+        if (!res.ok()) {
+             console.log(`Failed to seed traffic: ${res.status()} ${await res.text()}`);
+        }
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
@@ -101,9 +122,9 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete('/api/v1/services/Payment Gateway New', { headers: HEADERS });
+        await context.delete('/api/v1/services/User Service New', { headers: HEADERS });
+        await context.delete('/api/v1/services/Math New', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
@@ -118,7 +139,7 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
     }
 };
 
-export const seedUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
+export const seedUser = async (requestContext?: APIRequestContext, username: string = "e2e-admin") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
         id: username,
@@ -132,14 +153,13 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         roles: ["admin"]
     };
     try {
-        // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
         await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
     }
 };
 
-export const cleanupUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
+export const cleanupUser = async (requestContext?: APIRequestContext, username: string = "e2e-admin") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });

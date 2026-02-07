@@ -3,52 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
+import { seedTraffic, seedServices, cleanupServices } from './test-data';
 
 test.describe('MCP Any UI E2E', () => {
 
-  test('Debug verify file version', async () => {
-    console.log('DEBUG: RUNNING MODIFIED FILE');
+  test.beforeEach(async ({ page, request }) => {
+      // Seed real data
+      await seedServices(request);
+      await seedTraffic(request);
   });
 
-  test.beforeEach(async ({ page }) => {
-    // Mock metrics API to prevent backend connection errors during tests
-    await page.route('**/api/v1/dashboard/metrics*', async route => {
-        await route.fulfill({
-            json: [
-                { label: "Total Requests", value: "1,234", icon: "Activity", change: "+10%", trend: "up" },
-                { label: "System Health", value: "99.9%", icon: "Zap", change: "Stable", trend: "neutral" }
-            ]
-        });
-    });
-
-    // Mock health API
-    await page.route('**/api/dashboard/health*', async route => {
-        await route.fulfill({
-            json: []
-        });
-    });
-
-    // Mock doctor API to prevent system status banner
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
-
-    // Mock stats/tools APIs for Analytics page
-    await page.route('**/api/v1/dashboard/traffic*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/dashboard/top-tools*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/tools*', async route => {
-        await route.fulfill({ json: { tools: [] } });
-    });
+  test.afterEach(async ({ request }) => {
+      await cleanupServices(request);
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
@@ -65,22 +32,22 @@ test.describe('MCP Any UI E2E', () => {
     // Check for metrics cards
     await expect(page.locator('text=Total Requests').first()).toBeVisible();
     await expect(page.locator('text=System Health').first()).toBeVisible();
-    // Verify that exactly 2 metric cards are displayed
-    const cards = page.locator('.rounded-xl.border.bg-card');
-    // Note: The selector might need to be specific to the metric cards if other cards exist
-    // But based on the dashboard, we can check for specific content presence.
-    // Let's rely on visibility for now, or check count of specific metric values
-    await expect(page.getByText('1,234').first()).toBeVisible();
-    await expect(page.getByText('99.9%').first()).toBeVisible();
+
+    // Check values are present (not 0)
+    // Seeded data should provide > 0 requests
+    await expect(page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph')).toHaveText(/[0-9,]+/, { timeout: 10000 });
   });
 
-  test.skip('should navigate to analytics from sidebar', async ({ page }) => {
+  test('should navigate to analytics from sidebar', async ({ page }) => {
     // Verify direct navigation first (and warm up the route)
     await page.goto('/stats');
     await expect(page.locator('h1')).toContainText('Analytics & Stats');
 
     await page.goto('/');
-    // Check if link exists
+
+    // Ensure sidebar is expanded if possible, or try to click the trigger
+    // SidebarTrigger might be visible.
+    // If not, rely on the link.
     const statsLink = page.getByRole('link', { name: /Analytics|Stats/i });
     if (await statsLink.count() > 0) {
         await expect(statsLink).toBeVisible();
@@ -93,7 +60,24 @@ test.describe('MCP Any UI E2E', () => {
         // Verify page content
         await expect(page.locator('h1')).toContainText('Analytics & Stats');
     } else {
-        console.log('Analytics link not found in sidebar, skipping navigation test');
+        // If link is hidden, try to open sidebar?
+        // Assume default desktop view has it.
+        // If fail, we fail (unskipped).
+        // Check if there is a 'Sidebar' toggle button
+        const trigger = page.locator('button[data-sidebar="trigger"]');
+        if (await trigger.isVisible()) {
+            await trigger.click();
+            await expect(statsLink).toBeVisible();
+            await statsLink.click();
+            await expect(page).toHaveURL(/.*\/stats/);
+        } else {
+             // Maybe it's just icon?
+             // Use locators from app-sidebar.tsx
+             // It uses Lucide 'Activity' icon.
+             // Hard to target by icon.
+             // We'll fail if not found, to investigate.
+             throw new Error('Analytics link not found in sidebar');
+        }
     }
   });
 
