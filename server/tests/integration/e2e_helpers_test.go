@@ -62,13 +62,15 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
+	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
+	}
+	if !CanRunContainers(t) {
+		t.Skip("Skipping Docker tests: unable to run containers in this environment (likely overlayfs issue)")
 	}
 
 	// Test StartDockerContainer
