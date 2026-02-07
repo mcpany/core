@@ -50,7 +50,8 @@ graph TD
 Follow these steps to get up and running immediately.
 
 ### Prerequisites
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
+*   [Go 1.23+](https://go.dev/doc/install) (for building the server)
+*   [Node.js 18+](https://nodejs.org/) (for building the UI)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 *   `make` (for build automation)
 
@@ -66,12 +67,18 @@ Follow these steps to get up and running immediately.
     ```bash
     make prepare
     ```
+    This prepares the Go environment and installs necessary tools.
 
-3.  **Build the server:**
+3.  **Build everything (Server + UI):**
+    ```bash
+    make all
+    ```
+    This will create the `server` binary in `build/bin/` and build the UI assets in `ui/out/`.
+
+    *Alternatively, to build only the server:*
     ```bash
     make build
     ```
-    This will create the `server` binary in `build/bin/`.
 
 4.  **Run with an example configuration:**
     ```bash
@@ -114,9 +121,16 @@ make lint
 ```
 
 ### Building
-Compile all artifacts (Server binary and UI assets).
+Compile all artifacts.
 ```bash
+# Build everything (Server + UI)
+make all
+
+# Build Server only
 make build
+
+# Build UI only
+make -C ui build
 ```
 
 ### Code Generation
