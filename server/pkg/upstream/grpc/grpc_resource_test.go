@@ -141,10 +141,6 @@ func (m *TestMockToolManager) GetAllowedServiceIDs(profileID string) (map[string
 	return nil, true
 }
 
-func (m *TestMockToolManager) GetToolCountForService(serviceID string) int {
-	return 0
-}
-
 func TestRegisterDynamicResources_Detailed(t *testing.T) {
 	u := &Upstream{}
 	serviceID := "test-service"
