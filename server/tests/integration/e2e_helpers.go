@@ -221,8 +221,12 @@ func GetProjectRoot() (string, error) {
 	findRootOnce.Do(func() {
 		// Allow overriding via environment variable
 		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
-			projectRoot = envRoot
-			return
+			// Validate that the directory exists and contains go.mod
+			if _, err := os.Stat(filepath.Join(envRoot, "go.mod")); err == nil {
+				projectRoot = envRoot
+				return
+			}
+			// If invalid, ignore and fallback to auto-detection (useful if env var is set for container but running on host)
 		}
 
 		// Find the project root by looking for the go.mod file
@@ -582,13 +586,6 @@ func IsDockerSocketAccessible() bool {
 	if err := cmd.Run(); err != nil {
 		return false
 	}
-
-	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
-	if err := runCmd.Run(); err != nil {
-		return false
-	}
-
 	return true
 }
 
@@ -817,7 +814,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
+	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
@@ -832,7 +829,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ConfigPaths:     []string{},
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
-			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
@@ -1010,9 +1006,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
-	}
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
