@@ -2854,6 +2854,15 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
+	// Ruby and Perl: Block pipe | at start/end to prevent open() command injection
+	// This applies regardless of quoting because open("|cmd") parses the string content.
+	if strings.HasPrefix(base, "ruby") || isPerl {
+		trimmed := strings.TrimSpace(val)
+		if strings.HasPrefix(trimmed, "|") || strings.HasSuffix(trimmed, "|") {
+			return fmt.Errorf("interpreter pipe injection detected: value starts/ends with '|'")
+		}
+	}
+
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
