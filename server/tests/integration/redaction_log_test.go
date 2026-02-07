@@ -7,31 +7,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRedactionInLogs(t *testing.T) {
-	// Reset logger to capture output
-	logging.ForTestsOnlyResetLogger()
-
-	logBuffer := &threadSafeBuffer{}
-	logging.Init(slog.LevelInfo, logBuffer)
-
-	// Reset logger cleanup
-	defer logging.ForTestsOnlyResetLogger()
-
-	apiKey := "test-api-key"
-	// Use the refactored helper with API key
-	serverInfo := StartInProcessMCPANYServer(t, "redaction-test", apiKey)
+	t.Log("Starting TestRedactionInLogs")
+	// Use external process to isolate logs and avoid global state modification
+	// This prevents race conditions with other tests running in parallel
+	// Pass --log-level=info to reduce noise, we only need INFO logs for redaction check
+	serverInfo := StartMCPANYServer(t, "redaction-test", "--log-level=info")
 	defer serverInfo.CleanupFunc()
 
 	// Create a dummy upstream service
@@ -76,8 +67,12 @@ func TestRedactionInLogs(t *testing.T) {
 	_, err := serverInfo.CallTool(context.Background(), callToolParams)
 	require.NoError(t, err)
 
-	// Check logs
-	logs := logBuffer.String()
+	// Wait for the tool execution log to appear to ensure logs are flushed
+	// Increased timeout to 10s for slower CI environments
+	serverInfo.Process.WaitForText(t, "Tool execution completed", 10*time.Second)
+
+	// Check logs from stdout and stderr
+	logs := serverInfo.Process.StdoutString() + "\n" + serverInfo.Process.StderrString()
 
 	// We expect "Calling tool..." log message
 	if !strings.Contains(logs, "Calling tool...") {
@@ -100,4 +95,5 @@ func TestRedactionInLogs(t *testing.T) {
 	if !strings.Contains(logs, "[REDACTED]") {
 		t.Fatalf("Expected '[REDACTED]' in logs, but not found. Logs snippet: %s", logs)
 	}
+	t.Log("TestRedactionInLogs passed")
 }

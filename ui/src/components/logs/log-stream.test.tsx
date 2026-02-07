@@ -9,12 +9,36 @@ import { vi } from "vitest";
 
 // Mock react-virtuoso
 vi.mock("react-virtuoso", () => ({
-  Virtuoso: ({ data, itemContent }: any) => (
-    <div data-testid="virtuoso-mock">
-      {data.map((item: any, index: number) => itemContent(index, item))}
-    </div>
-  ),
+  Virtuoso: ({ data, itemContent }: any) => {
+    console.log("Virtuoso rendered with data length:", data?.length);
+    return (
+      <div data-testid="virtuoso-mock">
+        {data.map((item: any, index: number) => itemContent(index, item))}
+      </div>
+    );
+  },
   VirtuosoHandle: {},
+}));
+
+// Mock next/dynamic
+vi.mock("next/dynamic", () => ({
+  default: () => {
+    return (props: any) => {
+        // Simple heuristic to detect which component it is
+        if (props.itemContent && props.data) {
+             return (
+               <div data-testid="virtuoso-mock">
+                 {props.data.map((item: any, index: number) => props.itemContent(index, item))}
+               </div>
+             );
+        }
+        // JsonViewer
+        if (props.data) {
+            return <div data-testid="json-viewer">{JSON.stringify(props.data)}</div>;
+        }
+        return null;
+    }
+  },
 }));
 
 // Mock next/navigation
@@ -338,6 +362,76 @@ describe("LogStream", () => {
 
     // Should show "Invalid JSON" message
     expect(screen.getByText("Invalid JSON")).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it("filters logs by time range", async () => {
+    vi.useFakeTimers();
+    // Set a fixed system time
+    const now = new Date("2024-01-01T12:00:00Z").getTime();
+    vi.setSystemTime(now);
+
+    render(<LogStream />);
+
+    act(() => {
+      if (mockWebSocket.onopen) mockWebSocket.onopen();
+    });
+
+    // Log from 1 minute ago (should show in Last 5m)
+    const logRecent = {
+      id: "recent",
+      timestamp: new Date(now - 60 * 1000).toISOString(),
+      level: "INFO",
+      message: "Recent Log",
+      source: "test"
+    };
+
+    // Log from 1 hour ago (should NOT show in Last 5m)
+    const logOld = {
+      id: "old",
+      timestamp: new Date(now - 60 * 60 * 1000).toISOString(),
+      level: "INFO",
+      message: "Old Log",
+      source: "test"
+    };
+
+    act(() => {
+      if (mockWebSocket.onmessage) {
+          mockWebSocket.onmessage({ data: JSON.stringify(logRecent) });
+          mockWebSocket.onmessage({ data: JSON.stringify(logOld) });
+      }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(500);
+    });
+
+    // Initially both should be visible (default ALL)
+    expect(screen.getByText("Recent Log")).toBeInTheDocument();
+    expect(screen.getByText("Old Log")).toBeInTheDocument();
+
+    // Find the Time Range select.
+    // We can filter by the placeholder or text content.
+    // The test mock implementation of Select renders options as <option>.
+    // We need to find the right select.
+    // Let's assume we can find it by finding the select that has "Last 5m" option.
+
+    const selects = screen.getAllByTestId("mock-select");
+    const timeSelect = selects.find(select =>
+      select.innerHTML.includes("Last 5m")
+    );
+
+    if (!timeSelect) {
+        throw new Error("Could not find Time Range select");
+    }
+
+    // Change value to "5m"
+    fireEvent.change(timeSelect, { target: { value: "5m" } });
+
+    // Verify filtering
+    expect(screen.getByText("Recent Log")).toBeInTheDocument();
+    expect(screen.queryByText("Old Log")).not.toBeInTheDocument();
 
     vi.useRealTimers();
   });
