@@ -49,6 +49,7 @@ export default defineConfig({
         command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: false,
+        timeout: 120000,
         env: {
           BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
