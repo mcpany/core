@@ -70,11 +70,11 @@ Below are some examples of how to configure different upstream services using a 
 This example configures a gRPC service and uses gRPC reflection to automatically discover its tools.
 
 ```yaml
-upstreamServices:
+upstream_services:
   - name: "grpc_weather"
-    grpcService:
+    grpc_service:
       address: "localhost:50051"
-      useReflection: true
+      use_reflection: true
 ```
 
 #### HTTP Service with API Key Authentication
@@ -82,16 +82,16 @@ upstreamServices:
 This example configures a generic HTTP service and demonstrates how to secure the connection to the upstream service using an API key.
 
 ```yaml
-upstreamServices:
+upstream_services:
   - name: "http_echo"
-    httpService:
+    http_service:
       address: "http://localhost:8080"
       calls:
         echo:
           id: "echo"
           endpoint_path: "/echo"
           method: "HTTP_METHOD_POST"
-    upstream_authentication:
+    upstream_auth:
       api_key:
         header_name: "X-Api-Key"
         api_key:
@@ -103,9 +103,9 @@ upstreamServices:
 This example configures a service from an OpenAPI specification. MCP Any will parse the specification to discover the available tools.
 
 ```yaml
-upstreamServices:
+upstream_services:
   - name: "openapi_petstore"
-    openapiService:
+    openapi_service:
       address: "https://petstore.swagger.io/v2"
       spec_content: |
         # You can paste an OpenAPI spec here directly

@@ -46,4 +46,4 @@ Split your configuration using `imports` or directory scanning (if supported) or
 ### Best Practices
 - **Global Settings** at the top.
 - **Group Services** by team or domain (comments help).
-- **Use Validation**: Run `mcpctl config validate config.yaml` before restarting.
+- **Use Validation**: Run `mcpctl validate --config-path config.yaml` before restarting.
