@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, ResilienceConfig, RetryConfig, CircuitBreakerConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -36,7 +36,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ResilienceConfig, RetryConfig, CircuitBreakerConfig };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -246,6 +246,21 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            resilience: s.resilience ? {
+                circuitBreaker: s.resilience.circuit_breaker ? {
+                    failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                    consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                    openDuration: s.resilience.circuit_breaker.open_duration,
+                    halfOpenRequests: s.resilience.circuit_breaker.half_open_requests,
+                } : undefined,
+                retryPolicy: s.resilience.retry_policy ? {
+                    numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                    baseBackoff: s.resilience.retry_policy.base_backoff,
+                    maxBackoff: s.resilience.retry_policy.max_backoff,
+                    maxElapsedTime: s.resilience.retry_policy.max_elapsed_time,
+                } : undefined,
+                timeout: s.resilience.timeout
+            } : undefined,
             callPolicies: s.call_policies?.map((p: any) => ({
                 defaultAction: p.default_action,
                 rules: p.rules?.map((r: any) => ({
@@ -292,6 +307,21 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         resilience: s.resilience ? {
+                            circuitBreaker: s.resilience.circuit_breaker ? {
+                                failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                                consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                                openDuration: s.resilience.circuit_breaker.open_duration,
+                                halfOpenRequests: s.resilience.circuit_breaker.half_open_requests,
+                            } : undefined,
+                            retryPolicy: s.resilience.retry_policy ? {
+                                numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                                baseBackoff: s.resilience.retry_policy.base_backoff,
+                                maxBackoff: s.resilience.retry_policy.max_backoff,
+                                maxElapsedTime: s.resilience.retry_policy.max_elapsed_time,
+                            } : undefined,
+                            timeout: s.resilience.timeout
+                        } : undefined,
                          callPolicies: s.call_policies?.map((p: any) => ({
                             defaultAction: p.default_action,
                             rules: p.rules?.map((r: any) => ({
@@ -384,19 +414,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -423,6 +440,23 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                } : undefined,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                } : undefined,
+                timeout: config.resilience.timeout
+            };
         }
 
         const response = await fetchWithAuth('/api/v1/services', {
@@ -470,19 +504,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -509,6 +530,23 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                } : undefined,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                } : undefined,
+                timeout: config.resilience.timeout
+            };
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -571,19 +609,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -610,6 +635,23 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                } : undefined,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                } : undefined,
+                timeout: config.resilience.timeout
+            };
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
