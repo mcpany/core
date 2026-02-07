@@ -34,24 +34,65 @@ func (a *Application) handleAlerts() http.HandlerFunc {
 	}
 }
 
-func (a *Application) handleAlertWebhook() http.HandlerFunc {
+func (a *Application) handleWebhooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			url := a.AlertsManager.GetWebhookURL()
+			list := a.AlertsManager.ListWebhooks()
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]string{"url": url})
+			_ = json.NewEncoder(w).Encode(list)
 		case http.MethodPost:
-			var body struct {
-				URL string `json:"url"`
-			}
-			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			var webhook alerts.Webhook
+			if err := json.NewDecoder(r.Body).Decode(&webhook); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			a.AlertsManager.SetWebhookURL(body.URL)
+			created := a.AlertsManager.CreateWebhook(&webhook)
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]string{"url": body.URL})
+			w.WriteHeader(http.StatusCreated)
+			_ = json.NewEncoder(w).Encode(created)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func (a *Application) handleWebhookDetail() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, "/alerts/webhooks/")
+		if id == "" {
+			http.Error(w, "id required", http.StatusBadRequest)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			webhook := a.AlertsManager.GetWebhook(id)
+			if webhook == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(webhook)
+		case http.MethodPatch:
+			var updates alerts.Webhook
+			if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			updated := a.AlertsManager.UpdateWebhook(id, &updates)
+			if updated == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(updated)
+		case http.MethodDelete:
+			if err := a.AlertsManager.DeleteWebhook(id); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

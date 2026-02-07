@@ -30,10 +30,16 @@ type ManagerInterface interface {
 
 	// Webhooks
 
-	// GetWebhookURL returns the configured global webhook URL.
-	GetWebhookURL() string
-	// SetWebhookURL sets the configured global webhook URL.
-	SetWebhookURL(url string)
+	// ListWebhooks returns a list of all webhooks.
+	ListWebhooks() []*Webhook
+	// GetWebhook retrieves a webhook by its ID.
+	GetWebhook(id string) *Webhook
+	// CreateWebhook creates a new webhook.
+	CreateWebhook(webhook *Webhook) *Webhook
+	// UpdateWebhook updates an existing webhook.
+	UpdateWebhook(id string, webhook *Webhook) *Webhook
+	// DeleteWebhook deletes a webhook by its ID.
+	DeleteWebhook(id string) error
 
 	// Rules
 
@@ -51,17 +57,18 @@ type ManagerInterface interface {
 
 // Manager implements ManagerInterface using in-memory storage.
 type Manager struct {
-	mu         sync.RWMutex
-	alerts     map[string]*Alert
-	rules      map[string]*AlertRule
-	webhookURL string
+	mu       sync.RWMutex
+	alerts   map[string]*Alert
+	rules    map[string]*AlertRule
+	webhooks map[string]*Webhook
 }
 
 // NewManager creates a new Manager and seeds it with initial data.
 func NewManager() *Manager {
 	m := &Manager{
-		alerts: make(map[string]*Alert),
-		rules:  make(map[string]*AlertRule),
+		alerts:   make(map[string]*Alert),
+		rules:    make(map[string]*AlertRule),
+		webhooks: make(map[string]*Webhook),
 	}
 	m.seedData()
 	return m
@@ -113,33 +120,19 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 		alert.Timestamp = time.Now()
 	}
 	m.alerts[alert.ID] = alert
-	webhookURL := m.webhookURL
+
+	// Copy webhooks to avoid holding lock during HTTP calls
+	var activeWebhooks []*Webhook
+	for _, w := range m.webhooks {
+		if w.Active {
+			activeWebhooks = append(activeWebhooks, w)
+		}
+	}
 	m.mu.Unlock()
 
-	// Trigger webhook asynchronously
-	if webhookURL != "" {
-		go func(url string, a *Alert) {
-			body, err := json.Marshal(a)
-			if err != nil {
-				logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
-				return
-			}
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
-			if err != nil {
-				logging.GetLogger().Error("failed to create webhook request", "error", err)
-				return
-			}
-			req.Header.Set("Content-Type", "application/json")
-
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
-				return
-			}
-			defer func() { _ = resp.Body.Close() }()
-		}(webhookURL, alert)
+	// Dispatch to webhooks
+	for _, w := range activeWebhooks {
+		m.dispatchWebhook(w, alert)
 	}
 
 	return alert
@@ -157,52 +150,139 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	if alert.Status != "" {
 		existing.Status = alert.Status
 	}
-	// Can add more updatable fields here
-	webhookURL := m.webhookURL
+	// Copy webhooks
+	var activeWebhooks []*Webhook
+	for _, w := range m.webhooks {
+		if w.Active {
+			activeWebhooks = append(activeWebhooks, w)
+		}
+	}
 	m.mu.Unlock()
 
-	// Trigger webhook asynchronously if status changed (or just on update?)
-	// For now trigger on any update as "Incident Response" implies updates are important.
-	if webhookURL != "" {
-		go func(url string, a *Alert) {
-			body, err := json.Marshal(a)
-			if err != nil {
-				logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
-				return
-			}
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
-			if err != nil {
-				logging.GetLogger().Error("failed to create webhook request", "error", err)
-				return
-			}
-			req.Header.Set("Content-Type", "application/json")
-
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
-				return
-			}
-			defer func() { _ = resp.Body.Close() }()
-		}(webhookURL, existing)
+	// Dispatch to webhooks
+	for _, w := range activeWebhooks {
+		m.dispatchWebhook(w, existing)
 	}
 
 	return existing
 }
 
-// GetWebhookURL returns the configured global webhook URL.
-func (m *Manager) GetWebhookURL() string {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.webhookURL
+func (m *Manager) dispatchWebhook(w *Webhook, alert *Alert) {
+	// Simple event filtering: check if "all" is present or if any event matches
+	// For now, we assume all alert changes are "alert" events.
+	// In the future, we could have "alert.created", "alert.updated", etc.
+	// We'll verify if "all" or specific tags are supported.
+	// For simplicity, we just check if Events is empty (assume all) or contains "all" or "alerts".
+	shouldSend := len(w.Events) == 0
+	for _, e := range w.Events {
+		if e == "all" || e == "alerts" {
+			shouldSend = true
+			break
+		}
+		// Could add finer grained matching here
+	}
+
+	if !shouldSend {
+		return
+	}
+
+	go func(url string, a *Alert) {
+		body, err := json.Marshal(a)
+		if err != nil {
+			logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
+			return
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
+		if err != nil {
+			logging.GetLogger().Error("failed to create webhook request", "error", err)
+			return
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
+			return
+		}
+		defer func() { _ = resp.Body.Close() }()
+
+		// Update LastTriggered
+		// We need to lock to update LastTriggered safely?
+		// Or we can just ignore it for now or use atomic/mutex.
+		// Given Manager lock granularity, updating it requires locking the whole manager or the webhook struct.
+		// Let's defer this update to avoid complex locking logic in this iteration.
+		// Ideally Webhook struct should have its own mutex or Manager should expose UpdateWebhookLastTriggered.
+	}(w.URL, alert)
 }
 
-// SetWebhookURL sets the configured global webhook URL.
-func (m *Manager) SetWebhookURL(url string) {
+// ListWebhooks returns all webhooks.
+func (m *Manager) ListWebhooks() []*Webhook {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	list := make([]*Webhook, 0, len(m.webhooks))
+	for _, w := range m.webhooks {
+		list = append(list, w)
+	}
+	// Sort by ID or URL? Let's sort by ID for stability
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].ID < list[j].ID
+	})
+	return list
+}
+
+// GetWebhook returns a webhook by ID.
+func (m *Manager) GetWebhook(id string) *Webhook {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.webhooks[id]
+}
+
+// CreateWebhook creates a new webhook.
+func (m *Manager) CreateWebhook(w *Webhook) *Webhook {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.webhookURL = url
+	if w.ID == "" {
+		w.ID = "WH-" + uuid.New().String()[:8]
+	}
+	m.webhooks[w.ID] = w
+	return w
+}
+
+// UpdateWebhook updates a webhook.
+func (m *Manager) UpdateWebhook(id string, w *Webhook) *Webhook {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	existing, ok := m.webhooks[id]
+	if !ok {
+		return nil
+	}
+
+	// Create a new struct to avoid data races with readers (Copy-On-Write)
+	updated := &Webhook{
+		ID:            existing.ID,
+		URL:           w.URL,
+		Events:        make([]string, len(w.Events)),
+		Active:        w.Active,
+		LastTriggered: existing.LastTriggered,
+	}
+	copy(updated.Events, w.Events)
+
+	if !w.LastTriggered.IsZero() {
+		updated.LastTriggered = w.LastTriggered
+	}
+
+	m.webhooks[id] = updated
+	return updated
+}
+
+// DeleteWebhook deletes a webhook.
+func (m *Manager) DeleteWebhook(id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	delete(m.webhooks, id)
+	return nil
 }
 
 // ListRules returns all rules.
