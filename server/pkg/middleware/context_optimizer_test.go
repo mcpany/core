@@ -79,6 +79,45 @@ func TestContextOptimizerMiddleware(t *testing.T) {
 	assert.Equal(t, "Short", text)
 }
 
+func TestContextOptimizerMiddleware_Default(t *testing.T) {
+	// Test default initialization (0 -> 32000)
+	opt := NewContextOptimizer(0)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/default", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		// Create a string slightly longer than 32000
+		longText := strings.Repeat("a", 32005)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"result": map[string]interface{}{
+				"content": []interface{}{
+					map[string]interface{}{
+						"type": "text",
+						"text": longText,
+					},
+				},
+			},
+		})
+	})
+
+	handler := opt.Handler(mux)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/default", nil)
+	handler.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+
+	result := resp["result"].(map[string]interface{})
+	content := result["content"].([]interface{})
+	text := content[0].(map[string]interface{})["text"].(string)
+
+	assert.True(t, strings.Contains(text, "TRUNCATED"), "Should be truncated at default limit")
+	assert.True(t, len(text) < 32100, "Should be close to 32000")
+}
+
 func TestContextOptimizerMiddleware_WriterType(t *testing.T) {
 	opt := NewContextOptimizer(10)
 

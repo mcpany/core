@@ -21,10 +21,13 @@ type ContextOptimizer struct {
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// maxChars is the maxChars.
+// maxChars is the maxChars. If <= 0, defaults to 32000.
 //
 // Returns the result.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
+	if maxChars <= 0 {
+		maxChars = 32000
+	}
 	return &ContextOptimizer{
 		MaxChars: maxChars,
 	}

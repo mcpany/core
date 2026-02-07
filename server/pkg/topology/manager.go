@@ -361,6 +361,12 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		// Adjust to today
 		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
 
+		// Handle date rollover: if targetTime is significantly ahead of now (e.g., > 12 hours),
+		// it likely belongs to the previous day (e.g., now=00:05, seed=23:55).
+		if targetTime.Sub(now) > 12*time.Hour {
+			targetTime = targetTime.Add(-24 * time.Hour)
+		}
+
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
 		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
 			Requests: p.Total,
