@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
 
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -35,9 +40,18 @@ const seedBulkEditServices = async (request) => {
             await request.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS });
         } catch (_e) {}
 
-        const res = await request.post('/api/v1/services', { data: svc, headers: HEADERS });
-        if (!res.ok()) {
-            console.error(`Failed to seed ${svc.name}: ${res.status()} ${await res.text()}`);
+        let retries = 3;
+        while (retries > 0) {
+            const res = await request.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (res.ok()) break;
+
+            const text = await res.text();
+            console.error(`Failed to seed ${svc.name}: ${res.status()} ${text}. Retrying...`);
+            retries--;
+            if (retries === 0) {
+                 console.error(`Giving up on seeding ${svc.name}`);
+            }
+            await new Promise(r => setTimeout(r, 1000));
         }
     }
 };
@@ -45,11 +59,17 @@ const seedBulkEditServices = async (request) => {
 const cleanupBulkEditServices = async (request) => {
     const services = ["BulkEdit-HTTP-1", "BulkEdit-HTTP-2", "BulkEdit-CLI-1"];
     for (const name of services) {
-        await request.delete(`/api/v1/services/${name}`, { headers: HEADERS });
+        try {
+            await request.delete(`/api/v1/services/${name}`, { headers: HEADERS });
+        } catch (_e) {
+            // ignore cleanup errors
+        }
     }
 };
 
 test.describe('Bulk Edit Functionality', () => {
+    test.describe.configure({ mode: 'serial' });
+
     test.beforeEach(async ({ request }) => {
         await seedBulkEditServices(request);
     });
