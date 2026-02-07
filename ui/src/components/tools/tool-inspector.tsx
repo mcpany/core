@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -56,6 +57,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [metricsLoading, setMetricsLoading] = useState(false);
+  const [parsedArgs, setParsedArgs] = useState<any>({});
 
   // Computed stats from audit logs (recent 50)
   const recentStats = useMemo(() => {
@@ -98,8 +100,27 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   useEffect(() => {
       if (open && tool) {
           fetchMetrics();
+          // Reset input/form
+          setInput("{}");
+          setParsedArgs({});
       }
   }, [open, tool]);
+
+  // Sync JSON input to Form state (one-way, cautious)
+  useEffect(() => {
+      try {
+          const parsed = JSON.parse(input);
+          // Only update if deeply different? For now just set.
+          setParsedArgs(parsed);
+      } catch (e) {
+          // ignore invalid JSON
+      }
+  }, [input]);
+
+  const handleFormChange = (newArgs: any) => {
+      setParsedArgs(newArgs);
+      setInput(JSON.stringify(newArgs, null, 2));
+  };
 
   if (!tool) return null;
 
@@ -172,14 +193,30 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <Label>Arguments</Label>
+                    <Tabs defaultValue="form" className="w-full">
+                         <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="form">Form</TabsTrigger>
+                            <TabsTrigger value="json">JSON</TabsTrigger>
+                         </TabsList>
+                         <TabsContent value="form" className="mt-2">
+                             <ScrollArea className="h-[300px] border rounded-md p-4 bg-background">
+                                 <SchemaForm
+                                     schema={tool.inputSchema as any}
+                                     value={parsedArgs}
+                                     onChange={handleFormChange}
+                                 />
+                             </ScrollArea>
+                         </TabsContent>
+                         <TabsContent value="json" className="mt-2">
+                             <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm h-[300px]"
+                            />
+                         </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
