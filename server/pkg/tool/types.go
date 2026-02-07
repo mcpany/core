@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -1113,6 +1110,15 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 
 // redactURL removes sensitive query parameters from the URL for logging.
 func (t *HTTPTool) redactURL(u *url.URL) string {
+	// Create a copy of the URL to avoid modifying the original
+	redactedURL := *u
+
+	// Always redact User Info (password) if present
+	if redactedURL.User != nil {
+		username := redactedURL.User.Username()
+		redactedURL.User = url.UserPassword(username, redactedPlaceholder)
+	}
+
 	// Check if we have any secret parameters mapped
 	hasSecretParams := false
 	for _, param := range t.parameters {
@@ -1123,11 +1129,9 @@ func (t *HTTPTool) redactURL(u *url.URL) string {
 	}
 
 	if !hasSecretParams {
-		return u.String()
+		return redactedURL.String()
 	}
 
-	// Create a copy of the URL to avoid modifying the original
-	redactedURL := *u
 	q := redactedURL.Query()
 
 	for _, param := range t.parameters {
@@ -3006,9 +3010,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}

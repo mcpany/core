@@ -235,13 +235,15 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Check if we can perform bind mounts (often fails in CI DinD environments)
+	if !canBindMount(t) {
+		t.Skip("Skipping Docker tests: bind mounts not supported in this environment")
 	}
 
 	tempDir := t.TempDir()
@@ -345,4 +347,23 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	assert.Contains(t, listResultStr, "manifest.json")
 	assert.Contains(t, listResultStr, "server.js")
 	assert.Contains(t, listResultStr, "hello.txt")
+}
+
+func canBindMount(t *testing.T) bool {
+	tempDir := t.TempDir()
+	// Resolving symlinks is important because Docker requires absolute paths and sometimes fails with symlinks in bind mounts
+	absDir, err := filepath.EvalSymlinks(tempDir)
+	if err != nil {
+		t.Logf("Failed to resolve symlinks for bind mount check: %v", err)
+		return false
+	}
+
+	// Try to mount the temp dir into a container
+	cmd := exec.Command("docker", "run", "--rm", "-v", absDir+":/data", "node:18-alpine", "ls", "/data")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("Bind mount check failed: %v, output: %s", err, string(out))
+		return false
+	}
+	return true
 }
