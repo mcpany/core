@@ -36,9 +36,7 @@ COPY . .
 ARG TARGETOS
 ARG TARGETARCH
 # CGO_ENABLED=1 is required for go-sqlite3
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -o /server cmd/server/main.go
 
 # Stage 2: Create the small runtime image
