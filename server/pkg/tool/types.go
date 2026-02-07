@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -63,23 +60,44 @@ var (
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
-// Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+//
+// Summary: Abstract interface for tool implementations (gRPC, HTTP, CLI).
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Summary: Retrieves the internal protobuf definition.
+	//
+	// Returns:
+	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Summary: Retrieves the MCP-compliant tool definition.
+	//
+	// Returns:
+	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
+
+	// Execute runs the tool with the provided context and request.
+	//
+	// Summary: Executes the tool logic.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request containing tool name and inputs.
+	//
+	// Returns:
+	//   - any: The execution result (usually a map or string).
+	//   - error: An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Summary: Retrieves caching rules for the tool.
+	//
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if disabled.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -105,8 +123,9 @@ type ServiceInfo struct {
 	HealthStatus string
 }
 
-// ExecutionRequest represents a request to execute a specific tool, including
-// its name and input arguments as a raw JSON message.
+// ExecutionRequest represents a request to execute a specific tool.
+//
+// Summary: Payload for tool execution requests.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -3006,9 +3025,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}

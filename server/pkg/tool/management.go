@@ -35,39 +35,67 @@ type MCPServerProvider interface {
 }
 
 // ManagerInterface defines the interface for a tool manager.
+//
+// Summary: Interface for managing the lifecycle and execution of tools.
 type ManagerInterface interface {
 	// AddTool registers a new tool.
 	//
-	// tool represents the tool definition.
+	// Summary: Registers a tool with the manager.
 	//
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - tool: Tool. The tool instance to register.
+	//
+	// Returns:
+	//   - error: An error if registration fails.
 	AddTool(tool Tool) error
+
 	// GetTool retrieves a tool by name.
 	//
-	// toolName is the toolName.
+	// Summary: Look up a tool by its name.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Parameters:
+	//   - toolName: string. The name of the tool.
+	//
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if found, false otherwise.
 	GetTool(toolName string) (Tool, bool)
+
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Summary: Lists all internal tool representations.
+	//
+	// Returns:
+	//   - []Tool: A slice of all registered tools.
 	ListTools() []Tool
+
 	// ListMCPTools returns all registered tools in MCP format.
 	//
-	// Returns the result.
+	// Summary: Lists all tools converted to MCP format.
+	//
+	// Returns:
+	//   - []*mcp.Tool: A slice of MCP tools.
 	ListMCPTools() []*mcp.Tool
+
 	// ClearToolsForService removes all tools for a given service.
 	//
-	// serviceID is the serviceID.
+	// Summary: Removes tools associated with a specific service ID.
+	//
+	// Parameters:
+	//   - serviceID: string. The unique service identifier.
 	ClearToolsForService(serviceID string)
+
 	// ExecuteTool executes a tool with the given request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Summary: Executes a tool.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The execution parameters.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if execution fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer sets the MCP server provider.
 	//
@@ -119,12 +147,6 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
-	// GetToolCountForService returns the number of tools for a given service.
-	//
-	// serviceID is the serviceID.
-	//
-	// Returns the result.
-	GetToolCountForService(serviceID string) int
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -338,29 +360,6 @@ func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool
 	return allowed, ok
 }
 
-// GetToolCountForService returns the number of tools for a given service.
-//
-// serviceID is the serviceID.
-//
-// Returns the result.
-func (tm *Manager) GetToolCountForService(serviceID string) int {
-	// ⚡ Bolt Optimization: Check health status first without locking the main mutex.
-	// Randomized Selection from Top 5 High-Impact Targets
-	if info, ok := tm.serviceInfo.Load(serviceID); ok {
-		if info.HealthStatus == HealthStatusUnhealthy {
-			return 0
-		}
-	}
-
-	tm.mu.RLock()
-	defer tm.mu.RUnlock()
-
-	if tools, ok := tm.serviceToolIDs[serviceID]; ok {
-		return len(tools)
-	}
-	return 0
-}
-
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {
 	if selector == nil {
 		return false
@@ -522,7 +521,7 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	var preHooks []PreCallHook
 	var postHooks []PostCallHook
 	if ok {
-		if serviceInfo.HealthStatus == HealthStatusUnhealthy {
+		if serviceInfo.HealthStatus == "unhealthy" {
 			log.Warn("Service is unhealthy, denying execution", "serviceID", serviceID)
 			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
 		}
@@ -894,7 +893,7 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 		serviceID := value.Tool().GetServiceId()
 		// ⚡ Bolt Optimization: Use direct load to avoid expensive config cloning/stripping in GetServiceInfo
 		if info, ok := tm.serviceInfo.Load(serviceID); ok {
-			if info.HealthStatus == HealthStatusUnhealthy {
+			if info.HealthStatus == "unhealthy" {
 				return true // Skip unhealthy tools
 			}
 		}
