@@ -636,6 +636,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 		errStr := err.Error()
 		stderrStr := stderr.String()
 		// Check for common Docker-in-Docker mount errors or permission issues in CI
+		// "failed to mount ... invalid argument" is typical for overlayfs in unprivileged DIND.
 		if strings.Contains(errStr, "failed to mount") || strings.Contains(stderrStr, "failed to mount") ||
 			strings.Contains(errStr, "invalid argument") || strings.Contains(stderrStr, "invalid argument") ||
 			strings.Contains(errStr, "operation not permitted") || strings.Contains(stderrStr, "operation not permitted") {
