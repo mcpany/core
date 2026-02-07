@@ -62,9 +62,14 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+	// Debugging CI environment variables
+	ciEnv := os.Getenv("CI")
+	ghEnv := os.Getenv("GITHUB_ACTIONS")
+	if ciEnv != "" || ghEnv != "" {
+		t.Logf("Skipping TestDockerHelpers in CI (CI=%q, GITHUB_ACTIONS=%q)", ciEnv, ghEnv)
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
+
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
