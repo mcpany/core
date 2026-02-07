@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Author(s) of MCP Any
+ * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -109,23 +109,7 @@ const defaultEdgeOptions = {
     style: { strokeWidth: 2 }
 };
 
-/**
- * Props for the NetworkGraphFlow component.
- */
-export interface NetworkGraphFlowProps {
-    /**
-     * Whether to render in widget mode (simplified UI).
-     */
-    widgetMode?: boolean;
-}
-
-/**
- * NetworkGraphFlow component.
- * Renders the interactive network graph using ReactFlow.
- * @param props - The component props.
- * @returns The rendered component.
- */
-export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) {
+function Flow() {
   const router = useRouter();
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -142,7 +126,7 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
 
   // Basic filtering state
   const [showSystem, setShowSystem] = useState(true);
-  const [showTools, setShowTools] = useState(!widgetMode); // Hide detailed tools by default in widget mode
+  const [showTools, setShowTools] = useState(true);
   const [showLegend, setShowLegend] = useState(false);
 
   // Collapse controls by default on mobile
@@ -184,83 +168,81 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
   };
 
   return (
-    <div className={cn("h-full w-full relative bg-muted/5 group", widgetMode && "rounded-lg overflow-hidden")}>
-      {!widgetMode && (
-          <div className={cn("absolute top-4 left-4 right-4 z-10 space-y-4 pointer-events-none flex flex-col gap-2 transition-all", isMobile ? "items-start" : "")}>
-              <Card className={cn(
-                  "pointer-events-auto backdrop-blur-md bg-background/80 shadow-lg border-muted/60 transition-all hover:shadow-xl overflow-hidden",
-                  isControlsExpanded ? "w-[320px]" : "w-auto"
-              )}>
-                  <CardHeader className="p-4 pb-2 cursor-pointer" onClick={() => setIsControlsExpanded(!isControlsExpanded)}>
-                      <CardTitle className="text-lg flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-2">
-                            <Activity className="h-5 w-5 text-primary" />
-                            <span className={cn(isControlsExpanded ? "block" : "hidden sm:block")}>Network Graph</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="font-normal text-xs">{filteredNodes.length} Nodes</Badge>
-                            {isMobile && (
-                                <Button variant="ghost" size="icon" className="h-6 w-6">
-                                    <Filter className="h-3 w-3" />
-                                </Button>
-                            )}
-                          </div>
-                      </CardTitle>
-                      {isControlsExpanded && (
-                        <CardDescription className="text-xs">
-                            Live topology of MCP services and tools.
-                        </CardDescription>
-                      )}
-                  </CardHeader>
+    <div className="h-full w-full relative bg-muted/5 group">
+      <div className={cn("absolute top-4 left-4 right-4 z-10 space-y-4 pointer-events-none flex flex-col gap-2 transition-all", isMobile ? "items-start" : "")}>
+          <Card className={cn(
+              "pointer-events-auto backdrop-blur-md bg-background/80 shadow-lg border-muted/60 transition-all hover:shadow-xl overflow-hidden",
+              isControlsExpanded ? "w-[320px]" : "w-auto"
+          )}>
+              <CardHeader className="p-4 pb-2 cursor-pointer" onClick={() => setIsControlsExpanded(!isControlsExpanded)}>
+                  <CardTitle className="text-lg flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-5 w-5 text-primary" />
+                        <span className={cn(isControlsExpanded ? "block" : "hidden sm:block")}>Network Graph</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="font-normal text-xs">{filteredNodes.length} Nodes</Badge>
+                        {isMobile && (
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <Filter className="h-3 w-3" />
+                            </Button>
+                        )}
+                      </div>
+                  </CardTitle>
                   {isControlsExpanded && (
-                      <>
-                        <CardContent className="p-4 pt-2 flex gap-2">
-                            <Button variant="outline" size="sm" onClick={refreshTopology} className="flex-1 h-8 text-xs">
-                                <RefreshCcw className="mr-2 h-3 w-3" /> Refresh
-                            </Button>
-                            <Button size="sm" onClick={autoLayout} className="flex-1 h-8 text-xs bg-primary/90 hover:bg-primary">
-                                <Zap className="mr-2 h-3 w-3" /> Layout
-                            </Button>
-                        </CardContent>
-                        <div className="px-4 pb-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                                    <Filter className="h-3 w-3" /> Filters
-                                </span>
+                    <CardDescription className="text-xs">
+                        Live topology of MCP services and tools.
+                    </CardDescription>
+                  )}
+              </CardHeader>
+              {isControlsExpanded && (
+                  <>
+                    <CardContent className="p-4 pt-2 flex gap-2">
+                        <Button variant="outline" size="sm" onClick={refreshTopology} className="flex-1 h-8 text-xs">
+                            <RefreshCcw className="mr-2 h-3 w-3" /> Refresh
+                        </Button>
+                        <Button size="sm" onClick={autoLayout} className="flex-1 h-8 text-xs bg-primary/90 hover:bg-primary">
+                            <Zap className="mr-2 h-3 w-3" /> Layout
+                        </Button>
+                    </CardContent>
+                    <div className="px-4 pb-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                                <Filter className="h-3 w-3" /> Filters
+                            </span>
+                        </div>
+                        <div className="mt-2 space-y-2">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="show-system" checked={showSystem} onCheckedChange={(c) => setShowSystem(!!c)} />
+                                <Label htmlFor="show-system" className="text-xs font-normal cursor-pointer">Show System (Core/Middleware)</Label>
                             </div>
-                            <div className="mt-2 space-y-2">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox id="show-system" checked={showSystem} onCheckedChange={(c) => setShowSystem(!!c)} />
-                                    <Label htmlFor="show-system" className="text-xs font-normal cursor-pointer">Show System (Core/Middleware)</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox id="show-tools" checked={showTools} onCheckedChange={(c) => setShowTools(!!c)} />
-                                    <Label htmlFor="show-tools" className="text-xs font-normal cursor-pointer">Show Capability Details (Tools)</Label>
-                                </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="show-tools" checked={showTools} onCheckedChange={(c) => setShowTools(!!c)} />
+                                <Label htmlFor="show-tools" className="text-xs font-normal cursor-pointer">Show Capability Details (Tools)</Label>
+                            </div>
 
-                                <div className="pt-2 mt-2 border-t">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setShowLegend(!showLegend)}
-                                        className="w-full justify-start h-6 px-0 text-xs text-muted-foreground hover:text-foreground"
-                                    >
-                                        {showLegend ? <ChevronDown className="mr-2 h-3 w-3" /> : <ChevronRight className="mr-2 h-3 w-3" />}
-                                        Show Legend
-                                    </Button>
-                                    {showLegend && (
-                                        <div className="mt-2 pl-1">
-                                            <NetworkLegend />
-                                        </div>
-                                    )}
-                                </div>
+                            <div className="pt-2 mt-2 border-t">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowLegend(!showLegend)}
+                                    className="w-full justify-start h-6 px-0 text-xs text-muted-foreground hover:text-foreground"
+                                >
+                                    {showLegend ? <ChevronDown className="mr-2 h-3 w-3" /> : <ChevronRight className="mr-2 h-3 w-3" />}
+                                    Show Legend
+                                </Button>
+                                {showLegend && (
+                                    <div className="mt-2 pl-1">
+                                        <NetworkLegend />
+                                    </div>
+                                )}
                             </div>
                         </div>
-                      </>
-                  )}
-              </Card>
-          </div>
-      )}
+                    </div>
+                  </>
+              )}
+          </Card>
+      </div>
 
       <ReactFlow
         nodes={filteredNodes}
@@ -272,32 +254,24 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
         fitView
         attributionPosition="bottom-right"
         className="bg-background"
-        minZoom={widgetMode ? 0.2 : 0.1}
-        maxZoom={widgetMode ? 1.0 : 1.5}
+        minZoom={0.1}
+        maxZoom={1.5}
         defaultEdgeOptions={defaultEdgeOptions}
-        nodesDraggable={!widgetMode}
-        panOnDrag={!widgetMode}
-        zoomOnScroll={!widgetMode}
-        preventScrolling={widgetMode}
       >
-        {!widgetMode && (
-            <Controls showInteractive={false} className="bg-background/80 backdrop-blur border-muted shadow-sm dark:bg-slate-900/80 dark:border-slate-800 dark:text-slate-200 [&>button]:!border-muted [&>button]:!bg-transparent hover:[&>button]:!bg-muted" />
-        )}
+        <Controls showInteractive={false} className="bg-background/80 backdrop-blur border-muted shadow-sm dark:bg-slate-900/80 dark:border-slate-800 dark:text-slate-200 [&>button]:!border-muted [&>button]:!bg-transparent hover:[&>button]:!bg-muted" />
 
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="currentColor" className="text-muted-foreground/20" />
 
-        {!widgetMode && (
-            <Panel position="bottom-center" className="mb-8">
-                <div className="bg-background/90 p-2 px-4 rounded-full border shadow-lg backdrop-blur text-[10px] text-muted-foreground flex gap-4 items-center">
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Core</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Service</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div> Client</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Tool</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500"></div> Middleware</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div> Error</div>
-                </div>
-            </Panel>
-        )}
+        <Panel position="bottom-center" className="mb-8">
+            <div className="bg-background/90 p-2 px-4 rounded-full border shadow-lg backdrop-blur text-[10px] text-muted-foreground flex gap-4 items-center">
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Core</div>
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Service</div>
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div> Client</div>
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Tool</div>
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500"></div> Middleware</div>
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div> Error</div>
+            </div>
+        </Panel>
       </ReactFlow>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -431,7 +405,7 @@ MetricCard.displayName = 'MetricCard';
 export function NetworkGraphClient() {
     return (
         <ReactFlowProvider>
-            <NetworkGraphFlow />
+            <Flow />
         </ReactFlowProvider>
     )
 }

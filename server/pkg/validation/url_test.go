@@ -4,8 +4,6 @@
 package validation
 
 import (
-	"context"
-	"net"
 	"os"
 	"testing"
 )
@@ -14,26 +12,11 @@ func TestIsSafeURL(t *testing.T) {
 	// Ensure the bypass env var is not set for this test
 	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-
-	// Restore original lookupIPFunc
-	originalLookupIP := lookupIPFunc
 	defer func() {
-		lookupIPFunc = originalLookupIP
 		if originalEnv != "" {
 			os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnv)
 		}
 	}()
-
-	// Mock DNS resolution
-	lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, error) {
-		if host == "google.com" {
-			return []net.IP{net.ParseIP("8.8.8.8")}, nil
-		}
-		if host == "localhost" {
-			return []net.IP{net.ParseIP("127.0.0.1")}, nil
-		}
-		return net.DefaultResolver.LookupIP(ctx, network, host)
-	}
 
 	tests := []struct {
 		name    string
