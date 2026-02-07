@@ -2809,6 +2809,22 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkAwkInjection(val, base); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2829,14 +2845,20 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			}
 		}
 	}
+	return nil
+}
 
+func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
+	return nil
+}
 
+func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
@@ -2854,6 +2876,15 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
+	if isPerl && (quoteLevel == 1 || quoteLevel == 3) {
+		if strings.Contains(val, "@{") {
+			return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
+		}
+	}
+	return nil
+}
+
+func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
@@ -2861,7 +2892,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
 	}
-
 	return nil
 }
 
