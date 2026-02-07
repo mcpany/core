@@ -256,6 +256,21 @@ export const apiClient = {
                     callIdRegex: r.call_id_regex
                 }))
             })),
+            resilience: s.resilience ? {
+                timeout: s.resilience.timeout,
+                retryPolicy: s.resilience.retry_policy ? {
+                    numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                    baseBackoff: s.resilience.retry_policy.base_backoff,
+                    maxBackoff: s.resilience.retry_policy.max_backoff,
+                    maxElapsedTime: s.resilience.retry_policy.max_elapsed_time
+                } : undefined,
+                circuitBreaker: s.resilience.circuit_breaker ? {
+                    failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                    consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                    openDuration: s.resilience.circuit_breaker.open_duration,
+                    halfOpenRequests: s.resilience.circuit_breaker.half_open_requests
+                } : undefined
+            } : undefined,
         }));
     },
 
@@ -302,6 +317,21 @@ export const apiClient = {
                                 callIdRegex: r.call_id_regex
                             }))
                         })),
+                        resilience: s.resilience ? {
+                            timeout: s.resilience.timeout,
+                            retryPolicy: s.resilience.retry_policy ? {
+                                numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                                baseBackoff: s.resilience.retry_policy.base_backoff,
+                                maxBackoff: s.resilience.retry_policy.max_backoff,
+                                maxElapsedTime: s.resilience.retry_policy.max_elapsed_time
+                            } : undefined,
+                            circuitBreaker: s.resilience.circuit_breaker ? {
+                                failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                                consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                                openDuration: s.resilience.circuit_breaker.open_duration,
+                                halfOpenRequests: s.resilience.circuit_breaker.half_open_requests
+                            } : undefined
+                        } : undefined,
                      };
                  }
                  return data;
@@ -384,19 +414,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -423,6 +440,28 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {};
+            if (config.resilience.timeout) {
+                payload.resilience.timeout = config.resilience.timeout;
+            }
+            if (config.resilience.retryPolicy) {
+                payload.resilience.retry_policy = {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                };
+            }
+            if (config.resilience.circuitBreaker) {
+                payload.resilience.circuit_breaker = {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                };
+            }
         }
 
         const response = await fetchWithAuth('/api/v1/services', {
@@ -470,19 +509,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -509,6 +535,28 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {};
+            if (config.resilience.timeout) {
+                payload.resilience.timeout = config.resilience.timeout;
+            }
+            if (config.resilience.retryPolicy) {
+                payload.resilience.retry_policy = {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                };
+            }
+            if (config.resilience.circuitBreaker) {
+                payload.resilience.circuit_breaker = {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                };
+            }
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -571,19 +619,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -610,6 +645,28 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {};
+            if (config.resilience.timeout) {
+                payload.resilience.timeout = config.resilience.timeout;
+            }
+            if (config.resilience.retryPolicy) {
+                payload.resilience.retry_policy = {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                };
+            }
+            if (config.resilience.circuitBreaker) {
+                payload.resilience.circuit_breaker = {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                };
+            }
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
