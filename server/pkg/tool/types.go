@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2667,31 +2664,17 @@ func isShellCommand(cmd string) bool {
 		"lua", "awk", "gawk", "nawk", "mawk", "sed",
 		"jq",
 		"psql", "mysql", "sqlite3",
-		"docker",
 		// Additional shells/runners found missing
 		"busybox", "expect", "tclsh", "wish",
 		"irb", "php-cgi", "perl5",
-		"openssl", "git", "hg", "svn",
-		"wget", "curl", "nc", "netcat", "ncat",
-		"socat", "telnet",
-		// Editors and pagers that can execute commands
-		"vi", "vim", "nvim", "emacs", "nano",
-		"less", "more", "man",
 		// Build tools and others that can execute commands
-		"tar", "find", "xargs", "tee",
-		"make", "rake", "ant", "mvn", "gradle",
-		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
-		// Cloud/DevOps tools that can execute commands or have sensitive flags
-		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
+		"find", "xargs",
 		// Additional interpreters and compilers that can execute code
 		"R", "Rscript", "julia", "groovy", "jshell",
 		"scala", "kotlin", "swift",
 		"elixir", "iex", "erl", "escript",
 		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
-		"gcc", "g++", "clang", "java",
-		// Additional dangerous tools
-		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -3006,9 +2989,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
