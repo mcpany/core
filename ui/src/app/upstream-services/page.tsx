@@ -167,7 +167,9 @@ export default function ServicesPage() {
   const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[], resilience?: { timeout?: string, maxRetries?: number } }) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
-        await Promise.all(servicesToUpdate.map(service => {
+
+        // Execute sequentially to avoid SQLITE_BUSY errors on backend
+        for (const service of servicesToUpdate) {
             const updated = { ...service };
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
@@ -187,8 +189,9 @@ export default function ServicesPage() {
                 }
                 updated.resilience = newResilience;
             }
-            return apiClient.updateService(updated as any);
-        }));
+            await apiClient.updateService(updated as any);
+        }
+
         toast({
             title: "Services Updated",
             description: `${names.length} services have been updated.`

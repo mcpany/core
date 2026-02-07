@@ -34,6 +34,13 @@ type UIResilienceConfig = {
     };
 };
 
+/**
+ * ResilienceEditor component.
+ * @param props - The component props.
+ * @param props.resilience - The current resilience configuration.
+ * @param props.onChange - Callback when the configuration changes.
+ * @returns The rendered component.
+ */
 export function ResilienceEditor({ resilience, onChange }: ResilienceEditorProps) {
     // Cast to UI type for easier handling
     const config = (resilience || {}) as unknown as UIResilienceConfig;
