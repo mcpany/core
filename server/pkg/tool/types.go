@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -2659,6 +2656,10 @@ func isShellCommand(cmd string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
+		// Sentinel Security Update: Add meta-commands that execute other commands
+		"nice", "ionice", "time", "timeout", "nohup", "taskset",
+		"chroot", "strace", "ltrace", "setarch",
+		"doas", "runuser", "start-stop-daemon",
 		"busybox", "expect", "watch", "tmux", "screen",
 		// Common interpreters and runners that can execute code
 		"python", "python2", "python3",
@@ -3006,9 +3007,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
