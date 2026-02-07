@@ -2902,18 +2902,13 @@ func TestReloadConfig_DynamicUpdates(t *testing.T) {
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))
-
-	app.configMu.Lock()
-	mid := app.ipMiddleware
-	app.configMu.Unlock()
-
-	assert.True(t, mid.Allow("127.0.0.1"))
-	assert.False(t, mid.Allow("10.0.0.1"))
+	assert.True(t, app.ipMiddleware.Allow("127.0.0.1"))
+	assert.False(t, app.ipMiddleware.Allow("10.0.0.1"))
 
 	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\", \"10.0.0.1\"]"), 0644)
 	err = app.ReloadConfig(ctx, fs, []string{"/config.yaml"})
 	require.NoError(t, err)
-	assert.True(t, mid.Allow("10.0.0.1"))
+	assert.True(t, app.ipMiddleware.Allow("10.0.0.1"))
 }
 
 func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
@@ -3006,10 +3001,10 @@ func TestAuthMiddleware_IPBypass(t *testing.T) {
 		wantStatus int
 	}{
 		{"IPv4 Loopback", "127.0.0.1:12345", http.StatusOK},
-		{"IPv4 Private", "192.168.1.1:12345", http.StatusOK},
+		{"IPv4 Private", "192.168.1.1:12345", http.StatusForbidden},
 		{"IPv6 Loopback", "[::1]:12345", http.StatusOK},
 		{"IPv4 Public", "8.8.8.8:12345", http.StatusForbidden},
-		{"IPv4-Compatible Loopback", "[::127.0.0.1]:12345", http.StatusOK},
+		{"IPv4-Compatible Loopback", "[::127.0.0.1]:12345", http.StatusForbidden},
 	}
 
 	for _, tt := range tests {
