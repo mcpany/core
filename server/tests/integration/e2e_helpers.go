@@ -253,6 +253,34 @@ func GetProjectRoot() (string, error) {
 	return filepath.Abs(projectRoot)
 }
 
+// GetServerBinaryPath returns the absolute path to the server binary.
+// It attempts to locate the binary in standard locations relative to the project root.
+func GetServerBinaryPath(t *testing.T) string {
+	t.Helper()
+	root, err := GetProjectRoot()
+	require.NoError(t, err, "Failed to get project root")
+
+	// Try multiple common locations for the binary
+	candidates := []string{
+		filepath.Join(root, "../build/bin/server"), // Relative to server module
+		filepath.Join(root, "build/bin/server"),    // Relative to repo root
+	}
+
+	for _, path := range candidates {
+		absPath, err := filepath.Abs(path)
+		if err != nil {
+			continue
+		}
+		if _, err := os.Stat(absPath); err == nil {
+			return absPath
+		}
+	}
+
+	// If not found, fail with a helpful message listing attempted paths
+	require.Fail(t, "Server binary not found", "Tried locations: %v. Run 'make build' from project root.", candidates)
+	return ""
+}
+
 // --- Helper: Find Free Port ---.
 var portMutex sync.Mutex
 
@@ -1089,11 +1117,11 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
+	mcpanyBinary := GetServerBinaryPath(t)
+	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
+
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpanyBinary := filepath.Join(root, "../build/bin/server")
-
-	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
 	// Use port 0 to let the OS assign free ports
 	jsonrpcPortArg := dynamicBindAddr

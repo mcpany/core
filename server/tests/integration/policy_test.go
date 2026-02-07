@@ -28,8 +28,7 @@ import (
 func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	t.Helper()
 
-	root := ProjectRoot(t)
-	serverBin := filepath.Join(root, "../build/bin/server")
+	serverBin := GetServerBinaryPath(t)
 
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
