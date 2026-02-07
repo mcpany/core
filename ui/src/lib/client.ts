@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -234,7 +234,7 @@ export const apiClient = {
         return list.map((s: any) => ({
             ...s,
             connectionPool: s.connection_pool,
-            httpService: s.http_service,
+            httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
@@ -282,7 +282,7 @@ export const apiClient = {
                      data.service = {
                          ...s,
                          connectionPool: s.connection_pool,
-                         httpService: s.http_service,
+                         httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
                          grpcService: s.grpc_service,
                          commandLineService: s.command_line_service,
                          mcpService: s.mcp_service,
@@ -368,7 +368,7 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
@@ -456,7 +456,7 @@ export const apiClient = {
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
@@ -555,7 +555,7 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
