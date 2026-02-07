@@ -9,8 +9,7 @@ import { ServiceHealthWidget } from "@/components/dashboard/service-health-widge
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
-import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2 } from "lucide-react";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
 
 /**
  * Defines the possible sizes for a dashboard widget.
@@ -51,14 +50,6 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "full",
         component: MetricsOverview,
         icon: Activity
-    },
-    {
-        type: "network-topology",
-        title: "Network Topology",
-        description: "Visual graph of connected services and tools.",
-        defaultSize: "full",
-        component: NetworkGraphWidget,
-        icon: Share2
     },
     {
         type: "quick-actions",

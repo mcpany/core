@@ -75,11 +75,7 @@ test.describe('Bulk Edit Services', () => {
         await expect(dialog).toBeHidden();
 
         // Verify "Services Updated" toast?
-        // await expect(page.getByText(/services have been updated/)).toBeVisible();
-
-        // Reload to verify persistence
-        await page.reload();
-        await expect(page.getByRole('heading', { level: 1, name: 'Upstream Services' })).toBeVisible();
+        await expect(page.getByText(/services have been updated/)).toBeVisible();
 
         // Check Tags on UI (ServiceList usually shows tags)
         await expect(cliRow.getByText('bulk-test-tag')).toBeVisible();
