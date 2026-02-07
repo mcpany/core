@@ -21,9 +21,13 @@ type Service struct {
 
 // NewService creates and returns a new Service instance.
 //
-// promptManager is the promptManager.
+// Summary: Initializes a new Prompt Service.
 //
-// Returns the result.
+// Parameters:
+//   - promptManager: ManagerInterface. The manager for prompt lifecycles.
+//
+// Returns:
+//   - *Service: The initialized Service.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -34,7 +38,10 @@ func NewService(promptManager ManagerInterface) *Service {
 
 // SetMCPServer sets the MCP server instance for the service.
 //
-// mcpServer is the mcpServer.
+// Summary: Configures the MCP server instance.
+//
+// Parameters:
+//   - mcpServer: *mcp.Server. The MCP server instance.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -48,9 +55,17 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
 // }
 
-// ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
-// available prompts from the Manager, converts them to the MCP format, and
-// returns them to the client.
+// ListPrompts handles the "prompts/list" MCP request.
+//
+// Summary: Lists all available prompts.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *mcp.ListPromptsRequest. The list prompts request.
+//
+// Returns:
+//   - *mcp.ListPromptsResult: The list of prompts.
+//   - error: An error if the operation fails.
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -65,10 +80,20 @@ func (s *Service) ListPrompts(
 	}, nil
 }
 
-// GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
-// prompt by name from the Manager and executes it with the provided
-// arguments, returning the result. If the prompt is not found, it returns a
-// ErrPromptNotFound error.
+// GetPrompt handles the "prompts/get" MCP request.
+//
+// Summary: Retrieves and executes a specific prompt.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *mcp.GetPromptRequest. The get prompt request containing arguments.
+//
+// Returns:
+//   - *mcp.GetPromptResult: The prompt execution result.
+//   - error: An error if the prompt is not found or execution fails.
+//
+// Throws/Errors:
+//   - ErrPromptNotFound: If the prompt does not exist.
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

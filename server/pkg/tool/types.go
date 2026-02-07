@@ -330,6 +330,19 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Throws/Errors:
+//   - Returns error if connection pool is not found.
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if gRPC invocation fails.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -574,6 +587,22 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Throws/Errors:
+//   - Returns error if call policy blocks execution.
+//   - Returns error if initialization failed.
+//   - Returns error if connection pool is not found.
+//   - Returns error if inputs preparation fails.
+//   - Returns error if URL is unsafe.
+//   - Returns error if HTTP request fails or returns 4xx/5xx status.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1775,6 +1804,20 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Throws/Errors:
+//   - Returns error if call policy blocks execution.
+//   - Returns error if inputs unmarshalling fails.
+//   - Returns error if input validation fails (e.g. path traversal, injection).
+//   - Returns error if command execution fails.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2072,6 +2115,20 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The execution request containing tool inputs.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Throws/Errors:
+//   - Returns error if call policy blocks execution.
+//   - Returns error if inputs unmarshalling fails.
+//   - Returns error if input validation fails.
+//   - Returns error if command execution fails.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
