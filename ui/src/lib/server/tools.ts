@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Interface definition for a server-side tool.
+ */
 export interface Tool {
   name: string;
   description: string;

@@ -53,11 +53,42 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Try to run a simple container to ensure the environment (e.g. storage driver) is working.
+	// In some CI environments (like DinD with overlay-on-overlay), Ping succeeds but Run fails.
+	resp, err := cli.ContainerCreate(ctx, &container.Config{Image: "alpine:latest", Cmd: []string{"true"}}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("Docker verify: could not create container (skipping tests): %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("Docker verify: could not start container (skipping tests): %v", err)
+		return false
+	}
+
+	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		if err != nil {
+			t.Logf("Docker verify: error waiting for container (skipping tests): %v", err)
+			return false
+		}
+	case <-statusCh:
+	case <-time.After(5 * time.Second):
+		t.Logf("Docker verify: timeout waiting for container (skipping tests)")
+		return false
+	}
+
 	return true
 }
 

@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Severity levels for alerts.
+ */
 export type Severity = "critical" | "warning" | "info";
 /**
  * AlertStatus type definition.

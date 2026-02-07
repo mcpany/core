@@ -107,11 +107,17 @@ make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript).
 Run the linter to verify your changes:
 ```bash
 make lint
 ```
+
+### Documentation Standards
+We believe that "undocumented code is broken code." We strictly enforce **100% documentation coverage** for all public APIs.
+- **Go:** All exported types, functions, constants, and variables must have a documentation comment.
+- **TypeScript:** All exported classes, interfaces, types, and functions must have TSDoc comments.
+- **Validation:** Our CI pipeline runs custom tools (`check-go-doc` and `check-ts-doc`) to verify compliance.
 
 ### Building
 Compile all artifacts (Server binary and UI assets).
