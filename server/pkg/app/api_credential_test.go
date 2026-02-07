@@ -404,7 +404,7 @@ func TestCredentialHandlers(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
-		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 
 	t.Run("UpdateCredential_BadBody", func(t *testing.T) {
