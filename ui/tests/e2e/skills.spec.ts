@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.skip('Agent Skills', () => {
+test.describe('Agent Skills', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/skills');
     // Ensure we are on the list page
@@ -31,7 +31,7 @@ test.skip('Agent Skills', () => {
 
     // Wait for creation API response
     const createPromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/skills') &&
+        response.url().includes('/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
         { timeout: 30000 }
@@ -65,7 +65,7 @@ test.skip('Agent Skills', () => {
     await page.getByRole('button', { name: 'Next', exact: true }).click();
 
     const createPromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/skills') &&
+        response.url().includes('/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
         { timeout: 30000 }
