@@ -582,13 +582,6 @@ func IsDockerSocketAccessible() bool {
 	if err := cmd.Run(); err != nil {
 		return false
 	}
-
-	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
-	if err := runCmd.Run(); err != nil {
-		return false
-	}
-
 	return true
 }
 
@@ -791,11 +784,23 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 // StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
 //
 // t is the t.
-// _ is an unused parameter.
+// testName is the testName.
 // apiKey is the apiKey.
 //
 // Returns the result.
-func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPANYTestServerInfo {
+func StartInProcessMCPANYServer(t *testing.T, testName string, apiKey ...string) *MCPANYTestServerInfo {
+	return StartInProcessMCPANYServerWithConfig(t, testName, "", apiKey...)
+}
+
+// StartInProcessMCPANYServerWithConfig starts an in-process MCP Any server with a provided config path.
+//
+// t is the t.
+// testName is the testName.
+// configPath is the configPath.
+// apiKey is the apiKey.
+//
+// Returns the result.
+func StartInProcessMCPANYServerWithConfig(t *testing.T, _ string, configPath string, apiKey ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
 	var actualAPIKey string
@@ -817,22 +822,25 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
+	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
 	go func() {
 		defer cancel() // Ensure WaitForStartup doesn't hang if Run returns
+		configPaths := []string{}
+		if configPath != "" {
+			configPaths = append(configPaths, configPath)
+		}
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              afero.NewOsFs(),
 			Stdio:           false,
 			JSONRPCPort:     jsonrpcAddress,
 			GRPCPort:        grpcRegAddress,
-			ConfigPaths:     []string{},
+			ConfigPaths:     configPaths,
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
-			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
@@ -1010,9 +1018,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
-	}
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
