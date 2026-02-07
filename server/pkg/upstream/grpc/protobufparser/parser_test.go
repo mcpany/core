@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"sync"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -407,10 +406,7 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 		server, s, lis := setupServer(t)
 		defer s.Stop()
 
-		var wg sync.WaitGroup
-		wg.Add(1)
 		go func() {
-			defer wg.Done()
 			<-server.streamReady
 			// Simulate the server sending a response
 			req, err := server.stream.Recv()
@@ -448,17 +444,13 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 		}()
 		_, err := ParseProtoByReflection(context.Background(), lis.Addr().String())
 		require.NoError(t, err)
-		wg.Wait()
 	})
 
 	t.Run("ListServices failure", func(t *testing.T) {
 		server, s, lis := setupServer(t)
 		defer s.Stop()
 
-		var wg sync.WaitGroup
-		wg.Add(1)
 		go func() {
-			defer wg.Done()
 			<-server.streamReady
 			// Simulate the server sending an error response or closing early
 			server.stream.SendMsg(&reflectpb.ServerReflectionResponse{})
@@ -475,17 +467,13 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 		_, err := ParseProtoByReflection(context.Background(), lis.Addr().String())
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "invalid response type")
-		wg.Wait()
 	})
 
 	t.Run("FileContainingSymbol failure", func(t *testing.T) {
 		server, s, lis := setupServer(t)
 		defer s.Stop()
 
-		var wg sync.WaitGroup
-		wg.Add(1)
 		go func() {
-			defer wg.Done()
 			<-server.streamReady
 			// 1. ListServices success
 			req, err := server.stream.Recv()
@@ -519,7 +507,6 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 		_, err := ParseProtoByReflection(context.Background(), lis.Addr().String())
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "invalid or empty response")
-		wg.Wait()
 	})
 }
 

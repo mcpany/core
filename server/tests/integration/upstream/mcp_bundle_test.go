@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -18,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/tests/integration"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -235,13 +235,10 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	// Check if Docker is available and accessible using the shared helper that performs a smoke test
+	if !integration.IsDockerSocketAccessible() {
+		t.Skip("Skipping Docker tests: Docker not available or non-functional")
 	}
 
 	tempDir := t.TempDir()

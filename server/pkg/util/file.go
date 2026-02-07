@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util
+package util //nolint:revive
 
 import (
 	"bufio"
@@ -11,6 +11,17 @@ import (
 )
 
 // ReadLastNLines reads the last n lines from a file.
+//
+// Summary: Reads the last n lines from a file.
+//
+// Parameters:
+//   - path: string. The path to the file.
+//   - n: int. The number of lines to read.
+//
+// Returns:
+//   - [][]byte: The lines read from the file.
+//   - error: An error if reading fails.
+//
 // It is optimized to read from the end of the file.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {

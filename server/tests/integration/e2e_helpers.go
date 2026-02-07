@@ -572,7 +572,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible and functional.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
@@ -583,13 +583,10 @@ func IsDockerSocketAccessible() bool {
 		return false
 	}
 
-	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
-	if err := runCmd.Run(); err != nil {
-		return false
-	}
-
-	return true
+	// Smoke test: Try to run a simple container to ensure basic functionality (and storage driver works)
+	// We use alpine:latest which is expected to be present
+	cmd = exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
+	return cmd.Run() == nil
 }
 
 // --- Mock Service Start Helpers (External Processes) ---
@@ -817,7 +814,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
+	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
@@ -832,7 +829,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ConfigPaths:     []string{},
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
-			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
@@ -1011,7 +1007,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
+		t.Skip("Docker is not running or accessible (or failed smoke test). Skipping Redis tests.")
 	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())

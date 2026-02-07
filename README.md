@@ -108,6 +108,12 @@ make test
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+
+**Documentation Gold Standard:**
+*   All public symbols must have meaningful docstrings.
+*   Structure: Summary, Parameters, Returns, Errors, Side Effects.
+*   No "Empty Calorie" comments.
+
 Run the linter to verify your changes:
 ```bash
 make lint
