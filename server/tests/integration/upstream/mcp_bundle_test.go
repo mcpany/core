@@ -235,8 +235,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
+
+	// ⚡ BOLT: Workaround for Docker OverlayFS mount issues in GitHub Actions.
+	// When running inside a container (Docker-in-Docker) or certain CI environments,
+	// overlay mounts can fail with "invalid argument".
+	// We detect if we are in CI and skip if we suspect overlayfs issues unless explicitly forced.
+	// Randomized Selection from Top 5 High-Impact Targets
+	if os.Getenv("CI") == "true" && os.Getenv("FORCE_DOCKER_TESTS") != "true" {
+		t.Skip("Skipping Docker bundle tests in CI to avoid OverlayFS nesting issues (invalid argument)")
 	}
 
 	// Check if Docker is available and accessible
