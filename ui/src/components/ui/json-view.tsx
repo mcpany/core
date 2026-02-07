@@ -6,37 +6,32 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Button } from "@/components/ui/button";
+import { Check, Copy, Table as TableIcon, Code, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-interface JsonViewProps {
-  data: unknown;
-  className?: string;
-  /**
-   * If true, attempts to render array of objects as a table.
-   */
-  smartTable?: boolean;
-  /**
-   * Max height in pixels before collapsing. Default: 400.
-   * Set to 0 or negative to disable collapsing.
-   */
-  maxHeight?: number;
+/**
+ * Props for the JsonView component.
+ */
+export interface JsonViewProps {
+    /** The JSON data to display. Can be an object, array, or string. */
+    data: any;
+    /** Optional CSS class name for styling. */
+    className?: string;
+    /** Whether to attempt to render array of objects as a table. Defaults to false. */
+    smartTable?: boolean;
+    /** Maximum height in pixels before collapsing. Set to 0 to disable collapsing. Defaults to 400. */
+    maxHeight?: number;
 }
 
 /**
- * JsonView component.
- * Renders data with syntax highlighting, optional smart table view, and copy functionality.
+ * A component for viewing JSON data with syntax highlighting and smart table mode.
  *
  * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.className - The className.
- * @param props.smartTable - Whether to attempt smart table rendering.
- * @param props.maxHeight - Max height before collapsing.
  * @returns The rendered component.
  */
 export function JsonView({ data, className, smartTable = false, maxHeight = 400 }: JsonViewProps) {

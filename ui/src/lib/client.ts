@@ -200,17 +200,6 @@ export interface SystemStatus {
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
-    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-    // we need to be careful.
-    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-    // The gRPC calls should ideally be proxied or use a session token.
-    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-    // if they require the static key.
-    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-    // is also behind the Next.js proxy (rewrites).
-    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-    // If we use that, the middleware WILL run and inject the header!
     return undefined;
 };
 
@@ -261,7 +250,7 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
+     * @param id - The ID of the service to retrieve.
      * @returns A promise that resolves to the service configuration.
      */
     getService: async (id: string) => {
@@ -270,13 +259,10 @@ export const apiClient = {
              const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
              return response;
          } catch (e) {
-             // Fallback to REST if gRPC fails (e.g. in E2E tests passing through Next.js proxy or mock)
-             // Check if we are in a test env or just try fetch
+             // Fallback to REST if gRPC fails
              const res = await fetchWithAuth(`/api/v1/services/${id}`);
              if (res.ok) {
                  const data = await res.json();
-                 // REST returns { service: ... }, gRPC returns { service: ... }
-                 // Map snake_case to camelCase for ServiceDetail
                  if (data.service) {
                      const s = data.service;
                      data.service = {
@@ -312,8 +298,8 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
-     * @param name The name of the service.
-     * @param disable True to disable the service, false to enable it.
+     * @param name - The name of the service.
+     * @param disable - True to disable the service, false to enable it.
      * @returns A promise that resolves to the updated service status.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
@@ -328,7 +314,7 @@ export const apiClient = {
 
     /**
      * Gets the status of a service.
-     * @param name The name of the service.
+     * @param name - The name of the service.
      * @returns A promise that resolves to the service status.
      */
     getServiceStatus: async (name: string) => {
@@ -339,7 +325,7 @@ export const apiClient = {
 
     /**
      * Restarts a service.
-     * @param name The name of the service to restart.
+     * @param name - The name of the service to restart.
      * @returns A promise that resolves when the service is restarted.
      */
     restartService: async (name: string) => {
@@ -352,11 +338,10 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
+     * @param config - The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
      */
     registerService: async (config: UpstreamServiceConfig) => {
-        // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
             id: config.id,
             name: config.name,
@@ -383,19 +368,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -440,11 +412,10 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
-     * @param config The updated configuration of the service.
+     * @param config - The updated configuration of the service.
      * @returns A promise that resolves to the updated service configuration.
      */
     updateService: async (config: UpstreamServiceConfig) => {
-        // Same mapping as register
         const payload: any = {
              id: config.id,
             name: config.name,
@@ -454,7 +425,6 @@ export const apiClient = {
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
         };
-        // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
             payload.http_service = { address: config.httpService.address };
         }
@@ -469,19 +439,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -526,7 +483,7 @@ export const apiClient = {
 
     /**
      * Unregisters (deletes) an upstream service.
-     * @param id The ID of the service to unregister.
+     * @param id - The ID of the service to unregister.
      * @returns A promise that resolves when the service is unregistered.
      */
     unregisterService: async (id: string) => {
@@ -539,11 +496,10 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
-     * @param config The service configuration to validate.
+     * @param config - The service configuration to validate.
      * @returns A promise that resolves to the validation result.
      */
     validateService: async (config: UpstreamServiceConfig) => {
-        // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
             id: config.id,
             name: config.name,
@@ -565,24 +521,11 @@ export const apiClient = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
                 env: config.commandLineService.env,
-                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
+                container_environment: config.commandLineService.containerEnvironment,
             };
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -627,18 +570,13 @@ export const apiClient = {
         }
 
         if (!response.ok) {
-            // Even if not ok (400), it might contain validation details in JSON
             if (data && data.error) {
-                 return data; // Return the error object (valid: false, error: ...)
+                 return data;
             }
             throw new Error(`Failed to validate service: ${response.status} ${text}`);
         }
         return data;
     },
-
-    // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
-    // admin.proto has ListTools but we are focusing on RegistrationService first.
-    // So keep using fetch for Tools/Secrets/etc for now.
 
     /**
      * Lists all available tools.
@@ -661,8 +599,8 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
-     * @param request The execution request (tool name, arguments, etc.).
-     * @param dryRun If true, performs a dry run without side effects.
+     * @param request - The execution request (tool name, arguments, etc.).
+     * @param dryRun - If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
      */
     executeTool: async (request: any, dryRun?: boolean) => {
@@ -697,8 +635,8 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a tool.
-     * @param name The name of the tool.
-     * @param disabled True to disable the tool, false to enable it.
+     * @param name - The name of the tool.
+     * @param disabled - True to disable the tool, false to enable it.
      * @returns A promise that resolves to the updated tool status.
      */
     setToolStatus: async (name: string, disabled: boolean) => {
@@ -708,8 +646,6 @@ export const apiClient = {
         });
         return res.json();
     },
-
-    // Resources
 
     /**
      * Lists all available resources.
@@ -723,7 +659,7 @@ export const apiClient = {
 
     /**
      * Reads the content of a resource.
-     * @param uri The URI of the resource to read.
+     * @param uri - The URI of the resource to read.
      * @returns A promise that resolves to the resource content.
      */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
@@ -734,8 +670,8 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a resource.
-     * @param uri The URI of the resource.
-     * @param disabled True to disable the resource, false to enable it.
+     * @param uri - The URI of the resource.
+     * @param disabled - True to disable the resource, false to enable it.
      * @returns A promise that resolves to the updated resource status.
      */
     setResourceStatus: async (uri: string, disabled: boolean) => {
@@ -745,8 +681,6 @@ export const apiClient = {
         });
         return res.json();
     },
-
-    // Prompts
 
     /**
      * Lists all available prompts.
@@ -760,8 +694,8 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a prompt.
-     * @param name The name of the prompt.
-     * @param enabled True to enable the prompt, false to disable it.
+     * @param name - The name of the prompt.
+     * @param enabled - True to enable the prompt, false to disable it.
      * @returns A promise that resolves to the updated prompt status.
      */
     setPromptStatus: async (name: string, enabled: boolean) => {
@@ -775,8 +709,8 @@ export const apiClient = {
 
     /**
      * Executes a prompt with the given arguments.
-     * @param name The name of the prompt.
-     * @param args The arguments for the prompt.
+     * @param name - The name of the prompt.
+     * @param args - The arguments for the prompt.
      * @returns A promise that resolves to the prompt execution result.
      */
     executePrompt: async (name: string, args: Record<string, string>) => {
@@ -788,9 +722,6 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to execute prompt');
         return res.json();
     },
-
-
-    // Secrets
 
     /**
      * Lists all stored secrets.
@@ -805,7 +736,7 @@ export const apiClient = {
 
     /**
      * Reveals a secret value.
-     * @param id The ID of the secret to reveal.
+     * @param id - The ID of the secret to reveal.
      * @returns A promise that resolves to the secret value.
      */
     revealSecret: async (id: string): Promise<{ value: string }> => {
@@ -818,7 +749,7 @@ export const apiClient = {
 
     /**
      * Saves a secret.
-     * @param secret The secret definition to save.
+     * @param secret - The secret definition to save.
      * @returns A promise that resolves to the saved secret.
      */
     saveSecret: async (secret: SecretDefinition) => {
@@ -833,7 +764,7 @@ export const apiClient = {
 
     /**
      * Deletes a secret.
-     * @param id The ID of the secret to delete.
+     * @param id - The ID of the secret to delete.
      * @returns A promise that resolves when the secret is deleted.
      */
     deleteSecret: async (id: string) => {
@@ -843,8 +774,6 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to delete secret');
         return {};
     },
-
-    // Global Settings
 
     /**
      * Gets the global server settings.
@@ -858,7 +787,7 @@ export const apiClient = {
 
     /**
      * Saves the global server settings.
-     * @param settings The settings to save.
+     * @param settings - The settings to save.
      * @returns A promise that resolves when the settings are saved.
      */
     saveGlobalSettings: async (settings: any) => {
@@ -872,8 +801,8 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
-     * @param serviceId Optional service ID to filter by.
-     * @param timeRange Optional time range to filter by (e.g. "1h", "24h").
+     * @param serviceId - Optional service ID to filter by.
+     * @param timeRange - Optional time range to filter by (e.g. "1h", "24h").
      * @returns A promise that resolves to the traffic history points.
      */
     getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
@@ -891,19 +820,16 @@ export const apiClient = {
 
     /**
      * Gets the top used tools.
-     * @param serviceId Optional service ID to filter by.
+     * @param serviceId - Optional service ID to filter by.
      * @returns A promise that resolves to the top tools stats.
      */
     getTopTools: async (serviceId?: string) => {
         let url = '/api/v1/dashboard/top-tools';
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
-        // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
         return res.json();
     },
-
-    // Alerts
 
     /**
      * Lists all alerts.
@@ -927,7 +853,7 @@ export const apiClient = {
 
     /**
      * Creates a new alert rule.
-     * @param rule The rule to create.
+     * @param rule - The rule to create.
      * @returns A promise that resolves to the created rule.
      */
     createAlertRule: async (rule: any) => {
@@ -942,7 +868,7 @@ export const apiClient = {
 
     /**
      * Gets an alert rule by ID.
-     * @param id The ID of the rule.
+     * @param id - The ID of the rule.
      * @returns A promise that resolves to the rule.
      */
     getAlertRule: async (id: string) => {
@@ -953,7 +879,7 @@ export const apiClient = {
 
     /**
      * Updates an alert rule.
-     * @param rule The rule to update.
+     * @param rule - The rule to update.
      * @returns A promise that resolves to the updated rule.
      */
     updateAlertRule: async (rule: any) => {
@@ -968,7 +894,7 @@ export const apiClient = {
 
     /**
      * Deletes an alert rule.
-     * @param id The ID of the rule to delete.
+     * @param id - The ID of the rule to delete.
      * @returns A promise that resolves when the rule is deleted.
      */
     deleteAlertRule: async (id: string) => {
@@ -981,7 +907,7 @@ export const apiClient = {
 
     /**
      * Gets the tools with highest failure rates.
-     * @param serviceId Optional service ID to filter by.
+     * @param serviceId - Optional service ID to filter by.
      * @returns A promise that resolves to the tool failure stats.
      */
     getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
@@ -994,7 +920,7 @@ export const apiClient = {
 
     /**
      * Gets the tool usage analytics.
-     * @param serviceId Optional service ID to filter by.
+     * @param serviceId - Optional service ID to filter by.
      * @returns A promise that resolves to the tool usage stats.
      */
     getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
@@ -1004,7 +930,6 @@ export const apiClient = {
         if (!res.ok) return [];
         return res.json();
     },
-
 
     /**
      * Gets the system status.
@@ -1018,7 +943,7 @@ export const apiClient = {
 
     /**
      * Gets the dashboard metrics.
-     * @param serviceId Optional service ID to filter by.
+     * @param serviceId - Optional service ID to filter by.
      * @returns A promise that resolves to the metrics list.
      */
     getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
@@ -1031,7 +956,7 @@ export const apiClient = {
 
     /**
      * Gets the latest execution traces.
-     * @param options Optional parameters.
+     * @param options - Optional parameters.
      * @returns A promise that resolves to the traces list.
      */
     getTraces: async (options?: { limit?: number }): Promise<any[]> => {
@@ -1046,7 +971,7 @@ export const apiClient = {
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
-     * @param points The traffic points to seed.
+     * @param points - The traffic points to seed.
      */
     seedTrafficData: async (points: any[]) => {
         const res = await fetchWithAuth('/api/v1/debug/seed_traffic', {
@@ -1059,8 +984,8 @@ export const apiClient = {
 
     /**
      * Updates an alert status.
-     * @param id The ID of the alert.
-     * @param status The new status.
+     * @param id - The ID of the alert.
+     * @param status - The new status.
      * @returns A promise that resolves to the updated alert.
      */
     updateAlertStatus: async (id: string, status: string) => {
@@ -1085,7 +1010,7 @@ export const apiClient = {
 
     /**
      * Saves the configured global webhook URL for alerts.
-     * @param url The webhook URL.
+     * @param url - The webhook URL.
      * @returns A promise that resolves to the updated webhook configuration.
      */
     saveWebhookURL: async (url: string) => {
@@ -1097,8 +1022,6 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to save webhook URL');
         return res.json();
     },
-
-    // Stack Management (Collections)
 
     /**
      * Lists all service collections (stacks).
@@ -1112,7 +1035,7 @@ export const apiClient = {
 
     /**
      * Gets a single service collection (stack) by its name.
-     * @param name The name of the collection.
+     * @param name - The name of the collection.
      * @returns A promise that resolves to the collection.
      */
     getCollection: async (name: string) => {
@@ -1123,27 +1046,16 @@ export const apiClient = {
 
     /**
      * Saves a service collection (stack).
-     * @param collection The collection to save.
+     * @param collection - The collection to save.
      * @returns A promise that resolves when the collection is saved.
      */
     saveCollection: async (collection: any) => {
-        // Decide if create or update based on existence?
-        // The API might expect POST for create, PUT for update.
-        // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?
-        // But stack-editor logic handles "saving".
-        // The endpoint logic in api.go: handleCollections is POST, handleCollectionDetail is PUT.
-        // We'll use PUT if we have a name in the URL, POST otherwise?
-        // But `saveStackConfig` was replacing config.
-        // Let's assume we update an existing one usually.
         const res = await fetchWithAuth(`/api/v1/collections/${collection.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(collection)
         });
         if (!res.ok) {
-             // If PUT fails (e.g. not found), try POST to create?
-             // But UI should know if it's new.
-             // For now just error.
              throw new Error('Failed to save collection');
         }
         return res.json();
@@ -1151,7 +1063,7 @@ export const apiClient = {
 
     /**
      * Deletes a service collection (stack).
-     * @param name The name of the collection to delete.
+     * @param name - The name of the collection to delete.
      * @returns A promise that resolves when the collection is deleted.
      */
     deleteCollection: async (name: string) => {
@@ -1164,29 +1076,24 @@ export const apiClient = {
 
     /**
      * Gets the configuration for a stack (Compatibility wrapper).
-     * @param stackId The ID of the stack.
+     * @param stackId - The ID of the stack.
      * @returns A promise that resolves to the stack configuration.
      */
     getStackConfig: async (stackId: string) => {
-        // Map to getCollection
         return apiClient.getCollection(stackId);
     },
 
     /**
      * Saves the configuration for a stack (Compatibility wrapper).
-     * @param stackId The ID of the stack.
-     * @param config The configuration content (Collection object).
+     * @param stackId - The ID of the stack.
+     * @param config - The configuration content (Collection object).
      * @returns A promise that resolves when the config is saved.
      */
     saveStackConfig: async (stackId: string, config: any) => {
-        // Map to saveCollection. Ensure name is set.
         const collection = typeof config === 'string' ? JSON.parse(config) : config;
         if (!collection.name) collection.name = stackId;
         return apiClient.saveCollection(collection);
     },
-
-
-    // User Management
 
     /**
      * Lists all profiles.
@@ -1200,7 +1107,7 @@ export const apiClient = {
 
     /**
      * Creates a new profile.
-     * @param profile The profile definition.
+     * @param profile - The profile definition.
      * @returns A promise that resolves to the created profile.
      */
     createProfile: async (profile: ProfileDefinition) => {
@@ -1215,7 +1122,7 @@ export const apiClient = {
 
     /**
      * Updates an existing profile.
-     * @param profile The profile definition.
+     * @param profile - The profile definition.
      * @returns A promise that resolves to the updated profile.
      */
     updateProfile: async (profile: ProfileDefinition) => {
@@ -1230,7 +1137,7 @@ export const apiClient = {
 
     /**
      * Deletes a profile.
-     * @param name The name of the profile to delete.
+     * @param name - The name of the profile to delete.
      * @returns A promise that resolves when the profile is deleted.
      */
     deleteProfile: async (name: string) => {
@@ -1241,23 +1148,11 @@ export const apiClient = {
         return {};
     },
 
-    // User Management
-
     /**
      * Lists all users.
      * @returns A promise that resolves to a list of users.
      */
     listUsers: async () => {
-        // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
-        // We do have @proto/admin/v1/admin
-        // Let's rely on fetch for now if we expose REST, OR we can try to use standard gRPC-Web if we set it up.
-        // For simplicity in this UI iteration (which seems to use fetchWithAuth mostly),
-        // we might assume there is a REST gateway or we use a custom endpoint.
-        // Wait, server/pkg/admin/server.go implements providing gRPC.
-        // Does it expose REST?
-        // The previous task walkthrough mentions "Admin Service RPCs".
-        // And `server/pkg/app/server.go` likely mounts gRPC-Gateway?
-        // Let's try fetch first.
         const res = await fetchWithAuth('/api/v1/users');
         if (!res.ok) throw new Error('Failed to list users');
         return res.json();
@@ -1265,14 +1160,14 @@ export const apiClient = {
 
     /**
      * Creates a new user.
-     * @param user The user object to create.
+     * @param user - The user object to create.
      * @returns A promise that resolves to the created user.
      */
     createUser: async (user: any) => {
         const res = await fetchWithAuth('/api/v1/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user }) // Wrapper expected by AdminRPC? Request is CreateUserRequest { user: User }
+            body: JSON.stringify({ user })
         });
         if (!res.ok) throw new Error('Failed to create user');
         return res.json();
@@ -1280,7 +1175,7 @@ export const apiClient = {
 
     /**
      * Updates an existing user.
-     * @param user The user object to update.
+     * @param user - The user object to update.
      * @returns A promise that resolves to the updated user.
      */
     updateUser: async (user: any) => {
@@ -1295,7 +1190,7 @@ export const apiClient = {
 
     /**
      * Deletes a user.
-     * @param id The ID of the user to delete.
+     * @param id - The ID of the user to delete.
      * @returns A promise that resolves when the user is deleted.
      */
     deleteUser: async (id: string) => {
@@ -1306,14 +1201,11 @@ export const apiClient = {
         return {};
     },
 
-
-    // OAuth
-
     /**
      * Initiates an OAuth flow.
-     * @param serviceID The ID of the service for which to initiate OAuth.
-     * @param redirectURL The URL to redirect to after OAuth completes.
-     * @param credentialID Optional credential ID to associate with the token.
+     * @param serviceID - The ID of the service for which to initiate OAuth.
+     * @param redirectURL - The URL to redirect to after OAuth completes.
+     * @param credentialID - Optional credential ID to associate with the token.
      * @returns A promise that resolves to the initiation response.
      */
     initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
@@ -1335,10 +1227,10 @@ export const apiClient = {
 
     /**
      * Handles the OAuth callback.
-     * @param serviceID The ID of the service (optional).
-     * @param code The OAuth authorization code.
-     * @param redirectURL The redirect URL used in the initial request.
-     * @param credentialID Optional credential ID.
+     * @param serviceID - The ID of the service (optional).
+     * @param code - The OAuth authorization code.
+     * @param redirectURL - The redirect URL used in the initial request.
+     * @param credentialID - Optional credential ID.
      * @returns A promise that resolves to the callback handling result.
      */
     handleOAuthCallback: async (serviceID: string | null, code: string, redirectURL: string, credentialID?: string) => {
@@ -1358,8 +1250,6 @@ export const apiClient = {
         return res.json();
     },
 
-    // Credentials
-
     /**
      * Lists all stored credentials.
      * @returns A promise that resolves to a list of credentials.
@@ -1373,17 +1263,16 @@ export const apiClient = {
 
     /**
      * Saves (creates or updates) a credential.
-     * @param credential The credential to save.
+     * @param credential - The credential to save.
      * @returns A promise that resolves to the saved credential.
      */
     saveCredential: async (credential: Credential) => {
-        // ... (logic omitted for brevity, keeping same) ...
         return apiClient.createCredential(credential);
     },
 
     /**
      * Creates a new credential.
-     * @param credential The credential to create.
+     * @param credential - The credential to create.
      * @returns A promise that resolves to the created credential.
      */
     createCredential: async (credential: Credential) => {
@@ -1398,7 +1287,7 @@ export const apiClient = {
 
     /**
      * Updates an existing credential.
-     * @param credential The credential to update.
+     * @param credential - The credential to update.
      * @returns A promise that resolves to the updated credential.
      */
     updateCredential: async (credential: Credential) => {
@@ -1413,7 +1302,7 @@ export const apiClient = {
 
     /**
      * Deletes a credential.
-     * @param id The ID of the credential to delete.
+     * @param id - The ID of the credential to delete.
      * @returns A promise that resolves when the credential is deleted.
      */
     deleteCredential: async (id: string) => {
@@ -1426,7 +1315,7 @@ export const apiClient = {
 
     /**
      * Tests authentication with the provided parameters.
-     * @param req The authentication test request.
+     * @param req - The authentication test request.
      * @returns A promise that resolves to the test result.
      */
     testAuth: async (req: any) => {
@@ -1435,11 +1324,8 @@ export const apiClient = {
              headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(req)
         });
-        // We always return JSON even on error
         return res.json();
     },
-
-    // Templates (Backend Persistence)
 
     /**
      * Lists all service templates.
@@ -1449,12 +1335,9 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/templates');
         if (!res.ok) throw new Error('Failed to fetch templates');
         const data = await res.json();
-        // Backend returns generic UpstreamServiceConfig list.
-        // Map snake_case to camelCase
         const list = Array.isArray(data) ? data : [];
         return list.map((s: any) => ({
             ...s,
-            // Reuse logic? Or copy/paste mapping
             connectionPool: s.connection_pool,
             httpService: s.http_service,
             grpcService: s.grpc_service,
@@ -1471,12 +1354,10 @@ export const apiClient = {
 
     /**
      * Saves a service template.
-     * @param template The template configuration to save.
+     * @param template - The template configuration to save.
      * @returns A promise that resolves to the saved template.
      */
     saveTemplate: async (template: UpstreamServiceConfig) => {
-        // Map back to snake_case for saving
-        // Reuse registerService mapping logic essentially but for template endpoint
         const payload: any = {
             id: template.id,
             name: template.name,
@@ -1530,7 +1411,7 @@ export const apiClient = {
 
     /**
      * Deletes a service template.
-     * @param id The ID of the template to delete.
+     * @param id - The ID of the template to delete.
      * @returns A promise that resolves when the template is deleted.
      */
     deleteTemplate: async (id: string) => {
@@ -1540,8 +1421,6 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to delete template');
         return {};
     },
-
-    // System Health
 
     /**
      * Gets the doctor status report.
@@ -1553,11 +1432,9 @@ export const apiClient = {
         return res.json();
     },
 
-    // Audit Logs
-
     /**
      * Lists audit logs.
-     * @param filters The filters for the audit logs.
+     * @param filters - The filters for the audit logs.
      * @returns A promise that resolves to the list of audit logs.
      */
     listAuditLogs: async (filters: {

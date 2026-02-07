@@ -12,6 +12,8 @@ import (
 
 // JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes
 // JSON-encoded data from a reader.
+//
+// Summary: Handles JSON communication over IO streams.
 type JSONExecutor struct {
 	// in is the writer where JSON commands are written to (e.g. stdin of a process).
 	in io.Writer
@@ -20,6 +22,8 @@ type JSONExecutor struct {
 }
 
 // NewJSONExecutor creates a new JSONExecutor with the given writer and reader.
+//
+// Summary: Initializes a new JSONExecutor.
 //
 // Parameters:
 //   - in: io.Writer. The destination for writing JSON requests.
@@ -36,6 +40,19 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 
 // Execute sends the given data as a JSON-encoded message to the writer and
 // decodes the JSON-encoded response from the reader into the given result.
+//
+// Summary: Encodes data to JSON, writes it, and decodes the response.
+//
+// Parameters:
+//   - data: any. The data to encode and send.
+//   - result: any. The pointer to decode the response into.
+//
+// Returns:
+//   - error: An error if encoding or decoding fails.
+//
+// Side Effects:
+//   - Writes to the 'in' writer.
+//   - Reads from the 'out' reader.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)
