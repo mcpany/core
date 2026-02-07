@@ -582,13 +582,6 @@ func IsDockerSocketAccessible() bool {
 	if err := cmd.Run(); err != nil {
 		return false
 	}
-
-	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
-	if err := runCmd.Run(); err != nil {
-		return false
-	}
-
 	return true
 }
 
@@ -639,7 +632,13 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Use Run instead of Start for 'docker run -d' to ensure the command completes
 	// and the container is running before proceeding.
 	err := startCmd.Run()
-	require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
+	if err != nil {
+		// If docker run fails with specific errors related to CI environment limitations (e.g. overlayfs), skip instead of fail
+		if strings.Contains(stderr.String(), "failed to mount") || strings.Contains(stderr.String(), "operation not permitted") {
+			t.Skipf("Skipping test due to Docker environment limitations (overlayfs/permissions): %v. Stderr: %s", err, stderr.String())
+		}
+		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
+	}
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
@@ -817,7 +816,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
 	require.NoError(t, dbFile.Close())
-	// Do not use t.Setenv("MCPANY_DB_PATH", dbPath) to avoid race conditions in parallel tests
+	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
 	runErrCh := make(chan error, 1)
@@ -832,7 +831,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ConfigPaths:     []string{},
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
-			DBPath:          dbPath,
 		}
 		err := appRunner.Run(opts)
 		if err != nil {
@@ -1010,9 +1008,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
-	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
-	}
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
 	// Use port 0 for dynamic host port allocation
@@ -1098,6 +1094,22 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
 	mcpanyBinary := filepath.Join(root, "../build/bin/server")
+
+	// Verify binary exists, fallback if necessary (e.g. CI paths mismatch)
+	if _, err := os.Stat(mcpanyBinary); os.IsNotExist(err) {
+		// Try resolving relative to current working directory if root was misleading
+		cwd, _ := os.Getwd()
+		fallbackBin := filepath.Join(cwd, "../build/bin/server")
+		if _, err := os.Stat(fallbackBin); err == nil {
+			mcpanyBinary = fallbackBin
+		} else {
+			// Try resolving relative to executable (test binary) location?
+			// Usually tests run in package dir.
+			// Try /home/runner/work/core/core/build/bin/server hardcoded? No.
+			// Just log the error and let it fail later with better message.
+			fmt.Printf("DEBUG: Binary not found at %s or %s\n", mcpanyBinary, fallbackBin)
+		}
+	}
 
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 

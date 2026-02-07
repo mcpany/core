@@ -31,12 +31,20 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	root := ProjectRoot(t)
 	serverBin := filepath.Join(root, "../build/bin/server")
 
+	// Verify binary exists, fallback if necessary (e.g. CI paths mismatch)
+	if _, err := os.Stat(serverBin); os.IsNotExist(err) {
+		cwd, _ := os.Getwd()
+		fallbackBin := filepath.Join(cwd, "../build/bin/server")
+		if _, err := os.Stat(fallbackBin); err == nil {
+			serverBin = fallbackBin
+		}
+	}
+
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
-	cmd.Dir = t.TempDir() // Isolate working directory
 	cmd.Env = append(os.Environ(),
 		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"MCPANY_ENABLE_FILE_CONFIG=true",
