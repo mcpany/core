@@ -53,11 +53,50 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container (catches overlayfs issues in dind)
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		// If image doesn't exist, try pulling it first
+		if client.IsErrNotFound(err) {
+			reader, pullErr := cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+			if pullErr != nil {
+				t.Logf("could not pull alpine:latest: %v", pullErr)
+				return false
+			}
+			io.Copy(io.Discard, reader)
+			resp, err = cli.ContainerCreate(ctx, &container.Config{
+				Image: "alpine:latest",
+				Cmd:   []string{"true"},
+			}, nil, nil, nil, "")
+		}
+	}
+
+	if err != nil {
+		t.Logf("could not create test container: %v", err)
+		return false
+	}
+
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("could not start test container (likely overlay/storage driver issue): %v", err)
+		return false
+	}
+
 	return true
 }
 
