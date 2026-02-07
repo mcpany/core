@@ -235,13 +235,16 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Try to run a simple container to ensure the environment (e.g. storage driver) is working.
+	// In some CI environments (like DinD with overlay-on-overlay), Ping/Info succeeds but Run fails.
+	if err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run failed (likely overlay/storage issue): %v", err)
 	}
 
 	tempDir := t.TempDir()
