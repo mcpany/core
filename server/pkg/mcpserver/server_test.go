@@ -328,15 +328,11 @@ func TestServer_CallTool(t *testing.T) {
 	t.Run("tool call with error", func(t *testing.T) {
 		sanitizedToolName, _ := util.SanitizeToolName("error-tool")
 		toolID := "test-service" + "." + sanitizedToolName
-		result, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
+		_, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
 			Name: toolID,
 		})
-		require.NoError(t, err)
-		assert.True(t, result.IsError)
-		assert.Len(t, result.Content, 1)
-		textContent, ok := result.Content[0].(*mcp.TextContent)
-		require.True(t, ok)
-		assert.Contains(t, textContent.Text, "execution error")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "execution error")
 	})
 
 	t.Run("tool call with context timeout", func(t *testing.T) {
