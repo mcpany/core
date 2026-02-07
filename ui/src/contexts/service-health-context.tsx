@@ -47,9 +47,16 @@ const POLLING_INTERVAL = 5000;
 
 /**
  * ServiceHealthProvider component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ *
+ * Summary: Provides context for service health metrics and network topology to child components.
+ *
+ * @param props - Object. The component props.
+ * @param props.children - ReactNode. The child components to wrap.
+ * @returns JSX.Element. The rendered provider component.
+ *
+ * Side Effects:
+ *   - Polls the /api/v1/topology endpoint every 5 seconds.
+ *   - Maintains state for health history and latest topology graph.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});

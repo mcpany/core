@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+FROM python:3.11-alpine
 
-WORKDIR /app
+# Use a custom directory to avoid overlayfs issues with root-level directories
+RUN mkdir -p /mcp-app
+WORKDIR /mcp-app
 
 COPY timeserver_patch/requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY timeserver_patch/main.py /app/main.py
+COPY timeserver_patch/main.py main.py
 
-CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "main.py", "--mcp-stdio"]

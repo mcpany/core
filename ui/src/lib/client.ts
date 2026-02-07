@@ -222,7 +222,14 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     *
+     * Summary: Retrieves a list of all configured upstream services from the backend.
+     *
+     * @returns Promise<any[]>. A promise resolving to an array of service objects with camelCase properties.
+     * @throws Error if the fetch request fails.
+     *
+     * Side Effects:
+     *   - Makes a GET request to /api/v1/services.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -261,8 +268,15 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     *
+     * Summary: Retrieves the detailed configuration for a specific service.
+     *
+     * @param id - string. The ID of the service to retrieve.
+     * @returns Promise<any>. A promise resolving to the service configuration object.
+     * @throws Error if the service is not found or the request fails.
+     *
+     * Side Effects:
+     *   - Tries gRPC-Web request first, falls back to GET /api/v1/services/{id}.
      */
     getService: async (id: string) => {
          try {
@@ -352,8 +366,15 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     *
+     * Summary: Creates a new upstream service configuration in the backend.
+     *
+     * @param config - UpstreamServiceConfig. The configuration object for the new service.
+     * @returns Promise<any>. A promise resolving to the created service configuration.
+     * @throws Error if the registration fails (e.g., validation error).
+     *
+     * Side Effects:
+     *   - Makes a POST request to /api/v1/services.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -383,19 +404,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -469,19 +477,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -570,19 +565,6 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;

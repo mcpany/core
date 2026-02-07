@@ -15,6 +15,7 @@
 # Stage 1: Build the Go binary
 FROM mirror.gcr.io/library/golang:1.24 AS builder
 # Set working directory
+RUN mkdir -p /app
 WORKDIR /app
 
 
@@ -43,6 +44,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 # Stage 2: Create the small runtime image
 FROM debian:bookworm-slim
+RUN mkdir -p /app
 WORKDIR /app
 
 # Create a non-root user
