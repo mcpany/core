@@ -232,6 +232,9 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping TestE2E_Bundle_Filesystem in CI due to potential overlayfs mount failure in dind")
+	}
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
