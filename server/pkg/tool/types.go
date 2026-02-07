@@ -2852,6 +2852,10 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
+		// Sentinel Security Update: Block @ for Perl array interpolation
+		if isPerl && strings.Contains(val, "@") {
+			return fmt.Errorf("perl array interpolation injection detected: value contains '@'")
+		}
 	}
 
 	// Awk: Block pipe | to prevent external command execution
