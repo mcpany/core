@@ -65,6 +65,11 @@ func TestDockerHelpers(t *testing.T) {
 	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
+	// Check specifically for GitHub Actions environment where CI might not be "true" but GITHUB_ACTIONS is "true"
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		t.Skip("Skipping TestDockerHelpers in GitHub Actions due to Docker-in-Docker overlayfs issues")
+	}
+
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
