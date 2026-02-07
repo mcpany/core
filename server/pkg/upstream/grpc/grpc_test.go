@@ -152,6 +152,8 @@ func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, true
 }
 
+func (m *MockToolManager) OnListChanged(f func()) {}
+
 func TestNewGRPCUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)

@@ -74,6 +74,7 @@ func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 func (m *mockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }
 func (m *mockToolManager) ClearToolsForService(_ string)                           {}
 func (m *mockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool      { return true }
+func (m *mockToolManager) OnListChanged(f func()) {}
 
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup

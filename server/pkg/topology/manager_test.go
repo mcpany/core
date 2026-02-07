@@ -100,6 +100,10 @@ func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]boo
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
+func (m *MockToolManager) OnListChanged(f func()) {
+	m.Called(f)
+}
+
 // MockTool is a mock implementation of tool.Tool
 type MockTool struct {
 	mock.Mock

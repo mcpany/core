@@ -63,3 +63,5 @@ func TestUpstreamWorker_Stop(t *testing.T) {
 func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, true
 }
+
+func (m *MockToolManager) OnListChanged(f func()) {}

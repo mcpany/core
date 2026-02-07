@@ -141,6 +141,8 @@ func (m *TestMockToolManager) GetAllowedServiceIDs(profileID string) (map[string
 	return nil, true
 }
 
+func (m *TestMockToolManager) OnListChanged(f func()) {}
+
 func TestRegisterDynamicResources_Detailed(t *testing.T) {
 	u := &Upstream{}
 	serviceID := "test-service"

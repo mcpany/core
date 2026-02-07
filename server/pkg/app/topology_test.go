@@ -103,6 +103,10 @@ func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
 	return args.Get(0).([]*tool.ServiceInfo)
 }
 
+func (m *MockToolManager) OnListChanged(f func()) {
+	m.Called(f)
+}
+
 func TestHandleTopology(t *testing.T) {
 	app := NewApplication()
 	mockRegistry := new(MockServiceRegistry)

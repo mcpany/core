@@ -101,6 +101,8 @@ func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, true
 }
 
+func (m *MockToolManager) OnListChanged(f func()) {}
+
 // MockPromptManager is a mock implementation of the PromptManagerInterface.
 type MockPromptManager struct {
 	mu      sync.Mutex
