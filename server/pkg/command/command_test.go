@@ -53,11 +53,41 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
+	defer cli.Close()
 	_, err = cli.Ping(context.Background())
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Smoke test: Try to create a container to verify storage driver
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Use alpine:latest which is expected to be present for tests
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+
+	if err != nil {
+		t.Logf("docker smoke test failed (create): %v", err)
+		// If image is missing, we might want to try pull, but usually tests assume it's there.
+		// If mount fails (overlay issue), this will catch it.
+		return false
+	}
+
+	// Clean up
+	defer func() {
+		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	// Try starting
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("docker smoke test failed (start): %v", err)
+		return false
+	}
+
 	return true
 }
 
@@ -200,7 +230,7 @@ func TestLocalExecutor(t *testing.T) {
 
 func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to Docker daemon or create containers, skipping Docker tests")
 	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
