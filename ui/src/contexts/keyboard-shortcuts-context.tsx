@@ -44,17 +44,17 @@ type KeyboardShortcutsContextType = {
 const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextType | null>(null)
 
 /**
- * STORAGE_KEY component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Local storage key for persisting shortcut overrides.
  */
 const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
 /**
  * Provider component for keyboard shortcuts.
+ * Manages the registration and state of keyboard shortcuts across the application.
  *
- * @param { children - The { children.
+ * @param props - The component props.
+ * @param props.children - The child components to render.
+ * @returns The rendered provider.
  */
 export function KeyboardShortcutsProvider({ children }: { children: React.ReactNode }) {
   const [shortcuts, setShortcuts] = React.useState<Record<string, ShortcutDefinition>>({})
@@ -136,7 +136,8 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 
 /**
  * Hook to access the keyboard shortcuts context.
- * @returns The context.
+ * @returns The context object.
+ * @throws Error if used outside of a KeyboardShortcutsProvider.
  */
 export function useKeyboardShortcuts() {
   const context = React.useContext(KeyboardShortcutsContext)
@@ -172,10 +173,11 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
 
 /**
  * Hook to register and listen for a keyboard shortcut.
- * @param id Unique identifier.
- * @param defaultKeys Default key combinations.
- * @param action Callback function when shortcut is triggered.
- * @param options Additional options (label, category, enabled).
+ *
+ * @param id - Unique identifier for the shortcut.
+ * @param defaultKeys - Default key combinations (e.g., ["ctrl+s"]).
+ * @param action - Callback function to execute when the shortcut is triggered.
+ * @param options - Additional options (label, category, enabled).
  */
 export function useShortcut(
   id: string,

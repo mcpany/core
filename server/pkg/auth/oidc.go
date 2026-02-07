@@ -15,6 +15,8 @@ import (
 )
 
 // OIDCConfig holds the configuration for the OIDC provider.
+//
+// Summary: Configuration parameters for OpenID Connect authentication.
 type OIDCConfig struct {
 	Issuer       string
 	ClientID     string
@@ -23,6 +25,8 @@ type OIDCConfig struct {
 }
 
 // OIDCProvider handles OIDC authentication flow.
+//
+// Summary: Manages OIDC authentication including login redirection and callback handling.
 type OIDCProvider struct {
 	config       OIDCConfig
 	provider     *oidc.Provider
@@ -32,11 +36,15 @@ type OIDCProvider struct {
 
 // NewOIDCProvider creates a new OIDCProvider.
 //
-// ctx is the context for the request.
-// config holds the configuration settings.
+// Summary: Initializes a new OIDCProvider by discovering the provider's configuration.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for provider discovery.
+//   - config: OIDCConfig. The configuration settings.
+//
+// Returns:
+//   - *OIDCProvider: The initialized provider.
+//   - error: An error if provider discovery fails.
 func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, error) {
 	provider, err := oidc.NewProvider(ctx, config.Issuer)
 	if err != nil {
@@ -63,8 +71,15 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 
 // HandleLogin initiates the OIDC login flow.
 //
-// w is the HTTP response writer.
-// r is the HTTP request.
+// Summary: Generates a state token and redirects the user to the OIDC provider's login page.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request.
+//
+// Side Effects:
+//   - Sets a secure cookie containing the OAuth state.
+//   - Redirects the client to the identity provider.
 func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	state, err := generateRandomState()
 	if err != nil {
@@ -89,8 +104,16 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 // HandleCallback handles the OIDC provider callback.
 //
-// w is the HTTP response writer.
-// r is the HTTP request.
+// Summary: Validates the OAuth state, exchanges the authorization code for a token, and verifies the ID token.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The incoming HTTP request containing code and state.
+//
+// Side Effects:
+//   - Validates and clears the state cookie.
+//   - Exchanges code for tokens.
+//   - Writes a JSON response with the user's information (MVP implementation).
 func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	stateCookie, err := r.Cookie("oauth_state")
 	if err != nil {
@@ -159,6 +182,13 @@ func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// generateRandomState generates a random state string for OAuth2.
+//
+// Summary: Helper to generate a cryptographically secure random string.
+//
+// Returns:
+//   - string: The base64 URL-encoded random string.
+//   - error: If reading from rand fails.
 func generateRandomState() (string, error) {
 	b := make([]byte, 32)
 	_, err := rand.Read(b)

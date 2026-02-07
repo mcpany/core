@@ -53,11 +53,36 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container (catches overlayfs issues in CI)
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		// Try to pull if missing, though typically unit tests assume image exists or pulls.
+		// If create fails, it might be the image is missing.
+		// But here we care about storage driver errors.
+		t.Logf("check: failed to create container: %v", err)
+		// If image not found, we might want to try pull, but that's expensive.
+		// Assuming alpine:latest is cached or available.
+		// If error contains "overlay", definitely skip.
+		if strings.Contains(err.Error(), "overlay") || strings.Contains(err.Error(), "mount") {
+			return false
+		}
+		// If image not found, we return true and let the test try to pull/run and fail properly or succeed.
+		// But wait, if we want to skip if BROKEN, we should be careful.
+		return true
+	}
+
+	// Clean up the check container
+	_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 	return true
 }
 
