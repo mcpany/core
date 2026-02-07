@@ -167,7 +167,10 @@ export function SecretsManager() {
     const handleBulkDelete = async () => {
         try {
             const idsToDelete = Array.from(selectedSecrets);
-            await Promise.all(idsToDelete.map(id => apiClient.deleteSecret(id)));
+            // Sequential deletion to avoid potential backend concurrency limits (e.g. SQLite locking)
+            for (const id of idsToDelete) {
+                await apiClient.deleteSecret(id);
+            }
 
             toast({
                 title: "Success",

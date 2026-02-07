@@ -27,27 +27,40 @@ test.describe('Secrets Manager - Bulk Actions', () => {
         await page.fill('#key', secret.key);
         await page.fill('#value', secret.value);
         await page.getByRole('button', { name: 'Save Secret' }).click();
-        await expect(page.getByRole('dialog')).toBeHidden();
-        // Wait for it to appear
+
+        // Wait for dialog to close OR error toast
+        try {
+            await expect(page.getByRole('dialog')).toBeHidden({ timeout: 5000 });
+        } catch (e) {
+            // Check for error toast if dialog is still open
+            const errorToast = page.getByText(/Failed to save secret/i);
+            if (await errorToast.isVisible()) {
+                const text = await errorToast.textContent();
+                throw new Error(`Failed to save secret: ${text}`);
+            }
+            throw e;
+        }
+
+        // Wait for it to appear in the list
         await expect(page.getByText(secret.name)).toBeVisible();
     }
 
     // 2. Select 2 secrets
+    // Use more specific selector to avoid ambiguity if multiple rows have same text (unlikely here but good practice)
     // Select Secret 1
-    const row1 = page.getByRole('row', { name: secrets[0].name });
-    await row1.getByRole('checkbox').check();
+    await page.locator('tr').filter({ hasText: secrets[0].name }).getByRole('checkbox').check();
 
     // Select Secret 2
-    const row2 = page.getByRole('row', { name: secrets[1].name });
-    await row2.getByRole('checkbox').check();
+    await page.locator('tr').filter({ hasText: secrets[1].name }).getByRole('checkbox').check();
 
     // Secret 3 remains unselected
-    const row3 = page.getByRole('row', { name: secrets[2].name });
-    await expect(row3.getByRole('checkbox')).not.toBeChecked();
+    await expect(page.locator('tr').filter({ hasText: secrets[2].name }).getByRole('checkbox')).not.toBeChecked();
 
     // 3. Verify Bulk Actions Toolbar appears
-    const bulkDeleteBtn = page.getByRole('button', { name: 'Delete', exact: false }).filter({ hasText: 'Delete' }).last();
+    // The toolbar button text contains "Delete (2)"
+    const bulkDeleteBtn = page.getByRole('button', { name: /Delete \(\d+\)/ });
     await expect(bulkDeleteBtn).toBeVisible();
+    await expect(bulkDeleteBtn).toHaveText(/Delete \(2\)/);
 
     // 4. Click Bulk Delete and Handle Confirmation Dialog
     await bulkDeleteBtn.click();
@@ -62,6 +75,7 @@ test.describe('Secrets Manager - Bulk Actions', () => {
     await expect(alertDialog).toBeHidden();
 
     // 5. Verify Deletion
+    // Wait for list to update. The deleted items should disappear.
     await expect(page.getByText(secrets[0].name)).not.toBeVisible();
     await expect(page.getByText(secrets[1].name)).not.toBeVisible();
     await expect(page.getByText(secrets[2].name)).toBeVisible();
