@@ -1731,6 +1731,22 @@ func NewLocalCommandTool(
 			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
 			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
 		}
+	} else if base == "awk" || base == "gawk" || base == "nawk" || base == "mawk" {
+		// Sentinel Security Update: Enforce sandbox for awk if available
+		// Only gawk supports --sandbox usually.
+		// We try `cmd --sandbox --version`.
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version") //nolint:gosec // Trusted command from config
+		if err := checkCmd.Run(); err == nil {
+			t.sandboxArgs = []string{"--sandbox"}
+			logging.GetLogger().Info("Enabled sandbox mode for awk tool", "tool", tool.GetName())
+		} else {
+			// Unlike sed, many awk versions (mawk, nawk) do not support sandbox.
+			// We do not block execution by default to avoid breaking valid tools on systems without gawk.
+			// However, we rely on input validation (blocking 'getline') for protection in those cases.
+			logging.GetLogger().Warn("Awk tool detected but --sandbox is not supported; falling back to input validation only", "tool", tool.GetName(), "error", err)
+		}
 	}
 
 	return t
@@ -2859,6 +2875,10 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if isAwk {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
+		}
+		// Block getline to prevent arbitrary file read/write if sandbox is not enabled
+		if quoteLevel == 2 && strings.Contains(val, "getline") {
+			return fmt.Errorf("awk injection detected: value contains 'getline' (potential file access)")
 		}
 	}
 
