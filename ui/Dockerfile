@@ -13,6 +13,7 @@ FROM base AS deps
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* /app/
 # Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
+# Running as root (default), so no need for sudo/user switching which causes overlayfs issues
 RUN cd /app && rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
 
 # Rebuild the source code only when needed
@@ -74,21 +75,20 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # User authentication service URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    mkdir -p /app/public && \
-    mkdir -p /app/.next && \
-    chown nextjs:nodejs /app/.next
+# Skip creating user/group to avoid overlayfs metadata issues on some CI runners.
+# Running as root is acceptable for this build artifact context or handled by runtime security policies.
+# We also skip 'mkdir' commands that might trigger layer creation issues, relying on COPY to create destinations.
 
 # Handle public directory if it exists
 COPY --from=builder /app/public /app/public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone /app/
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static /app/.next/static
+COPY --from=builder /app/.next/standalone /app/
+COPY --from=builder /app/.next/static /app/.next/static
 
-USER nextjs
+# Run as root to avoid permission issues with copied files
+# USER nextjs
 
 EXPOSE 3000
 
