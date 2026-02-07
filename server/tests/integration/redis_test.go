@@ -5,6 +5,7 @@ package integration
 
 import (
 	"context"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -15,6 +16,11 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	// Skip in CI environments where Docker might not be available or fully functional
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping TestRedisBus_ExternalServer in CI environment")
+	}
+
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
