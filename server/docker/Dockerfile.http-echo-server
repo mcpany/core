@@ -14,9 +14,7 @@ WORKDIR /app/server
 COPY . .
 
 # Build the http-echo-server
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=0 go build -o /http-echo-server ./tests/integration/cmd/mocks/http_echo_server
+RUN CGO_ENABLED=0 go build -o /http-echo-server ./tests/integration/cmd/mocks/http_echo_server
 
 # Stage 2: Create the final, minimal production image
 FROM alpine:latest
