@@ -50,7 +50,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
-  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkEdit?: (names: string[], updates: { tags?: string[], timeout?: string, env?: { key: string, value: string } }) => void;
 }
 
 /**
@@ -63,6 +63,9 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
+  const [bulkTimeout, setBulkTimeout] = useState("");
+  const [bulkEnvKey, setBulkEnvKey] = useState("");
+  const [bulkEnvValue, setBulkEnvValue] = useState("");
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -223,16 +226,51 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                         onChange={(e) => setBulkTags(e.target.value)}
                     />
                 </div>
+                <div className="space-y-2">
+                    <Label htmlFor="bulk-timeout">Timeout (e.g., 30s)</Label>
+                    <Input
+                        id="bulk-timeout"
+                        placeholder="30s"
+                        value={bulkTimeout}
+                        onChange={(e) => setBulkTimeout(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2 border-t pt-4">
+                    <Label>Add Environment Variable</Label>
+                    <div className="flex gap-2">
+                        <Input
+                            placeholder="Key"
+                            value={bulkEnvKey}
+                            onChange={(e) => setBulkEnvKey(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Value"
+                            value={bulkEnvValue}
+                            onChange={(e) => setBulkEnvValue(e.target.value)}
+                        />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                        Applied to CLI and MCP Stdio services only.
+                    </p>
+                </div>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
                     if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                        const updates: any = {};
+                        if (bulkTags) updates.tags = bulkTags.split(",").map(t => t.trim()).filter(Boolean);
+                        if (bulkTimeout) updates.timeout = bulkTimeout;
+                        if (bulkEnvKey && bulkEnvValue) updates.env = { key: bulkEnvKey, value: bulkEnvValue };
+
+                        onBulkEdit(Array.from(selected), updates);
                     }
                     setIsBulkEditDialogOpen(false);
                     setSelected(new Set());
                     setBulkTags("");
+                    setBulkTimeout("");
+                    setBulkEnvKey("");
+                    setBulkEnvValue("");
                 }}>Apply Changes</Button>
             </DialogFooter>
         </DialogContent>

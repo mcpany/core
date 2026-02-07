@@ -164,16 +164,42 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[], timeout?: string, env?: { key: string, value: string } }) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
-        await Promise.all(servicesToUpdate.map(service => {
-            const updated = { ...service };
+
+        // Execute updates sequentially to avoid "database is locked" errors with SQLite
+        for (const service of servicesToUpdate) {
+            // Deep clone to safely mutate nested properties
+            const updated = JSON.parse(JSON.stringify(service));
+
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
             }
-            return apiClient.updateService(updated as any);
-        }));
+
+            if (updates.timeout) {
+                 if (!updated.resilience) {
+                     updated.resilience = {};
+                 }
+                 updated.resilience.timeout = updates.timeout;
+            }
+
+            if (updates.env) {
+                const { key, value } = updates.env;
+                // CommandLine
+                if (updated.commandLineService) {
+                    if (!updated.commandLineService.env) updated.commandLineService.env = {};
+                    updated.commandLineService.env[key] = { plain_text: value };
+                }
+                // MCP Stdio
+                if (updated.mcpService && updated.mcpService.stdioConnection) {
+                     if (!updated.mcpService.stdioConnection.env) updated.mcpService.stdioConnection.env = {};
+                     updated.mcpService.stdioConnection.env[key] = { plain_text: value };
+                }
+            }
+            await apiClient.updateService(updated as any);
+        }
+
         toast({
             title: "Services Updated",
             description: `${names.length} services have been updated.`

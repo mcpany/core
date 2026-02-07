@@ -384,19 +384,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -423,6 +410,21 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.upstreamAuth) {
+            payload.upstream_auth = config.upstreamAuth;
+        }
+        if (config.authentication) {
+            payload.authentication = config.authentication;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+        if (config.cache) {
+            payload.cache = config.cache;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
         }
 
         const response = await fetchWithAuth('/api/v1/services', {
@@ -470,19 +472,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -509,6 +498,21 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.upstreamAuth) {
+            payload.upstream_auth = config.upstreamAuth;
+        }
+        if (config.authentication) {
+            payload.authentication = config.authentication;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+        if (config.cache) {
+            payload.cache = config.cache;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -571,19 +575,6 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
-        if (config.openapiService) {
-            payload.openapi_service = {
-                address: config.openapiService.address,
-                spec_url: config.openapiService.specUrl,
-                spec_content: config.openapiService.specContent,
-                tools: config.openapiService.tools,
-                resources: config.openapiService.resources,
-                prompts: config.openapiService.prompts,
-                calls: config.openapiService.calls,
-                health_check: config.openapiService.healthCheck,
-                tls_config: config.openapiService.tlsConfig
-            };
-        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -610,6 +601,21 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.upstreamAuth) {
+            payload.upstream_auth = config.upstreamAuth;
+        }
+        if (config.authentication) {
+            payload.authentication = config.authentication;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+        if (config.cache) {
+            payload.cache = config.cache;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1517,6 +1523,21 @@ export const apiClient = {
         }
         if (template.resourceExportPolicy) {
             payload.resource_export_policy = template.resourceExportPolicy;
+        }
+        if (template.upstreamAuth) {
+            payload.upstream_auth = template.upstreamAuth;
+        }
+        if (template.authentication) {
+            payload.authentication = template.authentication;
+        }
+        if (template.resilience) {
+            payload.resilience = template.resilience;
+        }
+        if (template.cache) {
+            payload.cache = template.cache;
+        }
+        if (template.rateLimit) {
+            payload.rate_limit = template.rateLimit;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {
