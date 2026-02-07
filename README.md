@@ -2,7 +2,7 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Elevator Pitch
+## 1. Project Identity
 
 **What is this project and why does it exist?**
 
@@ -12,7 +12,80 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Architecture
+## 2. Quick Start
+
+Follow these steps to get up and running immediately.
+
+### Prerequisites
+*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
+*   `make` (for build automation)
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/mcpany/core.git
+    cd core
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    make prepare
+    ```
+
+3.  **Build the server:**
+    ```bash
+    make build
+    ```
+    This will create the `server` binary in `build/bin/`.
+
+4.  **Run with an example configuration:**
+    ```bash
+    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ```
+
+### Hello World
+Once the server is running, you can verify it using `curl` or an MCP client.
+```bash
+# Check health
+curl http://localhost:50050/healthz
+```
+
+To connect an AI client (like Claude Desktop or Gemini CLI):
+```bash
+gemini mcp add --transport http --trust mcpany http://localhost:50050
+```
+
+## 3. Developer Workflow
+
+We follow a strict development workflow to ensure quality.
+
+### Testing
+Run all unit, integration, and end-to-end tests to ensure code correctness.
+```bash
+make test
+```
+
+### Linting
+Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Run the linter to verify your changes:
+```bash
+make lint
+```
+
+### Building
+Compile all artifacts (Server binary and UI assets).
+```bash
+make build
+```
+
+### Code Generation
+Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
+```bash
+make gen
+```
+
+## 4. Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
@@ -44,86 +117,6 @@ graph TD
 *   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
-
-## 3. Getting Started
-
-Follow these steps to get up and running immediately.
-
-### Prerequisites
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
-*   `make` (for build automation)
-
-### Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/mcpany/core.git
-    cd core
-    ```
-
-2.  **Prepare dependencies:**
-    ```bash
-    make prepare
-    ```
-
-3.  **Build the server:**
-    ```bash
-    make build
-    ```
-    This will create the `server` binary in `build/bin/`.
-
-4.  **Run with an example configuration:**
-    ```bash
-    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
-    ```
-
-### Hello World
-Once the server is running, you can verify it using `curl` or an MCP client.
-```bash
-# Check health
-curl http://localhost:50050/health
-```
-
-To connect an AI client (like Claude Desktop or Gemini CLI):
-```bash
-gemini mcp add --transport http --trust mcpany http://localhost:50050
-```
-
-## 4. Development
-
-We follow a strict development workflow to ensure quality.
-
-### Setup
-Before running tests or building locally, ensure all dependencies and tools are installed.
-```bash
-make prepare
-```
-
-### Testing
-Run all unit, integration, and end-to-end tests to ensure code correctness.
-```bash
-make test
-```
-
-### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
-Run the linter to verify your changes:
-```bash
-make lint
-```
-
-### Building
-Compile all artifacts (Server binary and UI assets).
-```bash
-make build
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
-```
 
 ## 5. Configuration
 
