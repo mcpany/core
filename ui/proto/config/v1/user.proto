@@ -1,0 +1,24 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "proto/config/v1/auth.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "UserProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+message User {
+  // The unique ID of the user (UUID or Username).
+  string id = 1 [json_name = "id"];
+  // The authentication configuration for the user.
+  Authentication authentication = 2 [json_name = "authentication"];
+  // The list of profile IDs this user has access to.
+  repeated string profile_ids = 3 [json_name = "profile_ids"];
+  // The list of roles assigned to the user.
+  repeated string roles = 4 [json_name = "roles"];
+}
