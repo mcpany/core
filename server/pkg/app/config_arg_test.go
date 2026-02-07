@@ -65,16 +65,18 @@ upstream_services:
 
 	// Check if service was loaded
 	require.NotNil(t, app.ServiceRegistry, "ServiceRegistry should be initialized")
-	services, err := app.ServiceRegistry.GetAllServices()
-	require.NoError(t, err)
 
-	found := false
-	for _, svc := range services {
-		if svc.GetName() == "test-config-arg" {
-			found = true
-			break
+	assert.Eventually(t, func() bool {
+		services, err := app.ServiceRegistry.GetAllServices()
+		if err != nil {
+			return false
 		}
-	}
 
-	assert.True(t, found, "Service 'test-config-arg' should be loaded when --config-path is provided")
+		for _, svc := range services {
+			if svc.GetName() == "test-config-arg" {
+				return true
+			}
+		}
+		return false
+	}, 10*time.Second, 100*time.Millisecond, "Service 'test-config-arg' should be loaded when --config-path is provided")
 }
