@@ -14,64 +14,52 @@ import (
 
 // ManagerInterface defines the interface for a prompt manager.
 //
-// Summary: Interface for managing the lifecycle of prompts.
+// It manages the lifecycle, registration, and retrieval of prompts within the system.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
-	// Summary: Adds a new prompt to the registry.
-	//
 	// Parameters:
-	//   - prompt: Prompt. The prompt to add.
+	//   - prompt: Prompt. The prompt definition to add.
 	AddPrompt(prompt Prompt)
 
 	// UpdatePrompt updates an existing prompt.
-	//
-	// Summary: Updates an existing prompt in the registry.
 	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt with updated information.
 	UpdatePrompt(prompt Prompt)
 
-	// GetPrompt retrieves a prompt by name.
-	//
-	// Summary: Looks up a prompt by its name.
+	// GetPrompt retrieves a prompt by its name.
 	//
 	// Parameters:
-	//   - name: string. The name of the prompt.
+	//   - name: string. The unique name of the prompt.
 	//
 	// Returns:
 	//   - Prompt: The prompt instance.
-	//   - bool: True if found, false otherwise.
+	//   - bool: True if the prompt was found, false otherwise.
 	GetPrompt(name string) (Prompt, bool)
 
 	// ListPrompts returns all registered prompts.
-	//
-	// Summary: Lists all currently registered prompts.
 	//
 	// Returns:
 	//   - []Prompt: A slice of all registered prompts.
 	ListPrompts() []Prompt
 
-	// ClearPromptsForService removes all prompts associated with a service.
-	//
-	// Summary: Removes all prompts belonging to a specific service ID.
+	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
 	// Parameters:
-	//   - serviceID: string. The service ID.
+	//   - serviceID: string. The unique identifier of the service.
 	ClearPromptsForService(serviceID string)
 
 	// SetMCPServer sets the MCP server provider.
 	//
-	// Summary: Configures the MCP server provider.
-	//
 	// Parameters:
-	//   - mcpServer: MCPServerProvider. The provider to set.
+	//   - mcpServer: MCPServerProvider. The provider interface.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
 // Manager is a thread-safe manager for registering and retrieving prompts.
 //
-// Summary: Manages the registration and retrieval of prompts.
+// It supports concurrent access and uses caching for efficient list operations.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -81,10 +69,8 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
-// Summary: Initializes a new prompt Manager.
-//
 // Returns:
-//   - *Manager: A new Manager instance.
+//   - *Manager: A pointer to the newly created Manager.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -92,8 +78,6 @@ func NewManager() *Manager {
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
-//
-// Summary: Sets the MCP server instance.
 //
 // Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
@@ -103,18 +87,13 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mcpServer = mcpServer
 }
 
-// AddPrompt registers a new prompt with the manager. If a prompt with the same
-// name already exists, it will be overwritten, and a warning will be logged.
+// AddPrompt registers a new prompt with the manager.
 //
-// Summary: Registers a new prompt.
+// If a prompt with the same name already exists, it will be overwritten, and a warning
+// will be logged.
 //
 // Parameters:
 //   - prompt: Prompt. The prompt to add.
-//
-// Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the prompt cache.
-//   - Logs a warning if a prompt is overwritten.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
@@ -129,17 +108,12 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 	pm.mu.Unlock()
 }
 
-// UpdatePrompt updates an existing prompt in the manager. If the prompt does not
-// exist, it will be added.
+// UpdatePrompt updates an existing prompt in the manager.
 //
-// Summary: Updates an existing prompt or adds it if missing.
+// If the prompt does not exist, it will be added.
 //
 // Parameters:
-//   - prompt: Prompt. The prompt to update.
-//
-// Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the prompt cache.
+//   - prompt: Prompt. The prompt definition to update.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -149,14 +123,12 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 
 // GetPrompt retrieves a prompt from the manager by its name.
 //
-// Summary: Looks up a prompt by name.
-//
 // Parameters:
 //   - name: string. The name of the prompt.
 //
 // Returns:
 //   - Prompt: The prompt instance.
-//   - bool: True if found.
+//   - bool: True if found, false otherwise.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -164,10 +136,10 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 
 // ListPrompts returns a slice containing all the prompts currently registered.
 //
-// Summary: Lists all registered prompts.
+// It uses a read-through cache to improve performance.
 //
 // Returns:
-//   - []Prompt: A slice of prompts.
+//   - []Prompt: A slice of currently registered prompts.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -208,14 +180,8 @@ func (pm *Manager) ListPrompts() []Prompt {
 
 // ClearPromptsForService removes all prompts associated with a given service.
 //
-// Summary: Removes all prompts for a service.
-//
 // Parameters:
-//   - serviceID: string. The service ID.
-//
-// Side Effects:
-//   - Removes prompts from the registry.
-//   - Invalidates the prompt cache if changes occur.
+//   - serviceID: string. The unique identifier of the service.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {
