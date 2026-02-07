@@ -31,9 +31,11 @@ import (
 
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 10*time.Second)
+	// Use small interval to ensure flush happens during test
+	sink := metrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
+	conf.TimerGranularity = 10 * time.Millisecond // Ensure periodic flush runs frequently
 	_, err := metrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
@@ -96,10 +98,20 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	})
 	require.NoError(t, err)
 
+	// Wait for metrics flush
+	time.Sleep(100 * time.Millisecond)
+
 	// Check metrics
 	data := sink.Data()
 	require.NotEmpty(t, data)
-	samples := data[0].Samples
+
+	// Flatten samples from all intervals
+	samples := make(map[string]metrics.SampledValue)
+	for _, interval := range data {
+		for k, v := range interval.Samples {
+			samples[k] = v
+		}
+	}
 	require.NotEmpty(t, samples)
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.

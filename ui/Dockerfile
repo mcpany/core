@@ -12,7 +12,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 # Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
-RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
+RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/ --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
