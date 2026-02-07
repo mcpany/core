@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -235,9 +236,6 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	}
 
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
@@ -276,6 +274,15 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}.Build()
 
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+	if err != nil {
+		// In some CI environments (like GitHub Actions with certain runners), mounting overlayfs
+		// inside Docker (Docker-in-Docker) fails with "invalid argument".
+		// We skip the test in this case rather than failing.
+		errStr := err.Error()
+		if (strings.Contains(errStr, "overlay") || strings.Contains(errStr, "invalid argument")) && strings.Contains(errStr, "mount") {
+			t.Skipf("Skipping test due to Docker overlayfs/mount issue in this environment: %v", err)
+		}
+	}
 	require.NoError(t, err)
 	expectedKey, _ := util.SanitizeServiceName("fs-bundle-service")
 	assert.Equal(t, expectedKey, serviceID)

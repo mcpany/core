@@ -131,6 +131,67 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
              setResults([...newResults]);
         }
 
+        // 4. Browser Connectivity Check
+        // Only run for HTTP/OpenAPI services where we have an address
+        const httpAddress = service.httpService?.address || service.openapiService?.address;
+        let browserStatus: CheckStatus = "idle";
+
+        if (httpAddress) {
+            const browserCheck: DiagnosticResult = { name: "Browser Connectivity", status: "running" };
+            // Update UI to show running
+            setResults([...newResults, browserCheck]);
+
+            try {
+                // We use no-cors because we usually cannot read the response (CORS),
+                // but we can distinguish between a network error (failed fetch) and success/opaque.
+                // Note: a 404 or 500 return from the server is considered a "success" for fetch(),
+                // so we mainly catch DNS/Connection Refused errors here.
+                await fetch(httpAddress, { mode: 'no-cors', cache: 'no-store' });
+
+                browserCheck.status = "success";
+                browserCheck.message = "Browser successfully reached the service URL.";
+                browserStatus = "success";
+            } catch (e: any) {
+                browserCheck.status = "error";
+                browserCheck.message = "Browser failed to reach the service URL.";
+                browserCheck.details = e.message || "Network Error";
+                browserStatus = "error";
+            }
+            newResults.push(browserCheck);
+            setResults([...newResults]);
+        }
+
+        // 5. Analysis & Heuristics
+        const runtimeCheck = newResults.find(r => r.name === "Runtime Status");
+        const serverStatus = runtimeCheck?.status;
+
+        // "It works on my machine" scenario
+        if (serverStatus === "error" && browserStatus === "success") {
+            const insight: DiagnosticResult = {
+                name: "Analysis: Connectivity Discrepancy",
+                status: "warning",
+                message: "Your browser can reach the service, but the MCP Server cannot.",
+                details: "Common Causes:\n" +
+                         "1. You are using 'localhost', but the MCP Server is running in Docker. Use 'host.docker.internal' instead.\n" +
+                         "2. The service is firewalled or bound to loopback only (127.0.0.1) instead of 0.0.0.0."
+            };
+            newResults.push(insight);
+            setResults([...newResults]);
+        }
+        // "Firewall/VPN" scenario
+        else if (serverStatus === "success" && browserStatus === "error") {
+            const insight: DiagnosticResult = {
+                name: "Analysis: Client Network Issue",
+                status: "warning",
+                message: "The MCP Server connects fine, but your browser cannot reach it.",
+                details: "Common Causes:\n" +
+                         "1. You are on a VPN or corporate network that blocks this address.\n" +
+                         "2. The service is in an internal network accessible only to the server."
+            };
+            newResults.push(insight);
+            setResults([...newResults]);
+        }
+
         setRunning(false);
     };
 
