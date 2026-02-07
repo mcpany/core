@@ -32,7 +32,9 @@ import (
 )
 
 var (
-	// Version is set at build time.
+	// Version is the current version of the application.
+	//
+	// It is typically set at build time using -ldflags.
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )
@@ -55,7 +57,7 @@ const (
 //   - error: An error if the specified file cannot be loaded or if the default .env file is present but invalid.
 //
 // Side Effects:
-//   - Modifies the process environment variables.
+//   - Modifies the process environment variables by loading values from the file.
 func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
 	if envFile != "" {
@@ -269,7 +271,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				ConfigPaths:     configPaths,
 				APIKey:          cfg.APIKey(),
 				ShutdownTimeout: shutdownTimeout,
-				DBPath:          cfg.DBPath(),
 			}); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
@@ -619,8 +620,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 // Summary: Executes the root command to start the application.
 //
 // Side Effects:
-//   - Parsed command line arguments.
-//   - Starts the HTTP/gRPC server.
+//   - Parses command line arguments.
+//   - Starts the HTTP/gRPC server and blocks until shutdown.
+//   - Writes logs to stdout/stderr.
 //   - May exit the process with status code 1 on error.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {

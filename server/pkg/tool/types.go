@@ -46,9 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-
-	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
-	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
@@ -63,28 +60,46 @@ var (
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
+//
 // Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+// (e.g., gRPC, HTTP, command-line) and provides a unified way to execute it.
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The underlying protobuf definition of the tool.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
+
+	// Execute runs the tool with the provided context and request.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the execution.
+	//   - req: *ExecutionRequest. The request containing tool name and arguments.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if the execution fails.
+	//
+	// Side Effects:
+	//   - May invoke external services (HTTP, gRPC) or local commands depending on the implementation.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, if any.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
-// ServiceInfo holds metadata about a registered upstream service, including its
-// configuration and any associated protobuf file descriptors.
+// ServiceInfo holds metadata about a registered upstream service.
+//
+// It includes configuration, protobuf descriptors, hooks, policies, and health status.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -105,16 +120,17 @@ type ServiceInfo struct {
 	HealthStatus string
 }
 
-// ExecutionRequest represents a request to execute a specific tool, including
-// its name and input arguments as a raw JSON message.
+// ExecutionRequest represents a request to execute a specific tool.
+//
+// It encapsulates the tool name, inputs (both raw and map), dry-run status, and the resolved tool instance.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
-	// ToolInputs is the raw JSON message of the tool inputs. It is used by
-	// tools that need to unmarshal the inputs into a specific struct.
+	// ToolInputs is the raw JSON message of the tool inputs.
+	// It is used by tools that need to unmarshal the inputs into a specific struct.
 	ToolInputs stdjson.RawMessage `json:"toolInputs"`
-	// Arguments is a map of the tool inputs. It is used by tools that need to
-	// access the inputs as a map.
+	// Arguments is a map of the tool inputs.
+	// It is used by tools that need to access the inputs as a map.
 	Arguments map[string]interface{} `json:"arguments"`
 	// DryRun indicates whether the tool should be executed in dry-run mode.
 	// In dry-run mode, the tool should validate inputs and return a preview
@@ -124,14 +140,14 @@ type ExecutionRequest struct {
 	Tool Tool `json:"-"`
 }
 
-// ServiceRegistry defines an interface for a component that can look up tools
-// and service information. It is used for dependency injection to decouple
-// components from the main service registry.
+// ServiceRegistry defines an interface for tool and service lookup.
+//
+// It serves as a dependency injection abstraction to decouple components from the main service registry implementation.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
 	// Parameters:
-	//   - toolName: The name of the tool to retrieve.
+	//   - toolName: string. The name of the tool to retrieve.
 	//
 	// Returns:
 	//   - Tool: The tool instance if found.
@@ -141,7 +157,7 @@ type ServiceRegistry interface {
 	// GetServiceInfo retrieves metadata for a service.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
@@ -149,7 +165,7 @@ type ServiceRegistry interface {
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
-// ExecutionFunc represents the next middleware in the chain.
+// ExecutionFunc represents the next middleware in the chain of execution.
 type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
 
 type contextKey string
@@ -159,8 +175,8 @@ const toolContextKey = contextKey("tool")
 // NewContextWithTool creates a new context with the given tool embedded.
 //
 // Parameters:
-//   - ctx: The context to extend.
-//   - t: The tool instance to embed in the context.
+//   - ctx: context.Context. The context to extend.
+//   - t: Tool. The tool instance to embed in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
@@ -171,7 +187,7 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // GetFromContext retrieves a tool from the context if present.
 //
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx: context.Context. The context to search.
 //
 // Returns:
 //   - Tool: The tool instance from the context.
@@ -182,12 +198,14 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 }
 
 // Callable is an interface that represents a callable tool.
+//
+// It provides a generic interface for executing various types of tools (local, remote, etc.).
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
 	// Parameters:
-	//   - ctx: The context for the request.
-	//   - req: The execution request details.
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The execution request details.
 	//
 	// Returns:
 	//   - any: The result of the execution.
@@ -219,8 +237,8 @@ const cacheControlContextKey = contextKey("cache_control")
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
 // Parameters:
-//   - ctx: The context to extend.
-//   - cc: The CacheControl instance to embed.
+//   - ctx: context.Context. The context to extend.
+//   - cc: *CacheControl. The CacheControl instance to embed.
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
@@ -231,7 +249,7 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // GetCacheControl retrieves the CacheControl from the context.
 //
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx: context.Context. The context to search.
 //
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
@@ -243,15 +261,31 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 
 // PreCallHook defines the interface for hooks executed before a tool call.
 type PreCallHook interface {
-	// ExecutePre runs the hook. It returns an action (Allow/Deny),
-	// a potentially modified request (or nil if unchanged), and an error.
+	// ExecutePre runs the hook.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The request being processed.
+	//
+	// Returns:
+	//   - Action: The action to take (Allow/Deny/etc.).
+	//   - *ExecutionRequest: A potentially modified request (or nil if unchanged).
+	//   - error: An error if the hook execution fails.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
 // PostCallHook defines the interface for hooks executed after a tool call.
 type PostCallHook interface {
-	// ExecutePost runs the hook. It returns the potentially modified result
-	// (or original if unchanged) and an error.
+	// ExecutePost runs the hook.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The request that was processed.
+	//   - result: any. The result of the execution.
+	//
+	// Returns:
+	//   - any: The potentially modified result (or original if unchanged).
+	//   - error: An error if the hook execution fails.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 
@@ -273,12 +307,12 @@ type GRPCTool struct {
 // NewGRPCTool creates a new GRPCTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - poolManager: The connection pool manager for gRPC connections.
-//   - serviceID: The identifier for the service.
-//   - method: The gRPC method descriptor.
-//   - callDefinition: The configuration for the gRPC call.
-//   - resilienceConfig: The resilience configuration (retries, timeouts, etc.).
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The connection pool manager for gRPC connections.
+//   - serviceID: string. The identifier for the service.
+//   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
+//   - callDefinition: *configv1.GrpcCallDefinition. The configuration for the gRPC call.
+//   - resilienceConfig: *configv1.ResilienceConfig. The resilience configuration (retries, timeouts, etc.).
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
@@ -327,9 +361,22 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the gRPC tool. It retrieves a client from the
-// pool, unmarshals the JSON input into a protobuf request message, invokes the
-// gRPC method, and marshals the protobuf response back to JSON.
+// Execute handles the execution of the gRPC tool.
+//
+// It retrieves a client from the pool, unmarshals the JSON input into a protobuf request message,
+// invokes the gRPC method, and marshals the protobuf response back to JSON.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing tool name and arguments.
+//
+// Returns:
+//   - any: The result of the execution (typically a map[string]any representing the JSON response).
+//   - error: An error if the gRPC call fails, or if marshaling/unmarshaling fails.
+//
+// Side Effects:
+//   - Invokes a remote gRPC method.
+//   - Logs debug information and metrics.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -434,14 +481,14 @@ type HTTPTool struct {
 // NewHTTPTool creates a new HTTPTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - poolManager: The connection pool manager for HTTP connections.
-//   - serviceID: The identifier for the service.
-//   - authenticator: The authenticator for upstream requests.
-//   - callDefinition: The configuration for the HTTP call.
-//   - cfg: The resilience configuration.
-//   - policies: The security policies for the call.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The connection pool manager for HTTP connections.
+//   - serviceID: string. The identifier for the service.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.HttpCallDefinition. The configuration for the HTTP call.
+//   - cfg: *configv1.ResilienceConfig. The resilience configuration.
+//   - policies: []*configv1.CallPolicy. The security policies for the call.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
@@ -571,9 +618,22 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the HTTP tool. It builds an HTTP request by
-// mapping input parameters to the path, query, and body, applies any
-// configured transformations, sends the request, and processes the response.
+// Execute handles the execution of the HTTP tool.
+//
+// It builds an HTTP request by mapping input parameters to the path, query, and body,
+// applies any configured transformations, sends the request, and processes the response.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing tool name and arguments.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the HTTP request fails, validation fails, or response processing errors occur.
+//
+// Side Effects:
+//   - Sends an HTTP request to the upstream service.
+//   - Logs debug information and metrics.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1162,9 +1222,9 @@ type MCPTool struct {
 // NewMCPTool creates a new MCPTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - client: The MCP client for downstream communication.
-//   - callDefinition: The configuration for the MCP call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - client: client.MCPClient. The MCP client for downstream communication.
+//   - callDefinition: *configv1.MCPCallDefinition. The configuration for the MCP call.
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
@@ -1235,10 +1295,22 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the MCP tool. It forwards the tool call,
-// including its name and arguments, to the downstream MCP service using the
-// configured client and applies any necessary transformations to the request
-// and response.
+// Execute handles the execution of the MCP tool.
+//
+// It forwards the tool call, including its name and arguments, to the downstream MCP service
+// using the configured client and applies any necessary transformations to the request and response.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing tool name and arguments.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the downstream call fails or processing errors occur.
+//
+// Side Effects:
+//   - Invokes a tool on a downstream MCP server.
+//   - Logs debug information.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1377,13 +1449,13 @@ type OpenAPITool struct {
 // NewOpenAPITool creates a new OpenAPITool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - client: The HTTP client for requests.
-//   - parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
-//   - method: The HTTP method (GET, POST, etc.).
-//   - url: The URL template.
-//   - authenticator: The authenticator for upstream requests.
-//   - callDefinition: The configuration for the OpenAPI call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - client: client.HTTPClient. The HTTP client for requests.
+//   - parameterDefs: map[string]string. Mapping of parameter names to their locations (path, query, etc.).
+//   - method: string. The HTTP method (GET, POST, etc.).
+//   - url: string. The URL template.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.OpenAPICallDefinition. The configuration for the OpenAPI call.
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
@@ -1458,10 +1530,22 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the OpenAPI tool. It constructs an HTTP
-// request based on the operation's method, URL, and parameter definitions,
-// sends the request, and processes the response, applying transformations as
-// needed.
+// Execute handles the execution of the OpenAPI tool.
+//
+// It constructs an HTTP request based on the operation's method, URL, and parameter definitions,
+// sends the request, and processes the response, applying transformations as needed.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing tool name and arguments.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the HTTP request fails or validation fails.
+//
+// Side Effects:
+//   - Sends an HTTP request to the upstream service.
+//   - Logs debug information.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1621,9 +1705,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	return result, nil
 }
 
-// CommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process. It maps tool inputs to command-line arguments and
-// environment variables.
+// CommandTool implements the Tool interface for a tool that is executed as a local command-line process.
+//
+// It maps tool inputs to command-line arguments and environment variables.
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -1639,11 +1723,11 @@ type CommandTool struct {
 // NewCommandTool creates a new CommandTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - service: The configuration of the command-line service.
-//   - callDefinition: The configuration for the command-line call.
-//   - policies: The security policies.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - service: *configv1.CommandLineUpstreamService. The configuration of the command-line service.
+//   - callDefinition: *configv1.CommandLineCallDefinition. The configuration for the command-line call.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created CommandTool.
@@ -1668,9 +1752,9 @@ func NewCommandTool(
 	return t
 }
 
-// LocalCommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process. It maps tool inputs to command-line arguments and
-// environment variables.
+// LocalCommandTool implements the Tool interface for a tool that is executed as a local command-line process.
+//
+// It maps tool inputs to command-line arguments and environment variables.
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -1686,11 +1770,11 @@ type LocalCommandTool struct {
 // NewLocalCommandTool creates a new LocalCommandTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - service: The configuration of the command-line service.
-//   - callDefinition: The configuration for the command-line call.
-//   - policies: The security policies.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - service: *configv1.CommandLineUpstreamService. The configuration of the command-line service.
+//   - callDefinition: *configv1.CommandLineCallDefinition. The configuration for the command-line call.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
@@ -1772,9 +1856,22 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDefinition.GetCache()
 }
 
-// Execute handles the execution of the command-line tool. It constructs a command
-// with arguments and environment variables derived from the tool inputs, runs
-// the command, and returns its output.
+// Execute handles the execution of the command-line tool.
+//
+// It constructs a command with arguments and environment variables derived from the tool inputs,
+// runs the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the execution.
+//   - req: *ExecutionRequest. The request containing tool name and arguments.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if command execution fails or validation policies are violated.
+//
+// Side Effects:
+//   - Executes a local system command.
+//   - May read/write to stdout/stderr.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2362,11 +2459,11 @@ type threadSafeBuffer struct {
 // Write writes bytes to the buffer in a thread-safe manner.
 //
 // Parameters:
-//   - p: The slice of bytes to write.
+//   - p: []byte. The slice of bytes to write.
 //
 // Returns:
-//   - n: The number of bytes written.
-//   - err: An error if one occurred.
+//   - n: int. The number of bytes written.
+//   - err: error. An error if one occurred.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2384,6 +2481,15 @@ func (tsb *threadSafeBuffer) String() string {
 }
 
 // prettyPrint formats the input based on content type for better readability.
+//
+// It attempts to format JSON and XML content, and redacts sensitive information.
+//
+// Parameters:
+//   - input: []byte. The raw input data.
+//   - contentType: string. The MIME type of the input.
+//
+// Returns:
+//   - string: The formatted and potentially redacted string representation.
 func prettyPrint(input []byte, contentType string) string {
 	if len(input) == 0 {
 		return ""
@@ -2472,7 +2578,11 @@ func (t *CommandTool) getExecutor(env *configv1.ContainerEnvironment) command.Ex
 }
 
 // getMaxCommandOutputSize returns the maximum size of the command output (stdout + stderr) in bytes.
+//
 // It checks the MCPANY_MAX_COMMAND_OUTPUT_SIZE environment variable.
+//
+// Returns:
+//   - int64: The maximum allowed size in bytes.
 func getMaxCommandOutputSize() int64 {
 	val := os.Getenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
 	if val != "" {
@@ -2485,7 +2595,11 @@ func getMaxCommandOutputSize() int64 {
 }
 
 // getMaxHTTPResponseSize returns the maximum size of the HTTP response body in bytes.
+//
 // It checks the MCPANY_MAX_HTTP_RESPONSE_SIZE environment variable.
+//
+// Returns:
+//   - int64: The maximum allowed size in bytes.
 func getMaxHTTPResponseSize() int64 {
 	val := os.Getenv("MCPANY_MAX_HTTP_RESPONSE_SIZE")
 	if val != "" {
@@ -3006,9 +3120,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
-	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
-	val = strings.TrimSpace(val)
-
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}

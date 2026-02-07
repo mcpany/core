@@ -1,6 +1,6 @@
 # MCP Any: The Universal MCP Adapter
 
-**One server, Infinite possibilities.**
+**One server, Infinite possibilities.** 🚀
 
 ## 1. Elevator Pitch
 
