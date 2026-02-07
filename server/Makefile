@@ -662,7 +662,7 @@ endif
 
 # Target to run the UI Docker smoke test
 # Target to build UI Docker image (wrapper for CI)
-docker-build-ui:
+docker-build-ui: gen
 	$(MAKE) -C ../ui docker-build-ui
 
 docker-smoke-test-ui:
