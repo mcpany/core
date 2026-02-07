@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRateLimitMiddleware_ArgumentsPopulated(t *testing.T) {
+func TestRateLimitMiddleware_Optimization_NoUnmarshalling(t *testing.T) {
 	mockToolManager := &rateLimitMockToolManager{}
 	rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
@@ -53,9 +53,9 @@ func TestRateLimitMiddleware_ArgumentsPopulated(t *testing.T) {
 	ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 	next := func(_ context.Context, req *tool.ExecutionRequest) (any, error) {
-		// Verify Arguments are populated in next middleware
-		assert.NotNil(t, req.Arguments)
-		assert.Equal(t, "bar", req.Arguments["foo"])
+		// ⚡ BOLT: Optimization check
+		// Verify Arguments are NOT populated in next middleware (Lazy Unmarshalling)
+		assert.Nil(t, req.Arguments)
 		return "success", nil
 	}
 
@@ -63,7 +63,6 @@ func TestRateLimitMiddleware_ArgumentsPopulated(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "success", result)
 
-	// Verify Arguments are populated in original request object (since it's a pointer)
-	assert.NotNil(t, req.Arguments)
-	assert.Equal(t, "bar", req.Arguments["foo"])
+	// Verify Arguments are NOT populated in original request object
+	assert.Nil(t, req.Arguments)
 }
