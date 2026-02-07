@@ -1109,7 +1109,21 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--db-path", dbPath,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
+
+	// Check if log level is provided in extraArgs to avoid overriding it with default debug
+	logLevelSet := false
+	for _, arg := range extraArgs {
+		if strings.Contains(arg, "--log-level") {
+			logLevelSet = true
+			break
+		}
+	}
+
+	env := []string{"NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
+	if !logLevelSet {
+		env = append(env, "MCPANY_LOG_LEVEL=debug")
+	}
+
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}

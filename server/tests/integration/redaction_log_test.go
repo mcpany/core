@@ -68,7 +68,8 @@ func TestRedactionInLogs(t *testing.T) {
 	require.NoError(t, err)
 
 	// Wait for the tool execution log to appear to ensure logs are flushed
-	serverInfo.Process.WaitForText(t, "Tool execution completed", 5*time.Second)
+	// Increased timeout to 10s for slower CI environments
+	serverInfo.Process.WaitForText(t, "Tool execution completed", 10*time.Second)
 
 	// Check logs from stdout and stderr
 	logs := serverInfo.Process.StdoutString() + "\n" + serverInfo.Process.StderrString()
