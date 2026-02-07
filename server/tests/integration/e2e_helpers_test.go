@@ -71,10 +71,11 @@ func TestDockerHelpers(t *testing.T) {
 	}
 
 	// Verify we can actually run containers (CI environment might have issues with overlayfs)
+	// We use -d and sleep to match StartDockerContainer behavior closer
 	dockerExe, dockerArgs := getDockerCommand()
-	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...)
-	if err := checkCmd.Run(); err != nil {
-		t.Skipf("Docker available but unable to run containers: %v", err)
+	checkCmd := exec.Command(dockerExe, append(dockerArgs, "run", "--rm", "-d", "alpine:latest", "sleep", "1")...)
+	if out, err := checkCmd.CombinedOutput(); err != nil {
+		t.Skipf("Docker available but unable to run containers (skipping TestDockerHelpers): %v. Output: %s", err, string(out))
 	}
 
 	// Test StartDockerContainer
