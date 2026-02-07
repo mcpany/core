@@ -17,6 +17,14 @@ interface ResilienceEditorProps {
     onChange: (config: ResilienceConfig) => void;
 }
 
+/**
+ * ResilienceEditor component for configuring timeout, retry policy, and circuit breaker settings.
+ *
+ * @param props - The component props.
+ * @param props.config - The current resilience configuration.
+ * @param props.onChange - Callback to update the configuration.
+ * @returns The rendered ResilienceEditor component.
+ */
 export function ResilienceEditor({ config, onChange }: ResilienceEditorProps) {
     // Helper to update root config
     const updateConfig = (updates: Partial<ResilienceConfig>) => {
