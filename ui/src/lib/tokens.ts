@@ -12,11 +12,29 @@
 export function estimateTokens(text: string): number {
     if (!text) return 0;
 
+    // ⚡ BOLT: Optimized token estimation to avoid O(N) allocation from split()
+    // Randomized Selection from Top 5 High-Impact Targets
+
     // Simple heuristic used by many LLM providers for estimation:
     // Approximately 4 characters per token for English text.
     // We add some overhead for whitespace and special characters.
     const charCount = text.length;
-    const wordCount = text.trim().split(/\s+/).length;
+
+    // Count words without allocation
+    let wordCount = 0;
+    let inWord = false;
+    for (let i = 0; i < charCount; i++) {
+        const c = text.charCodeAt(i);
+        // ASCII space (32), tab (9), newline (10), carriage return (13), NBSP (160)
+        const isSpace = c === 32 || c === 9 || c === 10 || c === 13 || c === 160;
+
+        if (isSpace) {
+            inWord = false;
+        } else if (!inWord) {
+            inWord = true;
+            wordCount++;
+        }
+    }
 
     // Heuristic 1: 4 chars per token
     // Heuristic 2: 1.3 words per token
