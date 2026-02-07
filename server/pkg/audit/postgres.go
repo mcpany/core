@@ -167,7 +167,15 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	return tx.Commit()
 }
 
-// Read implements the Store interface.
+// Read reads audit entries from the database.
+//
+// Parameters:
+//   - ctx: context.Context. Unused.
+//   - filter: Filter. Unused.
+//
+// Returns:
+//   - []Entry: Nil.
+//   - error: An error indicating that read is not implemented for postgres audit store.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
