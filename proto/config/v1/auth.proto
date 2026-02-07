@@ -193,4 +193,7 @@ message Credential {
   // Optional: For interactive OAuth, the persisted session/tokens.
   // This allows the proxy to use this credential by refreshing the token.
   UserToken token = 4;
+
+  // The ID of the user who owns this credential.
+  string owner_id = 5 [json_name = "owner_id"];
 }

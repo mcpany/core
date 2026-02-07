@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -78,8 +79,11 @@ func writeError(w http.ResponseWriter, err error) {
 	case strings.Contains(errStr, "not found"):
 		status = http.StatusNotFound
 		msg = errStr
-	case strings.Contains(errStr, "required") || strings.Contains(errStr, "invalid"):
+	case strings.Contains(errStr, "required") || strings.Contains(errStr, "invalid") || strings.Contains(errStr, "mismatch"):
 		status = http.StatusBadRequest
+		msg = errStr
+	case strings.Contains(errStr, "forbidden"):
+		status = http.StatusForbidden
 		msg = errStr
 	default:
 		// For 500 errors, we don't leak details
@@ -105,11 +109,24 @@ func (a *Application) listCredentialsHandler(w http.ResponseWriter, r *http.Requ
 		writeError(w, err)
 		return
 	}
-	// Sanitize credentials
-	for i := range creds {
-		creds[i] = util.SanitizeCredential(creds[i])
+
+	// Filter based on ownership
+	user, userOK := auth.UserFromContext(ctx)
+	roles, _ := auth.RolesFromContext(ctx)
+	isAdmin := slices.Contains(roles, "admin")
+
+	var filtered []*configv1.Credential
+	for _, c := range creds {
+		// If admin, can see all.
+		// If user authenticated, can see own.
+		// If not authenticated (should be caught by middleware, but safe check), see none?
+		// Auth middleware ensures user is present usually.
+		if isAdmin || (userOK && c.GetOwnerId() == user) {
+			filtered = append(filtered, util.SanitizeCredential(c))
+		}
 	}
-	writeJSON(w, http.StatusOK, creds)
+
+	writeJSON(w, http.StatusOK, filtered)
 }
 
 // getCredentialHandler returns a credential by ID.
@@ -137,6 +154,21 @@ func (a *Application) getCredentialHandler(w http.ResponseWriter, r *http.Reques
 		writeError(w, fmt.Errorf("credential not found: %s", id))
 		return
 	}
+
+	// Ownership Check
+	user, userOK := auth.UserFromContext(ctx)
+	roles, _ := auth.RolesFromContext(ctx)
+	isAdmin := slices.Contains(roles, "admin")
+
+	if !isAdmin {
+		// If user is not admin, they must be the owner.
+		if !userOK || cred.GetOwnerId() != user {
+			// Return 404 to avoid leaking existence of ID
+			writeError(w, fmt.Errorf("credential not found: %s", id))
+			return
+		}
+	}
+
 	writeJSON(w, http.StatusOK, util.SanitizeCredential(cred))
 }
 
@@ -173,6 +205,12 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 			writeError(w, fmt.Errorf("id or name is required"))
 			return
 		}
+	}
+
+	// Set Owner
+	user, userOK := auth.UserFromContext(ctx)
+	if userOK {
+		cred.SetOwnerId(user)
 	}
 
 	if err := a.Storage.SaveCredential(ctx, &cred); err != nil {
@@ -215,6 +253,41 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 	}
 	cred.SetId(id)
 
+	// Ownership Check: Fetch existing credential first
+	existing, err := a.Storage.GetCredential(ctx, id)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+	if existing == nil {
+		writeError(w, fmt.Errorf("credential not found: %s", id))
+		return
+	}
+
+	user, userOK := auth.UserFromContext(ctx)
+	roles, _ := auth.RolesFromContext(ctx)
+	isAdmin := slices.Contains(roles, "admin")
+
+	if !isAdmin {
+		if !userOK || existing.GetOwnerId() != user {
+			writeError(w, fmt.Errorf("credential not found: %s", id))
+			return
+		}
+	}
+
+	// Preserve OwnerId if not admin (users shouldn't transfer ownership easily via update?)
+	// Or simply ensure OwnerId remains same.
+	// If admin updates, they might change owner?
+	// For safety, let's enforce OwnerId matches existing if not set in request, or overwrite if user.
+	if !isAdmin {
+		cred.SetOwnerId(existing.GetOwnerId())
+	} else {
+		// Admin can change owner, but if not provided, keep existing
+		if cred.GetOwnerId() == "" {
+			cred.SetOwnerId(existing.GetOwnerId())
+		}
+	}
+
 	if err := a.Storage.SaveCredential(ctx, &cred); err != nil {
 		writeError(w, err)
 		return
@@ -237,6 +310,30 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 	id := pathParts[len(pathParts)-1]
 
 	ctx := r.Context()
+
+	// Ownership Check: Fetch existing credential first
+	existing, err := a.Storage.GetCredential(ctx, id)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+	if existing == nil {
+		// Idempotent delete or 404? 404 is better for API consistency here
+		writeError(w, fmt.Errorf("credential not found: %s", id))
+		return
+	}
+
+	user, userOK := auth.UserFromContext(ctx)
+	roles, _ := auth.RolesFromContext(ctx)
+	isAdmin := slices.Contains(roles, "admin")
+
+	if !isAdmin {
+		if !userOK || existing.GetOwnerId() != user {
+			writeError(w, fmt.Errorf("credential not found: %s", id))
+			return
+		}
+	}
+
 	if err := a.Storage.DeleteCredential(ctx, id); err != nil {
 		writeError(w, err)
 		return
@@ -324,6 +421,22 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 			writeError(w, fmt.Errorf("credential not found: %s", req.CredentialID))
 			return
 		}
+
+		// Ownership Check for usage?
+		// Users should be able to USE their own credentials.
+		// If testAuthHandler allows using ANY credential ID, it's also an IDOR/SSRF risk helper.
+		// We should enforce ownership here too.
+		user, userOK := auth.UserFromContext(ctx)
+		roles, _ := auth.RolesFromContext(ctx)
+		isAdmin := slices.Contains(roles, "admin")
+
+		if !isAdmin {
+			if !userOK || cred.GetOwnerId() != user {
+				writeError(w, fmt.Errorf("credential not found: %s", req.CredentialID))
+				return
+			}
+		}
+
 		authConfig = cred.GetAuthentication()
 		userToken = cred.GetToken() // Note: Field is 'Token' in proto
 	} else {

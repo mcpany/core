@@ -37,10 +37,17 @@ func setupTestApp() *Application {
 func TestCredentialCRUD(t *testing.T) {
 	app := setupTestApp()
 	ctx := context.Background()
+	// Inject user
+	testUser := "test-user"
+	// Helper to add user to request
+	withUser := func(r *http.Request) *http.Request {
+		return r.WithContext(auth.ContextWithUser(r.Context(), testUser))
+	}
 
 	// 1. List (Empty)
 	t.Run("list empty", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/api/v1/credentials", nil)
+		req = withUser(req)
 		rr := httptest.NewRecorder()
 		app.listCredentialsHandler(rr, req)
 		assert.Equal(t, http.StatusOK, rr.Code)
@@ -63,6 +70,7 @@ func TestCredentialCRUD(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(cred)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/credentials", bytes.NewReader(body))
+		req = withUser(req)
 		rr := httptest.NewRecorder()
 		app.createCredentialHandler(rr, req)
 
@@ -78,6 +86,7 @@ func TestCredentialCRUD(t *testing.T) {
 	// 3. Get
 	t.Run("get credential", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/api/v1/credentials/"+createdID, nil)
+		req = withUser(req)
 		rr := httptest.NewRecorder()
 		app.getCredentialHandler(rr, req)
 
@@ -96,6 +105,7 @@ func TestCredentialCRUD(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(cred)
 		req := httptest.NewRequest(http.MethodPut, "/api/v1/credentials/"+createdID, bytes.NewReader(body))
+		req = withUser(req)
 		rr := httptest.NewRecorder()
 		app.updateCredentialHandler(rr, req)
 
@@ -110,6 +120,7 @@ func TestCredentialCRUD(t *testing.T) {
 	// 5. Delete
 	t.Run("delete credential", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodDelete, "/api/v1/credentials/"+createdID, nil)
+		req = withUser(req)
 		rr := httptest.NewRecorder()
 		app.deleteCredentialHandler(rr, req)
 
@@ -180,6 +191,9 @@ func TestAuthTestEndpoint(t *testing.T) {
 					}.Build(),
 				}.Build(),
 			}.Build(),
+			// Need owner for test usage if handler enforces it?
+			// testAuthHandler updated to check owner. So we need to set owner.
+			OwnerId: proto.String("test-user"),
 		}.Build()
 		err := app.Storage.SaveCredential(ctx, cred)
 		require.NoError(t, err)
@@ -190,6 +204,9 @@ func TestAuthTestEndpoint(t *testing.T) {
 		}
 		body, _ := json.Marshal(reqData)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
+		// Inject User
+		req = req.WithContext(auth.ContextWithUser(req.Context(), "test-user"))
+
 		rr := httptest.NewRecorder()
 
 		app.testAuthHandler(rr, req)
@@ -297,11 +314,18 @@ func TestCredentialHandlers(t *testing.T) {
 	cred := configv1.Credential_builder{
 		Id:   proto.String("test-cred"),
 		Name: proto.String("Test Credential"),
+		OwnerId: proto.String("test-user"), // Pre-set owner
 	}.Build()
 	require.NoError(t, store.SaveCredential(context.Background(), cred))
 
+	testUser := "test-user"
+	withUser := func(r *http.Request) *http.Request {
+		return r.WithContext(auth.ContextWithUser(r.Context(), testUser))
+	}
+
 	t.Run("ListCredentials", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/credentials", nil)
+		req = withUser(req)
 		w := httptest.NewRecorder()
 		app.listCredentialsHandler(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -329,6 +353,7 @@ func TestCredentialHandlers(t *testing.T) {
 
 	t.Run("GetCredential", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/credentials/test-cred", nil)
+		req = withUser(req)
 		w := httptest.NewRecorder()
 		app.getCredentialHandler(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -341,6 +366,7 @@ func TestCredentialHandlers(t *testing.T) {
 
 	t.Run("GetCredential_NotFound", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/credentials/missing", nil)
+		req = withUser(req)
 		w := httptest.NewRecorder()
 		app.getCredentialHandler(w, req)
 		assert.Equal(t, http.StatusNotFound, w.Code)
@@ -360,6 +386,7 @@ func TestCredentialHandlers(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
+		req = withUser(req)
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -377,7 +404,7 @@ func TestCredentialHandlers(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
-		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 
 	t.Run("UpdateCredential_BadBody", func(t *testing.T) {
@@ -389,6 +416,7 @@ func TestCredentialHandlers(t *testing.T) {
 
 	t.Run("DeleteCredential", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodDelete, "/credentials/test-cred", nil)
+		req = withUser(req)
 		w := httptest.NewRecorder()
 		app.deleteCredentialHandler(w, req)
 		assert.Equal(t, http.StatusNoContent, w.Code)
@@ -425,11 +453,13 @@ func TestHandleCredentials_Security_Redaction(t *testing.T) {
 			AccessToken:  proto.String("access-token-123"),
 			RefreshToken: proto.String("refresh-token-456"),
 		}.Build(),
+		OwnerId: proto.String("test-user"), // Needs owner for visibility
 	}.Build()
 	require.NoError(t, store.SaveCredential(context.Background(), cred))
 
 	t.Run("ListCredentials_ShouldNotLeakSecrets", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/credentials", nil)
+		req = req.WithContext(auth.ContextWithUser(req.Context(), "test-user"))
 		w := httptest.NewRecorder()
 		app.listCredentialsHandler(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
