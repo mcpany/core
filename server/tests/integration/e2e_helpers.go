@@ -784,11 +784,23 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 // StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
 //
 // t is the t.
-// _ is an unused parameter.
+// testName is the testName.
 // apiKey is the apiKey.
 //
 // Returns the result.
-func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPANYTestServerInfo {
+func StartInProcessMCPANYServer(t *testing.T, testName string, apiKey ...string) *MCPANYTestServerInfo {
+	return StartInProcessMCPANYServerWithConfig(t, testName, "", apiKey...)
+}
+
+// StartInProcessMCPANYServerWithConfig starts an in-process MCP Any server with a provided config path.
+//
+// t is the t.
+// testName is the testName.
+// configPath is the configPath.
+// apiKey is the apiKey.
+//
+// Returns the result.
+func StartInProcessMCPANYServerWithConfig(t *testing.T, _ string, configPath string, apiKey ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
 	var actualAPIKey string
@@ -816,13 +828,17 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	runErrCh := make(chan error, 1)
 	go func() {
 		defer cancel() // Ensure WaitForStartup doesn't hang if Run returns
+		configPaths := []string{}
+		if configPath != "" {
+			configPaths = append(configPaths, configPath)
+		}
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              afero.NewOsFs(),
 			Stdio:           false,
 			JSONRPCPort:     jsonrpcAddress,
 			GRPCPort:        grpcRegAddress,
-			ConfigPaths:     []string{},
+			ConfigPaths:     configPaths,
 			APIKey:          actualAPIKey,
 			ShutdownTimeout: 5 * time.Second,
 		}

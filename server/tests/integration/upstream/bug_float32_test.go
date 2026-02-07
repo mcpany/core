@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -18,6 +19,9 @@ import (
 )
 
 func TestUpstreamService_Float32Bug(t *testing.T) {
+	// Allow local IPs for testing
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	// 1. Start a mock upstream server
 	var receivedPath string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +58,16 @@ upstream_services:
 `, upstreamURL)
 
 	// 3. Start MCP Any server
-	serverInfo := integration.StartMCPANYServerWithConfig(t, "Float32BugTest", configContent)
+	// Use in-process server to avoid binary dependency and improve speed/reliability in CI.
+	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
+	require.NoError(t, err)
+	_, err = tmpFile.WriteString(configContent)
+	require.NoError(t, err)
+	err = tmpFile.Close()
+	require.NoError(t, err)
+
+	apiKey := "test-api-key"
+	serverInfo := integration.StartInProcessMCPANYServerWithConfig(t, "Float32BugTest", tmpFile.Name(), apiKey)
 	defer serverInfo.CleanupFunc()
 
 	// 4. Connect MCP Client
