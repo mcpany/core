@@ -5,6 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * GET executes GET logic.
+ *
+ * @param request - ...
+ * @returns ...
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');
