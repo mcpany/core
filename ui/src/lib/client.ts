@@ -222,7 +222,13 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
+     *
+     * Summary: Fetches the list of all configured upstream services from the backend.
+     *
      * @returns A promise that resolves to a list of services.
+     * @throws {Error} If the network request fails or the response is not OK.
+     *
+     * Side Effects: Makes a GET request to /api/v1/services.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -261,8 +267,14 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
+     *
+     * Summary: Retrieves the configuration details for a specific upstream service.
+     *
+     * @param id - The ID of the service to retrieve.
      * @returns A promise that resolves to the service configuration.
+     * @throws {Error} If the service is not found or the request fails.
+     *
+     * Side Effects: Makes a gRPC call or GET request to /api/v1/services/:id.
      */
     getService: async (id: string) => {
          try {
@@ -352,8 +364,14 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
+     *
+     * Summary: Registers a new upstream service with the provided configuration.
+     *
+     * @param config - The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
+     * @throws {Error} If the registration fails (e.g., validation error, duplicate ID).
+     *
+     * Side Effects: Makes a POST request to /api/v1/services.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -848,7 +866,13 @@ export const apiClient = {
 
     /**
      * Gets the global server settings.
+     *
+     * Summary: Retrieves the global configuration settings for the server.
+     *
      * @returns A promise that resolves to the global settings.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/settings.
      */
     getGlobalSettings: async () => {
         const res = await fetchWithAuth('/api/v1/settings');
