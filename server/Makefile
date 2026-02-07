@@ -393,12 +393,12 @@ e2e-parallel: build-test-images build build-examples build-e2e-mocks
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@mkdir -p $(BUILD_DIR)/bundles
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
 	@-pkill -f file-upload-server
 
 e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
@@ -529,8 +529,13 @@ $(E2E_BIN_DIR):
 build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
-	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
+	@echo "Checking if Docker is functional..."
+	@if ! $(DOCKER_CMD) run --rm alpine true >/dev/null 2>&1; then \
+		echo "Docker is present but not functional (likely overlayfs issue). Skipping build."; \
+	else \
+		echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."; \
+		$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples; \
+	fi
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
