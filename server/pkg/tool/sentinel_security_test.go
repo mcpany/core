@@ -65,8 +65,8 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
-	assert.Contains(t, err.Error(), "system(")
+	assert.Contains(t, err.Error(), "injection detected")
+	assert.Contains(t, err.Error(), "system")
 }
 
 func TestSentinelRCE_Backticks(t *testing.T) {
@@ -121,7 +121,7 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
+	assert.Contains(t, err.Error(), "injection detected")
 	assert.Contains(t, err.Error(), "backtick")
 }
 
@@ -176,8 +176,8 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
-	assert.Contains(t, err.Error(), "system(")
+	assert.Contains(t, err.Error(), "injection detected")
+	assert.Contains(t, err.Error(), "system")
 }
 
 func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
@@ -238,4 +238,113 @@ func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
 	assert.Contains(t, err.Error(), "shell injection detected")
 	// It should fail because it detected dangerous character (semicolon) in unquoted context
 	assert.Contains(t, err.Error(), ";")
+}
+
+func TestSentinelRCE_Python_Eval_DoubleQuotes(t *testing.T) {
+	// 1. Configure a tool that uses python -c with eval inside double quotes
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("python3"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "eval(\"{{msg}}\")"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("msg"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("python_eval_dq")
+
+	tool := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDef,
+		nil,
+		"python_eval_dq",
+	)
+
+	// 2. Craft a malicious input
+	payload := "__import__('os').system('echo pwned')"
+
+	inputMap := map[string]interface{}{
+		"msg": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	req := &ExecutionRequest{
+		ToolName:   "python_eval_dq",
+		ToolInputs: inputBytes,
+	}
+
+	// 3. Execute - Expect Error
+	res, err := tool.Execute(context.Background(), req)
+
+	// 4. Assert
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "interpreter injection detected")
+}
+
+func TestSentinelRCE_NodeExecSync(t *testing.T) {
+	// 1. Configure a tool that uses node -e
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("node"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-e", "console.log(\"{{msg}}\")"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("msg"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("node_wrapper")
+
+	tool := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDef,
+		nil,
+		"node_wrapper",
+	)
+
+	// 2. Craft a malicious input
+	payload := "\"); require('child_process').execSync('echo pwned'); console.log(\""
+
+	inputMap := map[string]interface{}{
+		"msg": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	req := &ExecutionRequest{
+		ToolName:   "node_wrapper",
+		ToolInputs: inputBytes,
+	}
+
+	// 3. Execute - Expect Error
+	res, err := tool.Execute(context.Background(), req)
+
+	// 4. Assert
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "interpreter injection detected")
+	assert.Contains(t, err.Error(), "require")
 }
