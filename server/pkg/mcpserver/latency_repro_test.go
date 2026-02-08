@@ -100,7 +100,7 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Check metrics
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
-	var samples map[string]*metrics.Sample
+	var samples map[string]metrics.SampledValue
 	for i := 0; i < 50; i++ { // Increased retries
 		data = sink.Data()
 		if len(data) > 0 {
