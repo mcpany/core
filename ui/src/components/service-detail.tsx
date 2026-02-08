@@ -29,6 +29,7 @@ import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
 import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
 import { PolicyEditor } from "@/components/safety/policy-editor";
 import { CallPolicy } from "@proto/config/v1/upstream_service";
+import { ServiceMetrics } from "@/components/services/service-metrics";
 
 /**
  * DefinitionsTable component.
@@ -87,60 +88,6 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
       </CardContent>
     </Card>
   )
-}
-
-/**
- * MetricsCard component.
- * @param props - The component props.
- * @param props.serviceId - The unique identifier for service.
- * @returns The rendered component.
- */
-function MetricsCard({ serviceId }: { serviceId: string }) {
-    const [metrics, setMetrics] = useState<Record<string, number> | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setIsLoading(true);
-        apiClient.getServiceStatus(serviceId)
-            .then(res => setMetrics(res.metrics))
-            .catch(() => setMetrics({}))
-            .finally(() => setIsLoading(false));
-    }, [serviceId])
-
-    if (isLoading) {
-        return <Skeleton className="h-48 w-full" />
-    }
-
-    if (!metrics || Object.keys(metrics).length === 0) {
-        return (
-             <Card>
-                <CardHeader>
-                    <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Usage Metrics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground text-sm">No metrics available for this service.</p>
-                </CardContent>
-            </Card>
-        )
-    }
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Usage Metrics</CardTitle>
-            </CardHeader>
-            <CardContent>
-                 <dl className="space-y-2">
-                    {Object.entries(metrics).map(([key, value]) => (
-                        <div key={key} className="flex justify-between items-start">
-                            <dt className="text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</dt>
-                            <dd className="text-right font-mono text-sm">{value.toLocaleString()}</dd>
-                        </div>
-                    ))}
-                 </dl>
-            </CardContent>
-        </Card>
-    )
 }
 
 /**
@@ -409,7 +356,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
                 <FileConfigCard service={service} />
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">
-                <MetricsCard serviceId={serviceId} />
+                <ServiceMetrics serviceId={serviceId} />
             </TabsContent>
             <TabsContent value="safety" className="mt-4 grid gap-6">
                 <ToolSafetyTable tools={tools} onUpdate={fetchService} />
