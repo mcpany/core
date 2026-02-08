@@ -4,8 +4,21 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('User Guide Walkthrough', () => {
+  const stackName = 'walkthrough-stack';
+
+  test.beforeAll(async ({ request }) => {
+      // Seed data required for walkthrough
+      await cleanupCollection(stackName, request);
+      await seedCollection(stackName, request);
+  });
+
+  test.afterAll(async ({ request }) => {
+      await cleanupCollection(stackName, request);
+  });
+
   test('Dashboard loads key metrics', async ({ page }) => {
     // Mock the stats endpoint
     await page.route('**/api/v1/dashboard/metrics', async route => {
@@ -105,8 +118,8 @@ test.describe('User Guide Walkthrough', () => {
   test('Stack Composer', async ({ page }) => {
     await page.goto('/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
-    // "Create Stack" button is missing in implementation, check for default stack card instead
-    await expect(page.getByText('mcpany-system')).toBeVisible();
+    // Check for the seeded stack using specific selector to avoid strict mode violation
+    await expect(page.locator('.text-2xl', { hasText: stackName })).toBeVisible();
   });
 
   test('Webhooks Management', async ({ page }) => {
