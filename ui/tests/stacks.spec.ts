@@ -1,7 +1,24 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Stacks Management', () => {
-  // We assume the backend is running and seeded with 'production-stack'
+  test.beforeEach(async ({ page }) => {
+    // Perform authentication if not already done by global setup
+    // Since we don't have a global setup file visible, we'll try to set the token manually
+    // or navigate to login.
+    // Assuming Playwright config sets X-API-Key header, that might be enough for direct requests
+    // but client-side app uses localStorage.
+
+    // Seed the token into localStorage
+    await page.goto('/'); // Navigate to a page to set localStorage
+    await page.evaluate(() => {
+        localStorage.setItem('mcp_auth_token', 'test-token');
+    });
+  });
 
   test('should list existing stacks', async ({ page }) => {
     // Navigate to Stacks page
@@ -19,7 +36,8 @@ test.describe('Stacks Management', () => {
     await page.goto('/stacks');
 
     // Click Create Stack
-    await page.getByRole('button', { name: 'Create Stack' }).click();
+    // Using first() because sometimes there might be hidden elements or multiple if responsiveness triggers
+    await page.getByRole('button', { name: 'Create Stack' }).first().click();
 
     // Fill in name
     const stackName = 'e2e-test-stack-' + Date.now();
