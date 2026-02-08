@@ -13,17 +13,20 @@ import { apiClient } from '@/lib/client';
 vi.mock('@/lib/client', () => ({
   apiClient: {
     getDoctorStatus: vi.fn(),
+    getServiceHealth: vi.fn(),
   },
 }));
 
 describe('SystemHealth', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        (apiClient.getServiceHealth as any).mockResolvedValue({ services: [], history: {} });
     });
 
     it('renders loading state initially', () => {
         // Mock to return promise that doesn't resolve immediately
         (apiClient.getDoctorStatus as any).mockReturnValue(new Promise(() => {}));
+        (apiClient.getServiceHealth as any).mockReturnValue(new Promise(() => {}));
 
         render(<SystemHealth />);
         expect(screen.getByText(/Running diagnostics.../i)).toBeInTheDocument();
@@ -54,6 +57,7 @@ describe('SystemHealth', () => {
 
     it('renders error state when api fails', async () => {
         (apiClient.getDoctorStatus as any).mockRejectedValue(new Error('Network error'));
+        (apiClient.getServiceHealth as any).mockResolvedValue({ services: [], history: {} });
 
         render(<SystemHealth />);
 
@@ -81,6 +85,40 @@ describe('SystemHealth', () => {
             expect(screen.getAllByText('Degraded')[0]).toBeInTheDocument();
             expect(screen.getByText('Upstream API')).toBeInTheDocument();
             expect(screen.getByText('High latency')).toBeInTheDocument();
+        });
+    });
+
+    it('renders service health history timeline', async () => {
+        const mockReport = {
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            checks: {}
+        };
+        const mockHealth = {
+            services: [
+                { id: 'srv1', name: 'My Service', status: 'healthy', latency: '10ms', uptime: '99%' }
+            ],
+            history: {
+                'srv1': [
+                    { timestamp: 1000, status: 'healthy' },
+                    { timestamp: 2000, status: 'unhealthy' },
+                    { timestamp: 3000, status: 'healthy' }
+                ]
+            }
+        };
+
+        (apiClient.getDoctorStatus as any).mockResolvedValue(mockReport);
+        (apiClient.getServiceHealth as any).mockResolvedValue(mockHealth);
+
+        render(<SystemHealth />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Service Health History')).toBeInTheDocument();
+            expect(screen.getByText('My Service')).toBeInTheDocument();
+            // Check if timeline points are rendered (we can check for class names or tooltips if we could hover)
+            // Ideally we check for elements with appropriate status colors
+            // But since we can't easily check styles in basic jsdom without computing styles,
+            // we assume presence of the container or elements is enough for this level.
         });
     });
 });

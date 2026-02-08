@@ -21,9 +21,23 @@ import {
   Cpu,
   Globe,
   Loader2,
-  Clock
+  Clock,
+  History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface ServiceHealthData {
+  services: {
+    id: string;
+    name: string;
+    status: string;
+    latency: string;
+    uptime: string;
+    message?: string;
+  }[];
+  history: Record<string, { timestamp: number; status: string }[]>;
+}
 
 /**
  * SystemHealth component.
@@ -31,6 +45,7 @@ import { cn } from "@/lib/utils";
  */
 export function SystemHealth() {
   const [report, setReport] = useState<DoctorReport | null>(null);
+  const [serviceHealth, setServiceHealth] = useState<ServiceHealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +53,12 @@ export function SystemHealth() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient.getDoctorStatus();
-      setReport(data);
+      const [doctorData, healthData] = await Promise.all([
+        apiClient.getDoctorStatus(),
+        apiClient.getServiceHealth()
+      ]);
+      setReport(doctorData);
+      setServiceHealth(healthData);
     } catch (err) {
       console.error("Failed to fetch system health", err);
       setError("Failed to retrieve diagnostics report. The backend might be unreachable.");
@@ -75,6 +94,16 @@ export function SystemHealth() {
     if (n.includes("database") || n.includes("storage")) return <Server className="h-4 w-4" />;
     if (n.includes("memory") || n.includes("cpu") || n.includes("runtime")) return <Cpu className="h-4 w-4" />;
     return <Activity className="h-4 w-4" />;
+  };
+
+  const getStatusColor = (status: string) => {
+      switch (status.toLowerCase()) {
+          case 'healthy': return "bg-green-500";
+          case 'degraded': return "bg-yellow-500";
+          case 'unhealthy': return "bg-red-500";
+          case 'inactive': return "bg-gray-500";
+          default: return "bg-gray-300";
+      }
   };
 
   if (loading && !report) {
@@ -160,6 +189,59 @@ export function SystemHealth() {
             </Card>
          ))}
       </div>
+
+      {/* Service Health History Timeline */}
+      {serviceHealth && (
+          <Card className="shadow-sm">
+              <CardHeader className="p-6 pb-2">
+                  <CardTitle className="text-lg font-medium flex items-center gap-2">
+                      <History className="h-5 w-5" />
+                      Service Health History
+                  </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 pt-4">
+                  <div className="space-y-4">
+                      {serviceHealth.services.map((svc) => (
+                          <div key={svc.id} className="flex flex-col sm:flex-row sm:items-center gap-4 border-b last:border-0 pb-4 last:pb-0">
+                              <div className="w-32 shrink-0">
+                                  <div className="font-medium truncate" title={svc.name}>{svc.name}</div>
+                                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <div className={cn("w-2 h-2 rounded-full", getStatusColor(svc.status))} />
+                                      {svc.status}
+                                  </div>
+                              </div>
+                              <div className="flex-1 overflow-hidden">
+                                  {/* Render heatmap blocks */}
+                                  <div className="flex gap-1 h-6">
+                                      <TooltipProvider>
+                                          {(serviceHealth.history[svc.id] || []).slice(-50).map((point, i) => (
+                                              <Tooltip key={i}>
+                                                  <TooltipTrigger asChild>
+                                                      <div className={cn(
+                                                          "w-2 h-full rounded-sm transition-opacity hover:opacity-80 cursor-help",
+                                                          getStatusColor(point.status)
+                                                      )} />
+                                                  </TooltipTrigger>
+                                                  <TooltipContent>
+                                                      <div className="text-xs font-mono">
+                                                          <div>Status: {point.status}</div>
+                                                          <div>Time: {new Date(point.timestamp).toLocaleTimeString()}</div>
+                                                      </div>
+                                                  </TooltipContent>
+                                              </Tooltip>
+                                          ))}
+                                          {(!serviceHealth.history[svc.id] || serviceHealth.history[svc.id].length === 0) && (
+                                              <div className="text-xs text-muted-foreground italic self-center">No history available</div>
+                                          )}
+                                      </TooltipProvider>
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+              </CardContent>
+          </Card>
+      )}
     </div>
   );
 }

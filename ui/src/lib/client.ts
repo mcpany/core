@@ -1577,6 +1577,16 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the service health history.
+     * @returns A promise that resolves to the service health response.
+     */
+    getServiceHealth: async (): Promise<{ services: any[], history: Record<string, any[]> }> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch service health');
+        return res.json();
+    },
+
     // Audit Logs
 
     /**
