@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner
+    runs-on: github-action-runner-github-action-runner
     # ubuntu-latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
