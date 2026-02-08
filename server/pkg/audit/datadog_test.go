@@ -82,7 +82,7 @@ func TestDatadogAuditStore(t *testing.T) {
 
 func TestDatadogAuditStore_Batch(t *testing.T) {
 	var totalReceived int32
-	done := make(chan struct{})
+	done := make(chan struct{}, 1) // Buffer to prevent deadlock
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var logs []map[string]interface{}
