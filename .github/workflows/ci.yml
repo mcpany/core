@@ -92,12 +92,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-lint-cache-
 
-      - name: Install Make
+      - name: Install Dependencies
         run: |
-          if ! command -v make &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y make build-essential
-          fi
+          sudo apt-get update
+          sudo apt-get install -y make build-essential wget xz-utils
 
       - name: Prepare environment
         run: make prepare
