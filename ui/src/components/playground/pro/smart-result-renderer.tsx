@@ -8,7 +8,7 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon } from "lucide-react";
+import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 
 /**
@@ -18,6 +18,61 @@ interface SmartResultRendererProps {
     /** The result object to render. Can be a JSON string, an object, or an array. */
     result: any;
 }
+
+const isMcpContent = (data: any): boolean => {
+    if (!Array.isArray(data)) return false;
+    return data.some(item =>
+        typeof item === 'object' &&
+        item !== null &&
+        (item.type === 'text' || item.type === 'image' || item.type === 'resource')
+    );
+};
+
+const RichContentRenderer = ({ content }: { content: any[] }) => {
+    return (
+        <div className="flex flex-col gap-4">
+            {content.map((item, idx) => {
+                if (item.type === 'image') {
+                    const src = `data:${item.mimeType};base64,${item.data}`;
+                    return (
+                        <div key={idx} className="border rounded-md overflow-hidden bg-accent/20 border-dashed p-2 flex justify-center">
+                            <img src={src} alt="Tool Result" className="max-w-full h-auto rounded shadow-sm" />
+                        </div>
+                    );
+                }
+                if (item.type === 'text') {
+                    return (
+                        <div key={idx} className="bg-muted/30 p-3 rounded-md border text-sm whitespace-pre-wrap break-words font-mono">
+                            {item.text}
+                        </div>
+                    );
+                }
+                if (item.type === 'resource') {
+                    // Fallback for resource type (maybe text or blob)
+                    return (
+                         <div key={idx} className="bg-muted/30 p-3 rounded-md border text-sm">
+                             <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                                 <FileText className="size-4" />
+                                 <span className="font-medium">Resource: {item.resource?.uri}</span>
+                             </div>
+                             {item.resource?.text && (
+                                <div className="whitespace-pre-wrap break-words font-mono text-xs opacity-80">
+                                    {item.resource.text}
+                                </div>
+                             )}
+                         </div>
+                    );
+                }
+                return (
+                    <div key={idx} className="bg-destructive/10 text-destructive p-2 rounded text-xs">
+                        Unknown content type: {item.type}
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
 
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
@@ -31,11 +86,22 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
 
     // Attempt to parse a tabular structure from the result
-    const tableData = useMemo(() => {
+    const { tableData, richContent } = useMemo(() => {
         let content = result;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        let richContent = null;
 
-        // 1. Unwrap CallToolResult structure
+        // 1. Check if it's already a CallToolResult with content
         if (result && typeof result === 'object' && Array.isArray(result.content)) {
+             // Check if we should render as Rich Content (images or mixed)
+            const hasImage = result.content.some((c: any) => c.type === 'image');
+            const hasMultiple = result.content.length > 1;
+
+            if (hasImage || hasMultiple) {
+                return { tableData: null, richContent: result.content };
+            }
+
+             // Otherwise, if single text item, unwrap it for potential Table parsing
             const textItem = result.content.find((c: any) => c.type === 'text' || (c.text && !c.type));
             if (textItem) {
                 content = textItem.text;
@@ -47,8 +113,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
             try {
                 content = JSON.parse(content);
             } catch (e) {
-                // Not valid JSON string
-                return null;
+                // Not valid JSON string, leave as is
             }
         }
 
@@ -69,31 +134,37 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
              }
         }
 
-        // 4. Final validation: Must be an array of objects
+        // 4. Check if final content is MCP Content (e.g. from stdout)
+        if (Array.isArray(content) && isMcpContent(content)) {
+             return { tableData: null, richContent: content };
+        }
+
+        // 5. Final validation: Must be an array of objects
         if (Array.isArray(content) && content.length > 0) {
             // Check if items are objects
             const isListOfObjects = content.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
             if (isListOfObjects) {
-                return content;
+                return { tableData: content, richContent: null };
             }
         }
 
-        return null;
+        return { tableData: null, richContent: null };
     }, [result]);
 
-    const hasSmartView = tableData !== null;
+    const hasSmartView = tableData !== null || richContent !== null;
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
     );
 
     const renderSmart = () => {
+        if (richContent) return <RichContentRenderer content={richContent} />;
         if (!tableData) return renderRaw();
 
         // Determine columns from all keys in the first 10 rows (to be reasonably safe)
         const allKeys = new Set<string>();
-        tableData.slice(0, 10).forEach(row => {
-            Object.keys(row).forEach(k => allKeys.add(k));
+        tableData.slice(0, 10).forEach((row: any) => {
+            Object.keys(row).forEach((k: string) => allKeys.add(k));
         });
         const columns = Array.from(allKeys);
 
@@ -110,7 +181,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tableData.map((row, idx) => (
+                        {tableData.map((row: any, idx: number) => (
                             <TableRow key={idx} className="hover:bg-muted/50">
                                 {columns.map(col => {
                                     const val = row[col];
@@ -149,7 +220,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             className="h-6 px-2 text-[10px] gap-1"
                             onClick={() => setViewMode("smart")}
                          >
-                             <TableIcon className="size-3" /> Table
+                             {richContent ? <ImageIcon className="size-3" /> : <TableIcon className="size-3" />}
+                             {richContent ? "Preview" : "Table"}
                          </Button>
                          <Button
                             variant={viewMode === "raw" ? "secondary" : "ghost"}
