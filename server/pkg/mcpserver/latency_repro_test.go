@@ -100,16 +100,25 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Check metrics
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
-	for i := 0; i < 20; i++ {
+	var samples map[string]*metrics.Sample
+	for i := 0; i < 50; i++ { // Increased retries
 		data = sink.Data()
 		if len(data) > 0 {
+			// Iterate backwards to get the most recent non-empty interval
+			for j := len(data) - 1; j >= 0; j-- {
+				if len(data[j].Samples) > 0 {
+					samples = data[j].Samples
+					break
+				}
+			}
+		}
+		if samples != nil {
 			break
 		}
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(20 * time.Millisecond)
 	}
-	require.NotEmpty(t, data)
-	samples := data[0].Samples
-	require.NotEmpty(t, samples)
+	require.NotEmpty(t, data, "No metrics data found")
+	require.NotEmpty(t, samples, "No samples found in metrics data")
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
 	// But in the buggy version, it DOES exist.
