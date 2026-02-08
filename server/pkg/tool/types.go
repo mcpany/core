@@ -1926,7 +1926,19 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
-			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+			// Sentinel Security: For shell commands, we only add environment variables if they are safe
+			// for unquoted use. If they contain dangerous characters, we omit them from the environment
+			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
+			safeForEnv := true
+			if isShellCommand(t.service.GetCommand()) {
+				if err := checkEnvInjection(valStr); err != nil {
+					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
+					safeForEnv = false
+				}
+			}
+			if safeForEnv {
+				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+			}
 		}
 	}
 
@@ -2247,7 +2259,19 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
-			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+			// Sentinel Security: For shell commands, we only add environment variables if they are safe
+			// for unquoted use. If they contain dangerous characters, we omit them from the environment
+			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
+			safeForEnv := true
+			if isShellCommand(t.service.GetCommand()) {
+				if err := checkEnvInjection(valStr); err != nil {
+					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
+					safeForEnv = false
+				}
+			}
+			if safeForEnv {
+				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+			}
 		}
 	}
 
@@ -3033,6 +3057,17 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	return minLevel
+}
+
+func checkEnvInjection(val string) error {
+	// Relaxed check for environment variables.
+	// Allows spaces, but blocks shell metacharacters.
+	// We rely on validateSafePathAndInjection to prevent argument injection (flags starting with -).
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\" // Space removed
+	if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
+		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
+	}
+	return nil
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
