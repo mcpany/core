@@ -2878,6 +2878,10 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
+		// Block leading pipe | to prevent open("|cmd") injection
+		if strings.HasPrefix(strings.TrimSpace(val), "|") {
+			return fmt.Errorf("ruby open injection detected: value starts with '|'")
+		}
 	}
 	return nil
 }
