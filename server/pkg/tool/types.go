@@ -68,18 +68,29 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The underlying protobuf definition.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request details.
+	//
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -327,9 +338,26 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the gRPC tool. It retrieves a client from the
-// pool, unmarshals the JSON input into a protobuf request message, invokes the
-// gRPC method, and marshals the protobuf response back to JSON.
+// Execute handles the execution of the gRPC tool.
+//
+// It retrieves a client from the pool, unmarshals the JSON input into a protobuf request message,
+// invokes the gRPC method, and marshals the protobuf response back to JSON.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool name and inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map).
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if gRPC pool is missing.
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if gRPC invocation fails.
+//
+// Side Effects:
+//   - Makes a network call to the upstream gRPC service.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -571,9 +599,28 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the HTTP tool. It builds an HTTP request by
-// mapping input parameters to the path, query, and body, applies any
-// configured transformations, sends the request, and processes the response.
+// Execute handles the execution of the HTTP tool.
+//
+// It builds an HTTP request by mapping input parameters to the path, query, and body,
+// applies any configured transformations, sends the request, and processes the response.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool name and inputs.
+//
+// Returns:
+//   - any: The execution result (usually a map or string).
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if call policy blocks execution.
+//   - Returns error if initialization failed.
+//   - Returns error if HTTP pool is missing.
+//   - Returns error if input preparation or body creation fails.
+//   - Returns error if HTTP request fails or returns an error status code.
+//
+// Side Effects:
+//   - Makes a network call to the upstream HTTP service.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1458,10 +1505,28 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the OpenAPI tool. It constructs an HTTP
-// request based on the operation's method, URL, and parameter definitions,
-// sends the request, and processes the response, applying transformations as
-// needed.
+// Execute handles the execution of the OpenAPI tool.
+//
+// It constructs an HTTP request based on the operation's method, URL, and parameter definitions,
+// sends the request, and processes the response, applying transformations as needed.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool name and inputs.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if initialization failed.
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if URL validation fails.
+//   - Returns error if authentication fails.
+//   - Returns error if HTTP request fails.
+//
+// Side Effects:
+//   - Makes a network call to the upstream HTTP service.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1772,9 +1837,28 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDefinition.GetCache()
 }
 
-// Execute handles the execution of the command-line tool. It constructs a command
-// with arguments and environment variables derived from the tool inputs, runs
-// the command, and returns its output.
+// Execute handles the execution of the command-line tool.
+//
+// It constructs a command with arguments and environment variables derived from the tool inputs,
+// runs the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing tool name and inputs.
+//
+// Returns:
+//   - any: The execution result (map containing stdout, stderr, etc.).
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if initialization failed.
+//   - Returns error if policy blocks execution.
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if validation of arguments or environment variables fails.
+//   - Returns error if command execution fails.
+//
+// Side Effects:
+//   - Executes a subprocess.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
