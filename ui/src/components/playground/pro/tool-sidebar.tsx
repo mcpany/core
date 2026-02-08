@@ -25,22 +25,47 @@ interface ToolSidebarProps {
  *
  * @param className - The className.
  */
+interface ExtendedToolDefinition extends ToolDefinition {
+    tags?: string[];
+}
+
 export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps) {
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedService, setSelectedService] = useState<string | null>(null);
+    const [selectedFilter, setSelectedFilter] = useState<{ type: 'service' | 'tag', value: string } | null>(null);
 
     const filteredTools = useMemo(() => {
         return tools.filter(tool => {
             const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                   tool.description?.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesService = selectedService ? tool.serviceId === selectedService : true;
-            return matchesSearch && matchesService;
-        });
-    }, [tools, searchQuery, selectedService]);
 
-    const services = useMemo(() => {
-        const s = new Set(tools.map(t => t.serviceId || 'builtin'));
-        return Array.from(s);
+            if (!matchesSearch) return false;
+            if (!selectedFilter) return true;
+
+            if (selectedFilter.type === 'service') {
+                return (tool.serviceId || 'builtin') === selectedFilter.value;
+            } else {
+                const t = tool as ExtendedToolDefinition;
+                return t.tags && Array.isArray(t.tags) && t.tags.includes(selectedFilter.value);
+            }
+        });
+    }, [tools, searchQuery, selectedFilter]);
+
+    const filters = useMemo(() => {
+        const services = new Set<string>();
+        const tags = new Set<string>();
+
+        tools.forEach(t => {
+            services.add(t.serviceId || 'builtin');
+            const tool = t as ExtendedToolDefinition;
+            if (tool.tags && Array.isArray(tool.tags)) {
+                tool.tags.forEach((tag: string) => tags.add(tag));
+            }
+        });
+
+        return {
+            services: Array.from(services).sort(),
+            tags: Array.from(tags).sort()
+        };
     }, [tools]);
 
     return (
@@ -59,23 +84,33 @@ export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps
                         className="pl-8 h-9 text-xs"
                     />
                 </div>
-                {services.length > 1 && (
+                {(filters.services.length > 1 || filters.tags.length > 0) && (
                     <div className="flex gap-1 overflow-x-auto pb-1 no-scrollbar">
                         <Badge
-                            variant={selectedService === null ? "default" : "outline"}
+                            variant={selectedFilter === null ? "default" : "outline"}
                             className="cursor-pointer text-[10px] whitespace-nowrap"
-                            onClick={() => setSelectedService(null)}
+                            onClick={() => setSelectedFilter(null)}
                         >
                             All
                         </Badge>
-                        {services.map(s => (
+                        {filters.services.map(s => (
                             <Badge
-                                key={s}
-                                variant={selectedService === s ? "default" : "outline"}
+                                key={`svc-${s}`}
+                                variant={selectedFilter?.type === 'service' && selectedFilter.value === s ? "default" : "outline"}
                                 className="cursor-pointer text-[10px] whitespace-nowrap"
-                                onClick={() => setSelectedService(s)}
+                                onClick={() => setSelectedFilter({ type: 'service', value: s })}
                             >
                                 {s}
+                            </Badge>
+                        ))}
+                        {filters.tags.map(t => (
+                            <Badge
+                                key={`tag-${t}`}
+                                variant={selectedFilter?.type === 'tag' && selectedFilter.value === t ? "secondary" : "outline"}
+                                className="cursor-pointer text-[10px] whitespace-nowrap border-primary/20"
+                                onClick={() => setSelectedFilter({ type: 'tag', value: t })}
+                            >
+                                #{t}
                             </Badge>
                         ))}
                     </div>
