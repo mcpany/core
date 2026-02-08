@@ -18,7 +18,7 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: github-action-runner-github-action-runner
     timeout-minutes: 30
     outputs:
       version: ${{ steps.vars.outputs.version }}
@@ -65,7 +65,7 @@ jobs:
     needs: setup
     if: needs.setup.outputs.is_release == 'true'
     name: Build Binaries (${{ matrix.platform }})
-    runs-on: ubuntu-latest
+    runs-on: github-action-runner-github-action-runner
     timeout-minutes: 60
     strategy:
       matrix:
@@ -127,7 +127,7 @@ jobs:
   create-release:
     needs: [setup, build-binaries]
     if: needs.setup.outputs.is_release == 'true'
-    runs-on: ubuntu-latest
+    runs-on: github-action-runner-github-action-runner
     timeout-minutes: 60
     steps:
       - name: Download all binaries
@@ -170,7 +170,7 @@ jobs:
           - platform: linux/amd64
             runner: ubuntu-latest
           - platform: linux/arm64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04-arm
 
     steps:
       - name: Checkout
@@ -252,7 +252,7 @@ jobs:
   # Combines the AMD64 and ARM64 digests into one "latest" tag
   # ==============================================================================
   docker-merge:
-    runs-on: ubuntu-latest
+    runs-on: github-action-runner-github-action-runner
     timeout-minutes: 60
     needs: [setup, docker-build]
     permissions:
@@ -383,7 +383,7 @@ jobs:
           - platform: linux/amd64
             runner: ubuntu-latest
           - platform: linux/arm64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04-arm
 
     steps:
       - name: Checkout
@@ -471,7 +471,7 @@ jobs:
   # JOB 6: UI DOCKER MERGE
   # ==============================================================================
   docker-merge-ui:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 60
     needs: [setup, docker-build-ui]
     permissions:
