@@ -8,8 +8,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
-import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
+import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause, RotateCcw } from "lucide-react";
+import { Trace, SpanStatus } from "@/types/trace";
 import { formatDistanceToNow } from "date-fns";
 import React, { memo, useMemo } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -22,6 +22,7 @@ interface TraceListProps {
   onSearchChange: (query: string) => void;
   isLive: boolean;
   onToggleLive: (live: boolean) => void;
+  onRefresh?: () => void;
 }
 
 // Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
@@ -72,9 +73,10 @@ TraceListItem.displayName = "TraceListItem";
 /**
  * TraceList.
  *
- * @param onToggleLive - The onToggleLive.
+ * @param props - The component props.
+ * @returns The rendered component.
  */
-export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
+export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive, onRefresh }: TraceListProps) {
 
   // Optimization: Memoize filtered traces to avoid re-calculating on every render,
   // especially when only selectedId changes.
@@ -98,15 +100,22 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
             onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
-        <Button
-            variant={isLive ? "default" : "outline"}
-            size="icon"
-            onClick={() => onToggleLive(!isLive)}
-            title={isLive ? "Pause Live Updates" : "Start Live Updates"}
-            className={cn("shrink-0", isLive && "bg-green-600 hover:bg-green-700")}
-        >
-             {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </Button>
+        <div className="flex items-center gap-1">
+            {onRefresh && (
+                <Button variant="ghost" size="icon" onClick={onRefresh} title="Refresh Traces" className="shrink-0">
+                    <RotateCcw className="h-4 w-4" />
+                </Button>
+            )}
+            <Button
+                variant={isLive ? "default" : "outline"}
+                size="icon"
+                onClick={() => onToggleLive(!isLive)}
+                title={isLive ? "Pause Live Updates" : "Start Live Updates"}
+                className={cn("shrink-0", isLive && "bg-green-600 hover:bg-green-700")}
+            >
+                {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
+        </div>
       </div>
       <div className="flex-1 min-h-0">
         {filteredTraces.length === 0 ? (
