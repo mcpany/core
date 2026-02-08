@@ -1212,36 +1212,6 @@ func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, e
 	return mergedConfig, nil
 }
 
-// levenshtein calculates the Levenshtein distance between two strings.
-func levenshtein(s, t string) int {
-	d := make([][]int, len(s)+1)
-	for i := range d {
-		d[i] = make([]int, len(t)+1)
-	}
-	for i := 0; i <= len(s); i++ {
-		d[i][0] = i
-	}
-	for j := 0; j <= len(t); j++ {
-		d[0][j] = j
-	}
-	for j := 1; j <= len(t); j++ {
-		for i := 1; i <= len(s); i++ {
-			if s[i-1] == t[j-1] {
-				d[i][j] = d[i-1][j-1]
-			} else {
-				minVal := d[i-1][j]
-				if d[i][j-1] < minVal {
-					minVal = d[i][j-1]
-				}
-				if d[i-1][j-1] < minVal {
-					minVal = d[i-1][j-1]
-				}
-				d[i][j] = minVal + 1
-			}
-		}
-	}
-	return d[len(s)][len(t)]
-}
 
 // suggestFix finds the closest matching field name in the proto message.
 func suggestFix(unknownField string, root proto.Message) string {
@@ -1285,7 +1255,9 @@ func suggestFix(unknownField string, root proto.Message) string {
 	minDist := 100
 
 	for name := range candidates {
-		dist := levenshtein(unknownField, name)
+		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
+		// Randomized Selection from Top 5 High-Impact Targets
+		dist := util.LevenshteinDistance(unknownField, name)
 		if dist < minDist {
 			minDist = dist
 			bestMatch = name
