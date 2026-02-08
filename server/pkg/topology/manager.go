@@ -1,7 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 // Package topology manages the network topology visualization and state.
+
 package topology
 
 import (
@@ -360,6 +358,11 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		}
 		// Adjust to today
 		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
+
+		// Handle day rollover: if the time is significantly in the future (e.g., > 1 hour), assume it was yesterday.
+		if targetTime.After(now.Add(1 * time.Hour)) {
+			targetTime = targetTime.Add(-24 * time.Hour)
+		}
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
 		m.trafficHistory[targetTime.Unix()] = &MinuteStats{

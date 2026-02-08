@@ -1,7 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 // Package main provides a mock OAuth 2.0 Identity Provider for testing purposes.
+
 package main
 
 import (
