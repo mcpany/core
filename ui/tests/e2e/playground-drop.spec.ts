@@ -37,7 +37,9 @@ test.describe('Playground Smart File Drop', () => {
             },
             headers: { 'X-API-Key': 'test-token' }
         });
-        expect(res.ok()).toBeTruthy();
+        // Improve debugging if it fails
+        const text = await res.text();
+        expect(res.ok(), `Failed to seed service: ${res.status()} ${text}`).toBeTruthy();
     });
 
     test.afterAll(async ({ request }) => {
