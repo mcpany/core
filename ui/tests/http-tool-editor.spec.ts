@@ -83,7 +83,7 @@ test.describe('HTTP Tool Editor', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Verify Toast
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    await expect(page.getByText('Service Updated', { exact: true })).toBeVisible();
 
     // Verify Persistence via API
     const response = await request.get(`/api/v1/services/${serviceName}`);

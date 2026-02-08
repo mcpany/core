@@ -18,6 +18,7 @@ import addFormats from "ajv-formats";
 
 interface ToolFormProps {
   tool: ToolDefinition;
+  initialData?: Record<string, unknown>;
   onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
 }
@@ -27,9 +28,9 @@ interface ToolFormProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
-  const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [jsonInput, setJsonInput] = useState<string>("{}");
+export function ToolForm({ tool, initialData, onSubmit, onCancel }: ToolFormProps) {
+  const [formData, setFormData] = useState<Record<string, unknown>>(initialData || {});
+  const [jsonInput, setJsonInput] = useState<string>(initialData ? JSON.stringify(initialData, null, 2) : "{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [mode, setMode] = useState<"form" | "json" | "schema">("form");
 
