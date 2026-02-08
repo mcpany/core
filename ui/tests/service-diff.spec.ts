@@ -5,6 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import fs from 'fs';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
@@ -103,6 +104,9 @@ test.describe('Service Config Diff', () => {
         // Take screenshot
         // We use try-catch to ensure screenshot failure doesn't fail test if dir missing (though we made it)
         try {
+            if (!fs.existsSync(AUDIT_DIR)) {
+                fs.mkdirSync(AUDIT_DIR, { recursive: true });
+            }
             await page.screenshot({ path: path.join(AUDIT_DIR, 'service_config_diff.png') });
         } catch (e) {
             console.error("Failed to take screenshot:", e);
