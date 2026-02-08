@@ -255,7 +255,7 @@ LogRow.displayName = 'LogRow'
  * LogStream component.
  * @returns The rendered component.
  */
-export function LogStream() {
+export function LogStream({ fixedSource }: { fixedSource?: string }) {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -267,7 +267,7 @@ export function LogStream() {
   }, [isPaused])
 
   const searchParams = useSearchParams()
-  const initialSource = searchParams.get("source") || "ALL"
+  const initialSource = fixedSource || searchParams.get("source") || "ALL"
 
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
@@ -494,7 +494,7 @@ export function LogStream() {
                 </div>
                 <div className="flex items-center gap-2 justify-end">
                     <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <Select value={filterSource} onValueChange={setFilterSource}>
+                    <Select value={filterSource} onValueChange={setFilterSource} disabled={!!fixedSource}>
                         <SelectTrigger className="w-[140px] bg-background">
                             <SelectValue placeholder="Source" />
                         </SelectTrigger>
