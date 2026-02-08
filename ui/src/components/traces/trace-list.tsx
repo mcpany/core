@@ -105,7 +105,7 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
                 variant={isPaused ? "outline" : "secondary"}
                 size="icon"
                 onClick={() => onTogglePause(!isPaused)}
-                title={isPaused ? "Resume Live Updates" : "Pause Live Updates"}
+                title={isPaused ? "Resume Live Updates" : "Start Live Updates"}
                 className={cn("shrink-0", !isPaused && "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40")}
             >
                 {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}

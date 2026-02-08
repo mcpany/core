@@ -41,6 +41,14 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
     }
 }
 
+/**
+ * TraceTable component.
+ * @param props - The component props.
+ * @param props.traces - The traces property.
+ * @param props.loading - The loading property.
+ * @param props.onSelect - The onSelect property.
+ * @returns The rendered component.
+ */
 export function TraceTable({ traces, loading, onSelect }: TraceTableProps) {
   return (
     <div className="rounded-md border bg-card h-full w-full overflow-hidden">
