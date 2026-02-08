@@ -17,6 +17,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, Y
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { SchemaViewer } from "./schema-viewer";
 import { SchemaForm } from "./schema-form";
 
@@ -144,6 +145,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px]">
+        <TooltipProvider>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
               {String(tool.name)}
@@ -320,6 +322,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
               </Button>
           </div>
         </DialogFooter>
+        </TooltipProvider>
       </DialogContent>
     </Dialog>
   );
