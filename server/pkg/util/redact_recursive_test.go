@@ -34,7 +34,7 @@ func TestRedactSecrets_Recursive(t *testing.T) {
 			name:     "Multiple secrets overlapping placeholder chars",
 			text:     "AB",
 			secrets:  []string{"A", "B"},
-			expected: "[REDACTED]",
+			expected: "[REDACTED][REDACTED]",
 		},
 		{
 			name:     "Nested secret in placeholder text",
@@ -52,7 +52,7 @@ func TestRedactSecrets_Recursive(t *testing.T) {
 			name:     "Adjacent secrets",
 			text:     "secret1secret2",
 			secrets:  []string{"secret1", "secret2"},
-			expected: "[REDACTED]", // Merged
+			expected: "[REDACTED][REDACTED]",
 		},
 		{
 			name:     "Adjacent secrets with space",

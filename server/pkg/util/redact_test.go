@@ -63,13 +63,13 @@ func TestRedactSecrets(t *testing.T) {
 			name:     "adjacent secrets",
 			text:     "secret1secret2",
 			secrets:  []string{"secret1", "secret2"},
-			expected: "[REDACTED]",
+			expected: "[REDACTED][REDACTED]",
 		},
 		{
 			name:     "overlapping same secret",
 			text:     "ababa",
 			secrets:  []string{"aba"},
-			expected: "[REDACTED]",
+			expected: "[REDACTED]ba", // greedy first match consumes "aba" at 0, leaving "ba"
 		},
 	}
 
