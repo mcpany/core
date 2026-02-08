@@ -700,14 +700,35 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// ToolResponse wraps the MCP tool definition with additional metadata.
+type ToolResponse struct {
+	*mcp.Tool
+	Tags            []string `json:"tags,omitempty"`
+	ServiceID       string   `json:"serviceId,omitempty"`
+	LegacyServiceID string   `json:"service_id,omitempty"`
+}
+
 func (a *Application) handleTools() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			tools := a.ToolManager.ListTools()
-			var toolList []*mcp.Tool
+			var toolList []ToolResponse
 			for _, t := range tools {
-				toolList = append(toolList, t.MCPTool())
+				mcpTool := t.MCPTool()
+				resp := ToolResponse{
+					Tool: mcpTool,
+				}
+
+				// Inject Tags from internal representation
+				if internalTool := t.Tool(); internalTool != nil {
+					resp.Tags = internalTool.GetTags()
+					if internalTool.GetServiceId() != "" {
+						resp.ServiceID = internalTool.GetServiceId()
+						resp.LegacyServiceID = internalTool.GetServiceId()
+					}
+				}
+				toolList = append(toolList, resp)
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)

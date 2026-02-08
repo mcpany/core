@@ -26,7 +26,7 @@ Navigate to `/playground`. The interface presents a clean slate with access to a
 Browse the sidebar to find the tool you wish to test.
 
 1. Click on a tool name (e.g., `filesystem.list_dir`).
-2. The main pane updates to show the **Tool Description** and a dynamically generated **Input Form**.
+2. A configuration dialog opens showing the **Tool Description** and a dynamically generated **Input Form**.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
 
