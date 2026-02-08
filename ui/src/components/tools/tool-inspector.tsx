@@ -103,8 +103,6 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       }
   }, [open, tool]);
 
-  if (!tool) return null;
-
   // Safe JSON parsing for the form
   const { parsedInput, isValidJson } = useMemo(() => {
     try {
@@ -114,6 +112,8 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
         return { parsedInput: {}, isValidJson: false };
     }
   }, [input]);
+
+  if (!tool) return null;
 
   const handleFormChange = (newValue: any) => {
     setInput(JSON.stringify(newValue, null, 2));
