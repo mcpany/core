@@ -37,7 +37,12 @@ func main() {
 		secret string
 	)
 
-	flag.StringVar(&port, "port", "8080", "Port to listen on")
+	defaultPort := os.Getenv("PORT")
+	if defaultPort == "" {
+		defaultPort = "8080"
+	}
+
+	flag.StringVar(&port, "port", defaultPort, "Port to listen on")
 	flag.StringVar(&secret, "secret", "", "Webhook secret for verification (or set WEBHOOK_SECRET env var)")
 	flag.Parse()
 
