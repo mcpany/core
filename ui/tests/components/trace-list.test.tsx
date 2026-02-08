@@ -6,7 +6,7 @@
 import { expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TraceList } from '@/components/traces/trace-list';
-import { Trace } from '@/app/api/traces/route';
+import { Trace } from '@/types/trace';
 
 // Mock react-virtuoso for tests as it doesn't render well in jsdom without layout
 vi.mock('react-virtuoso', () => ({
@@ -47,8 +47,10 @@ test('TraceList renders traces', () => {
         onSelect={() => {}}
         searchQuery=""
         onSearchChange={() => {}}
-        isLive={false}
-        onToggleLive={() => {}}
+        isPaused={false}
+        onTogglePaused={() => {}}
+        onRefresh={() => {}}
+        isConnected={true}
     />
   );
 
@@ -66,8 +68,10 @@ test('TraceList filters traces based on search query', () => {
           onSelect={() => {}}
           searchQuery="test_tool_1"
           onSearchChange={onSearchChange}
-          isLive={false}
-          onToggleLive={() => {}}
+          isPaused={false}
+          onTogglePaused={() => {}}
+          onRefresh={() => {}}
+          isConnected={true}
       />
     );
 
