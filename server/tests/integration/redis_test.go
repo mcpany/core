@@ -5,6 +5,7 @@ package integration
 
 import (
 	"context"
+	"os/exec"
 	"sync"
 	"testing"
 	"time"
@@ -15,6 +16,11 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	// Smoke test Docker capability
+	if err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run failed (likely environment/mount issue): %v", err)
+	}
+
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
