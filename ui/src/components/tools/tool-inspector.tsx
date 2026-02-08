@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
 import { SchemaForm } from "./schema-form";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -193,15 +194,19 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                         </TabsList>
                         <TabsContent value="form" className="mt-2">
                              <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-muted/20">
-                                {parsedInput !== null ? (
-                                    <SchemaForm
-                                        schema={tool.inputSchema as any}
-                                        value={parsedInput}
-                                        onChange={handleFormChange}
-                                    />
-                                ) : (
-                                    <div className="text-red-500 text-sm">Invalid JSON in raw view. Please fix it to use the form.</div>
-                                )}
+                                <ErrorBoundary fallback={<div className="text-red-500 p-4">Error loading form. Please use JSON view.</div>}>
+                                    {parsedInput !== null && tool.inputSchema ? (
+                                        <SchemaForm
+                                            schema={tool.inputSchema as any}
+                                            value={parsedInput}
+                                            onChange={handleFormChange}
+                                        />
+                                    ) : (
+                                        <div className="text-muted-foreground text-sm">
+                                            {parsedInput === null ? "Invalid JSON in raw view." : "No schema defined for this tool."}
+                                        </div>
+                                    )}
+                                </ErrorBoundary>
                              </ScrollArea>
                         </TabsContent>
                         <TabsContent value="json" className="mt-2">

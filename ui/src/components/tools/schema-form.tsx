@@ -46,6 +46,8 @@ interface SchemaFormProps {
   depth?: number;
 }
 
+const MAX_DEPTH = 10;
+
 /**
  * SchemaForm component.
  * Recursively renders a form based on a JSON Schema.
@@ -54,7 +56,7 @@ interface SchemaFormProps {
  * @returns The rendered form.
  */
 export function SchemaForm({ schema, value, onChange, name, required = false, depth = 0 }: SchemaFormProps) {
-  if (!schema) return null;
+  if (!schema || depth > MAX_DEPTH) return null;
 
   // Helper to handle field changes
   const handleChange = (newValue: any) => {
@@ -81,12 +83,15 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
   );
 
   // 1. Enum (Select)
-  if (schema.enum) {
+  if (schema.enum && Array.isArray(schema.enum)) {
+    // Ensure value is a string for Select
+    const currentValue = value === undefined || value === null ? "" : String(value);
+
     return (
       <div className="space-y-1">
         {name && label}
         <Select
-          value={value === undefined ? "" : String(value)}
+          value={currentValue}
           onValueChange={(val) => {
               // Try to cast back to original type if number/boolean
               if (schema.type === 'number' || schema.type === 'integer') {
@@ -137,7 +142,7 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
   }
 
   // 3. Object (Recursive)
-  if (schema.type === "object" || schema.properties) {
+  if (schema.type === "object" || (schema.properties && !schema.type)) {
     const properties = schema.properties || {};
     const requiredFields = schema.required || [];
 
@@ -146,8 +151,6 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
 
     const handlePropChange = (propKey: string, propValue: any) => {
       const newValue = { ...currentValue, [propKey]: propValue };
-      // If undefined/empty string and not required, maybe remove key?
-      // For now, keep it simple.
       handleChange(newValue);
     };
 
