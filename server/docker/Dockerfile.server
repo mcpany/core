@@ -42,15 +42,16 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     go build -o /server cmd/server/main.go
 
 # Stage 2: Create the small runtime image
-FROM debian:bookworm-slim
+# Using ubuntu:24.04 to match runner OS and avoid overlayfs issues seen with debian:bookworm-slim in CI
+FROM ubuntu:24.04
 WORKDIR /app
-
-# Create a non-root user
-RUN addgroup --system --gid 1001 mcpany && \
-    adduser --system --uid 1001 --gid 1001 --no-create-home mcpany
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user using standard useradd/groupadd
+RUN groupadd -g 1001 -r mcpany && \
+    useradd -u 1001 -g 1001 -r -M mcpany
 
 # Copy the binary from the builder stage
 # Copy the binary from the builder stage
