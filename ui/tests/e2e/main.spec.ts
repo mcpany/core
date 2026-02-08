@@ -13,42 +13,7 @@ test.describe('MCP Any UI E2E', () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    // Mock metrics API to prevent backend connection errors during tests
-    await page.route('**/api/v1/dashboard/metrics*', async route => {
-        await route.fulfill({
-            json: [
-                { label: "Total Requests", value: "1,234", icon: "Activity", change: "+10%", trend: "up" },
-                { label: "System Health", value: "99.9%", icon: "Zap", change: "Stable", trend: "neutral" }
-            ]
-        });
-    });
-
-    // Mock health API
-    await page.route('**/api/dashboard/health*', async route => {
-        await route.fulfill({
-            json: []
-        });
-    });
-
-    // Mock doctor API to prevent system status banner
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
-
-    // Mock stats/tools APIs for Analytics page
-    await page.route('**/api/v1/dashboard/traffic*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/dashboard/top-tools*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/tools*', async route => {
-        await route.fulfill({ json: { tools: [] } });
-    });
+    // Real Data Policy: No network mocks.
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
@@ -64,17 +29,17 @@ test.describe('MCP Any UI E2E', () => {
 
     // Check for metrics cards
     await expect(page.locator('text=Total Requests').first()).toBeVisible();
-    await expect(page.locator('text=System Health').first()).toBeVisible();
-    // Verify that exactly 2 metric cards are displayed
-    const cards = page.locator('.rounded-xl.border.bg-card');
-    // Note: The selector might need to be specific to the metric cards if other cards exist
-    // But based on the dashboard, we can check for specific content presence.
-    // Let's rely on visibility for now, or check count of specific metric values
-    await expect(page.getByText('1,234').first()).toBeVisible();
-    await expect(page.getByText('99.9%').first()).toBeVisible();
+    // "System Health" is not a real metric, checking for "Active Services" instead
+    await expect(page.locator('text=Active Services').first()).toBeVisible();
+
+    // Check for values (dynamic, so checking pattern or visibility of container)
+    // We can't expect "1,234" as it depends on real traffic.
+    // Instead we check that values are present (not empty)
+    const totalRequestsLocator = page.locator('.rounded-xl.border.bg-card').filter({ hasText: 'Total Requests' }).locator('.text-2xl');
+    await expect(totalRequestsLocator).toBeVisible();
   });
 
-  test.skip('should navigate to analytics from sidebar', async ({ page }) => {
+  test('should navigate to analytics from sidebar', async ({ page }) => {
     // Verify direct navigation first (and warm up the route)
     await page.goto('/stats');
     await expect(page.locator('h1')).toContainText('Analytics & Stats');
