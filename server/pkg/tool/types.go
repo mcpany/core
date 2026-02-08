@@ -2898,6 +2898,10 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
+		// Sentinel Security Update: Block @ for Perl array interpolation
+		if isPerl && strings.Contains(val, "@") {
+			return fmt.Errorf("perl array interpolation injection detected: value contains '@'")
+		}
 	}
 
 	if isPerl && (quoteLevel == 1 || quoteLevel == 3) {
