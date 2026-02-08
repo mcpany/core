@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -172,14 +173,37 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <Label>Arguments</Label>
+                    <Tabs defaultValue="form" className="w-full">
+                        <TabsList className="grid w-[200px] grid-cols-2 h-8 mb-2">
+                            <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
+                            <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="form">
+                            <div className="rounded-md border p-4 bg-muted/20">
+                                <SchemaForm
+                                    schema={tool.inputSchema as any}
+                                    value={(() => {
+                                        try {
+                                            return JSON.parse(input);
+                                        } catch {
+                                            return {};
+                                        }
+                                    })()}
+                                    onChange={(val) => setInput(JSON.stringify(val, null, 2))}
+                                />
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="json">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm"
+                                rows={10}
+                            />
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
