@@ -808,7 +808,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: ubuntu-latest
+    runs-on: github-action-runner-github-action-runner
     needs:
       [
         lint,
