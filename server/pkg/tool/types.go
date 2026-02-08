@@ -2809,35 +2809,56 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	// Python: Check for f-string prefix in template
-	if strings.HasPrefix(base, "python") {
-		// Scan template to find the prefix of the quote containing the placeholder
-		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
-		hasFString := false
-		for i := 0; i < len(template)-1; i++ {
-			if template[i+1] == '\'' || template[i+1] == '"' {
-				prefix := strings.ToLower(getPrefix(template, i+1))
-				if prefix == "f" || prefix == "fr" || prefix == "rf" {
-					hasFString = true
-					break
-				}
-			}
-		}
-		if hasFString {
-			if strings.ContainsAny(val, "{}") {
-				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkNodePHPPerlInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkAwkInjection(val, base); err != nil {
+		return err
+	}
+	return checkGeneralDangerousCalls(val, quoteLevel)
+}
+
+func checkPythonInjection(val, template, base string) error {
+	if !strings.HasPrefix(base, "python") {
+		return nil
+	}
+	// Scan template to find the prefix of the quote containing the placeholder
+	// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+	hasFString := false
+	for i := 0; i < len(template)-1; i++ {
+		if template[i+1] == '\'' || template[i+1] == '"' {
+			prefix := strings.ToLower(getPrefix(template, i+1))
+			if prefix == "f" || prefix == "fr" || prefix == "rf" {
+				hasFString = true
+				break
 			}
 		}
 	}
-
-	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+	if hasFString {
+		if strings.ContainsAny(val, "{}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
 		}
 	}
+	return nil
+}
 
-	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+func checkRubyInjection(val, base string, quoteLevel int) error {
+	if !strings.HasPrefix(base, "ruby") {
+		return nil
+	}
+	if (quoteLevel == 1 || quoteLevel == 3) && strings.Contains(val, "#{") {
+		return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+	}
+	return nil
+}
+
+func checkNodePHPPerlInjection(val, base string, quoteLevel int) error {
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
@@ -2853,22 +2874,28 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+	return nil
+}
 
-	// Awk: Block pipe | to prevent external command execution
+func checkAwkInjection(val, base string) error {
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
-		}
-		// Sentinel Security Update: Block file access and getline
-		if strings.Contains(val, "getline") {
-			return fmt.Errorf("awk injection detected: value contains 'getline'")
-		}
-		if strings.Contains(val, ">") || strings.Contains(val, "<") {
-			return fmt.Errorf("awk injection detected: value contains redirection characters")
-		}
+	if !isAwk {
+		return nil
 	}
+	if strings.Contains(val, "|") {
+		return fmt.Errorf("awk injection detected: value contains '|'")
+	}
+	// Sentinel Security Update: Block file access and getline
+	if strings.Contains(val, "getline") {
+		return fmt.Errorf("awk injection detected: value contains 'getline'")
+	}
+	if strings.Contains(val, ">") || strings.Contains(val, "<") {
+		return fmt.Errorf("awk injection detected: value contains redirection characters")
+	}
+	return nil
+}
 
+func checkGeneralDangerousCalls(val string, quoteLevel int) error {
 	// General Dangerous Calls Check for Interpreters (Level 1 and 2)
 	// We check this for all interpreters because executing arbitrary code via eval/system/subprocess is always risky
 	// if the user input was intended to be data (which is usually the case if it's inside quotes).
@@ -2903,7 +2930,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			}
 		}
 	}
-
 	return nil
 }
 
