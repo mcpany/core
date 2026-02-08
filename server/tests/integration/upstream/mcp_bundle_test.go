@@ -12,7 +12,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
