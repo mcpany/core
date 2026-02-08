@@ -3,11 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Trace } from "@/types/trace";
 
 interface UseTracesOptions {
     initialPaused?: boolean;
+    fetchHistory?: boolean;
 }
 
 /**
@@ -15,13 +16,15 @@ interface UseTracesOptions {
  *
  * @param options - Configuration options for the trace hook.
  * @param options.initialPaused - Whether to start in a paused state.
+ * @param options.fetchHistory - Whether to fetch historical traces on connect (default: true).
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
 export function useTraces(options: UseTracesOptions = {}) {
+    const { initialPaused = false, fetchHistory = true } = options;
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
     const [isConnected, setIsConnected] = useState(false);
-    const [isPaused, setIsPaused] = useState(options.initialPaused || false);
+    const [isPaused, setIsPaused] = useState(initialPaused);
     const wsRef = useRef<WebSocket | null>(null);
     const isPausedRef = useRef(isPaused);
     const isMountedRef = useRef(true);
@@ -31,12 +34,46 @@ export function useTraces(options: UseTracesOptions = {}) {
         isPausedRef.current = isPaused;
     }, [isPaused]);
 
-    const connect = () => {
+    const fetchHistoricalTraces = useCallback(async () => {
+        try {
+            const res = await fetch('/api/traces');
+            if (res.ok) {
+                const data: Trace[] = await res.json();
+                if (isMountedRef.current) {
+                    setTraces(prev => {
+                        const map = new Map<string, Trace>();
+                        // Keep existing live traces if any
+                        prev.forEach(t => map.set(t.id, t));
+                        // Merge history (only if not already present from WS)
+                        data.forEach(t => {
+                            if (!map.has(t.id)) {
+                                map.set(t.id, t);
+                            }
+                        });
+                        return Array.from(map.values()).sort((a, b) =>
+                            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+                        );
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Failed to fetch trace history", e);
+        }
+    }, []);
+
+    const connect = useCallback(() => {
         if (!isMountedRef.current) return;
 
         setLoading(true);
+
+        // Fetch history first if enabled
+        if (fetchHistory) {
+            fetchHistoricalTraces().finally(() => {
+                if (isMountedRef.current) setLoading(false);
+            });
+        }
+
         // Use relative URL for client-side navigation, but handle both dev and prod
-        // If window is undefined (SSR), don't connect
         if (typeof window === 'undefined') return;
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -56,7 +93,7 @@ export function useTraces(options: UseTracesOptions = {}) {
                 return;
             }
             setIsConnected(true);
-            setLoading(false);
+            if (!fetchHistory) setLoading(false);
         };
 
         ws.onmessage = (event) => {
@@ -70,6 +107,9 @@ export function useTraces(options: UseTracesOptions = {}) {
                     if (index !== -1) {
                         const newTraces = [...prev];
                         newTraces[index] = trace;
+                        // Re-sort? Probably not needed if we assume new traces are newer,
+                        // but updates might change order if sort by duration (unlikely) or status.
+                        // But we sort by timestamp. Trace updates (spans added) don't change start timestamp.
                         return newTraces;
                     }
                     return [trace, ...prev];
@@ -93,7 +133,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
 
         wsRef.current = ws;
-    };
+    }, [fetchHistory, fetchHistoricalTraces]);
 
     useEffect(() => {
         isMountedRef.current = true;
@@ -108,12 +148,24 @@ export function useTraces(options: UseTracesOptions = {}) {
                 clearTimeout(reconnectTimeoutRef.current);
             }
         };
-    }, []);
+    }, [connect]);
 
     const clearTraces = () => setTraces([]);
 
     const refresh = () => {
+        // Clear traces and reconnect (which triggers history fetch again)
         setTraces([]);
+
+        // Clear any pending reconnect
+        if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        // Force reconnect logic immediately
+        if (wsRef.current) {
+            wsRef.current.onclose = null; // Prevent triggering onclose logic
+            wsRef.current.close();
+        }
         connect();
     };
 

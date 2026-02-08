@@ -47,8 +47,8 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: github-action-runner-github-action-runner
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
+    # runs-on: github-action-runner-github-action-runner
     steps:
       - uses: actions/checkout@v5
 
