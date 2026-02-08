@@ -1,9 +1,11 @@
 # Secrets Management
 
-**Status:** Implemented
+**Status:** Mock / Preview
 
 ## Goal
 Securely store and manage sensitive information. The Secrets Vault enables you to inject API keys, passwords, and tokens into services without exposing them in plain text configuration files.
+
+> **Note:** The current implementation in the UI is a **Mock** for demonstration purposes. Secrets added here are stored in-memory within the UI server and are **not** persisted or accessible by the backend MCP server. For production use, please configure secrets using environment variables as described in the Configuration Guide. Integration with real secret managers (Vault/AWS) is on the roadmap.
 
 ## Usage Guide
 
