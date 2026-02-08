@@ -50,11 +50,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install Make
+      - name: Install Build Dependencies
         run: |
-          if ! command -v make &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make
-          fi
+          sudo apt-get update
+          sudo apt-get install -y make wget curl xz-utils
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -834,13 +833,14 @@ jobs:
       - name: Install GitHub CLI
         run: |
           if ! command -v gh &> /dev/null; then
-            (type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget)) \
-            && sudo mkdir -p -m 755 /etc/apt/keyrings \
-            && wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
-            && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-            && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-            && sudo apt-get update \
-            && sudo apt-get install -y gh
+            sudo apt-get update
+            sudo apt-get install -y wget curl
+            sudo mkdir -p -m 755 /etc/apt/keyrings
+            wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+            sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y gh
           fi
 
       - name: Auto-Squash
