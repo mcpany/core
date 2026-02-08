@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser, seedWebhook } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
@@ -17,6 +17,7 @@ test.describe('MCP Any UI E2E Tests', () => {
       await seedServices(request);
       await seedTraffic(request);
       await seedUser(request, "e2e-admin");
+      await seedWebhook(request);
 
       // Login before each test
       await page.goto('/login');
@@ -48,11 +49,12 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=process_payment')).toBeVisible();
+    // Expect built-in tools (Weather Service) which is more reliable in CI
+    // Note: Tool name is namespaced in backend as "weather-service.get_weather"
+    await expect(page.locator('text=weather-service.get_weather')).toBeVisible({ timeout: 15000 });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
@@ -70,29 +72,32 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Webhooks page displays configuration', async ({ page }) => {
+  test('Webhooks page displays configuration', async ({ page }) => {
     await page.goto('/settings/webhooks');
-    await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+    // We display "Global Alert Webhook" now
+    await expect(page.locator('input[value="https://example.com/webhook"]')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
-    // Check for nodes
+    // Check for nodes (seeded services)
     await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    await expect(page.locator('text=Math')).toBeVisible();
+    // Weather Service should be visible (pre-seeded in CI environment)
+    await expect(page.locator('text=weather-service')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
     const userService = page.locator('.group', { hasText: 'User Service' });
     await expect(userService).toBeVisible();

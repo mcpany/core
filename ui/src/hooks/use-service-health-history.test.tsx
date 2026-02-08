@@ -23,13 +23,14 @@ describe("useServiceHealthHistory", () => {
     };
 
     it("should fetch initial health data and update history from server", async () => {
-        global.fetch = vi.fn().mockResolvedValue({
+        const fetchMock = vi.fn().mockResolvedValue({
             ok: true,
             json: async () => ({
                 services: mockServices,
                 history: mockHistory
             })
         });
+        global.fetch = fetchMock;
 
         const { result } = renderHook(() => useServiceHealthHistory());
 
@@ -41,6 +42,7 @@ describe("useServiceHealthHistory", () => {
             expect(result.current.isLoading).toBe(false);
         });
 
+        expect(fetchMock).toHaveBeenCalledWith("/api/v1/dashboard/health");
         expect(result.current.services).toEqual(mockServices);
         expect(Object.keys(result.current.history)).toHaveLength(2);
         expect(result.current.history["svc-1"]).toHaveLength(1);

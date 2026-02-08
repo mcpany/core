@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -7,34 +7,52 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-interface Webhook {
-    id: string;
-    url: string;
-    events: string[];
-}
-
+import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { apiClient } from "@/lib/client";
 
 /**
  * WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+    const [webhookUrl, setWebhookUrl] = useState("");
+    const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
 
     useEffect(() => {
-        async function fetchWebhooks() {
-            const res = await fetch("/api/settings/webhooks");
-            if (res.ok) {
-                setWebhooks(await res.json());
+        async function fetchWebhook() {
+            try {
+                const data = await apiClient.getWebhookURL();
+                setWebhookUrl(data.url || "");
+            } catch (error) {
+                console.error("Failed to fetch webhook", error);
             }
         }
-        fetchWebhooks();
+        fetchWebhook();
     }, []);
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            await apiClient.saveWebhookURL(webhookUrl);
+            toast({
+                title: "Webhook updated",
+                description: "Global alert webhook URL has been saved.",
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to save webhook URL.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
@@ -61,31 +79,28 @@ export default function WebhooksPage() {
                 <TabsContent value="webhooks" className="space-y-4">
                     <div className="flex items-center justify-between">
                          <div>
-                            <h3 className="text-lg font-medium">Webhooks</h3>
-                            <p className="text-sm text-muted-foreground">Manage your webhook subscriptions.</p>
+                            <h3 className="text-lg font-medium">Global Alert Webhook</h3>
+                            <p className="text-sm text-muted-foreground">Configure a global webhook to receive system alerts.</p>
                          </div>
-                        <Button>Add Webhook</Button>
                     </div>
                     <Card className="backdrop-blur-sm bg-background/50">
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>ID</TableHead>
-                                        <TableHead>URL</TableHead>
-                                        <TableHead>Events</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {webhooks.map((hook) => (
-                                        <TableRow key={hook.id}>
-                                            <TableCell>{hook.id}</TableCell>
-                                            <TableCell>{hook.url}</TableCell>
-                                            <TableCell>{hook.events.join(", ")}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                        <CardHeader>
+                            <CardTitle>Webhook Configuration</CardTitle>
+                            <CardDescription>
+                                Alerts will be POSTed to this URL.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center gap-4">
+                                <Input
+                                    placeholder="https://example.com/webhook"
+                                    value={webhookUrl}
+                                    onChange={(e) => setWebhookUrl(e.target.value)}
+                                />
+                                <Button onClick={handleSave} disabled={loading}>
+                                    {loading ? "Saving..." : "Save"}
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
