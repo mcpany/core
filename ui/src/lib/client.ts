@@ -18,7 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
-import { formatDuration, parseDuration } from '@/lib/duration-utils';
+import { formatDuration, parseDuration, formatDurationForApi } from '@/lib/duration-utils';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -98,18 +98,18 @@ const mapResilience = (r: any): ResilienceConfig | undefined => {
  */
 const mapResiliencePayload = (resilience: ResilienceConfig) => {
     return {
-        timeout: resilience.timeout ? formatDuration(resilience.timeout) : undefined,
+        timeout: resilience.timeout ? formatDurationForApi(resilience.timeout) : undefined,
         circuit_breaker: resilience.circuitBreaker ? {
             failure_rate_threshold: resilience.circuitBreaker.failureRateThreshold,
             consecutive_failures: resilience.circuitBreaker.consecutiveFailures,
-            open_duration: resilience.circuitBreaker.openDuration ? formatDuration(resilience.circuitBreaker.openDuration) : undefined,
+            open_duration: resilience.circuitBreaker.openDuration ? formatDurationForApi(resilience.circuitBreaker.openDuration) : undefined,
             half_open_requests: resilience.circuitBreaker.halfOpenRequests,
         } : undefined,
         retry_policy: resilience.retryPolicy ? {
             number_of_retries: resilience.retryPolicy.numberOfRetries,
-            base_backoff: resilience.retryPolicy.baseBackoff ? formatDuration(resilience.retryPolicy.baseBackoff) : undefined,
-            max_backoff: resilience.retryPolicy.maxBackoff ? formatDuration(resilience.retryPolicy.maxBackoff) : undefined,
-            max_elapsed_time: resilience.retryPolicy.maxElapsedTime ? formatDuration(resilience.retryPolicy.maxElapsedTime) : undefined,
+            base_backoff: resilience.retryPolicy.baseBackoff ? formatDurationForApi(resilience.retryPolicy.baseBackoff) : undefined,
+            max_backoff: resilience.retryPolicy.maxBackoff ? formatDurationForApi(resilience.retryPolicy.maxBackoff) : undefined,
+            max_elapsed_time: resilience.retryPolicy.maxElapsedTime ? formatDurationForApi(resilience.retryPolicy.maxElapsedTime) : undefined,
         } : undefined,
     };
 };

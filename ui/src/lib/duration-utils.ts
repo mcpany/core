@@ -44,7 +44,7 @@ export function parseDuration(input: string): Duration | undefined {
 /**
  * Formats a Protobuf Duration object into a human-readable string.
  * @param duration The Duration object.
- * @returns The formatted string (e.g. "1.5s").
+ * @returns The formatted string (e.g. "1.5s", "500ms").
  */
 export function formatDuration(duration: Duration | undefined | null): string {
     if (!duration) return "";
@@ -72,4 +72,37 @@ export function formatDuration(duration: Duration | undefined | null): string {
     if (totalSeconds >= 60 && totalSeconds % 60 === 0) return `${totalSeconds / 60}m`;
 
     return `${totalSeconds}s`;
+}
+
+/**
+ * Formats a Protobuf Duration object into a string compliant with Google Protobuf JSON mapping (always seconds).
+ * @param duration The Duration object.
+ * @returns The formatted string (e.g. "1.5s", "0.5s") or undefined if input is null/undefined.
+ */
+export function formatDurationForApi(duration: Duration | undefined | null): string | undefined {
+    if (!duration) return undefined;
+
+    // Handle Long or string or number type for seconds
+    let seconds = 0;
+    if (Long.isLong(duration.seconds)) {
+        seconds = duration.seconds.toNumber();
+    } else if (typeof duration.seconds === 'string') {
+        seconds = parseInt(duration.seconds, 10);
+    } else if (typeof duration.seconds === 'number') {
+        seconds = duration.seconds;
+    }
+
+    const nanos = duration.nanos || 0;
+
+    // Total seconds as float
+    const totalSeconds = seconds + nanos / 1e9;
+
+    // Format with up to 9 decimal places to support nanoseconds
+    // Protobuf JSON mapping uses 0, 3, 6, or 9 fractional digits.
+    // We can just print as number and append 's', but avoiding scientific notation is safer.
+    // Using toFixed(9) and stripping zeros covers it.
+    let s = totalSeconds.toFixed(9);
+    // Remove trailing zeros and decimal point if integer
+    s = s.replace(/\.?0+$/, "");
+    return `${s}s`;
 }

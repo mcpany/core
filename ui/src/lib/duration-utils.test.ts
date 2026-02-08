@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseDuration, formatDuration } from './duration-utils';
+import { parseDuration, formatDuration, formatDurationForApi } from './duration-utils';
 import Long from 'long';
 
 describe('duration-utils', () => {
@@ -62,6 +62,27 @@ describe('duration-utils', () => {
         it('formats minutes as seconds if not exact', () => {
              const d = { seconds: Long.fromNumber(121), nanos: 0 };
              expect(formatDuration(d)).toBe('121s');
+        });
+    });
+
+    describe('formatDurationForApi', () => {
+        it('always formats as seconds', () => {
+            expect(formatDurationForApi({ seconds: Long.fromNumber(30), nanos: 0 })).toBe('30s');
+            expect(formatDurationForApi({ seconds: Long.fromNumber(0), nanos: 500000000 })).toBe('0.5s');
+            expect(formatDurationForApi({ seconds: Long.fromNumber(120), nanos: 0 })).toBe('120s');
+            expect(formatDurationForApi({ seconds: Long.fromNumber(0), nanos: 1000000 })).toBe('0.001s');
+        });
+
+        it('handles small durations without scientific notation', () => {
+             // 1 microsecond = 0.000001s
+             expect(formatDurationForApi({ seconds: Long.fromNumber(0), nanos: 1000 })).toBe('0.000001s');
+             // 1 nanosecond = 0.000000001s
+             expect(formatDurationForApi({ seconds: Long.fromNumber(0), nanos: 1 })).toBe('0.000000001s');
+        });
+
+        it('handles undefined/null', () => {
+            expect(formatDurationForApi(undefined)).toBeUndefined();
+            expect(formatDurationForApi(null)).toBeUndefined();
         });
     });
 });
