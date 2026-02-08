@@ -35,6 +35,17 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
     toolCount?: number;
 }
 
+/**
+ * Extended ToolDefinition to include tags if missing from proto.
+ */
+export interface ExtendedToolDefinition extends ToolDefinition {
+    tags?: string[];
+    // UI specific fields added during mapping
+    serviceId?: string;
+    inputSchema?: any;
+    outputSchema?: any;
+}
+
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
@@ -662,7 +673,7 @@ export const apiClient = {
      * Lists all available tools.
      * @returns A promise that resolves to a list of tools.
      */
-    listTools: async () => {
+    listTools: async (): Promise<{ tools: ExtendedToolDefinition[] }> => {
         const res = await fetchWithAuth('/api/v1/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
         const data = await res.json();
