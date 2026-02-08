@@ -2876,8 +2876,27 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		}
 	}
 
-	if isPerl && (quoteLevel == 1 || quoteLevel == 3) {
-		if strings.Contains(val, "@{") {
+	if isPerl {
+		// Block qx operator which allows execution (e.g. qx/id/)
+		// We check for this even in unquoted context because checkUnquotedInjection allows characters like '/' and '+'
+		// In single quotes (quoteLevel == 2), qx is treated as string literal and is safe.
+		if quoteLevel != 2 {
+			// Manual scan for "qx" with word boundaries to avoid false positives (e.g. "equinox")
+			for i := 0; i < len(val)-1; i++ {
+				if (val[i] == 'q' || val[i] == 'Q') && (val[i+1] == 'x' || val[i+1] == 'X') {
+					// Check start boundary
+					isStart := (i == 0) || !isWordChar(val[i-1])
+					// Check end boundary (must be non-word char)
+					isEnd := (i+2 >= len(val)) || !isWordChar(val[i+2])
+
+					if isStart && isEnd {
+						return fmt.Errorf("perl qx execution detected")
+					}
+				}
+			}
+		}
+
+		if (quoteLevel == 1 || quoteLevel == 3) && strings.Contains(val, "@{") {
 			return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
 		}
 	}
