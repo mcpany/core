@@ -81,7 +81,8 @@ test.describe('HTTP Tool Editor', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Verify Toast
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    // Use .first() to handle cases where multiple elements (e.g. title and aria-live status) match
+    await expect(page.getByText('Service Updated').first()).toBeVisible();
 
     // Verify Persistence via API
     const response = await request.get(`/api/v1/services/${serviceName}`);
