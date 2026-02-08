@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Bell, FileText, Save, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
+import { GlobalSettings, AuditConfig_StorageType } from "@proto/config/v1/config";
 
 /**
  * WebhooksPage component.
@@ -23,7 +24,7 @@ import { apiClient } from "@/lib/client";
 export default function WebhooksPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [settings, setSettings] = useState<any>(null); // Using any to match API response structure
+    const [settings, setSettings] = useState<GlobalSettings | null>(null);
     const { toast } = useToast();
 
     // Local state for form inputs
@@ -40,17 +41,21 @@ export default function WebhooksPage() {
         setLoading(true);
         try {
             const data = await apiClient.getGlobalSettings();
-            setSettings(data);
+            // Data from API is plain JSON (snake_case potentially if raw, but apiClient usually returns json).
+            // apiClient.getGlobalSettings returns `res.json()`.
+            // The proto-generated `fromJSON` handles the mapping from wire format (snake_case) to domain object (camelCase).
+            const typedSettings = GlobalSettings.fromJSON(data);
+            setSettings(typedSettings);
 
             // Initialize local state
-            if (data.alerts) {
-                setAlertUrl(data.alerts.webhook_url || "");
-                setAlertEnabled(data.alerts.enabled || false);
+            if (typedSettings.alerts) {
+                setAlertUrl(typedSettings.alerts.webhookUrl || "");
+                setAlertEnabled(typedSettings.alerts.enabled || false);
             }
-            if (data.audit) {
-                setAuditUrl(data.audit.webhook_url || "");
-                // Audit enabled + storage_type 4 (WEBHOOK) implies webhook enabled
-                setAuditEnabled(data.audit.enabled && (data.audit.storage_type === 4 || data.audit.storage_type === "STORAGE_TYPE_WEBHOOK"));
+            if (typedSettings.audit) {
+                setAuditUrl(typedSettings.audit.webhookUrl || "");
+                // Audit enabled + storage_type WEBHOOK implies webhook enabled
+                setAuditEnabled(typedSettings.audit.enabled && typedSettings.audit.storageType === AuditConfig_StorageType.STORAGE_TYPE_WEBHOOK);
             }
         } catch (e) {
             console.error("Failed to load settings", e);
@@ -69,37 +74,40 @@ export default function WebhooksPage() {
         setSaving(true);
 
         try {
-            // Clone settings to modify
-            const newSettings = JSON.parse(JSON.stringify(settings));
+            // Clone settings to modify using fromPartial since settings is already typed (camelCase)
+            const newSettings = GlobalSettings.fromPartial(settings);
 
             // Update Alerts
-            if (!newSettings.alerts) newSettings.alerts = {};
-            newSettings.alerts.webhook_url = alertUrl;
+            if (!newSettings.alerts) newSettings.alerts = { enabled: false, webhookUrl: "" };
+            newSettings.alerts.webhookUrl = alertUrl;
             newSettings.alerts.enabled = alertEnabled;
 
             // Update Audit
-            if (!newSettings.audit) newSettings.audit = {};
-            newSettings.audit.webhook_url = auditUrl;
+            if (!newSettings.audit) newSettings.audit = {
+                enabled: false,
+                webhookUrl: "",
+                storageType: AuditConfig_StorageType.STORAGE_TYPE_UNSPECIFIED,
+                outputPath: "",
+                logArguments: false,
+                logResults: false,
+                webhookHeaders: {},
+                splunk: undefined,
+                datadog: undefined
+            };
+            newSettings.audit.webhookUrl = auditUrl;
 
-            // If audit webhook is enabled, we must ensure storage_type is WEBHOOK (4)
-            // If disabled here, we don't necessarily change storage_type unless it was 4?
-            // For simplicity, if enabled via this UI, we force type 4.
-            // If disabled, we just set enabled=false? Or keep it enabled but type FILE?
-            // Let's assume this switch toggles the "Webhook Audit" feature.
+            // If audit webhook is enabled, we must ensure storage_type is WEBHOOK
             if (auditEnabled) {
                 newSettings.audit.enabled = true;
-                newSettings.audit.storage_type = 4; // STORAGE_TYPE_WEBHOOK
+                newSettings.audit.storageType = AuditConfig_StorageType.STORAGE_TYPE_WEBHOOK;
             } else {
-                // If we disable the webhook, do we disable audit entirely?
-                // Or just switch back to defaults?
-                // Ideally we shouldn't break other configs.
-                // But for this simplified UI, let's assume "Enabled" means "Enabled for Webhook".
-                if (newSettings.audit.storage_type === 4) {
+                if (newSettings.audit.storageType === AuditConfig_StorageType.STORAGE_TYPE_WEBHOOK) {
                     newSettings.audit.enabled = false;
                 }
             }
 
-            await apiClient.saveGlobalSettings(newSettings);
+            // toJSON converts back to wire format (snake_case)
+            await apiClient.saveGlobalSettings(GlobalSettings.toJSON(newSettings));
 
             toast({
                 title: "Settings Saved",
