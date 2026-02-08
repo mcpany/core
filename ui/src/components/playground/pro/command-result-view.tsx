@@ -19,6 +19,13 @@ interface CommandResult {
     status?: string;
 }
 
+/**
+ * CommandResultView component.
+ * Renders the result of a command execution in a terminal-like view.
+ * @param props - The component props.
+ * @param props.result - The command result object.
+ * @returns The rendered component.
+ */
 export function CommandResultView({ result }: { result: unknown }) {
     const data = result as CommandResult;
     // Default to success if return_code is missing but status is success, or if return_code is 0
