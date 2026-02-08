@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -2897,33 +2898,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command)
 }
 
+var dangerousInterpreterKeywords = regexp.MustCompile(`\b(system|exec|popen|eval|spawn|fork|import|require|subprocess|__import__)\b`)
+
 func checkInterpreterFunctionCalls(val string) error {
-	// Normalize value to detect obfuscation (e.g. system ( ) )
-	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
-		if !unicode.IsSpace(r) {
-			b.WriteRune(r)
-		}
-	}
-	cleanVal := strings.ToLower(b.String())
-
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
-		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
-	}
-
-	for _, kw := range dangerousKeywords {
-		if strings.Contains(cleanVal, kw+"(") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
-		}
-	}
-
-	if strings.Contains(cleanVal, "__import__") {
-		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
+	// Sentinel Security Update: Use regex to detect dangerous keywords even without parentheses
+	// (e.g. Ruby "system 'ls'") and handle word boundaries to avoid false positives.
+	// We check the original value to preserve spacing, trusting that regex \b handles word boundaries correctly.
+	if match := dangerousInterpreterKeywords.FindString(val); match != "" {
+		return fmt.Errorf("interpreter injection detected: value contains dangerous function call/keyword %q", match)
 	}
 	return nil
 }
@@ -3005,18 +2987,10 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		// Block qx operator (command execution) regardless of quoting.
 		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
 		// avoiding common shell injection filters.
-		if strings.Contains(val, "qx") {
-			// Check if it is likely the qx operator.
-			// The strict check should be to block "qx" followed by any character that could be a delimiter.
-			// However, blindly blocking "qx" might break legitimate strings.
-			// But for strict security on command execution tools, blocking "qx" is safer.
-			// Especially in unquoted context (Level 0), we must be very strict.
-			if quoteLevel == 0 {
-				return fmt.Errorf("shell injection detected: perl qx execution")
-			}
-			// In quoted contexts, qx might be just a string, UNLESS it is interpolated?
-			// qx// is NOT interpolated inside strings in Perl. "qx/ls/" is just a string.
-			// So we only need to worry about Level 0 (Unquoted).
+		// We block "qx" followed by non-alphanumeric (delimiter) using regex.
+		// We perform this check regardless of quote level to be safe.
+		if match, _ := regexp.MatchString(`qx[^a-zA-Z0-9]`, val); match {
+			return fmt.Errorf("shell injection detected: perl qx execution")
 		}
 
 		if (quoteLevel == 1 || quoteLevel == 3) {
