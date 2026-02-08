@@ -55,13 +55,12 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
             setName(`${templateConfig.name}-copy`);
             setAuthId("none");
 
+            let initialSchemaValues: Record<string, string> = {};
+            let newEnv: Record<string, SecretValue> = {};
+
             if (templateConfig.commandLineService) {
                 // Initialize command
                 setCommand(templateConfig.commandLineService.command || "");
-
-                // Initialize env vars
-                const newEnv: Record<string, SecretValue> = {};
-                const initialSchemaValues: Record<string, string> = {};
 
                 if (templateConfig.commandLineService.env) {
                     Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {

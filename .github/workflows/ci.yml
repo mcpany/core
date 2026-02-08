@@ -50,7 +50,7 @@ jobs:
     runs-on: github-action-runner-github-action-runner
     # runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -92,6 +92,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-lint-cache-
 
+      - name: Install Make
+        run: sudo apt-get update && sudo apt-get install -y make
+
       - name: Prepare environment
         run: make prepare
 
@@ -118,7 +121,7 @@ jobs:
       #     docker-images: true
       #     swap-storage: true
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -237,7 +240,7 @@ jobs:
       #     docker-images: true
       #     swap-storage: true
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -366,7 +369,44 @@ jobs:
           large-packages: true
           docker-images: false
           swap-storage: true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: pip install -r server/requirements.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+
+      - name: Cache Tools
+        uses: actions/cache@v4
+        with:
+          path: build/env/bin
+          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-env-bin-
+
+      - name: Prepare environment
+        run: make prepare
+
+      - name: Generate Protos
+        run: make gen
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -469,7 +509,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -567,7 +607,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -654,7 +694,7 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -708,7 +748,7 @@ jobs:
       #          docker-images: false
       #          swap-storage: true
       #
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Download Server Image
         uses: actions/download-artifact@v4
@@ -740,7 +780,7 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
