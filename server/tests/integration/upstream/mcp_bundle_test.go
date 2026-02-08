@@ -235,7 +235,12 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	if os.Getenv("CI") == "true" {
+
+	ciEnv := os.Getenv("CI")
+	ghActionsEnv := os.Getenv("GITHUB_ACTIONS")
+	t.Logf("CI Env: %q, GITHUB_ACTIONS Env: %q", ciEnv, ghActionsEnv)
+
+	if ciEnv != "" || ghActionsEnv != "" {
 		t.Skip("Skipping Docker bundle test in CI due to overlayfs/DinD limitations")
 	}
 
