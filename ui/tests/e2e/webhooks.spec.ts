@@ -25,7 +25,7 @@ test.describe('Webhooks Configuration', () => {
     await page.goto('/webhooks');
 
     // 1. Configure Alert Webhook
-    await expect(page.locator('h1')).toContainText('Integrations');
+    await expect(page.locator('h1')).toContainText('Webhooks');
 
     // Check seeded value
     await expect(page.locator('#alert-url')).toHaveValue(initialAlertUrl);
