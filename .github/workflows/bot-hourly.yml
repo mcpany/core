@@ -10,7 +10,7 @@ on:
 
 jobs:
   manage-prs:
-    runs-on: github-action-runner-github-action-runner
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: write
