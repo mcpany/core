@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -80,13 +79,12 @@ func TestFileAuditStore_Write_File(t *testing.T) {
 }
 
 func TestFileAuditStore_Write_Stdout(t *testing.T) {
-	// Capture stdout
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
+	// Use a buffer instead of replacing os.Stdout to avoid data races
+	var buf bytes.Buffer
 
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
+	store.writer = &buf // Inject custom writer
 	defer store.Close()
 
 	entry := Entry{
@@ -95,15 +93,6 @@ func TestFileAuditStore_Write_Stdout(t *testing.T) {
 	}
 
 	err = store.Write(context.Background(), entry)
-
-	// Restore stdout
-	w.Close()
-	os.Stdout = oldStdout
-
-	require.NoError(t, err)
-
-	var buf bytes.Buffer
-	_, err = io.Copy(&buf, r)
 	require.NoError(t, err)
 
 	var readEntry Entry

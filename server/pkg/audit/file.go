@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sync"
 
@@ -17,6 +18,8 @@ import (
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
+	// writer allows injecting a custom writer for testing (e.g. to capture stdout output without replacing os.Stdout)
+	writer io.Writer
 }
 
 // NewFileAuditStore creates a new FileAuditStore.
@@ -52,8 +55,10 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	var w *os.File
-	if s.file != nil {
+	var w io.Writer
+	if s.writer != nil {
+		w = s.writer
+	} else if s.file != nil {
 		w = s.file
 	} else {
 		w = os.Stdout
