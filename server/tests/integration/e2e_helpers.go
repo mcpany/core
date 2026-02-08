@@ -587,7 +587,9 @@ func IsDockerSocketAccessible() bool {
 	// Check if we can actually run a container (catches overlayfs/storage driver issues in CI)
 	// Use alpine:latest as it's small and commonly available.
 	// We use "true" as the command to exit immediately with success.
-	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
+	runArgs := make([]string, len(dockerArgs), len(dockerArgs)+4)
+	copy(runArgs, dockerArgs)
+	runArgs = append(runArgs, "run", "--rm", "alpine:latest", "true")
 	cmd = exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
