@@ -62,6 +62,9 @@ const NumberInput = ({ value, onChange, placeholder }: { value: any, onChange: (
   );
 };
 
+/**
+ * Schema represents a JSON Schema object used for defining tool input parameters.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;
@@ -83,6 +86,19 @@ interface SchemaFormProps {
   path?: string[];
 }
 
+/**
+ * SchemaForm component generates a dynamic form based on a JSON Schema.
+ * It supports nested objects, arrays, and basic types (string, number, boolean).
+ *
+ * @param props - The component props.
+ * @param props.schema - The JSON schema definition.
+ * @param props.value - The current value of the form.
+ * @param props.onChange - Callback when value changes.
+ * @param props.name - The name of the field (optional).
+ * @param props.required - Whether the field is required.
+ * @param props.path - The path to the current field (for debugging/nesting).
+ * @returns The rendered form component.
+ */
 export function SchemaForm({ schema, value, onChange, name, required = false, path = [] }: SchemaFormProps) {
   const type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
 
