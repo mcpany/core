@@ -4,15 +4,19 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices } from './e2e/test-data';
+import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { login } from './e2e/auth-helper';
 
 test.describe('Tool Exploration', () => {
     test.beforeEach(async ({ page, request }) => {
+        await seedUser(request, "e2e-admin");
         await seedServices(request);
+        await login(page);
     });
 
     test.afterEach(async ({ request }) => {
         await cleanupServices(request);
+        await cleanupUser(request, "e2e-admin");
     });
 
     test('should list available tools', async ({ page }) => {

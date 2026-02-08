@@ -4,18 +4,22 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedTraffic, seedServices, cleanupServices } from './test-data';
+import { seedTraffic, seedServices, cleanupServices, seedUser, cleanupUser } from './test-data';
+import { login } from './auth-helper';
 
 test.describe('MCP Any UI E2E', () => {
 
   test.beforeEach(async ({ page, request }) => {
       // Seed real data
+      await seedUser(request, "e2e-admin");
       await seedServices(request);
       await seedTraffic(request);
+      await login(page);
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {

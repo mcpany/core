@@ -4,16 +4,20 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection } from './test-data';
+import { seedCollection, cleanupCollection, seedUser, cleanupUser } from './test-data';
+import { login } from './auth-helper';
 
 test.describe('Stack Composer', () => {
 
   test.beforeEach(async ({ page, request }) => {
+      await seedUser(request, "e2e-admin");
       await seedCollection('e2e-test-stack', request);
+      await login(page);
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupCollection('e2e-test-stack', request);
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('should load the editor and visualize configuration', async ({ page }) => {

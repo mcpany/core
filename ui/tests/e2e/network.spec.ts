@@ -4,17 +4,21 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, seedTraffic, cleanupServices } from './test-data';
+import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './test-data';
+import { login } from './auth-helper';
 
 test.describe('Network Topology', () => {
   test.beforeEach(async ({ page, request }) => {
+      await seedUser(request, "e2e-admin");
       await seedServices(request);
       await seedTraffic(request);
+      await login(page);
       await page.goto('/network');
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('should display network topology nodes', async ({ page }) => {
@@ -24,8 +28,8 @@ test.describe('Network Topology', () => {
     // Check for nodes
     // The graph might take a moment to render
     await expect(page.locator('.react-flow').getByText('MCP Any').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('.react-flow').getByText('Payment Gateway New').first()).toBeVisible();
-    await expect(page.locator('.react-flow').getByText('User Service New').first()).toBeVisible();
+    await expect(page.locator('.react-flow').getByText('Payment Gateway').first()).toBeVisible();
+    await expect(page.locator('.react-flow').getByText('User Service').first()).toBeVisible();
 
     // Verify interaction
     await page.locator('.react-flow').getByText('MCP Any').first().click();

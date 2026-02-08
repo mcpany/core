@@ -4,9 +4,20 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { login } from '../auth-helper';
+import { seedUser, cleanupUser } from './test-data';
 
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
+
+    test.beforeEach(async ({ page, request }) => {
+        await seedUser(request, "e2e-admin");
+        await login(page);
+    });
+
+    test.afterEach(async ({ request }) => {
+        await cleanupUser(request, "e2e-admin");
+    });
 
     test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
@@ -32,7 +43,8 @@ test.describe('Dashboard Real Data', () => {
         const seedRes = await request.post('/api/v1/debug/seed_traffic', {
             data: trafficPoints,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
             }
         });
         expect(seedRes.ok()).toBeTruthy();
@@ -41,7 +53,9 @@ test.describe('Dashboard Real Data', () => {
         await page.goto('/');
 
         // Debug: Fetch traffic data directly to verify backend state
-        const trafficRes = await request.get('/api/v1/dashboard/traffic');
+        const trafficRes = await request.get('/api/v1/dashboard/traffic', {
+             headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+        });
         expect(trafficRes.ok()).toBeTruthy();
         const trafficData = await trafficRes.json();
         console.log('DEBUG: Traffic Data:', JSON.stringify(trafficData));
@@ -108,7 +122,10 @@ test.describe('Dashboard Real Data', () => {
          }
 
          const seedRes = await request.post('/api/v1/debug/seed_traffic', {
-             data: trafficPoints
+             data: trafficPoints,
+             headers: {
+                'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
+             }
          });
          expect(seedRes.ok()).toBeTruthy();
 
