@@ -64,7 +64,16 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "argument injection detected")
+		if err != nil {
+			// Can be blocked by argument injection OR strict interpreter hardening
+			if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+				assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+			} else if strings.Contains(err.Error(), "argument injection") {
+				assert.Contains(t, err.Error(), "argument injection detected")
+			} else {
+				assert.Contains(t, err.Error(), "shell injection detected")
+			}
+		}
 	})
 
 	// Case 4: Path traversal

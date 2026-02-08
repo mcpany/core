@@ -67,31 +67,32 @@ func IdentifyDangerousInterpreterArgs(command string, args []string) map[int]boo
 	var config interpreterConfig
 	found := false
 
-	if strings.HasPrefix(base, "python") {
+	switch {
+	case strings.HasPrefix(base, "python"):
 		config = interpreters["python"]
 		found = true
-	} else if strings.HasPrefix(base, "ruby") {
+	case strings.HasPrefix(base, "ruby"):
 		config = interpreters["ruby"]
 		found = true
-	} else if strings.HasPrefix(base, "perl") {
+	case strings.HasPrefix(base, "perl"):
 		config = interpreters["perl"]
 		found = true
-	} else if strings.HasPrefix(base, "node") || base == "nodejs" || base == "bun" || base == "deno" {
+	case strings.HasPrefix(base, "node") || base == "nodejs" || base == "bun" || base == "deno":
 		config = interpreters["node"]
 		found = true
-	} else if strings.HasPrefix(base, "php") {
+	case strings.HasPrefix(base, "php"):
 		config = interpreters["php"]
 		found = true
-	} else if strings.HasPrefix(base, "lua") {
+	case strings.HasPrefix(base, "lua"):
 		config = interpreters["lua"]
 		found = true
-	} else if isShell(base) {
+	case isShell(base):
 		config = interpreters["shell"]
 		found = true
-	} else if strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk") {
+	case strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk"):
 		config = interpreters["awk"]
 		found = true
-	} else if base == "sed" || base == "gsed" {
+	case base == "sed" || base == "gsed":
 		config = interpreters["sed"]
 		found = true
 	}
