@@ -5,7 +5,7 @@ The `mcpany` server supports flexible authentication mechanisms.
 
 ## Configuration
 
-Incoming authentication is configured under `authentication`. Outgoing authentication is configured under `upstream_authentication`.
+Incoming authentication is configured under `authentication`. Outgoing authentication is configured under `upstream_auth`.
 
 ### Incoming Authentication
 
@@ -28,7 +28,7 @@ To authenticate with an upstream service:
 ```yaml
 upstream_services:
   - name: "secure-upstream"
-    upstream_authentication:
+    upstream_auth:
       bearer_token:
         token:
           environment_variable: "UPSTREAM_TOKEN"
@@ -67,7 +67,7 @@ upstream_services:
           http:
              endpoint_path: "/json"
              method: "GET"
-    upstream_authentication:
+    upstream_auth:
       bearer_token:
         token:
           environment_variable: "IPINFO_API_KEY"
