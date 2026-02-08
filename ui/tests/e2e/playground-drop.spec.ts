@@ -34,17 +34,15 @@ test.describe('Playground Smart File Drop', () => {
                         }
                     ]
                 }
-            },
-            headers: { 'X-API-Key': 'test-token' } // Use consistent API key if possible, or assume none for dev
+            }
+            // Headers are handled by playwright.config.ts extraHTTPHeaders
         });
         expect(res.ok()).toBeTruthy();
     });
 
     test.afterAll(async ({ request }) => {
         try {
-            await request.delete('/api/v1/services/ImageProcessor', {
-                headers: { 'X-API-Key': 'test-token' }
-            });
+            await request.delete('/api/v1/services/ImageProcessor');
         } catch (e) {
             console.error('Failed to cleanup test service:', e);
         }
