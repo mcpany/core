@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y curl unzip && \
     find /usr/local/include/google/protobuf -name "*.proto" -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/app/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/usr/local/include {} + && \
     find /app/proto/google/api -name "*.proto" -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/app/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/app/proto {} + && \
     find /app/proto -name "*.proto" -not -path "/app/proto/google/*" -type f -exec sed -i '/google\/protobuf\/go_features.proto/d' {} + && \
-    find /app/proto -name "*.proto" -not -path "/app/proto/google/*" -type f -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=/app/proto --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/app/proto --proto_path=/usr/local/include {} +
+    find /app/proto -name "*.proto" -not -path "/app/proto/google/*" -type f -exec protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=. --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web --proto_path=/app --proto_path=/app/proto --proto_path=/usr/local/include {} +
 
 # Update tsconfig to use local proto path
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
