@@ -43,6 +43,10 @@ test.describe('Upstream Service Detail Page', () => {
     // Navigate to Settings tab where the editor is located
     await page.getByRole('tab', { name: 'Settings' }).click();
 
+    // Wait for the ServiceEditor to load by checking for its default tab "General"
+    // This ensures we don't try to find "Connection" before the inner Tabs component is mounted
+    await expect(page.getByRole('tab', { name: 'General' })).toBeVisible();
+
     await expect(page.getByRole('tab', { name: 'Connection' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Policies' })).toBeVisible();
 
