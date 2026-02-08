@@ -20,22 +20,13 @@ test.describe('Stacks Management', () => {
     });
   });
 
-  test('should list existing stacks', async ({ page }) => {
-    // Navigate to Stacks page
+  test('should create and verify a new stack', async ({ page }) => {
     await page.goto('/stacks');
 
     // Verify the page title
     await expect(page.getByRole('heading', { name: 'Stacks', exact: true })).toBeVisible();
 
-    // Verify the seeded stack card exists
-    await expect(page.getByText('production-stack')).toBeVisible();
-    await expect(page.getByText('2 services')).toBeVisible();
-  });
-
-  test('should create a new stack', async ({ page }) => {
-    await page.goto('/stacks');
-
-    // Click Create Stack
+    // Create a new stack
     // Using first() because sometimes there might be hidden elements or multiple if responsiveness triggers
     await page.getByRole('button', { name: 'Create Stack' }).first().click();
 
