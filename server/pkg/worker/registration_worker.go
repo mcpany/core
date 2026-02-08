@@ -64,17 +64,47 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
 	log.Info("Service registration worker started")
 
+	// 1. Get all buses first to handle errors cleanly
 	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, bus.ServiceRegistrationRequestTopic)
 	if err != nil {
 		log.Error("Failed to get service registration request bus", "error", err)
+		w.wg.Done()
 		return
 	}
 	resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
 	if err != nil {
 		log.Error("Failed to get service registration result bus", "error", err)
+		w.wg.Done()
 		return
 	}
 
+	listRequestBus, err := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
+	if err != nil {
+		log.Error("Failed to get service list request bus", "error", err)
+		w.wg.Done()
+		return
+	}
+	listResultBus, err := bus.GetBus[*bus.ServiceListResult](w.bus, bus.ServiceListResultTopic)
+	if err != nil {
+		log.Error("Failed to get service list result bus", "error", err)
+		w.wg.Done()
+		return
+	}
+
+	getRequestBus, err := bus.GetBus[*bus.ServiceGetRequest](w.bus, bus.ServiceGetRequestTopic)
+	if err != nil {
+		log.Error("Failed to get service get request bus", "error", err)
+		w.wg.Done()
+		return
+	}
+	getResultBus, err := bus.GetBus[*bus.ServiceGetResult](w.bus, bus.ServiceGetResultTopic)
+	if err != nil {
+		log.Error("Failed to get service get result bus", "error", err)
+		w.wg.Done()
+		return
+	}
+
+	// 2. Subscribe to topics
 	unsubscribe := requestBus.Subscribe(ctx, "request", func(req *bus.ServiceRegistrationRequest) {
 		// Process registration in a separate goroutine to prevent blocking other registrations
 		go func() {
@@ -170,17 +200,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		}()
 	})
 
-	listRequestBus, err := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
-	if err != nil {
-		log.Error("Failed to get service list request bus", "error", err)
-		return
-	}
-	listResultBus, err := bus.GetBus[*bus.ServiceListResult](w.bus, bus.ServiceListResultTopic)
-	if err != nil {
-		log.Error("Failed to get service list result bus", "error", err)
-		return
-	}
-
 	listUnsubscribe := listRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceListRequest) {
 		// Panic recovery for list request processing
 		defer func() {
@@ -207,17 +226,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			log.Error("Failed to publish list result", "error", err)
 		}
 	})
-
-	getRequestBus, err := bus.GetBus[*bus.ServiceGetRequest](w.bus, bus.ServiceGetRequestTopic)
-	if err != nil {
-		log.Error("Failed to get service get request bus", "error", err)
-		return
-	}
-	getResultBus, err := bus.GetBus[*bus.ServiceGetResult](w.bus, bus.ServiceGetResultTopic)
-	if err != nil {
-		log.Error("Failed to get service get result bus", "error", err)
-		return
-	}
 
 	getUnsubscribe := getRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceGetRequest) {
 		// Panic recovery for get request processing
@@ -264,6 +272,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		}
 	})
 
+	// 3. Start cleanup goroutine
 	go func() {
 		defer w.wg.Done()
 		<-ctx.Done()
