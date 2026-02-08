@@ -6,10 +6,12 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -281,6 +283,84 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// Logs
+
+// SaveLog saves a log entry.
+func (s *Store) SaveLog(ctx context.Context, entry logging.LogEntry) error {
+	metadataJSON, err := json.Marshal(entry.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+
+	query := `
+	INSERT INTO logs (id, timestamp, level, message, source, metadata_json)
+	VALUES (?, ?, ?, ?, ?, ?)
+	`
+	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Message, entry.Source, string(metadataJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save log: %w", err)
+	}
+	return nil
+}
+
+// GetLogs retrieves recent logs.
+func (s *Store) GetLogs(ctx context.Context, limit int, offset int) ([]logging.LogEntry, error) {
+	query := `
+	SELECT id, timestamp, level, message, source, metadata_json
+	FROM logs
+	ORDER BY timestamp DESC
+	LIMIT ? OFFSET ?
+	`
+	rows, err := s.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query logs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []logging.LogEntry
+	if limit > 0 && limit < 10000 {
+		logs = make([]logging.LogEntry, 0, limit)
+	}
+
+	for rows.Next() {
+		var (
+			id, timestamp, level, message string
+			source                        sql.NullString
+			metadataJSON                  string
+		)
+		if err := rows.Scan(&id, &timestamp, &level, &message, &source, &metadataJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan log: %w", err)
+		}
+
+		var metadata map[string]any
+		if metadataJSON != "" {
+			if err := json.Unmarshal([]byte(metadataJSON), &metadata); err != nil {
+				// We ignore metadata unmarshal errors to avoid breaking the log stream
+			}
+		}
+
+		logs = append(logs, logging.LogEntry{
+			ID:        id,
+			Timestamp: timestamp,
+			Level:     level,
+			Message:   message,
+			Source:    source.String,
+			Metadata:  metadata,
+		})
+	}
+
+	// Reverse logs to be chronological (Oldest -> Newest)
+	for i, j := 0, len(logs)-1; i < j; i, j = i+1, j-1 {
+		logs[i], logs[j] = logs[j], logs[i]
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return logs, nil
 }
 
 // GetService retrieves an upstream service configuration by name.
