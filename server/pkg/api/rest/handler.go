@@ -74,6 +74,9 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		// Skip schema validation in the engine since we already performed it above
 		if configurable, ok := engine.(config.ConfigurableEngine); ok {
 			configurable.SetSkipValidation(true)
+			// Ignore environment variables and --set overrides during validation
+			// to prevent information leakage and misleading validation results.
+			configurable.SetIgnoreEnv(true)
 		}
 
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
