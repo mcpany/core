@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ToolSidebar } from './tool-sidebar';
 import { ExtendedToolDefinition } from '@/lib/client';
