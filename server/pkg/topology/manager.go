@@ -361,7 +361,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 			// If p.Timestamp is huge (e.g. > 10^11), it's likely ms.
 			ts := p.Timestamp
 			if ts > 100000000000 {
-				ts = ts / 1000
+				ts /= 1000
 			}
 			targetTime = time.Unix(ts, 0).Truncate(time.Minute)
 		} else {
