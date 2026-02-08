@@ -251,11 +251,15 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 })
 LogRow.displayName = 'LogRow'
 
+interface LogStreamProps {
+  source?: string;
+}
+
 /**
  * LogStream component.
  * @returns The rendered component.
  */
-export function LogStream() {
+export function LogStream({ source: propSource }: LogStreamProps = {}) {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -267,7 +271,8 @@ export function LogStream() {
   }, [isPaused])
 
   const searchParams = useSearchParams()
-  const initialSource = searchParams.get("source") || "ALL"
+  // Use prop if available, otherwise fallback to URL param, otherwise "ALL"
+  const initialSource = propSource || searchParams.get("source") || "ALL"
 
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)

@@ -10,9 +10,14 @@ import { useParams, useRouter } from "next/navigation";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Trash2 } from "lucide-react";
+import { Loader2, ArrowLeft, Trash2, Settings, Monitor, Wrench, FileText, Terminal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
+import { ServiceOverview } from "@/components/services/service-overview";
+import { ServiceTools } from "@/components/services/service-tools";
+import { ServiceResources } from "@/components/services/service-resources";
+import { LogStream } from "@/components/logs/log-stream";
 
 /**
  * UpstreamServiceDetailPage component.
@@ -26,6 +31,7 @@ export default function UpstreamServiceDetailPage() {
 
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("overview");
 
     // Fetch Service
     useEffect(() => {
@@ -106,14 +112,54 @@ export default function UpstreamServiceDetailPage() {
                 </div>
             </div>
 
-            {/* Content - ServiceEditor takes full height of container */}
-            <div className="flex-1 overflow-hidden">
-                <ServiceEditor
-                    service={service}
-                    onChange={setService}
-                    onSave={handleSave}
-                    onCancel={() => router.push("/upstream-services")}
-                />
+            {/* Content */}
+            <div className="flex-1 overflow-hidden flex flex-col">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+                    <div className="border-b px-4 bg-background">
+                        <TabsList className="bg-transparent h-12">
+                            <TabsTrigger value="overview" className="data-[state=active]:bg-muted/50 data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-12 px-4">
+                                <Monitor className="mr-2 h-4 w-4" /> Overview
+                            </TabsTrigger>
+                            <TabsTrigger value="tools" className="data-[state=active]:bg-muted/50 data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-12 px-4">
+                                <Wrench className="mr-2 h-4 w-4" /> Tools
+                            </TabsTrigger>
+                            <TabsTrigger value="resources" className="data-[state=active]:bg-muted/50 data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-12 px-4">
+                                <FileText className="mr-2 h-4 w-4" /> Resources
+                            </TabsTrigger>
+                            <TabsTrigger value="logs" className="data-[state=active]:bg-muted/50 data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-12 px-4">
+                                <Terminal className="mr-2 h-4 w-4" /> Logs
+                            </TabsTrigger>
+                            <TabsTrigger value="settings" className="data-[state=active]:bg-muted/50 data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-12 px-4">
+                                <Settings className="mr-2 h-4 w-4" /> Settings
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto bg-muted/5">
+                        <TabsContent value="overview" className="p-6 m-0 h-full">
+                            <ServiceOverview service={service} />
+                        </TabsContent>
+                        <TabsContent value="tools" className="p-6 m-0 h-full">
+                            <ServiceTools service={service} />
+                        </TabsContent>
+                        <TabsContent value="resources" className="p-6 m-0 h-full">
+                            <ServiceResources service={service} />
+                        </TabsContent>
+                        <TabsContent value="logs" className="p-0 m-0 h-full flex flex-col">
+                            <div className="p-4 h-full">
+                                <LogStream source={service.name} />
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="settings" className="p-0 m-0 h-full">
+                             <ServiceEditor
+                                service={service}
+                                onChange={setService}
+                                onSave={handleSave}
+                                onCancel={() => setActiveTab("overview")}
+                            />
+                        </TabsContent>
+                    </div>
+                </Tabs>
             </div>
         </div>
     );

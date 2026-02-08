@@ -39,6 +39,10 @@ test.describe('Upstream Service Detail Page', () => {
     // 3. Verify ServiceEditor tabs are present (Evidence that ServiceEditor is used)
     // The old page had tabs: Overview, Config, Auth, Webhooks
     // The ServiceEditor has: General, Connection, Authentication, Policies, Advanced
+
+    // Navigate to Settings tab where the editor is located
+    await page.getByRole('tab', { name: 'Settings' }).click();
+
     await expect(page.getByRole('tab', { name: 'Connection' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Policies' })).toBeVisible();
 
