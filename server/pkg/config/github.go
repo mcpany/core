@@ -108,27 +108,19 @@ func (g *GitHub) ToRawContentURL() string {
 }
 
 // Content represents a file or directory in a GitHub repository.
+//
+// Fields:
+//   - Name: string. The name of the file or directory.
+//   - Type: string. The type of content (e.g., "file", "dir").
+//   - HTMLURL: string. The URL to view the content on GitHub.
+//   - DownloadURL: string. The URL to download the content (only for files).
 type Content struct {
-	// Name is the name of the file or directory.
-	Name string `json:"name"`
-	// Type is the type of content (e.g., "file", "dir").
-	Type string `json:"type"`
-	// HTMLURL is the URL to view the content on GitHub.
-	HTMLURL string `json:"html_url"`
-	// DownloadURL is the URL to download the content (only for files).
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	HTMLURL     string `json:"html_url"`
 	DownloadURL string `json:"download_url"`
 }
 
-// List fetches the contents of the configured GitHub path. It handles authentication
-// if provided and returns a list of Content objects.
-//
-// Parameters:
-//   - ctx: The context for the request.
-//   - auth: Optional authentication configuration for accessing private repos.
-//
-// Returns:
-//   - A slice of Content objects.
-//   - An error if the fetch fails.
 // List fetches the contents of the configured GitHub path. It handles authentication
 // if provided and returns a list of Content objects.
 //

@@ -2,17 +2,17 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Project Identity
+## Project Identity
 
 **What is this project and why does it exist?**
 
 **MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. **MCP Any** solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Quick Start
+## Quick Start
 
 Follow these steps to get up and running immediately.
 
@@ -58,7 +58,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 3. Developer Workflow
+## Developer Workflow
 
 We follow a strict development workflow to ensure quality.
 
@@ -94,7 +94,7 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
-## 4. Architecture
+## Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
@@ -127,7 +127,7 @@ graph TD
 *   **Configuration as Code**: All services are defined in declarative YAML/JSON.
 *   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
-## 5. Configuration
+## Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files for services.
 

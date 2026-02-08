@@ -9,6 +9,10 @@ import (
 )
 
 // ActionableError is an error that includes a suggestion for fixing the issue.
+//
+// Fields:
+//   - Err: error. The underlying error.
+//   - Suggestion: string. A user-friendly suggestion for resolving the error.
 type ActionableError struct {
 	Err        error
 	Suggestion string
