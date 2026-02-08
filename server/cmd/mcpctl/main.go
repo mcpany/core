@@ -17,7 +17,9 @@ import (
 
 var (
 	// Version is the version of the mcpctl CLI.
-	// It is set at build time via -ldflags.
+	//
+	// Summary:
+	//   Current version of the CLI tool, set at build time via -ldflags.
 	Version = "dev"
 )
 

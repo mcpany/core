@@ -32,7 +32,10 @@ import (
 )
 
 var (
-	// Version is set at build time.
+	// Version is the version of the server.
+	//
+	// Summary:
+	//   Current version of the server, set at build time.
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )
