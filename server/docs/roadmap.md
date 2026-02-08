@@ -34,7 +34,6 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 | 6    | **Dynamic Secret Rotation**         | **Security**: Integration with Vault/AWS Secrets Manager.                  | High       |
 | 7    | **Downstream mTLS**                 | **Security**: Zero Trust for agents.                                       | Medium     |
 | 8    | **Just-In-Time (JIT) Access**       | **Security**: Temporary privilege elevation.                               | High       |
-| 9    | **Audit Log Export**                | **Compliance**: Real-time push to Splunk/Datadog.                          | Medium     |
 | 10   | **Cost Attribution**                | **Observability**: Track token usage/cost per user.                        | Medium     |
 
 ### Feature Gap & Technical Feasibility

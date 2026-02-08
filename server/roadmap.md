@@ -38,6 +38,8 @@
   - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
 - **Context Optimizer Middleware**
   - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+- **Audit Logging (Splunk/Datadog)**
+  - **Description**: Implements audit logging with support for exporting to Splunk HEC and Datadog Logs.
 
 ## 2. Updated Roadmap
 
