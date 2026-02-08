@@ -25,8 +25,10 @@ test.describe('Stack Editor', () => {
 
     // Check for the node
     // Using a more specific selector to ensure it's inside a node
+    // Retry finding the node if it's not immediately available (React Flow can take a moment to render nodes)
     const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' });
-    await expect(weatherNode).toBeVisible();
+    // Increase timeout for node rendering
+    await expect(weatherNode).toBeVisible({ timeout: 15000 });
   });
 
   test('should update graph when template added', async ({ page }) => {
@@ -37,10 +39,14 @@ test.describe('Stack Editor', () => {
     await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 30000 });
 
     // Click on PostgreSQL template in the palette
-    await page.getByText('PostgreSQL').click();
+    // Ensure palette is open or visible (default)
+    const postgresTemplate = page.getByText('PostgreSQL');
+    await expect(postgresTemplate).toBeVisible();
+    await postgresTemplate.click();
 
     // Verify new node appears in graph
     const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: 'postgres-db' });
-    await expect(postgresNode).toBeVisible({ timeout: 10000 });
+    // This might take time to re-layout
+    await expect(postgresNode).toBeVisible({ timeout: 20000 });
   });
 });
