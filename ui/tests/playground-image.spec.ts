@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Playground Image Rendering', () => {
