@@ -1,8 +1,6 @@
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 # Rate Limit Tutorial Configuration
 # Run with: mcp-any --config ./docs/features/rate-limiting/tutorial_config.yaml
+
 upstream_services:
   - name: "httpbin-rate-limited"
     http_service:
