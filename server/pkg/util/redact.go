@@ -590,11 +590,6 @@ func RedactDSN(dsn string) string {
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
-// redactInterval represents a range of text to be redacted.
-type redactInterval struct {
-	start, end int
-}
-
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 //
 // Parameters:
@@ -608,71 +603,35 @@ func RedactSecrets(text string, secrets []string) string {
 		return text
 	}
 
-	// ⚡ BOLT: Optimization - Use interval merging instead of O(N) boolean mask.
+	// ⚡ BOLT: Optimization - Use strings.Replacer for O(T) replacement instead of O(S*T).
 	// Randomized Selection from Top 5 High-Impact Targets
-	var intervals []redactInterval
+	// We sort secrets by length descending to ensure longer matches are prioritized
+	// (e.g. "accesstoken" is redacted before "token").
 
-	for _, secret := range secrets {
-		if secret == "" {
-			continue
-		}
-
-		start := 0
-		for {
-			idx := strings.Index(text[start:], secret)
-			if idx == -1 {
-				break
-			}
-			absoluteIdx := start + idx
-			end := absoluteIdx + len(secret)
-			intervals = append(intervals, redactInterval{start: absoluteIdx, end: end})
-			// Advance by 1 to find overlapping instances of the *same* secret
-			// (e.g. "ababa" with secret "aba" -> match at 0 [0,3), next search starts at 1, finds match at 2 [2,5)).
-			start = absoluteIdx + 1
+	// Filter valid secrets and deduplicate
+	seen := make(map[string]bool)
+	validSecrets := make([]string, 0, len(secrets))
+	for _, s := range secrets {
+		if s != "" && !seen[s] {
+			validSecrets = append(validSecrets, s)
+			seen[s] = true
 		}
 	}
 
-	if len(intervals) == 0 {
+	if len(validSecrets) == 0 {
 		return text
 	}
 
-	// Sort intervals by start position
-	sort.Slice(intervals, func(i, j int) bool {
-		return intervals[i].start < intervals[j].start
+	// Sort by length descending to handle substring matches correctly
+	sort.Slice(validSecrets, func(i, j int) bool {
+		return len(validSecrets[i]) > len(validSecrets[j])
 	})
 
-	// Merge overlapping or adjacent intervals
-	var merged []redactInterval
-	if len(intervals) > 0 {
-		current := intervals[0]
-		for i := 1; i < len(intervals); i++ {
-			next := intervals[i]
-			// If overlaps or touches (next.start <= current.end)
-			// Touching intervals (e.g. [0,3) and [3,6)) should be merged into one [0,6)
-			// so they result in a single [REDACTED] placeholder.
-			if next.start <= current.end {
-				if next.end > current.end {
-					current.end = next.end
-				}
-			} else {
-				merged = append(merged, current)
-				current = next
-			}
-		}
-		merged = append(merged, current)
+	// Build args for Replacer
+	args := make([]string, 0, len(validSecrets)*2)
+	for _, s := range validSecrets {
+		args = append(args, s, redactedPlaceholder)
 	}
 
-	// Build result string
-	var sb strings.Builder
-	sb.Grow(len(text))
-
-	lastIdx := 0
-	for _, interval := range merged {
-		sb.WriteString(text[lastIdx:interval.start])
-		sb.WriteString(redactedPlaceholder)
-		lastIdx = interval.end
-	}
-	sb.WriteString(text[lastIdx:])
-
-	return sb.String()
+	return strings.NewReplacer(args...).Replace(text)
 }
