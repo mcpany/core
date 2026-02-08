@@ -46,6 +46,18 @@ func isCompressible(contentType string) bool {
 	return false
 }
 
+// ⚡ BOLT: Buffer pool to reduce allocations for small responses.
+// Randomized Selection from Top 5 High-Impact Targets.
+type pooledBuffer struct {
+	data []byte
+}
+
+var byteBufferPool = sync.Pool{
+	New: func() interface{} {
+		return &pooledBuffer{data: make([]byte, 0, minSize)}
+	},
+}
+
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
 // It checks the Accept-Encoding header and only compresses if the client supports gzip.
 // It also checks the Content-Type to ensure we only compress compressible types.
@@ -69,10 +81,13 @@ func GzipCompressionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		pb := byteBufferPool.Get().(*pooledBuffer)
+		pb.data = pb.data[:0]
+
 		gzw := &gzipResponseWriter{
 			ResponseWriter: w,
 			pool:           &pool,
-			buf:            make([]byte, 0, minSize),
+			buf:            pb,
 			code:           http.StatusOK, // Default status code
 		}
 		defer gzw.Close()
@@ -88,7 +103,7 @@ type gzipResponseWriter struct {
 
 	headerWritten bool
 	code          int
-	buf           []byte
+	buf           *pooledBuffer
 }
 
 // Write writes the data to the connection as part of an HTTP reply.
@@ -105,10 +120,10 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	}
 
 	// Otherwise, buffer the data
-	w.buf = append(w.buf, b...)
+	w.buf.data = append(w.buf.data, b...)
 
 	// Check if we crossed the threshold
-	if len(w.buf) >= minSize {
+	if len(w.buf.data) >= minSize {
 		// Flush buffer and start gzipping
 		if err := w.flushBuffer(true); err != nil {
 			return 0, err
@@ -145,24 +160,24 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	if w.headerWritten && w.writer == nil && startGzip {
 		// This shouldn't happen if logic is correct, but safety check.
 		// If headers were already written as raw, we can't switch to gzip.
-		_, err := w.ResponseWriter.Write(w.buf)
+		_, err := w.ResponseWriter.Write(w.buf.data)
 		return err
 	}
-    if w.headerWritten {
-        return nil
-    }
+	if w.headerWritten {
+		return nil
+	}
 
 	w.headerWritten = true
 
-    // Ensure Content-Type is set if missing
-    if w.Header().Get("Content-Type") == "" {
-        // Use the first 512 bytes of buffer for detection
-        detectBuf := w.buf
-        if len(detectBuf) > 512 {
-            detectBuf = detectBuf[:512]
-        }
-        w.Header().Set("Content-Type", http.DetectContentType(detectBuf))
-    }
+	// Ensure Content-Type is set if missing
+	if w.Header().Get("Content-Type") == "" {
+		// Use the first 512 bytes of buffer for detection
+		detectBuf := w.buf.data
+		if len(detectBuf) > 512 {
+			detectBuf = detectBuf[:512]
+		}
+		w.Header().Set("Content-Type", http.DetectContentType(detectBuf))
+	}
 
 	if startGzip {
 		w.Header().Del("Content-Length")
@@ -173,21 +188,23 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 		w.writer = w.pool.Get().(*gzip.Writer)
 		w.writer.Reset(w.ResponseWriter)
 
-		if len(w.buf) > 0 {
-			_, err := w.writer.Write(w.buf)
-			w.buf = nil // Release memory
+		if len(w.buf.data) > 0 {
+			_, err := w.writer.Write(w.buf.data)
+			byteBufferPool.Put(w.buf) // Return to pool
+			w.buf = nil               // Release reference
 			return err
 		}
-        return nil
+		return nil
 	}
 
 	w.ResponseWriter.WriteHeader(w.code)
-	if len(w.buf) > 0 {
-		_, err := w.ResponseWriter.Write(w.buf)
+	if len(w.buf.data) > 0 {
+		_, err := w.ResponseWriter.Write(w.buf.data)
+		byteBufferPool.Put(w.buf) // Return to pool
 		w.buf = nil
-        return err
+		return err
 	}
-    return nil
+	return nil
 }
 
 // Close closes the gzip writer and returns it to the pool.
@@ -197,18 +214,24 @@ func (w *gzipResponseWriter) Close() {
 		_ = w.writer.Close()
 		w.pool.Put(w.writer)
 		w.writer = nil
-        return
+		return
 	}
 
-    // If headers haven't been written, it means we are still buffering (Small Response).
-    if !w.headerWritten {
-        // We are at the end, so we know the total size = len(w.buf).
-        // Set Content-Length optimization.
-        if w.Header().Get("Content-Type") == "" {
-             w.Header().Set("Content-Type", http.DetectContentType(w.buf))
-        }
-        w.Header().Set("Content-Length", strconv.Itoa(len(w.buf)))
-    }
+	// If headers haven't been written, it means we are still buffering (Small Response).
+	if !w.headerWritten {
+		// We are at the end, so we know the total size = len(w.buf).
+		// Set Content-Length optimization.
+		if w.Header().Get("Content-Type") == "" {
+			w.Header().Set("Content-Type", http.DetectContentType(w.buf.data))
+		}
+		w.Header().Set("Content-Length", strconv.Itoa(len(w.buf.data)))
+	}
 
 	_ = w.flushBuffer(false)
+
+	// In case flushBuffer didn't run or didn't clear buf
+	if w.buf != nil {
+		byteBufferPool.Put(w.buf)
+		w.buf = nil
+	}
 }

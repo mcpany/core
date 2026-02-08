@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sync"
 
@@ -17,6 +18,7 @@ import (
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
+	out  io.Writer
 }
 
 // NewFileAuditStore creates a new FileAuditStore.
@@ -39,6 +41,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	}
 	return &FileAuditStore{
 		file: f,
+		out:  os.Stdout,
 	}, nil
 }
 
@@ -52,11 +55,11 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	var w *os.File
+	var w io.Writer
 	if s.file != nil {
 		w = s.file
 	} else {
-		w = os.Stdout
+		w = s.out
 	}
 
 	return json.NewEncoder(w).Encode(entry)
