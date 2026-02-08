@@ -4,13 +4,19 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { login } from './e2e/auth-helper';
+import { seedUser, cleanupUser } from './e2e/test-data';
+
+test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin");
+    await login(page);
+});
+
+test.afterEach(async ({ request }) => {
+    await cleanupUser(request, "e2e-admin");
+});
 
 test('Upstream Service Editor Diff Tab', async ({ page }) => {
-    // Mock API
-    await page.route('/api/v1/services', async route => {
-        await route.fulfill({ json: { services: [] } });
-    });
-
     // Navigate to upstream services
     await page.goto('/upstream-services');
 

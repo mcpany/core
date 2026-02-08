@@ -3,54 +3,45 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
+import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { login } from './e2e/auth-helper';
 
-test('Tools page loads and inspector opens', async ({ page }) => {
-  // Mock tools endpoint
-  await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-    await route.fulfill({
-      json: {
-        tools: [
-          {
-            name: 'get_weather',
-            description: 'Get weather for a location',
-            source: 'configured',
-            serviceId: 'weather-service',
-            inputSchema: {
-               type: "object",
-               properties: {
-                 location: { type: "string" }
-               }
-            }
-          }
-        ]
-      }
+test.describe('Tool Inspector', () => {
+    test.beforeEach(async ({ request, page }) => {
+        await seedUser(request, "e2e-admin");
+        await seedServices(request);
+        await login(page);
     });
-  });
 
-  await page.goto('/tools');
+    test.afterEach(async ({ request }) => {
+        await cleanupServices(request);
+        await cleanupUser(request, "e2e-admin");
+    });
 
-  // Check if tools are listed
-  await expect(page.getByText('get_weather')).toBeVisible();
+    test('Tools page loads and inspector opens', async ({ page }) => {
+        await page.goto('/tools');
 
-  // Open inspector for get_weather
-  await page.locator('tr').filter({ hasText: 'get_weather' }).getByText('Inspect').click();
+        // Check if calculator tool is listed
+        await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 30000 });
 
-  // Check if inspector sheet is open (Wait for title)
-  await expect(page.getByText('get_weather').first()).toBeVisible();
+        // Open inspector for calculator
+        const row = page.locator('tr').filter({ hasText: 'calculator' });
+        await row.getByText('Inspect').click();
 
-  // Check if schema is displayed (using the new Sheet layout)
-  await expect(page.getByText('Schema', { exact: true })).toBeVisible();
+        // Check if inspector sheet is open
+        await expect(page.getByRole('heading', { name: 'calculator' })).toBeVisible();
 
-  // Switch to JSON tab to verify raw schema
-  await page.getByRole('tab', { name: 'JSON' }).click();
+        // Check if schema is displayed
+        await expect(page.getByText('Schema', { exact: true })).toBeVisible();
 
-  // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
-  // We check for "location" property in the JSON view
-  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
-  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+        // Switch to JSON tab to verify raw schema
+        await page.getByRole('tab', { name: 'JSON' }).click();
 
-  // Verify service name is shown in details (Scoped to the sheet)
-  await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
+        // Check for standard schema properties
+        await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+
+        // Verify service name is shown in details
+        await expect(page.locator('div[role="dialog"]').getByText('Math New')).toBeVisible();
+    });
 });

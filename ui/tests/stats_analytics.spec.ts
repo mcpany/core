@@ -3,22 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
+import { login } from './e2e/auth-helper';
+import { seedUser, cleanupUser, seedTraffic } from './e2e/test-data';
+
+test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin");
+    await seedTraffic(request);
+    await login(page);
+});
+
+test.afterEach(async ({ request }) => {
+    await cleanupUser(request, "e2e-admin");
+});
 
 test('verify stats page', async ({ page }) => {
-  // Mock all API calls to ensure page loads even if backend is slow/down
-  await page.route('/api/v1/**', async route => {
-    const url = route.request().url();
-    if (url.includes('dashboard/traffic') || url.includes('tools/top')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
-    }
-  });
-
   // Go to the stats page
   await page.goto('/stats');
 

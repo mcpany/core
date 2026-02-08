@@ -4,16 +4,19 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection } from './e2e/test-data';
+import { seedCollection, cleanupCollection, seedUser, cleanupUser } from './e2e/test-data';
+import { login } from './e2e/auth-helper';
 
 test.describe('Stack Editor', () => {
-  test.beforeEach(async ({ request }) => {
+  test.beforeEach(async ({ request, page }) => {
+      await seedUser(request, "e2e-admin");
       await seedCollection('default-stack', request);
-      // Wait a bit for potential backend sync (though seedCollection awaits response)
+      await login(page);
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupCollection('default-stack', request);
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('should load the editor and show initial config in graph', async ({ page }) => {

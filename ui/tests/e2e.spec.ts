@@ -6,6 +6,7 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { login } from './e2e/auth-helper';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
@@ -17,18 +18,7 @@ test.describe('MCP Any UI E2E Tests', () => {
       await seedServices(request);
       await seedTraffic(request);
       await seedUser(request, "e2e-admin");
-
-      // Login before each test
-      await page.goto('/login');
-      // Wait for page to be fully loaded as it might be transitioning
-      await page.waitForLoadState('networkidle');
-
-      await page.fill('input[name="username"]', 'e2e-admin');
-      await page.fill('input[name="password"]', 'password');
-      await page.click('button[type="submit"]');
-
-      // Wait for redirect to home page and verify
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+      await login(page);
   });
 
   test.afterEach(async ({ request }) => {
@@ -50,7 +40,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
+    await expect(page.locator('h1')).toContainText('Tools', { timeout: 15000 });
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 

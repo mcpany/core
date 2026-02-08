@@ -141,6 +141,14 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
 
 export const seedUser = async (requestContext?: APIRequestContext, username: string = "e2e-admin") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
+    // First try to delete the user to ensure a clean state
+    try {
+        await context.delete(`/api/v1/users/${username}`, { headers: HEADERS }).catch(() => {});
+    } catch (e) {
+        // Ignore deletion errors
+    }
+
     const user = {
         id: username,
         authentication: {
@@ -153,7 +161,18 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         roles: ["admin"]
     };
     try {
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        const res = await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        if (!res.ok()) {
+            // Check if it failed because it already exists (race condition or persistence)
+            const text = await res.text();
+            if (!text.includes("already exists")) {
+                 console.log(`Failed to seed user: ${res.status()} ${text}`);
+            } else {
+                 // If it exists, we assume it's good (maybe from previous run)
+                 // But strictly we should have deleted it.
+                 console.log(`User already exists: ${text}`);
+            }
+        }
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
     }

@@ -40,13 +40,16 @@ test.describe('Agent Skills', () => {
     // Wait for creation API response
     const createPromise = page.waitForResponse(response =>
         response.url().includes('/api/v1/skills') &&
-        response.request().method() === 'POST' &&
-        (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        response.request().method() === 'POST'
     );
 
     await page.getByRole('button', { name: 'Create Skill' }).click();
-    await createPromise;
+    const response = await createPromise;
+
+    if (!response.ok()) {
+        console.log(`Create Skill failed: ${response.status()} ${await response.text()}`);
+    }
+    expect(response.ok()).toBeTruthy();
 
     // 5. Verify Redirect to List
     await expect(page).toHaveURL(/\/skills\/?$/);
@@ -74,12 +77,16 @@ test.describe('Agent Skills', () => {
 
     const createPromise = page.waitForResponse(response =>
         response.url().includes('/api/v1/skills') &&
-        response.request().method() === 'POST' &&
-        (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        response.request().method() === 'POST'
     );
     await page.getByRole('button', { name: 'Create Skill' }).click();
-    await createPromise;
+    const response = await createPromise;
+
+    if (!response.ok()) {
+        console.log(`Create Skill failed: ${response.status()} ${await response.text()}`);
+    }
+    expect(response.ok()).toBeTruthy();
+
     await expect(page).toHaveURL(/\/skills\/?$/);
 
     // Wait for list to sync

@@ -7,6 +7,9 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
 
+import { login } from './e2e/auth-helper';
+import { seedUser, cleanupUser } from './e2e/test-data';
+
 const DOCS_SCREENSHOTS_DIR = path.resolve(__dirname, '../docs/screenshots');
 
 if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
@@ -15,7 +18,10 @@ if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
 
 test.describe('Generate Detailed Docs Screenshots', () => {
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin");
+    await login(page);
+
     // Global mocks to ensure consistent state
     await page.route(/.*\/api\/v1\/services/, async route => {
         if (route.request().method() === 'GET') {
@@ -90,12 +96,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
-     // Mock Logs
-     // await page.route('**/api/v1/logs/stream**', async route => {
-     //     // This might be WS, but if HTTP fallback:
-     //     await route.fulfill({ json: [] });
-     // });
-
      // Mock Health Check to prevent connection error banner
      await page.route('**/healthz', async route => {
          await route.fulfill({ status: 200, body: 'ok' });
@@ -132,6 +132,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+  });
+
+  test.afterEach(async ({ request }) => {
+    await cleanupUser(request, "e2e-admin");
   });
 
   test('Dashboard Screenshots', async ({ page }) => {

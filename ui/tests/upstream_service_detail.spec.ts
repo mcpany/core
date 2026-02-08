@@ -4,14 +4,22 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { login } from './e2e/auth-helper';
+import { seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Upstream Service Detail Page', () => {
   const serviceName = 'e2e-detail-test-service';
 
-  test.beforeAll(async ({ request }) => {
-    // Seed the database with a test service
-    // Note: We must use /api/v1/services because that's what the middleware proxies
-    // and what the backend exposes (mounted at /api/v1/).
+  test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin");
+
+    // Seed test service with authentication
+    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
+
+    // Try clean up first
+    await request.delete(`/api/v1/services/${serviceName}`, { headers: HEADERS }).catch(() => {});
+
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
@@ -19,14 +27,19 @@ test.describe('Upstream Service Detail Page', () => {
             address: "http://example.com"
         },
         priority: 10
-      }
+      },
+      headers: HEADERS
     });
     expect(response.ok()).toBeTruthy();
+
+    await login(page);
   });
 
-  test.afterAll(async ({ request }) => {
-    // Clean up
-    await request.delete(`/api/v1/services/${serviceName}`);
+  test.afterEach(async ({ request }) => {
+    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
+    await request.delete(`/api/v1/services/${serviceName}`, { headers: HEADERS });
+    await cleanupUser(request, "e2e-admin");
   });
 
   test('should display ServiceEditor and save changes', async ({ page, request }) => {
@@ -36,15 +49,11 @@ test.describe('Upstream Service Detail Page', () => {
     // 2. Verify Page Title
     await expect(page.getByRole('heading', { level: 1 })).toContainText(serviceName);
 
-    // 3. Verify ServiceEditor tabs are present (Evidence that ServiceEditor is used)
-    // The old page had tabs: Overview, Config, Auth, Webhooks
-    // The ServiceEditor has: General, Connection, Authentication, Policies, Advanced
+    // 3. Verify ServiceEditor tabs are present
     await expect(page.getByRole('tab', { name: 'Connection' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Policies' })).toBeVisible();
 
     // 4. Modify a field
-    // Go to General tab (default) and change Priority
-    // Note: ServiceEditor defaults to "general" tab.
     const priorityInput = page.getByLabel('Priority');
     await expect(priorityInput).toBeVisible();
     await expect(priorityInput).toHaveValue('10');
@@ -56,12 +65,13 @@ test.describe('Upstream Service Detail Page', () => {
     await saveButton.click();
 
     // 6. Verify Toast/Feedback
-    // Use first() to avoid strict mode violation if multiple elements match (e.g. title and aria-live region)
     await expect(page.getByText('Service Updated').first()).toBeVisible();
     await expect(page.getByText('Configuration saved successfully').first()).toBeVisible();
 
-    // 7. Verify Persistence via API
-    const response = await request.get(`/api/v1/services/${serviceName}`);
+    // 7. Verify Persistence via API (requires auth)
+    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
+    const response = await request.get(`/api/v1/services/${serviceName}`, { headers: HEADERS });
     expect(response.ok()).toBeTruthy();
     const service = await response.json();
     expect(service.priority).toBe(5);

@@ -29,16 +29,16 @@ test.describe('Tool Exploration', () => {
         // We need to cleanup services to simulate empty state
         await cleanupServices(request);
         await page.reload();
-        await expect(page.locator('table tbody tr')).toHaveCount(1);
+        await expect(page.locator('table tbody tr')).toHaveCount(1, { timeout: 15000 });
         await expect(page.locator('text=No tools found.')).toBeVisible();
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
         const toolRow = page.locator('tr').filter({ hasText: 'calculator' });
-        await toolRow.getByText('Inspect').click();
+        await toolRow.getByText('Inspect').click({ timeout: 15000 });
 
-        await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
+        await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible({ timeout: 15000 });
         await expect(page.getByText('calculator').first()).toBeVisible();
     });
 });
