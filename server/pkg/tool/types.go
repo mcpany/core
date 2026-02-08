@@ -2706,14 +2706,11 @@ func isShellCommand(cmd string) bool {
 		// Additional shells/runners found missing
 		"busybox", "expect", "tclsh", "wish",
 		"irb", "php-cgi", "perl5",
-		"openssl", "git", "hg", "svn",
-		"wget", "curl", "nc", "netcat", "ncat",
-		"socat", "telnet",
 		// Editors and pagers that can execute commands
 		"vi", "vim", "nvim", "emacs", "nano",
 		"less", "more", "man",
 		// Build tools and others that can execute commands
-		"tar", "find", "xargs", "tee",
+		"find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
