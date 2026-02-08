@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"unicode/utf8"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -28,8 +29,9 @@ type MarkdownHandler struct{}
 // It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
 //
 // Parameters:
-//   w: The HTTP response writer.
-//   r: The HTTP request.
+//
+//	w: The HTTP response writer.
+//	r: The HTTP request.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -90,8 +92,9 @@ type TruncateHandler struct{}
 // Handle processes the text truncation request.
 //
 // Parameters:
-//   w: The HTTP response writer.
-//   r: The HTTP request.
+//
+//	w: The HTTP response writer.
+//	r: The HTTP request.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -158,8 +161,9 @@ type PaginateHandler struct{}
 // Handle processes the pagination request.
 //
 // Parameters:
-//   w: The HTTP response writer.
-//   r: The HTTP request.
+//
+//	w: The HTTP response writer.
+//	r: The HTTP request.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -222,6 +226,8 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 // Helpers
 
+// ⚡ BOLT: Optimized recursive handlers to use in-place modification and avoid heavy allocations.
+// Randomized Selection from Top 5 High-Impact Targets.
 func convertToMarkdown(converter *md.Converter, data any) any {
 	switch v := data.(type) {
 	case string:
@@ -234,17 +240,15 @@ func convertToMarkdown(converter *md.Converter, data any) any {
 		}
 		return res
 	case map[string]any:
-		newMap := make(map[string]any, len(v))
 		for k, val := range v {
-			newMap[k] = convertToMarkdown(converter, val)
+			v[k] = convertToMarkdown(converter, val)
 		}
-		return newMap
+		return v
 	case []any:
-		newSlice := make([]any, len(v))
 		for i, val := range v {
-			newSlice[i] = convertToMarkdown(converter, val)
+			v[i] = convertToMarkdown(converter, val)
 		}
-		return newSlice
+		return v
 	}
 	return data
 }
@@ -257,17 +261,15 @@ func truncateRecursive(data any, maxChars int) any {
 		}
 		return v
 	case map[string]any:
-		newMap := make(map[string]any, len(v))
 		for k, val := range v {
-			newMap[k] = truncateRecursive(val, maxChars)
+			v[k] = truncateRecursive(val, maxChars)
 		}
-		return newMap
+		return v
 	case []any:
-		newSlice := make([]any, len(v))
 		for i, val := range v {
-			newSlice[i] = truncateRecursive(val, maxChars)
+			v[i] = truncateRecursive(val, maxChars)
 		}
-		return newSlice
+		return v
 	}
 	return data
 }
@@ -278,23 +280,54 @@ func paginateRecursive(data any, page, pageSize int) any {
 		if len(v) > 1024*1024 {
 			return "Error: Input too large"
 		}
-		runes := []rune(v)
+
+		runesCount := utf8.RuneCountInString(v)
 		start := (page - 1) * pageSize
-		if start >= len(runes) {
-			return fmt.Sprintf("Page %d (empty). Total length: %d", page, len(runes))
+
+		if start >= runesCount {
+			return fmt.Sprintf("Page %d (empty). Total length: %d", page, runesCount)
 		}
+
 		end := start + pageSize
-		if end > len(runes) {
-			end = len(runes)
+		if end > runesCount {
+			end = runesCount
 		}
-		chunk := string(runes[start:end])
-		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (len(runes)+pageSize-1)/pageSize, chunk, len(runes))
+
+		// Find byte offsets
+		startByte := 0
+		endByte := 0
+
+		// Optimization: iterate runes without allocating []rune
+		count := 0
+		for i := range v {
+			if count == start {
+				startByte = i
+			}
+			if count == end {
+				endByte = i
+				break
+			}
+			count++
+		}
+
+		if endByte == 0 && end == runesCount {
+			endByte = len(v)
+		}
+
+		chunk := v[startByte:endByte]
+		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (runesCount+pageSize-1)/pageSize, chunk, runesCount)
+
 	case map[string]any:
-		newMap := make(map[string]any, len(v))
 		for k, val := range v {
-			newMap[k] = paginateRecursive(val, page, pageSize)
+			v[k] = paginateRecursive(val, page, pageSize)
 		}
-		return newMap
+		return v
+
+	case []any:
+		for i, val := range v {
+			v[i] = paginateRecursive(val, page, pageSize)
+		}
+		return v
 	}
 	return data
 }
