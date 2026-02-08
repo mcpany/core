@@ -23,9 +23,9 @@ func TestUpstreamService_Float32Bug(t *testing.T) {
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// 1. Start a mock upstream server
-	var receivedPath string
+	receivedPathChan := make(chan string, 1)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		receivedPath = r.URL.Path
+		receivedPathChan <- r.URL.Path
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status": "ok"}`))
 	}))
@@ -108,5 +108,10 @@ upstream_services:
 	// 6. Verify received path
 	// Before fix: /items/3e+09
 	// After fix: /items/3000000000
-	require.Equal(t, "/items/3000000000", receivedPath)
+	select {
+	case receivedPath := <-receivedPathChan:
+		require.Equal(t, "/items/3000000000", receivedPath)
+	case <-time.After(integration.TestWaitTimeShort):
+		require.Fail(t, "Timed out waiting for upstream request")
+	}
 }

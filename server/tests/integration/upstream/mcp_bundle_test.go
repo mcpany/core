@@ -252,8 +252,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		// Use a test-specific temp directory for bundles to ensure isolation
 		// and avoid conflicts with global state or other tests.
 		// If MCP_BUNDLE_DIR is set (e.g. in CI), use that as base to avoid overlay mount issues.
+		// Note: We avoid creating subdirectories that might confuse the global GC in mcp/bundle_gc.go
 		if envDir := os.Getenv("MCP_BUNDLE_DIR"); envDir != "" {
-			impl.BundleBaseDir = filepath.Join(envDir, "test-"+filepath.Base(t.Name()))
+			impl.BundleBaseDir = envDir
 		} else {
 			impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
 		}
@@ -267,8 +268,10 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 
 	// Usage of real implementation is default, so no need to touch connectForTesting
 
+	// Use a unique service name to avoid collisions in shared bundle dir and GC issues
+	serviceName := "fs-bundle-service-" + filepath.Base(tempDir)
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:             proto.String("fs-bundle-service"),
+		Name:             proto.String(serviceName),
 		AutoDiscoverTool: proto.Bool(true),
 		McpService: configv1.McpUpstreamService_builder{
 			BundleConnection: configv1.McpBundleConnection_builder{
@@ -279,7 +282,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)
-	expectedKey, _ := util.SanitizeServiceName("fs-bundle-service")
+	expectedKey, _ := util.SanitizeServiceName(serviceName)
 	assert.Equal(t, expectedKey, serviceID)
 
 	// Check if tools were discovered
