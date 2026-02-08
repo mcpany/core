@@ -66,9 +66,7 @@ test.describe('HTTP Tool Editor', () => {
     await page.getByLabel('Name', { exact: true }).fill('city');
 
     // Close Tool Editor Sheet
-    // There isn't a "Done" button in my implementation, just auto-save to parent state.
-    // So we close the sheet. Pressing Escape might close the top-most sheet.
-    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Done' }).click();
     await expect(page.getByRole('heading', { name: 'Edit get_weather' })).not.toBeVisible();
 
     // Verify tool is listed in Manager

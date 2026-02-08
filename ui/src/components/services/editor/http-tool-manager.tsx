@@ -244,6 +244,9 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                             />
                         )}
                     </div>
+                    <div className="mt-6 flex justify-end">
+                        <Button onClick={() => setIsSheetOpen(false)}>Done</Button>
+                    </div>
                 </SheetContent>
             </Sheet>
         </div>
