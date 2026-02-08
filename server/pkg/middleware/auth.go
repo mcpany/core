@@ -25,7 +25,7 @@ import (
 //   - authManager: *auth.Manager. The authentication manager.
 //
 // Returns:
-//   - mcp.Middleware: The middleware function.
+//   - mcp.Middleware: The authentication middleware function.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
