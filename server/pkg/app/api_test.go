@@ -1339,18 +1339,6 @@ func TestHandleUsers_Security_Redaction(t *testing.T) {
 	})
 }
 
-func TestCheckURLReachability(t *testing.T) {
-	// Enable loopback for this test since we are testing reachability against a local test server.
-	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
-	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
-
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-	defer server.Close()
-	assert.NoError(t, checkURLReachability(context.Background(), server.URL))
-}
-
 func TestHandleServiceValidate(t *testing.T) {
 	app := &Application{}
 	httpSvc := &configv1.HttpUpstreamService{}

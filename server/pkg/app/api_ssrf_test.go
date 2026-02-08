@@ -43,8 +43,8 @@ func TestServiceValidateSSRF(t *testing.T) {
 		{
 			name:        "Internal Loopback URL",
 			address:     internalServer.URL,
-			expectValid: false,
-			expectError: "ssrf attempt blocked",
+			expectValid: true, // Validation no longer probes, so it doesn't trigger SSRF check
+			expectError: "",
 		},
 	}
 
@@ -75,12 +75,8 @@ func TestServiceValidateSSRF(t *testing.T) {
 			}
 
 			if tc.expectValid {
-				// We expect either valid=true OR valid=false but with a connection error (not SSRF blocked)
-				// Since example.com might be reachable or not depending on environment.
-				// But we specifically want to ensure it is NOT blocked by SSRF if it resolves to public IP.
-				// However, example.com resolves to public IP.
-				// If we are offline, it might fail DNS or connection.
-				// For this test, we care about the negative case (SSRF blocked).
+				// Static validation only, so it should be valid
+				assert.True(t, resp["valid"].(bool))
 			} else {
 				assert.False(t, resp["valid"].(bool))
 				assert.Contains(t, resp["error"], tc.expectError)

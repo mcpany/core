@@ -35,8 +35,8 @@ func TestHandleServiceValidate_Filesystem(t *testing.T) {
 		{
 			name:           "Invalid Path",
 			path:           filepath.Join(tmpDir, "nonexistent"),
-			expectedStatus: http.StatusOK, // The API returns 200 OK even for validation failure
-			expectedValid:  false,
+			expectedStatus: http.StatusOK,
+			expectedValid:  true, // Checks are skipped to prevent information leakage
 		},
 	}
 
@@ -89,15 +89,15 @@ func TestHandleServiceValidate_CommandLine(t *testing.T) {
 		{
 			name:           "Invalid Command",
 			command:        "nonexistent_command_xyz",
-			expectedStatus: http.StatusBadRequest, // Fails static validation in config package
-			expectedValid:  false,
+			expectedStatus: http.StatusOK, // Checks are skipped
+			expectedValid:  true,
 		},
 		{
 			name:           "Invalid Working Directory",
 			command:        cmd,
 			workDir:        "/nonexistent/dir",
 			expectedStatus: http.StatusOK,
-			expectedValid:  false,
+			expectedValid:  true, // Checks are skipped
 		},
 	}
 
