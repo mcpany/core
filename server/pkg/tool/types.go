@@ -259,14 +259,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -1716,7 +1716,8 @@ func NewLocalCommandTool(
 	// Check if the command is sed and supports sandbox
 	cmd := service.GetCommand()
 	base := filepath.Base(cmd)
-	if base == "sed" || base == "gsed" {
+	switch base {
+	case "sed", "gsed":
 		// Check if sed supports --sandbox by running `sed --sandbox --version`
 		// We use exec.Command directly here.
 		// Use --version because it exits successfully if supported.
@@ -1731,7 +1732,7 @@ func NewLocalCommandTool(
 			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
 			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
 		}
-	} else if base == "awk" || base == "gawk" || base == "nawk" || base == "mawk" {
+	case "awk", "gawk", "nawk", "mawk":
 		// Sentinel Security Update: Enforce sandbox for awk if available
 		// Only gawk supports --sandbox usually.
 		// We try `cmd --sandbox --version`.
@@ -2825,6 +2826,19 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	if err := checkJSPerlPHPInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	return checkAwkInjection(val, base, quoteLevel)
+}
+
+func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2845,14 +2859,20 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			}
 		}
 	}
+	return nil
+}
 
+func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
+	return nil
+}
 
+func checkJSPerlPHPInjection(val, base string, quoteLevel int) error {
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
@@ -2869,7 +2889,10 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+	return nil
+}
 
+func checkAwkInjection(val, base string, quoteLevel int) error {
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
@@ -2881,7 +2904,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("awk injection detected: value contains 'getline' (potential file access)")
 		}
 	}
-
 	return nil
 }
 
