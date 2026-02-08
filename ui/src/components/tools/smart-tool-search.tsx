@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Command,
   CommandInput,
@@ -60,8 +60,15 @@ export function SmartToolSearch({
     };
   }, []);
 
+  const toolMap = useMemo(() => {
+    const map = new Map<string, ToolDefinition>();
+    tools.forEach((t) => map.set(t.name, t));
+    return map;
+  }, [tools]);
+
   const handleSelect = (toolName: string) => {
-    const tool = tools.find((t) => t.name === toolName);
+    // ⚡ BOLT: Optimized lookup using map
+    const tool = toolMap.get(toolName);
     if (tool) {
       addRecent(toolName);
       onToolSelect(tool);
@@ -69,8 +76,10 @@ export function SmartToolSearch({
     }
   };
 
+  // ⚡ BOLT: Optimized recent tools lookup from O(R*T) to O(R) using a hash map.
+  // Randomized Selection from Top 5 High-Impact Targets
   const recentToolDefs = recentTools
-    .map((name) => tools.find((t) => t.name === name))
+    .map((name) => toolMap.get(name))
     .filter((t): t is ToolDefinition => !!t);
 
   return (
