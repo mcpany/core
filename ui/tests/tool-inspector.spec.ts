@@ -61,7 +61,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await page.getByRole('tab', { name: 'Schema', exact: true }).click();
   // By default Schema tab shows "Visual", switch to "Raw" to see JSON pre block if needed,
   // or check Visual view. Visual view shows "location".
-  await expect(page.getByText('location')).toBeVisible();
+  await expect(page.getByText('location', { exact: true })).toBeVisible();
 
   // Switch back to Form to verify input exists
   await page.getByRole('tab', { name: 'Form', exact: true }).click();
