@@ -94,11 +94,24 @@ jobs:
 
       - name: Install system dependencies
         run: |
+          sudo apt-get update
           if ! command -v make >/dev/null 2>&1; then
             echo "make not found, installing..."
-            sudo apt-get update && sudo apt-get install -y make
+            sudo apt-get install -y make
           else
             echo "make is already installed"
+          fi
+          if ! command -v wget >/dev/null 2>&1; then
+            echo "wget not found, installing..."
+            sudo apt-get install -y wget
+          else
+            echo "wget is already installed"
+          fi
+          if ! command -v xz >/dev/null 2>&1; then
+            echo "xz-utils not found, installing..."
+            sudo apt-get install -y xz-utils
+          else
+            echo "xz-utils is already installed"
           fi
 
       - name: Prepare environment
