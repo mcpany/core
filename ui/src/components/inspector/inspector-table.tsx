@@ -8,7 +8,6 @@
 import React, { useState } from "react";
 import { Trace, SpanStatus } from "@/types/trace";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -24,6 +23,7 @@ import { TraceDetail } from "@/components/traces/trace-detail";
 import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { TableVirtuoso } from "react-virtuoso";
 
 /**
  * Props for the InspectorTable component.
@@ -37,6 +37,10 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Optional class name for the container.
+   */
+  className?: string;
 }
 
 /**
@@ -71,46 +75,6 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
 }
 
 /**
- * ⚡ BOLT: Memoized row component to prevent unnecessary re-renders when parent updates.
- * Randomized Selection from Top 5 High-Impact Targets
- */
-const TraceRow = React.memo(({ trace, onClick }: { trace: Trace; onClick: (t: Trace) => void }) => {
-  return (
-    <TableRow
-      className="cursor-pointer hover:bg-muted/50"
-      onClick={() => onClick(trace)}
-    >
-      <TableCell className="font-mono text-xs text-muted-foreground">
-        {new Date(trace.timestamp).toLocaleTimeString()}
-        <br />
-        <span className="opacity-50 text-[10px]">
-            {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
-        </span>
-      </TableCell>
-      <TableCell>
-          <TypeIcon type={trace.rootSpan.type} className="h-4 w-4 text-muted-foreground" />
-      </TableCell>
-      <TableCell>
-          <div className="flex flex-col">
-              <span className="font-medium">{trace.rootSpan.name}</span>
-              <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
-          </div>
-      </TableCell>
-      <TableCell>
-          <Badge variant={trace.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
-            <StatusIcon status={trace.status} className="h-3 w-3" />
-            {trace.status}
-          </Badge>
-      </TableCell>
-      <TableCell className="text-right font-mono text-xs">
-          {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
-      </TableCell>
-    </TableRow>
-  );
-});
-TraceRow.displayName = 'TraceRow';
-
-/**
  * A table component for displaying and inspecting traces.
  * Allows clicking on a row to view detailed trace information in a sheet.
  *
@@ -119,46 +83,79 @@ TraceRow.displayName = 'TraceRow';
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, className }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
     <>
-      <div className="rounded-md border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[180px]">Timestamp</TableHead>
-              <TableHead className="w-[50px]">Type</TableHead>
-              <TableHead>Method / Name</TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="w-[100px] text-right">Duration</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {traces.length === 0 && !loading && (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  No traces found.
-                </TableCell>
-              </TableRow>
+      <div className={cn("h-full w-full rounded-md border bg-card relative overflow-hidden", className)}>
+        {/* ⚡ BOLT: Implemented virtualization using TableVirtuoso to handle large trace lists efficiently.
+            Randomized Selection from Top 5 High-Impact Targets */}
+        <TableVirtuoso
+            style={{ height: '100%' }}
+            data={traces}
+            components={{
+                // Mimic shadcn Table styling
+                Table: ({ style, ...props }) => (
+                    <table {...props} style={{ ...style, width: '100%', borderCollapse: 'collapse' }} className="w-full caption-bottom text-sm" />
+                ),
+                TableHead: TableHeader,
+                TableBody: TableBody,
+                // @ts-expect-error - TableVirtuoso passes 'item' prop which TableRow doesn't strictly expect in types but accepts in JS/any
+                TableRow: ({ item, ...props }) => (
+                     <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedTrace(item)} />
+                ),
+            }}
+            fixedHeaderContent={() => (
+                <TableRow>
+                  <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
+                  <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
+                  <TableHead className="bg-card z-10">Method / Name</TableHead>
+                  <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
+                  <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
+                </TableRow>
             )}
-            {loading && traces.length === 0 && (
-                 <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                      Loading traces...
-                    </TableCell>
-                  </TableRow>
+            itemContent={(index, trace) => (
+                <>
+                  <TableCell className="font-mono text-xs text-muted-foreground">
+                    {new Date(trace.timestamp).toLocaleTimeString()}
+                    <br />
+                    <span className="opacity-50 text-[10px]">
+                        {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                      <TypeIcon type={trace.rootSpan.type} className="h-4 w-4 text-muted-foreground" />
+                  </TableCell>
+                  <TableCell>
+                      <div className="flex flex-col">
+                          <span className="font-medium">{trace.rootSpan.name}</span>
+                          <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
+                      </div>
+                  </TableCell>
+                  <TableCell>
+                      <Badge variant={trace.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
+                        <StatusIcon status={trace.status} className="h-3 w-3" />
+                        {trace.status}
+                      </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-xs">
+                      {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
+                  </TableCell>
+                </>
             )}
-            {traces.map((trace) => (
-              <TraceRow
-                key={trace.id}
-                trace={trace}
-                onClick={setSelectedTrace}
-              />
-            ))}
-          </TableBody>
-        </Table>
+        />
+
+        {traces.length === 0 && !loading && (
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-muted-foreground">No traces found.</div>
+             </div>
+        )}
+        {loading && traces.length === 0 && (
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-background/50">
+                <div className="text-muted-foreground">Loading traces...</div>
+             </div>
+        )}
       </div>
 
       <Sheet open={!!selectedTrace} onOpenChange={(open) => !open && setSelectedTrace(null)}>
