@@ -255,4 +255,84 @@ func TestInterpreterSecurity(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "Should detect dangerous character in backticks for shell")
 	})
+
+	// 6. Ruby System Injection Bypass (system 'cmd')
+	t.Run("Ruby_System_Injection_Blocked", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{
+			Name: proto.String("ruby_sys_tool"),
+		}).Build()
+		cmd := "ruby"
+		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}).Build()
+
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-e", "\"{{code}}\""},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				(&configv1.CommandLineParameterMapping_builder{
+					Schema: (&configv1.ParameterSchema_builder{
+						Name:       proto.String("code"),
+						Type:       configv1.ParameterType_STRING.Enum(),
+						IsRequired: proto.Bool(true),
+					}).Build(),
+				}).Build(),
+			},
+		}).Build()
+
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+
+		payload := "system 'echo pwned'"
+		req := &ExecutionRequest{
+			ToolName: "ruby_sys_tool",
+			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
+			Arguments: map[string]interface{}{
+				"code": payload,
+			},
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "interpreter injection detected", "Should detect system call injection without parens")
+	})
+
+	// 7. Perl qx Injection Blocked (qx/.../ in double quotes)
+	t.Run("Perl_qx_Injection_Blocked", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{
+			Name: proto.String("perl_qx_tool"),
+		}).Build()
+		cmd := "perl"
+		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}).Build()
+
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-e", "\"{{code}}\""},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				(&configv1.CommandLineParameterMapping_builder{
+					Schema: (&configv1.ParameterSchema_builder{
+						Name:       proto.String("code"),
+						Type:       configv1.ParameterType_STRING.Enum(),
+						IsRequired: proto.Bool(true),
+					}).Build(),
+				}).Build(),
+			},
+		}).Build()
+
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+
+		payload := "print qx/echo pwned/"
+		req := &ExecutionRequest{
+			ToolName: "perl_qx_tool",
+			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
+			Arguments: map[string]interface{}{
+				"code": payload,
+			},
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected: perl qx execution", "Should detect qx execution in double quotes")
+	})
 }
