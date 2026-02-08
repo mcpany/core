@@ -30,6 +30,9 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 
 	root := ProjectRoot(t)
 	serverBin := filepath.Join(root, "../build/bin/server")
+	if _, err := os.Stat(serverBin); err != nil {
+		t.Skipf("MCPANY binary not found at %s. Run 'make build'. Skipping test.", serverBin)
+	}
 
 	// Use a unique temp DB for each test to avoid conflicts and stale headers
 	dbPath := filepath.Join(t.TempDir(), "test.db")

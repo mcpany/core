@@ -80,10 +80,10 @@ test.describe('Bulk Service Actions', () => {
         expect(cliData.resilience?.timeout).toBe('30s');
 
         // Check Env Var on CLI Tool
-        // Note: Env Var persistence seems to have issues in the test environment or backend serialization.
-        // We skip verification of 'env' field for now, but the UI logic sends it.
-        // const env = cliData.command_line_service?.env;
-        // expect(env).toBeDefined();
-        // expect(env['NEW_VAR']).toBeDefined();
+        const env = cliData.command_line_service?.env;
+        expect(env).toBeDefined();
+        expect(env['NEW_VAR']).toBeDefined();
+        // Verify value (API returns camelCase via protojson)
+        expect(env['NEW_VAR'].plainText).toBe('new_val');
     });
 });

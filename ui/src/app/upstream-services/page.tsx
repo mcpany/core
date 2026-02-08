@@ -188,13 +188,13 @@ export default function ServicesPage() {
                 if (updated.commandLineService) {
                      if (!updated.commandLineService.env) updated.commandLineService.env = {};
                      Object.entries(updates.env).forEach(([k, v]) => {
-                         // Use both camelCase and snake_case to be safe with protojson behavior
-                         updated.commandLineService.env[k] = { plainText: v, plain_text: v };
+                         // Protojson expects camelCase by default
+                         updated.commandLineService.env[k] = { plainText: v };
                      });
                 } else if (updated.mcpService?.stdioConnection) {
                     if (!updated.mcpService.stdioConnection.env) updated.mcpService.stdioConnection.env = {};
                      Object.entries(updates.env).forEach(([k, v]) => {
-                         updated.mcpService.stdioConnection.env[k] = { plainText: v, plain_text: v };
+                         updated.mcpService.stdioConnection.env[k] = { plainText: v };
                      });
                 }
             }

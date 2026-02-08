@@ -274,10 +274,10 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}.Build()
 
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
-	if err != nil && os.Getenv("CI") != "" {
+	if err != nil {
 		errStr := err.Error()
 		if strings.Contains(errStr, "failed to mount") || strings.Contains(errStr, "invalid argument") || strings.Contains(errStr, "permission denied") {
-			t.Skipf("Skipping test due to Docker environment issue in CI: %v", err)
+			t.Skipf("Skipping test due to Docker environment issue: %v", err)
 		}
 	}
 	require.NoError(t, err)
