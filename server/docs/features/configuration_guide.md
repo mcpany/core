@@ -21,7 +21,7 @@ The server is driven by a YAML configuration file. By default, it looks for `con
    ```
 2. Run the server:
    ```bash
-   ./mcp-server run
+   ./server run
    ```
 
 ## Pain Point: "How do I keep secrets safe?"
