@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -110,5 +111,67 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 		w := httptest.NewRecorder()
 		app.handleAuditExport(w, req)
 		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
+	})
+}
+
+func TestHandleAuditLogs_Mock(t *testing.T) {
+	app := NewApplication()
+	mockStore := new(MockAuditStore)
+
+	// Initialize middleware
+	auditConfig := &configv1.AuditConfig{}
+	auditConfig.SetEnabled(true)
+	am, err := middleware.NewAuditMiddleware(auditConfig)
+	require.NoError(t, err)
+	am.SetStore(mockStore)
+
+	app.standardMiddlewares = &middleware.StandardMiddlewares{
+		Audit: am,
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		entries := []audit.Entry{
+			{
+				Timestamp:  time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+				ToolName:   "test-tool",
+				UserID:     "user-1",
+				ProfileID:  "profile-1",
+				DurationMs: 100,
+				Arguments:  []byte(`{"arg":"val"}`),
+				Result:     "success",
+			},
+		}
+		mockStore.On("Read", mock.Anything, mock.MatchedBy(func(f audit.Filter) bool {
+			return f.Limit == 10 && f.Offset == 5
+		})).Return(entries, nil).Once()
+
+		req := httptest.NewRequest(http.MethodGet, "/audit/logs?limit=10&offset=5", nil)
+		w := httptest.NewRecorder()
+
+		app.handleAuditLogs(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
+
+		var resp map[string][]audit.Entry
+		err := json.NewDecoder(w.Body).Decode(&resp)
+		require.NoError(t, err)
+		require.Len(t, resp["entries"], 1)
+		assert.Equal(t, "test-tool", resp["entries"][0].ToolName)
+	})
+
+	t.Run("Empty", func(t *testing.T) {
+		mockStore.On("Read", mock.Anything, mock.Anything).Return([]audit.Entry{}, nil).Once()
+
+		req := httptest.NewRequest(http.MethodGet, "/audit/logs", nil)
+		w := httptest.NewRecorder()
+
+		app.handleAuditLogs(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var resp map[string][]audit.Entry
+		err := json.NewDecoder(w.Body).Decode(&resp)
+		require.NoError(t, err)
+		require.Len(t, resp["entries"], 0)
 	})
 }

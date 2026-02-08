@@ -5,8 +5,10 @@ package app
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/audit"
@@ -68,4 +70,60 @@ func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) 
 			fmt.Sprintf("%d", entry.DurationMs),
 		})
 	}
+}
+
+func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Basic filtering from query params
+	filter := audit.Filter{}
+	if start := r.URL.Query().Get("start_time"); start != "" {
+		if t, err := time.Parse(time.RFC3339, start); err == nil {
+			filter.StartTime = &t
+		}
+	}
+	if end := r.URL.Query().Get("end_time"); end != "" {
+		if t, err := time.Parse(time.RFC3339, end); err == nil {
+			filter.EndTime = &t
+		}
+	}
+	filter.ToolName = r.URL.Query().Get("tool_name")
+	filter.UserID = r.URL.Query().Get("user_id")
+	filter.ProfileID = r.URL.Query().Get("profile_id")
+
+	if limit := r.URL.Query().Get("limit"); limit != "" {
+		if l, err := strconv.Atoi(limit); err == nil {
+			filter.Limit = l
+		}
+	}
+	if offset := r.URL.Query().Get("offset"); offset != "" {
+		if o, err := strconv.Atoi(offset); err == nil {
+			filter.Offset = o
+		}
+	}
+
+	// Get the audit store from standard middlewares
+	if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+		// If audit is disabled, return empty list instead of error
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"entries": []}`))
+		return
+	}
+
+	entries, err := a.standardMiddlewares.Audit.Read(r.Context(), filter)
+	if err != nil {
+		http.Error(w, "Failed to read audit logs: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if entries == nil {
+		entries = []audit.Entry{}
+	}
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"entries": entries,
+	})
 }
