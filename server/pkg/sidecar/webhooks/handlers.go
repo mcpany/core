@@ -293,6 +293,13 @@ func paginateRecursive(data any, page, pageSize int) any {
 			end = runesCount
 		}
 
+		// ⚡ BOLT: Optimization for ASCII strings to avoid O(N) loop after RuneCount.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if runesCount == len(v) {
+			chunk := v[start:end]
+			return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (runesCount+pageSize-1)/pageSize, chunk, runesCount)
+		}
+
 		// Find byte offsets
 		startByte := 0
 		endByte := 0
