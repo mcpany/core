@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,7 +8,7 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon } from "lucide-react";
+import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 
 /**
@@ -18,6 +18,64 @@ interface SmartResultRendererProps {
     /** The result object to render. Can be a JSON string, an object, or an array. */
     result: any;
 }
+
+interface McpContent {
+  type: string;
+  text?: string;
+  data?: string;
+  mimeType?: string;
+  resource?: any;
+}
+
+function isMcpContent(data: any): data is McpContent[] {
+  if (!Array.isArray(data) || data.length === 0) return false;
+  return data.every(item =>
+    typeof item === 'object' && item !== null &&
+    (item.type === 'text' || item.type === 'image' || item.type === 'resource')
+  );
+}
+
+function RichContentRenderer({ content }: { content: McpContent[] }) {
+    return (
+      <div className="flex flex-col gap-4 p-4 bg-muted/10 rounded-md border text-sm">
+        {content.map((item, i) => (
+          <div key={i} className="w-full overflow-auto">
+            {item.type === 'image' && item.data && (
+               <div className="flex flex-col gap-2 items-start">
+                  <img
+                    src={`data:${item.mimeType || 'image/png'};base64,${item.data}`}
+                    alt={`Result Image ${i+1}`}
+                    className="max-w-full h-auto rounded border bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAjyQc6wcE0AwAv16BC1L/4hcmAAAAAElFTkSuQmCC')] bg-repeat"
+                  />
+                  <div className="text-xs text-muted-foreground font-mono flex items-center gap-1">
+                      <ImageIcon className="h-3 w-3" />
+                      {item.mimeType || 'image/png'}
+                  </div>
+               </div>
+            )}
+            {item.type === 'text' && item.text && (
+               <div className="flex flex-col gap-1">
+                   {content.length > 1 && (
+                        <div className="text-xs text-muted-foreground font-mono flex items-center gap-1 mb-1">
+                            <FileText className="h-3 w-3" />
+                            Text Output
+                        </div>
+                   )}
+                   <pre className="whitespace-pre-wrap font-mono text-xs text-foreground/90 bg-muted/30 p-2 rounded">
+                      {item.text}
+                   </pre>
+               </div>
+            )}
+            {item.type === 'resource' && (
+                <div className="p-2 border rounded bg-muted/20">
+                    <pre className="text-xs">{JSON.stringify(item.resource, null, 2)}</pre>
+                </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
 
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
@@ -36,9 +94,29 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         // 1. Unwrap CallToolResult structure
         if (result && typeof result === 'object' && Array.isArray(result.content)) {
-            const textItem = result.content.find((c: any) => c.type === 'text' || (c.text && !c.type));
-            if (textItem) {
-                content = textItem.text;
+            // Check if it is MCP content array
+            if (isMcpContent(result.content)) {
+                 // If it has images, or multiple items, we treat the content array as the data
+                 // If it is single text item, we try to unwrap it to parse JSON inside it
+                 const hasImage = result.content.some((c: any) => c.type === 'image');
+                 const hasMultiple = result.content.length > 1;
+
+                 if (hasImage || hasMultiple) {
+                     content = result.content;
+                 } else {
+                     // Single text item, try to extract text to parse as JSON table
+                     const textItem = result.content.find((c: any) => c.type === 'text');
+                     if (textItem) {
+                         content = textItem.text;
+                     } else {
+                         content = result.content;
+                     }
+                 }
+            } else {
+                 const textItem = result.content.find((c: any) => c.type === 'text' || (c.text && !c.type));
+                 if (textItem) {
+                     content = textItem.text;
+                 }
             }
         }
 
@@ -48,7 +126,10 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                 content = JSON.parse(content);
             } catch (e) {
                 // Not valid JSON string
-                return null;
+                // If content was a string (e.g. from single text item), keep it as is?
+                // But downstream expects array of objects for table.
+                // If parsing fails, content remains string.
+                // Step 4 will fail. tableData = null. Raw view will show string. Correct.
             }
         }
 
@@ -57,8 +138,29 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
              if (content.stdout && typeof content.stdout === 'string') {
                  try {
                      const inner = JSON.parse(content.stdout);
+                     // If inner is array (maybe MCP content or data array)
                      if (Array.isArray(inner)) {
-                         content = inner;
+                         // Check if inner is nested MCP content output by a command
+                         if (inner.length > 0 && inner[0].content && Array.isArray(inner[0].content)) {
+                             // This handles case where command outputs CallToolResult JSON
+                             // We don't support double nesting unwrapping here yet easily without recursion
+                             // But wait, if command outputs `{"content": [...]}`, inner is Object, not Array.
+                             // So the checks above handle "inner is Array".
+                             // If command outputs `[{"type": "image", ...}]`, inner is Array.
+                             content = inner;
+                         } else if (typeof inner === 'object' && inner.content && Array.isArray(inner.content)) {
+                             // Command output is a JSON object that mimics CallToolResult
+                             content = inner.content;
+                         } else {
+                             content = inner;
+                         }
+                     } else if (typeof inner === 'object' && inner !== null) {
+                         // If command outputs `{"content": ...}` (CallToolResult)
+                         if (inner.content && Array.isArray(inner.content)) {
+                             content = inner.content;
+                         } else {
+                             content = inner;
+                         }
                      }
                  } catch (e) {
                      // stdout is not JSON
@@ -72,7 +174,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         // 4. Final validation: Must be an array of objects
         if (Array.isArray(content) && content.length > 0) {
             // Check if items are objects
-            const isListOfObjects = content.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+            const isListOfObjects = content.every((item: any) => typeof item === 'object' && item !== null && !Array.isArray(item));
             if (isListOfObjects) {
                 return content;
             }
@@ -81,7 +183,31 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         return null;
     }, [result]);
 
+    const mcpContent = useMemo(() => {
+        if (tableData && isMcpContent(tableData)) {
+             // If ANY item is image, or multiple items, prefer Rich View
+             const hasImage = tableData.some(c => c.type === 'image');
+
+             // If tableData is MCP content, it has 'type', 'text'/'data'.
+             // If we just show it as a Table, it shows columns "type", "text".
+             // If type is 'text' and text is JSON string, Table view is UGLY (shows escaped JSON).
+             // If type is 'text' and text is simple string, Table view is ok but redundant ("text": "value").
+
+             // Generally, if it matches McpContent structure, we probably want Rich view
+             // UNLESS it was explicitly parsed from a JSON array intended to be data.
+
+             // But if `isMcpContent` is true, it means it HAS `type: 'text'|'image'`.
+             // Normal data usually doesn't strictly follow this unless it IS McpContent.
+             // So safe to assume we want Rich View.
+
+             return tableData as McpContent[];
+        }
+        return null;
+    }, [tableData]);
+
+
     const hasSmartView = tableData !== null;
+    const showRichContent = viewMode === "smart" && mcpContent !== null;
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
@@ -92,7 +218,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         // Determine columns from all keys in the first 10 rows (to be reasonably safe)
         const allKeys = new Set<string>();
-        tableData.slice(0, 10).forEach(row => {
+        tableData.slice(0, 10).forEach((row: any) => {
             Object.keys(row).forEach(k => allKeys.add(k));
         });
         const columns = Array.from(allKeys);
@@ -110,7 +236,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tableData.map((row, idx) => (
+                        {tableData.map((row: any, idx: number) => (
                             <TableRow key={idx} className="hover:bg-muted/50">
                                 {columns.map(col => {
                                     const val = row[col];
@@ -149,7 +275,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             className="h-6 px-2 text-[10px] gap-1"
                             onClick={() => setViewMode("smart")}
                          >
-                             <TableIcon className="size-3" /> Table
+                             {showRichContent ? <ImageIcon className="size-3" /> : <TableIcon className="size-3" />}
+                             {showRichContent ? "Visual" : "Table"}
                          </Button>
                          <Button
                             variant={viewMode === "raw" ? "secondary" : "ghost"}
@@ -163,7 +290,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                 </div>
             )}
 
-            {viewMode === "smart" && hasSmartView ? renderSmart() : renderRaw()}
+            {showRichContent ? <RichContentRenderer content={mcpContent!} /> : (viewMode === "smart" && hasSmartView ? renderSmart() : renderRaw())}
         </div>
     );
 }
