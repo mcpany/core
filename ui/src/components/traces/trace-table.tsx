@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Trace, SpanStatus } from "@/types/trace";
 import {
   TableBody,
@@ -14,53 +14,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
 
-/**
- * Props for the InspectorTable component.
- */
-interface InspectorTableProps {
-  /**
-   * List of traces to display in the table.
-   */
+interface TraceTableProps {
   traces: Trace[];
-  /**
-   * Whether the table is currently loading data.
-   */
   loading?: boolean;
+  onSelect?: (trace: Trace) => void;
 }
 
-/**
- * Renders an icon representing the status of a trace span.
- *
- * @param props - The component props.
- * @param props.status - The status of the span (e.g., 'success', 'error').
- * @param props.className - Optional CSS classes.
- * @returns The status icon component.
- */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
   if (status === 'success') return <CheckCircle2 className={cn("text-green-500", className)} />;
   return <Clock className={cn("text-muted-foreground", className)} />;
 }
 
-/**
- * Renders an icon representing the type of a trace span.
- *
- * @param props - The component props.
- * @param props.type - The type of the span (e.g., 'tool', 'service', 'resource').
- * @param props.className - Optional CSS classes.
- * @returns The type icon component.
- */
 function TypeIcon({ type, className }: { type: string, className?: string }) {
     switch(type) {
         case 'tool': return <Terminal className={className} />;
@@ -71,24 +42,16 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
 }
 
 /**
- * A table component for displaying and inspecting traces.
- * Allows clicking on a row to view detailed trace information in a sheet.
- *
+ * TraceTable component.
  * @param props - The component props.
- * @param props.traces - The list of traces to display.
- * @param props.loading - Whether the data is loading.
- * @returns The rendered table component.
+ * @param props.traces - The traces property.
+ * @param props.loading - The loading property.
+ * @param props.onSelect - The onSelect property.
+ * @returns The rendered component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
-  const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
-
+export function TraceTable({ traces, loading, onSelect }: TraceTableProps) {
   return (
-    <>
-      <div className="rounded-md border bg-card h-full w-full overflow-hidden">
-        {/*
-            ⚡ BOLT: Implemented virtualization for trace table using react-virtuoso.
-            Randomized Selection from Top 5 High-Impact Targets
-        */}
+    <div className="rounded-md border bg-card h-full w-full overflow-hidden">
         {traces.length === 0 && !loading ? (
              <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
                 No traces found.
@@ -101,17 +64,18 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             <TableVirtuoso
                 style={{ height: '100%', width: '100%' }}
                 data={traces}
-                context={{ onClick: setSelectedTrace }}
                 components={{
-                    // Use shadcn/ui Table components where possible.
-                    // Table: The root table element. shadcn Table is a wrapper. We need the table element.
                     Table: ({ style, ...props }) => (
                         <table {...props} style={{...style, width: '100%', borderCollapse: 'collapse'}} className="w-full caption-bottom text-sm" />
                     ),
                     TableHead: TableHeader,
                     TableBody: TableBody,
-                    TableRow: ({ item, context, ...props }: any) => (
-                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item)} />
+                    TableRow: ({ item, ...props }) => (
+                        <TableRow
+                            {...props}
+                            className={cn("cursor-pointer hover:bg-muted/50", onSelect && "cursor-pointer")}
+                            onClick={() => onSelect?.(item)}
+                        />
                     ),
                 }}
                 fixedHeaderContent={() => (
@@ -138,7 +102,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     <TableCell>
                         <div className="flex flex-col">
                             <span className="font-medium">{trace.rootSpan.name}</span>
-                            <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
+                            <span className="text-xs text-muted-foreground font-mono">{trace.id.substring(0, 8)}...</span>
                         </div>
                     </TableCell>
                     <TableCell>
@@ -148,19 +112,12 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                         </Badge>
                     </TableCell>
                     <TableCell className="text-right font-mono text-xs">
-                        {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
+                        {trace.totalDuration < 1000 ? `${Math.round(trace.totalDuration)}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
                     </TableCell>
                     </>
                 )}
             />
         )}
-      </div>
-
-      <Sheet open={!!selectedTrace} onOpenChange={(open) => !open && setSelectedTrace(null)}>
-        <SheetContent className="w-full sm:w-[800px] sm:max-w-[800px] p-0 overflow-y-auto border-l">
-            {selectedTrace && <TraceDetail trace={selectedTrace} />}
-        </SheetContent>
-      </Sheet>
-    </>
+    </div>
   );
 }

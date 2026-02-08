@@ -6,8 +6,6 @@
 import { NextResponse } from 'next/server';
 import { Trace, Span } from '@/types/trace';
 
-export type { SpanStatus, Span, Trace } from '@/types/trace';
-
 interface DebugEntry {
   id: string;
   trace_id?: string;
