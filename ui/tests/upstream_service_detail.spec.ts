@@ -36,13 +36,15 @@ test.describe('Upstream Service Detail Page', () => {
     // 2. Verify Page Title
     await expect(page.getByRole('heading', { level: 1 })).toContainText(serviceName);
 
-    // 3. Verify ServiceEditor tabs are present (Evidence that ServiceEditor is used)
-    // The old page had tabs: Overview, Config, Auth, Webhooks
+    // 3. Navigate to Settings tab where ServiceEditor is located
+    await page.getByRole('tab', { name: 'Settings' }).click();
+
+    // 4. Verify ServiceEditor tabs are present (Evidence that ServiceEditor is used)
     // The ServiceEditor has: General, Connection, Authentication, Policies, Advanced
     await expect(page.getByRole('tab', { name: 'Connection' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Policies' })).toBeVisible();
 
-    // 4. Modify a field
+    // 5. Modify a field
     // Go to General tab (default) and change Priority
     // Note: ServiceEditor defaults to "general" tab.
     const priorityInput = page.getByLabel('Priority');

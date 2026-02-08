@@ -253,9 +253,11 @@ LogRow.displayName = 'LogRow'
 
 /**
  * LogStream component.
+ * @param props - The component props.
+ * @param props.source - Optional source to filter by initially.
  * @returns The rendered component.
  */
-export function LogStream() {
+export function LogStream({ source }: { source?: string }) {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -267,7 +269,8 @@ export function LogStream() {
   }, [isPaused])
 
   const searchParams = useSearchParams()
-  const initialSource = searchParams.get("source") || "ALL"
+  // Use prop source if provided, otherwise fallback to URL param or "ALL"
+  const initialSource = source || searchParams.get("source") || "ALL"
 
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
