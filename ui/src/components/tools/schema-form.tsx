@@ -22,6 +22,9 @@ import { Trash2, Plus, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+/**
+ * Schema definition for form generation.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;
@@ -43,6 +46,18 @@ interface SchemaFormProps {
   className?: string;
 }
 
+/**
+ * Recursive form builder based on JSON Schema.
+ *
+ * @param props - The component props.
+ * @param props.schema - The JSON schema to render.
+ * @param props.value - The current value.
+ * @param props.onChange - Callback when value changes.
+ * @param props.name - The field name.
+ * @param props.required - Whether the field is required.
+ * @param props.className - Optional CSS class.
+ * @returns The rendered form component.
+ */
 export function SchemaForm({
   schema,
   value,
