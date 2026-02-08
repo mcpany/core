@@ -19,12 +19,14 @@ type Bus[T any] struct {
 	client *redis.Client
 }
 
-// New creates a new RedisBus.
+// New creates and initializes a new RedisBus.
 //
-// redisConfig is the redisConfig.
+// Parameters:
+//   - redisConfig: *bus.RedisBus. The configuration settings for the Redis bus.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *Bus[T]: A pointer to the initialized Redis bus.
+//   - error: An error if initialization fails (currently always nil).
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
@@ -41,9 +43,11 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
 //
-// client is the client.
+// Parameters:
+//   - client: *redis.Client. The existing Redis client instance.
 //
-// Returns the result.
+// Returns:
+//   - *Bus[T]: A pointer to the initialized Redis bus.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -52,11 +56,15 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 
 // Publish publishes a message to a Redis channel.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// msg is the msg.
+// The message is marshaled to JSON before being published.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - topic: string. The topic (channel) to publish to.
+//   - msg: T. The message payload.
+//
+// Returns:
+//   - error: An error if marshaling or publishing fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -67,11 +75,16 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 
 // Subscribe subscribes to a Redis channel.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// handler is the handler.
+// It starts a goroutine that continuously receives messages from the channel
+// and invokes the provided handler.
 //
-// Returns the result.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic (channel) to subscribe to.
+//   - handler: func(T). The callback function invoked for each message.
+//
+// Returns:
+//   - func(): A function that unsubscribes the handler when called.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -123,11 +136,15 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 
 // SubscribeOnce subscribes to a topic for a single message.
 //
-// ctx is the context for the request.
-// topic is the topic.
-// handler is the handler.
+// It ensures that the handler is called only once for the next message received.
 //
-// Returns the result.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic (channel) to subscribe to.
+//   - handler: func(T). The callback function invoked for the single message.
+//
+// Returns:
+//   - func(): A function that unsubscribes the handler if called before the message is received.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -159,9 +176,12 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return proxyUnsub
 }
 
-// Close closes the Redis client.
+// Close closes the Redis client connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the Redis connection.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }
