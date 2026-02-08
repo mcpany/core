@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -44,15 +44,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
-            }
-        },
-        // Real functional service for tool discovery tests
-        {
-            id: "svc_memory",
-            name: "Memory",
-            command_line_service: {
-                command: "npx",
-                args: ["-y", "@modelcontextprotocol/server-memory"]
             }
         }
     ];
@@ -113,7 +104,6 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Memory', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }

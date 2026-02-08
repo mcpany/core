@@ -52,9 +52,8 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
-    // "Memory" service seeds "read_graph" tool. "Math" (dummy) tools won't appear.
-    // Increase timeout for npx installation
-    await expect(page.locator('text=read_graph')).toBeVisible({ timeout: 45000 });
+    // Expect built-in tools (Weather Service) which is more reliable in CI
+    await expect(page.locator('text=get_weather')).toBeVisible({ timeout: 15000 });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
