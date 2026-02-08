@@ -602,6 +602,8 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Initialize Topology Manager
 	a.TopologyManager = topology.NewManager(serviceRegistry, a.ToolManager)
+	// Add Topology Manager as Execution Middleware to track tool usage
+	a.ToolManager.AddMiddleware(a.TopologyManager)
 
 	// Initialize servers with the message bus
 	mcpSrv, err := mcpserver.NewServer(

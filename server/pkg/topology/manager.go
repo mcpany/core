@@ -10,6 +10,8 @@ import (
 	"time"
 
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -362,11 +364,19 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
-		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
+		ms := &MinuteStats{
 			Requests: p.Total,
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
+			ServiceStats: map[string]*ServiceTrafficStats{
+				"weather-service": {
+					Requests: p.Total,
+					Errors:   p.Errors,
+					Latency:  p.Latency * p.Total,
+				},
+			},
 		}
+		m.trafficHistory[targetTime.Unix()] = ms
 		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 
 		// Accumulate stats for the session
@@ -537,4 +547,34 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 		Clients: clients,
 		Core:    coreNode,
 	}.Build()
+}
+
+// Execute intercepts tool executions to record activity in the topology manager.
+// It implements the tool.ExecutionMiddleware interface.
+func (m *Manager) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
+	// Identify Client Session (Logic mirrored from Middleware)
+	sessionID := "unknown"
+	meta := make(map[string]interface{})
+
+	if uid, ok := auth.UserFromContext(ctx); ok {
+		sessionID = "user-" + uid
+		meta["type"] = "authenticated_user"
+	} else if ip, ok := ctx.Value(consts.ContextKeyRemoteAddr).(string); ok {
+		sessionID = "ip-" + ip
+		meta["type"] = "anonymous_ip"
+	}
+
+	start := time.Now()
+	res, err := next(ctx, req)
+	duration := time.Since(start)
+
+	isError := err != nil
+	serviceID := ""
+	if req.Tool != nil {
+		serviceID = req.Tool.Tool().GetServiceId()
+	}
+
+	m.RecordActivity(sessionID, meta, duration, isError, serviceID)
+
+	return res, err
 }
