@@ -90,6 +90,12 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
+**Try it out:**
+Ask your agent:
+> "What is the weather in Tokyo?"
+
+The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
+
 ## 4. Development
 
 We follow a strict development workflow to ensure quality and maintainability.
@@ -102,6 +108,7 @@ make test
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, JSDoc for TS). We enforce **100% documentation coverage**.
+All exported functions, types, and constants must have a comprehensive docstring (Summary, Parameters, Returns).
 ```bash
 make lint
 ```
