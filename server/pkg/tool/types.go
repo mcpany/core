@@ -2809,34 +2809,66 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+
+	if err := checkVariableInterpolationInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+
+	if err := checkAwkInjection(val, base); err != nil {
+		return err
+	}
+
+	if err := checkPipeInjection(val, base); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
-	if strings.HasPrefix(base, "python") {
-		// Scan template to find the prefix of the quote containing the placeholder
-		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
-		hasFString := false
-		for i := 0; i < len(template)-1; i++ {
-			if template[i+1] == '\'' || template[i+1] == '"' {
-				prefix := strings.ToLower(getPrefix(template, i+1))
-				if prefix == "f" || prefix == "fr" || prefix == "rf" {
-					hasFString = true
-					break
-				}
-			}
-		}
-		if hasFString {
-			if strings.ContainsAny(val, "{}") {
-				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+	if !strings.HasPrefix(base, "python") {
+		return nil
+	}
+
+	// Scan template to find the prefix of the quote containing the placeholder
+	// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+	hasFString := false
+	for i := 0; i < len(template)-1; i++ {
+		if template[i+1] == '\'' || template[i+1] == '"' {
+			prefix := strings.ToLower(getPrefix(template, i+1))
+			if prefix == "f" || prefix == "fr" || prefix == "rf" {
+				hasFString = true
+				break
 			}
 		}
 	}
+	if hasFString {
+		if strings.ContainsAny(val, "{}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+		}
+	}
+	return nil
+}
 
+func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
+	return nil
+}
 
+func checkVariableInterpolationInjection(val, base string, quoteLevel int) error {
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
@@ -2853,7 +2885,10 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+	return nil
+}
 
+func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
@@ -2861,7 +2896,11 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
 	}
+	return nil
+}
 
+func checkPipeInjection(val, base string) error {
+	isPerl := strings.HasPrefix(base, "perl")
 	// Ruby and Perl: Block pipe | to prevent open("|cmd") RCE
 	// Although checking content isn't perfect, blocking | in user input for these interpreters is a high-value defense.
 	if strings.HasPrefix(base, "ruby") {
@@ -2876,7 +2915,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("perl injection detected: value contains '|' at start/end (blocks open() RCE)")
 		}
 	}
-
 	return nil
 }
 
