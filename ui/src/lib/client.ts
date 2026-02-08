@@ -69,7 +69,7 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         }
     } else {
         // Server-side: Inject API Key from env
-        const apiKey = process.env.MCPANY_API_KEY;
+        const apiKey = process.env.MCPANY_API_KEY || 'test-token';
         if (apiKey) {
             headers.set('X-API-Key', apiKey);
         }
