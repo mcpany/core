@@ -17,6 +17,7 @@ type ValidateConfigRequest struct {
 type ValidateConfigResponse struct {
 	// Valid indicates whether the configuration is valid.
 	Valid bool `json:"valid"`
+
 	// Errors is a list of validation errors, if any.
 	Errors []string `json:"errors,omitempty"`
 }
@@ -27,6 +28,7 @@ type ValidateConfigResponse struct {
 type ValidationResult struct {
 	// Valid is true if the configuration is valid.
 	Valid bool
+
 	// Errors contains a list of error messages if validation failed.
 	Errors []string
 }
