@@ -4,14 +4,20 @@
 # Use node:20-bookworm as base to avoid overlayfs whiteout issues seen with mcr.microsoft.com/playwright images in CI
 FROM node:20-bookworm
 
+# Set browser path to a global location accessible by any user
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 WORKDIR /work/ui
 
 # Copy package files first for caching
 COPY ui/package.json ui/package-lock.json* ./
 
 # Install dependencies and Playwright in single layer to reduce image size and layer count
+# Create browser directory and ensure it is writable by all users
 RUN npm install --package-lock=false --registry=https://registry.npmjs.org/ && \
-    npx playwright install --with-deps chromium
+    mkdir -p $PLAYWRIGHT_BROWSERS_PATH && \
+    npx playwright install --with-deps chromium && \
+    chmod -R 777 $PLAYWRIGHT_BROWSERS_PATH
 
 # Copy the rest of the UI code
 COPY ui/ .
