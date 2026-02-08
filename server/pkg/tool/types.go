@@ -47,6 +47,7 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+	trueVal             = "true"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -709,7 +710,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
 			// util.RedactJSON returns the original input if it's not JSON.
 			// If it was JSON, it is already redacted.
-			isDebug := os.Getenv("MCPANY_DEBUG") == "true"
+			isDebug := os.Getenv("MCPANY_DEBUG") == trueVal
 			if !isDebug && !stdjson.Valid(bodyBytes) {
 				displayBody = "[Body hidden for security. Enable debug mode to view.]"
 			}
@@ -2706,7 +2707,7 @@ func checkForSSRF(val string) error {
 	// This ensures tools like git or curl used with non-http protocols cannot access internal networks.
 
 	// Check overrides first
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == "true" {
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
 		return nil
 	}
 
@@ -2715,8 +2716,8 @@ func checkForSSRF(val string) error {
 		return nil
 	}
 
-	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
-	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true"
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
 
 	// Check IP literal
 	if ip := net.ParseIP(host); ip != nil {
