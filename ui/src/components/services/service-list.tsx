@@ -338,7 +338,9 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
              </TableCell>
              <TableCell className="font-medium">
                  <div className="flex items-center gap-2">
-                     {service.name}
+                     <Link href={`/upstream-services/${service.name}`} className="hover:underline font-semibold text-primary">
+                        {service.name}
+                     </Link>
                      {service.lastError && (
                          <Tooltip>
                              <TooltipTrigger asChild>
