@@ -8,8 +8,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
-import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
+import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause, RefreshCw } from "lucide-react";
+import { Trace, SpanStatus } from "@/types/trace";
 import { formatDistanceToNow } from "date-fns";
 import React, { memo, useMemo } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -20,8 +20,9 @@ interface TraceListProps {
   onSelect: (id: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  isLive: boolean;
-  onToggleLive: (live: boolean) => void;
+  isPaused: boolean;
+  onTogglePause: (paused: boolean) => void;
+  onRefresh: () => void;
 }
 
 // Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
@@ -57,9 +58,9 @@ const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isS
         <div className="flex items-center justify-between w-full mt-1">
            <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <TriggerIcon trigger={trace.trigger} className="h-3 w-3" />
-                <span>{trace.id}</span>
+                <span title={trace.id}>{trace.id.substring(0, 8)}...</span>
            </div>
-           <span className="text-xs text-muted-foreground">
+           <span className="text-xs text-muted-foreground whitespace-nowrap">
              {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
            </span>
         </div>
@@ -72,9 +73,10 @@ TraceListItem.displayName = "TraceListItem";
 /**
  * TraceList.
  *
- * @param onToggleLive - The onToggleLive.
+ * @param props - The component props.
+ * @returns The rendered component.
  */
-export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
+export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isPaused, onTogglePause, onRefresh }: TraceListProps) {
 
   // Optimization: Memoize filtered traces to avoid re-calculating on every render,
   // especially when only selectedId changes.
@@ -98,15 +100,25 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
             onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
-        <Button
-            variant={isLive ? "default" : "outline"}
-            size="icon"
-            onClick={() => onToggleLive(!isLive)}
-            title={isLive ? "Pause Live Updates" : "Start Live Updates"}
-            className={cn("shrink-0", isLive && "bg-green-600 hover:bg-green-700")}
-        >
-             {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </Button>
+        <div className="flex gap-1">
+            <Button
+                variant={isPaused ? "outline" : "secondary"}
+                size="icon"
+                onClick={() => onTogglePause(!isPaused)}
+                title={isPaused ? "Resume Live Updates" : "Pause Live Updates"}
+                className={cn("shrink-0", !isPaused && "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40")}
+            >
+                {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+            </Button>
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={onRefresh}
+                title="Refresh History"
+            >
+                <RefreshCw className="h-4 w-4" />
+            </Button>
+        </div>
       </div>
       <div className="flex-1 min-h-0">
         {filteredTraces.length === 0 ? (
@@ -164,6 +176,6 @@ function TriggerIcon({ trigger, className }: { trigger: Trace['trigger'], classN
 }
 
 function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
+  if (ms < 1000) return `${Math.round(ms)}ms`;
   return `${(ms / 1000).toFixed(2)}s`;
 }

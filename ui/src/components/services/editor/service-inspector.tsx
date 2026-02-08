@@ -6,7 +6,7 @@
 "use client";
 
 import { useTraces } from "@/hooks/use-traces";
-import { InspectorTable } from "@/components/inspector/inspector-table";
+import { TraceTable } from "@/components/traces/trace-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCcw, Unplug, Pause, Play, Trash2 } from "lucide-react";
@@ -86,7 +86,7 @@ export function ServiceInspector({ service }: ServiceInspectorProps) {
             </CardHeader>
             <CardContent className="flex-1 min-h-0 p-0 flex flex-col">
                 <div className="border-t flex-1 min-h-0">
-                    <InspectorTable traces={filteredTraces} loading={loading && filteredTraces.length === 0} />
+                    <TraceTable traces={filteredTraces} loading={loading && filteredTraces.length === 0} />
                 </div>
             </CardContent>
         </Card>
