@@ -4,7 +4,7 @@
  */
 
 import * as React from "react"
-import { Upload, X, FileText } from "lucide-react"
+import { Upload, X, FileText, Image as ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -27,19 +27,41 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [fileName, setFileName] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
 
   // Sync internal state with external value
   React.useEffect(() => {
     if (!value) {
       setFileName(null)
+      setPreviewUrl(null)
       if (inputRef.current) {
         inputRef.current.value = ""
       }
     } else if (!fileName) {
        // Value exists but no filename (e.g. form preset loaded)
        setFileName("File loaded")
+       // Check if we can show a preview from base64
+       if (value.length > 0) {
+           // We try to guess if it's an image.
+           // If accept starts with image/, we assume it is.
+           if (accept && accept.startsWith("image/")) {
+               // We need a MIME type. If accept is specific (image/png), use it.
+               // If generic (image/*), default to png or jpeg?
+               const mime = accept === "image/*" ? "image/png" : accept;
+               setPreviewUrl(`data:${mime};base64,${value}`)
+           }
+       }
     }
-  }, [value])
+  }, [value, accept]) // Added accept to deps
+
+  // Cleanup object URL
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
 
   const [isDragging, setIsDragging] = React.useState(false)
 
@@ -53,6 +75,14 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
     }
 
     setFileName(file.name)
+
+    // Generate preview if image
+    if (file.type.startsWith("image/")) {
+        const url = URL.createObjectURL(file)
+        setPreviewUrl(url)
+    } else {
+        setPreviewUrl(null)
+    }
 
     const reader = new FileReader()
     reader.onload = (event) => {
@@ -104,6 +134,7 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
 
   const clearFile = () => {
     setFileName(null)
+    setPreviewUrl(null)
     onChange(undefined)
     if (inputRef.current) {
       inputRef.current.value = ""
@@ -130,35 +161,53 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
         className="hidden"
         disabled={disabled}
       />
-      <div className="flex items-center gap-2">
+      <div className="flex items-start gap-2">
         <Button
           type="button"
           variant="outline"
           onClick={() => inputRef.current?.click()}
           disabled={disabled}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto shrink-0"
         >
           <Upload className="mr-2 h-4 w-4" />
           {fileName ? "Change File" : "Select File"}
         </Button>
+
         {fileName && (
-           <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-md text-sm flex-1 overflow-hidden">
-             <FileText className="h-4 w-4 shrink-0" />
-             <span className="truncate">{fileName}</span>
-             <Button
-               type="button"
-               variant="ghost"
-               size="icon"
-               className="h-6 w-6 ml-auto shrink-0"
-               onClick={clearFile}
-               disabled={disabled}
-             >
-               <X className="h-4 w-4" />
-             </Button>
+           <div className="flex flex-col gap-2 flex-1 min-w-0 bg-muted px-3 py-2 rounded-md text-sm">
+             <div className="flex items-center gap-2 overflow-hidden">
+                 {previewUrl ? (
+                    <ImageIcon className="h-4 w-4 shrink-0 text-primary" />
+                 ) : (
+                    <FileText className="h-4 w-4 shrink-0" />
+                 )}
+                 <span className="truncate flex-1">{fileName}</span>
+                 <Button
+                   type="button"
+                   variant="ghost"
+                   size="icon"
+                   className="h-6 w-6 ml-auto shrink-0"
+                   onClick={clearFile}
+                   disabled={disabled}
+                 >
+                   <X className="h-4 w-4" />
+                 </Button>
+             </div>
+             {previewUrl && (
+                 <div className="relative w-full h-32 bg-background/50 rounded overflow-hidden border">
+                     {/* eslint-disable-next-line @next/next/no-img-element */}
+                     <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="w-full h-full object-contain"
+                     />
+                 </div>
+             )}
            </div>
         )}
+
          {isDragging && !fileName && (
-            <div className="flex-1 flex items-center justify-center text-sm text-primary font-medium animate-pulse">
+            <div className="flex-1 flex items-center justify-center text-sm text-primary font-medium animate-pulse border border-dashed rounded-md p-2">
                 Drop file here
             </div>
         )}

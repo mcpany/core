@@ -36,6 +36,7 @@ import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { SmartFileDrop } from "@/components/playground/smart-file-drop";
 
 import { useSearchParams } from "next/navigation";
 
@@ -100,6 +101,7 @@ export function PlaygroundClientPro() {
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const [initialFormData, setInitialFormData] = useState<Record<string, unknown>>({});
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -285,6 +287,18 @@ export function PlaygroundClientPro() {
     fileInputRef.current?.click();
   };
 
+  const handleSmartToolSelect = (tool: ToolDefinition, file: File, field: string) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const content = e.target?.result as string;
+        // content is data:mime;base64,...
+        const base64 = content.split(',')[1];
+        setInitialFormData({ [field]: base64 });
+        setToolToConfigure(tool);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -342,6 +356,7 @@ export function PlaygroundClientPro() {
 
   return (
     <div className="flex flex-col h-full bg-background">
+      <SmartFileDrop tools={availableTools} onToolSelect={handleSmartToolSelect}>
       <ResizablePanelGroup direction="horizontal" className="h-full items-stretch">
          <ResizablePanel
             defaultSize={25}
@@ -513,8 +528,14 @@ export function PlaygroundClientPro() {
             </div>
          </ResizablePanel>
       </ResizablePanelGroup>
+      </SmartFileDrop>
 
-      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
+      <Dialog open={!!toolToConfigure} onOpenChange={(open) => {
+          if (!open) {
+              setToolToConfigure(null);
+              setInitialFormData({});
+          }
+      }}>
         <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
             <DialogHeader className="p-6 pb-2">
                 <DialogTitle className="flex items-center gap-2 text-xl">
@@ -531,8 +552,12 @@ export function PlaygroundClientPro() {
                 {toolToConfigure && (
                     <ToolForm
                         tool={toolToConfigure}
+                        initialData={initialFormData}
                         onSubmit={handleToolFormSubmit}
-                        onCancel={() => setToolToConfigure(null)}
+                        onCancel={() => {
+                            setToolToConfigure(null);
+                            setInitialFormData({});
+                        }}
                     />
                 )}
             </div>
