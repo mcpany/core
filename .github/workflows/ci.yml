@@ -113,6 +113,12 @@ jobs:
           else
             echo "xz-utils is already installed"
           fi
+          if ! command -v curl >/dev/null 2>&1; then
+            echo "curl not found, installing..."
+            sudo apt-get install -y curl
+          else
+            echo "curl is already installed"
+          fi
 
       - name: Prepare environment
         run: make prepare
