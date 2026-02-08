@@ -68,14 +68,16 @@ test.describe('HTTP Tool Editor', () => {
     // Close Tool Editor Sheet
     // There isn't a "Done" button in my implementation, just auto-save to parent state.
     // So we close the sheet. Pressing Escape might close the top-most sheet.
+    // We force closing the top-most sheet (Tool Editor) specifically.
     await page.keyboard.press('Escape');
     await expect(page.getByRole('heading', { name: 'Edit get_weather' })).not.toBeVisible();
 
-    // Verify tool is listed in Manager
-    // Use first() if strict mode is still an issue (though closing sheet should fix it),
-    // or be more specific. The sheet title should be gone/hidden now.
-    await expect(page.getByText('get_weather', { exact: true })).toBeVisible();
-    await expect(page.getByText('/weather')).toBeVisible();
+    // Verify parent sheet (Service Editor) is still open
+    await expect(page.getByRole('dialog', { name: 'Edit Service' })).toBeVisible();
+
+    // Verify tool is listed in Manager within the parent sheet
+    await expect(page.getByRole('dialog', { name: 'Edit Service' }).getByText('get_weather', { exact: true })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Edit Service' }).getByText('/weather')).toBeVisible();
 
     // Save Service
     await page.getByRole('button', { name: 'Save Changes' }).click();

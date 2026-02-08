@@ -36,8 +36,24 @@ func VerifyIntegrity(t *v1.Tool) error {
 }
 
 // VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
-// Currently ToolDefinition in config does not have an integrity field, so this is a placeholder.
-func VerifyConfigIntegrity(_ *configv1.ToolDefinition) error {
+func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
+	if t.GetIntegrity() == nil {
+		return nil // No integrity check required
+	}
+
+	if t.GetIntegrity().GetAlgorithm() != "sha256" {
+		return fmt.Errorf("unsupported integrity algorithm: %s", t.GetIntegrity().GetAlgorithm())
+	}
+
+	calculatedHash, err := CalculateConfigHash(t)
+	if err != nil {
+		return fmt.Errorf("failed to calculate hash: %w", err)
+	}
+
+	if calculatedHash != t.GetIntegrity().GetHash() {
+		return fmt.Errorf("integrity check failed: expected %s, got %s", t.GetIntegrity().GetHash(), calculatedHash)
+	}
+
 	return nil
 }
 
@@ -64,6 +80,7 @@ func CalculateHash(t *v1.Tool) (string, error) {
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)
+	toolCopy.SetIntegrity(nil)
 
 	// Marshal to Binary for hashing - deterministic
 	marshaler := proto.MarshalOptions{
