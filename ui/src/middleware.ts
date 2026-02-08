@@ -23,8 +23,9 @@ export function middleware(request: NextRequest) {
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
     // Inject API Key for backend authentication
-    if (process.env.MCPANY_API_KEY) {
-      requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
+    const apiKey = process.env.MCPANY_API_KEY || process.env.NEXT_PUBLIC_MCPANY_API_KEY;
+    if (apiKey) {
+      requestHeaders.set('X-API-Key', apiKey);
     }
 
     const url = new URL(request.url);

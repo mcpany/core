@@ -8,10 +8,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
-        // traffic points: Time (HH:MM), Total, Errors, Latency
+        // traffic points: Time (HH:MM), Timestamp (ms), Total, Errors, Latency
         page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
         page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
         const now = new Date();
@@ -23,6 +23,7 @@ test.describe('Dashboard Real Data', () => {
             const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
             trafficPoints.push({
                 time: timeStr,
+                timestamp: t.getTime(),
                 requests: 100, // Constant request rate for easy verification
                 errors: i % 10 === 0 ? 10 : 0, // Some errors every 10 minutes
                 latency: 50 // Constant latency
@@ -101,6 +102,7 @@ test.describe('Dashboard Real Data', () => {
              const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
              trafficPoints.push({
                  time: timeStr,
+                 timestamp: t.getTime(),
                  requests: 100,
                  errors: 80, // 80% error rate -> should be error status
                  latency: 50

@@ -52,6 +52,7 @@ export default defineConfig({
         env: {
           BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
+          NEXT_PUBLIC_MCPANY_API_KEY: process.env.NEXT_PUBLIC_MCPANY_API_KEY || 'test-token',
         },
       },
 });

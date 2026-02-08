@@ -73,10 +73,11 @@ type ServiceTrafficStats struct {
 
 // TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
-	Time    string `json:"time"`
-	Total   int64  `json:"requests"` // mapped to "requests" for UI
-	Errors  int64  `json:"errors"`
-	Latency int64  `json:"latency"`
+	Time      string `json:"time"`
+	Timestamp int64  `json:"timestamp,omitempty"` // Unix timestamp (ms)
+	Total     int64  `json:"requests"`            // mapped to "requests" for UI
+	Errors    int64  `json:"errors"`
+	Latency   int64  `json:"latency"`
 }
 
 // NewManager creates a new Topology Manager.
@@ -352,14 +353,21 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	}
 
 	for _, p := range points {
-		// Parse time "HH:MM"
-		t, err := time.Parse("15:04", p.Time)
-		if err != nil {
-			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
-			continue
+		var targetTime time.Time
+
+		if p.Timestamp > 0 {
+			// Assume timestamp is in milliseconds
+			targetTime = time.Unix(p.Timestamp/1000, (p.Timestamp%1000)*1000000).Truncate(time.Minute)
+		} else {
+			// Parse time "HH:MM"
+			t, err := time.Parse("15:04", p.Time)
+			if err != nil {
+				log.Error("Failed to parse seed time", "time", p.Time, "error", err)
+				continue
+			}
+			// Adjust to today
+			targetTime = time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
 		}
-		// Adjust to today
-		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
 		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
@@ -367,7 +375,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
 		}
-		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
+		log.Info("Seeded point", "time", p.Time, "timestamp", p.Timestamp, "target_unix", targetTime.Unix(), "requests", p.Total)
 
 		// Accumulate stats for the session
 		m.sessions["seed-data"].RequestCount += p.Total

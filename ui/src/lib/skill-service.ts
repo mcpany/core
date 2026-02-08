@@ -3,7 +3,7 @@
 
 import { Skill } from '@proto/config/v1/skill';
 
-const API_BASE = '/api/v1/skills';
+const API_BASE = '/v1/skills';
 
 // Helper to wrap skill in request object if needed, or just send valid JSON that matches Proto.
 // The generated Gateway handlers expects JSON body mapped to the request message.
