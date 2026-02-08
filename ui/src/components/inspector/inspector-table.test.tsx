@@ -13,6 +13,25 @@ vi.mock('@/components/traces/trace-detail', () => ({
   TraceDetail: () => <div data-testid="trace-detail">Trace Detail Content</div>
 }));
 
+// Mock TableVirtuoso to render items immediately in tests
+vi.mock('react-virtuoso', () => ({
+  TableVirtuoso: (props: any) => {
+    const { data, itemContent, components, context } = props;
+    const TableRow = components?.TableRow || 'tr';
+    return (
+      <table>
+        <tbody>
+          {data.map((item: any, index: number) => (
+             <TableRow key={index} item={item} context={context}>
+                {itemContent(index, item)}
+             </TableRow>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+}));
+
 const mockTrace: Trace = {
   id: 'test-trace-1',
   rootSpan: {
