@@ -14,13 +14,10 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
-# Create directory first to avoid potential overlayfs issues with WORKDIR on some runners
-RUN mkdir -p /app
-WORKDIR /app
+# Avoid WORKDIR and mkdir to mitigate potential overlayfs/cachemount issues in CI
+COPY timeserver_patch/requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
 
-COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+COPY timeserver_patch/main.py /main.py
 
-COPY timeserver_patch/main.py /app/main.py
-
-CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "/main.py", "--mcp-stdio"]
