@@ -2,6 +2,8 @@
 
 **One server, Infinite possibilities.**
 
+[![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
+
 ## 1. Project Identity
 
 **What is this project and why does it exist?**
@@ -60,7 +62,7 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 
 ## 3. Developer Workflow
 
-We follow a strict development workflow to ensure quality.
+We follow a strict development workflow to ensure quality and maintainability.
 
 ### Setup
 Before running tests or building locally, ensure all dependencies and tools are installed.
