@@ -1815,21 +1815,22 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
-		for i, arg := range args {
+		for i := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
+				// Use args[i] directly to support cumulative replacements
+				if strings.Contains(args[i], placeholder) {
 					val := util.ToString(v)
 					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+						if err := checkForShellInjection(val, args[i], placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
+					args[i] = strings.ReplaceAll(args[i], placeholder, val)
 				}
 			}
 		}
@@ -2852,11 +2853,16 @@ func checkInterpreterFunctionCalls(val string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"getattr",
 	}
 
 	for _, kw := range dangerousKeywords {
 		if strings.Contains(cleanVal, kw+"(") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+		}
+		// Also block attribute access or method calls on dangerous objects (e.g. os.system, subprocess.run)
+		if strings.Contains(cleanVal, kw+".") {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous attribute access %q", kw)
 		}
 	}
 
