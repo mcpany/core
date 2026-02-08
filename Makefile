@@ -46,7 +46,7 @@ test: gen
 	$(MAKE) -C k8s test
 
 
-docker-build-all:
+docker-build-all: gen
 	$(MAKE) -C server docker-build-server docker-build-dev docker-build-http-echo
 	$(MAKE) -C ui docker-build-ui build-test-docker
 test-proto:

@@ -32,6 +32,16 @@ interface Parameter {
     defaultValue?: string;
 }
 
+/**
+ * Editor form for a single HTTP tool.
+ * Allows configuring the tool name, description, HTTP method, endpoint path, and parameters.
+ *
+ * @param props - The component props.
+ * @param props.initialTool - The tool definition to edit (optional).
+ * @param props.initialCall - The HTTP call definition to edit (optional).
+ * @param props.onSave - Callback when the tool is saved.
+ * @param props.onCancel - Callback when editing is cancelled.
+ */
 export function HttpToolEditor({ initialTool, initialCall, onSave, onCancel }: HttpToolEditorProps) {
     const [name, setName] = useState(initialTool?.name || "");
     const [description, setDescription] = useState(initialTool?.description || "");
