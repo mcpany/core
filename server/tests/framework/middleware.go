@@ -22,6 +22,9 @@ import (
 // TestE2ECaching tests the end-to-end caching functionality.
 //
 // t is the t.
+//
+// Parameters:
+//   - t: *testing.T.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -42,6 +45,12 @@ func TestE2ECaching(t *testing.T) {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - *integration.ManagedProcess
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -56,6 +65,11 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - registrationClient: apiv1.RegistrationServiceClient.
+//   - upstreamEndpoint: string.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_caching_server"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "get_data", "/", "GET", nil)
@@ -67,6 +81,13 @@ func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationS
 // next is the next.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: *testing.T.
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -97,6 +118,11 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - mcpanyEndpoint: string.
+//   - upstreamEndpoint: string.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	// 1. Reset the upstream server's counter.
 	req, err := http.NewRequestWithContext(context.Background(), "POST", fmt.Sprintf("http://%s/reset", upstreamEndpoint), nil)

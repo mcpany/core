@@ -224,6 +224,9 @@ func (rm *Manager) ListResources() []Resource {
 //
 // Parameters:
 //   - f: func(). The callback function.
+//
+// Returns:
+//   - )
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -238,6 +241,9 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns:
 //   - error: An error if resource not found or subscription fails.
+//
+// Errors:
+//   - Returns error if...
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {

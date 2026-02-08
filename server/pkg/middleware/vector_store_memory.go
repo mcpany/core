@@ -52,6 +52,9 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 //
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
+//
+// Errors:
+//   - Returns error if...
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -25,6 +25,9 @@ type Transformer struct {
 // NewTransformer creates and returns a new instance of Transformer.
 //
 // Returns the result.
+//
+// Returns:
+//   - *Transformer
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
@@ -42,6 +45,15 @@ func NewTransformer() *Transformer {
 // data is the data to be used in the template.
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
+//
+// Parameters:
+//   - templateStr: string.
+//   - data any): ([]byte.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error

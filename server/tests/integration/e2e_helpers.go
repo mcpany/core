@@ -45,6 +45,13 @@ import (
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - config: *configv1.UpstreamServiceConfig.
+//
+// Returns:
+//   - string
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
@@ -72,6 +79,12 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - string
 func CreateTempNatsConfigFile(t *testing.T) string {
 	t.Helper()
 
@@ -112,6 +125,14 @@ type threadSafeBuffer struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - p []byte): (int.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (b *threadSafeBuffer) Write(p []byte) (int, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -120,6 +141,9 @@ func (b *threadSafeBuffer) Write(p []byte) (int, error) {
 
 // String returns the contents of the unread portion of the buffer
 // as a string. If the Buffer is a nil pointer, it returns "<nil>".
+//
+// Returns:
+//   - string
 func (b *threadSafeBuffer) String() string {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -131,6 +155,12 @@ func (b *threadSafeBuffer) String() string {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - string
 func ProjectRoot(t *testing.T) string {
 	t.Helper()
 	root, err := GetProjectRoot()
@@ -216,6 +246,14 @@ var (
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ): (string.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
@@ -257,6 +295,12 @@ var portMutex sync.Mutex
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - int
 func FindFreePort(t *testing.T) int {
 	portMutex.Lock()
 	defer portMutex.Unlock()
@@ -299,6 +343,16 @@ type ManagedProcess struct {
 // env is the env.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - label: string.
+//   - command: string.
+//   - args: []string.
+//   - env: []string.
+//
+// Returns:
+//   - *ManagedProcess
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
 	cmd := exec.CommandContext(context.Background(), command, args...)
@@ -328,6 +382,9 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 // Cmd returns the underlying exec.Cmd.
 //
 // Returns the result.
+//
+// Returns:
+//   - *exec.Cmd
 func (mp *ManagedProcess) Cmd() *exec.Cmd {
 	return mp.cmd
 }
@@ -335,6 +392,12 @@ func (mp *ManagedProcess) Cmd() *exec.Cmd {
 // Start starts the process.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (mp *ManagedProcess) Start() error {
 	if mp.Dir != "" {
 		mp.cmd.Dir = mp.Dir
@@ -455,11 +518,17 @@ func (mp *ManagedProcess) Stop() {
 // StdoutString returns the captured stdout as a string.
 //
 // Returns the result.
+//
+// Returns:
+//   - string
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
 
 // StderrString returns the captured stderr as a string.
 //
 // Returns the result.
+//
+// Returns:
+//   - string
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
 // WaitForText waits for specific text to appear in the process's stdout.
@@ -467,6 +536,11 @@ func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 // t is the t.
 // text is the text.
 // timeout is the timeout.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - text: string.
+//   - timeout: time.Duration.
 func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -479,6 +553,11 @@ func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Du
 // t is the t.
 // port is the port.
 // timeout is the timeout.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - port: int.
+//   - timeout: time.Duration.
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -497,6 +576,11 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 // t is the t.
 // grpcAddress is the grpcAddress.
 // timeout is the timeout.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - grpcAddress: string.
+//   - timeout: time.Duration.
 func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -531,6 +615,11 @@ func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 // t is the t.
 // url is the url.
 // timeout is the timeout.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - url: string.
+//   - timeout: time.Duration.
 func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -553,6 +642,11 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 // t is the t.
 // url is the url.
 // timeout is the timeout.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - url: string.
+//   - timeout: time.Duration.
 func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	t.Helper()
 	client := http.Client{
@@ -575,6 +669,9 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 //
 // Returns true if successful.
+//
+// Returns:
+//   - bool
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
@@ -603,6 +700,16 @@ func IsDockerSocketAccessible() bool {
 // command is the command.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - imageName: string.
+//   - containerName: string.
+//   - runArgs: []string.
+//   - command ...string) (cleanupFunc: func(.
+//
+// Returns:
+//   - )
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
@@ -690,6 +797,12 @@ type WebsocketEchoServerInfo struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - *WebsocketEchoServerInfo
 func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	t.Helper()
 
@@ -755,6 +868,14 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 // configContent is the configContent.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - testName: string.
+//   - configContent: string.
+//
+// Returns:
+//   - *MCPANYTestServerInfo
 func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *MCPANYTestServerInfo {
 	t.Helper()
 	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
@@ -773,6 +894,14 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 // extraArgs is the extraArgs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - testName: string.
+//   - extraArgs: ...string.
+//
+// Returns:
+//   - *MCPANYTestServerInfo
 func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, true, extraArgs...)
 }
@@ -784,6 +913,14 @@ func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPA
 // extraArgs is the extraArgs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - testName: string.
+//   - extraArgs: ...string.
+//
+// Returns:
+//   - *MCPANYTestServerInfo
 func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, false, extraArgs...)
 }
@@ -795,6 +932,14 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 // apiKey is the apiKey.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - _: string.
+//   - apiKey: ...string.
+//
+// Returns:
+//   - *MCPANYTestServerInfo
 func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -930,6 +1075,12 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 //
 // Returns the result.
 // Returns the result.
+//
+// Parameters:
+//   - t *testing.T): (string.
+//
+// Returns:
+//   - )
 func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
@@ -1008,6 +1159,13 @@ func StartNatsServer(t *testing.T) (string, func()) {
 
 // StartRedisContainer starts a Redis container for testing.
 // StartRedisContainer starts a Redis container for testing.
+//
+// Parameters:
+//   - t *testing.T) (redisAddr: string.
+//   - cleanupFunc: func(.
+//
+// Returns:
+//   - )
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
@@ -1092,6 +1250,15 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 // extraArgs is the extraArgs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - testName: string.
+//   - healthCheck: bool.
+//   - extraArgs: ...string.
+//
+// Returns:
+//   - *MCPANYTestServerInfo
 func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -1309,6 +1476,15 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 // ctx is the context for the request.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	// 1. Send initialize request
 	initReq := map[string]interface{}{
@@ -1415,6 +1591,14 @@ func parseMCPResponse(_ *testing.T, resp *http.Response) ([]byte, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx context.Context): (*mcp.ListToolsResult.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1474,6 +1658,15 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - params *mcp.CallToolParams): (*mcp.CallToolResult.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1531,6 +1724,11 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 // t is the t.
 // regClient is the regClient.
 // req is the request object.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - req: *apiv1.RegisterServiceRequest.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
@@ -1551,6 +1749,16 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 // endpointPath is the endpointPath.
 // httpMethod is the httpMethod.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - baseURL: string.
+//   - operationID: string.
+//   - endpointPath: string.
+//   - httpMethod: string.
+//   - authConfig: *configv1.Authentication.
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	toolDef := configv1.ToolDefinition_builder{
@@ -1570,6 +1778,17 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 // httpMethod is the httpMethod.
 // params is the params.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - baseURL: string.
+//   - toolDef: *configv1.ToolDefinition.
+//   - endpointPath: string.
+//   - httpMethod: string.
+//   - params: []*configv1.HttpParameterMapping.
+//   - authConfig: *configv1.Authentication.
 func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
@@ -1618,6 +1837,14 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 // baseURL is the baseURL.
 // operationID is the operationID.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - baseURL: string.
+//   - operationID: string.
+//   - authConfig: *configv1.Authentication.
 func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1661,6 +1888,14 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 // baseURL is the baseURL.
 // operationID is the operationID.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - baseURL: string.
+//   - operationID: string.
+//   - authConfig: *configv1.Authentication.
 func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1704,6 +1939,14 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 // targetURL is the targetURL.
 // toolAutoDiscovery is the toolAutoDiscovery.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - targetURL: string.
+//   - toolAutoDiscovery: bool.
+//   - authConfig: *configv1.Authentication.
 func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.Authentication) {
 	t.Helper()
 
@@ -1750,6 +1993,13 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 // serviceID is the serviceID.
 // command is the command.
 // toolAutoDiscovery is the toolAutoDiscovery.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - command: string.
+//   - toolAutoDiscovery: bool.
 func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, command string, toolAutoDiscovery bool) {
 	t.Helper()
 	parts := strings.Fields(command)
@@ -1766,6 +2016,13 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 // serviceID is the serviceID.
 // grpcTargetAddress is the grpcTargetAddress.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - grpcTargetAddress: string.
+//   - authConfig: *configv1.Authentication.
 func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.Authentication) {
 	t.Helper()
 
@@ -1797,6 +2054,14 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 // commandName is the commandName.
 // toolAutoDiscovery is the toolAutoDiscovery.
 // commandArgs is the commandArgs.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - commandName: string.
+//   - toolAutoDiscovery: bool.
+//   - commandArgs: ...string.
 func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, commandArgs ...string) {
 	t.Helper()
 	RegisterStdioServiceWithSetup(t, regClient, serviceID, commandName, toolAutoDiscovery, "", "", nil, nil, commandArgs...)
@@ -1814,6 +2079,18 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 // setupCommands is the setupCommands.
 // env is the env.
 // commandArgs is the commandArgs.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - commandName: string.
+//   - toolAutoDiscovery: bool.
+//   - workingDir: string.
+//   - containerImage: string.
+//   - setupCommands: []string.
+//   - env: map[string]string.
+//   - commandArgs: ...string.
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, env map[string]string, commandArgs ...string) {
 	t.Helper()
 
@@ -1865,6 +2142,14 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 // openAPISpecPath is the openAPISpecPath.
 // serverURLOverride is the serverURLOverride.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - regClient: apiv1.RegistrationServiceClient.
+//   - serviceID: string.
+//   - openAPISpecPath: string.
+//   - serverURLOverride: string.
+//   - authConfig: *configv1.Authentication.
 func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.Authentication) {
 	t.Helper()
 	absSpecPath, err := filepath.Abs(openAPISpecPath)
@@ -1907,6 +2192,16 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 // endpointPath is the endpointPath.
 // httpMethod is the httpMethod.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - mcpanyEndpoint: string.
+//   - serviceID: string.
+//   - baseURL: string.
+//   - operationID: string.
+//   - endpointPath: string.
+//   - httpMethod: string.
+//   - authConfig: *configv1.Authentication.
 func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
@@ -1987,6 +2282,16 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - mp: *ManagedProcess.
+//   - serverName string): (string.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (string, error) {
 	t.Helper()
 	var port string
@@ -2031,6 +2336,9 @@ type MCPJSONRPCError struct {
 // Error implements the error interface.
 //
 // Returns the result.
+//
+// Returns:
+//   - string
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }

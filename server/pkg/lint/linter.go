@@ -108,6 +108,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Returns:
 //   - []Result: A list of linting findings.
 //   - error: An error if the linting process encounters a fatal issue (currently always nil).
+// Errors:
+//   - Returns error if...
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

@@ -27,6 +27,14 @@ type FileAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - path string): (*FileAuditStore.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -51,6 +59,16 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context.
+//   - entry: Entry.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -66,6 +84,15 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _ Filter): ([]Entry.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
@@ -73,6 +100,12 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Close closes the file.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

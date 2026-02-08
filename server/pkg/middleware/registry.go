@@ -39,6 +39,9 @@ var (
 //
 // name is the name of the resource.
 // factory is the factory.
+// Parameters:
+//   - name: string.
+//   - factory: Factory.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -49,6 +52,9 @@ func Register(name string, factory Factory) {
 //
 // name is the name of the resource.
 // factory is the factory.
+// Parameters:
+//   - name: string.
+//   - factory: MCPFactory.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -60,6 +66,11 @@ func RegisterMCP(name string, factory MCPFactory) {
 // configs is the configs.
 //
 // Returns the result.
+// Parameters:
+//   - configs: []*configv1.Middleware.
+//
+// Returns:
+//   - ...
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -88,6 +99,11 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // configs is the configs.
 //
 // Returns the result.
+// Parameters:
+//   - configs: []*configv1.Middleware.
+//
+// Returns:
+//   - ...
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -135,6 +151,22 @@ type StandardMiddlewares struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Parameters:
+//   - authManager: *auth.Manager.
+//   - toolManager: tool.ManagerInterface.
+//   - auditConfig: *configv1.AuditConfig.
+//   - cachingMiddleware: *CachingMiddleware.
+//   - globalRateLimitConfig: *configv1.RateLimitConfig.
+//   - dlpConfig: *configv1.DLPConfig.
+//   - contextOptimizerConfig: *configv1.ContextOptimizerConfig.
+//   - debuggerConfig: *configv1.DebuggerConfig.
+//   - smartRecoveryConfig: *configv1.SmartRecoveryConfig.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

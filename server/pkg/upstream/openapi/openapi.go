@@ -43,6 +43,15 @@ type OpenAPIUpstream struct { //nolint:revive
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -56,6 +65,9 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
+//
+// Returns:
+//   - upstream.Upstream
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -71,6 +83,19 @@ func NewOpenAPIUpstream() upstream.Upstream {
 // Register processes an OpenAPI service configuration. It parses the OpenAPI
 // specification, extracts the operations, converts them into tools, and
 // registers them with the tool manager.
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - promptManager: prompt.ManagerInterface.
+//   - resourceManager: resource.ManagerInterface.
+//   - isReload: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -253,6 +278,14 @@ type httpClientImpl struct {
 
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
+//
+// Parameters:
+//   - req *http.Request): (*http.Response.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

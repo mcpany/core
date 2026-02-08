@@ -21,6 +21,12 @@ type Manager struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: *configv1.ResilienceConfig.
+//
+// Returns:
+//   - *Manager
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -58,6 +64,16 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 // work is the work.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - work: func(context.Context.
+//
+// Returns:
+//   - error) error
+//
+// Errors:
+//   - Returns error if...
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

@@ -90,6 +90,8 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // Side Effects:
 //   - May clear existing services if a replace strategy is configured.
 //   - Fetches remote collections via HTTP.
+// Errors:
+//   - Returns error if...
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {

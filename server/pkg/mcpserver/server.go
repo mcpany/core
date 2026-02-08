@@ -102,6 +102,8 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+// Errors:
+//   - Returns error if...
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -339,6 +341,8 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // Returns:
 //   - *mcp.ListPromptsResult: A list of available prompts.
 //   - error: An error if the retrieval fails.
+// Errors:
+//   - Returns error if...
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -366,6 +370,8 @@ func (s *Server) ListPrompts(
 // Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation.
 //   - error: An error if no active session is found in context or if the operation fails.
+// Errors:
+//   - Returns error if...
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -428,6 +434,8 @@ func (s *Server) GetPrompt(
 // Returns:
 //   - *mcp.ListResourcesResult: A list of available resources.
 //   - error: An error if the retrieval fails.
+// Errors:
+//   - Returns error if...
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -579,6 +587,8 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+// Errors:
+//   - Returns error if...
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -749,6 +759,9 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 //
 // Returns:
 //   - error: An error if the tool cannot be added (e.g., if it already exists).
+//
+// Errors:
+//   - Returns error if...
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -787,6 +800,9 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //
 // Returns:
 //   None.
+//
+// Errors:
+//   - Returns error if...
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -798,6 +814,9 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Returns:
 //   - error: An error if the reload function fails.
+//
+// Errors:
+//   - Returns error if...
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -911,6 +930,9 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
+//
+// Returns:
+//   - slog.Value
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -923,6 +945,9 @@ type LazyLogResult struct {
 }
 
 // LogValue implements slog.LogValuer.
+//
+// Returns:
+//   - slog.Value
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

@@ -18,6 +18,12 @@ var redisClientCreator = redis.NewClient
 // SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
 // creator: A function that takes Redis options and returns a client instance.
+//
+// Parameters:
+//   - creator func(opts: *redis.Options.
+//
+// Returns:
+//   - *redis.Client)
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -27,6 +33,12 @@ var timeNow = time.Now
 // SetTimeNowForTests allows injecting a mock time provider for deterministic testing.
 //
 // nowFunc: A function that returns the current time.
+//
+// Parameters:
+//   - nowFunc: func(.
+//
+// Returns:
+//   - time.Time)
 func SetTimeNowForTests(nowFunc func() time.Time) {
 	timeNow = nowFunc
 }
@@ -53,6 +65,8 @@ type RedisLimiter struct {
 // Returns:
 //   - A pointer to the initialized RedisLimiter, or nil if an error occurs.
 //   - An error if the configuration is invalid or the Redis connection fails.
+// Errors:
+//   - Returns error if...
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
@@ -69,6 +83,8 @@ func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*Redis
 // Returns:
 //   - A pointer to the initialized RedisLimiter, or nil if initialization fails.
 //   - An error if the Redis configuration is missing.
+// Errors:
+//   - Returns error if...
 func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
@@ -190,6 +206,8 @@ var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
 //   - true if the request is allowed (tokens were available).
 //   - false if the request is denied (rate limit exceeded).
 //   - An error if the Redis operation fails.
+// Errors:
+//   - Returns error if...
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	return l.AllowN(ctx, 1)
 }
@@ -205,6 +223,8 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 //   - true if the request is allowed.
 //   - false if the request is denied.
 //   - An error if the Redis operation fails.
+// Errors:
+//   - Returns error if...
 func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	now := timeNow().UnixMicro()
 
@@ -247,6 +267,9 @@ func (l *RedisLimiter) GetConfigHash() string {
 //
 // Returns:
 //   - An error if closing the client fails.
+//
+// Errors:
+//   - Returns error if...
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }

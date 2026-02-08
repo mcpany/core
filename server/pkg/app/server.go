@@ -338,6 +338,9 @@ func NewApplication() *Application {
 //   - Initializes background workers.
 //   - Loads configuration.
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+//
+// Errors:
+//   - Returns error if...
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -884,6 +887,9 @@ func (a *Application) Run(opts RunOptions) error {
 //
 // Returns:
 //   - error: An error if the configuration reload fails.
+//
+// Errors:
+//   - Returns error if...
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1245,6 +1251,9 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+//
+// Errors:
+//   - Returns error if...
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1377,6 +1386,9 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
+//
+// Errors:
+//   - Returns error if...
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1400,6 +1412,8 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
+// Errors:
+//   - Returns error if...
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,

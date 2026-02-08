@@ -799,6 +799,9 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 //
 // Returns:
 //   - error: An error if validation fails or the tool cannot be added.
+//
+// Errors:
+//   - Returns error if...
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

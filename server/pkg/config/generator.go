@@ -36,6 +36,11 @@ func NewGenerator() *Generator {
 // Returns:
 //   - A byte slice containing the generated YAML configuration.
 //   - An error if the generation fails or the user provides invalid input.
+//
+// Parameters:
+//   - ): ([]byte.
+// Errors:
+//   - Returns error if...
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

@@ -39,6 +39,9 @@ type Upstream struct {
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - upstream.Upstream
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -50,6 +53,15 @@ func NewUpstream() upstream.Upstream {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -76,6 +88,19 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - _: prompt.ManagerInterface.
+//   - _: resource.ManagerInterface.
+//   - _: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -193,6 +218,15 @@ type fsCallable struct {
 
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *tool.ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

@@ -175,6 +175,8 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 // Returns:
 //   - context.Context: Context with API key if valid.
 //   - error: Error if unauthorized.
+// Errors:
+//   - Returns error if...
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	var receivedKey string
 	switch a.In {
@@ -235,6 +237,8 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 // Returns:
 //   - context.Context: Authenticated context.
 //   - error: Error if unauthorized.
+// Errors:
+//   - Returns error if...
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	user, password, ok := r.BasicAuth()
 	if !ok {
@@ -295,6 +299,8 @@ func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedH
 // Returns:
 //   - context.Context: Authenticated context.
 //   - error: Error if unauthorized.
+// Errors:
+//   - Returns error if...
 func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	val := r.Header.Get(a.HeaderName)
 	if val == "" {
@@ -401,6 +407,9 @@ func (am *Manager) SetAPIKey(apiKey string) {
 //
 // Returns:
 //   - error: Error if authenticator is nil.
+//
+// Errors:
+//   - Returns error if...
 func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
 	if authenticator == nil {
 		return fmt.Errorf("authenticator for service %s is nil", serviceID)
@@ -421,6 +430,8 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 // Returns:
 //   - context.Context: The authenticated context.
 //   - error: Error if unauthorized.
+// Errors:
+//   - Returns error if...
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
@@ -505,6 +516,9 @@ func (am *Manager) RemoveAuthenticator(serviceID string) {
 //
 // Returns:
 //   - error: Error if creation fails.
+//
+// Errors:
+//   - Returns error if...
 func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
 	if config == nil {
 		return nil
@@ -532,6 +546,9 @@ var (
 //
 // Returns:
 //   - error: Error if validation fails.
+//
+// Errors:
+//   - Returns error if...
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed

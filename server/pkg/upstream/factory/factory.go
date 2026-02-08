@@ -67,6 +67,8 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 // Returns:
 //   upstream.Upstream: A new upstream service instance.
 //   error: An error if the service type is unknown.
+// Errors:
+//   - Returns error if...
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

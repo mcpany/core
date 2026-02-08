@@ -65,6 +65,8 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
 //   - bool: True if a newer version is available, false otherwise.
 //   - error: An error if the check fails (e.g., network error, API rate limit).
+// Errors:
+//   - Returns error if...
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -96,6 +98,9 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Side Effects:
 //   - Writes temporary files to disk.
 //   - Modifies the executable file on disk.
+//
+// Errors:
+//   - Returns error if...
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

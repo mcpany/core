@@ -94,6 +94,9 @@ type Upstream struct{}
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - upstream.Upstream
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -103,6 +106,15 @@ func NewGraphQLUpstream() upstream.Upstream {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -179,6 +191,15 @@ type Callable struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *tool.ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -214,6 +235,19 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - _: prompt.ManagerInterface.
+//   - _: resource.ManagerInterface.
+//   - _: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

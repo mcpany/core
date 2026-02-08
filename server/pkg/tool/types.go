@@ -341,6 +341,15 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -585,6 +594,15 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1250,6 +1268,15 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // including its name and arguments, to the downstream MCP service using the
 // configured client and applies any necessary transformations to the request
 // and response.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1473,6 +1500,15 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // request based on the operation's method, URL, and parameter definitions,
 // sends the request, and processes the response, applying transformations as
 // needed.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1786,6 +1822,15 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2101,6 +2146,15 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2414,6 +2468,8 @@ type threadSafeBuffer struct {
 // Returns:
 //   - n: The number of bytes written.
 //   - err: An error if one occurred.
+// Errors:
+//   - Returns error if...
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

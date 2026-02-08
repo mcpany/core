@@ -61,6 +61,15 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
 // available prompts from the Manager, converts them to the MCP format, and
 // returns them to the client.
+// Parameters:
+//   - _: context.Context.
+//   - _: *mcp.ListPromptsRequest.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -79,6 +88,15 @@ func (s *Service) ListPrompts(
 // prompt by name from the Manager and executes it with the provided
 // arguments, returning the result. If the prompt is not found, it returns a
 // ErrPromptNotFound error.
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *mcp.GetPromptRequest.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

@@ -41,6 +41,12 @@ type MCPConfig struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - *CopilotCLI
 func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	tempDir := t.TempDir()
 	return &CopilotCLI{
@@ -77,6 +83,10 @@ func (c *CopilotCLI) copilotCommand(args ...string) *exec.Cmd {
 //
 // name is the name of the resource.
 // endpoint is the endpoint.
+//
+// Parameters:
+//   - name: string.
+//   - endpoint: string.
 func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -95,6 +105,9 @@ func (c *CopilotCLI) AddMCP(name, endpoint string) {
 // RemoveMCP removes an MCP server.
 //
 // name is the name of the resource.
+//
+// Parameters:
+//   - name: string.
 func (c *CopilotCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	delete(c.servers, name)
@@ -128,6 +141,15 @@ func (c *CopilotCLI) writeConfig() {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - apiKey: (string.
+//   - prompt string): (string.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (c *CopilotCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

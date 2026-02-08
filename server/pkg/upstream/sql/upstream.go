@@ -31,6 +31,9 @@ type Upstream struct {
 // NewUpstream creates a new SQL upstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - *Upstream
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
@@ -40,6 +43,15 @@ func NewUpstream() *Upstream {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -66,6 +78,19 @@ func ptr(s string) *string {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - _: prompt.ManagerInterface.
+//   - _: resource.ManagerInterface.
+//   - _: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

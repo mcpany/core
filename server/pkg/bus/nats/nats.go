@@ -85,6 +85,9 @@ func (b *Bus[T]) Close() {
 //
 // Returns:
 //   - error: An error if marshaling or publishing fails.
+//
+// Errors:
+//   - Returns error if...
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {

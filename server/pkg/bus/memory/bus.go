@@ -52,6 +52,12 @@ func New[T any]() *DefaultBus[T] {
 // Parameters:
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -91,6 +97,9 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Returns an `unsubscribe` function that can be called to remove the
 // subscription. When called, it removes the subscriber from the bus and closes
 // its channel, terminating the associated goroutine.
+//
+// Returns:
+//   - )
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -146,6 +155,9 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //
 // Returns a function that can be used to unsubscribe before the handler is
 // invoked.
+//
+// Returns:
+//   - )
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

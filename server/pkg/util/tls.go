@@ -27,6 +27,8 @@ import (
 // Returns:
 //   - *http.Client: A configured *http.Client.
 //   - error: An error if the TLS configuration is invalid or files cannot be read.
+// Errors:
+//   - Returns error if...
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

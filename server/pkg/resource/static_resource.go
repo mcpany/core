@@ -79,6 +79,8 @@ func (r *StaticResource) Service() string {
 // Returns:
 //   - *mcp.ReadResourceResult: The resource content.
 //   - error: An error if fetching fails.
+// Errors:
+//   - Returns error if...
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
@@ -169,6 +171,9 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 //
 // Returns:
 //   - error: Always returns an error indicating not implemented.
+//
+// Errors:
+//   - Returns error if...
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

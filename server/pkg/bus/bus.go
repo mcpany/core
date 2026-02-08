@@ -86,6 +86,8 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // Returns:
 //   *Provider: The created Provider.
 //   error: An error if creation fails.
+// Errors:
+//   - Returns error if...
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)

@@ -65,6 +65,9 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 //
 // Returns:
 //   - error: An error if marshaling or publishing fails.
+//
+// Errors:
+//   - Returns error if...
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -182,6 +185,9 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Errors:
+//   - Returns error if...
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

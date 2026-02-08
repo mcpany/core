@@ -19,6 +19,13 @@ const RolesContextKey authContextKey = "user_roles"
 // roles is the roles.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - roles: []string.
+//
+// Returns:
+//   - context.Context
 func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 	return context.WithValue(ctx, RolesContextKey, roles)
 }
@@ -29,6 +36,11 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 //
 // Returns the result.
 // Returns true if successful.
+//
+// Parameters:
+//   - ctx context.Context): ([]string.
+// Returns:
+//   - ...
 func RolesFromContext(ctx context.Context) ([]string, bool) {
 	val, ok := ctx.Value(RolesContextKey).([]string)
 	return val, ok
@@ -41,6 +53,9 @@ type RBACEnforcer struct {
 // NewRBACEnforcer creates a new RBACEnforcer.
 //
 // Returns the result.
+//
+// Returns:
+//   - *RBACEnforcer
 func NewRBACEnforcer() *RBACEnforcer {
 	return &RBACEnforcer{}
 }
@@ -51,6 +66,13 @@ func NewRBACEnforcer() *RBACEnforcer {
 // role is the role.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - user: *configv1.User.
+//   - role: string.
+//
+// Returns:
+//   - bool
 func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 	if user == nil {
 		return false
@@ -64,6 +86,13 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 // roles is the roles.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - user: *configv1.User.
+//   - roles: []string.
+//
+// Returns:
+//   - bool
 func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 	if user == nil {
 		return false
@@ -82,6 +111,13 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 // role is the role.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - role: string.
+//
+// Returns:
+//   - bool
 func (e *RBACEnforcer) HasRoleInContext(ctx context.Context, role string) bool {
 	roles, ok := RolesFromContext(ctx)
 	if !ok {

@@ -157,6 +157,8 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //   - []*config.ToolDefinition: Discovered tools.
 //   - []*config.ResourceDefinition: Discovered resources.
 //   - error: An error if any step fails.
+// Errors:
+//   - Returns error if...
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -356,6 +358,9 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Returns:
 //   - error: An error if the service is not found or if shutdown fails.
+//
+// Errors:
+//   - Returns error if...
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -487,6 +492,9 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 //
 // Returns:
 //   - error: An error if any service fails to shutdown cleanly.
+//
+// Errors:
+//   - Returns error if...
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -511,6 +519,11 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Returns:
 //   - []*config.UpstreamServiceConfig: A list of service configurations.
 //   - error: Always nil.
+//
+// Parameters:
+//   - ): ([]*config.UpstreamServiceConfig.
+// Errors:
+//   - Returns error if...
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

@@ -25,6 +25,14 @@ type DB struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - path string): (*DB.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

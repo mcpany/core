@@ -34,6 +34,12 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Close stops the health checker and closes the underlying pool.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -52,6 +58,22 @@ func (p *poolWithChecker[T]) Close() error {
 // dialer is an optional custom dialer for creating network connections.
 // creds is the per-RPC credentials to be used for authentication.
 // It returns a new gRPC client pool or an error if the pool cannot be created.
+// Parameters:
+//   - minSize: int.
+//   - maxSize: int.
+//   - idleTimeout: time.Duration.
+//   - dialer: func(context.Context.
+//   - string): (net.Conn.
+//   - error): credentials.PerRPCCredentials.
+//   - creds: credentials.PerRPCCredentials.
+//   - config: *configv1.UpstreamServiceConfig.
+//   - disableHealthCheck: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

@@ -89,6 +89,8 @@ type ConfigurableEngine interface {
 // Returns:
 //   - Engine: An initialized Engine implementation.
 //   - error: An error if the file extension is not supported.
+// Errors:
+//   - Returns error if...
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -109,11 +111,24 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Parameters:
+//   - skip: bool.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b: []byte.
+//   - v: proto.Message.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -133,6 +148,17 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Parameters:
+//   - yamlMap: map[string]interface{}.
+//   - v: proto.Message.
+//   - originalBytes: []byte.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -236,6 +262,16 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b: []byte.
+//   - v: proto.Message.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -244,6 +280,16 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b: []byte.
+//   - v: proto.Message.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -636,6 +682,8 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading or merging fails.
+// Errors:
+//   - Returns error if...
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 
@@ -1198,6 +1246,8 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
+// Errors:
+//   - Returns error if...
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

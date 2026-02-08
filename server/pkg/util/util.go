@@ -51,6 +51,8 @@ import (
 // Returns:
 //   - string: A single string representing the sanitized and joined identifier.
 //   - error: An error if the sanitization fails (e.g., if ids is empty).
+// Errors:
+//   - Returns error if...
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -216,6 +218,8 @@ func isValidChar(c byte) bool {
 // Returns:
 //   - string: The sanitized service name.
 //   - error: An error if sanitization fails.
+// Errors:
+//   - Returns error if...
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -233,6 +237,8 @@ func SanitizeServiceName(name string) (string, error) {
 // Returns:
 //   - string: The sanitized tool name.
 //   - error: An error if sanitization fails.
+// Errors:
+//   - Returns error if...
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -297,6 +303,8 @@ func GenerateUUID() string {
 //   - service: string. The service key part.
 //   - bareToolName: string. The tool name part.
 //   - err: error. An error if parsing fails.
+// Errors:
+//   - Returns error if...
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -408,6 +416,9 @@ func BytesToString(b []byte) string {
 //
 // Side Effects:
 //   - Reads environment variable USE_SUDO_FOR_DOCKER.
+//
+// Parameters:
+//   - ): (string.
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {

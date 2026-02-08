@@ -43,6 +43,16 @@ type Tool struct {
 // callID is the callID.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: *v1.Tool.
+//   - db: *sql.DB.
+//   - callDef: *configv1.SqlCallDefinition.
+//   - policies: []*configv1.CallPolicy.
+//   - callID: string.
+//
+// Returns:
+//   - *Tool
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -61,6 +71,9 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Tool returns the protobuf definition of the tool.
 //
 // Returns the result.
+//
+// Returns:
+//   - *v1.Tool
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -68,6 +81,9 @@ func (t *Tool) Tool() *v1.Tool {
 // MCPTool returns the MCP tool definition.
 //
 // Returns the result.
+//
+// Returns:
+//   - *mcp.Tool
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -82,6 +98,9 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the tool.
 //
 // Returns the result.
+//
+// Returns:
+//   - *configv1.CacheConfig
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -96,6 +115,15 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *tool.ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

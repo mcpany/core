@@ -79,6 +79,8 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - any: The result of the roots list operation (typically a list of roots).
 //   - error: An error if the session is missing or the list operation fails.
+// Errors:
+//   - Returns error if...
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

@@ -24,6 +24,12 @@ type ContextOptimizer struct {
 // maxChars is the maxChars.
 //
 // Returns the result.
+//
+// Parameters:
+//   - maxChars: int.
+//
+// Returns:
+//   - *ContextOptimizer
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -43,6 +49,12 @@ var bufferPool = sync.Pool{
 // next is the next.
 //
 // Returns the result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -179,6 +191,14 @@ func (w *responseBuffer) checkBuffer() {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - b []byte): (int.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -195,6 +215,9 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 // WriteHeader captures the status code and decides whether to buffer based on headers.
 //
 // statusCode is the HTTP status code to write.
+//
+// Parameters:
+//   - statusCode: int.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

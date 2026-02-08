@@ -41,6 +41,15 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -58,6 +67,15 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -73,6 +91,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+//
+// Parameters:
+//   - poolManager: *pool.Manager.
+//
+// Returns:
+//   - upstream.Upstream
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -82,6 +106,19 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and
 // registering tools for each call definition specified in the configuration.
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - promptManager: prompt.ManagerInterface.
+//   - resourceManager: resource.ManagerInterface.
+//   - isReload: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

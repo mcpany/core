@@ -133,6 +133,8 @@ func (r *SkillResource) Resource() *mcp.Resource {
 // Returns:
 //   - *mcp.ReadResourceResult: The result containing the resource content (text or blob).
 //   - error: An error if the file cannot be read or if the path is invalid.
+// Errors:
+//   - Returns error if...
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	var content []byte
 	var err error
@@ -248,6 +250,9 @@ func isTextMime(mimeType string) bool {
 //
 // Returns:
 //   - error: Always returns nil.
+//
+// Errors:
+//   - Returns error if...
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -264,6 +269,9 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 //
 // Returns:
 //   - error: An error if listing skills fails.
+//
+// Errors:
+//   - Returns error if...
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

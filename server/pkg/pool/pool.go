@@ -228,6 +228,8 @@ func (p *poolImpl[T]) release(n int64) {
 // Returns:
 //   - T: The client.
 //   - error: Error if pool closed or creation failed.
+// Errors:
+//   - Returns error if...
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -448,6 +450,9 @@ func (p *poolImpl[T]) Put(client T) {
 //
 // Returns:
 //   - error: Error if close fails (usually nil).
+//
+// Errors:
+//   - Returns error if...
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.

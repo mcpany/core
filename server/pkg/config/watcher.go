@@ -28,6 +28,11 @@ type Watcher struct {
 // Returns:
 //   - A pointer to a new Watcher.
 //   - An error if the watcher creation fails.
+//
+// Parameters:
+//   - ): (*Watcher.
+// Errors:
+//   - Returns error if...
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -48,6 +53,9 @@ func NewWatcher() (*Watcher, error) {
 //
 // Returns:
 //   - An error if watching fails.
+//
+// Errors:
+//   - Returns error if...
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)

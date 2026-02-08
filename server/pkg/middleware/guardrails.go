@@ -22,6 +22,12 @@ type GuardrailsConfig struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: GuardrailsConfig.
+//
+// Returns:
+//   - gin.HandlerFunc
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

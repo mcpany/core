@@ -152,6 +152,8 @@ func (p *TemplatedPrompt) Service() string {
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the operation fails (e.g., template rendering error).
+// Errors:
+//   - Returns error if...
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -191,6 +193,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // Returns:
 //   - Prompt: The created Prompt instance.
 //   - error: An error if the prompt cannot be created.
+// Errors:
+//   - Returns error if...
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID), nil
 }

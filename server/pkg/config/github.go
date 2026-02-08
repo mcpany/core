@@ -65,6 +65,8 @@ type GitHub struct {
 // Returns:
 //   - A pointer to a new GitHub client.
 //   - An error if the URL is invalid.
+// Errors:
+//   - Returns error if...
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -142,6 +144,8 @@ type Content struct {
 // Returns:
 //   - A slice of Content objects.
 //   - An error if the fetch fails.
+// Errors:
+//   - Returns error if...
 func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {

@@ -64,6 +64,9 @@ type McpField struct {
 // GetName returns the name of the McpField.
 //
 // Returns the result.
+//
+// Returns:
+//   - string
 func (f *McpField) GetName() string {
 	return f.Name
 }
@@ -71,6 +74,9 @@ func (f *McpField) GetName() string {
 // GetDescription returns the description of the McpField.
 //
 // Returns the result.
+//
+// Returns:
+//   - string
 func (f *McpField) GetDescription() string {
 	return f.Description
 }
@@ -78,6 +84,9 @@ func (f *McpField) GetDescription() string {
 // GetType returns the type of the McpField.
 //
 // Returns the result.
+//
+// Returns:
+//   - string
 func (f *McpField) GetType() string {
 	return f.Type
 }
@@ -85,6 +94,9 @@ func (f *McpField) GetType() string {
 // GetIsRepeated returns true if the McpField is a repeated field.
 //
 // Returns the result.
+//
+// Returns:
+//   - bool
 func (f *McpField) GetIsRepeated() bool {
 	return f.IsRepeated
 }
@@ -93,6 +105,16 @@ func (f *McpField) GetIsRepeated() bool {
 // ProtoDefinition and a ProtoCollection. It writes the proto files to a
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
 // then returns the parsed FileDescriptorSet.
+// Parameters:
+//   - ctx: context.Context.
+//   - protoDefinitions: []*configv1.ProtoDefinition.
+//   - protoCollections: []*configv1.ProtoCollection.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
@@ -330,6 +352,15 @@ type McpResource struct {
 //
 // ctx is the context for the reflection process, including timeouts.
 // target is the address of the gRPC service to connect to.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - target string): (*descriptorpb.FileDescriptorSet.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -519,6 +550,14 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // fds is the FileDescriptorSet to be parsed.
 // It returns a ParsedMcpAnnotations struct containing the extracted information
 // or an error if the parsing fails.
+//
+// Parameters:
+//   - fds *descriptorpb.FileDescriptorSet): (*ParsedMcpAnnotations.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

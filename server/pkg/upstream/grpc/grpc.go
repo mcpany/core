@@ -49,6 +49,15 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -68,6 +77,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
+//
+// Parameters:
+//   - poolManager: *pool.Manager.
+//
+// Returns:
+//   - upstream.Upstream
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -82,6 +97,15 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -101,6 +125,19 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // connection pool, uses gRPC reflection to discover the service's protobuf
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - promptManager: prompt.ManagerInterface.
+//   - resourceManager: resource.ManagerInterface.
+//   - isReload: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

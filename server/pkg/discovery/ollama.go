@@ -34,11 +34,22 @@ type OllamaProvider struct {
 }
 
 // Name returns the name of the provider.
+//
+// Returns:
+//   - string
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
+//
+// Parameters:
+//   - ctx context.Context): ([]*configv1.UpstreamServiceConfig.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

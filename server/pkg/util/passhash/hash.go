@@ -18,6 +18,8 @@ import (
 // Returns:
 //   - string: The hashed password.
 //   - error: An error if the hashing fails.
+// Errors:
+//   - Returns error if...
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12

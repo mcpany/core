@@ -31,6 +31,9 @@ type Upstream struct {
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - upstream.Upstream
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -52,6 +55,15 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -69,6 +81,19 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - toolManager: tool.ManagerInterface.
+//   - _: prompt.ManagerInterface.
+//   - _: resource.ManagerInterface.
+//   - _: bool.
+//
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -169,6 +194,15 @@ type vectorCallable struct {
 // Call executes the vector tool with the given arguments.
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req *tool.ExecutionRequest): (any.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }

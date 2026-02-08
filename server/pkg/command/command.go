@@ -60,6 +60,12 @@ type Executor interface {
 // containerEnv is the containerEnv.
 //
 // Returns the result.
+//
+// Parameters:
+//   - containerEnv: *configv1.ContainerEnvironment.
+//
+// Returns:
+//   - Executor
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -70,6 +76,9 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 // NewLocalExecutor creates a new local command executor.
 //
 // Returns the result.
+//
+// Returns:
+//   - Executor
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }
@@ -88,6 +97,20 @@ type localExecutor struct{}
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - command: string.
+//   - args: []string.
+//   - workingDir: string.
+//   - env []string): (io.ReadCloser.
+//   - io.ReadCloser: int.
+//   - <-chan: int.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -146,6 +169,21 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - command: string.
+//   - args: []string.
+//   - workingDir: string.
+//   - env []string): (io.WriteCloser.
+//   - io.ReadCloser: int.
+//   - io.ReadCloser: int.
+//   - <-chan: int.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -225,6 +263,20 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - command: string.
+//   - args: []string.
+//   - workingDir: string.
+//   - env []string): (io.ReadCloser.
+//   - io.ReadCloser: int.
+//   - <-chan: int.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -355,6 +407,21 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - command: string.
+//   - args: []string.
+//   - workingDir: string.
+//   - env []string): (io.WriteCloser.
+//   - io.ReadCloser: int.
+//   - io.ReadCloser: int.
+//   - <-chan: int.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -480,6 +547,15 @@ type closeWriter struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - p []byte) (n: int.
+//   - err: error.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
 }
@@ -487,6 +563,12 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 // Close closes the write side of the connection.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (c *closeWriter) Close() error {
 	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {
 		return cw.CloseWrite()

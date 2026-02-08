@@ -24,6 +24,14 @@ type DB struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - dsn string): (*DB.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
@@ -35,6 +43,15 @@ func NewDB(dsn string) (*DB, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - driver: (*DB.
+//   - dsn string): (*DB.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -67,6 +84,14 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - db *sql.DB): (*DB.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

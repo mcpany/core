@@ -41,6 +41,15 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -64,6 +73,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns:
 //   - error: An error if the shutdown operation fails, or nil on success.
+//
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -108,6 +120,8 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 //   - error: An error if registration fails.
+// Errors:
+//   - Returns error if...
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

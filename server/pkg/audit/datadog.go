@@ -35,6 +35,12 @@ type DatadogAuditStore struct {
 }
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
+//
+// Parameters:
+//   - config: *configv1.DatadogConfig.
+//
+// Returns:
+//   - *DatadogAuditStore
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -102,6 +108,16 @@ func (e *DatadogAuditStore) worker() {
 }
 
 // Write implements the Store interface.
+//
+// Parameters:
+//   - _: context.Context.
+//   - entry: Entry.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (e *DatadogAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -158,11 +174,26 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 
 
 // Read implements the Store interface.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _ Filter): ([]Entry.
+// Returns:
+//   - ...
+//
+// Errors:
+//   - Returns error if...
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
 // Close closes the queue and waits for workers to finish.
+//
+// Returns:
+//   - error
+//
+// Errors:
+//   - Returns error if...
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)
