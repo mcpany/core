@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -101,8 +102,19 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       }
   }, [open, tool]);
 
-  if (!tool) return null;
+  const parsedInput = useMemo(() => {
+    try {
+      return JSON.parse(input);
+    } catch {
+      return {};
+    }
+  }, [input]);
 
+  const handleFormChange = (newVal: any) => {
+    setInput(JSON.stringify(newVal, null, 2));
+  };
+
+  if (!tool) return null;
 
   const handleExecute = async () => {
     setLoading(true);
@@ -172,14 +184,32 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <Tabs defaultValue="form" className="w-full">
+                        <div className="flex items-center justify-between mb-2">
+                            <Label>Arguments</Label>
+                            <TabsList className="h-7 bg-muted/50">
+                                <TabsTrigger value="form" className="text-xs h-5 px-2">Form</TabsTrigger>
+                                <TabsTrigger value="json" className="text-xs h-5 px-2">Raw JSON</TabsTrigger>
+                            </TabsList>
+                        </div>
+                        <TabsContent value="form" className="mt-0">
+                             <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-muted/10">
+                                <SchemaForm
+                                    schema={tool.inputSchema as any}
+                                    value={parsedInput}
+                                    onChange={handleFormChange}
+                                />
+                             </ScrollArea>
+                        </TabsContent>
+                        <TabsContent value="json" className="mt-0">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm h-[300px]"
+                            />
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
