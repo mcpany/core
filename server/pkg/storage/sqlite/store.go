@@ -267,8 +267,7 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	query := `
 	INSERT INTO upstream_services (id, name, config_json, updated_at)
 	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-	ON CONFLICT(id) DO UPDATE SET
-		name = excluded.name,
+	ON CONFLICT(name) DO UPDATE SET
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
 	`
