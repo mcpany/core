@@ -4,7 +4,7 @@
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 
-## 1. Project Identity
+## 1. Elevator Pitch
 
 **What is this project and why does it exist?**
 
@@ -14,7 +14,40 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Quick Start
+## 2. Architecture
+
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
+
+**High-Level Overview:**
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration]
+        Registry -->|Policy| Auth[Authentication & Policy]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
+### Key Design Patterns
+*   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
+*   **Configuration as Code**: All services are defined in declarative YAML/JSON.
+*   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
+
+## 3. Getting Started
 
 Follow these steps to get up and running immediately.
 
@@ -60,7 +93,7 @@ To connect an AI client (like Claude Desktop or Gemini CLI):
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 3. Developer Workflow
+## 4. Development
 
 We follow a strict development workflow to ensure quality and maintainability.
 
@@ -77,12 +110,12 @@ make test
 ```
 
 ### Linting & Documentation
-Ensure code adheres to our style guides (Godoc for Go). We strictly enforce **100% documentation coverage** for all public APIs.
+Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
 Run the linter to verify your changes:
 ```bash
 make lint
 ```
-This command runs `golangci-lint` and our custom documentation checkers.
+This command runs `golangci-lint` and our custom documentation checkers (`check-go-doc`, `check-ts-doc`).
 
 ### Building
 Compile all artifacts (Server binary and UI assets).
@@ -95,39 +128,6 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 ```bash
 make gen
 ```
-
-## 4. Architecture
-
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
-
-**High-Level Overview:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration]
-        Registry -->|Policy| Auth[Authentication & Policy]
-    end
-
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
-```
-
-### Key Design Patterns
-*   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
-*   **Configuration as Code**: All services are defined in declarative YAML/JSON.
-*   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
 ## 5. Configuration
 
