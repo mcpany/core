@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('User Guide Walkthrough', () => {
-  const stackName = 'mcpany-system';
+  const stackName = 'walkthrough-stack';
 
   test.beforeAll(async ({ request }) => {
       // Seed data required for walkthrough

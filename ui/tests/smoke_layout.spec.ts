@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('Layout Smoke Tests', () => {
-  const stackName = 'mcpany-system';
+  const stackName = 'smoke-layout-stack';
 
   test.beforeEach(async ({ request }) => {
     await cleanupCollection(stackName, request);
@@ -35,7 +35,7 @@ test.describe('Layout Smoke Tests', () => {
     await page.waitForURL('**/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
-    // Check for the "mcpany-system" stack
+    // Check for the stack
     // Target the main title to avoid strict mode violation (subtitle also has the text)
     await expect(page.locator('.text-2xl', { hasText: stackName })).toBeVisible();
 
