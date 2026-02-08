@@ -51,16 +51,6 @@ test.describe('Dashboard Real Data', () => {
         expect(hasData).toBeTruthy();
 
         // 3. Verify metrics
-        // We seeded 100 requests per minute for 60 minutes = 6000 total requests?
-        // Wait, GetTrafficHistory returns the history.
-        // AnalyticsDashboard sums them up.
-        // 60 points * 100 requests = 6000 total requests.
-        // Check if "Total Requests" card shows 6,000 (formatted).
-
-        await expect(page.locator('text=Total Requests')).toBeVisible();
-
-        // The endpoint returns points. The UI sums them up.
-        // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
         // Check if we have a non-zero value formatted (contains comma or digits)
         const totalRequestsLocator = page.locator('.rounded-xl.border.bg-card').filter({ hasText: 'Total Requests' }).locator('.text-2xl');
 

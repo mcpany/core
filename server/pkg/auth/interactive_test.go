@@ -1,6 +1,3 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package auth
 
 import (
@@ -96,7 +93,6 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 	_, _, err = am.InitiateOAuth(ctx, "user1", "", "no-auth", "http://127.0.0.1/cb")
 	assert.Error(t, err)
 }
-
 
 func TestHandleOAuthCallback_Validation(t *testing.T) {
 	store := memory.NewStore()
