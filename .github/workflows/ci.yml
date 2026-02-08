@@ -90,8 +90,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-lint-cache-
 
-      - name: Prepare environment
-        run: make prepare
+      - name: Install Make
+        run: sudo apt-get update && sudo apt-get install -y make
 
       - name: Lint
         run: make lint
