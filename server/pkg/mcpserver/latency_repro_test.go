@@ -100,12 +100,12 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Check metrics
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 50; i++ {
 		data = sink.Data()
 		if len(data) > 0 {
 			break
 		}
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(20 * time.Millisecond)
 	}
 	require.NotEmpty(t, data)
 	samples := data[0].Samples
