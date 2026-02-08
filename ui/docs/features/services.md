@@ -31,10 +31,10 @@ Key columns:
 
 To register a new upstream service:
 
-1. Click the **"Add Service"** link in the top-right corner.
-2. You will be redirected to the **Marketplace**.
+1. Click the **"Add Service"** button in the top-right corner.
+2. A **Modal/Sheet** will open displaying the **Template Selector**.
 3. Select the desired service type (e.g., HTTP, gRPC) or a pre-configured service template.
-4. Follow the configuration wizard to register the service.
+4. Follow the configuration form within the modal to register the service.
 
 ![Add Service Dialog](screenshots/services_add_dialog.png)
 
@@ -43,8 +43,8 @@ To register a new upstream service:
 To edit an existing service:
 
 1. Click on the service name in the list.
-2. You will be taken to the detailed **Configuration Page**.
-3. Here you can update the endpoint, managing **Environment Variables**, and view specialized settings.
+2. A **Modal/Sheet** will open with the detailed **Configuration Editor**.
+3. Here you can update the endpoint, manage **Environment Variables**, and view specialized settings directly within the current context.
 
 ![Service Configuration](screenshots/service_config.png)
 

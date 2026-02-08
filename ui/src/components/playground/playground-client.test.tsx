@@ -19,6 +19,10 @@ vi.mock('@/lib/client', () => ({
 // Mock scrollIntoView
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
+// Mock URL
+global.URL.createObjectURL = vi.fn();
+global.URL.revokeObjectURL = vi.fn();
+
 // Mock ResizeObserver
 window.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -72,5 +76,40 @@ describe('PlaygroundClient', () => {
       expect(durationBadge).toBeInTheDocument();
       // Optional: check it's visible
       expect(durationBadge).toBeVisible();
+  });
+
+  it('exports session history', async () => {
+      render(<PlaygroundClient />);
+      const exportBtn = screen.getByTitle('Export Session');
+      fireEvent.click(exportBtn);
+      expect(global.URL.createObjectURL).toHaveBeenCalled();
+  });
+
+  it('imports session history', async () => {
+      render(<PlaygroundClient />);
+
+      const file = new File([JSON.stringify([
+          {
+              id: "test-id",
+              type: "assistant",
+              content: "Imported Message",
+              timestamp: new Date().toISOString()
+          }
+      ])], "session.json", { type: "application/json" });
+
+      const importBtn = screen.getByTitle('Import Session');
+
+      const createElementSpy = vi.spyOn(document, 'createElement');
+      fireEvent.click(importBtn);
+
+      const input = createElementSpy.mock.results.find(r => r.value instanceof HTMLInputElement && r.value.type === 'file')?.value as HTMLInputElement;
+      expect(input).toBeDefined();
+
+      Object.defineProperty(input, 'files', { value: [file] });
+      fireEvent.change(input);
+
+      await waitFor(() => {
+          expect(screen.getByText("Imported Message")).toBeInTheDocument();
+      });
   });
 });

@@ -12,10 +12,11 @@ Tracing allows you to see the "Waterfall" of a request as it passes through midd
 **Configuration:**
 ```yaml
 global_settings:
-  tracing:
-    enabled: true
-    endpoint: "http://jaeger:4318" # OTLP HTTP
-    sampling_rate: 1.0 # 100% of requests (lower for prod)
+  telemetry:
+    traces_exporter: "otlp"
+    metrics_exporter: "otlp"
+    otlp_endpoint: "http://jaeger:4318" # OTLP HTTP
+    service_name: "mcp-server"
 ```
 
 ### 2. Live Logs
@@ -33,10 +34,9 @@ Enable audit logging to a secure destination:
 global_settings:
   audit:
     enabled: true
-    output:
-      type: "file"
-      path: "/var/log/mcp/audit.log"
-      # Or send to external system
+    output_path: "/var/log/mcp/audit.log"
+    storage_type: 1 # STORAGE_TYPE_FILE
+    # Or send to external system
 ```
 
 **What is logged?**

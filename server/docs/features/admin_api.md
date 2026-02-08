@@ -13,7 +13,7 @@ The Admin API is exposed as a gRPC service defined in `proto/admin/v1/admin.prot
 Returns a list of all currently registered upstream services.
 
 - **Request**: `ListServicesRequest` (empty)
-- **Response**: `ListServicesResponse` containing a list of `UpstreamServiceConfig`.
+- **Response**: `ListServicesResponse` containing a list of `ServiceState` (which includes `config`, `status`, and `error`).
 
 #### `GetService`
 
