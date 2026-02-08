@@ -47,7 +47,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
+    runs-on: github-action-runner-github-action-runner
     # runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
