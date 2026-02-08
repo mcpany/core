@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -18,6 +17,8 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/util"
+	// Import integration package for helpers
+	"github.com/mcpany/core/server/tests/integration"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,17 +26,7 @@ import (
 )
 
 // simpleFsServerJS is a minimal Node.js MCP server that implements filesystem tools.
-// It uses the official SDK via standard input/output.
-// To avoid npm install, we will write a vanilla JS server that speaks JSON-RPC over stdio.
-// Actually, using the SDK is much easier but requires node_modules.
-// For a "bundle", it usually includes node_modules or is a single binary.
-// Since we want to test "mcpb", we should probably create a bundle that *works*.
-//
-// A vanilla JS implementation of MCP is non-trivial to write in a string.
-// However, looking at the code, we infer "node" type uses image "node:18-alpine".
-// We can use a simple script that just reads stdin and replies.
-//
-// Let's implement a very basic JSON-RPC handler in JS.
+// ... (content same as before)
 const simpleFsServerJS = `
 const readline = require('readline');
 const fs = require('fs');
@@ -232,14 +223,7 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
-		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
-	}
-
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
-	}
+	integration.RequireDocker(t)
 
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)

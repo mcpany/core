@@ -62,8 +62,11 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
+	// Skip explicit check if running in CI if we have specific CI flag, but let's check capabilities instead.
+	RequireDocker(t)
+
 	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
+		t.Log("Running in CI environment")
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {

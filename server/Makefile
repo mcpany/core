@@ -27,6 +27,17 @@ endif
 endif
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
+# Check if docker is functional (can run a container)
+DOCKER_FUNCTIONAL := 0
+ifdef HAS_DOCKER
+ifneq ($(shell docker run --rm alpine:latest true >/dev/null 2>&1; echo $$?), 0)
+    # Docker command failed, set DOCKER_FUNCTIONAL to 0 (false)
+    DOCKER_FUNCTIONAL := 0
+else
+    DOCKER_FUNCTIONAL := 1
+endif
+endif
+
 # Check if docker can be run without sudo
 ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	DOCKER_CMD := docker
@@ -528,15 +539,14 @@ $(E2E_BIN_DIR):
 .PHONY: build-e2e-timeserver-docker
 build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifneq ($(SKIP_DOCKER_TESTS),true)
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
 else
-	@echo "Docker not found. Cannot build E2E time server image."
-	@exit 1
+	@echo "Docker not functional. Skipping E2E time server image build."
 endif
 else
-	@echo "Skipping E2E time server Docker image build..."
+	@echo "Skipping E2E time server Docker image build (SKIP_DOCKER_TESTS)..."
 endif
 
 
@@ -546,7 +556,7 @@ endif
 # If PLATFORMS is not set, it defaults to the host architecture.
 # For single-platform local builds, --load is added automatically.
 build-docker: docker/Dockerfile.server prepare-docker-context
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@{ \
 		PLATFORMS="$(PLATFORMS)"; \
 		if [ -z "$$PLATFORMS" ]; then \
@@ -591,39 +601,35 @@ ifdef HAS_DOCKER
 	@echo "Server Docker image build complete."
 
 else
-	@echo "Docker not found. Cannot build server image."
-	@exit 1
+	@echo "Docker not functional. Skipping server image build."
 endif
 
 # Target to build http-echo-server Docker image
 build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-context
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
 
 else
-	@echo "Docker not found. Cannot build http-echo-server image."
-	@exit 1
+	@echo "Docker not functional. Skipping http-echo-server image build."
 endif
 
 # Target to build cowsay Docker image for integration tests
 build-cowsay-docker: tests/integration/cmd/mocks/python_cowsay_server/Dockerfile
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building cowsay Docker image (mcpany/e2e-cowsay-server:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/cmd/mocks/python_cowsay_server
 else
-	@echo "Docker not found. Cannot build cowsay image."
-	@exit 1
+	@echo "Docker not functional. Skipping cowsay image build."
 endif
 
 # Target to build operator Docker image
 docker-build-operator: prepare-docker-context
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building operator Docker image (mcpany/operator:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/operator:latest -f ../k8s/operator/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 else
-	@echo "Docker not found. Cannot build operator image."
-	@exit 1
+	@echo "Docker not functional. Skipping operator image build."
 endif
 
 # Aliases for consistent naming
@@ -632,12 +638,11 @@ docker-build-http-echo: build-http-echo-docker
 
 # Target to build dev Docker image
 docker-build-dev: docker/Dockerfile.dev
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building dev Docker image (mcpany/dev:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/dev:latest -f docker/Dockerfile.dev $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 else
-	@echo "Docker not found. Cannot build dev image."
-	@exit 1
+	@echo "Docker not functional. Skipping dev image build."
 endif
 
 # Target to build all test images
@@ -651,12 +656,12 @@ endif
 
 # Target to run the server Docker container
 run-docker:
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Running server Docker container from image ($(SERVER_IMAGE_TAG))..."
 	@echo "Exposing ports 50050 and 50051."
 	@$(DOCKER_CMD) run --rm -p 50050:50050 -p 50051:50051 $(SERVER_IMAGE_TAG)
 else
-	@echo "Docker not found. Cannot run server container."
+	@echo "Docker not functional. Cannot run server container."
 	@exit 1
 endif
 
@@ -666,14 +671,14 @@ docker-build-ui:
 	$(MAKE) -C ../ui docker-build-ui
 
 docker-smoke-test-ui:
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building UI Docker image..."
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
 	@echo "Running UI smoke test..."
 	@chmod +x tests/smoke_test_ui.sh
 	@./tests/smoke_test_ui.sh mcpany-ui 3333
 else
-	@echo "Docker not found. Cannot run UI smoke test."
+	@echo "Docker not functional. Cannot run UI smoke test."
 	@exit 1
 endif
 
@@ -681,13 +686,12 @@ endif
 
 
 build-everything-docker: docker/Dockerfile.everything
-ifdef HAS_DOCKER
+ifeq ($(DOCKER_FUNCTIONAL),1)
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
 	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
 	@echo "Everything server Docker image build complete."
 else
-	@echo "Docker not found. Cannot build everything server image."
-	@exit 1
+	@echo "Docker not functional. Skipping everything server image build."
 endif
 
 BUILD_CONTEXT_DIR := .build-context
