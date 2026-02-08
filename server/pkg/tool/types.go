@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -2748,9 +2749,27 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	// Sentinel Security Update: Interpreter Injection Protection
+	// If the command is explicitly an interpreter, check for interpreter-specific injections.
 	if isInterpreter(command) {
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 			return err
+		}
+	} else if isGenericShell(command) {
+		// If the command is a shell, the argument (template) might be an interpreter command line.
+		// e.g. sh -c "awk '...'"
+		// We try to detect if the template invokes a known interpreter.
+		parts := strings.Fields(template)
+		if len(parts) > 0 {
+			templateCmd := parts[0]
+			// Handle quotes in templateCmd? usually template is like "awk '{{script}}'"
+			// So Fields[0] is "awk".
+			// But if template is "'awk ...'", Fields[0] is "'awk".
+			cleanTemplateCmd := strings.TrimLeft(templateCmd, "\"'(")
+			if isInterpreter(cleanTemplateCmd) {
+				if err := checkInterpreterInjection(val, template, strings.ToLower(cleanTemplateCmd), quoteLevel); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
@@ -2891,6 +2910,34 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
+		// Sentinel Security Update: Block getline to prevent LFI
+		// Use regex for word boundary to avoid false positives
+		if matched, _ := regexp.MatchString(`\bgetline\b`, val); matched {
+			return fmt.Errorf("awk injection detected: value contains 'getline' (potential LFI)")
+		}
+		// Removed > check to preserve valid comparisons (e.g. if ($1 > 5))
+	}
+
+	// Sentinel Security Update: Block open() for interpreters that use it for file access
+	// Python, Ruby, Perl, PHP
+	isScript := strings.HasPrefix(base, "python") || strings.HasPrefix(base, "ruby") || strings.HasPrefix(base, "perl") || strings.HasPrefix(base, "php")
+	if isScript && (quoteLevel == 1 || quoteLevel == 2 || quoteLevel == 3) {
+		// Block open( which is often used for LFI
+		// Use regex for smarter matching: word boundary "open" followed by optional space then "("
+		// This avoids blocking "open" as a word in text.
+		if matched, _ := regexp.MatchString(`\bopen\s*\(`, val); matched {
+			return fmt.Errorf("interpreter injection detected: value contains 'open(' (potential LFI)")
+		}
+
+		// Block subprocess and import to prevent RCE in Python
+		if strings.HasPrefix(base, "python") {
+			if matched, _ := regexp.MatchString(`\bsubprocess\b`, val); matched {
+				return fmt.Errorf("interpreter injection detected: value contains 'subprocess'")
+			}
+			if matched, _ := regexp.MatchString(`\bimport\b`, val); matched {
+				return fmt.Errorf("interpreter injection detected: value contains 'import'")
+			}
+		}
 	}
 	return nil
 }
@@ -2939,6 +2986,17 @@ func isInterpreter(command string) bool {
 	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk"}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
+			return true
+		}
+	}
+	return false
+}
+
+func isGenericShell(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	shells := []string{"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish", "pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe"}
+	for _, shell := range shells {
+		if base == shell {
 			return true
 		}
 	}
