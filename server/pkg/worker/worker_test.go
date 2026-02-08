@@ -20,8 +20,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var globalTestLock sync.Mutex
-
 // Mocks
 
 type mockBus[T any] struct {
@@ -125,9 +123,6 @@ func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 }
 
 func TestServiceRegistrationWorker(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -266,9 +261,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 }
 
 func TestUpstreamWorker(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -451,9 +443,6 @@ func TestUpstreamWorker(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -504,9 +493,6 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 }
 
 func TestWorker_ContextPropagation(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	t.Log("Running TestWorker_ContextPropagation")
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
@@ -516,7 +502,6 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
 	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
 
-	prevHook := bus.GetBusHook
 	bus.GetBusHook = func(_ *bus.Provider, topic string) (any, error) {
 		if topic == bus.ToolExecutionRequestTopic {
 			return reqBusMock, nil
@@ -527,7 +512,7 @@ func TestWorker_ContextPropagation(t *testing.T) {
 		return nil, nil
 	}
 	t.Cleanup(func() {
-		bus.GetBusHook = prevHook
+		bus.GetBusHook = nil
 	})
 
 	var wg sync.WaitGroup
@@ -574,9 +559,6 @@ func TestWorker_ContextPropagation(t *testing.T) {
 }
 
 func TestUpstreamWorker_Concurrent(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -631,9 +613,6 @@ func ptr[T any](v T) *T {
 }
 
 func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

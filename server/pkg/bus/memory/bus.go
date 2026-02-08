@@ -58,15 +58,11 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 
 	if subs, ok := b.subscribers[topic]; ok {
 		for id, ch := range subs {
-			// ⚡ BOLT: Fix memory leak by using time.NewTimer instead of time.After.
-			// Randomized Selection from Top 5 High-Impact Targets
-			timer := time.NewTimer(b.publishTimeout)
+			// Use a non-blocking send with a timeout to avoid blocking the
+			// publisher indefinitely.
 			select {
 			case ch <- msg:
-				if !timer.Stop() {
-					<-timer.C
-				}
-			case <-timer.C:
+			case <-time.After(b.publishTimeout):
 				// It's important to have a logging strategy for dropped messages.
 				log := logging.GetLogger()
 				log.Warn("Message dropped on topic", "topic", topic, "subscriber_id", id, "timeout", b.publishTimeout)

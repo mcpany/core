@@ -57,40 +57,29 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	copy(providers, m.providers)
 	m.mu.RUnlock()
 
-	// ⚡ BOLT: Parallelized discovery providers to avoid waterfall latency.
-	// Randomized Selection from Top 5 High-Impact Targets
-	var wg sync.WaitGroup
-	wg.Add(len(providers))
-
 	for _, p := range providers {
-		go func(p Provider) {
-			defer wg.Done()
-			log.Info("Running auto-discovery", "provider", p.Name())
-			services, err := p.Discover(ctx)
+		log.Info("Running auto-discovery", "provider", p.Name())
+		services, err := p.Discover(ctx)
 
-			m.mu.Lock()
-			defer m.mu.Unlock()
+		m.mu.Lock()
+		status := &ProviderStatus{
+			Name:      p.Name(),
+			LastRunAt: time.Now(),
+		}
 
-			status := &ProviderStatus{
-				Name:      p.Name(),
-				LastRunAt: time.Now(),
-			}
-
-			if err != nil {
-				log.Warn("Auto-discovery failed", "provider", p.Name(), "error", err)
-				status.Status = "ERROR"
-				status.LastError = err.Error()
-			} else {
-				log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
-				status.Status = "OK"
-				status.DiscoveredCount = len(services)
-				allServices = append(allServices, services...)
-			}
-			m.statuses[p.Name()] = status
-		}(p)
+		if err != nil {
+			log.Warn("Auto-discovery failed", "provider", p.Name(), "error", err)
+			status.Status = "ERROR"
+			status.LastError = err.Error()
+		} else {
+			log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
+			status.Status = "OK"
+			status.DiscoveredCount = len(services)
+			allServices = append(allServices, services...)
+		}
+		m.statuses[p.Name()] = status
+		m.mu.Unlock()
 	}
-
-	wg.Wait()
 
 	return allServices
 }

@@ -72,7 +72,7 @@ export default function InspectorPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 overflow-y-auto rounded-md border bg-card">
         <InspectorTable traces={traces} loading={loading && traces.length === 0} />
       </div>
     </div>

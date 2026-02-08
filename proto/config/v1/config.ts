@@ -32,7 +32,6 @@ export interface McpAnyServerConfig {
   mergeStrategy?: MergeStrategyConfig | undefined;
 }
 
-/** MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources. */
 export interface MergeStrategyConfig {
   /** Strategy for merging upstream_services list ("extend" or "replace"). */
   upstreamServiceList: string;
@@ -58,13 +57,10 @@ export interface Secret {
   createdAt: string;
 }
 
-/** SecretList is a container for a list of secrets. */
 export interface SecretList {
-  /** The list of secrets. */
   secrets: Secret[];
 }
 
-/** GlobalSettings defines server-wide operational parameters. */
 export interface GlobalSettings {
   /** The address the MCP server listens on. */
   mcpListenAddress: string;
@@ -147,7 +143,6 @@ export interface GlobalSettings {
   smartRecovery?: SmartRecoveryConfig | undefined;
 }
 
-/** LogLevel defines the severity of logs to emit. */
 export enum GlobalSettings_LogLevel {
   LOG_LEVEL_UNSPECIFIED = 0,
   LOG_LEVEL_INFO = 1,
@@ -199,7 +194,6 @@ export function globalSettings_LogLevelToJSON(object: GlobalSettings_LogLevel): 
   }
 }
 
-/** LogFormat defines the format of the logs. */
 export enum GlobalSettings_LogFormat {
   LOG_FORMAT_UNSPECIFIED = 0,
   LOG_FORMAT_TEXT = 1,
@@ -239,9 +233,7 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
   }
 }
 
-/** SmartRecoveryConfig configures automatic error recovery using an LLM. */
 export interface SmartRecoveryConfig {
-  /** Whether smart recovery is enabled. */
   enabled: boolean;
   /** The provider to use (e.g., "openai", "ollama"). */
   provider: string;
@@ -257,7 +249,6 @@ export interface SmartRecoveryConfig {
   baseUrl: string;
 }
 
-/** AlertConfig configures system alerts. */
 export interface AlertConfig {
   /** Whether alerts are enabled. */
   enabled: boolean;
@@ -265,45 +256,33 @@ export interface AlertConfig {
   webhookUrl: string;
 }
 
-/** ContextOptimizerConfig configures the context optimization middleware. */
 export interface ContextOptimizerConfig {
-  /** The maximum number of characters allowed in the context. */
   maxChars: number;
 }
 
-/** DebuggerConfig configures the debugging middleware. */
 export interface DebuggerConfig {
-  /** Whether the debugger is enabled. */
   enabled: boolean;
-  /** The maximum size of the debug buffer. */
   size: number;
 }
 
-/** TelemetryConfig configures tracing and metrics. */
 export interface TelemetryConfig {
-  /** Tracing configuration (e.g. "otlp", "stdout", "none"). */
+  /** Tracing configuration */
   tracesExporter: string;
-  /** Metrics configuration (e.g. "otlp", "stdout", "none"). */
+  /** Metrics configuration */
   metricsExporter: string;
-  /** OTLP endpoint (shared for now, or can be split). */
+  /** OTLP endpoint (shared for now, or can be split) */
   otlpEndpoint: string;
-  /** Service name override (optional). */
+  /** Service name override (optional) */
   serviceName: string;
 }
 
-/** OIDCConfig configures OpenID Connect authentication. */
 export interface OIDCConfig {
-  /** The OIDC issuer URL. */
   issuer: string;
-  /** The client ID. */
   clientId: string;
-  /** The client secret. */
   clientSecret: string;
-  /** The redirect URL after authentication. */
   redirectUrl: string;
 }
 
-/** GCSettings configures the garbage collection worker. */
 export interface GCSettings {
   /** Whether the global GC worker is enabled. */
   enabled: boolean;
@@ -321,7 +300,6 @@ export interface GCSettings {
   paths: string[];
 }
 
-/** DLPConfig configures Data Loss Prevention (redaction). */
 export interface DLPConfig {
   /** Whether DLP is enabled. */
   enabled: boolean;
@@ -332,7 +310,6 @@ export interface DLPConfig {
   customPatterns: string[];
 }
 
-/** AuditConfig configures audit logging. */
 export interface AuditConfig {
   /** Whether audit logging is enabled. */
   enabled: boolean;
@@ -356,7 +333,6 @@ export interface AuditConfig {
   datadog?: DatadogConfig | undefined;
 }
 
-/** StorageType defines where audit logs are stored. */
 export enum AuditConfig_StorageType {
   STORAGE_TYPE_UNSPECIFIED = 0,
   STORAGE_TYPE_FILE = 1,
@@ -425,37 +401,23 @@ export interface AuditConfig_WebhookHeadersEntry {
   value: string;
 }
 
-/** SplunkConfig configures Splunk integration for audit logs. */
 export interface SplunkConfig {
-  /** The HTTP Event Collector URL. */
   hecUrl: string;
-  /** The HEC token. */
   token: string;
-  /** The index to send events to. */
   index: string;
-  /** The source value for events. */
   source: string;
-  /** The sourcetype value for events. */
   sourcetype: string;
 }
 
-/** DatadogConfig configures Datadog integration for audit logs. */
 export interface DatadogConfig {
-  /** The Datadog API key. */
   apiKey: string;
-  /** The Datadog site (e.g. "datadoghq.com"). */
   site: string;
-  /** The service name for logs. */
   service: string;
-  /** Tags to attach to logs. */
   tags: string;
 }
 
-/** ProfileDefinition defines a user profile and its permissions. */
 export interface ProfileDefinition {
-  /** The unique name of the profile. */
   name: string;
-  /** The selector criteria for tools associated with this profile. */
   selector?:
     | ProfileSelector
     | undefined;
@@ -479,11 +441,8 @@ export interface ProfileDefinition_SecretsEntry {
   value?: SecretValue | undefined;
 }
 
-/** ProfileSelector defines criteria for selecting tools. */
 export interface ProfileSelector {
-  /** List of tags to match. */
   tags: string[];
-  /** Key-value pairs of tool properties to match. */
   toolProperties: { [key: string]: string };
 }
 
@@ -492,7 +451,6 @@ export interface ProfileSelector_ToolPropertiesEntry {
   value: string;
 }
 
-/** Middleware configures a specific middleware in the request pipeline. */
 export interface Middleware {
   /** The name of the middleware (e.g., "logging", "auth", "ratelimit"). */
   name: string;

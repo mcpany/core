@@ -17,9 +17,6 @@ import (
 )
 
 func TestServiceRegistrationWorker_Panic_Registration(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -62,9 +59,6 @@ func TestServiceRegistrationWorker_Panic_Registration(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Panic_List(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -119,9 +113,6 @@ func (m *extendedMockServiceRegistry) GetServiceConfig(name string) (*configv1.U
 }
 
 func TestServiceRegistrationWorker_GetServiceConfig(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -180,9 +171,6 @@ func TestServiceRegistrationWorker_GetServiceConfig(t *testing.T) {
 }
 
 func TestServiceRegistrationWorker_Panic_Get(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -226,9 +214,6 @@ func TestServiceRegistrationWorker_Panic_Get(t *testing.T) {
 }
 
 func TestWorker_PublishFailure(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	t.Log("Running TestWorker_PublishFailure")
 
 	// Setup the mock bus provider hook
@@ -287,9 +272,6 @@ func TestWorker_PublishFailure(t *testing.T) {
 }
 
 func TestUpstreamWorker_PublishFailure(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -349,9 +331,6 @@ func TestUpstreamWorker_PublishFailure(t *testing.T) {
 }
 
 func TestWorker_Start_BusErrors(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	tests := []struct {
 		name      string
 		failTopic string

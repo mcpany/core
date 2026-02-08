@@ -28,8 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: github-action-runner-github-action-runner
-    # ubuntu-latest
+    runs-on: ubuntu-latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -47,8 +46,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: github-action-runner-github-action-runner
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
@@ -91,6 +89,11 @@ jobs:
           key: ${{ runner.os }}-lint-cache-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-lint-cache-
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Prepare environment
         run: make prepare

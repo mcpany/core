@@ -159,7 +159,7 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `id`                      | `string`                 | A UUID to uniquely identify this upstream service configuration, used for bindings.           |
 | `name`                    | `string`                 | A unique name for the upstream service. Used for identification, logging, and metrics.        |
 | `connection_pool`         | `ConnectionPoolConfig`   | Configuration for the pool of connections to the upstream service.                            |
-| `upstream_auth` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
+| `upstream_authentication` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
 | `cache`                   | `CacheConfig`            | Caching configuration to improve performance and reduce load on the upstream.                 |
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
@@ -213,7 +213,7 @@ upstream_services:
       circuit_breaker:
         failure_rate_threshold: 0.5
         open_duration: "5s"
-    upstream_auth:
+    upstream_authentication:
       api_key:
         header_name: "X-API-Key"
         api_key:
@@ -488,7 +488,7 @@ upstream_services:
       calls:
         user:
           selection_set: "{ id name }"
-    upstream_auth:
+    upstream_authentication:
       api_key:
         header_name: "X-API-Key"
         api_key:
@@ -806,7 +806,7 @@ Configures the authentication method for MCP Any to use when connecting to an up
 Authenticate with an upstream service using the OAuth 2.0 client credentials flow.
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   oauth2:
     token_url: "https://auth.example.com/oauth2/token"
     client_id:
@@ -821,7 +821,7 @@ upstream_auth:
 Authenticate with an upstream service using an API key stored in HashiCorp Vault.
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   api_key:
     header_name: "X-API-Key"
     api_key:
@@ -837,7 +837,7 @@ upstream_auth:
 Authenticate using an API key stored in AWS Secrets Manager.
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   api_key:
     header_name: "X-API-Key"
     api_key:

@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package worker
+package worker_test
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/worker"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -37,16 +38,13 @@ func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool { r
 func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
 
 func TestUpstreamWorker_Stop(t *testing.T) {
-	globalTestLock.Lock()
-	defer globalTestLock.Unlock()
-
 	// Setup bus
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
 	// Setup worker
 	toolManager := &MockToolManager{}
-	w := NewUpstreamWorker(b, toolManager)
+	w := worker.NewUpstreamWorker(b, toolManager)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	w.Start(ctx)

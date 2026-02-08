@@ -44,9 +44,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByText('Schema', { exact: true })).toBeVisible();
 
   // Switch to JSON tab to verify raw schema
-  // We use .first() or scope it because there are now two JSON tabs (Schema & Arguments)
-  // The first "JSON" tab is for the Schema viewer (top section)
-  await page.getByRole('tab', { name: 'JSON' }).first().click();
+  await page.getByRole('tab', { name: 'JSON' }).click();
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view

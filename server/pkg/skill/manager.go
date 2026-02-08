@@ -31,7 +31,6 @@ var (
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
-	cache   []*Skill
 }
 
 // NewManager creates a new Skill Manager.
@@ -48,22 +47,8 @@ func NewManager(rootDir string) (*Manager, error) {
 // ListSkills returns all available skills.
 // It scans the root directory for subdirectories containing SKILL.md.
 func (m *Manager) ListSkills() ([]*Skill, error) {
-	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
-	// Randomized Selection from Top 5 High-Impact Targets
 	m.mu.RLock()
-	if m.cache != nil {
-		defer m.mu.RUnlock()
-		return m.cache, nil
-	}
-	m.mu.RUnlock()
-
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	// Double-checked locking
-	if m.cache != nil {
-		return m.cache, nil
-	}
+	defer m.mu.RUnlock()
 
 	entries, err := os.ReadDir(m.rootDir)
 	if err != nil {
@@ -82,8 +67,6 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 		}
 		skills = append(skills, skill)
 	}
-
-	m.cache = skills
 	return skills, nil
 }
 
@@ -104,9 +87,6 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 func (m *Manager) CreateSkill(skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-
-	// Invalidate cache
-	m.cache = nil
 
 	if err := validateName(skill.Name); err != nil {
 		return err
@@ -134,9 +114,6 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-
-	// Invalidate cache
-	m.cache = nil
 
 	if err := validateName(skill.Name); err != nil {
 		return err
@@ -171,9 +148,6 @@ func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Invalidate cache
-	m.cache = nil
-
 	skillDir := filepath.Join(m.rootDir, name)
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", name)
@@ -188,9 +162,6 @@ func (m *Manager) DeleteSkill(name string) error {
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-
-	// Invalidate cache
-	m.cache = nil
 
 	// validate path to prevent traversal and ensure it is relative
 	if err := validation.IsSecureRelativePath(relPath); err != nil {

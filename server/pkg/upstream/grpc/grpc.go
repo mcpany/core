@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/alexliesenfeld/health"
@@ -45,17 +44,12 @@ type Upstream struct {
 	toolManager     tool.ManagerInterface
 	serviceID       string
 	checker         health.Checker
-	mu              sync.RWMutex
 }
 
 // CheckHealth performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
+	if u.checker != nil {
+		res := u.checker.Check(ctx)
 		if res.Status != health.StatusUp {
 			return fmt.Errorf("health check failed: %v", res)
 		}
@@ -83,17 +77,8 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	serviceID := u.serviceID
-	u.mu.Unlock()
-
 	u.reflectionCache.Stop()
-	u.poolManager.Deregister(serviceID)
+	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
 
@@ -127,17 +112,10 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	u.mu.Lock()
 	u.serviceID = sanitizedName // for internal use
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	u.checker = mcphealth.NewChecker(serviceConfig)
-	u.mu.Unlock()
+	serviceID := u.serviceID
 
-	serviceID := sanitizedName
+	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	grpcService := serviceConfig.GetGrpcService()
 	if grpcService == nil {

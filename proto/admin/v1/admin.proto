@@ -67,192 +67,123 @@ service AdminService {
   }
 }
 
-// ClearCacheRequest represents a request to clear the server cache.
 message ClearCacheRequest {}
 
-// ClearCacheResponse represents the response after clearing the cache.
 message ClearCacheResponse {}
 
-// ListServicesRequest represents a request to list all services.
 message ListServicesRequest {}
 
-// ListServicesResponse contains the list of services and their states.
 message ListServicesResponse {
-  // Deprecated: Use service_states instead.
   repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
-  // The list of service states.
   repeated ServiceState service_states = 2;
 }
 
-// ServiceState describes the current state of a service.
 message ServiceState {
-  // The configuration of the service.
   mcpany.config.v1.UpstreamServiceConfig config = 1;
-  // The status of the service (e.g., "OK", "ERROR", "CONNECTING").
-  string status = 2;
-  // Any error message associated with the service status.
+  string status = 2; // "OK", "ERROR", "CONNECTING"
   string error = 3;
 }
 
-// GetServiceRequest represents a request to retrieve a specific service.
 message GetServiceRequest {
-  // The ID of the service to retrieve.
   string service_id = 1;
 }
 
-// GetServiceResponse contains the requested service information.
 message GetServiceResponse {
-  // Deprecated: Use service_state instead.
   mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
-  // The state of the requested service.
   ServiceState service_state = 2;
 }
 
-// ListToolsRequest represents a request to list all tools.
 message ListToolsRequest {}
 
-// ListToolsResponse contains the list of tools.
 message ListToolsResponse {
-  // The list of tools.
   repeated mcpany.mcp_router.v1.Tool tools = 1;
 }
 
-// GetToolRequest represents a request to retrieve a specific tool.
 message GetToolRequest {
-  // The name of the tool to retrieve.
   string tool_name = 1;
 }
 
-// GetToolResponse contains the requested tool definition.
 message GetToolResponse {
-  // The tool definition.
   mcpany.mcp_router.v1.Tool tool = 1;
 }
 
 // User Management Messages
 
-// CreateUserRequest represents a request to create a new user.
 message CreateUserRequest {
-  // The user definition to create.
   mcpany.config.v1.User user = 1;
 }
 
-// CreateUserResponse contains the created user definition.
 message CreateUserResponse {
-  // The created user.
   mcpany.config.v1.User user = 1;
 }
 
-// GetUserRequest represents a request to retrieve a user.
 message GetUserRequest {
-  // The ID of the user to retrieve.
   string user_id = 1;
 }
 
-// GetUserResponse contains the requested user definition.
 message GetUserResponse {
-  // The user definition.
   mcpany.config.v1.User user = 1;
 }
 
-// ListUsersRequest represents a request to list all users.
 message ListUsersRequest {}
 
-// ListUsersResponse contains the list of users.
 message ListUsersResponse {
-  // The list of users.
   repeated mcpany.config.v1.User users = 1;
 }
 
-// UpdateUserRequest represents a request to update a user.
 message UpdateUserRequest {
-  // The user definition with updated fields.
   mcpany.config.v1.User user = 1;
   // Field mask to specify which fields to update (optional for now, full replace).
 }
 
-// UpdateUserResponse contains the updated user definition.
 message UpdateUserResponse {
-  // The updated user.
   mcpany.config.v1.User user = 1;
 }
 
-// DeleteUserRequest represents a request to delete a user.
 message DeleteUserRequest {
-  // The ID of the user to delete.
   string user_id = 1;
 }
 
-// DeleteUserResponse represents the response after deleting a user.
 message DeleteUserResponse {}
 
-// GetDiscoveryStatusRequest represents a request to get auto-discovery status.
 message GetDiscoveryStatusRequest {}
 
-// GetDiscoveryStatusResponse contains the status of discovery providers.
 message GetDiscoveryStatusResponse {
-  // The list of discovery provider statuses.
   repeated DiscoveryProviderStatus providers = 1;
 }
 
-// DiscoveryProviderStatus describes the status of a single discovery provider.
 message DiscoveryProviderStatus {
-  // The name of the provider.
   string name = 1;
-  // The status of the provider (e.g., "OK", "ERROR").
-  string status = 2;
-  // The last error message, if any.
+  string status = 2; // "OK", "ERROR"
   string last_error = 3;
-  // The timestamp of the last run in ISO 8601 format.
-  string last_run_at = 4;
-  // The number of services discovered in the last run.
+  string last_run_at = 4; // ISO 8601
   int32 discovered_count = 5;
 }
 
 // Audit Log Messages
 
-// ListAuditLogsRequest represents a request to list audit logs.
 message ListAuditLogsRequest {
-  // The start time for the query (ISO 8601).
-  string start_time = 1;
-  // The end time for the query (ISO 8601).
-  string end_time = 2;
-  // Filter by tool name.
+  string start_time = 1; // ISO 8601
+  string end_time = 2;   // ISO 8601
   string tool_name = 3;
-  // Filter by user ID.
   string user_id = 4;
-  // Filter by profile ID.
   string profile_id = 5;
-  // The maximum number of logs to return.
   int32 limit = 6;
-  // The offset for pagination.
   int32 offset = 7;
 }
 
-// ListAuditLogsResponse contains the list of audit log entries.
 message ListAuditLogsResponse {
-  // The list of audit log entries.
   repeated AuditLogEntry entries = 1;
 }
 
-// AuditLogEntry represents a single audit log event.
 message AuditLogEntry {
-  // The timestamp of the event (ISO 8601).
-  string timestamp = 1;
-  // The name of the tool executed.
+  string timestamp = 1; // ISO 8601
   string tool_name = 2;
-  // The ID of the user who initiated the action.
   string user_id = 3;
-  // The ID of the profile used.
   string profile_id = 4;
-  // The arguments passed to the tool (JSON string).
-  string arguments = 5;
-  // The result returned by the tool (JSON string).
-  string result = 6;
-  // Any error that occurred during execution.
+  string arguments = 5; // JSON string
+  string result = 6;    // JSON string
   string error = 7;
-  // The duration of the execution as a string.
   string duration = 8;
-  // The duration of the execution in milliseconds.
   int64 duration_ms = 9;
 }

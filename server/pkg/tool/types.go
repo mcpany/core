@@ -1926,19 +1926,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
-			// Sentinel Security: For shell commands, we only add environment variables if they are safe
-			// for unquoted use. If they contain dangerous characters, we omit them from the environment
-			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
-			safeForEnv := true
-			if isShellCommand(t.service.GetCommand()) {
-				if err := checkEnvInjection(valStr); err != nil {
-					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
-					safeForEnv = false
-				}
-			}
-			if safeForEnv {
-				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
-			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
 
@@ -2259,19 +2247,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
-			// Sentinel Security: For shell commands, we only add environment variables if they are safe
-			// for unquoted use. If they contain dangerous characters, we omit them from the environment
-			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
-			safeForEnv := true
-			if isShellCommand(t.service.GetCommand()) {
-				if err := checkEnvInjection(valStr); err != nil {
-					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
-					safeForEnv = false
-				}
-			}
-			if safeForEnv {
-				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
-			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
 
@@ -2833,22 +2809,6 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	if err := checkPythonInjection(val, template, base); err != nil {
-		return err
-	}
-	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
-		return err
-	}
-	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
-		return err
-	}
-	if err := checkAwkInjection(val, base); err != nil {
-		return err
-	}
-	return nil
-}
-
-func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2869,24 +2829,14 @@ func checkPythonInjection(val, template, base string) error {
 			}
 		}
 	}
-	return nil
-}
 
-func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
 	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
-		// Block leading pipe | to prevent open("|cmd") injection
-		if strings.HasPrefix(strings.TrimSpace(val), "|") {
-			return fmt.Errorf("ruby open injection detected: value starts with '|'")
-		}
 	}
-	return nil
-}
 
-func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
@@ -2904,15 +2854,6 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		}
 	}
 
-	if isPerl && (quoteLevel == 1 || quoteLevel == 3) {
-		if strings.Contains(val, "@{") {
-			return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
-		}
-	}
-	return nil
-}
-
-func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
@@ -2920,6 +2861,7 @@ func checkAwkInjection(val, base string) error {
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
 	}
+
 	return nil
 }
 
@@ -3061,17 +3003,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	return minLevel
-}
-
-func checkEnvInjection(val string) error {
-	// Relaxed check for environment variables.
-	// Allows spaces, but blocks shell metacharacters.
-	// We rely on validateSafePathAndInjection to prevent argument injection (flags starting with -).
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\" // Space removed
-	if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
-		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
-	}
-	return nil
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {

@@ -45,7 +45,7 @@ You can use `SecretValue` wherever a secret is expected (e.g., in authentication
 #### Environment Variable
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   api_key:
     header_name: "X-API-Key"
     api_key:
@@ -55,7 +55,7 @@ upstream_auth:
 #### File Path
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   bearer_token:
     token:
       file_path: "/var/secrets/token.txt"
@@ -64,7 +64,7 @@ upstream_auth:
 #### HashiCorp Vault
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   basic_auth:
     username: "admin"
     password:
@@ -79,7 +79,7 @@ upstream_auth:
 #### AWS Secrets Manager
 
 ```yaml
-upstream_auth:
+upstream_authentication:
   api_key:
     header_name: "Authorization"
     api_key:

@@ -19,10 +19,8 @@ import (
 	"al.essio.dev/pkg/shellescape"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
-	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -128,23 +126,6 @@ type Upstream struct {
 
 	mu        sync.RWMutex
 	serviceID string
-	checker   health.Checker
-}
-
-// CheckHealth performs a health check on the upstream service.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	return nil
 }
 
 // Shutdown cleans up any temporary resources associated with the upstream, such
@@ -152,14 +133,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.RLock()
 	serviceID := u.serviceID
-	checker := u.checker
 	u.mu.RUnlock()
-
-	if checker != nil {
-		if c, ok := checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
 
 	if serviceID != "" {
 		untrackBundle(serviceID)
@@ -301,12 +275,6 @@ func (u *Upstream) Register(
 		return "", nil, nil, err
 	}
 	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	u.checker = mcphealth.NewChecker(serviceConfig)
 	u.serviceID = serviceID
 	u.mu.Unlock()
 

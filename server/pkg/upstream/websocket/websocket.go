@@ -10,14 +10,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
-	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -36,24 +33,6 @@ import (
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
-	checker     health.Checker
-	mu          sync.RWMutex
-}
-
-// CheckHealth performs a health check on the upstream service.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	return nil
 }
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
@@ -65,16 +44,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Returns:
 //   - error: An error if the shutdown operation fails, or nil on success.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	serviceID := u.serviceID
-	u.mu.Unlock()
-
-	u.poolManager.Deregister(serviceID)
+	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
 
@@ -133,17 +103,8 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	u.mu.Lock()
 	u.serviceID = sanitizedName
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	u.checker = mcphealth.NewChecker(serviceConfig)
-	u.mu.Unlock()
-
-	serviceID := sanitizedName
+	serviceID := u.serviceID
 
 	websocketService := serviceConfig.GetWebsocketService()
 	if websocketService == nil {

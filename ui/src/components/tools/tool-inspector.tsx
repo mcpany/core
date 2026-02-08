@@ -18,7 +18,6 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
-import { SchemaForm, Schema } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -57,14 +56,6 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [metricsLoading, setMetricsLoading] = useState(false);
-
-  const parsedInput = useMemo(() => {
-    try {
-        return JSON.parse(input);
-    } catch {
-        return undefined;
-    }
-  }, [input]);
 
   // Computed stats from audit logs (recent 50)
   const recentStats = useMemo(() => {
@@ -181,37 +172,14 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments</Label>
-                    <Tabs defaultValue="form" className="w-full">
-                        <TabsList className="grid w-[200px] grid-cols-2 h-8 mb-2">
-                            <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
-                            <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="form">
-                            {parsedInput === undefined ? (
-                                <div className="text-destructive text-sm p-4 border border-destructive/50 rounded bg-destructive/10">
-                                    Invalid JSON. Please fix errors in JSON view to use the Form builder.
-                                </div>
-                            ) : (
-                                <div className="rounded-md border p-4 bg-muted/10">
-                                    <SchemaForm
-                                        schema={tool.inputSchema as Schema}
-                                        value={parsedInput}
-                                        onChange={(v) => setInput(JSON.stringify(v, null, 2))}
-                                    />
-                                </div>
-                            )}
-                        </TabsContent>
-                        <TabsContent value="json">
-                             <Textarea
-                                id="args"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                className="font-mono text-sm"
-                                rows={8}
-                            />
-                        </TabsContent>
-                    </Tabs>
+                    <Label htmlFor="args">Arguments (JSON)</Label>
+                    <Textarea
+                        id="args"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        className="font-mono text-sm"
+                        rows={5}
+                    />
                 </div>
 
                 {output && (

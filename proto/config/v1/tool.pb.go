@@ -25,7 +25,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// MergeStrategy defines how tool definitions should be merged.
 type ToolDefinition_MergeStrategy int32
 
 const (
@@ -498,7 +497,7 @@ type ToolDefinition_builder struct {
 
 	// The name of the tool, which will be used to invoke it.
 	Name *string
-	// The input schema for the tool, defining expected arguments.
+	// The input schema for the tool.
 	InputSchema *structpb.Struct
 	// The ID of the service that provides the tool.
 	ServiceId *string
@@ -528,14 +527,12 @@ type ToolDefinition_builder struct {
 	OpenWorldHint *bool
 	// The ID of the call definition to use for this tool.
 	CallId *string
-	// If true, this tool is disabled and will not be exposed.
+	// If true, this tool is disabled.
 	Disable *bool
 	// A list of profiles this tool belongs to.
-	Profiles []*Profile
-	// The strategy to use when merging this tool definition with others.
+	Profiles      []*Profile
 	MergeStrategy *ToolDefinition_MergeStrategy
-	// Tags associated with the tool for filtering and organization.
-	Tags []string
+	Tags          []string
 	// Integrity check for the tool definition.
 	Integrity *Integrity
 }
@@ -599,7 +596,6 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	return m0
 }
 
-// Integrity defines a checksum for verifying the tool definition.
 type Integrity struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Hash        *string                `protobuf:"bytes,1,opt,name=hash"`
@@ -692,9 +688,7 @@ func (x *Integrity) ClearAlgorithm() {
 type Integrity_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The hash value.
-	Hash *string
-	// The algorithm used to generate the hash (e.g., "sha256").
+	Hash      *string
 	Algorithm *string
 }
 

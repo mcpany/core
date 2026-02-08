@@ -10,13 +10,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/alexliesenfeld/health"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
-	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -36,36 +33,11 @@ type sanitizer func(string) (string, error)
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
-	checker           health.Checker
-	mu                sync.RWMutex
-}
-
-// CheckHealth performs a health check on the upstream service.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	return nil
 }
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	u.mu.Unlock()
 	return nil
 }
 
@@ -108,15 +80,6 @@ func (u *Upstream) Register(
 	serviceConfig.SetSanitizedName(sanitizedName)
 
 	serviceID := sanitizedName // for internal use
-
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	u.checker = mcphealth.NewChecker(serviceConfig)
-	u.mu.Unlock()
 
 	webrtcService := serviceConfig.GetWebrtcService()
 	if webrtcService == nil {

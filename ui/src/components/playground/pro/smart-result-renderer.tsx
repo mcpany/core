@@ -8,7 +8,7 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
+import { Code, Table as TableIcon } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 
 /**
@@ -19,150 +19,80 @@ interface SmartResultRendererProps {
     result: any;
 }
 
-interface McpContent {
-    type: 'text' | 'image' | 'resource';
-    text?: string;
-    data?: string;
-    mimeType?: string;
-    resource?: any;
-}
-
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
  * falling back to a raw JSON view.
+ *
+ * @param props - The component props.
+ * @param props.result - The result object to render. Can be a JSON string, an object, or an array.
+ * @returns A React component that displays the result.
  */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
-    const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | null>(null);
+    const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
 
-    // 1. Shared unwrapping logic
-    const unwrappedContent = useMemo(() => {
+    // Attempt to parse a tabular structure from the result
+    const tableData = useMemo(() => {
         let content = result;
 
-        // Unwrap CallToolResult structure
+        // 1. Unwrap CallToolResult structure
         if (result && typeof result === 'object' && Array.isArray(result.content)) {
-            content = result.content;
+            const textItem = result.content.find((c: any) => c.type === 'text' || (c.text && !c.type));
+            if (textItem) {
+                content = textItem.text;
+            }
         }
 
-        // Handle Command Output wrapper
+        // 2. Parse JSON string if it's a string
+        if (typeof content === 'string') {
+            try {
+                content = JSON.parse(content);
+            } catch (e) {
+                // Not valid JSON string
+                return null;
+            }
+        }
+
+        // 3. Handle Command Output wrapper (e.g. { stdout: "[...]", ... })
         if (content && typeof content === 'object' && !Array.isArray(content)) {
              if (content.stdout && typeof content.stdout === 'string') {
                  try {
                      const inner = JSON.parse(content.stdout);
-                     if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
+                     if (Array.isArray(inner)) {
                          content = inner;
                      }
                  } catch (e) {
                      // stdout is not JSON
                  }
+             } else if (content.content && Array.isArray(content.content)) {
+                  // Maybe nested content?
+                  content = content.content;
              }
         }
 
-        // Handle deeply nested "content" (e.g. from stdout containing MCP content object)
-        if (content && typeof content === 'object' && !Array.isArray(content) && Array.isArray(content.content)) {
-            content = content.content;
+        // 4. Final validation: Must be an array of objects
+        if (Array.isArray(content) && content.length > 0) {
+            // Check if items are objects
+            const isListOfObjects = content.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+            if (isListOfObjects) {
+                return content;
+            }
         }
 
-        return content;
+        return null;
     }, [result]);
 
-    // 2. Identify MCP Content
-    const mcpContent = useMemo<McpContent[] | null>(() => {
-        if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
-            const isMcp = unwrappedContent.every((item: any) =>
-                typeof item === 'object' &&
-                (item.type === 'text' || item.type === 'image' || item.type === 'resource')
-            );
-            if (isMcp) return unwrappedContent as McpContent[];
-        }
-        return null;
-    }, [unwrappedContent]);
-
-    // 3. Identify Table Data
-    const tableData = useMemo(() => {
-        // If MCP content, try to extract table data from text
-        if (mcpContent) {
-             const hasNonText = mcpContent.some(c => c.type !== 'text');
-             if (hasNonText) return null;
-
-             // Only support single text block for table view to avoid complexity
-             if (mcpContent.length === 1 && mcpContent[0].text) {
-                 try {
-                    const parsed = JSON.parse(mcpContent[0].text);
-                    if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
-                        return parsed;
-                    }
-                } catch (e) {}
-             }
-             return null;
-        }
-
-        // If NOT MCP content, check if unwrapped content itself is tabular data (CLI use case)
-        if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
-             const isTable = unwrappedContent.every((item: any) => typeof item === 'object' && item !== null);
-             if (isTable) return unwrappedContent;
-        }
-
-        return null;
-    }, [unwrappedContent, mcpContent]);
-
-    const activeView = useMemo(() => {
-        // User override
-        if (userViewMode === 'smart' && tableData) return 'smart';
-        if (userViewMode === 'rich' && mcpContent) return 'rich';
-        if (userViewMode === 'raw') return 'raw';
-
-        // Auto defaults (if user mode invalid or null)
-        if (tableData) return 'smart';
-        if (mcpContent) return 'rich';
-        return 'raw';
-    }, [userViewMode, tableData, mcpContent]);
+    const hasSmartView = tableData !== null;
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
     );
 
-    const renderRich = () => {
-        if (!mcpContent) return renderRaw();
+    const renderSmart = () => {
+        if (!tableData) return renderRaw();
 
-        return (
-            <div className="flex flex-col gap-4 p-4 border rounded-md bg-muted/10">
-                {mcpContent.map((item, idx) => (
-                    <div key={idx} className="flex flex-col gap-2">
-                        {item.type === 'text' && (
-                            <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
-                                {item.text}
-                            </div>
-                        )}
-                        {item.type === 'image' && item.data && (
-                            <div className="flex flex-col gap-1 items-start">
-                                <img
-                                    src={`data:${item.mimeType || 'image/png'};base64,${item.data}`}
-                                    alt="Tool Result"
-                                    className="max-w-full h-auto rounded-lg border border-white/10 shadow-sm"
-                                />
-                                <span className="text-[10px] text-muted-foreground self-end">
-                                    {item.mimeType}
-                                </span>
-                            </div>
-                        )}
-                        {item.type === 'resource' && (
-                            <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-md border border-white/5">
-                                <FileText className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium">Resource: {item.resource?.uri || 'Unknown'}</span>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
-    const renderSmartTable = () => {
-        if (!tableData) return null;
-
-        // Determine columns from all keys in the first 10 rows
+        // Determine columns from all keys in the first 10 rows (to be reasonably safe)
         const allKeys = new Set<string>();
-        tableData.slice(0, 10).forEach((row: any) => {
+        tableData.slice(0, 10).forEach(row => {
             Object.keys(row).forEach(k => allKeys.add(k));
         });
         const columns = Array.from(allKeys);
@@ -180,7 +110,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tableData.map((row: any, idx: number) => (
+                        {tableData.map((row, idx) => (
                             <TableRow key={idx} className="hover:bg-muted/50">
                                 {columns.map(col => {
                                     const val = row[col];
@@ -210,42 +140,30 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
     return (
         <div className="flex flex-col gap-0 w-full">
-            <div className="flex justify-end mb-1 px-1">
-                 <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border">
-                     {tableData && (
-                        <Button
-                            variant={activeView === "smart" ? "secondary" : "ghost"}
+            {hasSmartView && (
+                <div className="flex justify-end mb-1 px-1">
+                     <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border">
+                         <Button
+                            variant={viewMode === "smart" ? "secondary" : "ghost"}
                             size="sm"
                             className="h-6 px-2 text-[10px] gap-1"
-                            onClick={() => setUserViewMode("smart")}
-                        >
-                            <TableIcon className="size-3" /> Table
-                        </Button>
-                     )}
-                     {mcpContent && (
-                        <Button
-                            variant={activeView === "rich" ? "secondary" : "ghost"}
+                            onClick={() => setViewMode("smart")}
+                         >
+                             <TableIcon className="size-3" /> Table
+                         </Button>
+                         <Button
+                            variant={viewMode === "raw" ? "secondary" : "ghost"}
                             size="sm"
                             className="h-6 px-2 text-[10px] gap-1"
-                            onClick={() => setUserViewMode("rich")}
-                        >
-                            <ImageIcon className="size-3" /> Rich
-                        </Button>
-                     )}
-                     <Button
-                        variant={activeView === "raw" ? "secondary" : "ghost"}
-                        size="sm"
-                        className="h-6 px-2 text-[10px] gap-1"
-                        onClick={() => setUserViewMode("raw")}
-                     >
-                         <Code className="size-3" /> JSON
-                     </Button>
-                 </div>
-            </div>
+                            onClick={() => setViewMode("raw")}
+                         >
+                             <Code className="size-3" /> JSON
+                         </Button>
+                     </div>
+                </div>
+            )}
 
-            {activeView === 'smart' && renderSmartTable()}
-            {activeView === 'rich' && renderRich()}
-            {activeView === 'raw' && renderRaw()}
+            {viewMode === "smart" && hasSmartView ? renderSmart() : renderRaw()}
         </div>
     );
 }

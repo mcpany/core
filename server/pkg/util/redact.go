@@ -626,9 +626,9 @@ func RedactSecrets(text string, secrets []string) string {
 			absoluteIdx := start + idx
 			end := absoluteIdx + len(secret)
 			intervals = append(intervals, redactInterval{start: absoluteIdx, end: end})
-			// Advance by 1 to find overlapping instances of the *same* secret
-			// (e.g. "ababa" with secret "aba" -> match at 0 [0,3), next search starts at 1, finds match at 2 [2,5)).
-			start = absoluteIdx + 1
+			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
+			// (e.g. "aaaa" with secret "aa" -> match at 0, next search starts at 2).
+			start = end
 		}
 	}
 

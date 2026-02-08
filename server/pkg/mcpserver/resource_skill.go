@@ -19,9 +19,6 @@ import (
 )
 
 // SkillResource adapts a Skill (or its asset) to the Resource interface.
-//
-// It provides a way to expose skill documentation and associated assets (like images or text files)
-// as MCP resources, making them accessible to clients.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
@@ -32,14 +29,9 @@ var _ resource.Resource = &SkillResource{}
 
 // NewSkillResource creates a new resource for the main SKILL.md.
 //
-// It wraps the provided Skill definition into a Resource that serves the skill's
-// documentation file (SKILL.md).
+// s is the s.
 //
-// Parameters:
-//   - s: *skill.Skill. The skill definition to expose as a resource.
-//
-// Returns:
-//   - *SkillResource: A new instance of SkillResource pointing to the skill's documentation.
+// Returns the result.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -48,14 +40,10 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 
 // NewSkillAssetResource creates a new resource for a skill asset.
 //
-// It wraps a specific asset associated with a skill into a Resource.
+// s is the s.
+// assetPath is the assetPath.
 //
-// Parameters:
-//   - s: *skill.Skill. The skill definition the asset belongs to.
-//   - assetPath: string. The relative path to the asset file within the skill's directory.
-//
-// Returns:
-//   - *SkillResource: A new instance of SkillResource pointing to the specified asset.
+// Returns the result.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -65,12 +53,7 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 
 // URI returns the URI of the resource.
 //
-// Constructs a unique URI for the resource using the scheme "skills://".
-// For the main skill documentation, the URI is "skills://<skill_name>/SKILL.md".
-// For assets, the URI is "skills://<skill_name>/<asset_path>".
-//
-// Returns:
-//   - string: The unique URI of the resource.
+// Returns the result.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -78,10 +61,9 @@ func (r *SkillResource) URI() string {
 	return fmt.Sprintf("skills://%s/%s", r.skill.Name, r.assetPath)
 }
 
-// Name returns the human-readable name of the resource.
+// Name returns the name of the resource.
 //
-// Returns:
-//   - string: The name of the resource, including the skill name and asset path if applicable.
+// Returns the result.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -89,22 +71,16 @@ func (r *SkillResource) Name() string {
 	return fmt.Sprintf("Skill Asset: %s (%s)", r.assetPath, r.skill.Name)
 }
 
-// Service returns the service identifier associated with the resource.
+// Service returns the service associated with the resource.
 //
-// All skill resources belong to the "skills" service.
-//
-// Returns:
-//   - string: The fixed string "skills".
+// Returns the result.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
 
 // Resource returns the underlying MCP resource definition.
 //
-// It constructs the mcp.Resource object, determining the MIME type based on the file extension.
-//
-// Returns:
-//   - *mcp.Resource: The MCP resource definition.
+// Returns the result.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {
@@ -124,15 +100,10 @@ func (r *SkillResource) Resource() *mcp.Resource {
 
 // Read returns the contents of the resource.
 //
-// It reads the file content from disk, verifying that the path is secure and within the
-// allowed skill directory to prevent path traversal attacks.
+// _ is an unused parameter.
 //
-// Parameters:
-//   - _ : context.Context. Unused in this implementation.
-//
-// Returns:
-//   - *mcp.ReadResourceResult: The result containing the resource content (text or blob).
-//   - error: An error if the file cannot be read or if the path is invalid.
+// Returns the result.
+// Returns an error if the operation fails.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	var content []byte
 	var err error
@@ -240,14 +211,9 @@ func isTextMime(mimeType string) bool {
 
 // Subscribe subscribes to changes on the resource.
 //
-// Currently, this implementation is a no-op as dynamic updates to skill resources
-// are not yet supported.
+// _ is an unused parameter.
 //
-// Parameters:
-//   - _ : context.Context. Unused.
-//
-// Returns:
-//   - error: Always returns nil.
+// Returns an error if the operation fails.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -255,15 +221,10 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 
 // RegisterSkillResources registers all skills from the manager into the resource manager.
 //
-// It iterates through all available skills and registers their documentation (SKILL.md)
-// and associated assets as resources in the provided Resource Manager.
+// rm is the rm.
+// sm is the sm.
 //
-// Parameters:
-//   - rm: resource.ManagerInterface. The resource manager to register resources with.
-//   - sm: *skill.Manager. The skill manager to retrieve skills from.
-//
-// Returns:
-//   - error: An error if listing skills fails.
+// Returns an error if the operation fails.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

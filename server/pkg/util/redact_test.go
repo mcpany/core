@@ -65,12 +65,6 @@ func TestRedactSecrets(t *testing.T) {
 			secrets:  []string{"secret1", "secret2"},
 			expected: "[REDACTED]",
 		},
-		{
-			name:     "overlapping same secret",
-			text:     "ababa",
-			secrets:  []string{"aba"},
-			expected: "[REDACTED]",
-		},
 	}
 
 	for _, tt := range tests {

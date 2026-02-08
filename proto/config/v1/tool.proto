@@ -15,16 +15,9 @@ option features.(pb.go).api_level = API_OPAQUE;
 
 // ToolDefinition describes a single capability or "tool" offered by a service.
 message ToolDefinition {
-  // MergeStrategy defines how tool definitions should be merged.
-  enum MergeStrategy {
-    MERGE_STRATEGY_UNSPECIFIED = 0;
-    MERGE_STRATEGY_MERGE = 1;
-    MERGE_STRATEGY_OVERRIDE = 2;
-  }
-
   // The name of the tool, which will be used to invoke it.
   string name = 1;
-  // The input schema for the tool, defining expected arguments.
+  // The input schema for the tool.
   google.protobuf.Struct input_schema = 3 [json_name = "input_schema"];
   // The ID of the service that provides the tool.
   string service_id = 13 [json_name = "service_id"];
@@ -54,22 +47,23 @@ message ToolDefinition {
   bool open_world_hint = 10 [json_name = "open_world_hint"];
   // The ID of the call definition to use for this tool.
   string call_id = 11 [json_name = "call_id"];
-  // If true, this tool is disabled and will not be exposed.
+  // If true, this tool is disabled.
   bool disable = 12;
   // A list of profiles this tool belongs to.
   repeated Profile profiles = 14;
-  // The strategy to use when merging this tool definition with others.
+
+  enum MergeStrategy {
+    MERGE_STRATEGY_UNSPECIFIED = 0;
+    MERGE_STRATEGY_MERGE = 1;
+    MERGE_STRATEGY_OVERRIDE = 2;
+  }
   MergeStrategy merge_strategy = 15 [json_name = "merge_strategy"];
-  // Tags associated with the tool for filtering and organization.
   repeated string tags = 16;
   // Integrity check for the tool definition.
   Integrity integrity = 17;
 }
 
-// Integrity defines a checksum for verifying the tool definition.
 message Integrity {
-  // The hash value.
   string hash = 1;
-  // The algorithm used to generate the hash (e.g., "sha256").
-  string algorithm = 2;
+  string algorithm = 2; // e.g. "sha256"
 }
