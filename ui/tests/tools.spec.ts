@@ -18,32 +18,28 @@ test.describe('Tool Exploration', () => {
     test('should list available tools', async ({ page }) => {
         await page.goto('/tools');
 
-        // Expect seeded tools (Memory)
-        await expect(page.getByText('read_graph').first()).toBeVisible({ timeout: 10000 });
+        // Expect seeded tools (Memory) - Increase timeout for npx installation
+        await expect(page.getByText('read_graph').first()).toBeVisible({ timeout: 45000 });
     });
 
     test('should show empty state when no tools', async ({ page, request }) => {
         // Cleanup tools for this test
         await cleanupServices(request);
-        // Also ensure no other tools are lingering (Memory service ID is not in cleanupServices helper yet? Check test-data.ts)
-        // seedServices adds "Memory", cleanupServices removes "Payment Gateway", "User Service", "Math".
-        // I need to update cleanupServices in test-data.ts or handle it here.
-        // Assuming I updated test-data.ts, but I didn't update cleanupServices to include Memory!
-        // I must update test-data.ts first or do manual cleanup.
-        // Let's do manual cleanup for Memory here to be safe or update test-data.ts in next step?
-        // Wait, I can update test-data.ts now? No, I am editing tools.spec.ts.
-        // I will use raw request to delete Memory service.
-        await request.delete('/api/v1/services/Memory', { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } });
+        // Cleanup Memory service manually if cleanupServices didn't catch it (redundant if test-data.ts updated, but safe)
+        await request.delete('/api/v1/services/Memory', { headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' } }).catch(() => {});
 
         await page.goto('/tools');
         await page.reload(); // Ensure fresh state
 
         // The table shows one row with "No tools found." when empty
-        await expect(page.locator('text=No tools found.')).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('text=No tools found.')).toBeVisible({ timeout: 15000 });
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
+        // Wait for tool to appear first
+        await expect(page.getByText('read_graph').first()).toBeVisible({ timeout: 45000 });
+
         const toolRow = page.locator('tr').filter({ hasText: 'read_graph' });
         await toolRow.getByText('Inspect').click();
 

@@ -53,7 +53,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
     // "Memory" service seeds "read_graph" tool. "Math" (dummy) tools won't appear.
-    await expect(page.locator('text=read_graph')).toBeVisible();
+    // Increase timeout for npx installation
+    await expect(page.locator('text=read_graph')).toBeVisible({ timeout: 45000 });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
