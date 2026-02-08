@@ -16,7 +16,9 @@ test.describe('Service Resilience Configuration (Real Data)', () => {
       },
       data: {
         name: serviceName,
-        http_service: { address: "https://api.example.com" },
+        // Use a reachable address in CI/Docker environment to avoid registration failures
+        // if strict connectivity checks are enabled.
+        http_service: { address: "http://ui-http-echo-server:5678" },
         resilience: {
             timeout: "30s",
             retry_policy: {
@@ -33,6 +35,9 @@ test.describe('Service Resilience Configuration (Real Data)', () => {
         }
       }
     });
+    if (!response.ok()) {
+        console.error('Failed to register resilient service:', await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
