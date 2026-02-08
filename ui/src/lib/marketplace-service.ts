@@ -57,10 +57,15 @@ export interface ExternalServer {
  * A server discovered from the Community (Awesome List).
  */
 export interface CommunityServer {
+    /** The category or section where this server was found (e.g., "Browser Automation"). */
     category: string;
+    /** The name of the server. */
     name: string;
+    /** The URL to the server's repository or documentation. */
     url: string;
+    /** A brief description of the server's capabilities. */
     description: string;
+    /** A list of tags or keywords associated with the server (e.g., emojis). */
     tags: string[];
 }
 
