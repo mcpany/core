@@ -36,14 +36,14 @@ test.describe('Layout Smoke Tests', () => {
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
     // Check for the "mcpany-system" stack
-    // Use a more robust selector if possible, but text match is fine for now
-    await expect(page.locator(`text=${stackName}`)).toBeVisible();
+    // Target the main title to avoid strict mode violation (subtitle also has the text)
+    await expect(page.locator('.text-2xl', { hasText: stackName })).toBeVisible();
 
     // Navigate to Stack Detail
     await Promise.all([
       // Regex needs to match encoded or simple path
       page.waitForURL(new RegExp(`/stacks/${stackName}`)),
-      page.click(`text=${stackName}`),
+      page.click(`.text-2xl:has-text("${stackName}")`),
     ]);
 
     // Check Header

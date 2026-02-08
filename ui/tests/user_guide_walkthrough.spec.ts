@@ -118,8 +118,8 @@ test.describe('User Guide Walkthrough', () => {
   test('Stack Composer', async ({ page }) => {
     await page.goto('/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
-    // Check for the seeded stack
-    await expect(page.getByText(stackName)).toBeVisible();
+    // Check for the seeded stack using specific selector to avoid strict mode violation
+    await expect(page.locator('.text-2xl', { hasText: stackName })).toBeVisible();
   });
 
   test('Webhooks Management', async ({ page }) => {
