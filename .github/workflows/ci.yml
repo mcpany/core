@@ -92,6 +92,34 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-lint-cache-
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          if ! command -v make >/dev/null 2>&1; then
+            echo "make not found, installing..."
+            sudo apt-get install -y make
+          else
+            echo "make is already installed"
+          fi
+          if ! command -v wget >/dev/null 2>&1; then
+            echo "wget not found, installing..."
+            sudo apt-get install -y wget
+          else
+            echo "wget is already installed"
+          fi
+          if ! command -v xz >/dev/null 2>&1; then
+            echo "xz-utils not found, installing..."
+            sudo apt-get install -y xz-utils
+          else
+            echo "xz-utils is already installed"
+          fi
+          if ! command -v curl >/dev/null 2>&1; then
+            echo "curl not found, installing..."
+            sudo apt-get install -y curl
+          else
+            echo "curl is already installed"
+          fi
+
       - name: Prepare environment
         run: make prepare
 

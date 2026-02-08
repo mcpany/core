@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"log/slog"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,10 +27,10 @@ type LogEntry struct {
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
-	attrs       []slog.Attr
-	group       string
-	mu          sync.Mutex
 	level       slog.Level
+	// modifiers is a chain of functions that build the metadata structure.
+	// Each function takes the current map and returns the map where subsequent attributes should be added.
+	modifiers []func(map[string]any) map[string]any
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
@@ -44,6 +43,7 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastH
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
 		level:       level,
+		modifiers:   make([]func(map[string]any) map[string]any, 0),
 	}
 }
 
@@ -72,13 +72,19 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		Metadata:  make(map[string]any),
 	}
 
+	// Apply modifiers to build the metadata structure and find the insertion point for record attributes
+	currentMap := entry.Metadata
+	for _, mod := range h.modifiers {
+		currentMap = mod(currentMap)
+	}
+
 	// Track source priority to ensure we get the most specific source
 	sourcePriority := 0 // 0: none, 1: component/source, 2: toolName
 
 	// Try to find source in attributes or use default
 	r.Attrs(func(a slog.Attr) bool {
-		// Collect all attributes into Metadata
-		entry.Metadata[a.Key] = a.Value.Any()
+		// Collect all attributes into Metadata (at the current nesting level)
+		currentMap[a.Key] = a.Value.Any()
 
 		if a.Key == "source" || a.Key == "component" {
 			if sourcePriority < 1 {
@@ -119,13 +125,27 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 //
 // Returns the result.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	// Copy attributes to ensure immutability
+	attrsCopy := make([]slog.Attr, len(attrs))
+	copy(attrsCopy, attrs)
+
+	// Create a modifier that adds attributes to the current map
+	mod := func(m map[string]any) map[string]any {
+		for _, a := range attrsCopy {
+			m[a.Key] = a.Value.Any()
+		}
+		return m
+	}
+
+	// Copy existing modifiers and append the new one
+	newModifiers := make([]func(map[string]any) map[string]any, len(h.modifiers)+1)
+	copy(newModifiers, h.modifiers)
+	newModifiers[len(h.modifiers)] = mod
+
 	return &BroadcastHandler{
 		broadcaster: h.broadcaster,
-		attrs:       append(h.attrs, attrs...),
-		group:       h.group,
 		level:       h.level,
+		modifiers:   newModifiers,
 	}
 }
 
@@ -135,13 +155,26 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Returns the result.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	if name == "" {
+		return h
+	}
+
+	// Create a modifier that creates a sub-map and returns it
+	mod := func(m map[string]any) map[string]any {
+		sub := make(map[string]any)
+		m[name] = sub
+		return sub
+	}
+
+	// Copy existing modifiers and append the new one
+	newModifiers := make([]func(map[string]any) map[string]any, len(h.modifiers)+1)
+	copy(newModifiers, h.modifiers)
+	newModifiers[len(h.modifiers)] = mod
+
 	return &BroadcastHandler{
 		broadcaster: h.broadcaster,
-		attrs:       h.attrs,
-		group:       name,
 		level:       h.level,
+		modifiers:   newModifiers,
 	}
 }
 

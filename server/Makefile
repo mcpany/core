@@ -317,7 +317,14 @@ prepare:
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
 		SC_VERSION="stable"; \
-		wget -qO- "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		ARCH=$$(uname -m); \
+		case $${ARCH} in \
+			x86_64) SC_ARCH=x86_64 ;; \
+			aarch64) SC_ARCH=aarch64 ;; \
+			*) SC_ARCH=x86_64 ;; \
+		esac; \
+		echo "Detected architecture for ShellCheck: $${SC_ARCH}"; \
+		wget -qO- "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.$${SC_ARCH}.tar.xz" | tar -xJv -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
 		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
