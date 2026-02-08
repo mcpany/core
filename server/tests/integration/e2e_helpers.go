@@ -625,8 +625,9 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	dockerRunArgs = append(dockerRunArgs, command...)
 
 	startCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // Test helper
-	// Capture stderr for better error reporting
-	var stderr bytes.Buffer
+	// Capture stdout and stderr for better error reporting
+	var stdout, stderr bytes.Buffer
+	startCmd.Stdout = &stdout
 	startCmd.Stderr = &stderr
 
 	// Use Run instead of Start for 'docker run -d' to ensure the command completes
@@ -634,13 +635,15 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	err := startCmd.Run()
 	if err != nil {
 		errOutput := stderr.String()
+		fullOutput := stdout.String() + "\n" + errOutput
 		// Check for overlayfs mount error (common in restricted Docker environments)
 		// Case insensitive check to be robust
-		lowerOutput := strings.ToLower(errOutput)
-		if strings.Contains(lowerOutput, "overlay") && (strings.Contains(lowerOutput, "invalid argument") || strings.Contains(lowerOutput, "operation not supported")) {
-			t.Skipf("Skipping test due to Docker overlayfs issue: %v. Stderr: %s", err, errOutput)
+		lowerOutput := strings.ToLower(fullOutput)
+		if (strings.Contains(lowerOutput, "overlay") && (strings.Contains(lowerOutput, "invalid argument") || strings.Contains(lowerOutput, "operation not supported"))) ||
+			strings.Contains(lowerOutput, "failed to mount") {
+			t.Skipf("Skipping test due to Docker environment issue: %v. Output: %s", err, fullOutput)
 		}
-		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, errOutput)
+		require.NoError(t, err, "failed to start docker container %s. Output: %s", imageName, fullOutput)
 	}
 
 	cleanupFunc = func() {
