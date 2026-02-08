@@ -2538,6 +2538,14 @@ func isSensitiveHeader(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
+	// Sentinel Security Update: Also check for @file syntax which might be used to bypass traversal checks
+	// e.g. curl -d @../secret.txt
+	if strings.HasPrefix(val, "@") && len(val) > 1 {
+		if err := checkForPathTraversal(val[1:]); err != nil {
+			return fmt.Errorf("path traversal attempt detected in @file argument: %w", err)
+		}
+	}
+
 	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
@@ -2657,6 +2665,14 @@ func checkForLocalFileAccess(val string) error {
 	if filepath.IsAbs(val) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
+	// Sentinel Security Update: Block @file syntax which bypasses IsAbs check for tools like curl
+	if strings.HasPrefix(val, "@") && len(val) > 1 {
+		rest := val[1:]
+		if filepath.IsAbs(rest) {
+			return fmt.Errorf("absolute path detected in @file argument: %s", val)
+		}
+	}
+
 	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
 	// We check for "file:" prefix case-insensitively.
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
