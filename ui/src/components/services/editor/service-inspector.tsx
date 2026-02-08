@@ -5,10 +5,13 @@
 
 "use client";
 
+import { useState } from "react";
 import { useTraces } from "@/hooks/use-traces";
-import { InspectorTable } from "@/components/inspector/inspector-table";
+import { TraceList } from "@/components/traces/trace-list";
+import { TraceDetail } from "@/components/traces/trace-detail";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { RefreshCcw, Unplug, Pause, Play, Trash2 } from "lucide-react";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -34,11 +37,16 @@ export function ServiceInspector({ service }: ServiceInspectorProps) {
         refresh
     } = useTraces();
 
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+
     // Filter traces by service name
     // The serviceName in rootSpan usually matches the service ID or Name
     const filteredTraces = traces.filter(
         t => t.rootSpan.serviceName === service.name || t.rootSpan.serviceName === service.id
     );
+
+    const selectedTrace = traces.find(t => t.id === selectedId) || null;
 
     return (
         <Card className="h-[600px] flex flex-col">
@@ -84,10 +92,24 @@ export function ServiceInspector({ service }: ServiceInspectorProps) {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 p-0 flex flex-col">
-                <div className="border-t flex-1 min-h-0">
-                    <InspectorTable traces={filteredTraces} loading={loading && filteredTraces.length === 0} />
+            <CardContent className="flex-1 min-h-0 p-0 flex flex-col relative">
+                <div className="border-t flex-1 min-h-0 relative">
+                    <TraceList
+                        traces={filteredTraces}
+                        selectedId={selectedId}
+                        onSelect={setSelectedId}
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        isLive={!isPaused}
+                        onToggleLive={(live) => setIsPaused(!live)}
+                    />
                 </div>
+
+                <Sheet open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
+                    <SheetContent className="w-full sm:w-[800px] sm:max-w-[800px] p-0 overflow-y-auto border-l">
+                        {selectedTrace && <TraceDetail trace={selectedTrace} />}
+                    </SheetContent>
+                </Sheet>
             </CardContent>
         </Card>
     );
