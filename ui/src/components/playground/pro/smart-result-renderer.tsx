@@ -8,8 +8,9 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
+import { Code, Table as TableIcon, Image as ImageIcon, FileText, Terminal } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
+import { CommandResultView } from "./command-result-view";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -32,7 +33,7 @@ interface McpContent {
  * falling back to a raw JSON view.
  */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
-    const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | null>(null);
+    const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | "console" | null>(null);
 
     // 1. Shared unwrapping logic
     const unwrappedContent = useMemo(() => {
@@ -105,17 +106,53 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         return null;
     }, [unwrappedContent, mcpContent]);
 
+    // 4. Identify Command Result
+    const commandResult = useMemo(() => {
+        let content = result;
+        // Unwrap CallToolResult structure to find the inner content
+        if (result && typeof result === 'object' && Array.isArray(result.content)) {
+            content = result.content;
+        }
+
+        // Case 1: content is an array (Standard MCP)
+        // Check if the first item contains a JSON string that parses to a command result
+        if (Array.isArray(content) && content.length > 0) {
+            const firstItem = content[0];
+            if (firstItem && typeof firstItem === 'object' && firstItem.type === 'text' && typeof firstItem.text === 'string') {
+                try {
+                    const parsed = JSON.parse(firstItem.text);
+                    if (parsed && typeof parsed === 'object' && typeof parsed.stdout === 'string' && (typeof parsed.return_code === 'number' || typeof parsed.status === 'string')) {
+                        return parsed;
+                    }
+                } catch (e) {
+                    // Not JSON or parse error, ignore
+                }
+            }
+        }
+
+        // Case 2: content is already the command result object (Non-standard / CLI wrapper direct return)
+        if (content && typeof content === 'object' && !Array.isArray(content)) {
+             // It must have stdout (string) AND (return_code (number) OR status (string))
+             if (typeof content.stdout === 'string' && (typeof content.return_code === 'number' || typeof content.status === 'string')) {
+                 return content;
+             }
+        }
+        return null;
+    }, [result]);
+
     const activeView = useMemo(() => {
         // User override
         if (userViewMode === 'smart' && tableData) return 'smart';
         if (userViewMode === 'rich' && mcpContent) return 'rich';
+        if (userViewMode === 'console' && commandResult) return 'console';
         if (userViewMode === 'raw') return 'raw';
 
         // Auto defaults (if user mode invalid or null)
         if (tableData) return 'smart';
         if (mcpContent) return 'rich';
+        if (commandResult) return 'console';
         return 'raw';
-    }, [userViewMode, tableData, mcpContent]);
+    }, [userViewMode, tableData, mcpContent, commandResult]);
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
@@ -155,6 +192,11 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                 ))}
             </div>
         );
+    };
+
+    const renderConsole = () => {
+        if (!commandResult) return renderRaw();
+        return <CommandResultView result={commandResult} />;
     };
 
     const renderSmartTable = () => {
@@ -232,6 +274,16 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             <ImageIcon className="size-3" /> Rich
                         </Button>
                      )}
+                     {commandResult && (
+                        <Button
+                            variant={activeView === "console" ? "secondary" : "ghost"}
+                            size="sm"
+                            className="h-6 px-2 text-[10px] gap-1"
+                            onClick={() => setUserViewMode("console")}
+                        >
+                            <Terminal className="size-3" /> Console
+                        </Button>
+                     )}
                      <Button
                         variant={activeView === "raw" ? "secondary" : "ghost"}
                         size="sm"
@@ -245,6 +297,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
             {activeView === 'smart' && renderSmartTable()}
             {activeView === 'rich' && renderRich()}
+            {activeView === 'console' && renderConsole()}
             {activeView === 'raw' && renderRaw()}
         </div>
     );
