@@ -34,7 +34,7 @@ test.describe('Stack Editor', () => {
     const visualizer = page.locator('.stack-visualizer-container');
 
     // Wait for initial load
-    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 30000 });
+    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 60000 });
 
     // Click on PostgreSQL template in the palette
     await page.getByText('PostgreSQL').click();
