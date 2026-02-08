@@ -81,7 +81,8 @@ test.describe('HTTP Tool Editor', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Verify Toast
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    // Use exact match to avoid strict mode violation (ambiguity with other text containing 'Service Updated')
+    await expect(page.getByText('Service Updated', { exact: true })).toBeVisible();
 
     // Verify Persistence via API
     const response = await request.get(`/api/v1/services/${serviceName}`);

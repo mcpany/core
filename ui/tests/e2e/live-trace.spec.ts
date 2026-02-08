@@ -32,12 +32,17 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Navigate to traces page
   await page.goto('/traces');
 
-  // Verify Live Toggle exists
-  const liveToggle = page.locator('button[title="Start Live Updates"]');
-  await expect(liveToggle).toBeVisible();
+  // Verify Live Toggle exists and system starts in Live mode (Pause button visible)
+  // If we want to test toggling, we should see Pause first.
+  const pauseButton = page.locator('button[title="Pause Live Updates"]');
+  await expect(pauseButton).toBeVisible();
 
-  // Click Live Toggle
-  await liveToggle.click();
+  // Click to Pause
+  await pauseButton.click();
+  await expect(page.locator('button[title="Start Live Updates"]')).toBeVisible();
+
+  // Click to Resume
+  await page.locator('button[title="Start Live Updates"]').click();
   await expect(page.locator('button[title="Pause Live Updates"]')).toBeVisible();
 
   // Wait for and click on a trace (using the mock data which has "calculate_sum")
