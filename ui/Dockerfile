@@ -28,7 +28,12 @@ COPY proto/ /proto/
 RUN ln -s /app/node_modules /proto/node_modules
 
 # Install tools to generate protos inside the container
-RUN apt-get update && apt-get install -y protobuf-compiler curl unzip
+RUN apt-get update && apt-get install -y curl unzip
+
+# Download protoc 29.3 (supports edition 2023)
+RUN curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip && \
+    unzip protoc-29.3-linux-x86_64.zip -d /usr/local && \
+    rm protoc-29.3-linux-x86_64.zip
 
 # Download googleapis
 RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
@@ -46,8 +51,8 @@ RUN find /proto -name "*.proto" -exec protoc \
     {} +
 
 # Generate standard protos (google/api, google/protobuf)
-RUN find /usr/include/google/protobuf /googleapis/google/api -name "*.proto" -exec protoc \
-    --proto_path=/usr/include \
+RUN find /usr/local/include/google/protobuf /googleapis/google/api -name "*.proto" -exec protoc \
+    --proto_path=/usr/local/include \
     --proto_path=/googleapis \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/proto \
