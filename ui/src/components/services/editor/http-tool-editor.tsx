@@ -24,6 +24,16 @@ interface HttpToolEditorProps {
     onCancel: () => void;
 }
 
+/**
+ * A form component to create or edit an HTTP tool definition.
+ * It manages both the high-level ToolDefinition and the low-level HttpCallDefinition.
+ *
+ * @param props - Component props
+ * @param props.tool - The existing tool definition to edit, or null for a new tool.
+ * @param props.call - The existing HTTP call definition to edit, or null for a new call.
+ * @param props.onSave - Callback fired when the user saves the tool.
+ * @param props.onCancel - Callback fired when the user cancels the operation.
+ */
 export function HttpToolEditor({ tool, call, onSave, onCancel }: HttpToolEditorProps) {
     // Tool State
     const [name, setName] = useState(tool?.name || "");
