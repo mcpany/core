@@ -34,6 +34,14 @@ interface HttpToolManagerProps {
     onChange: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * Manages the list of HTTP tools for a service.
+ * Provides functionality to add, edit, and delete tools mapped to HTTP endpoints.
+ * @param props The component props.
+ * @param props.service The service configuration.
+ * @param props.onChange Callback when the service configuration is updated.
+ * @returns The rendered component.
+ */
 export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
     const [editingTool, setEditingTool] = useState<ToolDefinition | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
