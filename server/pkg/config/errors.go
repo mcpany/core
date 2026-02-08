@@ -9,6 +9,12 @@ import (
 )
 
 // ActionableError is an error that includes a suggestion for fixing the issue.
+//
+// Summary: An error type that pairs an underlying error with a user-facing suggestion.
+//
+// Fields:
+//   - Err: error. The original error that occurred.
+//   - Suggestion: string. A human-readable suggestion on how to resolve the error.
 type ActionableError struct {
 	Err        error
 	Suggestion string

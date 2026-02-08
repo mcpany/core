@@ -127,6 +127,20 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 // RunOptions configuration for starting the MCP Any application.
 //
 // Summary: Options for configuring the application runtime.
+//
+// Fields:
+//   - Ctx: context.Context. The context for the application.
+//   - Fs: afero.Fs. The filesystem interface.
+//   - Stdio: bool. Whether to run in stdio mode (for CLI/one-off usage).
+//   - JSONRPCPort: string. The port for the JSON-RPC/HTTP server.
+//   - GRPCPort: string. The port for the gRPC registration server.
+//   - ConfigPaths: []string. Paths to configuration files.
+//   - APIKey: string. The master API key for the server.
+//   - ShutdownTimeout: time.Duration. The timeout for graceful shutdown.
+//   - TLSCert: string. Path to the TLS certificate file.
+//   - TLSKey: string. Path to the TLS private key file.
+//   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
+//   - DBPath: string. Path to the SQLite database file.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -174,6 +188,26 @@ type Runner interface {
 // Application is the main application struct, holding the dependencies and logic for the MCP Any server.
 //
 // Summary: The main application container.
+//
+// Fields:
+//   - PromptManager: prompt.ManagerInterface. Manages AI prompts.
+//   - ToolManager: tool.ManagerInterface. Manages tools and execution.
+//   - ResourceManager: resource.ManagerInterface. Manages resources (files, data).
+//   - ServiceRegistry: serviceregistry.ServiceRegistryInterface. Manages upstream service connections.
+//   - TopologyManager: *topology.Manager. Manages the topology of the server.
+//   - UpstreamFactory: factory.Factory. Creates upstream service clients.
+//   - Storage: storage.Storage. Persistent storage interface.
+//   - TemplateManager: *TemplateManager. Manages templates.
+//   - SkillManager: *skill.Manager. Manages agent skills.
+//   - AlertsManager: *alerts.Manager. Manages system alerts.
+//   - DiscoveryManager: *discovery.Manager. Manages auto-discovery of services.
+//   - SettingsManager: *GlobalSettingsManager. Manages dynamic global settings.
+//   - ProfileManager: *profile.Manager. Manages user profiles.
+//   - AuthManager: *auth.Manager. Manages authentication and authorization.
+//   - RegistrationRetryDelay: time.Duration. Delay between service registration retries.
+//   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
+//   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
+//   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
