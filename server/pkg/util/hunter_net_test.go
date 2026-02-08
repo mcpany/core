@@ -51,6 +51,8 @@ func TestCheckConnection_Coverage(t *testing.T) {
 }
 
 func TestSafeDialer_Coverage(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
