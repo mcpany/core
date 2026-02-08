@@ -2891,6 +2891,48 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
+		// Sentinel Security Update: Block file access and getline
+		if strings.Contains(val, "getline") {
+			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+		if strings.Contains(val, ">") || strings.Contains(val, "<") {
+			return fmt.Errorf("awk injection detected: value contains redirection characters")
+		}
+	}
+
+	// General Dangerous Calls Check for Interpreters (Level 1 and 2)
+	// We check this for all interpreters because executing arbitrary code via eval/system/subprocess is always risky
+	// if the user input was intended to be data (which is usually the case if it's inside quotes).
+	// This covers both Double Quoted (Level 1) and Single Quoted (Level 2).
+	if quoteLevel == 1 || quoteLevel == 2 {
+		var b strings.Builder
+		b.Grow(len(val))
+		for _, r := range val {
+			if !unicode.IsSpace(r) {
+				b.WriteRune(r)
+			}
+		}
+		cleanVal := strings.ToLower(b.String())
+
+		// Expanded list of dangerous calls for interpreters
+		// We avoid short common words to prevent false positives (e.g. "os.", "sys.", "open(", "file(")
+		dangerousCalls := []string{
+			// Python
+			"os.system(", "os.popen(", "os.spawn", "os.execl", "os.execv",
+			"subprocess.", "__import__(",
+			// Generic / Other Languages (Ruby, Perl, PHP, Node)
+			"eval(", "exec(", "popen(",
+			"child_process",
+			// We omit "system(" to avoid blocking "System (Active)", unless we can be more specific.
+			// But system() is critical for Ruby/Perl.
+			// Let's rely on quote breaking checks for simple strings, and this list for code injection.
+		}
+
+		for _, call := range dangerousCalls {
+			if strings.Contains(cleanVal, call) {
+				return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q inside quoted argument", call)
+			}
+		}
 	}
 	return nil
 }
