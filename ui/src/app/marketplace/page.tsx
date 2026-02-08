@@ -25,6 +25,7 @@ import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
+import { enrichCommunityServerConfig } from "@/lib/server-schemas";
 
 /**
  * MarketplacePage component.
@@ -140,102 +141,7 @@ export default function MarketplacePage() {
   };
 
   const openInstantiateCommunity = (server: CommunityServer) => {
-      // Best-effort config generation logic
-      const isPython = server.tags.some(t => t.includes('🐍'));
-
-      // Try to extract repo name for npx
-      let command = "";
-      const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
-
-      if (repoMatch) {
-          const owner = repoMatch[1];
-          const repo = repoMatch[2];
-          if (isPython) {
-             command = `uvx ${repo}`;
-          } else {
-             if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
-                 command = `npx -y @modelcontextprotocol/${repo}`;
-             } else {
-                 command = `npx -y ${repo}`;
-             }
-          }
-      } else {
-          command = isPython ? "uvx package-name" : "npx -y package-name";
-      }
-
-      // Smart Schema Injection
-      let configurationSchema = "";
-
-      // Cloudflare
-      if (repoMatch && (repoMatch[2] === "mcp-server-cloudflare" || server.name.toLowerCase().includes("cloudflare"))) {
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "Cloudflare Configuration",
-              properties: {
-                  "CLOUDFLARE_API_TOKEN": {
-                      type: "string",
-                      title: "Cloudflare API Token",
-                      description: "Your Cloudflare API Token (Account.Read permissions required)",
-                  },
-                  "CLOUDFLARE_ACCOUNT_ID": {
-                      type: "string",
-                      title: "Account ID",
-                      description: "Your Cloudflare Account ID"
-                  }
-              },
-              required: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
-          });
-      }
-
-      // Postgres
-      if (repoMatch && (repoMatch[2] === "server-postgres" || server.name.toLowerCase().includes("postgres"))) {
-           // PostgreSQL usually takes args but some wrappers use env.
-           // For the official one, it takes connection string as arg.
-           // But let's assume we can pass it via env if we wrap it, or just for demo of the UI capability.
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "PostgreSQL Configuration",
-              properties: {
-                  "POSTGRES_URL": {
-                      type: "string",
-                      title: "Connection URL",
-                      description: "postgresql://user:pass@host:5432/db",
-                  }
-              },
-              required: ["POSTGRES_URL"]
-          });
-      }
-
-      const config: UpstreamServiceConfig = {
-          id: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-          name: server.name,
-          configurationSchema: configurationSchema,
-          version: "1.0.0",
-          commandLineService: {
-              command: command,
-              env: {},
-              workingDirectory: "",
-              tools: [],
-              resources: [],
-              prompts: [],
-              calls: {},
-              communicationProtocol: 0,
-              local: false
-          },
-          disable: false,
-          sanitizedName: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-          priority: 0,
-          loadBalancingStrategy: 0,
-          callPolicies: [],
-          preCallHooks: [],
-          postCallHooks: [],
-          prompts: [],
-          autoDiscoverTool: true,
-          configError: "",
-          tags: server.tags,
-          readOnly: false
-      };
-
+      const config = enrichCommunityServerConfig(server);
       setSelectedTemplate(config);
       setIsInstantiateOpen(true);
   };
