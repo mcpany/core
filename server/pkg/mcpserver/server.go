@@ -69,6 +69,8 @@ type Server struct {
 
 // Server returns the underlying *mcp.Server instance.
 //
+// Summary: Returns the underlying *mcp.Server instance.
+//
 // It provides access to the core MCP server functionality, which can be used for advanced
 // configurations or direct interaction with the MCP server.
 //

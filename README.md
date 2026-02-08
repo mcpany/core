@@ -108,7 +108,12 @@ make test
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, JSDoc for TS). We enforce **100% documentation coverage**.
-All exported functions, types, and constants must have a comprehensive docstring (Summary, Parameters, Returns).
+All exported functions, types, and constants must have a comprehensive docstring following the Gold Standard structure:
+*   **Summary**: A concise one-line description.
+*   **Parameters**: Detailed description of input parameters.
+*   **Returns**: Description of return values.
+*   **Errors/Throws**: Explicit list of potential errors.
+
 ```bash
 make lint
 ```

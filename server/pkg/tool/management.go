@@ -27,10 +27,14 @@ import (
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server.
 //
+// Summary: Interface for providing the MCP server instance.
+//
 // This interface is used to decouple the Manager from the concrete server implementation,
 // avoiding circular dependencies.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
+	//
+	// Summary: Returns the underlying MCP server instance.
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.
@@ -39,19 +43,28 @@ type MCPServerProvider interface {
 
 // ManagerInterface defines the contract for a tool manager.
 //
+// Summary: Interface for tool lifecycle and execution management.
+//
 // It outlines the methods required for managing the lifecycle, registration, discovery,
 // and execution of tools within the MCP Any server.
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
+	//
+	// Summary: Registers a new tool.
 	//
 	// Parameters:
 	//   - tool: Tool. The tool definition to register.
 	//
 	// Returns:
 	//   - error: An error if the tool cannot be registered (e.g., duplicate name).
+	//
+	// Errors:
+	//   - Returns an error if tool validation fails.
 	AddTool(tool Tool) error
 
 	// GetTool retrieves a tool by its unique name or ID.
+	//
+	// Summary: Retrieves a tool by name.
 	//
 	// Parameters:
 	//   - toolName: string. The name or ID of the tool to retrieve.
@@ -63,11 +76,15 @@ type ManagerInterface interface {
 
 	// ListTools returns a list of all currently registered tools.
 	//
+	// Summary: Lists all registered tools.
+	//
 	// Returns:
 	//   - []Tool: A slice of registered tools.
 	ListTools() []Tool
 
 	// ListMCPTools returns a list of all registered tools formatted for the MCP protocol.
+	//
+	// Summary: Lists tools in MCP format.
 	//
 	// This method is optimized for the MCP `tools/list` request.
 	//
@@ -77,6 +94,8 @@ type ManagerInterface interface {
 
 	// ClearToolsForService removes all tools associated with a specific service ID.
 	//
+	// Summary: Removes tools for a specific service.
+	//
 	// This is typically used when a service is reloaded or removed.
 	//
 	// Parameters:
@@ -85,6 +104,8 @@ type ManagerInterface interface {
 
 	// ExecuteTool executes a specific tool with the provided request parameters.
 	//
+	// Summary: Executes a tool.
+	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the execution.
 	//   - req: *ExecutionRequest. The request containing the tool name and arguments.
@@ -92,9 +113,14 @@ type ManagerInterface interface {
 	// Returns:
 	//   - any: The result of the tool execution.
 	//   - error: An error if execution fails.
+	//
+	// Errors:
+	//   - Returns an error if execution fails or tool is not found.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 
 	// SetMCPServer sets the MCP server provider for the manager.
+	//
+	// Summary: Sets the MCP server provider.
 	//
 	// This allows the manager to register tool handlers with the underlying MCP server.
 	//
@@ -104,11 +130,15 @@ type ManagerInterface interface {
 
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
+	// Summary: Adds a middleware to the execution chain.
+	//
 	// Parameters:
 	//   - middleware: ExecutionMiddleware. The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
 
 	// AddServiceInfo adds metadata for a registered service.
+	//
+	// Summary: Adds service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -116,6 +146,8 @@ type ManagerInterface interface {
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 
 	// GetServiceInfo retrieves metadata for a service by its ID.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -127,11 +159,15 @@ type ManagerInterface interface {
 
 	// ListServices returns a list of all services known to the manager.
 	//
+	// Summary: Lists all known services.
+	//
 	// Returns:
 	//   - []*ServiceInfo: A slice of service metadata.
 	ListServices() []*ServiceInfo
 
 	// SetProfiles configures the active profiles and their definitions.
+	//
+	// Summary: Configures active profiles.
 	//
 	// This is used for filtering tools based on user profiles and permissions.
 	//
@@ -141,6 +177,8 @@ type ManagerInterface interface {
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 
 	// IsServiceAllowed checks if a specific service is accessible under a given profile.
+	//
+	// Summary: Checks if a service is allowed for a profile.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -152,6 +190,8 @@ type ManagerInterface interface {
 
 	// ToolMatchesProfile checks if a specific tool is accessible under a given profile.
 	//
+	// Summary: Checks if a tool matches a profile.
+	//
 	// Parameters:
 	//   - tool: Tool. The tool to check.
 	//   - profileID: string. The identifier of the profile to check against.
@@ -161,6 +201,8 @@ type ManagerInterface interface {
 	ToolMatchesProfile(tool Tool, profileID string) bool
 
 	// GetAllowedServiceIDs returns a set of allowed service IDs for a given profile.
+	//
+	// Summary: Retrieves allowed service IDs for a profile.
 	//
 	// This is optimized for quick lookups during filtering.
 	//
@@ -174,6 +216,8 @@ type ManagerInterface interface {
 
 	// GetToolCountForService returns the number of tools registered for a given service.
 	//
+	// Summary: Counts tools for a service.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -183,8 +227,12 @@ type ManagerInterface interface {
 }
 
 // ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
+//
+// Summary: Interface for tool execution middleware.
 type ExecutionMiddleware interface {
 	// Execute performs the middleware logic wrapping the next handler in the chain.
+	//
+	// Summary: Executes the middleware logic.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the execution.
@@ -194,10 +242,15 @@ type ExecutionMiddleware interface {
 	// Returns:
 	//   - any: The result of the execution.
 	//   - error: An error if execution fails.
+	//
+	// Errors:
+	//   - Returns an error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
 // Manager is the central component for managing tools in MCP Any.
+//
+// Summary: Central manager for tool registration and execution.
 //
 // It handles tool registration, retrieval, execution, and profile-based filtering.
 // It is thread-safe and supports efficient lookups via caching and indexing.
@@ -226,6 +279,8 @@ type Manager struct {
 
 // NewManager creates and initializes a new Tool Manager.
 //
+// Summary: Creates a new Manager.
+//
 // Parameters:
 //   - bus: *bus.Provider. The event bus provider for publishing tool execution events.
 //
@@ -245,6 +300,8 @@ func NewManager(bus *bus.Provider) *Manager {
 }
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
+//
+// Summary: Configures active profiles for filtering.
 //
 // This method updates the internal state used for profile-based access control.
 // It pre-computes allowed services for each profile to optimize lookup performance.
@@ -352,6 +409,8 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 
 // IsServiceAllowed checks if a service is allowed for a given profile.
 //
+// Summary: Checks if a service is allowed for a profile.
+//
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
 //   - profileID: string. The identifier of the profile to check.
@@ -380,6 +439,8 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 
 // ToolMatchesProfile checks if a tool matches a given profile.
 //
+// Summary: Checks if a tool matches a profile.
+//
 // It delegates to the internal toolMatchesProfile method.
 //
 // Parameters:
@@ -395,6 +456,8 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 }
 
 // GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+//
+// Summary: Retrieves allowed service IDs for a profile.
 //
 // The returned map uses the service ID as the key and a boolean true as the value.
 //
@@ -413,6 +476,8 @@ func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool
 }
 
 // GetToolCountForService returns the number of tools registered for a given service.
+//
+// Summary: Counts tools for a service.
 //
 // It first checks if the service is healthy; if not, it returns 0.
 //
@@ -511,6 +576,8 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 
 // AddMiddleware adds a middleware to the tool manager.
 //
+// Summary: Adds a middleware.
+//
 // The middleware will be executed as part of the tool execution chain.
 //
 // Parameters:
@@ -520,6 +587,8 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
+//
+// Summary: Sets the MCP server reference.
 //
 // This allows the manager to register tool handlers directly with the server.
 //
@@ -532,6 +601,8 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 }
 
 // ExecuteTool finds a tool by its name and executes it.
+//
+// Summary: Executes a tool by name.
 //
 // It handles the entire lifecycle of a tool call, including:
 // 1. Resolving the tool.
@@ -550,7 +621,7 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //   - error: An error if the tool is not found, execution is denied, or the tool fails.
 //
 // Errors:
-//   - ErrToolNotFound: If the tool cannot be found (includes fuzzy matching suggestions).
+//   - Returns ErrToolNotFound if the tool cannot be found.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -701,6 +772,8 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 
 // AddServiceInfo registers metadata about a service.
 //
+// Summary: Registers service metadata.
+//
 // It processes the service configuration to set up hooks and call policies.
 //
 // Parameters:
@@ -745,6 +818,8 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 
 // GetServiceInfo retrieves the metadata for a registered service.
 //
+// Summary: Retrieves service metadata.
+//
 // It returns a copy of the service info with secrets stripped from the configuration
 // for security.
 //
@@ -770,6 +845,8 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 
 // ListServices returns a list of all currently registered services.
 //
+// Summary: Lists all services.
+//
 // It strips secrets from the service configurations before returning them.
 //
 // Returns:
@@ -791,6 +868,8 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 
 // AddTool registers a new tool with the manager.
 //
+// Summary: Registers a new tool.
+//
 // It performs validation, sanitization, and integrity checks.
 // If an MCP server is configured, it also registers the tool with the server.
 //
@@ -799,6 +878,9 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 //
 // Returns:
 //   - error: An error if validation fails or the tool cannot be added.
+//
+// Errors:
+//   - Returns an error if validation fails.
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -961,6 +1043,8 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 // GetTool retrieves a tool from the manager by its fully qualified name.
 //
+// Summary: Retrieves a tool by name.
+//
 // It first attempts to look up the tool by its exact ID (useful if the client sends the ID).
 // If that fails, it looks up the tool by its client-facing name (using the name map).
 //
@@ -988,6 +1072,8 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 }
 
 // ListTools returns a list of all tools currently registered with the manager.
+//
+// Summary: Lists all tools.
 //
 // It uses a read-through cache to avoid rebuilding the list on every call.
 //
@@ -1038,6 +1124,8 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 // ListMCPTools returns a slice containing all the tools currently registered with
 // the manager in MCP format.
 //
+// Summary: Lists tools in MCP format.
+//
 // It maintains a cache of the MCP tool definitions to minimize overhead.
 //
 // Returns:
@@ -1084,6 +1172,8 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 }
 
 // ClearToolsForService removes all tools associated with a given service ID.
+//
+// Summary: Clears tools for a service.
 //
 // It efficiently cleans up internal indices and caches.
 //

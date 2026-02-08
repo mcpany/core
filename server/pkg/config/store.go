@@ -43,6 +43,9 @@ type Engine interface {
 	//
 	// Returns:
 	//   - error: An error if parsing fails.
+	//
+	// Errors:
+	//   - Returns an error if the bytes cannot be unmarshaled into the message.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -62,6 +65,9 @@ type StructuredEngine interface {
 	//
 	// Returns:
 	//   - error: An error if parsing fails.
+	//
+	// Errors:
+	//   - Returns an error if the map cannot be marshaled/unmarshaled into the message.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
@@ -97,6 +103,9 @@ type ConfigurableEngine interface {
 // Returns:
 //   - Engine: An initialized Engine implementation.
 //   - error: An error if the file extension is not supported.
+//
+// Errors:
+//   - Returns an error if the file extension is not one of .json, .yaml, .yml, .textproto, .prototxt, .pb, .pb.txt.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -118,16 +127,38 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Summary: Sets whether to skip schema validation.
+//
+// Parameters:
+//   - skip: bool. True to skip validation.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
 // SetIgnoreEnv sets whether to ignore environment variables.
+//
+// Summary: Sets whether to ignore environment variables.
+//
+// Parameters:
+//   - ignore: bool. True to ignore environment variables.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// Summary: Parses a YAML byte slice into a proto.Message.
+//
+// Parameters:
+//   - b: []byte. The YAML bytes.
+//   - v: proto.Message. The destination message.
+//
+// Returns:
+//   - error: An error if parsing fails.
+//
+// Errors:
+//   - Returns an error if YAML unmarshaling fails.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -147,6 +178,19 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Summary: Populates the provided proto.Message from a raw map.
+//
+// Parameters:
+//   - yamlMap: map[string]interface{}. The raw map.
+//   - v: proto.Message. The destination message.
+//   - originalBytes: []byte. The original bytes for error reporting.
+//
+// Returns:
+//   - error: An error if parsing fails.
+//
+// Errors:
+//   - Returns an error if conversion fails.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -252,6 +296,18 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Summary: Parses a textproto byte slice into a proto.Message.
+//
+// Parameters:
+//   - b: []byte. The textproto bytes.
+//   - v: proto.Message. The destination message.
+//
+// Returns:
+//   - error: An error if parsing fails.
+//
+// Errors:
+//   - Returns an error if textproto unmarshaling fails.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -260,6 +316,18 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Summary: Parses a JSON byte slice into a proto.Message.
+//
+// Parameters:
+//   - b: []byte. The JSON bytes.
+//   - v: proto.Message. The destination message.
+//
+// Returns:
+//   - error: An error if parsing fails.
+//
+// Errors:
+//   - Returns an error if JSON unmarshaling fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -306,6 +374,9 @@ type Store interface {
 	// Returns:
 	//   - *configv1.McpAnyServerConfig: The loaded configuration.
 	//   - error: An error if loading fails.
+	//
+	// Errors:
+	//   - Returns an error if configuration cannot be loaded.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
@@ -332,6 +403,9 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if saving fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
@@ -345,6 +419,9 @@ type ServiceStore interface {
 	// Returns:
 	//   - *configv1.UpstreamServiceConfig: The service configuration.
 	//   - error: An error if the service is not found or the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the service is not found.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
@@ -357,6 +434,9 @@ type ServiceStore interface {
 	// Returns:
 	//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if listing fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
@@ -369,6 +449,9 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if deletion fails.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -386,6 +469,9 @@ const maxExpandRecursionDepth = 100
 // Returns:
 //   - []byte: The expanded bytes.
 //   - error: An error if expansion fails or recursion limit is exceeded.
+//
+// Errors:
+//   - Returns an error if recursion depth is exceeded or if required variables are missing.
 func expand(b []byte) ([]byte, error) {
 	return expandRecursive(b, 0)
 }
@@ -652,6 +738,9 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading or merging fails.
+//
+// Errors:
+//   - Returns an error if file collection, reading, or parsing fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 
@@ -1214,6 +1303,9 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
+//
+// Errors:
+//   - Returns an error if any store fails to load.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

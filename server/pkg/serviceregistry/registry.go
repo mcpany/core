@@ -24,10 +24,14 @@ import (
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
+// Summary: Interface for managing upstream service registration and lifecycle.
+//
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
+	//
+	// Summary: Registers a new upstream service.
 	//
 	// It establishes the connection to the upstream service and discovers its capabilities.
 	//
@@ -40,9 +44,14 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//   - []*config.ToolDefinition: A list of discovered tools.
 	//   - []*config.ResourceDefinition: A list of discovered resources.
 	//   - error: An error if registration fails.
+	//
+	// Errors:
+	//   - Returns an error if service config is invalid or upstream connection fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 
 	// UnregisterService removes a service from the registry.
+	//
+	// Summary: Removes a service from the registry.
 	//
 	// It gracefully shuts down the upstream connection and cleans up associated resources.
 	//
@@ -52,16 +61,26 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//
 	// Returns:
 	//   - error: An error if the service is not found or shutdown fails.
+	//
+	// Errors:
+	//   - Returns an error if service is not found.
 	UnregisterService(ctx context.Context, serviceName string) error
 
 	// GetAllServices returns a list of all currently registered services.
 	//
+	// Summary: Returns all registered services.
+	//
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if retrieval fails (unlikely for in-memory registry).
+	//
+	// Errors:
+	//   - Returns an error if list cannot be retrieved.
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -73,6 +92,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceConfig returns the configuration for a given service ID.
 	//
+	// Summary: Retrieves service configuration.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -82,6 +103,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the last known registration or health error for a service.
+	//
+	// Summary: Retrieves the last error for a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -93,6 +116,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 }
 
 // ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+//
+// Summary: Concrete implementation of the service registry.
 //
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
@@ -111,6 +136,8 @@ type ServiceRegistry struct {
 }
 
 // New creates and initializes a new ServiceRegistry.
+//
+// Summary: Creates and initializes a new ServiceRegistry.
 //
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.
@@ -157,6 +184,9 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //   - []*config.ToolDefinition: Discovered tools.
 //   - []*config.ResourceDefinition: Discovered resources.
 //   - error: An error if any step fails.
+//
+// Errors:
+//   - Returns an error if service name is invalid, duplicate, or upstream fails.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -356,6 +386,9 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Returns:
 //   - error: An error if the service is not found or if shutdown fails.
+//
+// Errors:
+//   - Returns an error if service is not found or shutdown fails.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -487,6 +520,9 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 //
 // Returns:
 //   - error: An error if any service fails to shutdown cleanly.
+//
+// Errors:
+//   - Returns an error if any service shutdown fails.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -511,6 +547,9 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Returns:
 //   - []*config.UpstreamServiceConfig: A list of service configurations.
 //   - error: Always nil.
+//
+// Errors:
+//   - Returns an error if retrieval fails (currently nil).
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
