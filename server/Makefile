@@ -316,7 +316,7 @@ prepare:
 		echo "ShellCheck is already installed."; \
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
-		SC_VERSION="stable"; \
+		SC_VERSION="v0.10.0"; \
 		ARCH=$$(uname -m); \
 		case $${ARCH} in \
 			x86_64) SC_ARCH=x86_64 ;; \
