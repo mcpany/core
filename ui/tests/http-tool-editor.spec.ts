@@ -80,8 +80,8 @@ test.describe('HTTP Tool Editor', () => {
     // Save Service
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
-    // Verify Toast
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    // Verify Toast (Specific locator to avoid multiple matches)
+    await expect(page.getByRole('status').filter({ hasText: 'Service Updated' })).toBeVisible();
 
     // Verify Persistence via API
     const response = await request.get(`/api/v1/services/${serviceName}`);
