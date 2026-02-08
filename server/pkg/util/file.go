@@ -64,7 +64,11 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 	buf := make([]byte, chunkSize)
 	var cursor = filesize
 
-	var collected []byte
+	// ⚡ BOLT: Optimized reverse file reading to avoid O(N^2) memory copying.
+	// We collect chunks and join them once at the end.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var chunks [][]byte
+	newlineCount := 0
 
 	for cursor > 0 {
 		toRead := chunkSize
@@ -85,21 +89,30 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 			return nil, err
 		}
 
-		// Prepend readBuf to collected
-		collected = append(readBuf, collected...)
-
-		// Count newlines in collected
-		count := 0
-		for _, b := range collected {
+		// Count newlines in THIS chunk
+		for _, b := range readBuf {
 			if b == '\n' {
-				count++
+				newlineCount++
 			}
 		}
 
-		if count >= n {
+		// Copy chunk because buffer is reused
+		chunkCopy := make([]byte, len(readBuf))
+		copy(chunkCopy, readBuf)
+		chunks = append(chunks, chunkCopy)
+
+		if newlineCount >= n {
 			break
 		}
 	}
+
+	// Reverse chunks to put them in correct order (since we read backwards)
+	for i, j := 0, len(chunks)-1; i < j; i, j = i+1, j-1 {
+		chunks[i], chunks[j] = chunks[j], chunks[i]
+	}
+
+	// Join chunks efficiently
+	collected := bytes.Join(chunks, nil)
 
 	// Now process 'collected'
 	scanner := bufio.NewScanner(bytes.NewReader(collected))
