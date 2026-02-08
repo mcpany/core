@@ -6,7 +6,6 @@
 import { test, expect } from '@playwright/test';
 
 test('Live Trace Inspector and Replay Flow', async ({ page }) => {
-  // Navigate to traces page
   // Mock traces API
   await page.route('/api/traces', async route => {
     await route.fulfill({
@@ -29,12 +28,53 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
     });
   });
 
+  // Mock WebSocket to ensure "Connected" state regardless of backend availability
+  await page.addInitScript(() => {
+    const originalWebSocket = window.WebSocket;
+
+    // Minimal mock that triggers onopen immediately
+    class MockWebSocket extends EventTarget {
+      readyState: number;
+
+      constructor(url: string | URL, protocols?: string | string[]) {
+        super();
+        this.readyState = 0; // CONNECTING
+
+        // Trigger Open immediately to simulate connection
+        setTimeout(() => {
+          this.readyState = 1; // OPEN
+          this.dispatchEvent(new Event('open'));
+        }, 10);
+      }
+
+      close() {
+        this.readyState = 3; // CLOSED
+        this.dispatchEvent(new Event('close'));
+      }
+
+      send(data: any) {
+        // no-op
+      }
+    }
+
+    // Override the global WebSocket
+    (window as any).WebSocket = MockWebSocket;
+    // Keep constants if needed (though not used by useTraces usually)
+    (window as any).WebSocket.CONNECTING = 0;
+    (window as any).WebSocket.OPEN = 1;
+    (window as any).WebSocket.CLOSING = 2;
+    (window as any).WebSocket.CLOSED = 3;
+  });
+
   // Navigate to traces page
   await page.goto('/traces');
 
   // Verify Live Toggle exists (Starts in Live/Pause state)
   const liveToggle = page.locator('button[title="Pause Live Updates"]');
   await expect(liveToggle).toBeVisible();
+
+  // Verify it's enabled (connected)
+  await expect(liveToggle).toBeEnabled();
 
   // Click Live Toggle to Pause
   await liveToggle.click();
@@ -57,7 +97,6 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
       await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
   }
 
-  // Verify Playground input
   // Verify Playground input
   const input = page.getByPlaceholder('Enter command or select a tool...').or(page.locator('textarea'));
   await expect(input).toBeVisible();

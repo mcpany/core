@@ -21,7 +21,10 @@ test.describe('Stack Editor', () => {
 
     // Check for React Flow container
     const visualizer = page.locator('.stack-visualizer-container');
-    await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+    // React Flow might take a moment to mount and render its internal structure
+    // We check for the renderer wrapper or just wait for the container to be stable
+    await expect(visualizer).toBeVisible();
+    await expect(visualizer.locator('.react-flow__renderer')).toBeVisible({ timeout: 30000 });
 
     // Check for the node
     // Using a more specific selector to ensure it's inside a node
