@@ -61,7 +61,9 @@ const TypeBadge = ({ type }: { type: string }) => {
  * @returns The rendered component.
  */
 const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps) => {
-  const [expanded, setExpanded] = useState(true);
+  // ⚡ BOLT: Collapse deep nodes by default to improve initial render performance for large schemas.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const [expanded, setExpanded] = useState(level < 1);
 
   if (!schema) return null;
 
@@ -80,6 +82,7 @@ const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps)
               <button
                 onClick={() => setExpanded(!expanded)}
                 className="p-0.5 hover:bg-muted rounded-sm transition-colors"
+                aria-label={expanded ? "Collapse" : "Expand"}
               >
                 {expanded ? (
                   <ChevronDown className="h-3 w-3 text-muted-foreground" />

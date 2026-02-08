@@ -105,4 +105,51 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('items')).toBeInTheDocument();
         expect(screen.getByText('A tag')).toBeInTheDocument();
     });
+
+    it('renders deeply nested objects collapsed by default', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                level0: {
+                    type: 'object',
+                    properties: {
+                        level1: {
+                            type: 'object',
+                            properties: {
+                                level2: { type: 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        // Level 0 is expanded by default (level < 1)
+        expect(screen.getByText('level0')).toBeInTheDocument();
+        // Level 1 should be visible (child of Level 0)
+        expect(screen.getByText('level1')).toBeInTheDocument();
+
+        // Level 2 should NOT be visible (child of Level 1, which is collapsed by default)
+        expect(screen.queryByText('level2')).not.toBeInTheDocument();
+
+        // Find the expand button for level1.
+        // Since level0 is also expandable, there are multiple buttons.
+        // We need to find the one associated with level1.
+        // The structure is TableRow -> TableCell -> div -> button.
+        // We can find the row containing "level1" and then find the button within it.
+
+        const level1Row = screen.getByText('level1').closest('tr');
+        // We can look for the button with aria-label "Expand" (since it starts collapsed)
+        // But simply finding the button in the row is enough.
+        const expandButton = level1Row?.querySelector('button');
+        expect(expandButton).toBeInTheDocument();
+
+        // Click to expand
+        fireEvent.click(expandButton!);
+
+        // Now level2 should be visible
+        expect(screen.getByText('level2')).toBeInTheDocument();
+    });
 });
