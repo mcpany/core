@@ -48,7 +48,8 @@ test.describe('Playground Command Result View', () => {
 
     // Verify Terminal View
     // We expect the "Console" button to be present and active
-    const consoleBtn = page.getByRole('button', { name: 'Console' });
+    // Use exact: true to avoid matching "Load into console" or other buttons
+    const consoleBtn = page.getByRole('button', { name: 'Console', exact: true });
     await expect(consoleBtn).toBeVisible();
 
     // Wait for execution (it might take a bit)
