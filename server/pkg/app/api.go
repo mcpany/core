@@ -703,9 +703,9 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 // ToolResponse wraps the MCP tool definition with additional metadata.
 type ToolResponse struct {
 	*mcp.Tool
-	Tags      []string `json:"tags,omitempty"`
-	ServiceId string   `json:"serviceId,omitempty"`
-	Service_Id string   `json:"service_id,omitempty"`
+	Tags            []string `json:"tags,omitempty"`
+	ServiceID       string   `json:"serviceId,omitempty"`
+	LegacyServiceID string   `json:"service_id,omitempty"`
 }
 
 func (a *Application) handleTools() http.HandlerFunc {
@@ -724,8 +724,8 @@ func (a *Application) handleTools() http.HandlerFunc {
 				if internalTool := t.Tool(); internalTool != nil {
 					resp.Tags = internalTool.GetTags()
 					if internalTool.GetServiceId() != "" {
-						resp.ServiceId = internalTool.GetServiceId()
-						resp.Service_Id = internalTool.GetServiceId()
+						resp.ServiceID = internalTool.GetServiceId()
+						resp.LegacyServiceID = internalTool.GetServiceId()
 					}
 				}
 				toolList = append(toolList, resp)
