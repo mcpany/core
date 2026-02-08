@@ -35,8 +35,8 @@ type Prompt interface {
 	// Get executes the prompt with the provided arguments.
 	//
 	// Parameters:
-	//   - ctx: The context for the request.
-	//   - args: The arguments for the prompt as a raw JSON message.
+	//   - ctx: context.Context. The context for the request.
+	//   - args: json.RawMessage. The arguments for the prompt as a raw JSON message.
 	//
 	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.
@@ -77,6 +77,8 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 }
 
 // Prompt returns the MCP prompt definition.
+//
+// It constructs the prompt definition from the configuration, including arguments and description.
 //
 // Returns:
 //   - *mcp.Prompt: The MCP prompt definition.
@@ -146,12 +148,16 @@ func (p *TemplatedPrompt) Service() string {
 // It renders the prompt template using the provided arguments.
 //
 // Parameters:
-//   - _ : The context (unused in this implementation).
-//   - args: The arguments for the prompt as a raw JSON message.
+//   - _: context.Context. The context for the request (unused).
+//   - args: json.RawMessage. The arguments for the prompt as a raw JSON message.
 //
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
-//   - error: An error if the operation fails (e.g., template rendering error).
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns error if input unmarshalling fails.
+//   - Returns error if template rendering fails.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
