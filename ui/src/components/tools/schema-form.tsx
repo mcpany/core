@@ -32,6 +32,18 @@ interface SchemaFormProps {
   depth?: number;
 }
 
+/**
+ * SchemaForm component.
+ * Recursively renders a form based on a JSON schema.
+ * @param props - The component props.
+ * @param props.schema - The schema definition.
+ * @param props.value - The current value.
+ * @param props.onChange - Callback function when value changes.
+ * @param props.name - The name of the field.
+ * @param props.required - Whether the field is required.
+ * @param props.depth - The nesting depth.
+ * @returns The rendered component.
+ */
 export function SchemaForm({ schema, value, onChange, name, required = false, depth = 0 }: SchemaFormProps) {
   // Ensure value is initialized correctly based on type if undefined
   useEffect(() => {
