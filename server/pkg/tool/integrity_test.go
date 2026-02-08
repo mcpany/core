@@ -51,3 +51,31 @@ func TestToolIntegrityConfig(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "integrity check failed")
 }
+
+func TestVerifyConfigIntegrity(t *testing.T) {
+	toolDef := configv1.ToolDefinition_builder{
+		Name:        proto.String("config-test-tool"),
+		Description: proto.String("A config test tool"),
+	}.Build()
+
+	// 1. No integrity -> Pass
+	require.NoError(t, VerifyConfigIntegrity(toolDef))
+
+	// 2. Correct integrity -> Pass
+	// Calculate hash manually
+	hashStr, err := CalculateConfigHash(toolDef)
+	require.NoError(t, err)
+
+	toolDef.SetIntegrity(configv1.Integrity_builder{
+		Hash:      proto.String(hashStr),
+		Algorithm: proto.String("sha256"),
+	}.Build())
+
+	require.NoError(t, VerifyConfigIntegrity(toolDef))
+
+	// 3. Incorrect integrity -> Fail
+	toolDef.GetIntegrity().SetHash("bad-hash")
+	err = VerifyConfigIntegrity(toolDef)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "integrity check failed")
+}

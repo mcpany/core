@@ -15,9 +15,9 @@ The server is driven by a YAML configuration file. By default, it looks for `con
 
    upstream_services:
      - name: "my-local-tool"
-       type: "stdio"
-       command: "python3"
-       args: ["/path/to/script.py"]
+       command_line_service:
+         command: "python3"
+         args: ["/path/to/script.py"]
    ```
 2. Run the server:
    ```bash
@@ -32,11 +32,12 @@ Never hardcode API keys in `config.yaml`. Use environment variable substitution.
 ```yaml
 upstream_services:
   - name: "github-api"
-    type: "http"
-    endpoint: "https://api.github.com"
-    environment:
-      # Will look for GITHUB_TOKEN in the server's environment
-      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    http_service:
+      address: "https://api.github.com"
+    upstream_auth:
+      bearer_token:
+        token:
+          environment_variable: "GITHUB_TOKEN"
 ```
 
 ## Pain Point: "My Config is huge!"

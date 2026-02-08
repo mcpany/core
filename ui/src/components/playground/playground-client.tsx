@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -69,6 +69,7 @@ export function PlaygroundClient() {
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const lastExecutionRef = useRef<{ toolName: string; args: string; result: unknown } | null>(null);
 
   useEffect(() => {
@@ -260,6 +261,42 @@ export function PlaygroundClient() {
       }]);
   };
 
+  const handleExportSession = () => {
+      const blob = new Blob([JSON.stringify(messages, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `playground-session-${new Date().toISOString()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+  };
+
+  const handleImportSession = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+          try {
+              const content = event.target?.result as string;
+              const importedMessages = JSON.parse(content);
+              if (Array.isArray(importedMessages)) {
+                  setMessages(importedMessages);
+              } else {
+                  console.error("Invalid session file format");
+              }
+          } catch (err) {
+              console.error("Failed to parse session file:", err);
+          }
+      };
+      reader.readAsText(file);
+      if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+      }
+  };
+
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex items-center justify-between">
@@ -267,6 +304,19 @@ export function PlaygroundClient() {
               <Bot className="text-primary" /> Playground
           </h2>
           <div className="flex items-center gap-2">
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImportSession}
+                className="hidden"
+                accept=".json"
+            />
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} title="Import Session">
+                <Upload className="size-4 mr-2" /> Import
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExportSession} title="Export Session">
+                <Download className="size-4 mr-2" /> Export
+            </Button>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
