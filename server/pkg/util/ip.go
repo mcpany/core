@@ -19,6 +19,8 @@ const remoteIPContextKey = contextKey("remote_ip")
 
 // ContextWithRemoteIP creates a new context containing the remote IP address.
 //
+// Summary: Injects the remote IP into the context.
+//
 // Parameters:
 //   - ctx: context.Context. The parent context.
 //   - ip: string. The remote IP address to store in the context.
@@ -30,6 +32,8 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 }
 
 // ExtractIP extracts and validates the IP address from a string.
+//
+// Summary: Parses and sanitizes an IP address string.
 //
 // It handles "host:port" formats, strips IPv6 brackets, and removes zone indices.
 //
@@ -60,6 +64,8 @@ func ExtractIP(addr string) string {
 }
 
 // GetClientIP extracts the client IP address from an HTTP request.
+//
+// Summary: Determines the client's IP address.
 //
 // Parameters:
 //   - r: *http.Request. The HTTP request to inspect.
@@ -94,6 +100,8 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 }
 
 // RemoteIPFromContext retrieves the remote IP address stored in the context.
+//
+// Summary: Retrieves the remote IP from the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to retrieve the IP from.

@@ -46,14 +46,13 @@ const (
 
 // loadEnv loads environment variables from a .env file.
 //
+// Summary: Loads environment variables from a file.
+//
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to check for the --env-file flag.
 //
 // Returns:
 //   - error: An error if the specified file cannot be loaded or if the default .env file is present but invalid.
-//
-// Side Effects:
-//   - Modifies the process environment variables.
 func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
 	if envFile != "" {
@@ -79,12 +78,10 @@ func loadEnv(cmd *cobra.Command) error {
 
 // newRootCmd creates and configures the main command for the application.
 //
+// Summary: Creates the root command hierarchy.
+//
 // Returns:
 //   - *cobra.Command: The configured root command.
-//
-// Side Effects:
-//   - Configures global flags and command structure.
-//   - Sets up persistent pre-run hooks for environment loading.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
@@ -612,10 +609,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 // main is the entry point for the MCP Any server application.
 //
-// Side Effects:
-//   - Parsed command line arguments.
-//   - Starts the HTTP/gRPC server.
-//   - May exit the process with status code 1 on error.
+// Summary: Entry point for the application.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)
