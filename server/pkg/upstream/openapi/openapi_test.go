@@ -566,7 +566,7 @@ func TestConvertSchemaToStructPB_ArrayTypes(t *testing.T) {
 	}
 	doc := &openapi3.T{}
 
-	val, err := convertSchemaToStructPB("testArray", &openapi3.SchemaRef{Value: schema}, "", doc)
+	val, err := convertSchemaToStructPB("testArray", &openapi3.SchemaRef{Value: schema}, "", doc, 0)
 	assert.NoError(t, err)
 	fields := val.GetStructValue().GetFields()
 	assert.Equal(t, "array", fields["type"].GetStringValue())
@@ -581,7 +581,7 @@ func TestConvertSchemaToStructPB_ArrayTypes(t *testing.T) {
 			},
 		},
 	}
-	val, err = convertSchemaToStructPB("testArrayItems", &openapi3.SchemaRef{Value: schemaWithItems}, "", doc)
+	val, err = convertSchemaToStructPB("testArrayItems", &openapi3.SchemaRef{Value: schemaWithItems}, "", doc, 0)
 	assert.NoError(t, err)
 	fields = val.GetStructValue().GetFields()
 	items := fields["items"].GetStructValue().GetFields()
@@ -662,7 +662,7 @@ func TestConvertSchemaToStructPB_NoTypeButAllOf(t *testing.T) {
 		},
 	}
 	doc := &openapi3.T{}
-	val, err := convertSchemaToStructPB("testAllOf", &openapi3.SchemaRef{Value: schema}, "", doc)
+	val, err := convertSchemaToStructPB("testAllOf", &openapi3.SchemaRef{Value: schema}, "", doc, 0)
 	assert.NoError(t, err)
 	fields := val.GetStructValue().GetFields()
 	assert.Equal(t, "object", fields["type"].GetStringValue())
@@ -674,7 +674,7 @@ func TestConvertSchemaToStructPB_UnhandledType(t *testing.T) {
 		Type: &openapi3.Types{"unknown"},
 	}
 	doc := &openapi3.T{}
-	val, err := convertSchemaToStructPB("testUnknown", &openapi3.SchemaRef{Value: schema}, "", doc)
+	val, err := convertSchemaToStructPB("testUnknown", &openapi3.SchemaRef{Value: schema}, "", doc, 0)
 	assert.NoError(t, err)
 	fields := val.GetStructValue().GetFields()
 	// Should default to string
@@ -688,7 +688,7 @@ func TestConvertSchemaToStructPB_WithEnumAndDefault(t *testing.T) {
 		Default: "A",
 	}
 	doc := &openapi3.T{}
-	val, err := convertSchemaToStructPB("testEnum", &openapi3.SchemaRef{Value: schema}, "", doc)
+	val, err := convertSchemaToStructPB("testEnum", &openapi3.SchemaRef{Value: schema}, "", doc, 0)
 	assert.NoError(t, err)
 	fields := val.GetStructValue().GetFields()
 
