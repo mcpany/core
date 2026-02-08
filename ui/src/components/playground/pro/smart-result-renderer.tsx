@@ -8,7 +8,7 @@
 import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon } from "lucide-react";
+import { Code, Table as TableIcon, Image as ImageIcon } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 
 /**
@@ -18,6 +18,58 @@ interface SmartResultRendererProps {
     /** The result object to render. Can be a JSON string, an object, or an array. */
     result: any;
 }
+
+const isMcpContent = (content: any): boolean => {
+    return Array.isArray(content) && content.length > 0 && content.every((item: any) =>
+        typeof item === 'object' && item !== null &&
+        (item.type === 'text' || item.type === 'image' || item.type === 'resource')
+    );
+};
+
+const RichContentRenderer = ({ content }: { content: any[] }) => {
+    return (
+        <div className="flex flex-col gap-4 p-2 bg-muted/10 rounded-lg border border-border/50">
+            {content.map((item, idx) => {
+                if (item.type === 'image') {
+                    return (
+                        <div key={idx} className="flex flex-col gap-1">
+                            <div className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider flex items-center gap-1">
+                                <ImageIcon className="w-3 h-3" /> Image ({item.mimeType})
+                            </div>
+                            <div className="border rounded-md overflow-hidden bg-black/20 self-start">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={`data:${item.mimeType};base64,${item.data}`}
+                                    alt="Tool Result"
+                                    className="max-w-full h-auto object-contain max-h-[500px]"
+                                />
+                            </div>
+                        </div>
+                    );
+                }
+                if (item.type === 'text') {
+                     return (
+                         <div key={idx} className="flex flex-col gap-1 w-full overflow-hidden">
+                             {content.length > 1 && (
+                                <div className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">
+                                    Text Output
+                                </div>
+                             )}
+                             <div className="whitespace-pre-wrap font-mono text-xs bg-muted/30 p-3 rounded-md border border-white/5 overflow-x-auto">
+                                 {item.text}
+                             </div>
+                         </div>
+                     );
+                }
+                return (
+                    <div key={idx} className="text-xs text-muted-foreground italic p-2 border border-dashed rounded">
+                        Unsupported content type: {item.type}
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
 
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
@@ -30,8 +82,47 @@ interface SmartResultRendererProps {
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
 
-    // Attempt to parse a tabular structure from the result
+    // Check for MCP Content (Images, Mixed) first
+    const smartContent = useMemo(() => {
+        let content = result;
+
+        // 1. Check if it's already CallToolResult structure
+         if (result && typeof result === 'object' && Array.isArray(result.content)) {
+            // Check if it has images
+            if (result.content.some((c:any) => c.type === 'image')) {
+                 return result.content;
+            }
+             // If mixed content, return it
+            if (result.content.length > 1) {
+                return result.content;
+            }
+         }
+
+         // 2. Check Command Output (nested JSON content)
+         if (content && typeof content === 'object' && !Array.isArray(content)) {
+             if (content.stdout && typeof content.stdout === 'string') {
+                 try {
+                     const inner = JSON.parse(content.stdout);
+                     // Check if inner is MCP Content Array containing images
+                     if (isMcpContent(inner)) {
+                          if (inner.some((c:any) => c.type === 'image')) {
+                              return inner;
+                          }
+                     }
+                 } catch {
+                    // ignore parse error
+                 }
+             }
+         }
+
+         return null;
+    }, [result]);
+
+    // Attempt to parse a tabular structure from the result (Fallback for text/data)
     const tableData = useMemo(() => {
+        // If we found smart content (images), skip table parsing
+        if (smartContent) return null;
+
         let content = result;
 
         // 1. Unwrap CallToolResult structure
@@ -46,7 +137,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         if (typeof content === 'string') {
             try {
                 content = JSON.parse(content);
-            } catch (e) {
+            } catch {
                 // Not valid JSON string
                 return null;
             }
@@ -60,7 +151,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                      if (Array.isArray(inner)) {
                          content = inner;
                      }
-                 } catch (e) {
+                 } catch {
                      // stdout is not JSON
                  }
              } else if (content.content && Array.isArray(content.content)) {
@@ -79,15 +170,19 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         }
 
         return null;
-    }, [result]);
+    }, [result, smartContent]);
 
-    const hasSmartView = tableData !== null;
+    const hasSmartView = tableData !== null || smartContent !== null;
 
     const renderRaw = () => (
         <JsonView data={result} maxHeight={400} />
     );
 
     const renderSmart = () => {
+        if (smartContent) {
+            return <RichContentRenderer content={smartContent} />;
+        }
+
         if (!tableData) return renderRaw();
 
         // Determine columns from all keys in the first 10 rows (to be reasonably safe)
@@ -149,7 +244,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                             className="h-6 px-2 text-[10px] gap-1"
                             onClick={() => setViewMode("smart")}
                          >
-                             <TableIcon className="size-3" /> Table
+                             {smartContent ? <ImageIcon className="size-3" /> : <TableIcon className="size-3" />}
+                             {smartContent ? " Visual" : " Table"}
                          </Button>
                          <Button
                             variant={viewMode === "raw" ? "secondary" : "ghost"}
