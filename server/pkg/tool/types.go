@@ -1815,6 +1815,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
+		// Determine the effective command (unwrapping env, sudo, etc.)
+		// We do this before loop to avoid resolving inside the loop, but using the original args slice is fine
+		effectiveCommand := resolveEffectiveCommand(t.service.GetCommand(), args)
+
 		for i, arg := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
@@ -1824,8 +1828,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+					// We use effectiveCommand to catch cases like "env python"
+					if isShellCommand(effectiveCommand) {
+						if err := checkForShellInjection(val, arg, placeholder, effectiveCommand); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2120,6 +2125,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
+		// Determine the effective command (unwrapping env, sudo, etc.)
+		effectiveCommand := resolveEffectiveCommand(t.service.GetCommand(), args)
+
 		for i, arg := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
@@ -2137,8 +2145,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+					// We use effectiveCommand to catch cases like "env python"
+					if isShellCommand(effectiveCommand) {
+						if err := checkForShellInjection(val, arg, placeholder, effectiveCommand); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2674,6 +2683,53 @@ func checkForArgumentInjection(val string) error {
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
 	return nil
+}
+
+func resolveEffectiveCommand(command string, args []string) string {
+	base := strings.ToLower(filepath.Base(command))
+
+	// Handle 'env' specifically to skip flags and variable assignments
+	if base == "env" {
+		remainingArgs := args
+		for len(remainingArgs) > 0 {
+			arg := remainingArgs[0]
+			// If we hit a dynamic argument, we can't safely resolve further.
+			if strings.Contains(arg, "{{") {
+				return command
+			}
+			// Skip flags (-i, -0, etc.) and assignments (VAR=VAL)
+			if strings.HasPrefix(arg, "-") || strings.Contains(arg, "=") {
+				remainingArgs = remainingArgs[1:]
+				continue
+			}
+			// Found the command
+			return resolveEffectiveCommand(arg, remainingArgs[1:])
+		}
+		return command
+	}
+
+	wrappers := []string{"sudo", "busybox", "time", "nice", "nohup", "timeout"}
+	isWrapper := false
+	for _, w := range wrappers {
+		if base == w {
+			isWrapper = true
+			break
+		}
+	}
+
+	if isWrapper && len(args) > 0 {
+		// If the next argument contains a placeholder, we can't statically resolve the command.
+		if strings.Contains(args[0], "{{") {
+			return command
+		}
+		// If the next argument is a flag, we stop resolving to avoid misidentifying flags as commands.
+		// We fallback to the wrapper command which will enforce its own checks (or generic ones).
+		if strings.HasPrefix(args[0], "-") {
+			return command
+		}
+		return resolveEffectiveCommand(args[0], args[1:])
+	}
+	return command
 }
 
 func isShellCommand(cmd string) bool {
