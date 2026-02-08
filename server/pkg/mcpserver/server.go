@@ -74,6 +74,9 @@ type Server struct {
 //
 // Returns:
 //   - *mcp.Server: The underlying server instance.
+//
+// Side Effects:
+//   - Invokes AddReceivingMiddlewareHook if set (for testing purposes).
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -102,6 +105,10 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Side Effects:
+//   - Registers built-in tools.
+//   - Sets up middleware.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -339,6 +346,9 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // Returns:
 //   - *mcp.ListPromptsResult: A list of available prompts.
 //   - error: An error if the retrieval fails.
+//
+// Errors:
+//   - Returns error if underlying prompt manager fails.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -366,6 +376,10 @@ func (s *Server) ListPrompts(
 // Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation.
 //   - error: An error if no active session is found in context or if the operation fails.
+//
+// Errors:
+//   - Returns error if no active session is found in context.
+//   - Returns error if the sampling request fails.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -387,8 +401,10 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //
-// Throws/Errors:
+// Errors:
 //   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
+//   - Returns error if access is denied by profile.
+//   - Returns error if argument marshaling fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -428,6 +444,9 @@ func (s *Server) GetPrompt(
 // Returns:
 //   - *mcp.ListResourcesResult: A list of available resources.
 //   - error: An error if the retrieval fails.
+//
+// Errors:
+//   - Returns error if underlying resource manager fails.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -456,8 +475,10 @@ func (s *Server) ListResources(
 //   - *mcp.ReadResourceResult: The content of the resource.
 //   - error: An error if the resource is not found or reading fails.
 //
-// Throws/Errors:
+// Errors:
 //   - resource.ErrResourceNotFound: If the requested resource does not exist.
+//   - Returns error if access is denied by profile.
+//   - Returns error if resource reading fails.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -579,6 +600,14 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Errors:
+//   - Returns error if access is denied by profile.
+//   - Returns error if tool execution fails.
+//
+// Side Effects:
+//   - Increments metrics counters.
+//   - Logs execution details.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -785,8 +814,8 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 // Parameters:
 //   - f: func(context.Context) error. The function to execute on reload.
 //
-// Returns:
-//   None.
+// Side Effects:
+//   - Updates the internal reload function reference.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -798,6 +827,9 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Returns:
 //   - error: An error if the reload function fails.
+//
+// Side Effects:
+//   - Invokes the configured reload function which may have side effects like file I/O or network calls.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)

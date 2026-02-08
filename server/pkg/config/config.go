@@ -25,9 +25,8 @@ import (
 // Returns:
 //   None.
 //
-// Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails
-//   (e.g., if a flag with the same name already exists).
+// Errors:
+//   - Exits the application with status code 1 if a flag binding operation fails.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
@@ -87,8 +86,8 @@ func BindRootFlags(cmd *cobra.Command) {
 // Returns:
 //   None.
 //
-// Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails.
+// Errors:
+//   - Exits the application with status code 1 if a flag binding operation fails.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -134,8 +133,8 @@ func BindServerFlags(cmd *cobra.Command) {
 // Returns:
 //   None.
 //
-// Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails.
+// Errors:
+//   - Exits the application with status code 1 if a flag binding operation fails.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

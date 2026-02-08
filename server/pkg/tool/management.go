@@ -551,6 +551,12 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Errors:
 //   - ErrToolNotFound: If the tool cannot be found (includes fuzzy matching suggestions).
+//   - Returns error if service is unhealthy.
+//   - Returns error if execution is denied by hooks or policies.
+//
+// Side Effects:
+//   - Logs execution details.
+//   - Updates cache control if applicable.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
