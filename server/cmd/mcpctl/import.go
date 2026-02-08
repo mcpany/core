@@ -14,11 +14,25 @@ import (
 )
 
 // ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
+//
+// Summary:
+//   Configuration structure for Claude Desktop application.
+//
+// Fields:
+//   - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
 // MCPServerConfig represents a single server configuration in Claude Desktop.
+//
+// Summary:
+//   Configuration for a single MCP server in Claude Desktop.
+//
+// Fields:
+//   - Command: string. The command to execute.
+//   - Args: []string. The arguments to pass to the command.
+//   - Env: map[string]string. Environment variables for the server process.
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
