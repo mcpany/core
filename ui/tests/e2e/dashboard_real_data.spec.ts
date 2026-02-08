@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { login } from '../auth-helper';
+import { login } from './auth-helper';
 import { seedUser, cleanupUser } from './test-data';
 
 test.describe('Dashboard Real Data', () => {
