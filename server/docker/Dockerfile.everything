@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/node:24-alpine
+FROM public.ecr.aws/docker/library/node:24-alpine
 WORKDIR /app
 RUN npm install -g @modelcontextprotocol/server-everything@latest
 

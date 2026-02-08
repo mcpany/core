@@ -1,10 +1,10 @@
-FROM mirror.gcr.io/library/golang:1.24 AS builder
+FROM public.ecr.aws/docker/library/golang:1.24 AS builder
 
 WORKDIR /go/src/github.com/ory/hydra
 RUN git clone --depth 1 --branch v2.2.0 https://github.com/ory/hydra.git .
 RUN go install .
 
-FROM mirror.gcr.io/library/debian:bookworm-slim
+FROM public.ecr.aws/debian/debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 

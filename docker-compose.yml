@@ -43,7 +43,7 @@ services:
       - mcpany-net
 
   redis:
-    image: mirror.gcr.io/library/redis:latest
+    image: public.ecr.aws/docker/library/redis:latest
     ports:
       - "6379:6379"
     healthcheck:
@@ -55,7 +55,7 @@ services:
       - mcpany-net
 
   prometheus:
-    image: mirror.gcr.io/prom/prometheus:latest
+    image: public.ecr.aws/prometheus/prometheus:latest
     volumes:
       - ./server/docker/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
