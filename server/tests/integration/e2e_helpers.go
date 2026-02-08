@@ -572,16 +572,31 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible and capable of running containers.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
+	// 1. Check if we can talk to the daemon
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// 2. Check if we can actually run a container (catches overlayfs mount issues in CI)
+	// We use alpine:latest as it is small and used in other tests.
+	// We accept that this might pull the image if missing.
+	// Make a copy of args to avoid modifying the cached slice
+	runArgs := make([]string, len(dockerArgs), len(dockerArgs)+4)
+	copy(runArgs, dockerArgs)
+	runArgs = append(runArgs, "run", "--rm", "alpine:latest", "true")
+
+	cmdRun := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
+	if err := cmdRun.Run(); err != nil {
+		return false
+	}
+
 	return true
 }
 
