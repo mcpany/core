@@ -1947,6 +1947,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					safeForEnv = false
 				}
 			}
+			// Sentinel Security Update: Block known dangerous environment variables
+			if isDangerousEnvVar(name) {
+				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
+				safeForEnv = false
+			}
+
 			if safeForEnv {
 				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
@@ -2280,6 +2286,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					safeForEnv = false
 				}
 			}
+			// Sentinel Security Update: Block known dangerous environment variables
+			if isDangerousEnvVar(name) {
+				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
+				safeForEnv = false
+			}
+
 			if safeForEnv {
 				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
@@ -2582,6 +2594,48 @@ func checkForPathTraversal(val string) error {
 		i++
 	}
 	return nil
+}
+
+var dangerousEnvVars = map[string]bool{
+	// Git
+	"GIT_SSH": true, "GIT_SSH_COMMAND": true, "GIT_ASKPASS": true,
+	"GIT_PAGER": true, "GIT_EDITOR": true, "GIT_EXTERNAL_DIFF": true,
+	"GIT_MAN_VIEWER": true, "GIT_SEQUENCE_EDITOR": true,
+	"GIT_CONFIG_PARAMETERS": true, "GIT_CONFIG_COUNT": true,
+
+	// Interpreters
+	"PYTHONPATH": true, "PYTHONSTARTUP": true, "PYTHONHOME": true,
+	"PERL5LIB": true, "PERLIB": true, "PERL5OPT": true,
+	"RUBYLIB": true, "RUBYOPT": true,
+	"NODE_OPTIONS": true, "NODE_PATH": true,
+	"JAVA_TOOL_OPTIONS": true, "JDK_JAVA_OPTIONS": true, "_JAVA_OPTIONS": true,
+	"R_PROFILE_USER": true, "R_ENVIRON_USER": true,
+
+	// Shell
+	"BASH_ENV": true, "ENV": true, "PS4": true, "SHELLOPTS": true, "PROMPT_COMMAND": true, "IFS": true,
+}
+
+// isDangerousEnvVar checks if the environment variable name is potentially dangerous.
+// This prevents users from injecting variables that could lead to RCE or configuration overrides
+// in common tools (Git, Python, Node, etc.).
+func isDangerousEnvVar(name string) bool {
+	name = strings.ToUpper(name)
+
+	if dangerousEnvVars[name] {
+		return true
+	}
+
+	// Dynamic Linker
+	if strings.HasPrefix(name, "LD_") || strings.HasPrefix(name, "DYLD_") {
+		return true
+	}
+
+	// Git Config Injection
+	if strings.HasPrefix(name, "GIT_CONFIG_KEY_") || strings.HasPrefix(name, "GIT_CONFIG_VALUE_") {
+		return true
+	}
+
+	return false
 }
 
 // cleanPathPreserveDoubleSlash cleans the path like path.Clean but preserves double slashes.
