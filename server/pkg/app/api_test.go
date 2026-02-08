@@ -1657,7 +1657,21 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: fmt.Sprintf("127.0.0.1:%d", httpPort), GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
 	}()
 
-	require.NoError(t, app.WaitForStartup(ctx))
+	startupErr := make(chan error, 1)
+	go func() {
+		startupErr <- app.WaitForStartup(ctx)
+	}()
+
+	select {
+	case err := <-startupErr:
+		require.NoError(t, err)
+	case err := <-errChan:
+		// If app.Run returned error (e.g. port bind fail), we fail fast instead of hanging
+		require.NoError(t, err, "app.Run failed prematurely")
+	case <-time.After(10 * time.Second):
+		t.Fatal("timed out waiting for startup")
+	}
+
 	baseURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", httpPort)
 	// Use local HealthCheck polling instead of integration package to avoid cycle
 	require.Eventually(t, func() bool {
