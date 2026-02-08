@@ -55,10 +55,8 @@ test.describe('Bulk Edit Services', () => {
         await dialog.getByLabel('Add Tags').fill('bulk-test-tag');
 
         // 2. Set Timeout (assuming input exists - will fail if not implemented yet)
-        // We will implement this in next step, so this test expects the UI to exist.
-        // If the UI is not there yet, this test fails, which is expected for TDD.
-        // However, I should probably write the test assuming the UI will be there.
-        await dialog.getByLabel('Timeout').fill('45s');
+        // Use partial match for label "Set Timeout (e.g. 30s)" to be robust
+        await dialog.getByLabel('Set Timeout', { exact: false }).fill('45s');
 
         // 3. Add Env Var (assuming UI structure)
         // Click "Add Variable"
