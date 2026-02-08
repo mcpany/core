@@ -19,13 +19,10 @@ test.describe('Tool Exploration', () => {
 
     test('should list available tools', async ({ page }) => {
         await page.goto('/tools');
-        // seedServices adds: "process_payment" (Payment Gateway), "get_user" (User Service), "calculator" (Math)
+        // seedServices now adds: "Weather Service" which provides "get_weather"
 
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Process a payment').first()).toBeVisible({ timeout: 10000 });
-
-        await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('calc').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Get current weather').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('should show empty state when no tools', async ({ page, request }) => {
@@ -42,11 +39,11 @@ test.describe('Tool Exploration', () => {
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
         // Inspection relies on schema being present in the tool definition
-        // process_payment is a good candidate
-        const toolRow = page.locator('tr').filter({ hasText: 'process_payment' });
+        // get_weather is a good candidate
+        const toolRow = page.locator('tr').filter({ hasText: 'get_weather' });
         await toolRow.getByText('Inspect').click();
 
         await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('process_payment').first()).toBeVisible();
+        await expect(page.getByText('get_weather').first()).toBeVisible();
     });
 });

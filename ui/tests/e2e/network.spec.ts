@@ -21,9 +21,9 @@ test.describe('Network Topology', () => {
     await expect(page.locator('.text-lg', { hasText: 'Network Graph' })).toBeVisible();
 
     // Check for nodes
-    // seedServices creates "Payment Gateway", "User Service", "Math"
+    // seedServices creates "Weather Service", "User Service"
     await expect(page.locator('.react-flow').getByText('MCP Any').first()).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('.react-flow').getByText('Payment Gateway').first()).toBeVisible();
+    await expect(page.locator('.react-flow').getByText('Weather Service').first()).toBeVisible();
     await expect(page.locator('.react-flow').getByText('User Service').first()).toBeVisible();
 
     // Verify interaction

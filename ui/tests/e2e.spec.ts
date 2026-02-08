@@ -51,8 +51,8 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=process_payment')).toBeVisible();
+    // seedServices now uses Weather Service -> get_weather
+    await expect(page.locator('text=get_weather')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
@@ -84,8 +84,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
     // Check for nodes
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    await expect(page.locator('text=Math')).toBeVisible();
+    await expect(page.locator('text=Weather Service')).toBeVisible();
+    await expect(page.locator('text=User Service')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });
