@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,7 +36,12 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
 		}
 		assert.Error(t, err, "Should detect shell injection (space)")
 		if err != nil {
-			assert.Contains(t, err.Error(), "shell injection detected", "Error message should indicate shell injection")
+			// Now blocked by strict interpreter hardening
+			if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+				assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+			} else {
+				assert.Contains(t, err.Error(), "shell injection detected", "Error message should indicate shell injection")
+			}
 		}
 	})
 
@@ -51,6 +57,10 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
         }
 
         _, err := tool.Execute(context.Background(), req)
-        assert.NoError(t, err, "Quoted input with space should be allowed")
+        // Now blocked by strict interpreter hardening
+		assert.Error(t, err)
+		if err != nil {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		}
     })
 }

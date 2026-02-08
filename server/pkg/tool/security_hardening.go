@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+type interpreterConfig struct {
+	execFlags         map[string]bool
+	combinedFlags     []string
+	scriptIsFirstArg  bool
+	skipFlags         map[string]bool
+}
+
 // IdentifyDangerousInterpreterArgs returns a set of indices in args that are
 // considered "code" arguments for known interpreters.
 // Substituting into these arguments allows code injection vulnerabilities.
@@ -15,105 +22,119 @@ func IdentifyDangerousInterpreterArgs(command string, args []string) map[int]boo
 	dangerous := make(map[int]bool)
 	base := strings.ToLower(filepath.Base(command))
 
-	isPython := strings.HasPrefix(base, "python")
-	isRuby := strings.HasPrefix(base, "ruby")
-	isPerl := strings.HasPrefix(base, "perl")
-	isNode := strings.HasPrefix(base, "node") || base == "nodejs" || base == "bun" || base == "deno"
-	isPhp := strings.HasPrefix(base, "php")
-	isLua := strings.HasPrefix(base, "lua")
-	isShell := base == "sh" || base == "bash" || base == "zsh" || base == "dash" || base == "ash" || base == "ksh" || base == "csh" || base == "tcsh" || base == "fish" || base == "pwsh" || base == "powershell" || base == "cmd" || base == "cmd.exe"
-	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	isSed := base == "sed" || base == "gsed"
+	// Define interpreter configurations
+	interpreters := map[string]interpreterConfig{
+		"python": {
+			execFlags:     map[string]bool{"-c": true},
+			combinedFlags: []string{"-c"},
+		},
+		"ruby": {
+			execFlags:     map[string]bool{"-e": true},
+			combinedFlags: []string{"-e"},
+		},
+		"perl": {
+			execFlags:     map[string]bool{"-e": true, "-E": true},
+			combinedFlags: []string{"-e"},
+		},
+		"node": {
+			execFlags:     map[string]bool{"-e": true, "--eval": true, "-p": true, "--print": true},
+			combinedFlags: []string{"-e", "-p"},
+		},
+		"php": {
+			execFlags:     map[string]bool{"-r": true},
+			combinedFlags: []string{"-r"},
+		},
+		"lua": {
+			execFlags:     map[string]bool{"-e": true},
+			combinedFlags: []string{"-e"},
+		},
+		"shell": { // sh, bash, etc.
+			execFlags:     map[string]bool{"-c": true},
+			combinedFlags: []string{"-c"},
+		},
+		"awk": {
+			scriptIsFirstArg: true,
+			skipFlags:        map[string]bool{"-f": true, "--file": true},
+		},
+		"sed": {
+			execFlags:        map[string]bool{"-e": true},
+			scriptIsFirstArg: true,
+			skipFlags:        map[string]bool{"-f": true, "--file": true},
+		},
+	}
 
-	// Iterate args to find execution flags
+	// Determine which config to use
+	var config interpreterConfig
+	found := false
+
+	if strings.HasPrefix(base, "python") {
+		config = interpreters["python"]
+		found = true
+	} else if strings.HasPrefix(base, "ruby") {
+		config = interpreters["ruby"]
+		found = true
+	} else if strings.HasPrefix(base, "perl") {
+		config = interpreters["perl"]
+		found = true
+	} else if strings.HasPrefix(base, "node") || base == "nodejs" || base == "bun" || base == "deno" {
+		config = interpreters["node"]
+		found = true
+	} else if strings.HasPrefix(base, "php") {
+		config = interpreters["php"]
+		found = true
+	} else if strings.HasPrefix(base, "lua") {
+		config = interpreters["lua"]
+		found = true
+	} else if isShell(base) {
+		config = interpreters["shell"]
+		found = true
+	} else if strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk") {
+		config = interpreters["awk"]
+		found = true
+	} else if base == "sed" || base == "gsed" {
+		config = interpreters["sed"]
+		found = true
+	}
+
+	if !found {
+		return dangerous
+	}
+
+	// Check for flags
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
 
-		// Check for combined flags (e.g. -cCode)
-		if len(arg) > 2 && strings.HasPrefix(arg, "-") {
-			// Python, Bash, Sh: -c
-			if (isPython || isShell) && strings.HasPrefix(arg, "-c") {
-				dangerous[i] = true
-				continue
+		// Check separate flags
+		if config.execFlags != nil && config.execFlags[arg] {
+			if i+1 < len(args) {
+				dangerous[i+1] = true
 			}
-			// Ruby, Perl, Lua: -e
-			if (isRuby || isPerl || isLua) && strings.HasPrefix(arg, "-e") {
-				dangerous[i] = true
-				continue
-			}
-			// Node: -e, -p
-			if isNode && (strings.HasPrefix(arg, "-e") || strings.HasPrefix(arg, "-p")) {
-				dangerous[i] = true
-				continue
-			}
-			// PHP: -r
-			if isPhp && strings.HasPrefix(arg, "-r") {
-				dangerous[i] = true
-				continue
-			}
+			continue
 		}
 
-		// Check for separate flags
-		if arg == "-c" {
-			if isPython || isShell {
-				if i+1 < len(args) {
-					dangerous[i+1] = true
-				}
-			}
-		} else if arg == "-e" {
-			if isRuby || isPerl || isLua || isNode || isSed {
-				if i+1 < len(args) {
-					dangerous[i+1] = true
-				}
-			}
-		} else if arg == "-E" {
-			if isPerl {
-				if i+1 < len(args) {
-					dangerous[i+1] = true
-				}
-			}
-		} else if arg == "-p" || arg == "--print" {
-			if isNode {
-				if i+1 < len(args) {
-					dangerous[i+1] = true
-				}
-			}
-		} else if arg == "--eval" {
-			if isNode {
-				if i+1 < len(args) {
-					dangerous[i+1] = true
-				}
-			}
-		} else if arg == "-r" {
-			if isPhp {
-				if i+1 < len(args) {
-					dangerous[i+1] = true
-				}
+		// Check combined flags
+		for _, prefix := range config.combinedFlags {
+			if len(arg) > len(prefix) && strings.HasPrefix(arg, prefix) {
+				dangerous[i] = true
+				break
 			}
 		}
 	}
 
-	if isAwk || isSed {
+	// Check for script argument (first non-flag) if applicable
+	if config.scriptIsFirstArg {
 		// Find first non-flag argument
 		for i := 0; i < len(args); i++ {
 			arg := args[i]
 			if strings.HasPrefix(arg, "-") {
 				// If it takes an argument, skip next
-				// sed -e script (handled above)
-				// awk -f file
-				if arg == "-f" || arg == "--file" {
+				if config.skipFlags != nil && config.skipFlags[arg] {
 					i++
 				}
 				continue
 			}
-			// First non-flag is script
-			// For sed, if -e was used, subsequent non-flags are input files.
-			// But if no -e used, first non-flag is script.
-			// How to know if -e was used?
-			// We can track it.
 
-			// Simplified: If we haven't marked any dangerous args yet (via -e),
-			// then this is likely the script.
+			// Only mark if we haven't already marked this index as dangerous via a flag (e.g. sed -e script)
 			alreadyMarked := false
 			for j := 0; j < i; j++ {
 				if dangerous[j] {
@@ -130,4 +151,12 @@ func IdentifyDangerousInterpreterArgs(command string, args []string) map[int]boo
 	}
 
 	return dangerous
+}
+
+func isShell(base string) bool {
+	switch base {
+	case "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish", "pwsh", "powershell", "cmd", "cmd.exe":
+		return true
+	}
+	return false
 }
