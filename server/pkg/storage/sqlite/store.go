@@ -737,7 +737,8 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 	query := `
 	INSERT INTO profile_definitions (id, name, config_json, updated_at)
 	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-	ON CONFLICT(name) DO UPDATE SET
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
 	`
@@ -844,7 +845,8 @@ func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.
 	query := `
 	INSERT INTO service_collections (id, name, config_json, updated_at)
 	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-	ON CONFLICT(name) DO UPDATE SET
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
 	`
