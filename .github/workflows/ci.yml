@@ -28,7 +28,8 @@ permissions:
 
 jobs:
   changes:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
+    # ubuntu-latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -46,7 +47,8 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
+    # runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
