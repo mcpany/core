@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
+	"sync"
 	"net/url"
 	"sort"
 	"strings"
@@ -60,27 +61,42 @@ type Upstream struct {
 	serviceID   string
 	address     string
 	checker     health.Checker
+	mu          sync.RWMutex
 }
 
 // CheckHealth performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
-	if u.checker != nil {
-		res := u.checker.Check(ctx)
+	u.mu.RLock()
+	checker := u.checker
+	address := u.address
+	u.mu.RUnlock()
+
+	if checker != nil {
+		res := checker.Check(ctx)
 		if res.Status != health.StatusUp {
 			return fmt.Errorf("health check failed: %v", res)
 		}
 		return nil
 	}
-	if u.address == "" {
+	if address == "" {
 		return fmt.Errorf("no address configured")
 	}
-	return util.CheckConnection(ctx, u.address)
+	return util.CheckConnection(ctx, address)
 }
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	u.poolManager.Deregister(u.serviceID)
+	u.mu.Lock()
+	if u.checker != nil {
+		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
+	serviceID := u.serviceID
+	u.mu.Unlock()
+
+	u.poolManager.Deregister(serviceID)
 	return nil
 }
 
@@ -125,6 +141,12 @@ func (u *Upstream) Register(
 	// Store new ID in local variable
 	serviceID := sanitizedName
 
+	u.mu.Lock()
+	if u.checker != nil {
+		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
 	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	if isReload {
@@ -137,6 +159,7 @@ func (u *Upstream) Register(
 	}
 
 	u.serviceID = serviceID
+	u.mu.Unlock()
 
 	httpService := serviceConfig.GetHttpService()
 	if httpService == nil {

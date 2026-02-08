@@ -47,7 +47,8 @@ var (
 //   - cfg: *configv1.AlertConfig. The new alert configuration.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Updates a global variable protected by a mutex.
@@ -122,6 +123,8 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		return nil
 	}
 
+	interval, timeout := getHealthCheckConfig(uc)
+
 	// Wrap check to measure latency
 	originalCheck := check.Check
 	check.Check = func(ctx context.Context) error {
@@ -168,13 +171,13 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
 			}
 		}),
-		// Using synchronous checks for now to simplify the implementation and ensure
-		// tests are reliable. Periodic checks can be re-introduced later if needed,
-		// likely controlled by a configuration option.
-		health.WithCheck(check),
-		// Cache the health check result for a short duration to avoid spamming the upstream
-		// if IsHealthy is called frequently (e.g. by the pool).
 		health.WithCacheDuration(1 * time.Second),
+	}
+
+	if interval > 0 {
+		opts = append(opts, health.WithPeriodicCheck(interval, timeout, check))
+	} else {
+		opts = append(opts, health.WithCheck(check))
 	}
 
 	return health.NewChecker(opts...)
@@ -217,6 +220,63 @@ func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) 
 		}
 	}
 	return nil
+}
+
+func getHealthCheckConfig(uc *configv1.UpstreamServiceConfig) (time.Duration, time.Duration) {
+	var interval time.Duration
+	var timeout = 5 * time.Second
+
+	switch uc.WhichServiceConfig() {
+	case configv1.UpstreamServiceConfig_HttpService_case:
+		if hc := uc.GetHttpService().GetHealthCheck(); hc != nil {
+			if hc.GetInterval() != nil {
+				interval = hc.GetInterval().AsDuration()
+			}
+			if hc.GetTimeout() != nil {
+				timeout = hc.GetTimeout().AsDuration()
+			}
+		}
+	case configv1.UpstreamServiceConfig_GrpcService_case:
+		if hc := uc.GetGrpcService().GetHealthCheck(); hc != nil {
+			if hc.GetInterval() != nil {
+				interval = hc.GetInterval().AsDuration()
+			}
+		}
+	case configv1.UpstreamServiceConfig_WebsocketService_case:
+		if hc := uc.GetWebsocketService().GetHealthCheck(); hc != nil {
+			if hc.GetInterval() != nil {
+				interval = hc.GetInterval().AsDuration()
+			}
+			if hc.GetTimeout() != nil {
+				timeout = hc.GetTimeout().AsDuration()
+			}
+		}
+	case configv1.UpstreamServiceConfig_CommandLineService_case:
+		if hc := uc.GetCommandLineService().GetHealthCheck(); hc != nil {
+			if hc.GetInterval() != nil {
+				interval = hc.GetInterval().AsDuration()
+			}
+		}
+	case configv1.UpstreamServiceConfig_WebrtcService_case:
+		if hc := uc.GetWebrtcService().GetHealthCheck(); hc != nil {
+			if hc.GetHttp() != nil {
+				if hc.GetHttp().GetInterval() != nil {
+					interval = hc.GetHttp().GetInterval().AsDuration()
+				}
+				if hc.GetHttp().GetTimeout() != nil {
+					timeout = hc.GetHttp().GetTimeout().AsDuration()
+				}
+			} else if hc.GetWebsocket() != nil {
+				if hc.GetWebsocket().GetInterval() != nil {
+					interval = hc.GetWebsocket().GetInterval().AsDuration()
+				}
+				if hc.GetWebsocket().GetTimeout() != nil {
+					timeout = hc.GetWebsocket().GetTimeout().AsDuration()
+				}
+			}
+		}
+	}
+	return interval, timeout
 }
 
 func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {

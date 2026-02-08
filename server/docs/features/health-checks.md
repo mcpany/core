@@ -10,6 +10,7 @@ Health checks can be configured for the following upstream service types:
 -   **gRPC**: Uses the standard [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 -   **WebSocket**: Sends a message and expects a specific response.
 -   **WebRTC**: Can perform HTTP or WebSocket checks over the WebRTC channel.
+-   **MCP Service**: Checks connectivity to the upstream MCP service (HTTP or Stdio).
 -   **Command Line**: Executes a command and checks the output.
 -   **Filesystem**: Checks if configured root paths exist and are accessible (Automatic).
 
@@ -28,7 +29,7 @@ upstream_services:
         url: "https://api.example.com/health"
         expected_code: 200
         method: "GET"
-        interval: "30s" # Note: Currently reserved for future background monitoring; checks are performed on-demand.
+        interval: "30s" # Optional: Interval for background health checks.
         timeout: "5s"
 ```
 
@@ -42,7 +43,7 @@ upstream_services:
       health_check:
         service: "grpc.health.v1.Health"
         method: "Check"
-        interval: "10s" # Note: Currently reserved for future background monitoring.
+        interval: "10s"
 ```
 
 ### WebSocket Health Check
@@ -56,7 +57,32 @@ upstream_services:
         url: "ws://localhost:8080/health"
         message: "ping"
         expected_response_contains: "pong"
-        interval: "15s" # Note: Currently reserved for future background monitoring.
+        interval: "15s"
+```
+
+### WebRTC Health Check
+
+```yaml
+upstream_services:
+  - name: "my-webrtc-service"
+    webrtc_service:
+      address: "http://localhost:8080/signal"
+      health_check:
+        # WebRTC checks rely on the signaling channel (HTTP or WebSocket)
+        http:
+          url: "http://localhost:8080/health"
+          expected_code: 200
+```
+
+### MCP Service Health Check
+
+```yaml
+upstream_services:
+  - name: "my-mcp-service"
+    mcp_service:
+      http_connection:
+        http_address: "http://localhost:8000/mcp"
+      # Health check implicitly checks the connection
 ```
 
 ### Command Line Health Check
@@ -70,7 +96,7 @@ upstream_services:
         method: "-c"
         prompt: "print('alive')"
         expected_response_contains: "alive"
-        interval: "60s" # Note: Currently reserved for future background monitoring.
+        interval: "60s"
 ```
 
 ### Filesystem Health Check
