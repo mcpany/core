@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"unicode/utf8"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -278,17 +279,39 @@ func paginateRecursive(data any, page, pageSize int) any {
 		if len(v) > 1024*1024 {
 			return "Error: Input too large"
 		}
-		runes := []rune(v)
-		start := (page - 1) * pageSize
-		if start >= len(runes) {
-			return fmt.Sprintf("Page %d (empty). Total length: %d", page, len(runes))
+
+		// ⚡ BOLT: Zero-allocation string pagination using utf8 iteration.
+		// Randomized Selection from Top 5 High-Impact Targets
+		totalRunes := utf8.RuneCountInString(v)
+		startIdx := (page - 1) * pageSize
+
+		if startIdx >= totalRunes {
+			return fmt.Sprintf("Page %d (empty). Total length: %d", page, totalRunes)
 		}
-		end := start + pageSize
-		if end > len(runes) {
-			end = len(runes)
+
+		endIdx := startIdx + pageSize
+		if endIdx > totalRunes {
+			endIdx = totalRunes
 		}
-		chunk := string(runes[start:end])
-		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (len(runes)+pageSize-1)/pageSize, chunk, len(runes))
+
+		// Find byte offsets for startIdx and endIdx
+		startByte := 0
+		endByte := len(v)
+		currentRuneIdx := 0
+
+		for i := range v {
+			if currentRuneIdx == startIdx {
+				startByte = i
+			}
+			if currentRuneIdx == endIdx {
+				endByte = i
+				break
+			}
+			currentRuneIdx++
+		}
+
+		chunk := v[startByte:endByte]
+		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (totalRunes+pageSize-1)/pageSize, chunk, totalRunes)
 	case map[string]any:
 		newMap := make(map[string]any, len(v))
 		for k, val := range v {

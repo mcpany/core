@@ -166,6 +166,48 @@ func TestPaginateHandler(t *testing.T) {
 				assert.Equal(t, "Page 1/3:\nHello\n(Total: 11 chars)", repl["text"])
 			},
 		},
+		{
+			name:        "Paginate Unicode",
+			queryParams: "?page_size=2",
+			reqBody: map[string]any{
+				"tool_name": "echo",
+				"result": map[string]any{
+					"text": "Hello 世界", // 5 ascii + space + 2 chinese (3 bytes each)
+				},
+			},
+			expectedStatus: http.StatusOK,
+			verifyResponse: func(t *testing.T, respBytes []byte) {
+				event := cloudevents.NewEvent()
+				err := json.Unmarshal(respBytes, &event)
+				require.NoError(t, err)
+
+				var data map[string]any
+				err = event.DataAs(&data)
+				require.NoError(t, err)
+
+				repl := data["replacement_object"].(map[string]any)
+				// Page 1: "He"
+				// Page 2: "ll"
+				// Page 3: "o "
+				// Page 4: "世界"
+				// Total chars: 8
+				// Wait, page_size=2.
+				// "Hello 世界" length 8 runes.
+				// P1: He
+				// P2: ll
+				// P3: o
+				// P4: 世界
+				// If I request page 4?
+				// But this test setup requests default page (1)?
+				// Ah, queryParams: "?page_size=2" sets page_size.
+				// But paginateRecursive takes `page` argument.
+				// `PaginateHandler` calls `paginateRecursive(val, 1, pageSize)`.
+				// It always returns page 1.
+
+				// So for page 1, size 2: "He"
+				assert.Equal(t, "Page 1/4:\nHe\n(Total: 8 chars)", repl["text"])
+			},
+		},
 	}
 
 	for _, tt := range tests {
