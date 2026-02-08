@@ -30,6 +30,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
+//
+// Summary: implements the upstream.Upstream interface for filesystem services.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -38,7 +40,13 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
-// Returns the result.
+// Summary: creates a new instance of FilesystemUpstream.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - upstream.Upstream: The upstream.Upstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -47,9 +55,16 @@ func NewUpstream() upstream.Upstream {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// _ is an unused parameter.
+// Summary: implements the upstream.Upstream interface.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -65,17 +80,24 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// ctx is the context for the request.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: processes the configuration for a filesystem service.
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//   - _: prompt.ManagerInterface. The _.
+//   - _: resource.ManagerInterface. The _.
+//   - _: bool. The _.
+//
+// Returns:
+//   - string: The string.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -192,7 +214,19 @@ type fsCallable struct {
 }
 
 // Call executes the filesystem tool with the provided request arguments.
-// It returns the result of the tool execution or an error.
+//
+// Summary: executes the filesystem tool with the provided request arguments.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: *tool.ExecutionRequest. The req.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

@@ -28,23 +28,39 @@ import (
 
 type sanitizer func(string) (string, error)
 
-// Upstream implements the upstream.Upstream interface for services that
-// communicate over WebRTC data channels.
+// Upstream implements the upstream.Upstream interface for services that.
+//
+// Summary: implements the upstream.Upstream interface for services that.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
 }
 
-// Shutdown is a no-op for the WebRTC upstream, as connections are transient
-// and not managed by a persistent pool.
+// Shutdown is a no-op for the WebRTC upstream, as connections are transient.
+//
+// Summary: is a no-op for the WebRTC upstream, as connections are transient.
+//
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
-// poolManager is the connection pool manager, though it is not currently used
-// by the WebRTC upstream as connections are transient.
+// Summary: creates a new instance of WebrtcUpstream.
+//
+// Parameters:
+//   - poolManager: *pool.Manager. The poolManager.
+//
+// Returns:
+//   - upstream.Upstream: The upstream.Upstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -52,8 +68,26 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Register processes the configuration for a WebRTC service, creating and
-// registering tools for each call definition specified in the configuration.
+// Register processes the configuration for a WebRTC service, creating and.
+//
+// Summary: processes the configuration for a WebRTC service, creating and.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//   - promptManager: prompt.ManagerInterface. The promptManager.
+//   - resourceManager: resource.ManagerInterface. The resourceManager.
+//   - isReload: bool. The isReload.
+//
+// Returns:
+//   - string: The string.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

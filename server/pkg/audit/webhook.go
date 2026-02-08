@@ -22,6 +22,8 @@ const (
 )
 
 // WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Summary: sends audit logs to a configured webhook URL.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string
@@ -32,6 +34,15 @@ type WebhookAuditStore struct {
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
+//
+// Summary: creates a new WebhookAuditStore.
+//
+// Parameters:
+//   - webhookURL: string. The webhookURL.
+//   - headers: map[string]string. The headers.
+//
+// Returns:
+//   - *WebhookAuditStore: The *WebhookAuditStore.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -88,6 +99,18 @@ func (s *WebhookAuditStore) worker() {
 }
 
 // Write writes an audit entry to the webhook (buffered).
+//
+// Summary: writes an audit entry to the webhook (buffered).
+//
+// Parameters:
+//   - _: context.Context. The _.
+//   - entry: Entry. The entry.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -133,11 +156,35 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 }
 
 // Read implements the Store interface.
+//
+// Summary: implements the Store interface.
+//
+// Parameters:
+//   - _: context.Context. The _.
+//   - _: Filter. The _.
+//
+// Returns:
+//   - []Entry: The []Entry.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
 
 // Close stops the workers and drains the queue.
+//
+// Summary: stops the workers and drains the queue.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

@@ -33,7 +33,16 @@ type poolWithChecker[T pool.ClosableClient] struct {
 
 // Close stops the health checker and closes the underlying pool.
 //
-// Returns an error if the operation fails.
+// Summary: stops the health checker and closes the underlying pool.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -41,17 +50,25 @@ func (p *poolWithChecker[T]) Close() error {
 	return p.Pool.Close()
 }
 
-// NewGrpcPool creates a new connection pool for gRPC clients. It configures the
-// pool with a factory function that establishes new gRPC connections with the
-// specified address, dialer, and credentials.
+// NewGrpcPool creates a new connection pool for gRPC clients. It configures the.
 //
-// minSize is the initial number of connections to create.
-// maxSize is the maximum number of connections the pool can hold.
-// idleTimeout is the duration after which an idle connection may be closed (not currently implemented).
-// address is the target address of the gRPC service.
-// dialer is an optional custom dialer for creating network connections.
-// creds is the per-RPC credentials to be used for authentication.
-// It returns a new gRPC client pool or an error if the pool cannot be created.
+// Summary: creates a new connection pool for gRPC clients. It configures the.
+//
+// Parameters:
+//   - minSize: int. The minSize.
+//   - maxSize: int. The maxSize.
+//   - idleTimeout: time.Duration. The idleTimeout.
+//   - dialer: func(context.Context, string) (net.Conn, error). The dialer.
+//   - creds: credentials.PerRPCCredentials. The creds.
+//   - config: *configv1.UpstreamServiceConfig. The config.
+//   - disableHealthCheck: bool. The disableHealthCheck.
+//
+// Returns:
+//   - pool.Pool[*client.GrpcClientWrapper]: The pool.Pool[*client.GrpcClientWrapper].
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

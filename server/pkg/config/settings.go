@@ -21,6 +21,8 @@ import (
 )
 
 // Settings defines the global configuration for the application.
+//
+// Summary: defines the global configuration for the application.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string
@@ -44,7 +46,13 @@ var (
 
 // GlobalSettings returns the singleton instance of the global settings.
 //
-// Returns the result.
+// Summary: returns the singleton instance of the global settings.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *Settings: The *Settings.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
@@ -56,16 +64,30 @@ func GlobalSettings() *Settings {
 
 // ToProto returns the underlying GlobalSettings protobuf message.
 //
-// Returns the result.
+// Summary: returns the underlying GlobalSettings protobuf message.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *configv1.GlobalSettings: The *configv1.GlobalSettings.
 func (s *Settings) ToProto() *configv1.GlobalSettings {
 	return s.proto
 }
 
 // Load initializes the global settings from the command line and config files.
 //
+// Summary: initializes the global settings from the command line and config files.
+//
 // Parameters:
-//   cmd: The cobra command containing flags.
-//   fs: The file system interface for reading config files.
+//   - cmd: *cobra.Command. The cmd.
+//   - fs: afero.Fs. The fs.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -151,7 +173,13 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 
 // LogFormat returns the current log format as a protobuf enum.
 //
-// Returns the result.
+// Summary: returns the current log format as a protobuf enum.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - configv1.GlobalSettings_LogFormat: The configv1.GlobalSettings_LogFormat.
 func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 	format := viper.GetString("log-format")
 	key := "LOG_FORMAT_" + strings.ToUpper(format)
@@ -163,63 +191,117 @@ func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 
 // GRPCPort returns the gRPC port.
 //
-// Returns the result.
+// Summary: returns the gRPC port.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) GRPCPort() string {
 	return s.grpcPort
 }
 
 // MCPListenAddress returns the MCP listen address.
 //
-// Returns the result.
+// Summary: returns the MCP listen address.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) MCPListenAddress() string {
 	return s.proto.GetMcpListenAddress()
 }
 
 // MetricsListenAddress returns the metrics listen address.
 //
-// Returns the result.
+// Summary: returns the metrics listen address.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) MetricsListenAddress() string {
 	return viper.GetString("metrics-listen-address")
 }
 
 // Stdio returns whether stdio mode is enabled.
 //
-// Returns true if successful.
+// Summary: returns whether stdio mode is enabled.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - bool: The bool.
 func (s *Settings) Stdio() bool {
 	return s.stdio
 }
 
 // ConfigPaths returns the paths to the configuration files.
 //
-// Returns the result.
+// Summary: returns the paths to the configuration files.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []string: The []string.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
 }
 
 // IsDebug returns whether debug mode is enabled.
 //
-// Returns true if successful.
+// Summary: returns whether debug mode is enabled.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - bool: The bool.
 func (s *Settings) IsDebug() bool {
 	return s.debug
 }
 
 // LogFile returns the path to the log file.
 //
-// Returns the result.
+// Summary: returns the path to the log file.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) LogFile() string {
 	return s.logFile
 }
 
 // ShutdownTimeout returns the graceful shutdown timeout.
 //
-// Returns the result.
+// Summary: returns the graceful shutdown timeout.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - time.Duration: The time.Duration.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
 }
 
 // APIKey returns the API key for the server.
 //
-// Returns the result.
+// Summary: returns the API key for the server.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) APIKey() string {
 	if s.proto.GetApiKey() != "" {
 		return s.proto.GetApiKey()
@@ -229,21 +311,39 @@ func (s *Settings) APIKey() string {
 
 // SetAPIKey sets the Global API key.
 //
-// key is the key.
+// Summary: sets the Global API key.
+//
+// Parameters:
+//   - key: string. The key.
+//
+// Returns:
+//   None.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
 
 // SetMiddlewares sets the middlewares for the global settings.
 //
-// middlewares is the middlewares.
+// Summary: sets the middlewares for the global settings.
+//
+// Parameters:
+//   - middlewares: []*configv1.Middleware. The middlewares.
+//
+// Returns:
+//   None.
 func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 	s.proto.SetMiddlewares(middlewares)
 }
 
 // Profiles returns the active profiles.
 //
-// Returns the result.
+// Summary: returns the active profiles.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []string: The []string.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
 		return getStringSlice("profiles")
@@ -256,7 +356,13 @@ func (s *Settings) Profiles() []string {
 
 // LogLevel returns the current log level as a protobuf enum.
 //
-// Returns the result.
+// Summary: returns the current log level as a protobuf enum.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - configv1.GlobalSettings_LogLevel: The configv1.GlobalSettings_LogLevel.
 func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
@@ -286,68 +392,130 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 
 // DBPath returns the path to the SQLite database.
 //
-// Returns the result.
+// Summary: returns the path to the SQLite database.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) DBPath() string {
 	return s.dbPath
 }
 
 // SetValues returns configuration values to override.
+//
+// Summary: returns configuration values to override.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []string: The []string.
 func (s *Settings) SetValues() []string {
 	return s.setValues
 }
 
 // GetDbDsn returns the database DSN.
 //
-// Returns the result.
+// Summary: returns the database DSN.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) GetDbDsn() string {
 	return s.proto.GetDbDsn()
 }
 
 // GetDbDriver returns the database driver.
 //
-// Returns the result.
+// Summary: returns the database driver.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) GetDbDriver() string {
 	return s.proto.GetDbDriver()
 }
 
 // Middlewares returns the configured middlewares.
 //
-// Returns the result.
+// Summary: returns the configured middlewares.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []*configv1.Middleware: The []*configv1.Middleware.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()
 }
 
 // GetDlp returns the DLP configuration.
 //
-// Returns the result.
+// Summary: returns the DLP configuration.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *configv1.DLPConfig: The *configv1.DLPConfig.
 func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
 }
 
 // SetDlp sets the DLP configuration.
 //
-// dlp is the dlp.
+// Summary: sets the DLP configuration.
+//
+// Parameters:
+//   - dlp: *configv1.DLPConfig. The dlp.
+//
+// Returns:
+//   None.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }
 
 // GetOidc returns the OIDC configuration.
 //
-// Returns the result.
+// Summary: returns the OIDC configuration.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *configv1.OIDCConfig: The *configv1.OIDCConfig.
 func (s *Settings) GetOidc() *configv1.OIDCConfig {
 	return s.proto.GetOidc()
 }
 
 // GetProfileDefinitions returns the profile definitions.
 //
-// Returns the result.
+// Summary: returns the profile definitions.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []*configv1.ProfileDefinition: The []*configv1.ProfileDefinition.
 func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 	return s.proto.GetProfileDefinitions()
 }
 
 // GithubAPIURL returns the GitHub API URL.
 //
-// Returns the result.
+// Summary: returns the GitHub API URL.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (s *Settings) GithubAPIURL() string {
 	return s.proto.GetGithubApiUrl()
 }

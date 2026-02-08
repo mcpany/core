@@ -12,17 +12,22 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
+// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny).
+//
+// Summary: is a middleware that enforces call policies (allow/deny).
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
-// toolManager is the toolManager.
+// Summary: creates a new CallPolicyMiddleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//
+// Returns:
+//   - *CallPolicyMiddleware: The *CallPolicyMiddleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
@@ -31,12 +36,19 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 
 // Execute enforces call policies before proceeding to the next handler.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: enforces call policies before proceeding to the next handler.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: *tool.ExecutionRequest. The req.
+//   - next: tool.ExecutionFunc. The next.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

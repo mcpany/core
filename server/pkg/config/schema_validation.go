@@ -36,11 +36,16 @@ func ensureSchema() (*jsonschema.Schema, error) {
 
 // ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
 //
+// Summary: validates the raw configuration map against the generated JSON schema.
+//
 // Parameters:
-//   rawConfig: The raw configuration data as a map.
+//   - rawConfig: map[string]interface{}. The rawConfig.
 //
 // Returns:
-//   error: An error if validation fails.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {
@@ -55,8 +60,17 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 
 // GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Summary: returns the JSON schema for McpAnyServerConfig as a byte slice.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []byte: The []byte.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func GenerateJSONSchemaBytes() ([]byte, error) {
 	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())

@@ -23,6 +23,8 @@ import (
 )
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
+//
+// Summary: implements the Tool interface for a tool that executes a SQL query.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -36,13 +38,17 @@ type Tool struct {
 
 // NewTool creates a new SQL Tool.
 //
-// t is the t.
-// db is the db.
-// callDef is the callDef.
-// policies is the policies.
-// callID is the callID.
+// Summary: creates a new SQL Tool.
 //
-// Returns the result.
+// Parameters:
+//   - t: *v1.Tool. The t.
+//   - db: *sql.DB. The db.
+//   - callDef: *configv1.SqlCallDefinition. The callDef.
+//   - policies: []*configv1.CallPolicy. The policies.
+//   - callID: string. The callID.
+//
+// Returns:
+//   - *Tool: The *Tool.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -60,14 +66,26 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns the result.
+// Summary: returns the protobuf definition of the tool.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *v1.Tool: The *v1.Tool.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: returns the MCP tool definition.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *mcp.Tool: The *mcp.Tool.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -81,7 +99,13 @@ func (t *Tool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the tool.
 //
-// Returns the result.
+// Summary: returns the cache configuration for the tool.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The *configv1.CacheConfig.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -91,11 +115,18 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 
 // Execute runs the SQL query with the provided inputs.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: runs the SQL query with the provided inputs.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: *tool.ExecutionRequest. The req.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

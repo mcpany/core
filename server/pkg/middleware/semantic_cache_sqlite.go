@@ -14,15 +14,27 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteVectorStore implements VectorStore using SQLite for persistence
-// and an in-memory cache for fast search.
+// SQLiteVectorStore implements VectorStore using SQLite for persistence.
+//
+// Summary: implements VectorStore using SQLite for persistence.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
 }
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
-// It loads existing entries from the database into memory.
+//
+// Summary: creates a new SQLiteVectorStore.
+//
+// Parameters:
+//   - path: string. The path.
+//
+// Returns:
+//   - *SQLiteVectorStore: The *SQLiteVectorStore.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -157,13 +169,20 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 
 // Add adds a new entry to both memory and DB.
 //
-// ctx is the context for the request.
-// key is the key.
-// vector is the vector.
-// result is the result.
-// ttl is the ttl.
+// Summary: adds a new entry to both memory and DB.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//   - vector: []float32. The vector.
+//   - result: any. The result.
+//   - ttl: time.Duration. The ttl.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -206,21 +225,31 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 
 // Search searches in memory.
 //
-// ctx is the context for the request.
-// key is the key.
-// query is the query.
+// Summary: searches in memory.
 //
-// Returns the result.
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//   - query: []float32. The query.
+//
+// Returns:
+//   - any: The any.
+//   - float32: The float32.
+//   - bool: The bool.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
 
 // Prune removes expired entries from both memory and DB.
 //
-// ctx is the context for the request.
-// key is the key.
+// Summary: removes expired entries from both memory and DB.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//
+// Returns:
+//   None.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -230,7 +259,16 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 
 // Close closes the database connection.
 //
-// Returns an error if the operation fails.
+// Summary: closes the database connection.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

@@ -9,6 +9,8 @@ import (
 )
 
 // ActionableError is an error that includes a suggestion for fixing the issue.
+//
+// Summary: is an error that includes a suggestion for fixing the issue.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -16,21 +18,46 @@ type ActionableError struct {
 
 // Error implements the error interface.
 //
-// Returns the error message including the suggestion.
+// Summary: implements the error interface.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
 // Unwrap returns the underlying error.
 //
-// Returns the original error wrapped by ActionableError.
+// Summary: returns the underlying error.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
 
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
-// If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
-// Otherwise, it returns a standard wrapped error.
+//
+// Summary: wraps an error with context, preserving ActionableError semantics if present.
+//
+// Parameters:
+//   - context: string. The context.
+//   - err: error. The err.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

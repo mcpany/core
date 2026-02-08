@@ -16,59 +16,56 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
-// Bus defines the interface for a generic, type-safe event bus that facilitates
-// communication between different parts of the application. The type parameter T
-// specifies the type of message that the bus will handle.
+// Bus defines the interface for a generic, type-safe event bus that facilitates.
+//
+// Summary: defines the interface for a generic, type-safe event bus that facilitates.
 type Bus[T any] interface {
-	// Publish sends a message to all subscribers of a given topic. The message
-	// is sent to each subscriber's channel, and the handler is invoked by a
-	// dedicated goroutine for that subscriber.
+	// Publish sends a message to all subscribers of a given topic. The message.
+	//
+	// Summary: sends a message to all subscribers of a given topic. The message.
 	//
 	// Parameters:
-	//   - ctx: context.Context. Controls the lifecycle of the publish operation (e.g. timeouts).
-	//   - topic: string. The destination topic for the message.
-	//   - msg: T. The payload message to be broadcasted.
+	//   - ctx: context.Context. The context for the operation.
+	//   - topic: string. The string.
+	//   - msg: T. The t.
 	//
 	// Returns:
-	//   - error: An error if the publish operation fails (e.g. underlying transport error).
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	Publish(ctx context.Context, topic string, msg T) error
 
-	// Subscribe registers a handler function for a given topic. It starts a
-	// dedicated goroutine for the subscription to process messages from a
-	// channel.
+	// Subscribe registers a handler function for a given topic. It starts a.
+	//
+	// Summary: registers a handler function for a given topic. It starts a.
 	//
 	// Parameters:
-	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation
-	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function.
-	//   - topic: string. The topic to listen to.
-	//   - handler: func(T). The callback function invoked for each received message.
+	//   - ctx: context.Context. The context for the operation.
+	//   - topic: string. The string.
+	//   - handler: func(T). The func( t).
 	//
 	// Returns:
-	//   - func(): A cleanup function that removes the subscription when called.
+	//   - unsubscribe: func(). The func().
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
-	// SubscribeOnce registers a handler function that will be invoked only once
-	// for a given topic. After the handler is called, the subscription is
-	// automatically removed.
+	// SubscribeOnce registers a handler function that will be invoked only once.
+	//
+	// Summary: registers a handler function that will be invoked only once.
 	//
 	// Parameters:
-	//   - ctx: context.Context. Controls the setup of the subscription.
-	//   - topic: string. The topic to listen to.
-	//   - handler: func(T). The callback function invoked for the single received message.
+	//   - ctx: context.Context. The context for the operation.
+	//   - topic: string. The string.
+	//   - handler: func(T). The func( t).
 	//
 	// Returns:
-	//   - func(): A cleanup function that removes the subscription if called before the first message.
+	//   - unsubscribe: func(). The func().
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// Provider is a thread-safe container for managing multiple, type-safe bus
-// instances, with each bus being dedicated to a specific topic. It ensures that
-// for any given topic, there is only one bus instance, creating one on demand
-// if it doesn't already exist.
+// Provider is a thread-safe container for managing multiple, type-safe bus.
 //
-// This allows different parts of the application to get a bus for a specific
-// message type and topic without needing to manage the lifecycle of the bus
-// instances themselves.
+// Summary: is a thread-safe container for managing multiple, type-safe bus.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -77,15 +74,19 @@ type Provider struct {
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
+// NewProvider creates and returns a new Provider, which is used to manage.
+//
+// Summary: creates and returns a new Provider, which is used to manage.
 //
 // Parameters:
-//   messageBus: The configuration for the message bus.
+//   - messageBus: *bus.MessageBus. The messageBus.
 //
 // Returns:
-//   *Provider: The created Provider.
-//   error: An error if creation fails.
+//   - *Provider: The *Provider.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -122,20 +123,20 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
-// GetBus retrieves a bus for the given topic. If a bus for the given topic
-// already exists, it is returned; otherwise, a new one is created and stored for
-// future use.
+// GetBus retrieves a bus for the given topic. If a bus for the given topic.
 //
-// The type parameter T specifies the message type for the bus, ensuring
-// type safety for each topic.
+// Summary: retrieves a bus for the given topic. If a bus for the given topic.
 //
 // Parameters:
-//   p: The Provider instance.
-//   topic: The topic name.
+//   - p: *Provider. The p.
+//   - topic: string. The topic.
 //
 // Returns:
-//   Bus[T]: The requested Bus instance.
-//   error: An error if retrieval or creation fails.
+//   - Bus[T]: The Bus[T].
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

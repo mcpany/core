@@ -17,6 +17,8 @@ import (
 )
 
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
+//
+// Summary: implements a generic HTTP EmbeddingProvider.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
@@ -27,13 +29,20 @@ type HTTPEmbeddingProvider struct {
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
-// url is the url.
-// headers is the headers.
-// bodyTemplateStr is the bodyTemplateStr.
-// responseJSONPath is the responseJSONPath.
+// Summary: creates a new HTTPEmbeddingProvider.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - url: string. The url.
+//   - headers: map[string]string. The headers.
+//   - bodyTemplateStr: string. The bodyTemplateStr.
+//   - responseJSONPath: string. The responseJSONPath.
+//
+// Returns:
+//   - *HTTPEmbeddingProvider: The *HTTPEmbeddingProvider.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
@@ -57,11 +66,18 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 // Embed generates an embedding for the given text.
 //
-// ctx is the context for the request.
-// text is the text.
+// Summary: generates an embedding for the given text.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - text: string. The text.
+//
+// Returns:
+//   - []float32: The []float32.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?

@@ -10,14 +10,20 @@ import (
 	"github.com/mcpany/core/server/pkg/consts"
 )
 
-// ParseToolName deconstructs a fully qualified tool name into its namespace
-// (service ID) and the bare tool name. The expected format is
-// "<namespace>/-/--<tool_name>". If the separator is not found, the entire
-// input is treated as the tool name with an empty namespace.
+// ParseToolName deconstructs a fully qualified tool name into its namespace.
 //
-// toolName is the fully qualified tool name to parse.
-// It returns the namespace, the bare tool name, and an error if the tool name
-// is invalid (e.g., empty).
+// Summary: deconstructs a fully qualified tool name into its namespace.
+//
+// Parameters:
+//   - toolName: string. The toolName.
+//
+// Returns:
+//   - namespace: string. The string.
+//   - tool: string. The string.
+//   - err: error. An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {
@@ -33,12 +39,16 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	return namespace, tool, nil
 }
 
-// GetFullyQualifiedToolName constructs a fully qualified tool name from a
-// service ID and a method name, using the standard separator.
+// GetFullyQualifiedToolName constructs a fully qualified tool name from a.
 //
-// serviceID is the unique identifier of the service.
-// methodName is the name of the tool/method within the service.
-// It returns the combined, fully qualified tool name.
+// Summary: constructs a fully qualified tool name from a.
+//
+// Parameters:
+//   - serviceID: string. The serviceID.
+//   - methodName: string. The methodName.
+//
+// Returns:
+//   - string: The string.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {
 	return fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, methodName)
 }

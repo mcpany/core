@@ -23,6 +23,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: implements the upstream.Upstream interface for SQL databases.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -30,16 +32,29 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
-// Returns the result.
+// Summary: creates a new SQL upstream.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *Upstream: The *Upstream.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
 //
-// _ is an unused parameter.
+// Summary: closes the database connection.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -55,17 +70,24 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration.
 //
-// ctx is the context for the request.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: discovers and registers tools from the SQL configuration.
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//   - _: prompt.ManagerInterface. The _.
+//   - _: resource.ManagerInterface. The _.
+//   - _: bool. The _.
+//
+// Returns:
+//   - string: The string.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

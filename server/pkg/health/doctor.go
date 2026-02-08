@@ -12,6 +12,8 @@ import (
 )
 
 // CheckResult represents a single check result.
+//
+// Summary: represents a single check result.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -20,9 +22,13 @@ type CheckResult struct {
 }
 
 // CheckFunc is a function that performs a health check.
+//
+// Summary: is a function that performs a health check.
 type CheckFunc func(context.Context) CheckResult
 
 // DoctorReport represents the full doctor report.
+//
+// Summary: represents the full doctor report.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
@@ -30,6 +36,8 @@ type DoctorReport struct {
 }
 
 // Doctor is the health check handler.
+//
+// Summary: is the health check handler.
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex
@@ -38,7 +46,13 @@ type Doctor struct {
 
 // NewDoctor creates a new Doctor.
 //
-// Returns the result.
+// Summary: creates a new Doctor.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *Doctor: The *Doctor.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -48,8 +62,14 @@ func NewDoctor() *Doctor {
 
 // AddCheck adds a named health check.
 //
-// name is the name of the resource.
-// check is the check.
+// Summary: adds a named health check.
+//
+// Parameters:
+//   - name: string. The name.
+//   - check: CheckFunc. The check.
+//
+// Returns:
+//   None.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -58,7 +78,13 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 
 // Handler returns the http handler.
 //
-// Returns the result.
+// Summary: returns the http handler.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - http.HandlerFunc: The http.HandlerFunc.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

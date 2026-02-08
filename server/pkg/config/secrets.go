@@ -10,36 +10,67 @@ import (
 )
 
 // StripSecretsFromService removes sensitive information from the service configuration.
-// It specifically targets plain text secrets in UpstreamAuth and other locations.
+//
+// Summary: removes sensitive information from the service configuration.
+//
+// Parameters:
+//   - svc: *configv1.UpstreamServiceConfig. The svc.
+//
+// Returns:
+//   None.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	util.StripSecretsFromService(svc)
 }
 
 // StripSecretsFromProfile removes sensitive information from the profile definition.
 //
-// profile is the profile.
+// Summary: removes sensitive information from the profile definition.
+//
+// Parameters:
+//   - profile: *configv1.ProfileDefinition. The profile.
+//
+// Returns:
+//   None.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	util.StripSecretsFromProfile(profile)
 }
 
 // StripSecretsFromCollection removes sensitive information from the service collection.
 //
-// collection is the collection.
+// Summary: removes sensitive information from the service collection.
+//
+// Parameters:
+//   - collection: *configv1.Collection. The collection.
+//
+// Returns:
+//   None.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	util.StripSecretsFromCollection(collection)
 }
 
 // StripSecretsFromAuth removes sensitive values from the authentication config.
 //
-// auth is the auth.
+// Summary: removes sensitive values from the authentication config.
+//
+// Parameters:
+//   - auth: *configv1.Authentication. The auth.
+//
+// Returns:
+//   None.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	util.StripSecretsFromAuth(auth)
 }
 
 // HydrateSecretsInService populates the service configuration with resolved secret values.
 //
-// svc is the svc.
-// secrets is the secrets.
+// Summary: populates the service configuration with resolved secret values.
+//
+// Parameters:
+//   - svc: *configv1.UpstreamServiceConfig. The svc.
+//   - secrets: map[string]*configv1.SecretValue. The secrets.
+//
+// Returns:
+//   None.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	util.HydrateSecretsInService(svc, secrets)
 }

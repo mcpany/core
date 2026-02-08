@@ -45,18 +45,26 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 	return client.NewClientWithOpts(ops...)
 }
 
-// DockerTransport implements the mcp.Transport interface to connect to a service
-// running inside a Docker container. It manages the container lifecycle.
+// DockerTransport implements the mcp.Transport interface to connect to a service.
+//
+// Summary: implements the mcp.Transport interface to connect to a service.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
 
 // Connect establishes a connection to the service within the Docker container.
 //
-// ctx is the context for the request.
+// Summary: establishes a connection to the service within the Docker container.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - mcp.Connection: The mcp.Connection.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -198,10 +206,17 @@ type dockerConn struct {
 
 // Read decodes a single JSON-RPC message from the container's output stream.
 //
-// _ is an unused parameter.
+// Summary: decodes a single JSON-RPC message from the container's output stream.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - jsonrpc.Message: The jsonrpc.Message.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -283,10 +298,17 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
 //
-// _ is an unused parameter.
-// msg is the msg.
+// Summary: encodes and sends a JSON-RPC message to the container's input stream.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//   - msg: jsonrpc.Message. The msg.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -328,14 +350,29 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
-// Returns an error if the operation fails.
+// Summary: terminates the connection by closing the underlying ReadWriteCloser.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns a static identifier for the Docker transport session.
 //
-// Returns the result.
+// Summary: returns a static identifier for the Docker transport session.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -350,7 +387,16 @@ type dockerReadWriteCloser struct {
 
 // Close closes the underlying connection and removes the associated Docker container.
 //
-// Returns an error if the operation fails.
+// Summary: closes the underlying connection and removes the associated Docker container.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -379,8 +425,19 @@ type slogWriter struct {
 	level slog.Level
 }
 
-// Write takes a byte slice, scans it for lines, and logs each line
-// individually using the configured slog.Logger and level.
+// Write takes a byte slice, scans it for lines, and logs each line.
+//
+// Summary: takes a byte slice, scans it for lines, and logs each line.
+//
+// Parameters:
+//   - p: []byte. The p.
+//
+// Returns:
+//   - n: int. The int.
+//   - err: error. An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
@@ -398,10 +455,17 @@ type tailBuffer struct {
 
 // Write writes data to the buffer, maintaining the size limit.
 //
-// p is the p.
+// Summary: writes data to the buffer, maintaining the size limit.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - p: []byte. The p.
+//
+// Returns:
+//   - n: int. The int.
+//   - err: error. An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -416,7 +480,13 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 
 // String returns the buffered data as a string.
 //
-// Returns the result.
+// Summary: returns the buffered data as a string.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

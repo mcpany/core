@@ -89,20 +89,35 @@ const introspectionQuery = `
 `
 
 // Upstream implements the upstream.Upstream interface for GraphQL services.
+//
+// Summary: implements the upstream.Upstream interface for GraphQL services.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
-// Returns the result.
+// Summary: creates a new GraphQL upstream.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - upstream.Upstream: The upstream.Upstream.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
 //
-// _ is an unused parameter.
+// Summary: shuts down the upstream.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -165,6 +180,8 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 }
 
 // Callable implements the Callable interface for GraphQL queries.
+//
+// Summary: implements the Callable interface for GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -174,11 +191,18 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: executes the GraphQL query.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: *tool.ExecutionRequest. The req.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -203,17 +227,24 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 
 // Register inspects the GraphQL upstream service and registers its capabilities.
 //
-// ctx is the context for the request.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: inspects the GraphQL upstream service and registers its capabilities.
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//   - _: prompt.ManagerInterface. The _.
+//   - _: resource.ManagerInterface. The _.
+//   - _: bool. The _.
+//
+// Returns:
+//   - string: The string.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

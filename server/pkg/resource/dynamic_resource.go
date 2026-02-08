@@ -14,8 +14,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DynamicResource implements the Resource interface for resources that are
-// fetched dynamically by executing a tool.
+// DynamicResource implements the Resource interface for resources that are.
+//
+// Summary: implements the Resource interface for resources that are.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -23,11 +24,18 @@ type DynamicResource struct {
 
 // NewDynamicResource creates a new instance of DynamicResource.
 //
-// def is the def.
-// t is the t.
+// Summary: creates a new instance of DynamicResource.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The def.
+//   - t: tool.Tool. The t.
+//
+// Returns:
+//   - *DynamicResource: The *DynamicResource.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -50,24 +58,43 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 
 // Resource returns the MCP representation of the resource.
 //
-// Returns the result.
+// Summary: returns the MCP representation of the resource.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *mcp.Resource: The *mcp.Resource.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
 // Service returns the ID of the service that provides this resource.
 //
-// Returns the result.
+// Summary: returns the ID of the service that provides this resource.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }
 
 // Read executes the associated tool to fetch the resource content.
 //
-// ctx is the context for the request.
+// Summary: executes the associated tool to fetch the resource content.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The *mcp.ReadResourceResult.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
@@ -122,9 +149,16 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 
 // Subscribe is not yet implemented for dynamic resources.
 //
-// _ is an unused parameter.
+// Summary: is not yet implemented for dynamic resources.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

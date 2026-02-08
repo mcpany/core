@@ -16,6 +16,8 @@ import (
 )
 
 // ZipProvider provides access to files within a zip archive.
+//
+// Summary: provides access to files within a zip archive.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
@@ -23,10 +25,17 @@ type ZipProvider struct {
 
 // NewZipProvider creates a new ZipProvider from the given configuration.
 //
-// config holds the configuration settings.
+// Summary: creates a new ZipProvider from the given configuration.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - config: *configv1.ZipFs. The config.
+//
+// Returns:
+//   - *ZipProvider: The *ZipProvider.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -59,17 +68,30 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 
 // GetFs returns the underlying filesystem.
 //
-// Returns the result.
+// Summary: returns the underlying filesystem.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - afero.Fs: The afero.Fs.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path in the zip.
 //
-// virtualPath is the virtualPath.
+// Summary: resolves the virtual path to a real path in the zip.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - virtualPath: string. The virtualPath.
+//
+// Returns:
+//   - string: The string.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil
@@ -77,7 +99,16 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 
 // Close closes the underlying zip file.
 //
-// Returns an error if the operation fails.
+// Summary: closes the underlying zip file.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

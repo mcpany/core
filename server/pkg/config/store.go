@@ -109,11 +109,31 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Summary: sets whether to skip schema validation.
+//
+// Parameters:
+//   - skip: bool. The skip.
+//
+// Returns:
+//   None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// Summary: parses a YAML byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b: []byte. The b.
+//   - v: proto.Message. The v.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -133,6 +153,19 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Summary: populates the provided proto.Message from a raw map.
+//
+// Parameters:
+//   - yamlMap: map[string]interface{}. The yamlMap.
+//   - v: proto.Message. The v.
+//   - originalBytes: []byte. The originalBytes.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -236,6 +269,18 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Summary: parses a textproto byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b: []byte. The b.
+//   - v: proto.Message. The v.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -244,6 +289,18 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Summary: parses a JSON byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b: []byte. The b.
+//   - v: proto.Message. The v.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format

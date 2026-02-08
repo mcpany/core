@@ -109,13 +109,13 @@ func init() {
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 //
-// If the input is not valid JSON object or array, it returns the input as is.
+// Summary: parses a JSON byte slice and redacts sensitive keys.
 //
 // Parameters:
-//   - input: []byte. The JSON input to redact.
+//   - input: []byte. The input.
 //
 // Returns:
-//   - []byte: The redacted JSON output.
+//   - []byte: The []byte.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -135,16 +135,13 @@ func RedactJSON(input []byte) []byte {
 
 // RedactMap recursively redacts sensitive keys in a map.
 //
-// Optimization: This function performs a copy-on-write.
-// If no sensitive keys are found, it returns the original map (zero allocation).
-// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
-// Note: This aligns with RedactJSON behavior which returns original slice if clean.
+// Summary: recursively redacts sensitive keys in a map.
 //
 // Parameters:
-//   - m: map[string]interface{}. The map to redact.
+//   - m: map[string]interface{}. The m.
 //
 // Returns:
-//   - map[string]interface{}: The potentially redacted map.
+//   - map[string]interface{}: The map[string]interface{}.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -253,11 +250,13 @@ var sensitiveKeys = []string{
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
+// Summary: checks if a key name suggests it contains sensitive information.
+//
 // Parameters:
-//   - key: string. The key name to check.
+//   - key: string. The key.
 //
 // Returns:
-//   - bool: True if the key is considered sensitive, false otherwise.
+//   - bool: The bool.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -487,13 +486,13 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
 // RedactDSN redacts the password from a DSN string.
 //
-// Supported formats: postgres://user:password@host...
+// Summary: redacts the password from a DSN string.
 //
 // Parameters:
-//   - dsn: string. The DSN string to redact.
+//   - dsn: string. The dsn.
 //
 // Returns:
-//   - string: The redacted DSN string.
+//   - string: The string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -597,12 +596,14 @@ type redactInterval struct {
 
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 //
+// Summary: replaces all occurrences of the given secrets in the text with [REDACTED].
+//
 // Parameters:
-//   - text: string. The text to redact.
-//   - secrets: []string. A list of secret values to redact from the text.
+//   - text: string. The text.
+//   - secrets: []string. The secrets.
 //
 // Returns:
-//   - string: The redacted text.
+//   - string: The string.
 func RedactSecrets(text string, secrets []string) string {
 	if text == "" || len(secrets) == 0 {
 		return text

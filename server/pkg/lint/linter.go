@@ -16,7 +16,7 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// It is used to categorize findings based on their impact and urgency.
+// Summary: indicates the importance of a linting result.
 type Severity int
 
 const (
@@ -30,10 +30,13 @@ const (
 
 // String returns the string representation of the severity.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
+// Summary: returns the string representation of the severity.
+//
+// Parameters:
+//   None.
 //
 // Returns:
-//   - string: The string representation of the severity.
+//   - string: The string.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -49,7 +52,7 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
+// Summary: represents a single linting finding.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -63,10 +66,13 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
-// It formats the result into a human-readable string suitable for CLI output.
+// Summary: returns the string representation of the result.
+//
+// Parameters:
+//   None.
 //
 // Returns:
-//   - string: A formatted string containing severity, service, path, and message.
+//   - string: The string.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -81,33 +87,37 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
+// Summary: performs static analysis on the configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
 // NewLinter creates a new Linter instance.
 //
+// Summary: creates a new Linter instance.
+//
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+//   - cfg: *configv1.McpAnyServerConfig. The cfg.
 //
 // Returns:
-//   - *Linter: A new Linter instance initialized with the provided configuration.
+//   - *Linter: The *Linter.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
 // Run executes all linting checks.
 //
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
+// Summary: executes all linting checks.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
+//   - ctx: context.Context. The context for the operation.
 //
 // Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue (currently always nil).
+//   - []Result: The []Result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

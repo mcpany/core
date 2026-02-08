@@ -12,8 +12,9 @@ import (
 	"github.com/valyala/fasttemplate"
 )
 
-// TextTemplate provides a simple wrapper around Go's standard text/template
-// for rendering strings with dynamic data.
+// TextTemplate provides a simple wrapper around Go's standard text/template.
+//
+// Summary: provides a simple wrapper around Go's standard text/template.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -24,8 +25,19 @@ type TextTemplate struct {
 
 // NewTemplate parses a template string and creates a new TextTemplate.
 //
-// templateString is the template content to be parsed.
-// It returns a new TextTemplate or an error if the template string is invalid.
+// Summary: parses a template string and creates a new TextTemplate.
+//
+// Parameters:
+//   - templateString: string. The templateString.
+//   - startTag: string. The startTag.
+//   - endTag: string. The endTag.
+//
+// Returns:
+//   - *TextTemplate: The *TextTemplate.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -50,12 +62,19 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	}, nil
 }
 
-// Render executes the template with the provided parameters and returns the
-// resulting string.
+// Render executes the template with the provided parameters and returns the.
 //
-// params is a map of key-value pairs that will be available within the
-// template.
-// It returns the rendered string or an error if the template execution fails.
+// Summary: executes the template with the provided parameters and returns the.
+//
+// Parameters:
+//   - params: map[string]any. The params.
+//
+// Returns:
+//   - string: The string.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

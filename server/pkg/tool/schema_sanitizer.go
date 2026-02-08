@@ -9,8 +9,18 @@ import (
 )
 
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
-// It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
-// This function does NOT modify the input schema.
+//
+// Summary: attempts to fix common schema issues that cause strict MCP clients to fail.
+//
+// Parameters:
+//   - schema: any. The schema.
+//
+// Returns:
+//   - *structpb.Struct: The *structpb.Struct.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

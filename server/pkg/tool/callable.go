@@ -10,24 +10,30 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CallableTool implements the Tool interface for a tool that is executed by a
-// Callable.
+// CallableTool implements the Tool interface for a tool that is executed by a.
+//
+// Summary: implements the Tool interface for a tool that is executed by a.
 type CallableTool struct {
 	*baseTool
 }
 
 // NewCallableTool creates a new CallableTool.
 //
+// Summary: creates a new CallableTool.
+//
 // Parameters:
-//   toolDef: The definition of the tool.
-//   serviceConfig: The configuration of the service the tool belongs to.
-//   callable: The callable implementation for execution.
-//   inputSchema: The input schema for the tool.
-//   outputSchema: The output schema for the tool.
+//   - toolDef: *configv1.ToolDefinition. The toolDef.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - callable: Callable. The callable.
+//   - inputSchema: *structpb.Struct. The inputSchema.
+//   - outputSchema: *structpb.Struct. The outputSchema.
 //
 // Returns:
-//   *CallableTool: A pointer to the created CallableTool.
-//   error: An error if creation fails.
+//   - *CallableTool: The *CallableTool.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -38,18 +44,31 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 
 // Execute handles the execution of the tool.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: handles the execution of the tool.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: *ExecutionRequest. The req.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
 
 // Callable returns the underlying Callable of the tool.
 //
-// Returns the result.
+// Summary: returns the underlying Callable of the tool.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - Callable: The Callable.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

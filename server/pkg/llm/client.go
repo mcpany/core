@@ -15,6 +15,8 @@ import (
 )
 
 // Client is the interface for an LLM client.
+//
+// Summary: is the interface for an LLM client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -38,23 +40,31 @@ type Client interface {
 }
 
 // ChatRequest represents a chat completion request.
+//
+// Summary: represents a chat completion request.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
 // Message represents a chat message.
+//
+// Summary: represents a chat message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
 // ChatResponse represents a chat completion response.
+//
+// Summary: represents a chat completion response.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
 // OpenAIClient implements Client for OpenAI.
+//
+// Summary: implements Client for OpenAI.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string
@@ -62,6 +72,15 @@ type OpenAIClient struct {
 }
 
 // NewOpenAIClient creates a new OpenAIClient.
+//
+// Summary: creates a new OpenAIClient.
+//
+// Parameters:
+//   - apiKey: string. The apiKey.
+//   - baseURL: string. The baseURL.
+//
+// Returns:
+//   - *OpenAIClient: The *OpenAIClient.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -90,6 +109,19 @@ type openAIChatResponse struct {
 }
 
 // ChatCompletion performs a chat completion request.
+//
+// Summary: performs a chat completion request.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: ChatRequest. The req.
+//
+// Returns:
+//   - *ChatResponse: The *ChatResponse.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

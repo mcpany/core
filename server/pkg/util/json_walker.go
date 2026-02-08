@@ -9,22 +9,15 @@ import (
 )
 
 // WalkJSONStrings visits every string value in the JSON input.
-// visitor is called for every string value (not keys).
-// visitor receives:
 //
-//	raw: the raw bytes of the string, including quotes.
-//
-// visitor returns:
-//
-//	replacement: the new bytes to replace 'raw' with, or nil to keep original.
-//	modified: true if replacement should be used.
+// Summary: visits every string value in the JSON input.
 //
 // Parameters:
-//   - input: The JSON input to walk.
-//   - visitor: A function that visits every string value.
+//   - input: []byte. The input.
+//   - visitor: func(raw []byte) ([]byte, bool). The visitor.
 //
 // Returns:
-//   - []byte: The potentially modified JSON output.
+//   - []byte: The []byte.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0
@@ -109,10 +102,15 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 }
 
 // WalkStandardJSONStrings visits every string value in the JSON input.
-// ⚡ Bolt: Optimized for standard JSON (no comments).
-// It assumes the input is standard JSON (no comments) and skips comment detection logic
-// for significantly improved performance on mixed payloads.
-// visitor is called for every string value (not keys).
+//
+// Summary: visits every string value in the JSON input.
+//
+// Parameters:
+//   - input: []byte. The input.
+//   - visitor: func(raw []byte) ([]byte, bool). The visitor.
+//
+// Returns:
+//   - []byte: The []byte.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0

@@ -12,6 +12,8 @@ import (
 )
 
 // ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
+//
+// Summary: provides circuit breaker and retry functionality for tool executions.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
@@ -19,9 +21,13 @@ type ResilienceMiddleware struct {
 
 // NewResilienceMiddleware creates a new ResilienceMiddleware.
 //
-// toolManager is the toolManager.
+// Summary: creates a new ResilienceMiddleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//
+// Returns:
+//   - *ResilienceMiddleware: The *ResilienceMiddleware.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
@@ -30,12 +36,19 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 
 // Execute executes the resilience middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: executes the resilience middleware.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: *tool.ExecutionRequest. The req.
+//   - next: tool.ExecutionFunc. The next.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

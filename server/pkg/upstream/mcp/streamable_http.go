@@ -38,86 +38,157 @@ var (
 	connectForTesting       func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)
 )
 
-// ClientSession defines an interface that abstracts the capabilities of an
-// mcp.ClientSession. This is used primarily for testing, allowing mock sessions
-// to be injected.
+// ClientSession defines an interface that abstracts the capabilities of an.
+//
+// Summary: defines an interface that abstracts the capabilities of an.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: lists the tools available in the session.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//   - params: *mcp.ListToolsParams. The list tools params.
+	//
+	// Returns:
+	//   - *mcp.ListToolsResult: The *mcp.ListToolsResult.
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error)
 	// ListPrompts lists the prompts available in the session.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: lists the prompts available in the session.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//   - params: *mcp.ListPromptsParams. The list prompts params.
+	//
+	// Returns:
+	//   - *mcp.ListPromptsResult: The *mcp.ListPromptsResult.
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error)
 	// ListResources lists the resources available in the session.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: lists the resources available in the session.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//   - params: *mcp.ListResourcesParams. The list resources params.
+	//
+	// Returns:
+	//   - *mcp.ListResourcesResult: The *mcp.ListResourcesResult.
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error)
 	// GetPrompt retrieves a prompt from the session.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: retrieves a prompt from the session.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//   - params: *mcp.GetPromptParams. The get prompt params.
+	//
+	// Returns:
+	//   - *mcp.GetPromptResult: The *mcp.GetPromptResult.
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error)
 	// ReadResource reads a resource from the session.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: reads a resource from the session.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//   - params: *mcp.ReadResourceParams. The read resource params.
+	//
+	// Returns:
+	//   - *mcp.ReadResourceResult: The *mcp.ReadResourceResult.
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error)
 	// CallTool calls a tool in the session.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: calls a tool in the session.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//   - params: *mcp.CallToolParams. The call tool params.
+	//
+	// Returns:
+	//   - *mcp.CallToolResult: The *mcp.CallToolResult.
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 	// Close closes the session.
 	//
-	// Returns an error if the operation fails.
+	// Summary: closes the session.
+	//
+	// Parameters:
+	//   None.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Throws/Errors:
+	//   Returns an error if the operation fails.
 	Close() error
 }
 
-// SetNewClientImplForTesting provides a hook for injecting a mock MCP client
-// implementation during tests. This should only be used for testing purposes.
+// SetNewClientImplForTesting provides a hook for injecting a mock MCP client.
+//
+// Summary: provides a hook for injecting a mock MCP client.
+//
+// Parameters:
+//   - f: func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient. The f.
+//
+// Returns:
+//   None.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
 
-// SetNewClientForTesting provides a hook for injecting a mock mcp.Client
-// during tests. This should only be used for testing purposes.
+// SetNewClientForTesting provides a hook for injecting a mock mcp.Client.
+//
+// Summary: provides a hook for injecting a mock mcp.Client.
+//
+// Parameters:
+//   - f: func(impl *mcp.Implementation) *mcp.Client. The f.
+//
+// Returns:
+//   None.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
 
-// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect
-// function during tests. This should only be used for testing purposes.
+// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect.
+//
+// Summary: provides a hook for injecting a mock mcp.Client.Connect.
+//
+// Parameters:
+//   - f: func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error). The f.
+//
+// Returns:
+//   None.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
 
-// Upstream implements the upstream.Upstream interface for services that are
-// themselves MCP-compliant. It connects to the downstream MCP service, discovers
-// its tools, prompts, and resources, and registers them with the current server,
-// effectively acting as a proxy or aggregator.
+// Upstream implements the upstream.Upstream interface for services that are.
+//
+// Summary: implements the upstream.Upstream interface for services that are.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -128,8 +199,18 @@ type Upstream struct {
 	serviceID string
 }
 
-// Shutdown cleans up any temporary resources associated with the upstream, such
-// as extracted bundle directories.
+// Shutdown cleans up any temporary resources associated with the upstream, such.
+//
+// Summary: cleans up any temporary resources associated with the upstream, such.
+//
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.RLock()
 	serviceID := u.serviceID
@@ -150,9 +231,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
-// globalSettings is the globalSettings.
+// Summary: creates a new instance of Upstream.
 //
-// Returns the result.
+// Parameters:
+//   - globalSettings: *configv1.GlobalSettings. The globalSettings.
+//
+// Returns:
+//   - upstream.Upstream: The upstream.Upstream.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -171,20 +256,44 @@ type mcpPrompt struct {
 
 // Prompt returns the underlying *mcp.Prompt definition.
 //
-// Returns the result.
+// Summary: returns the underlying *mcp.Prompt definition.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *mcp.Prompt: The *mcp.Prompt.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
 // Service returns the ID of the service that this prompt belongs to.
 //
-// Returns the result.
+// Summary: returns the ID of the service that this prompt belongs to.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
 
-// Get executes the prompt by establishing a session with the downstream MCP
-// service and calling its GetPrompt method.
+// Get executes the prompt by establishing a session with the downstream MCP.
+//
+// Summary: executes the prompt by establishing a session with the downstream MCP.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - args: json.RawMessage. The args.
+//
+// Returns:
+//   - *mcp.GetPromptResult: The *mcp.GetPromptResult.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -225,20 +334,43 @@ type mcpResource struct {
 
 // Resource returns the underlying *mcp.Resource definition.
 //
-// Returns the result.
+// Summary: returns the underlying *mcp.Resource definition.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *mcp.Resource: The *mcp.Resource.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
 // Service returns the ID of the service that this resource belongs to.
 //
-// Returns the result.
+// Summary: returns the ID of the service that this resource belongs to.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The string.
 func (r *mcpResource) Service() string {
 	return r.service
 }
 
-// Read retrieves the content of the resource by establishing a session with the
-// downstream MCP service and calling its ReadResource method.
+// Read retrieves the content of the resource by establishing a session with the.
+//
+// Summary: retrieves the content of the resource by establishing a session with the.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The *mcp.ReadResourceResult.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -251,16 +383,42 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 	return result, err
 }
 
-// Subscribe is not yet implemented for MCP resources. It returns an error
-// indicating that this functionality is not available.
+// Subscribe is not yet implemented for MCP resources. It returns an error.
+//
+// Summary: is not yet implemented for MCP resources. It returns an error.
+//
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
 
-// Register handles the registration of another MCP service as an upstream. It
-// determines the connection type (stdio or HTTP), connects to the downstream
-// service, lists its available tools, prompts, and resources, and registers
-// them with the appropriate managers.
+// Register handles the registration of another MCP service as an upstream. It.
+//
+// Summary: handles the registration of another MCP service as an upstream. It.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//   - promptManager: prompt.ManagerInterface. The promptManager.
+//   - resourceManager: resource.ManagerInterface. The resourceManager.
+//   - isReload: bool. The isReload.
+//
+// Returns:
+//   - string: The string.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -414,8 +572,20 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	return f(cs)
 }
 
-// CallTool executes a tool on the downstream MCP service by establishing a
-// session and forwarding the tool call.
+// CallTool executes a tool on the downstream MCP service by establishing a.
+//
+// Summary: executes a tool on the downstream MCP service by establishing a.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - params: *mcp.CallToolParams. The params.
+//
+// Returns:
+//   - *mcp.CallToolResult: The *mcp.CallToolResult.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -1059,8 +1229,19 @@ type authenticatedRoundTripper struct {
 	base          http.RoundTripper
 }
 
-// RoundTrip applies the configured authenticator to the request and then passes
-// it to the base RoundTripper.
+// RoundTrip applies the configured authenticator to the request and then passes.
+//
+// Summary: applies the configured authenticator to the request and then passes.
+//
+// Parameters:
+//   - req: *http.Request. The req.
+//
+// Returns:
+//   - *http.Response: The *http.Response.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {
@@ -1075,6 +1256,8 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 }
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
+//
+// Summary: implements the mcp.Transport interface for HTTP connections.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string
@@ -1084,10 +1267,17 @@ type StreamableHTTP struct {
 
 // RoundTrip executes an HTTP request and returns the response.
 //
-// req is the request object.
+// Summary: executes an HTTP request and returns the response.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - req: *http.Request. The req.
+//
+// Returns:
+//   - *http.Response: The *http.Response.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

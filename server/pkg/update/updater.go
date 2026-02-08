@@ -20,7 +20,7 @@ import (
 
 // Updater handles the self-update process.
 //
-// It manages checking for updates on GitHub and applying them to the local executable.
+// Summary: handles the self-update process.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -28,12 +28,14 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
+// Summary: creates a new Updater.
+//
 // Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
+//   - httpClient: *http.Client. The httpClient.
+//   - githubAPIURL: string. The githubAPIURL.
 //
 // Returns:
-//   - *Updater: A new Updater instance.
+//   - *Updater: The *Updater.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -53,18 +55,21 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 
 // CheckForUpdate checks for a new release on GitHub.
 //
-// It compares the provided current version tag with the latest release tag on the repository.
+// Summary: checks for a new release on GitHub.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - owner: string. The GitHub repository owner (e.g., "mcpany").
-//   - repo: string. The GitHub repository name (e.g., "core").
-//   - currentVersion: string. The current version tag of the application.
+//   - ctx: context.Context. The context for the operation.
+//   - owner: string. The owner.
+//   - repo: string. The repo.
+//   - currentVersion: string. The currentVersion.
 //
 // Returns:
-//   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
-//   - bool: True if a newer version is available, false otherwise.
-//   - error: An error if the check fails (e.g., network error, API rate limit).
+//   - *github.RepositoryRelease: The *github.RepositoryRelease.
+//   - bool: The bool.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -80,22 +85,21 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
-// It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
+// Summary: downloads the new release, verifies its checksum, and replaces the current executable.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - fs: afero.Fs. The file system abstraction (usually afero.NewOsFs()).
-//   - executablePath: string. The path to the currently running executable to replace.
-//   - release: *github.RepositoryRelease. The release object to update to.
-//   - assetName: string. The name of the binary asset to download.
-//   - checksumsAssetName: string. The name of the checksums file asset.
+//   - ctx: context.Context. The context for the operation.
+//   - fs: afero.Fs. The fs.
+//   - executablePath: string. The executablePath.
+//   - release: *github.RepositoryRelease. The release.
+//   - assetName: string. The assetName.
+//   - checksumsAssetName: string. The checksumsAssetName.
 //
 // Returns:
-//   - error: An error if any step of the update process fails (download, verify, replace).
+//   - error: An error if the operation fails.
 //
-// Side Effects:
-//   - Writes temporary files to disk.
-//   - Modifies the executable file on disk.
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

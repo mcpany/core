@@ -26,9 +26,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed as command-line tools. It discovers and registers tools based on
-// a list of commands defined in the service configuration.
+// Upstream implements the upstream.Upstream interface for services that.
+//
+// Summary: implements the upstream.Upstream interface for services that.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -36,9 +36,16 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// _ is an unused parameter.
+// Summary: implements the upstream.Upstream interface.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -51,13 +58,37 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
-// Returns the result.
+// Summary: creates a new instance of CommandUpstream.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - upstream.Upstream: The upstream.Upstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Register processes the configuration for a command-line service, creates a
-// new tool for each defined command, and registers them with the tool manager.
+// Register processes the configuration for a command-line service, creates a.
+//
+// Summary: processes the configuration for a command-line service, creates a.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The serviceConfig.
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//   - promptManager: prompt.ManagerInterface. The promptManager.
+//   - resourceManager: resource.ManagerInterface. The resourceManager.
+//   - isReload: bool. The isReload.
+//
+// Returns:
+//   - string: The string.
+//   - []*configv1.ToolDefinition: The []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

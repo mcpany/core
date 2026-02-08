@@ -25,6 +25,8 @@ import (
 )
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+//
+// Summary: provides rate limiting functionality for all MCP requests.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -36,9 +38,13 @@ type GlobalRateLimitMiddleware struct {
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
-// config holds the configuration settings.
+// Summary: creates a new GlobalRateLimitMiddleware.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.RateLimitConfig. The config.
+//
+// Returns:
+//   - *GlobalRateLimitMiddleware: The *GlobalRateLimitMiddleware.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -48,7 +54,13 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 
 // UpdateConfig updates the rate limit configuration safely.
 //
-// config holds the configuration settings.
+// Summary: updates the rate limit configuration safely.
+//
+// Parameters:
+//   - config: *configv1.RateLimitConfig. The config.
+//
+// Returns:
+//   None.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -60,13 +72,20 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 
 // Execute executes the rate limiting middleware.
 //
-// ctx is the context for the request.
-// method is the method.
-// req is the request object.
-// next is the next.
+// Summary: executes the rate limiting middleware.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - method: string. The method.
+//   - req: mcp.Request. The req.
+//   - next: mcp.MethodHandler. The next.
+//
+// Returns:
+//   - mcp.Result: The mcp.Result.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

@@ -14,27 +14,43 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: wraps the sql.DB connection.
 type DB struct {
 	*sql.DB
 }
 
 // NewDB opens a PostgreSQL database connection.
 //
-// dsn is the dsn.
+// Summary: opens a PostgreSQL database connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - dsn: string. The dsn.
+//
+// Returns:
+//   - *DB: The *DB.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
 // NewDBWithDriver opens a database connection with the specified driver.
 //
-// driver is the driver.
-// dsn is the dsn.
+// Summary: opens a database connection with the specified driver.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - driver: string. The driver.
+//   - dsn: string. The dsn.
+//
+// Returns:
+//   - *DB: The *DB.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -63,10 +79,17 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
 //
-// db is the db.
+// Summary: creates a new DB wrapper from an existing sql.DB connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - db: *sql.DB. The db.
+//
+// Returns:
+//   - *DB: The *DB.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

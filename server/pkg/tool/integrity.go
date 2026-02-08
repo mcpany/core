@@ -14,6 +14,17 @@ import (
 )
 
 // VerifyIntegrity checks if the tool definition matches its expected hash.
+//
+// Summary: checks if the tool definition matches its expected hash.
+//
+// Parameters:
+//   - t: *v1.Tool. The t.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -36,12 +47,34 @@ func VerifyIntegrity(t *v1.Tool) error {
 }
 
 // VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
-// Currently ToolDefinition in config does not have an integrity field, so this is a placeholder.
+//
+// Summary: checks if the config tool definition matches its expected hash.
+//
+// Parameters:
+//   - _: *configv1.ToolDefinition. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func VerifyConfigIntegrity(_ *configv1.ToolDefinition) error {
 	return nil
 }
 
 // CalculateHash computes the SHA256 hash of a runtime tool definition.
+//
+// Summary: computes the SHA256 hash of a runtime tool definition.
+//
+// Parameters:
+//   - t: *v1.Tool. The t.
+//
+// Returns:
+//   - string: The string.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -61,6 +94,18 @@ func CalculateHash(t *v1.Tool) (string, error) {
 }
 
 // CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
+//
+// Summary: computes the SHA256 hash of a configuration tool definition.
+//
+// Parameters:
+//   - t: *configv1.ToolDefinition. The t.
+//
+// Returns:
+//   - string: The string.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

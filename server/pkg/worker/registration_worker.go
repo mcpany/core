@@ -18,10 +18,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistrationWorker is a background worker responsible for handling
-// service registration requests. It listens for ServiceRegistrationRequest
-// messages on the event bus, processes them using the service registry, and
-// publishes the results as ServiceRegistrationResult messages.
+// ServiceRegistrationWorker is a background worker responsible for handling.
+//
+// Summary: is a background worker responsible for handling.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -31,12 +30,14 @@ type ServiceRegistrationWorker struct {
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
+// Summary: creates a new ServiceRegistrationWorker.
+//
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - serviceRegistry: The registry that will handle the actual registration logic.
+//   - bus: *bus.Provider. The bus.
+//   - serviceRegistry: serviceregistry.ServiceRegistryInterface. The serviceRegistry.
 //
 // Returns:
-//   - *ServiceRegistrationWorker: A new service registration worker.
+//   - *ServiceRegistrationWorker: The *ServiceRegistrationWorker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -47,18 +48,26 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 
 // SetRetryDelay sets the retry delay for failed registrations.
 //
+// Summary: sets the retry delay for failed registrations.
+//
 // Parameters:
-//   - d: The duration to wait before retrying.
+//   - d: time.Duration. The d.
+//
+// Returns:
+//   None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
 
-// Start launches the worker in a new goroutine. It subscribes to service
-// registration requests on the event bus and will continue to process them
-// until the provided context is canceled.
+// Start launches the worker in a new goroutine. It subscribes to service.
+//
+// Summary: launches the worker in a new goroutine. It subscribes to service.
 //
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   None.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -275,6 +284,14 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 }
 
 // Stop waits for the worker to stop.
+//
+// Summary: waits for the worker to stop.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

@@ -13,29 +13,40 @@ import (
 )
 
 // Generator handles the interactive generation of configuration files.
-// It prompts the user for input and uses templates to generate YAML configuration
-// for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
+//
+// Summary: handles the interactive generation of configuration files.
 type Generator struct {
 	Reader *bufio.Reader
 }
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
+// Summary: creates a new Generator instance that reads from standard input.
+//
+// Parameters:
+//   None.
+//
 // Returns:
-//   - A pointer to a new Generator initialized with os.Stdin.
+//   - *Generator: The *Generator.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
 	}
 }
 
-// Generate prompts the user for service details and returns the generated
-// configuration as a byte slice. It supports multiple service types including
-// HTTP, gRPC, OpenAPI, and GraphQL.
+// Generate prompts the user for service details and returns the generated.
+//
+// Summary: prompts the user for service details and returns the generated.
+//
+// Parameters:
+//   None.
 //
 // Returns:
-//   - A byte slice containing the generated YAML configuration.
-//   - An error if the generation fails or the user provides invalid input.
+//   - []byte: The []byte.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {
@@ -110,7 +121,8 @@ const httpServiceTemplate = `upstreamServices:
 `
 
 // HTTPServiceData holds the data required to generate an HTTP service configuration.
-// It is used as the data context for the httpServiceTemplate.
+//
+// Summary: holds the data required to generate an HTTP service configuration.
 type HTTPServiceData struct {
 	// Name is the name of the service.
 	Name string
@@ -183,7 +195,8 @@ const grpcServiceTemplate = `upstreamServices:
 `
 
 // GRPCServiceData holds the data required to generate a gRPC service configuration.
-// It is used as the data context for the grpcServiceTemplate.
+//
+// Summary: holds the data required to generate a gRPC service configuration.
 type GRPCServiceData struct {
 	// Name is the name of the service.
 	Name string
@@ -233,7 +246,8 @@ const openapiServiceTemplate = `upstreamServices:
 `
 
 // OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
-// It is used as the data context for the openapiServiceTemplate.
+//
+// Summary: holds the data required to generate an OpenAPI service configuration.
 type OpenAPIServiceData struct {
 	// Name is the name of the service.
 	Name string
@@ -278,7 +292,8 @@ const graphqlServiceTemplate = `upstreamServices:
 `
 
 // GraphQLServiceData holds the data required to generate a GraphQL service configuration.
-// It is used as the data context for the graphqlServiceTemplate.
+//
+// Summary: holds the data required to generate a GraphQL service configuration.
 type GraphQLServiceData struct {
 	// Name is the name of the service.
 	Name string

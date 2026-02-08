@@ -4,8 +4,9 @@
 // Package terraform provides a Terraform provider skeleton.
 package terraform
 
-// ResourceMCPServer represents the configuration schema for an MCP Server resource
-// This would map to hashicorp/terraform-plugin-sdk in a real provider.
+// ResourceMCPServer represents the configuration schema for an MCP Server resource.
+//
+// Summary: represents the configuration schema for an MCP Server resource.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int
@@ -14,7 +15,13 @@ type ResourceMCPServer struct {
 
 // Schema returns the Terraform schema definition (Mock).
 //
-// Returns the result.
+// Summary: returns the Terraform schema definition (Mock).
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - map[string]interface{}: The map[string]interface{}.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -39,9 +46,16 @@ func Schema() map[string]interface{} {
 
 // Create mimics the Create operation of a Terraform resource.
 //
-// _ is an unused parameter.
+// Summary: mimics the Create operation of a Terraform resource.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: *ResourceMCPServer. The _.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
@@ -49,10 +63,17 @@ func Create(_ *ResourceMCPServer) error {
 
 // Read mimics the Read operation.
 //
-// name is the name of the resource.
+// Summary: mimics the Read operation.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - name: string. The name.
+//
+// Returns:
+//   - *ResourceMCPServer: The *ResourceMCPServer.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

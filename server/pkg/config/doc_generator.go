@@ -22,16 +22,19 @@ import (
 )
 
 // GenerateDocumentation generates Markdown documentation for the tools defined in the configuration.
-// It iterates through the configured upstream services, registers their tools, and produces a
-// Markdown formatted string describing each tool and its input schema.
+//
+// Summary: generates Markdown documentation for the tools defined in the configuration.
 //
 // Parameters:
-//   ctx: The context for the operation.
-//   cfg: The server configuration containing upstream service definitions.
+//   - ctx: context.Context. The context for the operation.
+//   - cfg: *configv1.McpAnyServerConfig. The cfg.
 //
 // Returns:
-//   A string containing the generated Markdown documentation.
-//   An error if documentation generation fails (e.g., if a service cannot be initialized).
+//   - string: The string.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

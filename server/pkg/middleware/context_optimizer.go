@@ -15,15 +15,21 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+//
+// Summary: optimises the context size of responses.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// maxChars is the maxChars.
+// Summary: creates a new ContextOptimizer.
 //
-// Returns the result.
+// Parameters:
+//   - maxChars: int. The maxChars.
+//
+// Returns:
+//   - *ContextOptimizer: The *ContextOptimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -40,9 +46,13 @@ var bufferPool = sync.Pool{
 
 // Handler returns the middleware handler.
 //
-// next is the next.
+// Summary: returns the middleware handler.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next.
+//
+// Returns:
+//   - http.Handler: The http.Handler.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -175,10 +185,17 @@ func (w *responseBuffer) checkBuffer() {
 
 // Write writes the data to the buffer or the underlying ResponseWriter.
 //
-// b is the b.
+// Summary: writes the data to the buffer or the underlying ResponseWriter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - b: []byte. The b.
+//
+// Returns:
+//   - int: The int.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -194,7 +211,13 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 
 // WriteHeader captures the status code and decides whether to buffer based on headers.
 //
-// statusCode is the HTTP status code to write.
+// Summary: captures the status code and decides whether to buffer based on headers.
+//
+// Parameters:
+//   - statusCode: int. The statusCode.
+//
+// Returns:
+//   None.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

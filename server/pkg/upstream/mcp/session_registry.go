@@ -11,7 +11,8 @@ import (
 )
 
 // SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
-// This allows requests from upstream (like sampling) to be routed to the correct downstream client.
+//
+// Summary: manages the mapping between upstream MCP sessions and downstream tool sessions.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session
@@ -19,7 +20,13 @@ type SessionRegistry struct {
 
 // NewSessionRegistry creates a new SessionRegistry.
 //
-// Returns the result.
+// Summary: creates a new SessionRegistry.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *SessionRegistry: The *SessionRegistry.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),
@@ -28,8 +35,14 @@ func NewSessionRegistry() *SessionRegistry {
 
 // Register registers a mapping between an upstream session and a downstream session.
 //
-// upstreamSession is the upstreamSession.
-// downstreamSession is the downstreamSession.
+// Summary: registers a mapping between an upstream session and a downstream session.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session. The upstreamSession.
+//   - downstreamSession: tool.Session. The downstreamSession.
+//
+// Returns:
+//   None.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -38,7 +51,13 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 
 // Unregister removes the mapping for an upstream session.
 //
-// upstreamSession is the upstreamSession.
+// Summary: removes the mapping for an upstream session.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session. The upstreamSession.
+//
+// Returns:
+//   None.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -47,10 +66,14 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 
 // Get retrieves the downstream session associated with an upstream session.
 //
-// upstreamSession is the upstreamSession.
+// Summary: retrieves the downstream session associated with an upstream session.
 //
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - upstreamSession: mcp.Session. The upstreamSession.
+//
+// Returns:
+//   - tool.Session: The tool.Session.
+//   - bool: The bool.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

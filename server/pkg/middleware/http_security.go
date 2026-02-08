@@ -10,9 +10,13 @@ import (
 
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
 //
-// next is the next.
+// Summary: adds security headers to HTTP responses.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next.
+//
+// Returns:
+//   - http.Handler: The http.Handler.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

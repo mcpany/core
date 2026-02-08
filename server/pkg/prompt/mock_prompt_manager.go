@@ -16,6 +16,8 @@ import (
 )
 
 // MockManagerInterface is a mock of ManagerInterface interface.
+//
+// Summary: is a mock of ManagerInterface interface.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
@@ -23,15 +25,21 @@ type MockManagerInterface struct {
 }
 
 // MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
+//
+// Summary: is the mock recorder for MockManagerInterface.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }
 
 // NewMockManagerInterface creates a new mock instance.
 //
-// ctrl is the ctrl.
+// Summary: creates a new mock instance.
 //
-// Returns the result.
+// Parameters:
+//   - ctrl: *gomock.Controller. The ctrl.
+//
+// Returns:
+//   - *MockManagerInterface: The *MockManagerInterface.
 func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	mock := &MockManagerInterface{ctrl: ctrl}
 	mock.recorder = &MockManagerInterfaceMockRecorder{mock}
@@ -40,14 +48,26 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 //
-// Returns the result.
+// Summary: returns an object that allows the caller to indicate expected use.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *MockManagerInterfaceMockRecorder: The *MockManagerInterfaceMockRecorder.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
 // AddPrompt mocks base method.
 //
-// prompt is the prompt.
+// Summary: mocks base method.
+//
+// Parameters:
+//   - prompt: Prompt. The prompt.
+//
+// Returns:
+//   None.
 func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddPrompt", prompt)
@@ -55,15 +75,27 @@ func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
 
 // AddPrompt indicates an expected call of AddPrompt.
 //
-// prompt is the prompt.
+// Summary: indicates an expected call of AddPrompt.
 //
-// Returns the result.
+// Parameters:
+//   - prompt: any. The prompt.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) AddPrompt(prompt any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPrompt", reflect.TypeOf((*MockManagerInterface)(nil).AddPrompt), prompt)
 }
 
 // Clear mocks base method.
+//
+// Summary: mocks base method.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
 func (m *MockManagerInterface) Clear() {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Clear")
@@ -71,7 +103,13 @@ func (m *MockManagerInterface) Clear() {
 
 // Clear indicates an expected call of Clear.
 //
-// Returns the result.
+// Summary: indicates an expected call of Clear.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockManagerInterface)(nil).Clear))
@@ -79,7 +117,13 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 
 // ClearPromptsForService mocks base method.
 //
-// serviceID is the serviceID.
+// Summary: mocks base method.
+//
+// Parameters:
+//   - serviceID: string. The serviceID.
+//
+// Returns:
+//   None.
 func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearPromptsForService", serviceID)
@@ -87,9 +131,13 @@ func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 
 // ClearPromptsForService indicates an expected call of ClearPromptsForService.
 //
-// serviceID is the serviceID.
+// Summary: indicates an expected call of ClearPromptsForService.
 //
-// Returns the result.
+// Parameters:
+//   - serviceID: any. The serviceID.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) ClearPromptsForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearPromptsForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearPromptsForService), serviceID)
@@ -97,10 +145,14 @@ func (mr *MockManagerInterfaceMockRecorder) ClearPromptsForService(serviceID any
 
 // GetPrompt mocks base method.
 //
-// name is the name of the resource.
+// Summary: mocks base method.
 //
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - name: string. The name.
+//
+// Returns:
+//   - Prompt: The Prompt.
+//   - bool: The bool.
 func (m *MockManagerInterface) GetPrompt(name string) (Prompt, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPrompt", name)
@@ -111,9 +163,13 @@ func (m *MockManagerInterface) GetPrompt(name string) (Prompt, bool) {
 
 // GetPrompt indicates an expected call of GetPrompt.
 //
-// name is the name of the resource.
+// Summary: indicates an expected call of GetPrompt.
 //
-// Returns the result.
+// Parameters:
+//   - name: any. The name.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPrompt", reflect.TypeOf((*MockManagerInterface)(nil).GetPrompt), name)
@@ -121,7 +177,13 @@ func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 
 // ListPrompts mocks base method.
 //
-// Returns the result.
+// Summary: mocks base method.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - []Prompt: The []Prompt.
 func (m *MockManagerInterface) ListPrompts() []Prompt {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPrompts")
@@ -131,7 +193,13 @@ func (m *MockManagerInterface) ListPrompts() []Prompt {
 
 // ListPrompts indicates an expected call of ListPrompts.
 //
-// Returns the result.
+// Summary: indicates an expected call of ListPrompts.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPrompts", reflect.TypeOf((*MockManagerInterface)(nil).ListPrompts))
@@ -139,7 +207,13 @@ func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 
 // SetMCPServer mocks base method.
 //
-// mcpServer is the mcpServer.
+// Summary: mocks base method.
+//
+// Parameters:
+//   - mcpServer: MCPServerProvider. The mcpServer.
+//
+// Returns:
+//   None.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMCPServer", mcpServer)
@@ -147,9 +221,13 @@ func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 
 // SetMCPServer indicates an expected call of SetMCPServer.
 //
-// mcpServer is the mcpServer.
+// Summary: indicates an expected call of SetMCPServer.
 //
-// Returns the result.
+// Parameters:
+//   - mcpServer: any. The mcpServer.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
@@ -157,7 +235,13 @@ func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.
 
 // UpdatePrompt mocks base method.
 //
-// prompt is the prompt.
+// Summary: mocks base method.
+//
+// Parameters:
+//   - prompt: Prompt. The prompt.
+//
+// Returns:
+//   None.
 func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "UpdatePrompt", prompt)
@@ -165,9 +249,13 @@ func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 
 // UpdatePrompt indicates an expected call of UpdatePrompt.
 //
-// prompt is the prompt.
+// Summary: indicates an expected call of UpdatePrompt.
 //
-// Returns the result.
+// Parameters:
+//   - prompt: any. The prompt.
+//
+// Returns:
+//   - *gomock.Call: The *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) UpdatePrompt(prompt any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePrompt", reflect.TypeOf((*MockManagerInterface)(nil).UpdatePrompt), prompt)

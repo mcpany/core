@@ -14,8 +14,8 @@ import (
 )
 
 // Watcher monitors configuration files for changes and triggers a reload.
-// It watches the parent directory of specified files to handle atomic saves (rename/move)
-// commonly used by text editors.
+//
+// Summary: monitors configuration files for changes and triggers a reload.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -25,9 +25,17 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Summary: creates a new file watcher.
+//
+// Parameters:
+//   None.
+//
 // Returns:
-//   - A pointer to a new Watcher.
-//   - An error if the watcher creation fails.
+//   - *Watcher: The *Watcher.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -42,12 +50,17 @@ func NewWatcher() (*Watcher, error) {
 
 // Watch starts monitoring the specified configuration paths.
 //
+// Summary: starts monitoring the specified configuration paths.
+//
 // Parameters:
-//   - paths: A slice of file or directory paths to watch.
-//   - reloadFunc: The function to call when a change is detected.
+//   - paths: []string. The paths.
+//   - reloadFunc: func(). The reloadFunc.
 //
 // Returns:
-//   - An error if watching fails.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -161,6 +174,14 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close stops the file watcher and releases resources.
+//
+// Summary: stops the file watcher and releases resources.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

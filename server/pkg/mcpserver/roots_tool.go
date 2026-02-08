@@ -16,6 +16,8 @@ import (
 )
 
 // RootsTool implements the Tool interface for listing roots.
+//
+// Summary: implements the Tool interface for listing roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -23,7 +25,13 @@ type RootsTool struct {
 
 // NewRootsTool creates a new RootsTool.
 //
-// Returns the result.
+// Summary: creates a new RootsTool.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *RootsTool: The *RootsTool.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -47,25 +55,44 @@ func NewRootsTool() *RootsTool {
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns the result.
+// Summary: returns the protobuf definition of the tool.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *v1.Tool: The *v1.Tool.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: returns the MCP tool definition.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *mcp.Tool: The *mcp.Tool.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
 // Execute executes the tool.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Summary: executes the tool.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - _: *tool.ExecutionRequest. The _.
+//
+// Returns:
+//   - any: The any.
+//   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   Returns an error if the operation fails.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -82,7 +109,13 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 
 // GetCacheConfig returns nil as this tool shouldn't be cached aggressively or depends on client state.
 //
-// Returns the result.
+// Summary: returns nil as this tool shouldn't be cached aggressively or depends on client state.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The *configv1.CacheConfig.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

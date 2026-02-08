@@ -14,9 +14,13 @@ import (
 
 // Middleware returns a middleware function to track session activity.
 //
-// next is the next.
+// Summary: returns a middleware function to track session activity.
 //
-// Returns the result.
+// Parameters:
+//   - next: mcp.MethodHandler. The next.
+//
+// Returns:
+//   - mcp.MethodHandler: The mcp.MethodHandler.
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,
