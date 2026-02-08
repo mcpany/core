@@ -1,15 +1,23 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { test, expect } from '@playwright/test';
+import { login } from './auth-helper';
+import { seedUser, cleanupUser } from './test-data';
 
-test.skip('Agent Skills', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('Agent Skills', () => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin");
+    await login(page);
     await page.goto('/skills');
     // Ensure we are on the list page
     await expect(page).toHaveURL(/\/skills\/?$/);
+  });
+
+  test.afterEach(async ({ request }) => {
+    await cleanupUser(request, "e2e-admin");
   });
 
   test('should create and list a new skill', async ({ page }) => {

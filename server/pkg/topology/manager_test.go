@@ -516,6 +516,42 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	assert.Equal(t, 1700*time.Millisecond, seedSession.TotalLatency)
 }
 
+func TestManager_SeedTrafficHistory_Rollover(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	now := time.Now()
+	// Create a time 1 hour in the future relative to now
+	future := now.Add(1 * time.Hour)
+	futureStr := future.Format("15:04")
+
+	points := []TrafficPoint{
+		{Time: futureStr, Total: 10, Errors: 1, Latency: 50},
+	}
+
+	m.SeedTrafficHistory(points)
+
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	assert.NotEmpty(t, m.trafficHistory)
+
+	// Calculate expected time (yesterday at future time)
+	expectedTime := time.Date(now.Year(), now.Month(), now.Day(), future.Hour(), future.Minute(), 0, 0, now.Location())
+	// logic from manager.go: if after now+5m, subtract 24h
+	if expectedTime.After(now.Add(5 * time.Minute)) {
+		expectedTime = expectedTime.Add(-24 * time.Hour)
+	}
+
+	stats, ok := m.trafficHistory[expectedTime.Unix()]
+	assert.True(t, ok, "Expected history entry for rolled over time")
+	if ok {
+		assert.Equal(t, int64(10), stats.Requests)
+	}
+}
+
 func TestManager_GetGraph_Metrics(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)

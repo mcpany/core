@@ -4,48 +4,21 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './test-data';
+import { login } from './auth-helper';
 
 test.describe('Network Topology', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock the topology API
-    await page.route('**/api/v1/topology', async route => {
-        await route.fulfill({
-            json: {
-                clients: [
-                    {
-                        id: "client-1",
-                        label: "Web Client",
-                        type: "NODE_TYPE_CLIENT",
-                        status: "NODE_STATUS_ACTIVE"
-                    }
-                ],
-                core: {
-                    id: "core",
-                    label: "MCP Any",
-                    type: "NODE_TYPE_CORE",
-                    status: "NODE_STATUS_ACTIVE",
-                    children: [
-                        {
-                            id: "svc_01",
-                            label: "Payment Gateway",
-                            type: "NODE_TYPE_SERVICE",
-                            status: "NODE_STATUS_ACTIVE",
-                            metrics: { qps: 10.5 }
-                        },
-                        {
-                            id: "svc_02",
-                            label: "User Service",
-                            type: "NODE_TYPE_SERVICE",
-                            status: "NODE_STATUS_ACTIVE",
-                            metrics: { qps: 5.2 }
-                        }
-                    ]
-                }
-            }
-        });
-    });
+  test.beforeEach(async ({ page, request }) => {
+      await seedUser(request, "e2e-admin");
+      await seedServices(request);
+      await seedTraffic(request);
+      await login(page);
+      await page.goto('/network');
+  });
 
-    await page.goto('/network');
+  test.afterEach(async ({ request }) => {
+      await cleanupServices(request);
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('should display network topology nodes', async ({ page }) => {
@@ -54,7 +27,7 @@ test.describe('Network Topology', () => {
 
     // Check for nodes
     // The graph might take a moment to render
-    await expect(page.locator('.react-flow').getByText('MCP Any').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.react-flow').getByText('MCP Any').first()).toBeVisible({ timeout: 15000 });
     await expect(page.locator('.react-flow').getByText('Payment Gateway').first()).toBeVisible();
     await expect(page.locator('.react-flow').getByText('User Service').first()).toBeVisible();
 

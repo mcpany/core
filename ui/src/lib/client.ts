@@ -396,7 +396,8 @@ export const apiClient = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
                 environment: config.commandLineService.env,
-                env: config.commandLineService.env
+                env: config.commandLineService.env,
+                tools: config.commandLineService.tools,
             };
         }
         if (config.mcpService) {
@@ -483,6 +484,9 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
+                environment: config.commandLineService.env,
+                env: config.commandLineService.env,
+                tools: config.commandLineService.tools,
             };
         }
         if (config.mcpService) {
