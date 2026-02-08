@@ -16,9 +16,10 @@ import (
 )
 
 var (
-	mu            sync.Mutex
-	once          sync.Once
-	defaultLogger atomic.Pointer[slog.Logger]
+	mu                     sync.Mutex
+	once                   sync.Once
+	defaultLogger          atomic.Pointer[slog.Logger]
+	globalBroadcastHandler *BroadcastHandler
 )
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
@@ -72,10 +73,19 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 		}
 
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
+		globalBroadcastHandler = broadcastHandler
 		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})
+}
+
+// SetLogSaver sets the log saver for the global broadcast handler.
+// This allows persistent storage of logs.
+func SetLogSaver(saver LogSaver) {
+	if globalBroadcastHandler != nil {
+		globalBroadcastHandler.SetSaver(saver)
+	}
 }
 
 // GetLogger returns the shared global logger instance. If the logger has not yet

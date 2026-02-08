@@ -833,6 +833,13 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	// Wire up logging persistence if storage supports it
+	// We check if s implements logging.LogSaver
+	if logSaver, ok := interface{}(s).(logging.LogSaver); ok {
+		logging.SetLogSaver(logSaver)
+		log.Info("Enabled persistent logging to storage")
+	}
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {

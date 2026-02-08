@@ -31,8 +31,8 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			}
 		}()
 
-		// Subscribe to logs with history
-		logCh, history := logging.GlobalBroadcaster.SubscribeWithHistory()
+		// Subscribe to logs (we'll fetch history from DB)
+		logCh := logging.GlobalBroadcaster.Subscribe()
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
 		// Set write deadline
@@ -44,15 +44,24 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 		})
 
-		// Send history
-		for _, msg := range history {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				return
-			}
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-				logging.GetLogger().Error("failed to write history log message to websocket", "error", err)
-				return
+		// Send history from Storage
+		if a.Storage != nil {
+			// Fetch last 1000 logs
+			logs, err := a.Storage.GetLogs(r.Context(), 1000, 0)
+			if err != nil {
+				logging.GetLogger().Error("failed to fetch log history from storage", "error", err)
+			} else {
+				for _, log := range logs {
+					if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+						logging.GetLogger().Error("failed to set write deadline", "error", err)
+						return
+					}
+					// WriteJSON marshals the struct to JSON
+					if err := conn.WriteJSON(log); err != nil {
+						logging.GetLogger().Error("failed to write log history to websocket", "error", err)
+						return
+					}
+				}
 			}
 		}
 

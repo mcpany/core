@@ -25,13 +25,26 @@ type LogEntry struct {
 	Metadata  map[string]any `json:"metadata,omitempty"`
 }
 
+// LogSaver defines the interface for saving logs.
+type LogSaver interface {
+	SaveLog(ctx context.Context, entry LogEntry) error
+}
+
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
+	saver       LogSaver
 	attrs       []slog.Attr
 	group       string
 	mu          sync.Mutex
 	level       slog.Level
+}
+
+// SetSaver sets the log saver for the handler.
+func (h *BroadcastHandler) SetSaver(saver LogSaver) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.saver = saver
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
@@ -93,9 +106,10 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		return true
 	})
 
-	// If message is empty but we have attributes, maybe format them?
-	// For now, let's append attributes to message if it's debugging or specific keys
-	// This is a simplification. Ideally we'd send structured data.
+	// Add handler attributes
+	for _, a := range h.attrs {
+		entry.Metadata[a.Key] = a.Value.Any()
+	}
 
 	// Also handle source from record PC if available
 	if entry.Source == "" && r.PC != 0 {
@@ -110,6 +124,22 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	}
 
 	h.broadcaster.Broadcast(data)
+
+	// Save to storage if configured
+	// We read lock to access saver safely
+	// Note: We don't hold the lock during SaveLog to avoid blocking
+	h.mu.Lock()
+	saver := h.saver
+	h.mu.Unlock()
+
+	if saver != nil {
+		go func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			_ = saver.SaveLog(ctx, entry)
+		}()
+	}
+
 	return nil
 }
 
