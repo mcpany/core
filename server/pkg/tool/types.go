@@ -2809,6 +2809,26 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	if err := checkPythonInjection(val, template, base); err != nil {
+		return err
+	}
+
+	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+
+	if err := checkVariableInterpolationInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+
+	if err := checkAwkInjection(val, base); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2829,24 +2849,40 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			}
 		}
 	}
+	return nil
+}
 
+func checkRubyInjection(val, base string, quoteLevel int) error {
+	isRuby := strings.HasPrefix(base, "ruby")
 	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+	if isRuby && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
 	}
 
-	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+	// Ruby: Block pipe | at start/end to prevent open() command injection
+	if isRuby {
+		trimmed := strings.TrimSpace(val)
+		if strings.HasPrefix(trimmed, "|") || strings.HasSuffix(trimmed, "|") {
+			return fmt.Errorf("interpreter pipe injection detected: value starts/ends with '|'")
+		}
+	}
+	return nil
+}
+
+func checkVariableInterpolationInjection(val, base string, quoteLevel int) error {
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
 
+	// Node/JS: ${...} works in backticks (JS)
 	if isNode && quoteLevel == 3 { // Backtick
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
 		}
 	}
+
 	// Perl and PHP interpolate variables in both double quotes and backticks
 	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
 		if strings.Contains(val, "${") {
@@ -2854,15 +2890,17 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
-	// Ruby and Perl: Block pipe | at start/end to prevent open() command injection
-	// This applies regardless of quoting because open("|cmd") parses the string content.
-	if strings.HasPrefix(base, "ruby") || isPerl {
+	// Perl: Block pipe | at start/end to prevent open() command injection
+	if isPerl {
 		trimmed := strings.TrimSpace(val)
 		if strings.HasPrefix(trimmed, "|") || strings.HasSuffix(trimmed, "|") {
 			return fmt.Errorf("interpreter pipe injection detected: value starts/ends with '|'")
 		}
 	}
+	return nil
+}
 
+func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
@@ -2870,7 +2908,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
 	}
-
 	return nil
 }
 
