@@ -61,7 +61,8 @@ func TestLocalCommandTool_GDBInjection_Blocked(t *testing.T) {
 	result, err := localTool.Execute(context.Background(), req)
 
 	// Expect error due to shell injection detection
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "shell injection detected")
+	if assert.Error(t, err) {
+		assert.Contains(t, err.Error(), "shell injection detected")
+	}
 	assert.Nil(t, result)
 }
