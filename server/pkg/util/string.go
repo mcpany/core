@@ -10,8 +10,8 @@ import "unicode/utf8"
 // required to change one string into the other.
 //
 // Parameters:
-//   - s1: The first string.
-//   - s2: The second string.
+//   - s1: string. The first string.
+//   - s2: string. The second string.
 //
 // Returns:
 //   - int: The Levenshtein distance.
@@ -26,9 +26,9 @@ func LevenshteinDistance(s1, s2 string) int {
 // If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
 //
 // Parameters:
-//   - s1: The first string.
-//   - s2: The second string.
-//   - limit: The maximum distance to compute.
+//   - s1: string. The first string.
+//   - s2: string. The second string.
+//   - limit: int. The maximum distance to compute.
 //
 // Returns:
 //   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.

@@ -11,8 +11,6 @@ import (
 
 // MethodHandler defines the signature for a function that handles an MCP method call.
 //
-// Summary: Defines the function signature for MCP method handlers.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: mcp.Request. The request object.
@@ -24,8 +22,6 @@ type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error
 
 // Router is responsible for mapping MCP method names to their corresponding handler functions.
 //
-// Summary: Manages the registration and retrieval of MCP method handlers.
-//
 // Side Effects:
 //   - Stores handlers in an internal map.
 type Router struct {
@@ -33,8 +29,6 @@ type Router struct {
 }
 
 // NewRouter creates and returns a new, empty Router.
-//
-// Summary: Initializes a new Router instance.
 //
 // Returns:
 //   - *Router: A pointer to a new, initialized Router.
@@ -45,8 +39,6 @@ func NewRouter() *Router {
 }
 
 // Register associates a handler function with a specific MCP method name.
-//
-// Summary: Registers a handler for a specific MCP method.
 //
 // Parameters:
 //   - method: string. The name of the MCP method (e.g., "tools/call").
@@ -59,8 +51,6 @@ func (r *Router) Register(method string, handler MethodHandler) {
 }
 
 // GetHandler retrieves the handler function for a given MCP method name.
-//
-// Summary: Retrieves the registered handler for a specific MCP method.
 //
 // Parameters:
 //   - method: string. The name of the MCP method.

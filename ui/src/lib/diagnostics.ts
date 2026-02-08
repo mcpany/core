@@ -9,16 +9,25 @@ import { Trace } from "@/types/trace";
  * Diagnostic represents a finding from the trace analysis, indicating an error or warning.
  */
 export interface Diagnostic {
+  /** The severity of the diagnostic. */
   type: 'error' | 'warning' | 'info';
+  /** A concise title for the diagnostic. */
   title: string;
+  /** A detailed message explaining the issue. */
   message: string;
+  /** An actionable suggestion for resolving the issue. */
   suggestion?: string;
 }
 
 /**
  * Analyzes a trace for common errors and returns a list of diagnostics.
- * @param trace - The trace to analyze.
- * @returns An array of diagnostics.
+ *
+ * This function inspects the trace status and error messages to identify
+ * known error patterns such as schema validation failures, permission issues,
+ * JSON parsing errors, timeouts, and connection failures.
+ *
+ * @param trace - The trace object containing span data and status.
+ * @returns An array of Diagnostic objects describing identified issues.
  */
 export function analyzeTrace(trace: Trace): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];

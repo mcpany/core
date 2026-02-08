@@ -46,8 +46,6 @@ const (
 
 // loadEnv loads environment variables from a .env file.
 //
-// Summary: Loads environment variables from a specified file or the default .env file.
-//
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to check for the --env-file flag.
 //
@@ -80,8 +78,6 @@ func loadEnv(cmd *cobra.Command) error {
 }
 
 // newRootCmd creates and configures the main command for the application.
-//
-// Summary: Initializes the root Cobra command with all subcommands and flags.
 //
 // Returns:
 //   - *cobra.Command: The configured root command.
@@ -615,8 +611,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 }
 
 // main is the entry point for the MCP Any server application.
-//
-// Summary: Executes the root command to start the application.
 //
 // Side Effects:
 //   - Parsed command line arguments.
