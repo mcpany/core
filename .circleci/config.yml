@@ -1,69 +1,47 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # CircleCI Configuration
 version: 2.1
 
-executors:
-  default-executor:
-    docker:
-      - image: cimg/go:1.24
-    resource_class: medium
-
-commands:
-  check-skip:
-    description: "Check if CI should skip based on changed files"
-    steps:
-      - run:
-          name: Early Return if Docs Only
-          command: |
-            # If this is a PR, we can check changes against main
-            # But CircleCI shallow clones can be tricky.
-            # Simple approach: If all changed files match docs, exit 0 (success) immediately?
-            # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'make lint' itself might be fast or we just run it.
-            # However, the user asked for similar logic.
-            # For now, let's just run it. If strict parity is needed, we'd add complex logic.
-            echo "Running lint on all commits"
+orbs:
+  go: circleci/go@1.9.0
+  node: circleci/node@5.1.0
 
 jobs:
-  lint:
-    executor: default-executor
+  build:
+    docker:
+      - image: cimg/go:1.22
     steps:
       - checkout
+      - go/load-cache
+      - go/mod-download
+      - go/save-cache
       - run:
-          name: Install Python dependencies
-          command: |
-             sudo apt-get update
-             sudo apt-get install -y python3-pip python3-venv
-             python3 -m venv venv
-             . venv/bin/activate
-             pip install pre-commit
+          name: Build Server
+          command: make -C server build
       - run:
-          name: Install Node.js
-          command: |
-            curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-      - restore_cache:
-          keys:
-            - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v1-lint-
+          name: Test Server
+          command: make -C server test
+
+  build-ui:
+    docker:
+      - image: cimg/node:20.11.0
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+          app-dir: ui
       - run:
-          name: Prepare Environment
-          command: make prepare
+          name: Build UI
+          command: cd ui && npm run build
       - run:
-          name: Run Lint
-          command: |
-            . venv/bin/activate
-            # Ensure PATH includes tool install dir
-            export PATH=$PWD/build/env/bin:$PATH
-            make lint
-      - save_cache:
-          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-          paths:
-            - "build/env/bin"
-            - "build/.cache"
-            - "venv"
+          name: Lint UI
+          command: cd ui && npm run lint
 
 workflows:
   version: 2
-  ci:
+  build-and-test:
     jobs:
-      - lint
+      - build
+      - build-ui
