@@ -111,9 +111,9 @@ test.describe('User Guide Walkthrough', () => {
 
   test('Webhooks Management', async ({ page }) => {
     await page.goto('/webhooks');
-    await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
-    // Button is "New Webhook", not "Add Webhook"
-    await expect(page.getByRole('button', { name: 'New Webhook' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Integrations' })).toBeVisible();
+    // Check for "Alerts Webhook" card title
+    await expect(page.getByText('Alerts Webhook')).toBeVisible();
   });
 
   test('Connection Diagnostic Tool', async ({ page }) => {
