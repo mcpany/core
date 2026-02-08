@@ -79,6 +79,11 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
+
+	if err := validateName(name); err != nil {
+		return nil, err
+	}
+
 	return m.loadSkill(name)
 }
 
@@ -148,6 +153,10 @@ func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
+	if err := validateName(name); err != nil {
+		return err
+	}
+
 	skillDir := filepath.Join(m.rootDir, name)
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", name)
@@ -162,6 +171,10 @@ func (m *Manager) DeleteSkill(name string) error {
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	if err := validateName(skillName); err != nil {
+		return err
+	}
 
 	// validate path to prevent traversal and ensure it is relative
 	if err := validation.IsSecureRelativePath(relPath); err != nil {
@@ -185,6 +198,12 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 }
 
 func (m *Manager) loadSkill(name string) (*Skill, error) {
+	// Name validation is expected to be done by caller, but we double check
+	// to prevent direct usage vulnerabilities if called internally.
+	if err := validateName(name); err != nil {
+		return nil, err
+	}
+
 	skillDir := filepath.Join(m.rootDir, name)
 	content, err := os.ReadFile(filepath.Join(skillDir, SkillFileName)) //nolint:gosec
 	if err != nil {
