@@ -2917,7 +2917,13 @@ func checkInterpreterFunctionCalls(val string) error {
 	}
 
 	for _, kw := range dangerousKeywords {
-		if strings.Contains(cleanVal, kw+"(") {
+		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
+		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
+		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
+		if strings.Contains(cleanVal, kw+"(") ||
+			strings.Contains(cleanVal, kw+"'") ||
+			strings.Contains(cleanVal, kw+"\"") ||
+			strings.Contains(cleanVal, kw+"`") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
 		}
 	}
@@ -3006,17 +3012,13 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
 		// avoiding common shell injection filters.
 		if strings.Contains(val, "qx") {
-			// Check if it is likely the qx operator.
-			// The strict check should be to block "qx" followed by any character that could be a delimiter.
-			// However, blindly blocking "qx" might break legitimate strings.
-			// But for strict security on command execution tools, blocking "qx" is safer.
-			// Especially in unquoted context (Level 0), we must be very strict.
-			if quoteLevel == 0 {
+			// Sentinel Security Update: Block qx in all contexts (unquoted, double-quoted, backticked).
+			// While qx// inside double quotes is technically a string literal in some contexts,
+			// sophisticated interpolation attacks or misinterpretation of quote context makes it risky.
+			// Blocking "qx" is aggressive but necessary for strict security on Perl input.
+			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
 				return fmt.Errorf("shell injection detected: perl qx execution")
 			}
-			// In quoted contexts, qx might be just a string, UNLESS it is interpolated?
-			// qx// is NOT interpolated inside strings in Perl. "qx/ls/" is just a string.
-			// So we only need to worry about Level 0 (Unquoted).
 		}
 
 		if (quoteLevel == 1 || quoteLevel == 3) {
