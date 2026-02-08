@@ -3,25 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Trace } from "@/types/trace";
 
 interface UseTracesOptions {
     initialPaused?: boolean;
+    fetchHistory?: boolean;
 }
 
 /**
- * Hook to manage trace subscriptions via WebSocket.
+ * Hook to manage trace subscriptions via WebSocket with historical data fetching.
  *
  * @param options - Configuration options for the trace hook.
  * @param options.initialPaused - Whether to start in a paused state.
+ * @param options.fetchHistory - Whether to fetch initial history from REST API.
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
 export function useTraces(options: UseTracesOptions = {}) {
+    const { initialPaused = false, fetchHistory = true } = options;
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
     const [isConnected, setIsConnected] = useState(false);
-    const [isPaused, setIsPaused] = useState(options.initialPaused || false);
+    const [isPaused, setIsPaused] = useState(initialPaused);
     const wsRef = useRef<WebSocket | null>(null);
     const isPausedRef = useRef(isPaused);
     const isMountedRef = useRef(true);
@@ -31,19 +34,35 @@ export function useTraces(options: UseTracesOptions = {}) {
         isPausedRef.current = isPaused;
     }, [isPaused]);
 
-    const connect = () => {
+    const fetchHistoricalTraces = useCallback(async () => {
+        if (!fetchHistory) return;
+        try {
+            const res = await fetch('/api/traces');
+            if (res.ok) {
+                const history: Trace[] = await res.json();
+                if (isMountedRef.current) {
+                    setTraces(prev => {
+                         // Simple merge: Replace history, but what if WS updates came in?
+                         // Ideally we want to merge.
+                         // But for simplicity on "refresh" or "init", we can assume history is the base.
+                         return history;
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Failed to fetch historical traces", e);
+        }
+    }, [fetchHistory]);
+
+    const connect = useCallback(() => {
         if (!isMountedRef.current) return;
 
-        setLoading(true);
-        // Use relative URL for client-side navigation, but handle both dev and prod
-        // If window is undefined (SSR), don't connect
         if (typeof window === 'undefined') return;
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
         const wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
 
-        // Cleanup previous
         if (wsRef.current) {
             wsRef.current.close();
         }
@@ -82,7 +101,6 @@ export function useTraces(options: UseTracesOptions = {}) {
         ws.onclose = () => {
             if (!isMountedRef.current) return;
             setIsConnected(false);
-            // Reconnect after 3s
             if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = setTimeout(connect, 3000);
         };
@@ -93,28 +111,50 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
 
         wsRef.current = ws;
-    };
+    }, []);
 
     useEffect(() => {
         isMountedRef.current = true;
-        connect();
+
+        const init = async () => {
+            if (fetchHistory) {
+                setLoading(true);
+                await fetchHistoricalTraces();
+            }
+            connect();
+        };
+
+        init();
+
         return () => {
             isMountedRef.current = false;
             if (wsRef.current) {
-                wsRef.current.onclose = null; // Prevent reconnect trigger on manual close
+                wsRef.current.onclose = null;
                 wsRef.current.close();
             }
             if (reconnectTimeoutRef.current) {
                 clearTimeout(reconnectTimeoutRef.current);
             }
         };
-    }, []);
+    }, [connect, fetchHistoricalTraces, fetchHistory]);
 
     const clearTraces = () => setTraces([]);
 
     const refresh = () => {
+        setLoading(true);
+        // Do not clear traces immediately to avoid flash?
+        // Actually clear is better for explicit refresh.
         setTraces([]);
-        connect();
+
+        // Re-fetch history
+        fetchHistoricalTraces().then(() => {
+             // Check connection status
+             if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+                 connect();
+             } else {
+                 setLoading(false);
+             }
+        });
     };
 
     return {

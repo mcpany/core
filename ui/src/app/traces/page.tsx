@@ -5,62 +5,42 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { Trace } from "@/app/api/traces/route";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
+import { useTraces } from "@/hooks/use-traces";
 
 /**
  * TracesPage component.
  * @returns The rendered component.
  */
 export default function TracesPage() {
-  const [traces, setTraces] = useState<Trace[]>([]);
+  const {
+    traces,
+    loading,
+    isConnected,
+    isPaused,
+    setIsPaused,
+    refresh
+  } = useTraces({ fetchHistory: true });
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLive, setIsLive] = useState(false);
 
-  // Separate load function for reuse
-  const loadTraces = async (isFirstLoad = false) => {
-      try {
-        const res = await fetch('/api/traces');
-        const data = await res.json();
-
-        // If live, prepend new traces or merge?
-        // For simplicity, we just replace since the API returns a fresh list.
-        // In a real app we might want to merge.
-        setTraces(data);
-
-        if (isFirstLoad && data.length > 0 && !selectedId) {
-            setSelectedId(data[0].id);
-        }
-      } catch (err) {
-        console.error("Failed to load traces", err);
-      } finally {
-        if (isFirstLoad) setLoading(false);
-      }
-  };
-
+  // Select the first trace on initial load if none selected
   useEffect(() => {
-    loadTraces(true);
-  }, []);
-
-  useEffect(() => {
-      let interval: NodeJS.Timeout;
-      if (isLive) {
-          interval = setInterval(() => {
-              loadTraces(false);
-          }, 3000);
-      }
-      return () => clearInterval(interval);
-  }, [isLive]);
+    if (!selectedId && traces.length > 0 && !loading) {
+       // Only select if it's the very first load to avoid jumping?
+       // Let's just select the first one if nothing is selected.
+       setSelectedId(traces[0].id);
+    }
+  }, [loading]); // Run once when loading finishes? Or when traces change?
 
   const selectedTrace = traces.find(t => t.id === selectedId) || null;
 
-  if (loading) {
+  if (loading && traces.length === 0) {
       return (
           <div className="h-full flex items-center justify-center text-muted-foreground gap-2">
               <Loader2 className="h-6 w-6 animate-spin" /> Loading traces...
@@ -78,8 +58,10 @@ export default function TracesPage() {
                 onSelect={setSelectedId}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                isLive={isLive}
-                onToggleLive={setIsLive}
+                isPaused={isPaused}
+                onTogglePaused={setIsPaused}
+                onRefresh={refresh}
+                isConnected={isConnected}
             />
         </ResizablePanel>
         <ResizableHandle />

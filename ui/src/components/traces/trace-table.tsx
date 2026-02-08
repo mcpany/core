@@ -26,9 +26,9 @@ import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
 
 /**
- * Props for the InspectorTable component.
+ * Props for the TraceTable component.
  */
-interface InspectorTableProps {
+interface TraceTableProps {
   /**
    * List of traces to display in the table.
    */
@@ -79,7 +79,7 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function TraceTable({ traces, loading }: TraceTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
