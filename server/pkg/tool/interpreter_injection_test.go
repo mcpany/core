@@ -41,12 +41,17 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	result, err := tool.Execute(context.Background(), req)
 	if err != nil {
+		// New hardening blocks ANY template substitution in code arguments
+		if strings.Contains(strings.ToLower(err.Error()), "security risk: template substitution is not allowed") {
+			t.Logf("Success: Blocked by security hardening: %v", err)
+			return
+		}
 		// If input validation blocks it (e.g., preventing spaces), that's also a success for security.
 		if strings.Contains(err.Error(), "injection detected") || strings.Contains(err.Error(), "dangerous character") {
 			t.Logf("Success: Blocked by input validation: %v", err)
-		} else {
-			t.Fatalf("Execute failed: %v", err)
+			return
 		}
+		t.Fatalf("Execute failed: %v", err)
 	} else {
 		resMap, ok := result.(map[string]interface{})
 		if !ok {
@@ -81,6 +86,10 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	result, err = tool.Execute(context.Background(), req)
 	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "security risk: template substitution is not allowed") {
+			t.Logf("Success: Blocked by security hardening: %v", err)
+			return
+		}
 		if strings.Contains(err.Error(), "injection detected") || strings.Contains(err.Error(), "dangerous character") {
 			t.Logf("Success: Blocked by input validation: %v", err)
 			return

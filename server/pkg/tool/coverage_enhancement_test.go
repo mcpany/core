@@ -146,17 +146,17 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 		{
 			name:    "Shell Injection ;",
 			inputs:  `{"script": "echo hi; rm -rf /"}`,
-			wantErr: "shell injection detected",
+			wantErr: "security risk: template substitution is not allowed", // Strict block
 		},
 		{
 			name:    "Shell Injection backtick",
 			inputs:  `{"script": "echo ` + "`whoami`" + `"}`,
-			wantErr: "shell injection detected",
+			wantErr: "security risk: template substitution is not allowed", // Strict block
 		},
 		{
 			name:    "Safe Shell Command",
 			inputs:  `{"script": "whoami"}`,
-			wantErr: "",
+			wantErr: "security risk: template substitution is not allowed", // Even safe is blocked in -c
 		},
 	}
 
@@ -170,6 +170,7 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 			_, err := cmdTool.Execute(ctx, req)
 			if tt.wantErr != "" {
 				require.Error(t, err)
+				// Relax check to allow both old and new errors if needed, but here we expect stricter
 				assert.Contains(t, err.Error(), tt.wantErr)
 			} else {
 				assert.NoError(t, err)

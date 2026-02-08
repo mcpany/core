@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -65,8 +66,13 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
-	assert.Contains(t, err.Error(), "system(")
+	// Now blocked by strict interpreter hardening
+	if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+		assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+	} else {
+		assert.Contains(t, err.Error(), "shell injection detected")
+		assert.Contains(t, err.Error(), "system(")
+	}
 }
 
 func TestSentinelRCE_Backticks(t *testing.T) {
@@ -121,8 +127,13 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
-	assert.Contains(t, err.Error(), "backtick")
+	// Now blocked by strict interpreter hardening
+	if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+		assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+	} else {
+		assert.Contains(t, err.Error(), "shell injection detected")
+		assert.Contains(t, err.Error(), "backtick")
+	}
 }
 
 func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
@@ -176,8 +187,13 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
-	assert.Contains(t, err.Error(), "system(")
+	// Now blocked by strict interpreter hardening
+	if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+		assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+	} else {
+		assert.Contains(t, err.Error(), "shell injection detected")
+		assert.Contains(t, err.Error(), "system(")
+	}
 }
 
 func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
@@ -235,7 +251,12 @@ func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "shell injection detected")
-	// It should fail because it detected dangerous character (semicolon) in unquoted context
-	assert.Contains(t, err.Error(), ";")
+	// Now blocked by strict interpreter hardening
+	if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+		assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+	} else {
+		assert.Contains(t, err.Error(), "shell injection detected")
+		// It should fail because it detected dangerous character (semicolon) in unquoted context
+		assert.Contains(t, err.Error(), ";")
+	}
 }

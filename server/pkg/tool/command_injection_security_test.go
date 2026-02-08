@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -25,7 +26,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// Now blocked by strict interpreter hardening
+		if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		} else {
+			assert.Contains(t, err.Error(), "shell injection detected")
+		}
 	})
 
 	// Case 2: Double quoted shell injection
@@ -39,7 +45,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// Now blocked by strict interpreter hardening
+		if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		} else {
+			assert.Contains(t, err.Error(), "shell injection detected")
+		}
 	})
 
 	// Case 3: Argument injection (leading dash)
@@ -95,21 +106,32 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// Now blocked by strict interpreter hardening
+		if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		} else {
+			assert.Contains(t, err.Error(), "shell injection detected")
+		}
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
+	// NOTE: This test case was asserting assert.NoError, implying "foo; bar" should be allowed.
+	// However, with strict hardening on "python -c", this substitution is now BLOCKED.
+	// We update the test to expect the security error.
 	t.Run("improved_quote_detection", func(t *testing.T) {
 		cmd := "python"
 		tool := createTestCommandToolWithTemplate(cmd, "print('Prefix: {{input}}')")
-		// This input is safe in python string but blocked by strict check currently
+		// This input is safe in python string but blocked by strict check
 		req := &ExecutionRequest{
 			ToolName: "test",
 			ToolInputs: []byte(`{"input": "foo; bar"}`),
 		}
 
 		_, err := tool.Execute(context.Background(), req)
-		assert.NoError(t, err)
+		assert.Error(t, err)
+		if err != nil {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		}
 	})
 
 	// Case 8: Extended Interpreter Detection

@@ -56,7 +56,8 @@ func TestLocalCommandTool_RubyInjection_Backtick(t *testing.T) {
 	_, err := localTool.Execute(context.Background(), req)
 
 	assert.Error(t, err)
-	assert.True(t, strings.Contains(err.Error(), "ruby interpolation injection detected"), "Expected ruby interpolation error, got: %v", err)
+	// Now we expect the general security risk error
+	assert.True(t, strings.Contains(strings.ToLower(err.Error()), "security risk: template substitution is not allowed"), "Expected security risk error, got: %v", err)
 }
 
 func TestLocalCommandTool_PHPInjection_Backtick(t *testing.T) {
@@ -99,5 +100,6 @@ func TestLocalCommandTool_PHPInjection_Backtick(t *testing.T) {
 	_, err := localTool.Execute(context.Background(), req)
 
 	assert.Error(t, err)
-	assert.True(t, strings.Contains(err.Error(), "variable interpolation injection detected"), "Expected variable interpolation error, got: %v", err)
+	// Now we expect the general security risk error
+	assert.True(t, strings.Contains(strings.ToLower(err.Error()), "security risk: template substitution is not allowed"), "Expected security risk error, got: %v", err)
 }

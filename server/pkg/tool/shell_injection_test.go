@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -25,7 +26,12 @@ func TestShellInjection_Regression(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected", "python3 should be protected")
+		// Now blocked by strict interpreter hardening
+		if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		} else {
+			assert.Contains(t, err.Error(), "shell injection detected", "python3 should be protected")
+		}
 	})
 
 	// Case 2: python3.10 (Protected)
@@ -40,7 +46,12 @@ func TestShellInjection_Regression(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected", "python3.10 should be protected")
+		// Now blocked by strict interpreter hardening
+		if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		} else {
+			assert.Contains(t, err.Error(), "shell injection detected", "python3.10 should be protected")
+		}
 	})
 
 	// Case 3: mawk (Protected)
@@ -71,7 +82,12 @@ func TestShellInjection_Regression(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected", "mawk should be protected")
+		// Now blocked by strict interpreter hardening
+		if strings.Contains(strings.ToLower(err.Error()), "security risk") {
+			assert.Contains(t, strings.ToLower(err.Error()), "security risk: template substitution is not allowed")
+		} else {
+			assert.Contains(t, err.Error(), "shell injection detected", "mawk should be protected")
+		}
 	})
 }
 

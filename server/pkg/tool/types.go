@@ -1810,6 +1810,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
 
+	dangerousArgs := IdentifyDangerousInterpreterArgs(t.service.GetCommand(), args)
+
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
@@ -1819,6 +1821,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
+					if dangerousArgs[i] {
+						return nil, fmt.Errorf("security risk: template substitution is not allowed in interpreter code arguments (index %d). Use environment variables or stdin instead", i)
+					}
 					val := util.ToString(v)
 					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
