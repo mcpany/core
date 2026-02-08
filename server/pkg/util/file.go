@@ -58,13 +58,17 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		return lines, nil
 	}
 
+	// ⚡ BOLT: Optimization to avoid O(N^2) memory copying when reading backwards.
+	// We collect chunks in a slice and assemble them once at the end.
+	// Randomized Selection from Top 5 High-Impact Targets
+
 	// Seek backwards
 	// Use a reasonable chunk size
 	const chunkSize = 1024 * 16
-	buf := make([]byte, chunkSize)
 	var cursor = filesize
-
-	var collected []byte
+	var chunks [][]byte
+	var totalSize int
+	var newlineCount int
 
 	for cursor > 0 {
 		toRead := chunkSize
@@ -78,27 +82,34 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 			return nil, err
 		}
 
-		// Only read the chunk we calculated
-		// We re-slice buf to size needed
-		readBuf := buf[:toRead]
-		if _, err := io.ReadFull(f, readBuf); err != nil {
+		// Allocate chunk directly to store in list
+		chunk := make([]byte, toRead)
+		if _, err := io.ReadFull(f, chunk); err != nil {
 			return nil, err
 		}
 
-		// Prepend readBuf to collected
-		collected = append(readBuf, collected...)
-
-		// Count newlines in collected
-		count := 0
-		for _, b := range collected {
+		// Count newlines in chunk
+		for _, b := range chunk {
 			if b == '\n' {
-				count++
+				newlineCount++
 			}
 		}
 
-		if count >= n {
+		chunks = append(chunks, chunk)
+		totalSize += len(chunk)
+
+		if newlineCount >= n {
 			break
 		}
+	}
+
+	// Assemble chunks into a single buffer
+	// Chunks are in reverse order (end of file first), so we iterate backwards to reconstruct file order.
+	collected := make([]byte, totalSize)
+	offset := 0
+	for i := len(chunks) - 1; i >= 0; i-- {
+		copy(collected[offset:], chunks[i])
+		offset += len(chunks[i])
 	}
 
 	// Now process 'collected'
