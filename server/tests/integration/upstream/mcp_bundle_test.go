@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -193,6 +194,13 @@ const manifestJSON = `
 }
 `
 
+func containsOverlayError(output string) bool {
+	// Common error string for DinD overlayfs mount issues
+	// "failed to mount ... mount source: "overlay", target: ... err: invalid argument"
+	return (strings.Contains(output, "failed to mount") && strings.Contains(output, "overlay")) ||
+		strings.Contains(output, "invalid argument")
+}
+
 func createE2EBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "e2e_test.mcpb")
 	file, err := os.Create(bundlePath) //nolint:gosec // Test file
@@ -239,6 +247,19 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// Check if Docker is available and accessible
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Verify Docker volume mounts work (often fails in DinD/CI environments)
+	mountTestDir := t.TempDir()
+	mountCheckCmd := exec.Command("docker", "run", "--rm", "-v", mountTestDir+":/test", "alpine", "ls", "/test")
+	if out, err := mountCheckCmd.CombinedOutput(); err != nil {
+		t.Logf("Docker volume mount check failed output: %s", string(out))
+		if containsOverlayError(string(out)) {
+			t.Skipf("Skipping Docker tests: Volume mounts not supported in this environment (likely DinD overlayfs issue): %v", err)
+		}
+		// If it failed for another reason, we might still want to proceed or warn,
+		// but usually if basic run fails, complex tests will fail too.
+		t.Skipf("Skipping Docker tests: Basic docker run with volume failed: %v", err)
 	}
 
 	tempDir := t.TempDir()
