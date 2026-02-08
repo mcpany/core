@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     const res = await fetch(`${backendUrl}/debug/entries`, {
         headers: {
             'Authorization': request.headers.get('Authorization') || '',
-            'X-API-Key': request.headers.get('X-API-Key') || process.env.MCPANY_API_KEY || ''
+            'X-API-Key': request.headers.get('X-API-Key') || process.env.MCPANY_API_KEY || process.env.NEXT_PUBLIC_MCPANY_API_KEY || ''
         },
         cache: 'no-store'
     });

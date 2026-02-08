@@ -13,8 +13,11 @@ export async function GET(request: Request) {
     const headers: HeadersInit = {};
     if (authHeader) {
       headers['Authorization'] = authHeader;
-    } else if (process.env.MCPANY_API_KEY) {
-      headers['X-API-Key'] = process.env.MCPANY_API_KEY;
+    } else {
+      const apiKey = process.env.MCPANY_API_KEY || process.env.NEXT_PUBLIC_MCPANY_API_KEY;
+      if (apiKey) {
+        headers['X-API-Key'] = apiKey;
+      }
     }
 
     // Proxy directly to backend dashboard health API

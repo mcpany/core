@@ -21,9 +21,12 @@ export async function GET(request: NextRequest) {
   // Pass auth token from client if provided
   if (token) {
     headers['Authorization'] = `Basic ${token}`;
-  } else if (process.env.MCPANY_API_KEY) {
+  } else {
     // Fallback to server-side API Key if configured
-    headers['X-API-Key'] = process.env.MCPANY_API_KEY;
+    const apiKey = process.env.MCPANY_API_KEY || process.env.NEXT_PUBLIC_MCPANY_API_KEY;
+    if (apiKey) {
+      headers['X-API-Key'] = apiKey;
+    }
   }
 
   try {
