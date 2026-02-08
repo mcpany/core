@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util
+package util //nolint:revive
 
 import (
 	"bufio"
