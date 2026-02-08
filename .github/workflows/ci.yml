@@ -90,6 +90,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-lint-cache-
 
+      - name: Install dependencies
+        run: |
+          if ! command -v make &> /dev/null; then
+            echo "make not found, installing..."
+            sudo apt-get update && sudo apt-get install -y make
+          fi
+
       - name: Prepare environment
         run: make prepare
 
