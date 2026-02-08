@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
@@ -20,9 +20,13 @@ test.describe('Dashboard Real Data', () => {
         // Generate 60 points for the last 60 minutes
         for (let i = 59; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 60000);
+            // We use timestamp (seconds) to be robust against time zone issues
+            // Backend expects seconds if provided via timestamp field
+            const timestamp = Math.floor(t.getTime() / 1000);
             const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
             trafficPoints.push({
-                time: timeStr,
+                time: timeStr, // Fallback
+                timestamp: timestamp,
                 requests: 100, // Constant request rate for easy verification
                 errors: i % 10 === 0 ? 10 : 0, // Some errors every 10 minutes
                 latency: 50 // Constant latency
@@ -61,18 +65,16 @@ test.describe('Dashboard Real Data', () => {
         // The endpoint returns points. The UI sums them up.
         // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
         // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        // Or simpler: find the value card.
-        // The card structure: Header "Total Requests", Content: "6,000"
-        // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
+        // The value is in a div with text-2xl class, not a paragraph (which holds the change "--")
 
         await expect(page.locator('text=Total Requests')).toBeVisible();
         // Wait for data to load (it starts at 0 or empty)
         await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden(); // Ensure no error text is shown if that was a thing?
+
         // Just wait for non-zero requests
         // We expect around 6,000.
-        // Use a more specific locator to debug and allow for potential data propagation delay
-        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
+        // Selector strategy: Find card with "Total Requests", go up to card, find the big number.
+        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').locator('.text-2xl');
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
 
         // Avg Latency: 50ms
@@ -98,9 +100,11 @@ test.describe('Dashboard Real Data', () => {
          // 5 mins of high errors (100% errors) to cause "error" status
          for (let i = 0; i < 5; i++) {
              const t = new Date(now.getTime() - i * 60000);
+             const timestamp = Math.floor(t.getTime() / 1000);
              const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
              trafficPoints.push({
                  time: timeStr,
+                 timestamp: timestamp,
                  requests: 100,
                  errors: 80, // 80% error rate -> should be error status
                  latency: 50

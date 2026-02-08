@@ -2093,6 +2093,12 @@ func (a *Application) runServerMode(
 							gwmux.ServeHTTP(w, r)
 						}
 					})))
+
+					// Route legacy /api/v1/skills requests to gRPC Gateway
+					// Frontend uses /api/v1/skills, but gRPC Gateway uses /v1/skills.
+					// We strip /api prefix to match the Gateway's expectations.
+					mux.Handle("/api/v1/skills", authMiddleware(http.StripPrefix("/api", gwmux)))
+					mux.Handle("/api/v1/skills/", authMiddleware(http.StripPrefix("/api", gwmux)))
 				}
 			}
 			expectedReady++
