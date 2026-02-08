@@ -77,6 +77,14 @@ type ConfigurableEngine interface {
 	// Parameters:
 	//   - skip: bool. True to skip validation.
 	SetSkipValidation(skip bool)
+
+	// SetIgnoreEnv sets whether to ignore environment variables and other external overrides.
+	//
+	// Summary: Configures the engine to ignore environment variables.
+	//
+	// Parameters:
+	//   - ignore: bool. True to ignore environment variables.
+	SetIgnoreEnv(ignore bool)
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
@@ -106,11 +114,17 @@ func NewEngine(path string) (Engine, error) {
 // yamlEngine implements the Engine interface for YAML configuration files.
 type yamlEngine struct {
 	skipValidation bool
+	ignoreEnv      bool
 }
 
 // SetSkipValidation sets whether to skip schema validation.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
+}
+
+// SetIgnoreEnv sets whether to ignore environment variables.
+func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
+	e.ignoreEnv = ignore
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
@@ -138,12 +152,14 @@ func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Me
 }
 
 func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
-	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
-	// This allows overriding any configuration value using environment variables.
-	applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
+	if !e.ignoreEnv {
+		// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
+		// This allows overriding any configuration value using environment variables.
+		applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
 
-	// Apply --set overrides: section.key=value or section[idx].key=value
-	applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
+		// Apply --set overrides: section.key=value or section[idx].key=value
+		applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
+	}
 
 	if v != nil {
 		fixTypes(yamlMap, v.ProtoReflect().Descriptor())
