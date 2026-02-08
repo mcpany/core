@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -46,6 +47,7 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+	trueVal             = "true"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -708,7 +710,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
 			// util.RedactJSON returns the original input if it's not JSON.
 			// If it was JSON, it is already redacted.
-			isDebug := os.Getenv("MCPANY_DEBUG") == "true"
+			isDebug := os.Getenv("MCPANY_DEBUG") == trueVal
 			if !isDebug && !stdjson.Valid(bodyBytes) {
 				displayBody = "[Body hidden for security. Enable debug mode to view.]"
 			}
@@ -2136,15 +2138,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForLocalFileAccess(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
@@ -2178,15 +2172,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2262,13 +2248,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
 			// for unquoted use. If they contain dangerous characters, we omit them from the environment
@@ -2684,6 +2665,88 @@ func checkForArgumentInjection(val string) error {
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
+	return nil
+}
+
+func checkForSSRF(val string) error {
+	// Fast path: if no "://" present, likely not a URL (or relative, which is fine for SSRF unless interpreted as such)
+	if !strings.Contains(val, "://") {
+		return nil
+	}
+
+	u, err := url.Parse(val)
+	if err != nil {
+		// Not a valid URL structure
+		return nil
+	}
+
+	scheme := strings.ToLower(u.Scheme)
+
+	// Block dangerous schemes completely
+	dangerous := []string{"gopher", "dict", "ldap", "ldaps", "tftp", "telnet", "php", "expect"}
+	for _, d := range dangerous {
+		if scheme == d {
+			return fmt.Errorf("scheme %q is not allowed", scheme)
+		}
+	}
+
+	// For file scheme, rely on checkForLocalFileAccess but we can also block here
+	if scheme == "file" {
+		return fmt.Errorf("scheme 'file' is not allowed")
+	}
+
+	// For http/https, delegate to IsSafeURL which handles mocking and comprehensive checks
+	if scheme == "http" || scheme == "https" {
+		if err := validation.IsSafeURL(val); err != nil {
+			return fmt.Errorf("potential SSRF attempt detected: %w", err)
+		}
+		return nil
+	}
+
+	// For other schemes (ssh, ftp, git, etc.), we verify the host resolves to a safe IP.
+	// This ensures tools like git or curl used with non-http protocols cannot access internal networks.
+
+	// Check overrides first
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
+		return nil
+	}
+
+	host := u.Hostname()
+	if host == "" {
+		return nil
+	}
+
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
+
+	// Check IP literal
+	if ip := net.ParseIP(host); ip != nil {
+		if err := validation.ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
+			return fmt.Errorf("unsafe IP %s in URL: %w", ip.String(), err)
+		}
+		return nil
+	}
+
+	// Resolve Domain
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+	if err != nil {
+		// If DNS resolution fails, we treat it as an error to be safe (fail closed)
+		return fmt.Errorf("failed to resolve host %q: %w", host, err)
+	}
+
+	if len(ips) == 0 {
+		return fmt.Errorf("no IP addresses found for host %q", host)
+	}
+
+	for _, ip := range ips {
+		if err := validation.ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
+			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
+		}
+	}
+
 	return nil
 }
 
@@ -3197,5 +3260,16 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
+
+	if err := checkForSSRF(val); err != nil {
+		return err
+	}
+	// Also check decoded value for SSRF (e.g. http%3A%2F%2F)
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForSSRF(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
 	return nil
 }
