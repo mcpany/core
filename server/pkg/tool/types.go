@@ -65,6 +65,8 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
+//
+// Summary: Interface for defining and executing tools.
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
@@ -96,6 +98,8 @@ type Tool interface {
 
 // ServiceInfo holds metadata about a registered upstream service, including its
 // configuration and any associated protobuf file descriptors.
+//
+// Summary: Metadata for a registered service.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -118,6 +122,8 @@ type ServiceInfo struct {
 
 // ExecutionRequest represents a request to execute a specific tool, including
 // its name and input arguments as a raw JSON message.
+//
+// Summary: Request payload for tool execution.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -138,6 +144,8 @@ type ExecutionRequest struct {
 // ServiceRegistry defines an interface for a component that can look up tools
 // and service information. It is used for dependency injection to decouple
 // components from the main service registry.
+//
+// Summary: Interface for tool and service lookup.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
@@ -161,6 +169,14 @@ type ServiceRegistry interface {
 }
 
 // ExecutionFunc represents the next middleware in the chain.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request payload.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
 type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
 
 type contextKey string
@@ -181,8 +197,10 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 
 // GetFromContext retrieves a tool from the context if present.
 //
+// Summary: Retrieves a tool from the context.
+//
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx: context.Context. The context to search.
 //
 // Returns:
 //   - Tool: The tool instance from the context.
@@ -193,6 +211,8 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 }
 
 // Callable is an interface that represents a callable tool.
+//
+// Summary: Interface for executing a tool.
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
@@ -210,17 +230,19 @@ type Callable interface {
 type Action int
 
 const (
-	// ActionAllow indicates that the action is allowed.
+	// ActionAllow indicates that the action is allowed to proceed.
 	ActionAllow Action = 0
-	// ActionDeny indicates that the action is denied.
+	// ActionDeny indicates that the action is denied and should be blocked.
 	ActionDeny Action = 1
-	// ActionSaveCache indicates that the result should be cached.
+	// ActionSaveCache indicates that the result should be saved to the cache.
 	ActionSaveCache Action = 2
-	// ActionDeleteCache indicates that the cache should be invalidated.
+	// ActionDeleteCache indicates that the associated cache entry should be invalidated.
 	ActionDeleteCache Action = 3
 )
 
 // CacheControl is a mutable struct to pass cache control instructions via context.
+//
+// Summary: Context-based cache control instructions.
 type CacheControl struct {
 	Action Action
 }
@@ -241,8 +263,10 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 
 // GetCacheControl retrieves the CacheControl from the context.
 //
+// Summary: Retrieves CacheControl from the context.
+//
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx: context.Context. The context to search.
 //
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
@@ -253,6 +277,8 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 }
 
 // PreCallHook defines the interface for hooks executed before a tool call.
+//
+// Summary: Interface for pre-execution hooks.
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
@@ -260,6 +286,8 @@ type PreCallHook interface {
 }
 
 // PostCallHook defines the interface for hooks executed after a tool call.
+//
+// Summary: Interface for post-execution hooks.
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
