@@ -21,6 +21,10 @@ interface ServiceToolsProps {
     tools: ToolDefinition[];
 }
 
+/**
+ * ServiceTools lists the tools exposed by an upstream service.
+ * It provides actions to try out tools in the playground and view their schema definitions.
+ */
 export function ServiceTools({ tools }: ServiceToolsProps) {
     if (!tools || tools.length === 0) {
         return <div className="text-center py-10 text-muted-foreground">No tools discovered for this service.</div>;

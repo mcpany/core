@@ -15,6 +15,10 @@ import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { LogStream } from "@/components/logs/log-stream";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 
+/**
+ * UpstreamServiceDetailPage renders the detailed view for a specific upstream service.
+ * It includes tabs for Overview, Tools, Resources, Logs, Inspector, and Settings.
+ */
 export default function UpstreamServiceDetailPage() {
     const params = useParams();
     const router = useRouter();
