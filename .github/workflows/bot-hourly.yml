@@ -10,13 +10,72 @@ on:
 
 jobs:
   manage-prs:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     permissions:
       pull-requests: write
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Install gh CLI
+        run: |
+          install_dependencies() {
+            if ! command -v curl &> /dev/null; then
+              echo "curl not found. Installing..."
+              if command -v apt-get &> /dev/null; then
+                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+              elif command -v apk &> /dev/null; then
+                sudo apk add --no-cache curl ca-certificates
+              elif command -v yum &> /dev/null; then
+                sudo yum install -y curl ca-certificates
+              elif command -v dnf &> /dev/null; then
+                sudo dnf install -y curl ca-certificates
+              else
+                echo "Could not find package manager to install curl. Trying to proceed..."
+              fi
+            fi
+          }
+
+          if ! command -v gh &> /dev/null; then
+            echo "gh not found. Installing..."
+            install_dependencies
+            
+            GH_VERSION="2.65.0"
+            ARCH=$(uname -m)
+            case $ARCH in
+              x86_64) ARCH_STR="amd64" ;;
+              aarch64) ARCH_STR="arm64" ;;
+              *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+            esac
+
+            mkdir -p /tmp/gh-install
+            if command -v curl &> /dev/null; then
+              curl -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+            elif command -v wget &> /dev/null; then
+              wget -qO- https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+            else
+              echo "Neither curl nor wget found. Cannot install gh."
+              exit 1
+            fi
+
+            BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
+            
+            if [ -w /usr/local/bin ]; then
+               cp "$BIN_PATH" /usr/local/bin/
+            elif command -v sudo &> /dev/null; then
+               sudo cp "$BIN_PATH" /usr/local/bin/
+            else
+               mkdir -p "$HOME/.local/bin"
+               cp "$BIN_PATH" "$HOME/.local/bin/"
+               echo "$HOME/.local/bin" >> $GITHUB_PATH
+            fi
+            
+            rm -rf /tmp/gh-install
+            echo "gh installed successfully."
+          else
+            echo "gh is already installed."
+          fi
 
       # Step 1: Merge PRs that are passing and ready
       - name: Merge Passing PRs
