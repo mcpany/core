@@ -61,8 +61,8 @@ describe('JsonView', () => {
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Bob')).toBeInTheDocument();
 
-    // Switch to JSON
-    const jsonBtn = screen.getByText('JSON');
+    // Switch to JSON (Raw)
+    const jsonBtn = screen.getByText('Raw');
     fireEvent.click(jsonBtn);
     expect(screen.getByText(/"Alice"/)).toBeInTheDocument();
   });
