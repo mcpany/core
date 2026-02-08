@@ -1,32 +1,42 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM mcr.microsoft.com/playwright:v1.58.0-jammy
+# Use node:20-bookworm as base to avoid overlayfs whiteout issues seen with mcr.microsoft.com/playwright images in CI
+FROM node:20-bookworm
+
+# Set browser path to a global location accessible by any user
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 WORKDIR /work/ui
 
 # Copy package files first for caching
-COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
+COPY ui/package.json ui/package-lock.json* ./
 
-# Install dependencies
-RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
+# Install dependencies and Playwright in single layer to reduce image size and layer count
+# Create browser directory and ensure it is writable by all users
+RUN npm install --package-lock=false --registry=https://registry.npmjs.org/ && \
+    mkdir -p $PLAYWRIGHT_BROWSERS_PATH && \
+    npx playwright install --with-deps chromium && \
+    chmod -R 777 $PLAYWRIGHT_BROWSERS_PATH
 
 # Copy the rest of the UI code
 COPY ui/ .
 COPY proto/ /work/proto/
-# Symlink node_modules so proto files can find dependencies
-RUN ln -s /work/ui/node_modules /work/proto/node_modules
-# Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
-RUN cp -r /work/proto /work/ui/proto
-# Update tsconfig to use local proto path (aligns with copied folder)
-RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
-# Recursively chmod, but skip node_modules and symlinks to avoid errors
-RUN find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmod 777 {} +
-# Ensure proto directory is also writable/accessible
-RUN chmod -R 777 /work/proto
 
-# Clean up any copied .next directory to avoid permission issues, then create fresh
-RUN rm -rf .next &&     touch next-env.d.ts &&     mkdir -p .next node_modules/.cache test-results playwright-report &&     chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
+# Setup environment and permissions in a single layer to avoid overlayfs depth limits
+# 1. Symlink node_modules
+# 2. Copy proto folder (avoid filesystem root issues)
+# 3. Update tsconfig
+# 4. Fix permissions
+# 5. Create .next and test directories
+RUN ln -s /work/ui/node_modules /work/proto/node_modules && \
+    cp -r /work/proto /work/ui/proto && \
+    sed -i 's|\.\./proto|proto|g' tsconfig.json && \
+    find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmod 777 {} + && \
+    chmod -R 777 /work/proto && \
+    touch next-env.d.ts && \
+    mkdir -p .next node_modules/.cache test-results playwright-report && \
+    chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
 
 # Default command (can be overridden)
 CMD ["npx", "playwright", "test"]

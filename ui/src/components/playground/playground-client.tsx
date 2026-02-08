@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -260,6 +260,49 @@ export function PlaygroundClient() {
       }]);
   };
 
+  const handleExportSession = () => {
+      const dataStr = JSON.stringify(messages, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `playground-history-${new Date().toISOString()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+  };
+
+  const handleImportSession = () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "application/json";
+      input.onchange = (e) => {
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+              try {
+                  const content = e.target?.result as string;
+                  const parsed = JSON.parse(content);
+                  if (Array.isArray(parsed)) {
+                      setMessages(parsed.map((m: any) => ({
+                          ...m,
+                          timestamp: new Date(m.timestamp)
+                      })));
+                  } else {
+                      alert("Invalid session file format.");
+                  }
+              } catch (err) {
+                  console.error("Failed to parse session file:", err);
+                  alert("Failed to parse session file.");
+              }
+          };
+          reader.readAsText(file);
+      };
+      input.click();
+  };
+
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex items-center justify-between">
@@ -317,6 +360,12 @@ export function PlaygroundClient() {
             </Sheet>
             <Button variant="ghost" size="sm" onClick={clearChat} title="Clear Chat">
                 <Trash2 className="size-4 text-muted-foreground hover:text-destructive" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleExportSession} title="Export Session">
+                <Download className="size-4 text-muted-foreground hover:text-primary" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleImportSession} title="Import Session">
+                <Upload className="size-4 text-muted-foreground hover:text-primary" />
             </Button>
           </div>
       </div>
