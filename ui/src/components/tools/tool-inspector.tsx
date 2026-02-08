@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,10 +18,10 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
-import { useEffect } from "react";
 
 interface ToolInspectorProps {
   tool: ToolDefinition | null;
@@ -76,6 +76,14 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       return { total, successes, failures, avgLatency, chartData };
   }, [auditLogs]);
 
+  const parsedInput = useMemo(() => {
+      try {
+          return JSON.parse(input);
+      } catch (e) {
+          return null;
+      }
+  }, [input]);
+
   const fetchMetrics = async () => {
       if (!tool) return;
       setMetricsLoading(true);
@@ -129,7 +137,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
               {String(tool.name)}
@@ -172,14 +180,38 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <Tabs defaultValue="form" className="w-full">
+                        <div className="flex items-center justify-between mb-2">
+                            <Label>Arguments</Label>
+                            <TabsList className="grid w-[120px] grid-cols-2 h-7">
+                                <TabsTrigger value="form" className="text-xs">Form</TabsTrigger>
+                                <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                            </TabsList>
+                        </div>
+                        <TabsContent value="form">
+                            {parsedInput ? (
+                                <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                                    <SchemaForm
+                                        schema={tool.inputSchema as any}
+                                        value={parsedInput}
+                                        onChange={(val) => setInput(JSON.stringify(val, null, 2))}
+                                    />
+                                </ScrollArea>
+                            ) : (
+                                <div className="h-[300px] flex items-center justify-center border rounded-md bg-destructive/10 text-destructive text-sm p-4 text-center">
+                                    Invalid JSON in "JSON" tab. Please fix syntax errors to use the Form builder.
+                                </div>
+                            )}
+                        </TabsContent>
+                        <TabsContent value="json">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="font-mono text-sm h-[300px]"
+                            />
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
                 {output && (
