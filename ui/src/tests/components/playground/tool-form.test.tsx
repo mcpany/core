@@ -77,8 +77,11 @@ describe("ToolForm", () => {
     await user.click(screen.getByRole("tab", { name: "Schema" }));
 
     // Find copy button (by title)
-    const copyBtn = screen.getByTitle("Copy JSON");
-    expect(copyBtn).toBeInTheDocument();
+    // Note: JsonTree renders a copy button for each object node, so there might be multiple.
+    // We want the root one.
+    const copyBtns = screen.getAllByTitle("Copy JSON");
+    expect(copyBtns.length).toBeGreaterThan(0);
+    const copyBtn = copyBtns[0];
 
     // Use fireEvent to bypass opacity/visibility checks
     fireEvent.click(copyBtn);

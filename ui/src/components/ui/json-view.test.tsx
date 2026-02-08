@@ -47,7 +47,7 @@ describe('JsonView', () => {
     expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
 
-  it('supports smart table view', () => {
+  it('supports smart table view', async () => {
     const data = [
         { id: 1, name: 'Alice' },
         { id: 2, name: 'Bob' }
@@ -64,7 +64,8 @@ describe('JsonView', () => {
     // Switch to JSON (Raw)
     const jsonBtn = screen.getByText('Raw');
     fireEvent.click(jsonBtn);
-    expect(screen.getByText(/"Alice"/)).toBeInTheDocument();
+    // ⚡ BOLT: Wait for lazy-loaded SyntaxHighlighter
+    expect(await screen.findByText(/"Alice"/)).toBeInTheDocument();
   });
 
   it('collapses long content', () => {
