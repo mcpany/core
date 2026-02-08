@@ -44,21 +44,23 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 
 	// Handle slices of proto messages
 	v := reflect.ValueOf(data)
-	if v.Kind() == reflect.Slice && v.Len() > 0 {
-		if _, ok := v.Index(0).Interface().(proto.Message); ok {
-			var parts []string
-			for i := 0; i < v.Len(); i++ {
-				m := v.Index(i).Interface().(proto.Message)
-				b, _ := marshaler.Marshal(m)
-				parts = append(parts, string(b))
+	if v.Kind() == reflect.Slice {
+		if v.Len() > 0 {
+			if _, ok := v.Index(0).Interface().(proto.Message); ok {
+				var parts []string
+				for i := 0; i < v.Len(); i++ {
+					m := v.Index(i).Interface().(proto.Message)
+					b, _ := marshaler.Marshal(m)
+					parts = append(parts, string(b))
+				}
+				_, _ = w.Write([]byte("[" + strings.Join(parts, ",") + "]"))
+				return
 			}
-			_, _ = w.Write([]byte("[" + strings.Join(parts, ",") + "]"))
+		} else {
+			// Empty slice
+			_, _ = w.Write([]byte("[]"))
 			return
 		}
-	} else if v.Kind() == reflect.Slice && v.Len() == 0 {
-		// Empty slice
-		_, _ = w.Write([]byte("[]"))
-		return
 	}
 
 	if err := json.NewEncoder(w).Encode(data); err != nil {
