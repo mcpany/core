@@ -2876,9 +2876,29 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		}
 	}
 
-	if isPerl && (quoteLevel == 1 || quoteLevel == 3) {
-		if strings.Contains(val, "@{") {
-			return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
+	if isPerl {
+		// Sentinel Security Update:
+		// Block qx operator (command execution) regardless of quoting.
+		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
+		// avoiding common shell injection filters.
+		if strings.Contains(val, "qx") {
+			// Check if it is likely the qx operator.
+			// The strict check should be to block "qx" followed by any character that could be a delimiter.
+			// However, blindly blocking "qx" might break legitimate strings.
+			// But for strict security on command execution tools, blocking "qx" is safer.
+			// Especially in unquoted context (Level 0), we must be very strict.
+			if quoteLevel == 0 {
+				return fmt.Errorf("shell injection detected: perl qx execution")
+			}
+			// In quoted contexts, qx might be just a string, UNLESS it is interpolated?
+			// qx// is NOT interpolated inside strings in Perl. "qx/ls/" is just a string.
+			// So we only need to worry about Level 0 (Unquoted).
+		}
+
+		if (quoteLevel == 1 || quoteLevel == 3) {
+			if strings.Contains(val, "@{") {
+				return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
+			}
 		}
 	}
 	return nil
