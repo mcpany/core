@@ -31,12 +31,22 @@ Key columns:
 
 To register a new upstream service:
 
-1. Click the **"Add Service"** link in the top-right corner.
-2. You will be redirected to the **Marketplace**.
+1. Click the **"Add Service"** button in the top-right corner.
+2. A **Service Marketplace** sheet will open.
 3. Select the desired service type (e.g., HTTP, gRPC) or a pre-configured service template.
 4. Follow the configuration wizard to register the service.
 
 ![Add Service Dialog](screenshots/services_add_dialog.png)
+
+### 2.5 Bulk Import
+
+To import multiple services at once:
+
+1. Click the **"Bulk Import"** button (next to "Add Service").
+2. A dialog will open allowing you to:
+   - Paste a URL to an OpenAPI definition or JSON configuration.
+   - Upload a JSON file containing a list of service configurations.
+3. Click **"Import Services"** to register them.
 
 ### 3. Configure Service
 
