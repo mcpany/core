@@ -4,6 +4,7 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -96,7 +97,11 @@ func (a *Application) handleValidate() http.HandlerFunc {
 		}
 
 		// Run deep validation
-		if errs := config.Validate(r.Context(), cfg, config.Server); len(errs) > 0 {
+		// Security: Skip filesystem and secret checks to prevent Oracle attacks (Information Leakage).
+		ctx := context.WithValue(r.Context(), config.SkipSecretValidationKey, true)
+		ctx = context.WithValue(ctx, config.SkipFilesystemCheckKey, true)
+
+		if errs := config.Validate(ctx, cfg, config.Server); len(errs) > 0 {
 			var errMsg string
 			for i, e := range errs {
 				if i > 0 {
