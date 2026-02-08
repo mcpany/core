@@ -22,6 +22,9 @@ import { Plus, Trash2, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+/**
+ * Schema definition for the form generation.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;
@@ -81,6 +84,19 @@ function NumberInput({ value, onChange, placeholder }: { value: number | undefin
   );
 }
 
+/**
+ * SchemaForm generates a dynamic form based on a JSON Schema.
+ * It supports nested objects, arrays, enums, and basic types.
+ *
+ * @param props - The component props.
+ * @param props.schema - The JSON schema to generate the form from.
+ * @param props.value - The current value of the form data.
+ * @param props.onChange - Callback when data changes.
+ * @param props.name - Optional name for the field (used for labels).
+ * @param props.required - Whether the field is marked as required.
+ * @param props.depth - Recursion depth for styling nested levels.
+ * @returns The rendered form component.
+ */
 export function SchemaForm({ schema, value, onChange, name, required = false, depth = 0 }: SchemaFormProps) {
   // Helper to update object properties
   const updateProperty = (key: string, val: any) => {

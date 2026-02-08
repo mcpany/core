@@ -189,7 +189,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                             <Label>Arguments</Label>
                             <TabsList className="h-7 bg-muted/50">
                                 <TabsTrigger value="form" className="text-xs h-5 px-2">Form</TabsTrigger>
-                                <TabsTrigger value="json" className="text-xs h-5 px-2">JSON</TabsTrigger>
+                                <TabsTrigger value="json" className="text-xs h-5 px-2">Raw JSON</TabsTrigger>
                             </TabsList>
                         </div>
                         <TabsContent value="form" className="mt-0">
