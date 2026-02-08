@@ -22,13 +22,14 @@ test.describe('Stacks List', () => {
   test('should list created stacks', async ({ page }) => {
     await page.goto('/stacks');
 
-    // Wait for the stack card to appear
-    const stackCard = page.locator('.grid').getByText(STACK_NAME);
-    await expect(stackCard).toBeVisible({ timeout: 10000 });
+    // Select the specific card link for the stack
+    // The grid structure is div.grid > Link > Card
+    // We target the Link containing the text
+    const stackLink = page.locator('.grid > a').filter({ hasText: STACK_NAME });
 
-    // Verify service count (seeded collection has 1 service)
-    // The card contains "1 Services"
-    const serviceCount = page.locator('.grid').filter({ hasText: STACK_NAME }).getByText('1 Services');
-    await expect(serviceCount).toBeVisible();
+    await expect(stackLink).toBeVisible({ timeout: 10000 });
+
+    // Verify service count within that specific card
+    await expect(stackLink.getByText('1 Services')).toBeVisible();
   });
 });
