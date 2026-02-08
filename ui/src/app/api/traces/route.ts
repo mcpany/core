@@ -30,7 +30,7 @@ interface DebugEntry {
  * @param request - The request.
  */
 export async function GET(request: Request) {
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
 
   try {
     const res = await fetch(`${backendUrl}/debug/entries`, {
