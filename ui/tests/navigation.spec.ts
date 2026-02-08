@@ -20,7 +20,7 @@ test.describe('Navigation Coverage', () => {
     { path: '/stacks', title: 'Stacks' },
     { path: '/stats', title: 'Analytics & Stats' },
     { path: '/tools', title: 'Tools' },
-    { path: '/webhooks', title: 'Webhooks' },
+    { path: '/webhooks', title: 'Integrations' },
   ];
 
   for (const route of routes) {
