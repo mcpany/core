@@ -8,7 +8,7 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is the universal adapter that instantly turns your existing APIs into MCP-compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and the Model Context Protocol (MCP).
+**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It is a configuration-driven gateway that bridges the gap between *any* API (REST, gRPC, GraphQL, Command-line) and AI agents.
 
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
@@ -77,12 +77,12 @@ make test
 ```
 
 ### Linting & Documentation
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+Ensure code adheres to our style guides (Godoc for Go). We strictly enforce **100% documentation coverage** for all public APIs.
 Run the linter to verify your changes:
 ```bash
 make lint
 ```
-This command runs `golangci-lint` and our custom documentation checkers (`check-go-doc`, `check-ts-doc`).
+This command runs `golangci-lint` and our custom documentation checkers.
 
 ### Building
 Compile all artifacts (Server binary and UI assets).

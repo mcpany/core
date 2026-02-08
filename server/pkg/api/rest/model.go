@@ -5,7 +5,7 @@ package rest
 
 // ValidateConfigRequest represents the request body for config validation.
 //
-// It contains the raw configuration content to be validated.
+// Summary: Request payload for config validation.
 type ValidateConfigRequest struct {
 	// Content is the raw YAML/JSON content of the configuration file.
 	Content string `json:"content"`
@@ -13,7 +13,7 @@ type ValidateConfigRequest struct {
 
 // ValidateConfigResponse represents the response body for config validation.
 //
-// It indicates whether the configuration is valid and lists any errors found.
+// Summary: Response payload for config validation.
 type ValidateConfigResponse struct {
 	// Valid indicates whether the configuration is valid.
 	Valid bool `json:"valid"`
@@ -23,7 +23,7 @@ type ValidateConfigResponse struct {
 
 // ValidationResult represents the result of the validation logic.
 //
-// It is used internally to decouple handler from response format if needed.
+// Summary: Internal result of validation logic.
 type ValidationResult struct {
 	// Valid is true if the configuration is valid.
 	Valid bool

@@ -51,6 +51,9 @@ type SafeDialer struct {
 }
 
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
+//
+// Summary: Initializes a SafeDialer with secure defaults.
+//
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
 //
 // Returns:
@@ -64,6 +67,9 @@ func NewSafeDialer() *SafeDialer {
 }
 
 // DialContext establishes a network connection to the given address while enforcing egress policies.
+//
+// Summary: Dials a network address securely.
+//
 // It resolves the host's IP addresses and verifies them against the allowed list before connecting.
 //
 // Parameters:
@@ -135,6 +141,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 }
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
+//
+// Summary: Dials an address with default security protections.
+//
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
 //
 // Parameters:
@@ -150,6 +159,9 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 }
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
+//
+// Summary: Creates a secure HTTP client.
+//
 // It uses a custom Transport backed by SafeDialer.
 //
 // Configuration is loaded from environment variables:

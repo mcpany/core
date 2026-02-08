@@ -36,11 +36,15 @@ func ForTestsOnlyResetLogger() {
 // typically at the start of the application, to ensure a consistent logging
 // setup.
 //
+// Summary: Initializes the global logger singleton.
+//
 // Parameters:
-//   - level: The minimum log level to be recorded (e.g., `slog.LevelInfo`).
-//   - output: The `io.Writer` to which log entries will be written (e.g.,
-//     `os.Stdout`).
-//   - format: Optional format string ("json" or "text"). Defaults to "text".
+//   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
+//   - output: io.Writer. The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
+//   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
+//
+// Returns:
+//   None.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -82,8 +86,10 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 // been initialized through a call to `Init`, this function will initialize it
 // with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
+// Summary: Retrieves the global logger instance.
+//
 // Returns:
-//   - The global `*slog.Logger` instance.
+//   - *slog.Logger: The global `*slog.Logger` instance.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -105,11 +111,13 @@ func GetLogger() *slog.Logger {
 
 // ToSlogLevel converts a string log level to a slog.Level.
 //
+// Summary: Converts protobuf log level to slog level.
+//
 // Parameters:
-//   - level: The log level from the configuration.
+//   - level: configv1.GlobalSettings_LogLevel. The log level from the configuration.
 //
 // Returns:
-//   - The corresponding slog.Level.
+//   - slog.Level: The corresponding slog.Level.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

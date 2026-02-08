@@ -17,23 +17,19 @@ import (
 
 // ValidateConfigHandler handles requests to validate configuration.
 //
-// Validates the provided configuration content against the JSON schema and internal logic.
+// Summary: Validates configuration content against schema and logic.
 //
 // Parameters:
-//   - w: http.ResponseWriter. The response writer to send the validation result.
-//   - r: *http.Request. The HTTP request containing the configuration content in the body.
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing the configuration in the body.
 //
 // Returns:
-//   - (void): This function does not return a value but writes to the response writer.
+//   None.
 //
-// Errors/Throws:
-//   - Returns 405 Method Not Allowed if the request method is not POST.
-//   - Returns 400 Bad Request if the request body is invalid or empty.
-//   - Returns 500 Internal Server Error if there is an error encoding the response.
-//
-// Side Effects:
-//   - Reads from the request body.
-//   - Writes JSON response to the http.ResponseWriter.
+// Throws/Errors:
+//   - 405 Method Not Allowed: If method is not POST.
+//   - 400 Bad Request: If body is invalid.
+//   - 500 Internal Server Error: If response encoding fails.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
