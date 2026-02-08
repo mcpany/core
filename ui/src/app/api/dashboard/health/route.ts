@@ -28,6 +28,11 @@ export async function GET(request: Request) {
 
     if (!res.ok) {
         console.warn(`Failed to fetch health from backend: ${res.status} ${res.statusText}`);
+        // Debug auth issues
+        if (res.status === 401) {
+             const keyUsed = headers['X-API-Key'] ? 'SET' : 'MISSING';
+             console.error(`Auth failed. MCPANY_API_KEY: ${!!process.env.MCPANY_API_KEY}, NEXT_PUBLIC: ${!!process.env.NEXT_PUBLIC_MCPANY_API_KEY}, Header: ${keyUsed}`);
+        }
         return NextResponse.json({ services: [], history: {} }, { status: res.status });
     }
 
