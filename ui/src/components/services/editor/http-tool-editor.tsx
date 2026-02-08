@@ -23,6 +23,12 @@ interface HttpToolEditorProps {
     onChange: (tool: ToolDefinition, call: HttpCallDefinition) => void;
 }
 
+/**
+ * Editor for configuring a single HTTP tool.
+ * Allows defining tool metadata and the mapped HTTP request details.
+ * @param props - The component props.
+ * @returns The rendered tool editor.
+ */
 export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
     const [localTool, setLocalTool] = useState<ToolDefinition>(tool);
     const [localCall, setLocalCall] = useState<HttpCallDefinition>(call);
