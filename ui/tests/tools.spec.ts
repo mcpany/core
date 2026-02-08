@@ -19,7 +19,8 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Expect built-in tools (Weather Service) which is more reliable in CI
-        await expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 15000 });
+        // Use locator with text= for partial/flexible match, but expect namespaced name
+        await expect(page.locator('text=weather-service.get_weather')).toBeVisible({ timeout: 15000 });
     });
 
     test('should show empty state when no tools', async ({ page, request }) => {
@@ -38,12 +39,12 @@ test.describe('Tool Exploration', () => {
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
         // Wait for tool to appear first
-        await expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 15000 });
+        await expect(page.locator('text=weather-service.get_weather')).toBeVisible({ timeout: 15000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: 'get_weather' });
+        const toolRow = page.locator('tr').filter({ hasText: 'weather-service.get_weather' });
         await toolRow.getByText('Inspect').click();
 
         await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('get_weather').first()).toBeVisible();
+        await expect(page.locator('text=weather-service.get_weather').first()).toBeVisible();
     });
 });

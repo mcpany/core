@@ -53,7 +53,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
     // Expect built-in tools (Weather Service) which is more reliable in CI
-    await expect(page.locator('text=get_weather')).toBeVisible({ timeout: 15000 });
+    // Note: Tool name is namespaced in backend as "weather-service.get_weather"
+    await expect(page.locator('text=weather-service.get_weather')).toBeVisible({ timeout: 15000 });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
@@ -88,9 +89,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.getByText('Network Graph').first()).toBeVisible();
     // Check for nodes (seeded services)
     await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    // Math might be hidden if down/no-tools? But it is seeded as service.
-    // Memory should be visible
-    await expect(page.locator('text=Memory')).toBeVisible();
+    // Weather Service should be visible (pre-seeded in CI environment)
+    await expect(page.locator('text=weather-service')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });
