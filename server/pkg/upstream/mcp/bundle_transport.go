@@ -10,9 +10,7 @@ import (
 	"io"
 	"log/slog"
 	"reflect"
-	"regexp"
 	"strconv"
-	"strings"
 	"unsafe"
 
 	"github.com/docker/docker/api/types/container"
@@ -23,11 +21,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-var (
-	idValueIntRegex = regexp.MustCompile(`value:(\d+)`)
-	idValueStrRegex = regexp.MustCompile(`value:([^}]+)`)
 )
 
 // transportError implements the error interface for JSON-RPC errors.
@@ -363,44 +356,75 @@ func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 }
 
 func fixID(id interface{}) interface{} {
+	// ⚡ BOLT: Replaced inefficient regex-based parsing with direct reflection access
+	// Randomized Selection from Top 5 High-Impact Targets
 	if id == nil {
 		return nil
 	}
-	// Check if it's already simple type
+
+	// Fast path for simple types
 	switch v := id.(type) {
-	case string, int, int64, float64:
+	case int, int64, float64, string:
 		return v
-	}
-
-	// If it's the broken struct, print it and parse
-	// This is fragile, but needed until SDK exports ID or provides a way to marshal it.
-	s := fmt.Sprintf("%+v", id)
-	// Parse string value, handling potential closing braces in the content
-	// Format is {value:<content>}
-	if strings.HasPrefix(s, "{value:") && strings.HasSuffix(s, "}") {
-		content := s[7 : len(s)-1]
-		// Try to maintain integer type if possible to avoid regressions
-		if i, err := strconv.Atoi(content); err == nil {
-			return i
-		}
-		return content
-	}
-
-	// Expect {value:1}
-	matches := idValueIntRegex.FindStringSubmatch(s)
-	if len(matches) > 1 {
-		if i, err := strconv.Atoi(matches[1]); err == nil {
-			return i
+	case map[string]interface{}:
+		if val, ok := v["value"]; ok {
+			return fixIDExtracted(val)
 		}
 	}
 
-	matchesStr := idValueStrRegex.FindStringSubmatch(s)
-	if len(matchesStr) > 1 {
-		return matchesStr[1]
+	val := reflect.ValueOf(id)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
 	}
 
-	// If parsing fails, return the ID as is and hope for the best (it might be marshaled as {})
+	// Handle maps via reflection if not covered by type switch (e.g. custom map types)
+	if val.Kind() == reflect.Map {
+		// Check for "value" key
+		key := reflect.ValueOf("value")
+		v := val.MapIndex(key)
+		if v.IsValid() {
+			return fixIDExtracted(v.Interface())
+		}
+		return id
+	}
+
+	if val.Kind() != reflect.Struct {
+		return id
+	}
+
+	f := val.FieldByName("value")
+	if !f.IsValid() {
+		return id
+	}
+
+	// Make a copy if not addressable to use unsafe on the copy
+	if !val.CanAddr() {
+		copyVal := reflect.New(val.Type()).Elem()
+		copyVal.Set(val)
+		val = copyVal
+		f = val.FieldByName("value")
+	}
+
+	if f.CanAddr() {
+		// Use unsafe to read unexported field
+		rf := reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
+		// Recursively fix the extracted value (to handle int conversion)
+		return fixIDExtracted(rf.Interface())
+	}
+
 	return id
+}
+
+func fixIDExtracted(val interface{}) interface{} {
+	// If string looks like int, convert. This matches legacy behavior where
+	// extracting from a struct would convert string "123" to int 123.
+	if s, ok := val.(string); ok {
+		if i, err := strconv.Atoi(s); err == nil {
+			return i
+		}
+	}
+	// Otherwise recurse
+	return fixID(val)
 }
 
 // Close closes the connection.

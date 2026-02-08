@@ -108,3 +108,25 @@ func BenchmarkFixID_Optimized(b *testing.B) {
 		fixIDOptimized(id)
 	}
 }
+
+func BenchmarkFixID_Reflection(b *testing.B) {
+	id := brokenID{value: 123}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		fixID(id)
+	}
+}
+
+func TestFixIDReflection(t *testing.T) {
+	id := brokenID{value: 123}
+	res := fixID(id)
+	if res != 123 {
+		t.Errorf("Expected 123, got %v", res)
+	}
+
+	// Test pointer case
+	resPtr := fixID(&id)
+	if resPtr != 123 {
+		t.Errorf("Expected 123 from pointer, got %v", resPtr)
+	}
+}
