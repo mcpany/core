@@ -229,17 +229,16 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 
 			// Inject Tool Count
 			if a.ToolManager != nil {
-				tools := a.ToolManager.ListTools()
+				// ⚡ BOLT: Optimized tool counting from O(N*M) to O(N) using cached counters.
+				// Randomized Selection from Top 5 High-Impact Targets
 				count := 0
 				svcID := svc.GetId()
-				// Fallback to name if ID is empty or not matching (though tools should use ID)
-				sanitizedName := svc.GetSanitizedName()
-
-				for _, t := range tools {
-					tSvcID := t.Tool().GetServiceId()
-					if tSvcID != "" && (tSvcID == svcID || tSvcID == sanitizedName) {
-						count++
-					}
+				if svcID != "" {
+					count += a.ToolManager.GetToolCountForService(svcID)
+				}
+				// Check sanitized name if different, to catch legacy registrations
+				if sanitizedName := svc.GetSanitizedName(); sanitizedName != "" && sanitizedName != svcID {
+					count += a.ToolManager.GetToolCountForService(sanitizedName)
 				}
 				jsonMap["tool_count"] = count
 			}
