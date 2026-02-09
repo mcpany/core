@@ -152,5 +152,17 @@ upstreamAuth:
 
 Ensure `OPENAI_API_KEY` is set in the server's environment.
 
+## 6. CLI Reference
+
+The server binary includes several built-in commands to help you manage and validate your configuration.
+
+| Command | Description |
+|---------|-------------|
+| `server doctor` | Checks connectivity and health of all configured upstream services. |
+| `server config validate` | Performs a deep semantic validation of your configuration files. |
+| `server lint` | Scans your configuration for best practices, security issues, and potential errors. |
+| `server config schema` | Outputs the full JSON Schema for configuration files, useful for IDE validation. |
+| `server health` | Checks the health of a running server instance. |
+
 ## License
 This project is licensed under the terms of the [Apache 2.0 License](LICENSE).
