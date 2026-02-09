@@ -1219,6 +1219,29 @@ export const apiClient = {
     },
 
     /**
+     * Gets the latest logs.
+     * @param options Optional parameters.
+     * @returns A promise that resolves to the logs list.
+     */
+    getLogs: async (options?: { limit?: number, offset?: number, level?: string, source?: string, search?: string }): Promise<any[]> => {
+        let url = '/api/v1/logs';
+        const params = new URLSearchParams();
+        if (options?.limit) params.set('limit', options.limit.toString());
+        if (options?.offset) params.set('offset', options.offset.toString());
+        if (options?.level && options.level !== 'ALL') params.set('level', options.level);
+        if (options?.source && options.source !== 'ALL') params.set('source', options.source);
+        if (options?.search) params.set('search', options.search);
+
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch logs');
+        return res.json();
+    },
+
+    /**
      * Seeds the dashboard traffic history (Debug/Test only).
      * @param points The traffic points to seed.
      */

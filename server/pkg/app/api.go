@@ -159,6 +159,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/alerts/", a.handleAlertDetail())
 
 	mux.HandleFunc("/traces", a.handleTraces())
+	mux.HandleFunc("/logs", a.handleGetLogs())
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 

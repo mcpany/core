@@ -375,6 +375,15 @@ func (a *Application) Run(opts RunOptions) error {
 			if err != nil {
 				return fmt.Errorf("failed to initialize sqlite db: %w", err)
 			}
+			// Initialize Log Persistence (SQLite only for now)
+			logStore, err := logging.NewSQLiteLogStore(sqliteDB.DB)
+			if err != nil {
+				log.Warn("Failed to initialize log store", "error", err)
+			} else {
+				logging.SetStore(logStore)
+				log.Info("Log persistence enabled")
+			}
+
 			storageCloser = sqliteDB.Close
 			storageStore = sqlite.NewStore(sqliteDB)
 		case "postgres":

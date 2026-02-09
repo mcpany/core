@@ -19,6 +19,12 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+	globalStore   LogStore
+
+	// Saved init params for re-initialization
+	savedLevel  slog.Level
+	savedOutput io.Writer
+	savedFormat []string
 )
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
@@ -48,38 +54,79 @@ func ForTestsOnlyResetLogger() {
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
+
+	// Save params for re-init
+	savedLevel = level
+	savedOutput = output
+	savedFormat = format
+
 	once.Do(func() {
-		fmtStr := "text"
-		if len(format) > 0 {
-			fmtStr = format[0]
-		}
-
-		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
-		// Randomized Selection from Top 5 High-Impact Targets
-		opts := &slog.HandlerOptions{
-			Level:     level,
-			AddSource: level == slog.LevelDebug,
-			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-				if util.IsSensitiveKey(a.Key) {
-					return slog.String(a.Key, "[REDACTED]")
-				}
-				return a
-			},
-		}
-
-		var mainHandler slog.Handler
-		if fmtStr == "json" {
-			output = &RedactingWriter{w: output}
-			mainHandler = slog.NewJSONHandler(output, opts)
-		} else {
-			mainHandler = slog.NewTextHandler(output, opts)
-		}
-
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
-		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
-
-		defaultLogger.Store(slog.New(teeHandler))
+		logger := createLogger(level, output, format...)
+		defaultLogger.Store(logger)
 	})
+}
+
+func createLogger(level slog.Level, output io.Writer, format ...string) *slog.Logger {
+	fmtStr := "text"
+	if len(format) > 0 {
+		fmtStr = format[0]
+	}
+
+	// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
+	// Randomized Selection from Top 5 High-Impact Targets
+	opts := &slog.HandlerOptions{
+		Level:     level,
+		AddSource: level == slog.LevelDebug,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if util.IsSensitiveKey(a.Key) {
+				return slog.String(a.Key, "[REDACTED]")
+			}
+			return a
+		},
+	}
+
+	var mainHandler slog.Handler
+	if fmtStr == "json" {
+		output = &RedactingWriter{w: output}
+		mainHandler = slog.NewJSONHandler(output, opts)
+	} else {
+		mainHandler = slog.NewTextHandler(output, opts)
+	}
+
+	broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
+
+	handlers := []slog.Handler{mainHandler, broadcastHandler}
+
+	if globalStore != nil {
+		// Add store handler
+		storeHandler := NewStoreHandler(globalStore, level)
+		handlers = append(handlers, storeHandler)
+	}
+
+	teeHandler := NewTeeHandler(handlers...)
+
+	return slog.New(teeHandler)
+}
+
+// SetStore registers a persistent store for logs.
+// If the logger is already initialized, it recreates it with the store.
+func SetStore(store LogStore) {
+	mu.Lock()
+	defer mu.Unlock()
+	globalStore = store
+
+	// If Init was already called (logger exists), re-create it
+	if defaultLogger.Load() != nil && savedOutput != nil {
+		logger := createLogger(savedLevel, savedOutput, savedFormat...)
+		defaultLogger.Store(logger)
+	}
+}
+
+// GetStore returns the registered log store.
+func GetStore() LogStore {
+	mu.Lock()
+	defer mu.Unlock()
+	return globalStore
 }
 
 // GetLogger returns the shared global logger instance. If the logger has not yet

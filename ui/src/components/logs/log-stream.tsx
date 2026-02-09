@@ -28,6 +28,7 @@ import dynamic from "next/dynamic";
 const Virtuoso = dynamic(() => import("react-virtuoso").then((m) => m.Virtuoso), { ssr: false });
 
 import { cn } from "@/lib/utils"
+import { apiClient } from "@/lib/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -292,6 +293,35 @@ export function LogStream({ source }: { source?: string }) {
   const logBufferRef = React.useRef<LogEntry[]>([])
 
   React.useEffect(() => {
+    // Fetch historical logs from backend
+    const fetchHistory = async () => {
+        try {
+            const history = await apiClient.getLogs({ limit: 1000 });
+            // API returns newest first (DESC), reverse to display oldest to newest
+            const reversed = history.reverse();
+
+            const processed = reversed.map((log: LogEntry) => {
+                 log.searchStr = (log.message + " " + (log.source || "")).toLowerCase();
+                 log.formattedTime = timeFormatter
+                    ? timeFormatter.format(new Date(log.timestamp))
+                    : new Date(log.timestamp).toLocaleTimeString();
+                 return log;
+            });
+
+            setLogs(prev => {
+                // Deduplicate against existing logs (though on mount prev should be empty)
+                const existingIds = new Set(prev.map(l => l.id));
+                const newLogs = processed.filter((l: LogEntry) => !existingIds.has(l.id));
+                // Prepend history to existing logs
+                return [...newLogs, ...prev];
+            });
+        } catch (e) {
+            console.error("Failed to fetch log history", e);
+        }
+    };
+
+    fetchHistory();
+
     // Optimization: Flush buffer periodically to limit re-renders
     const flushInterval = setInterval(() => {
       if (logBufferRef.current.length > 0) {
@@ -300,23 +330,33 @@ export function LogStream({ source }: { source?: string }) {
           logBufferRef.current = [] // Clear buffer
           const MAX_LOGS = 1000
 
+          // Deduplication check
+          // Since buffer contains new logs, we only need to check against the end of prev?
+          // No, simple ID check is safer given we merged history.
+          // However, iterating potentially 1000 items on every flush might be expensive?
+          // Let's do it efficiently.
+          const existingIds = new Set(prev.slice(-100).map(l => l.id)); // Check last 100 to dedupe recent overlap
+          const uniqueBuffer = buffer.filter(l => !existingIds.has(l.id));
+
+          if (uniqueBuffer.length === 0) return prev;
+
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
           // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
 
           // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
+          if (prev.length + uniqueBuffer.length <= MAX_LOGS) {
+            return [...prev, ...uniqueBuffer]
           }
 
           // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
+          if (uniqueBuffer.length >= MAX_LOGS) {
+            return uniqueBuffer.slice(uniqueBuffer.length - MAX_LOGS)
           }
 
           // Case 3: Need to trim from prev to make room for buffer
-          // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
+          // We need (MAX_LOGS - uniqueBuffer.length) from the end of prev
+          const keepCount = MAX_LOGS - uniqueBuffer.length
+          return [...prev.slice(-keepCount), ...uniqueBuffer]
         })
       }
     }, 100) // Flush every 100ms

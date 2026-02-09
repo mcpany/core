@@ -9,11 +9,75 @@ import (
 	"testing"
 	"time"
 
+	"context"
+	"database/sql"
+	"encoding/json"
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	_ "modernc.org/sqlite"
 )
+
+func TestHandleGetLogs(t *testing.T) {
+	// Setup in-memory store
+	db, err := sql.Open("sqlite", ":memory:")
+	require.NoError(t, err)
+	defer db.Close()
+
+	store, err := logging.NewSQLiteLogStore(db)
+	require.NoError(t, err)
+
+	// Set as global store
+	originalStore := logging.GetStore()
+	logging.SetStore(store)
+	defer logging.SetStore(originalStore)
+
+	// Seed logs
+	ctx := context.Background()
+	store.Write(ctx, logging.LogEntry{
+		ID:        "log1",
+		Level:     "INFO",
+		Message:   "Log 1",
+		Timestamp: time.Now().Format(time.RFC3339),
+	})
+	store.Write(ctx, logging.LogEntry{
+		ID:        "log2",
+		Level:     "ERROR",
+		Message:   "Log 2",
+		Timestamp: time.Now().Add(time.Second).Format(time.RFC3339),
+	})
+
+	app := &Application{}
+	handler := app.handleGetLogs()
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	// 1. Fetch All
+	resp, err := http.Get(ts.URL)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	var logs []logging.LogEntry
+	err = json.NewDecoder(resp.Body).Decode(&logs)
+	require.NoError(t, err)
+	assert.Len(t, logs, 2)
+	assert.Equal(t, "Log 2", logs[0].Message) // DESC order
+
+	// 2. Filter by Level
+	resp, err = http.Get(ts.URL + "?level=ERROR")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	err = json.NewDecoder(resp.Body).Decode(&logs)
+	require.NoError(t, err)
+	assert.Len(t, logs, 1)
+	assert.Equal(t, "Log 2", logs[0].Message)
+}
 
 func TestHandleLogsWS_History(t *testing.T) {
 	// Backup and replace GlobalBroadcaster
