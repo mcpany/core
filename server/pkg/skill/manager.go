@@ -8,11 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/validation"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v3"
 )
 
@@ -71,17 +73,41 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 	}
 
 	skills := make([]*Skill, 0, len(entries))
+	var skillsMu sync.Mutex
+
+	// ⚡ BOLT: Optimization - Parallelize skill loading to reduce latency.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var g errgroup.Group
+	g.SetLimit(20) // Limit concurrency to avoid file descriptor exhaustion
+
 	for _, entry := range entries {
+		entry := entry // Capture loop variable
 		if !entry.IsDir() {
 			continue
 		}
-		skill, err := m.loadSkill(entry.Name())
-		if err != nil {
-			logging.GetLogger().Warn("Failed to load skill", "name", entry.Name(), "error", err)
-			continue
-		}
-		skills = append(skills, skill)
+
+		g.Go(func() error {
+			skill, err := m.loadSkill(entry.Name())
+			if err != nil {
+				logging.GetLogger().Warn("Failed to load skill", "name", entry.Name(), "error", err)
+				return nil // Don't fail the whole group
+			}
+
+			skillsMu.Lock()
+			skills = append(skills, skill)
+			skillsMu.Unlock()
+			return nil
+		})
 	}
+
+	// Wait for all goroutines to finish.
+	// Since we return nil in the goroutine, Wait() will return nil.
+	_ = g.Wait()
+
+	// Sort by name for deterministic output
+	sort.Slice(skills, func(i, j int) bool {
+		return skills[i].Name < skills[j].Name
+	})
 
 	m.cache = skills
 	return skills, nil
