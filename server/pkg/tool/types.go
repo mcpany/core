@@ -1523,7 +1523,10 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
+			// Try double braces first (internal convention)
 			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
+			// Also try single braces (OpenAPI standard)
+			url = strings.ReplaceAll(url, "{"+paramName+"}", util.ToString(paramValue))
 			delete(inputs, paramName)
 		}
 	}

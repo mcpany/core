@@ -8,8 +8,14 @@ package jira_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -17,24 +23,79 @@ import (
 )
 
 func TestUpstreamService_Jira(t *testing.T) {
-	jiraDomain := os.Getenv("JIRA_DOMAIN")
-	jiraUsername := os.Getenv("JIRA_USERNAME")
-	jiraPat := os.Getenv("JIRA_PAT")
-	jiraTestIssueKey := os.Getenv("JIRA_TEST_ISSUE_KEY")
-	jiraTestIssueSummary := os.Getenv("JIRA_TEST_ISSUE_SUMMARY")
+	// Mock Jira Server
+	mockJira := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Serve minimal Swagger Spec if requested
+		if strings.Contains(r.URL.Path, "swagger.v3.json") {
+			w.Write([]byte(`{
+				"openapi": "3.0.0",
+				"info": { "title": "Jira", "version": "3" },
+				"paths": {
+					"/rest/api/3/issue/{id}": {
+						"get": {
+							"operationId": "getIssue",
+							"parameters": [
+								{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+							],
+							"responses": {
+								"200": {
+									"description": "Success",
+									"content": {
+										"application/json": {
+											"schema": { "type": "object", "properties": { "key": { "type": "string" }, "fields": { "type": "object", "properties": { "summary": { "type": "string" } } } } }
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}`))
+			return
+		}
 
-	if jiraDomain == "" || jiraUsername == "" || jiraPat == "" || jiraTestIssueKey == "" || jiraTestIssueSummary == "" {
-		// t.Skip("Skipping Jira integration test because one or more of the required environment variables are not set: JIRA_DOMAIN, JIRA_USERNAME, JIRA_PAT, JIRA_TEST_ISSUE_KEY, JIRA_TEST_ISSUE_SUMMARY")
-	}
+		// Handle Issue Request
+		if strings.HasPrefix(r.URL.Path, "/rest/api/3/issue/") {
+			key := strings.TrimPrefix(r.URL.Path, "/rest/api/3/issue/")
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"key": key,
+				"fields": map[string]interface{}{
+					"summary": "Mock Issue Summary",
+				},
+			})
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockJira.Close()
+
+	// Create Config
+	configContent := fmt.Sprintf(`
+upstream_services:
+- name: jira
+  upstream_auth:
+    basic_auth:
+      username: "user"
+      password:
+        plain_text: "token"
+  openapi_service:
+    address: "%s"
+    spec_url: "%s/swagger.v3.json"
+`, mockJira.URL, mockJira.URL)
+
+	configFile := filepath.Join(t.TempDir(), "config.yaml")
+	require.NoError(t, os.WriteFile(configFile, []byte(configContent), 0644))
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Jira Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Jira Server (Mocked)...")
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EJiraServerTest", "--config-path", "../../../../examples/popular_services/jira")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EJiraServerTest", "--config-path", configFile)
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Call Tool via MCPANY ---
@@ -43,11 +104,42 @@ func TestUpstreamService_Jira(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	require.Len(t, listToolsResult.Tools, 1, "Expected exactly one tool to be registered")
-	registeredToolName := listToolsResult.Tools[0].Name
+	// Wait for tool registration? ListTools poller?
+	// integration.StartMCPANYServer waits for health check, but tool registration is async.
+	// We might need to retry ListTools or wait.
+	var listToolsResult *mcp.ListToolsResult
+	var registeredToolName string
+	require.Eventually(t, func() bool {
+		listToolsResult, err = cs.ListTools(ctx, &mcp.ListToolsParams{})
+		if err != nil {
+			return false
+		}
+		for _, tool := range listToolsResult.Tools {
+			// Look for our jira tool
+			if strings.Contains(tool.Name, "getIssue") {
+				registeredToolName = tool.Name
+				return true
+			}
+		}
+		return false
+	}, integration.TestWaitTimeShort, 100*time.Millisecond, "Expected jira tools to be registered. Got: %v", func() []string {
+		if listToolsResult == nil {
+			return nil
+		}
+		var names []string
+		for _, t := range listToolsResult.Tools {
+			names = append(names, t.Name)
+		}
+		return names
+	}())
+
 	t.Logf("Discovered tool from MCPANY: %s", registeredToolName)
+	for _, tool := range listToolsResult.Tools {
+		if tool.Name == registeredToolName {
+			schema, _ := json.Marshal(tool.InputSchema)
+			t.Logf("Tool Schema: %s", string(schema))
+		}
+	}
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
@@ -57,15 +149,16 @@ func TestUpstreamService_Jira(t *testing.T) {
 	}{
 		{
 			name:            "Get issue by key",
-			issueIdOrKey:    jiraTestIssueKey,
-			expectedSummary: jiraTestIssueSummary,
+			issueIdOrKey:    "TEST-123",
+			expectedSummary: "Mock Issue Summary",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// --- 4. Call Tool ---
-			args := json.RawMessage(`{"issueIdOrKey": "` + tc.issueIdOrKey + `"}`)
+			// We map "issueIdOrKey" from test case to "id" argument for tool
+			args := json.RawMessage(`{"id": "` + tc.issueIdOrKey + `"}`)
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: registeredToolName, Arguments: args})
 			require.NoError(t, err)
 			require.NotNil(t, res)
@@ -79,12 +172,10 @@ func TestUpstreamService_Jira(t *testing.T) {
 			err = json.Unmarshal([]byte(textContent.Text), &jiraIssueResponse)
 			require.NoError(t, err, "Failed to unmarshal JSON response")
 
-			require.Contains(t, jiraIssueResponse, "key", "The response should contain an issue key")
 			require.Equal(t, tc.issueIdOrKey, jiraIssueResponse["key"], "The issue key should match the input")
 
 			fields, ok := jiraIssueResponse["fields"].(map[string]interface{})
 			require.True(t, ok, "The response should contain a fields object")
-			require.Contains(t, fields, "summary", "The fields object should contain a summary")
 			require.Equal(t, tc.expectedSummary, fields["summary"], "The summary should match the expected value")
 		})
 	}

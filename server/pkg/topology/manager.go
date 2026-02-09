@@ -352,14 +352,21 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	}
 
 	for _, p := range points {
-		// Parse time "HH:MM"
+		// Parse time "HH:MM" or "RFC3339"
+		var targetTime time.Time
 		t, err := time.Parse("15:04", p.Time)
-		if err != nil {
-			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
-			continue
+		if err == nil {
+			// Adjust to today
+			targetTime = time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
+		} else {
+			// Try RFC3339
+			t, err = time.Parse(time.RFC3339, p.Time)
+			if err != nil {
+				log.Error("Failed to parse seed time", "time", p.Time, "error", err)
+				continue
+			}
+			targetTime = t.Truncate(time.Minute)
 		}
-		// Adjust to today
-		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
 		m.trafficHistory[targetTime.Unix()] = &MinuteStats{

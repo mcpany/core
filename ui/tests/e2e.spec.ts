@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedServices, seedCollection, seedTraffic, cleanupServices, cleanupCollection, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
@@ -15,6 +15,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
+      await seedCollection("e2e-stack", request);
       await seedTraffic(request);
       await seedUser(request, "e2e-admin");
 
@@ -33,6 +34,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
+      await cleanupCollection("e2e-stack", request);
       await cleanupUser(request, "e2e-admin");
   });
 
@@ -48,11 +50,11 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=process_payment')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible();
+    // Verify real tool from weather service
+    await expect(page.locator('text=get_weather')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
@@ -70,7 +72,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Webhooks page displays configuration', async ({ page }) => {
+  test('Webhooks page displays configuration', async ({ page }) => {
     await page.goto('/settings/webhooks');
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
 
@@ -79,7 +81,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
@@ -92,12 +94,15 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
-    const userService = page.locator('.group', { hasText: 'User Service' });
+    // Use a more specific locator to avoid matching the Network Widget which also contains "User Service"
+    const userService = page.locator('div.group.flex.items-center', { hasText: 'User Service' });
     await expect(userService).toBeVisible();
 
-    // We skip checking error details as it depends on runtime health check timing
+    // Verify real data is present (Latency should not be --)
+    await expect(userService).toContainText('Latency');
+    await expect(userService).not.toContainText('Latency: --');
   });
 
 });

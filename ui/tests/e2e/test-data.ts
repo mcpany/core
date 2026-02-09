@@ -89,7 +89,7 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
+        { time: new Date().toISOString(), requests: 100, errors: 2, latency: 50 }
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
