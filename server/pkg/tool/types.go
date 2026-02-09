@@ -3167,7 +3167,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
-	minLevel := 3
+	// We track all seen levels and resolve conflicts to the strictest applicable level.
 
 	inSingle := false
 	inDouble := false
@@ -3175,6 +3175,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 	escaped := false
 
 	foundAny := false
+	seenLevels := make(map[int]bool)
 
 	for i := 0; i < len(template); i++ {
 		// Check if we match placeholder at current position
@@ -3190,9 +3191,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 				currentLevel = 3
 			}
 
-			if currentLevel < minLevel {
-				minLevel = currentLevel
-			}
+			seenLevels[currentLevel] = true
 
 			// Advance past placeholder
 			i += len(placeholder) - 1
@@ -3231,8 +3230,34 @@ func analyzeQuoteContext(template, placeholder string) int {
 		return 0 // Should not happen if called correctly, fallback to strict
 	}
 
-	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
-	return minLevel
+	// Conflict Resolution Logic
+	// If ANY unquoted usage is found, we must enforce strict checks (Level 0).
+	if seenLevels[0] {
+		return 0
+	}
+	// If BOTH Double (1) and Single (2) quotes are used, they have conflicting escape requirements.
+	// Double allows single quotes, Single allows double quotes.
+	// To be safe, we must enforce strict checks (Level 0) which blocks both.
+	if seenLevels[1] && seenLevels[2] {
+		return 0
+	}
+	// If Backtick (3) is present, we enforce Backtick checks (Level 3).
+	// Backtick checks are very strict (similar to Level 0) for unsafe languages, blocking shell metacharacters.
+	// This ensures we don't accidentally allow metacharacters that are safe in Double/Single quotes
+	// but execute in backticks (e.g. `;`).
+	if seenLevels[3] {
+		return 3
+	}
+	// If Double (1) is present (without Backtick), we enforce Double checks.
+	if seenLevels[1] {
+		return 1
+	}
+	// If Single (2) is present (without Backtick), we enforce Single checks.
+	if seenLevels[2] {
+		return 2
+	}
+
+	return 0
 }
 
 func checkEnvInjection(val string) error {
