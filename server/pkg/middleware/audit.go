@@ -73,7 +73,12 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 		case configv1.AuditConfig_STORAGE_TYPE_DATADOG:
 			store = audit.NewDatadogAuditStore(config.GetDatadog())
 		default:
-			store, err = audit.NewFileAuditStore(config.GetOutputPath())
+			// If UNSPECIFIED or FILE but path is empty, default to Memory
+			if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED && config.GetOutputPath() == "" {
+				store = audit.NewMemoryAuditStore()
+			} else {
+				store, err = audit.NewFileAuditStore(config.GetOutputPath())
+			}
 		}
 
 		if err != nil {
