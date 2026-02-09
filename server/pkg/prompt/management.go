@@ -95,6 +95,9 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // Parameters:
 //   - prompt: Prompt. The prompt to add.
 func (pm *Manager) AddPrompt(prompt Prompt) {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
 		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Overwriting. promptName=%s, newPromptService=%s, existingPromptService=%s",
@@ -103,9 +106,7 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 			existingPrompt.Service(),
 		))
 	}
-	pm.mu.Lock()
 	pm.cachedPrompts = nil
-	pm.mu.Unlock()
 }
 
 // UpdatePrompt updates an existing prompt in the manager.
@@ -115,10 +116,11 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 // Parameters:
 //   - prompt: Prompt. The prompt definition to update.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
-	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.cachedPrompts = nil
-	pm.mu.Unlock()
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
@@ -183,6 +185,9 @@ func (pm *Manager) ListPrompts() []Prompt {
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {
 		if value.Service() == serviceID {
@@ -193,8 +198,6 @@ func (pm *Manager) ClearPromptsForService(serviceID string) {
 	})
 
 	if changed {
-		pm.mu.Lock()
 		pm.cachedPrompts = nil
-		pm.mu.Unlock()
 	}
 }
