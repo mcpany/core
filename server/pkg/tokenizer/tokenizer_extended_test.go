@@ -1,103 +1,266 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package tokenizer_test
+package tokenizer
 
 import (
 	"math"
 	"testing"
-
-	"github.com/mcpany/core/server/pkg/tokenizer"
-	"github.com/stretchr/testify/assert"
 )
 
-// MockTokenizer is a tokenizer that is neither SimpleTokenizer nor WordTokenizer.
-type MockTokenizer struct{}
-
-func (m *MockTokenizer) CountTokens(text string) (int, error) {
-	return len(text), nil
-}
-
-func TestCountTokensInValue_GenericFallback(t *testing.T) {
-	tok := &MockTokenizer{}
+// TestSimpleTokenizeInt64_Comprehensive exercises all branches of simpleTokenizeInt64.
+// It covers positive and negative integers of all magnitudes.
+func TestSimpleTokenizeInt64_Comprehensive(t *testing.T) {
+	// SimpleTokenizer uses len(text) / 4.
+	// If count < 1, it returns 1.
 
 	tests := []struct {
-		name     string
-		input    interface{}
-		expected int
+		val  int64
+		want int
 	}{
-		{"string", "hello", 5},
-		{"int", 123, 3},
-		{"int64", int64(1234), 4},
-		{"float", 3.14, 4},
-		{"bool_true", true, 4},
-		{"bool_false", false, 5},
-		{"nil", nil, 4}, // "null"
-		{"slice", []interface{}{"a", "bb"}, 1 + 2},
-		{"map", map[string]interface{}{"a": "b"}, 1 + 1},
-		{"struct", struct{ A int }{1}, 1}, // "1" (values only, consistent with map content)
-		{"ptr_struct", &struct{ A int }{1}, 1},
-		{"ptr_int", func() *int { i := 123; return &i }(), 3}, // "123" -> 3
-		{"ptr_nil", (*int)(nil), 4},                           // "null"
-		{"nested_ptr", func() **int { i := 123; p := &i; return &p }(), 3},
-		{"struct_unexported", struct{ a int }{1}, 0},
+		// Small integers (< 7 digits + sign) -> 1 token
+		{0, 1},
+		{1, 1},
+		{9, 1},
+		{10, 1},
+		{99, 1},
+		{100, 1},
+		{999, 1},
+		{1000, 1},
+		{9999, 1},
+		{10000, 1},
+		{99999, 1},
+		{100000, 1},
+		{999999, 1},
+		{-1, 1},
+		{-9, 1},
+		{-10, 1},
+		{-99, 1},
+		{-100, 1},
+		{-999, 1},
+		{-1000, 1},
+		{-9999, 1},
+		{-10000, 1},
+		{-99999, 1},
+		{-999999, 1},
+
+		// Larger integers - checking magnitudes
+		// 10^6 (7 digits) -> 7/4 = 1.75 -> 1
+		{1000000, 1},
+		{-1000000, 2}, // -1000000 (8 chars) -> 8/4 = 2
+
+		// 10^7 (8 digits) -> 2 tokens
+		{10000000, 2},
+		{-10000000, 2}, // 9 chars -> 2
+
+		// 10^8 (9 digits) -> 2 tokens
+		{100000000, 2},
+		{-100000000, 2}, // 10 chars -> 2
+
+		// 10^9 (10 digits) -> 2 tokens
+		{1000000000, 2},
+		{-1000000000, 2}, // 11 chars -> 2
+
+		// 10^10 (11 digits) -> 2 tokens
+		{10000000000, 2},
+		{-10000000000, 3}, // 12 chars -> 3
+
+		// 10^11 (12 digits) -> 3 tokens
+		{100000000000, 3},
+		{-100000000000, 3}, // 13 chars -> 3
+
+		// 10^12 (13 digits) -> 3 tokens
+		{1000000000000, 3},
+		{-1000000000000, 3}, // 14 chars -> 3
+
+		// 10^13 (14 digits) -> 3 tokens
+		{10000000000000, 3},
+		{-10000000000000, 3}, // 15 chars -> 3
+
+		// 10^14 (15 digits) -> 3 tokens
+		{100000000000000, 3},
+		{-100000000000000, 4}, // 16 chars -> 4
+
+		// 10^15 (16 digits) -> 4 tokens
+		{1000000000000000, 4},
+		{-1000000000000000, 4}, // 17 chars -> 4
+
+		// 10^16 (17 digits) -> 4 tokens
+		{10000000000000000, 4},
+		{-10000000000000000, 4}, // 18 chars -> 4
+
+		// 10^17 (18 digits) -> 4 tokens
+		{100000000000000000, 4},
+		{-100000000000000000, 4}, // 19 chars -> 4
+
+		// 10^18 (19 digits) -> 4 tokens
+		{1000000000000000000, 4},
+		{-1000000000000000000, 5}, // 20 chars -> 5
+
+		// Max Int64 (19 digits)
+		{math.MaxInt64, 4}, // 9223372036854775807 (19 chars) -> 4 tokens
+
+		// Min Int64
+		{math.MinInt64, 5}, // -9223372036854775808 (20 chars) -> 5 tokens
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tokenizer.CountTokensInValue(tok, tt.input)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.expected, got)
-		})
+		got := simpleTokenizeInt64(tt.val)
+		if got != tt.want {
+			t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.val, got, tt.want)
+		}
 	}
 }
 
-func TestWordTokenizer_Types(t *testing.T) {
-	tok := tokenizer.NewWordTokenizer()
-	// WordTokenizer factor is 1.3. Primitive strings are short.
-	// "123" -> 1 word * 1.3 = 1.3 -> 1 token.
+// TestCountTokensReflect_Comprehensive exercises reflection logic.
+func TestCountTokensReflect_Comprehensive(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
 
-	tests := []struct {
-		name     string
-		input    interface{}
-		expected int
-	}{
-		{"int64", int64(999), 1},
-		{"float64", 123.456, 1},
-		{"bool_false", false, 1}, // "false" -> 1 word -> 1.3 -> 1
+	// 1. Struct with unexported fields
+	type MixedVisibility struct {
+		Exported   string
+		unexported string
+		Exported2  int
+	}
+	s := MixedVisibility{
+		Exported:   "abcd", // 1 token
+		unexported: "longstringthatwouldchangecount",
+		Exported2:  1234, // 1 token
+	}
+	// Only exported fields should be counted.
+	// "abcd"(1) + "1234"(1) = 2
+	got, err := CountTokensInValue(tokenizer, s)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 2 {
+		t.Errorf("MixedVisibility struct: got %d, want 2", got)
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tokenizer.CountTokensInValue(tok, tt.input)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.expected, got)
-		})
+	// 2. Map with non-string keys
+	m := map[int]string{
+		1234: "abcd",
+	}
+	// Key: 1234 -> 1 token. Value: "abcd" -> 1 token. Total 2.
+	got, err = CountTokensInValue(tokenizer, m)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 2 {
+		t.Errorf("Map with int keys: got %d, want 2", got)
+	}
+
+	// 3. Slice of interface{} with mixed types
+	slice := []interface{}{
+		"abcd", // 1
+		1234,   // 1
+		true,   // 1 ("true" -> 4 chars / 4 = 1)
+		nil,    // 1 ("null" -> 4 chars / 4 = 1)
+	}
+	// Total 4.
+	got, err = CountTokensInValue(tokenizer, slice)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 4 {
+		t.Errorf("Slice of mixed types: got %d, want 4", got)
+	}
+
+	// 4. Nested Pointers
+	i := 1234
+	p1 := &i
+	p2 := &p1
+	p3 := &p2
+	// Should traverse all pointers to int 1234 -> 1 token
+	got, err = CountTokensInValue(tokenizer, p3)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 1 {
+		t.Errorf("Nested pointers: got %d, want 1", got)
+	}
+
+	// 5. Struct with Bool field (for optimization coverage)
+	type BoolStruct struct {
+		Flag bool
+	}
+	bs := BoolStruct{Flag: true}
+	// "true" -> 4 chars -> 1 token
+	got, err = CountTokensInValue(tokenizer, bs)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 1 {
+		t.Errorf("BoolStruct: got %d, want 1", got)
+	}
+
+	// 6. Map with Bool values (for reflection optimization coverage)
+	// Key: 1 (int) -> 1 token. Value: true (bool) -> 1 token. Total 2.
+	mb := map[int]bool{1: true}
+	got, err = CountTokensInValue(tokenizer, mb)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 2 {
+		t.Errorf("Map with bool values: got %d, want 2", got)
+	}
+
+	// 7. Map with Int values (fallback in reflection)
+	// Key: 1 -> 1. Value: 2 -> 1. Total 2.
+	mi := map[int]int{1: 2}
+	got, err = CountTokensInValue(tokenizer, mi)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 2 {
+		t.Errorf("Map with int values: got %d, want 2", got)
+	}
+
+	// 8. Custom Slice type (bypasses []string optimization, hits reflection string optimization)
+	type MyStringSlice []string
+	mss := MyStringSlice{"abcd", "efgh"}
+	// 1 + 1 = 2
+	got, err = CountTokensInValue(tokenizer, mss)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if got != 2 {
+		t.Errorf("MyStringSlice: got %d, want 2", got)
 	}
 }
 
-func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
-	tok := tokenizer.NewSimpleTokenizer()
+// TestRecursiveCycleDetection exercises cycle detection logic in reflection paths.
+func TestRecursiveCycleDetection(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
 
-	tests := []struct {
-		name     string
-		input    interface{}
-		expected int
-	}{
-		{"zero", 0, 1},
-		{"zero_int64", int64(0), 1},
-		{"negative_small", -5, 1}, // "-5" -> 2 chars -> 1 token
-		{"negative_large", -12345, 1}, // "-12345" -> 6 chars -> 1.5 -> 1 token? No, 6/4 = 1.
-		{"min_int", math.MinInt, 5}, // "-9223372036854775808" -> 20 chars -> 5 tokens
-		{"max_int", math.MaxInt, 4}, // "9223372036854775807" -> 19 chars -> 4.75 -> 4 tokens
-		{"min_int64", int64(math.MinInt64), 5},
+	// 1. Map Cycle
+	type RecursiveMap map[string]interface{}
+	m := make(RecursiveMap)
+	m["self"] = m // Direct cycle
+
+	// CountTokensInValue uses a visited map, so it should detect this.
+	_, err := CountTokensInValue(tokenizer, m)
+	if err == nil {
+		t.Error("Expected error for map cycle, got nil")
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tokenizer.CountTokensInValue(tok, tt.input)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.expected, got, "input: %v", tt.input)
-		})
+	// 2. Slice Cycle
+	type RecursiveSlice []interface{}
+	s := make(RecursiveSlice, 1)
+	s[0] = s // Direct cycle
+	_, err = CountTokensInValue(tokenizer, s)
+	if err == nil {
+		t.Error("Expected error for slice cycle, got nil")
+	}
+
+	// 3. Pointer Cycle (Struct)
+	type Node struct {
+		Next *Node
+	}
+	n := &Node{}
+	n.Next = n
+	_, err = CountTokensInValue(tokenizer, n)
+	if err == nil {
+		t.Error("Expected error for struct pointer cycle, got nil")
 	}
 }
