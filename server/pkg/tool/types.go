@@ -2942,17 +2942,24 @@ func checkInterpreterFunctionCalls(val string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		// Sentinel Security Update: Add more keywords for Node/Python
+		"execsync", "spawnsync",
+		"process", "global",
+		"getattr", "setattr", "delattr",
 	}
 
 	for _, kw := range dangerousKeywords {
 		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
 		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
 		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
+		// Also check for property access via '.' or '['.
 		if strings.Contains(cleanVal, kw+"(") ||
 			strings.Contains(cleanVal, kw+"'") ||
 			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+			strings.Contains(cleanVal, kw+"`") ||
+			strings.Contains(cleanVal, kw+".") ||
+			strings.Contains(cleanVal, kw+"[") {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous function call or property access %q", kw)
 		}
 	}
 
@@ -2981,6 +2988,11 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 func checkPythonInjection(val, template, base string) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
+		// Sentinel Security Update: Block double underscores to prevent access to magic methods
+		if strings.Contains(val, "__") {
+			return fmt.Errorf("python injection detected: value contains double underscore '__'")
+		}
+
 		// Scan template to find the prefix of the quote containing the placeholder
 		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
 		hasFString := false
