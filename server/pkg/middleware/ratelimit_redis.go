@@ -147,6 +147,13 @@ const RedisRateLimitScript = `
     local tokens = tonumber(fields[1])
     local last_refill = tonumber(fields[2])
 
+    -- Expire key after enough time to refill completely + buffer
+    local ttl = 60
+    if rate > 0 then
+         ttl = math.ceil(burst / rate * 2)
+    end
+    if ttl < 1 then ttl = 1 end
+
     if not tokens then
         tokens = burst
         last_refill = now
@@ -159,13 +166,6 @@ const RedisRateLimitScript = `
         local new_tokens = filled_tokens - cost
         redis.call("HMSET", key, "tokens", new_tokens, "last_refill", now)
 
-        -- Expire key after enough time to refill completely + buffer
-        local ttl = 60
-        if rate > 0 then
-             ttl = math.ceil(burst / rate * 2)
-        end
-        if ttl < 1 then ttl = 1 end
-
         -- Optimization: Only write EXPIRE if necessary to reduce replication traffic.
         -- TTL command returns -1 if no expiry, -2 if missing (should not happen here).
         local current_ttl = redis.call("TTL", key)
@@ -173,6 +173,16 @@ const RedisRateLimitScript = `
              redis.call("EXPIRE", key, ttl)
         end
         return 1
+    end
+
+    -- ⚡ Bolt Fix: Randomized Selection from Top 5 High-Impact Targets
+    -- Even if blocked, ensure the key doesn't expire prematurely.
+    -- If the key exists (fields[1] is not false/nil), we extend TTL if needed.
+    if fields[1] then
+        local current_ttl = redis.call("TTL", key)
+        if current_ttl < (ttl / 2) then
+             redis.call("EXPIRE", key, ttl)
+        end
     end
 
     return 0
