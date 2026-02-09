@@ -25,7 +25,7 @@ export default function MiddlewarePage() {
 
     useEffect(() => {
         async function fetchMiddleware() {
-            const res = await fetch("/api/settings/middleware");
+            const res = await fetch("/api/v1/settings/middleware");
             if (res.ok) {
                 setMiddleware(await res.json());
             }

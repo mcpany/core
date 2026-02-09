@@ -80,6 +80,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/validate", a.handleValidate())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
+	mux.HandleFunc("/settings/middleware", a.handleSettingsMiddleware(store))
+	mux.HandleFunc("/settings/webhooks", a.handleSettingsWebhooks(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
 	mux.HandleFunc("/tools", a.handleTools())
@@ -697,6 +699,73 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
+	}
+}
+
+func (a *Application) handleSettingsMiddleware(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		settings, err := store.GetGlobalSettings(r.Context())
+		if err != nil {
+			logging.GetLogger().Error("failed to get global settings", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if settings == nil {
+			settings = configv1.GlobalSettings_builder{}.Build()
+		}
+		w.Header().Set("Content-Type", "application/json")
+		middlewares := settings.GetMiddlewares()
+		if middlewares == nil {
+			middlewares = []*configv1.Middleware{}
+		}
+		_ = json.NewEncoder(w).Encode(middlewares)
+	}
+}
+
+func (a *Application) handleSettingsWebhooks(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		settings, err := store.GetGlobalSettings(r.Context())
+		if err != nil {
+			logging.GetLogger().Error("failed to get global settings", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if settings == nil {
+			settings = configv1.GlobalSettings_builder{}.Build()
+		}
+
+		type Webhook struct {
+			ID     string   `json:"id"`
+			URL    string   `json:"url"`
+			Events []string `json:"events"`
+		}
+		var webhooks []Webhook = []Webhook{}
+
+		if settings.GetAlerts() != nil && settings.GetAlerts().GetWebhookUrl() != "" {
+			webhooks = append(webhooks, Webhook{
+				ID:     "alert",
+				URL:    settings.GetAlerts().GetWebhookUrl(),
+				Events: []string{"alerts"},
+			})
+		}
+		if settings.GetAudit() != nil && settings.GetAudit().GetWebhookUrl() != "" {
+			webhooks = append(webhooks, Webhook{
+				ID:     "audit",
+				URL:    settings.GetAudit().GetWebhookUrl(),
+				Events: []string{"audit"},
+			})
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(webhooks)
 	}
 }
 

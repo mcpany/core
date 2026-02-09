@@ -28,7 +28,7 @@ export default function WebhooksPage() {
 
     useEffect(() => {
         async function fetchWebhooks() {
-            const res = await fetch("/api/settings/webhooks");
+            const res = await fetch("/api/v1/settings/webhooks");
             if (res.ok) {
                 setWebhooks(await res.json());
             }

@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redismock/v9"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -28,6 +29,17 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
+		// Try miniredis if no explicit address provided
+		mr, err := miniredis.Run()
+		if err == nil {
+			t.Cleanup(mr.Close)
+			client := redis.NewClient(&redis.Options{
+				Addr: mr.Addr(),
+			})
+			t.Cleanup(func() { _ = client.Close() })
+			return client
+		}
+		// Fallback to default localhost
 		redisAddr = "127.0.0.1:6379"
 	}
 	client := redis.NewClient(&redis.Options{
