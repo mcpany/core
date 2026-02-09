@@ -3260,6 +3260,16 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
+	// Check for dangerous schemes globally (even in Docker)
+	if err := checkForDangerousSchemes(val); err != nil {
+		return err
+	}
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForDangerousSchemes(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
 	if !isDocker {
 		if err := checkForLocalFileAccess(val); err != nil {
 			return err
@@ -3280,6 +3290,15 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		if err := checkForArgumentInjection(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
+	}
+	return nil
+}
+
+func checkForDangerousSchemes(val string) error {
+	lowerVal := strings.ToLower(val)
+	// Block "ext::" scheme used by Git for RCE
+	if strings.HasPrefix(lowerVal, "ext::") {
+		return fmt.Errorf("dangerous scheme detected: %s (ext:: protocol is blocked)", val)
 	}
 	return nil
 }
