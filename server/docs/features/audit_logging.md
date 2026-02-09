@@ -92,7 +92,7 @@ global_settings:
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
-**Note on Webhook Performance:** The webhook storage makes a synchronous HTTP call for every audit log entry. To prevent slowing down tool execution, a short timeout (3 seconds) is applied. Ensure your webhook endpoint is performant.
+**Note on Webhook Performance:** The webhook storage uses an asynchronous, buffered mechanism. Log entries are queued and processed by background workers in batches (up to 10 entries or every 1 second) to prevent slowing down tool execution. The buffer can hold up to 1000 entries before dropping new logs, and the HTTP client has a 10-second timeout.
 
 ## Log Format
 

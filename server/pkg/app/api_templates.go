@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -83,15 +82,12 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 // handleTemplateDetail handles retrieving and deleting a specific service template.
 func (a *Application) handleTemplateDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		id := vars["id"]
-		// Fallback if mux vars not set (e.g. unit tests without router)
-		if id == "" {
-			pathParts := strings.Split(r.URL.Path, "/")
-			if len(pathParts) > 0 {
-				id = pathParts[len(pathParts)-1]
-			}
-		}
+		// Use standard library to parse ID from path
+		// Pattern: /templates/{id}
+		id := strings.TrimPrefix(r.URL.Path, "/templates/")
+
+		// Handle trailing slash if present (optional)
+		id = strings.TrimSuffix(id, "/")
 
 		if id == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
