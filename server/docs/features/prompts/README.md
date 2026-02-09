@@ -24,6 +24,13 @@ upstream_services:
       prompts:
         - name: "welcomer"
           description: "Welcomes the user"
+          input_schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "The name of the user"
+            required: ["name"]
           messages:
             - role: "USER"
               text:

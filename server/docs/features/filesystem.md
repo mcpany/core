@@ -54,6 +54,39 @@ upstream_services:
         bucket: "my-gcs-bucket"
 ```
 
+#### 4. SFTP
+
+```yaml
+upstream_services:
+  - name: "sftp-fs"
+    filesystem:
+      sftp:
+        address: "sftp.example.com:22"
+        username: "user"
+        password: "${SFTP_PASSWORD}"
+        key_path: "/path/to/private/key" # Optional
+```
+
+#### 5. ZIP Archive
+
+```yaml
+upstream_services:
+  - name: "zip-fs"
+    filesystem:
+      read_only: true # ZIPs are typically read-only
+      zip:
+        file_path: "/path/to/archive.zip"
+```
+
+#### 6. In-Memory (TmpFS)
+
+```yaml
+upstream_services:
+  - name: "temp-fs"
+    filesystem:
+      tmpfs: {}
+```
+
 ## Tools Exposed
 
 When a filesystem service is configured, it automatically registers the following tools:

@@ -31,3 +31,20 @@ Use the `${secrets.KEY_NAME}` syntax in your `config.yaml` or `config.json` file
 
 **UI Configuration:**
 The UI currently treats manual input as plain text. To use secrets in the UI, ensure they are loaded from the configuration file, or use the "Secrets" management interface to view existing secret references.
+
+## Dynamic Secrets (Vault / AWS)
+
+Integration with external secret managers like HashiCorp Vault or AWS Secrets Manager enables dynamic secret rotation and zero-touch handling.
+
+**Note:** This feature is currently configured via the `config.yaml` file, not the UI.
+
+```yaml
+upstream_services:
+  - name: "my-service"
+    upstream_auth:
+      api_key:
+        value:
+          aws_secret_manager:
+            secret_id: "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret"
+            region: "us-east-1"
+```

@@ -183,6 +183,16 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	page := 1
+	if p := r.URL.Query().Get("page"); p != "" {
+		if val, err := strconv.Atoi(p); err == nil {
+			if val <= 0 {
+				val = 1
+			}
+			page = val
+		}
+	}
+
 	event, err := cloudevents.NewEventFromHTTPRequest(r)
 	if err != nil {
 		http.Error(w, "Failed to parse CloudEvent: "+err.Error(), http.StatusBadRequest)
@@ -206,10 +216,10 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if val, ok := data["inputs"]; ok {
-		newInputs := paginateRecursive(val, 1, pageSize)
+		newInputs := paginateRecursive(val, page, pageSize)
 		respData["replacement_object"] = newInputs
 	} else if val, ok := data["result"]; ok {
-		newResult := paginateRecursive(val, 1, pageSize)
+		newResult := paginateRecursive(val, page, pageSize)
 		respData["replacement_object"] = newResult
 	}
 

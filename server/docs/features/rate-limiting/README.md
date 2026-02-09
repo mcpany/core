@@ -15,6 +15,7 @@ Rate limiting is configured within the `rate_limit` block of an upstream service
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
 | `storage`             | `enum`   | The storage backend to use: `STORAGE_MEMORY` (default) or `STORAGE_REDIS`. |
 | `redis`               | `object` | Redis connection details (required if storage is `STORAGE_REDIS`). |
+| `key_by`              | `enum`   | The key to use for rate limiting bucket: `KEY_BY_GLOBAL` (default), `KEY_BY_IP`, `KEY_BY_USER_ID`, `KEY_BY_API_KEY`. |
 | `tool_limits`         | `map`    | Tool-specific rate limits. Key is the tool name, value is a RateLimitConfig object. |
 
 ### Configuration Snippet

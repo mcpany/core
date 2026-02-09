@@ -17,7 +17,9 @@ Navigate to `/network`. The graph renders automatically using a force-directed l
 ### 2. Inspect Node
 Click on any node (e.g., a Service node) to open the **Details Panel**.
 - **Metrics**: Real-time uptime and active connection count.
-- **Tools**: List of tools exposed by this service.
+- **Metadata**: Detailed information about the node configuration.
+
+> **Note**: Tools exposed by a service are visualized as connected nodes in the graph itself.
 
 ![Node Details](screenshots/node_detail_panel.png)
 
