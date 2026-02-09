@@ -2804,8 +2804,16 @@ func isShellCommand(cmd string) bool {
 		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
+		"gnuplot", "octave", "matlab", "scilab",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
+		// Version control systems that can execute hooks/commands
+		"git", "hg", "svn", "cvs",
+		// Wrappers that execute other commands
+		"nice", "ionice", "nohup", "time", "timeout", "stdbuf", "taskset",
+		"chroot", "nsenter", "unshare", "setsid",
+		"strace", "ltrace", "valgrind",
+		"openssl", "tar", "wget", "curl",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2942,6 +2950,8 @@ func checkInterpreterFunctionCalls(val string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"getattr", "setattr", "compile", "input",
+		"__builtins__", "__class__", "__base__", "__subclasses__",
 	}
 
 	for _, kw := range dangerousKeywords {
@@ -3109,9 +3119,16 @@ func checkUnquotedInjection(val, command string) error {
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 
 	charsToCheck := dangerousChars
+	base := filepath.Base(command)
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
-	if filepath.Base(command) == "env" {
+	if base == "env" {
 		charsToCheck += "="
+	}
+
+	// For VCS and archive tools, spaces are common in file paths and generally safe (as arguments).
+	// We still block other metacharacters to prevent flag injection or shell escapes if they invoke shells.
+	if base == "git" || base == "hg" || base == "svn" || base == "cvs" || base == "tar" {
+		charsToCheck = strings.ReplaceAll(charsToCheck, " ", "")
 	}
 
 	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
