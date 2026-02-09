@@ -368,3 +368,29 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 		})
 	}
 }
+
+func TestAnalyzeQuoteContext_MixedQuotes(t *testing.T) {
+	template := `echo "{{input}}"; echo '{{input}}'`
+	placeholder := "{{input}}"
+
+	// Vulnerability: Previously returned level 1 (Double), allowing single quotes.
+	// Fix: Should return level 0 (Strict) for mixed contexts.
+
+	level := analyzeQuoteContext(template, placeholder)
+
+	if level != 0 {
+		t.Errorf("Expected level 0 (Strict) for mixed quotes, got %d", level)
+	}
+
+	// Payload that exploits the vulnerability if level is 1.
+	val := "'; ls -la; #"
+	command := "bash"
+
+	err := checkForShellInjection(val, template, placeholder, command)
+
+	if err == nil {
+		t.Errorf("VULNERABILITY: checkForShellInjection allowed dangerous payload in mixed quote context. Payload: %s", val)
+	} else {
+		t.Logf("Blocked as expected: %v", err)
+	}
+}

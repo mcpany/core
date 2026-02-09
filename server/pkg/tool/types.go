@@ -3167,7 +3167,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
-	minLevel := 3
 
 	inSingle := false
 	inDouble := false
@@ -3175,6 +3174,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 	escaped := false
 
 	foundAny := false
+	seenLevels := make(map[int]bool)
 
 	for i := 0; i < len(template); i++ {
 		// Check if we match placeholder at current position
@@ -3190,9 +3190,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 				currentLevel = 3
 			}
 
-			if currentLevel < minLevel {
-				minLevel = currentLevel
-			}
+			seenLevels[currentLevel] = true
 
 			// Advance past placeholder
 			i += len(placeholder) - 1
@@ -3231,8 +3229,19 @@ func analyzeQuoteContext(template, placeholder string) int {
 		return 0 // Should not happen if called correctly, fallback to strict
 	}
 
-	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
-	return minLevel
+	// If multiple distinct levels are found, enforce Strict (0) to prevent injection
+	// via context switching (e.g. allowing single quotes because one context is double-quoted,
+	// but the input is also used in a single-quoted context).
+	if len(seenLevels) > 1 {
+		return 0
+	}
+
+	// If only one level found, return it
+	for l := range seenLevels {
+		return l
+	}
+
+	return 0
 }
 
 func checkEnvInjection(val string) error {
