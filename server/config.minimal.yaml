@@ -11,6 +11,12 @@ global_settings:
   db_path: "/tmp/mcpany.db"
   debugger:
     enabled: true
+  audit:
+    enabled: true
+    storage_type: "STORAGE_TYPE_FILE"
+    output_path: "/tmp/audit.log"
+    log_arguments: true
+    log_results: true
   middlewares:
     - name: "auth"
       priority: 1
