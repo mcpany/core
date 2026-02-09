@@ -13,6 +13,7 @@ import { User, Plus, Trash, Edit } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { toast } from "sonner";
 import { ProfileEditor, Profile } from "@/components/profiles/profile-editor";
+import { WizardDialog } from "@/components/profiles/wizard/wizard-dialog";
 
 /**
  * ProfilesPage component.
@@ -118,9 +119,12 @@ export default function ProfilesPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Profiles</h1>
-        <Button onClick={openNew}>
-            <Plus className="mr-2 h-4 w-4" /> Create Profile
-        </Button>
+              <div className="flex gap-2">
+                  <WizardDialog onProfileCreated={fetchProfiles} />
+                  <Button onClick={openNew}>
+                      <Plus className="mr-2 h-4 w-4" /> Create Profile
+                  </Button>
+              </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

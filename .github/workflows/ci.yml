@@ -103,9 +103,10 @@ jobs:
 
 
   unit-test:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     timeout-minutes: 30
-    needs: [build-images]
+    needs: [changes]
+    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -218,7 +219,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -298,6 +299,17 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -310,27 +322,27 @@ jobs:
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Time Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-time-server
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Cowsay Image
         uses: actions/download-artifact@v4
         with:
-          name: image-cowsay
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Everything Image
         uses: actions/download-artifact@v4
         with:
-          name: image-everything
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Images
         run: |
@@ -354,10 +366,20 @@ jobs:
           verbose: true
 
   build-images:
-    name: Build Docker Images
+    name: Build Docker Images (${{ matrix.platform }})
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            slug: amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            slug: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -374,98 +396,102 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Build and Save Images
         run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          
           # Server
-          make -C server build-docker CACHE_TO=type=gha,mode=max,scope=server CACHE_FROM=type=gha,scope=server
+          make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
           docker save -o server.tar mcpany/server:latest
 
           # HTTP Echo
-          make -C server build-http-echo-docker CACHE_TO=type=gha,mode=max,scope=http-echo CACHE_FROM=type=gha,scope=http-echo
+          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
           docker save -o http-echo.tar mcpany/http-echo-server:latest
 
           # Time Server
-          make -C server build-e2e-timeserver-docker CACHE_TO=type=gha,mode=max,scope=time-server CACHE_FROM=type=gha,scope=time-server
+          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
           docker save -o time-server.tar mcpany-e2e-time-server
 
           # Cowsay
-          make -C server build-cowsay-docker CACHE_TO=type=gha,mode=max,scope=cowsay CACHE_FROM=type=gha,scope=cowsay
+          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
 
           # Everything
-          make -C server build-everything-docker CACHE_TO=type=gha,mode=max,scope=everything CACHE_FROM=type=gha,scope=everything
+          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
           docker save -o everything.tar mcpany/everything:latest
 
           # UI
-          make -C server docker-build-ui CACHE_TO=type=gha,mode=max,scope=ui CACHE_FROM=type=gha,scope=ui
+          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
           docker save -o ui.tar mcpany/ui:latest
 
           # Operator
-          make -C server docker-build-operator CACHE_TO=type=gha,mode=max,scope=operator CACHE_FROM=type=gha,scope=operator
+          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
           docker save -o operator.tar mcpany/operator:latest
 
           # UI Test Image
-          make -C ui build-test-docker CACHE_TO=type=gha,mode=max,scope=ui-test CACHE_FROM=type=gha,scope=ui-test
+          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
           docker save -o ui-test-image.tar mcpany-ui-e2e:latest
 
       - name: Upload Server Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-server
+          name: image-server-${{ matrix.slug }}
           path: server.tar
           retention-days: 1
 
       - name: Upload HTTP Echo Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-http-echo
+          name: image-http-echo-${{ matrix.slug }}
           path: http-echo.tar
           retention-days: 1
 
       - name: Upload Time Server Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-time-server
+          name: image-time-server-${{ matrix.slug }}
           path: time-server.tar
           retention-days: 1
 
       - name: Upload Cowsay Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-cowsay
+          name: image-cowsay-${{ matrix.slug }}
           path: cowsay.tar
           retention-days: 1
 
       - name: Upload Everything Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-everything
+          name: image-everything-${{ matrix.slug }}
           path: everything.tar
           retention-days: 1
 
       - name: Upload UI Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-ui
+          name: image-ui-${{ matrix.slug }}
           path: ui.tar
           retention-days: 1
 
       - name: Upload Operator Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-operator
+          name: image-operator-${{ matrix.slug }}
           path: operator.tar
           retention-days: 1
 
       - name: Upload UI Test Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-ui-test
+          name: image-ui-test-${{ matrix.slug }}
           path: ui-test-image.tar
           retention-days: 1
 
   e2e-sequential:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -502,30 +528,47 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Time Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-time-server
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Cowsay Image
         uses: actions/download-artifact@v4
         with:
-          name: image-cowsay
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Everything Image
         uses: actions/download-artifact@v4
         with:
-          name: image-everything
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Images
         run: |
@@ -563,9 +606,10 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     timeout-minutes: 30
-    needs: [build-images]
+    needs: [changes]
+    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -677,10 +721,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Image
         run: |
@@ -692,7 +747,7 @@ jobs:
           ./server/tests/smoke_test.sh mcpany/server:latest
 
   ui-test:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     timeout-minutes: 20
     needs: [build-images]
     strategy:
@@ -713,20 +768,31 @@ jobs:
       #
       - uses: actions/checkout@v5
 
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download UI Test Image
         uses: actions/download-artifact@v4
         with:
-          name: image-ui-test
+          name: image-ui-test-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Images
         run: |
@@ -773,20 +839,31 @@ jobs:
           cluster_name: mcp-e2e
           wait: 120s
 
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Operator Image
         uses: actions/download-artifact@v4
         with:
-          name: image-operator
+          name: image-operator-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
-          name: image-ui
+          name: image-ui-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Images into Kind
         run: |
@@ -814,7 +891,6 @@ jobs:
     runs-on: oci-runner
     needs:
       [
-        lint,
         build-images,
         unit-test,
         e2e-sequential,
@@ -830,6 +906,65 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - name: Install gh CLI
+        run: |
+          install_dependencies() {
+            if ! command -v curl &> /dev/null; then
+              echo "curl not found. Installing..."
+              if command -v apt-get &> /dev/null; then
+                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+              elif command -v apk &> /dev/null; then
+                sudo apk add --no-cache curl ca-certificates
+              elif command -v yum &> /dev/null; then
+                sudo yum install -y curl ca-certificates
+              elif command -v dnf &> /dev/null; then
+                sudo dnf install -y curl ca-certificates
+              else
+                echo "Could not find package manager to install curl. Trying to proceed..."
+              fi
+            fi
+          }
+
+          if ! command -v gh &> /dev/null; then
+            echo "gh not found. Installing..."
+            install_dependencies
+            
+            GH_VERSION="2.65.0"
+            ARCH=$(uname -m)
+            case $ARCH in
+              x86_64) ARCH_STR="amd64" ;;
+              aarch64) ARCH_STR="arm64" ;;
+              *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+            esac
+
+            mkdir -p /tmp/gh-install
+            if command -v curl &> /dev/null; then
+              curl -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+            elif command -v wget &> /dev/null; then
+              wget -qO- https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+            else
+              echo "Neither curl nor wget found. Cannot install gh."
+              exit 1
+            fi
+
+            BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
+            
+            if [ -w /usr/local/bin ]; then
+               cp "$BIN_PATH" /usr/local/bin/
+            elif command -v sudo &> /dev/null; then
+               sudo cp "$BIN_PATH" /usr/local/bin/
+            else
+               mkdir -p "$HOME/.local/bin"
+               cp "$BIN_PATH" "$HOME/.local/bin/"
+               echo "$HOME/.local/bin" >> $GITHUB_PATH
+            fi
+            
+            rm -rf /tmp/gh-install
+            echo "gh installed successfully."
+          else
+            echo "gh is already installed."
+          fi
+
       - name: Auto-Squash
         if: github.event_name == 'pull_request'
         env:

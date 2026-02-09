@@ -31,6 +31,7 @@ type Store struct {
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
+	serviceTemplates   map[string]*configv1.ServiceTemplate
 }
 
 // NewStore creates a new memory store.
@@ -45,6 +46,7 @@ func NewStore() *Store {
 		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
+		serviceTemplates:   make(map[string]*configv1.ServiceTemplate),
 	}
 }
 
