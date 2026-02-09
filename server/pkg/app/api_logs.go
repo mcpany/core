@@ -40,9 +40,26 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			logging.GetLogger().Error("failed to set write deadline", "error", err)
 			return
 		}
+
+		// ⚡ BOLT: Start a read loop to process Pongs and Close frames.
+		// Without this, Pongs pile up in the buffer and the connection may become unhealthy.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if err := conn.SetReadDeadline(time.Now().Add(60 * time.Second)); err != nil {
+			logging.GetLogger().Error("failed to set read deadline", "error", err)
+			return
+		}
 		conn.SetPongHandler(func(string) error {
-			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			return conn.SetReadDeadline(time.Now().Add(60 * time.Second))
 		})
+
+		go func() {
+			for {
+				if _, _, err := conn.NextReader(); err != nil {
+					_ = conn.Close()
+					return
+				}
+			}
+		}()
 
 		// Send history
 		for _, msg := range history {
