@@ -22,6 +22,14 @@ interface AuthStepProps {
     onBack: () => void;
 }
 
+/**
+ * Step component for authenticating selected services.
+ *
+ * @param props - The component props.
+ * @param props.services - The list of services to authenticate.
+ * @param props.onNext - Callback to proceed to the next step.
+ * @param props.onBack - Callback to go back to the previous step.
+ */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
     const [authServices, setAuthServices] = useState<WizardService[]>([...services]);
     const [loadingAuth, setLoadingAuth] = useState<Record<string, boolean>>({});
@@ -61,8 +69,8 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
 
             const res = await apiClient.initiateOAuth(
                 svc.instanceName, 
-                svc.instanceName, // credential_id same as service for 1:1 binding
-                window.location.href // Redirect back here? Or a special callback page?
+                window.location.href, // Redirect back here? Or a special callback page?
+                svc.instanceName // credential_id same as service for 1:1 binding
                 // Actually, backend needs to handle the code.
                 // If we redirect to window.location.href, we need to handle the ?code= param on re-load.
                 // But this dialog will close on reload.

@@ -14,6 +14,13 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * Handles the GET request to retrieve the health status of backend services.
+ *
+ * @param request - The incoming request object.
+ * @returns A NextResponse containing an array of BackendService objects with their health status.
+ *          Returns an empty array if the backend is unreachable.
+ */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');

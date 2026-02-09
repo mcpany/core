@@ -1,6 +1,7 @@
 # MCP Any
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ## 1. Elevator Pitch
 
@@ -19,7 +20,7 @@ MCP Any uses a modular, adapter-based architecture to decouple the MCP protocol 
 
 1.  **Core Server**: A Go-based runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote/DB).
-3.  **Adapters**: specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine & Middleware**: Enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
 
 ```mermaid
@@ -50,7 +51,8 @@ graph TD
 Follow these steps to get up and running immediately.
 
 ### Prerequisites
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
+*   [Go 1.23+](https://go.dev/doc/install) (for building server from source)
+*   [Node.js 18+](https://nodejs.org/) (for building UI)
 *   `make` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
@@ -64,19 +66,20 @@ Follow these steps to get up and running immediately.
 
 2.  **Prepare dependencies:**
     ```bash
+    cd server
     make prepare
     ```
-    This installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
+    This installs necessary tools (protoc, linter, hooks) into `server/build/env/bin`.
 
 3.  **Build the server:**
     ```bash
     make build
     ```
-    This creates the `server` binary in `build/bin/`.
+    This creates the `server` binary in `server/build/bin/`.
 
 4.  **Run with an example configuration:**
     ```bash
-    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ./build/bin/server run --config-path examples/popular_services/wttr.in/config.yaml
     ```
 
 ### Hello World
@@ -100,30 +103,47 @@ The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
 We follow a strict development workflow to ensure quality and maintainability.
 
-### Testing
-Run all unit and integration tests to ensure code correctness.
+### Server Development (Go)
+Navigate to the `server/` directory:
 ```bash
-make test
+cd server
 ```
 
-### Linting
-Ensure code adheres to our style guides (Godoc for Go, JSDoc for TS). We enforce **100% documentation coverage**.
-All exported functions, types, and constants must have a comprehensive docstring (Summary, Parameters, Returns).
+*   **Testing:** Run all unit and integration tests.
+    ```bash
+    make test
+    ```
+*   **Linting:** Ensure code adheres to our style guides (Godoc). We enforce **100% documentation coverage**.
+    ```bash
+    make lint
+    ```
+*   **Building:** Compile the server binary.
+    ```bash
+    make build
+    ```
+*   **Code Generation:** Regenerate Protocol Buffers if you modify `.proto` files.
+    ```bash
+    make gen
+    ```
+
+### UI Development (Next.js)
+Navigate to the `ui/` directory:
 ```bash
-make lint
+cd ui
 ```
 
-### Building
-Compile the server binary and UI assets.
-```bash
-make build
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
-```
+*   **Setup:** Install dependencies.
+    ```bash
+    npm install
+    ```
+*   **Development Server:** Start the local development server.
+    ```bash
+    npm run dev
+    ```
+*   **Linting:** Check for style issues.
+    ```bash
+    npm run lint
+    ```
 
 ## 5. Configuration
 

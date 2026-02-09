@@ -3,17 +3,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-
+/**
+ * Configuration for a marketplace item, defining how to install and run it.
+ */
 export interface MarketplaceItemConfig {
+  /** The command to execute (e.g. "npx", "docker"). */
   command: string;
+  /** Arguments to pass to the command. */
   args: string[];
+  /** Environment variable definitions required by the item. */
   envVars: EnvVarDefinition[];
 }
 
 /**
- * EnvVarDefinition type definition.
+ * Defines a required environment variable for a marketplace item.
  */
 export interface EnvVarDefinition {
   name: string;

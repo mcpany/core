@@ -25,9 +25,14 @@ interface DebugEntry {
 }
 
 /**
- * GET.
+ * Handles the GET request to retrieve debug traces from the backend.
  *
- * @param request - The request.
+ * It fetches debug entries, groups them by trace ID, constructs the span hierarchy,
+ * and returns a list of formatted Trace objects.
+ *
+ * @param request - The incoming request object.
+ * @returns A NextResponse containing an array of Trace objects sorted by timestamp (descending).
+ *          Returns an empty array if the backend is unreachable or returns invalid data.
  */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';

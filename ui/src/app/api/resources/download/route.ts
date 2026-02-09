@@ -5,6 +5,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Handles the GET request to download a specific resource.
+ *
+ * @param request - The incoming Next.js request object containing query parameters (uri, name, token).
+ * @returns A NextResponse containing the resource content as a downloadable file, or a JSON error response.
+ * @throws 400 If 'uri' or 'name' parameters are missing.
+ * @throws 404 If the resource content is not found in the backend response.
+ * @throws 500 If an internal server error occurs during the fetch operation.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');

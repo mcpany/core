@@ -20,6 +20,14 @@ interface ServiceConfigStepProps {
     onBack: () => void;
 }
 
+/**
+ * Step component for configuring service details (names, specific settings).
+ *
+ * @param props - The component props.
+ * @param props.services - The services to configure.
+ * @param props.onNext - Callback to proceed.
+ * @param props.onBack - Callback to go back.
+ */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(

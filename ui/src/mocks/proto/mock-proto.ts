@@ -5,20 +5,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Mock implementation of GrpcWebImpl for testing purposes.
+ */
 export class GrpcWebImpl {
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * Mock implementation of the RegistrationServiceClient.
  */
 export class RegistrationServiceClientImpl {
     constructor(_rpc: any) {}
+    /**
+     * Mocks the GetService RPC call.
+     * @param _request The request object.
+     * @param _metadata Optional metadata.
+     * @returns A promise resolving to an empty object.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
 /**
- * UpstreamServiceConfig type definition.
+ * Mock configuration for an upstream service.
  */
 export interface UpstreamServiceConfig {
     id?: string;

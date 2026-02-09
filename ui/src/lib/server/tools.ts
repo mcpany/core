@@ -3,15 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Interface definition for a server-side tool.
+ */
 export interface Tool {
+  /** The unique name of the tool. */
   name: string;
+  /** A description of what the tool does. */
   description: string;
+  /** The JSON schema defining the tool's input arguments. */
   schema: Record<string, any>;
+  /** The execution function for the tool. */
   execute: (args: any) => Promise<any>;
 }
 
 /**
- * The BuiltInTools const.
+ * A registry of built-in tools available on the server.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
