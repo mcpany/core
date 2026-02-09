@@ -2212,15 +2212,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2750,10 +2742,22 @@ func checkForLocalFileAccess(val string) error {
 	if filepath.IsAbs(val) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
-	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
-	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
+	return nil
+}
+
+func checkForDangerousSchemes(val string) error {
+	lowerVal := strings.ToLower(val)
+	// Block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
+	if strings.HasPrefix(lowerVal, "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+	}
+	// Block "ext::" scheme to prevent Git RCE
+	if strings.HasPrefix(lowerVal, "ext::") {
+		return fmt.Errorf("ext:: scheme detected: %s (potential command injection)", val)
+	}
+	// Block other dangerous schemes
+	if strings.HasPrefix(lowerVal, "gopher:") || strings.HasPrefix(lowerVal, "php:") {
+		return fmt.Errorf("dangerous scheme detected: %s", val)
 	}
 	return nil
 }
@@ -3250,11 +3254,18 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
+	if err := checkForDangerousSchemes(val); err != nil {
+		return err
+	}
+
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
 	// Also check decoded value just in case the input was already encoded
 	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForDangerousSchemes(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
 		if err := checkForPathTraversal(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}

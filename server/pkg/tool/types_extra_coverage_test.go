@@ -45,10 +45,22 @@ func TestContextHelpers_Extra(t *testing.T) {
 
 func TestCheckForLocalFileAccess(t *testing.T) {
 	assert.Error(t, checkForLocalFileAccess("/absolute"))
-	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("file:foo"))
+	// File scheme is now handled by checkForDangerousSchemes
+	assert.NoError(t, checkForLocalFileAccess("file:///etc/passwd"))
 	assert.NoError(t, checkForLocalFileAccess("relative"))
+}
+
+func TestCheckForDangerousSchemes(t *testing.T) {
+	assert.Error(t, checkForDangerousSchemes("file:///etc/passwd"))
+	assert.Error(t, checkForDangerousSchemes("FILE:///etc/passwd"))
+	assert.Error(t, checkForDangerousSchemes("file:foo"))
+	assert.Error(t, checkForDangerousSchemes("ext::sh -c echo pwned"))
+	assert.Error(t, checkForDangerousSchemes("EXT::sh -c echo pwned"))
+	assert.Error(t, checkForDangerousSchemes("gopher://localhost"))
+	assert.Error(t, checkForDangerousSchemes("php://filter"))
+	assert.NoError(t, checkForDangerousSchemes("http://example.com"))
+	assert.NoError(t, checkForDangerousSchemes("https://example.com"))
+	assert.NoError(t, checkForDangerousSchemes("relative/path"))
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {
