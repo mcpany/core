@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -127,6 +127,21 @@ export function StackEditor({ stackId }: StackEditorProps) {
         } catch (error) {
             console.error(error);
             toast.error("Failed to save configuration");
+            throw error; // Re-throw for deploy
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeploy = async () => {
+        try {
+            await handleSave();
+            setIsSaving(true);
+            await apiClient.applyCollection(stackId);
+            toast.success("Stack deployed successfully!");
+        } catch (error) {
+            console.error("Deploy failed", error);
+            toast.error("Failed to deploy stack");
         } finally {
             setIsSaving(false);
         }
@@ -201,9 +216,13 @@ export function StackEditor({ stackId }: StackEditorProps) {
                      <Button variant="ghost" size="sm" onClick={handleDownload} title="Download Config">
                         <Download className="h-3 w-3 mr-1" /> Export
                     </Button>
-                    <Button size="sm" onClick={handleSave} disabled={isSaving || !isValid || isLoading}>
+                    <Button size="sm" onClick={handleSave} disabled={isSaving || !isValid || isLoading} variant="outline">
                         {isSaving ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
-                        Save Changes
+                        Save
+                    </Button>
+                    <Button size="sm" onClick={handleDeploy} disabled={isSaving || !isValid || isLoading}>
+                        <Rocket className="h-3 w-3 mr-1" />
+                        Deploy
                     </Button>
                 </div>
             </CardHeader>
