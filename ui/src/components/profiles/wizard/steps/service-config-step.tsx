@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { apiClient } from "@/lib/client";
 
 interface ServiceConfigStepProps {
     services: WizardService[];
@@ -20,6 +19,11 @@ interface ServiceConfigStepProps {
     onBack: () => void;
 }
 
+/**
+ * ServiceConfigStep allows configuring service details like instance name.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(
@@ -28,7 +32,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
             instanceName: s.instanceName || s.config.name + "-" + Math.random().toString(36).substring(7)
         }))
     );
-    const [checkStatus, setCheckStatus] = useState<Record<string, 'checking' | 'ok' | 'fail'>>({});
+    // const [checkStatus, setCheckStatus] = useState<Record<string, 'checking' | 'ok' | 'fail'>>({});
 
     const updateName = (idx: number, name: string) => {
         const next = [...configs];
@@ -36,7 +40,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
         next[idx].config.name = name; // Update inner config name too
         setConfigs(next);
         // Reset status check
-        setCheckStatus(prev => ({ ...prev, [idx]: undefined }));
+        // setCheckStatus(prev => ({ ...prev, [idx]: undefined }));
     };
 
     const handleNext = async () => {
@@ -64,7 +68,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
                         <CardContent className="py-3">
                             <div className="grid gap-2">
                                 <Label>Service Instance Name</Label>
-                                <Input 
+                                <Input
                                     value={svc.instanceName}
                                     onChange={(e) => updateName(idx, e.target.value)}
                                     placeholder="e.g. my-google-calendar"
