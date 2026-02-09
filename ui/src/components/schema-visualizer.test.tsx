@@ -105,4 +105,55 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('items')).toBeInTheDocument();
         expect(screen.getByText('A tag')).toBeInTheDocument();
     });
+
+    it('renders deeply nested objects collapsed by default', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                level0: {
+                    type: 'object',
+                    properties: {
+                        level1: {
+                            type: 'object',
+                            properties: {
+                                level2: { type: 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        // Level 0 should be visible
+        expect(screen.getByText('level0')).toBeInTheDocument();
+
+        // Level 1 should be visible (as child of expanded level 0)
+        expect(screen.getByText('level1')).toBeInTheDocument();
+
+        // Level 2 should NOT be visible initially (child of collapsed level 1)
+        expect(screen.queryByText('level2')).not.toBeInTheDocument();
+
+        // Find the expand button for level 1
+        // Since level 1 is rendered, it has a row. The expand button is in the first cell.
+        // We can find the row by text 'level1' and then find the button within it.
+        // Or simpler: getAllByRole('button') and click the one corresponding to level 1.
+        // Since level 0 is expanded, it has a ChevronDown. Level 1 is collapsed, it has a ChevronRight.
+        // But testing-library by role is better.
+        // Let's rely on the fact that only level 1 has a ChevronRight initially (level 0 has ChevronDown).
+        // But how do we distinguish? We can check for the button associated with 'level1'.
+
+        // Alternative: Click the button inside the row containing 'level1'.
+        const level1Row = screen.getByText('level1').closest('tr');
+        const expandButton = level1Row?.querySelector('button');
+        expect(expandButton).toBeInTheDocument();
+
+        if (expandButton) {
+            fireEvent.click(expandButton);
+        }
+
+        // Now Level 2 should be visible
+        expect(screen.getByText('level2')).toBeInTheDocument();
+    });
 });
