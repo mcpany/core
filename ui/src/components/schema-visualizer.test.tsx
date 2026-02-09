@@ -105,4 +105,50 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('items')).toBeInTheDocument();
         expect(screen.getByText('A tag')).toBeInTheDocument();
     });
+
+    it('collapses deep nested objects by default', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                parent: {
+                    type: 'object',
+                    properties: {
+                         child: {
+                             type: 'object',
+                             properties: {
+                                 grandchild: { type: 'string' }
+                             }
+                         }
+                    }
+                }
+            }
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        // Parent (level 0) should be visible and expanded by default (level < 1)
+        expect(screen.getByText('parent')).toBeInTheDocument();
+
+        // Child (level 1) should be visible because parent (level 0) is expanded
+        expect(screen.getByText('child')).toBeInTheDocument();
+
+        // Grandchild (level 2) should NOT be visible because child (level 1) is collapsed by default (1 is not < 1)
+        expect(screen.queryByText('grandchild')).not.toBeInTheDocument();
+
+        // Expand "child"
+        const childText = screen.getByText('child');
+        // The button is in the same cell.
+        // We can find the button relative to the text.
+        // The structure: <div> <button>...</button> <span>child</span> </div>
+        const cellDiv = childText.closest('div');
+        const expandButton = cellDiv?.querySelector('button');
+
+        if (!expandButton) {
+            throw new Error('Expand button not found');
+        }
+        fireEvent.click(expandButton);
+
+        // Now grandchild should be visible
+        expect(screen.getByText('grandchild')).toBeInTheDocument();
+    });
 });
