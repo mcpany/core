@@ -953,7 +953,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list profiles');
         const data = await res.json();
         return data.profiles || [];
-    }
+    },
 
 
 
@@ -1320,6 +1320,19 @@ export const apiClient = {
              // For now just error.
              throw new Error('Failed to save collection');
         }
+        return res.json();
+    },
+
+    /**
+     * Applies a service collection (stack), registering all services defined in it.
+     * @param name The name of the collection to apply.
+     * @returns A promise that resolves when the collection is applied.
+     */
+    applyCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}/apply`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to apply collection');
         return res.json();
     },
 

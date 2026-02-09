@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -127,6 +127,29 @@ export function StackEditor({ stackId }: StackEditorProps) {
         } catch (error) {
             console.error(error);
             toast.error("Failed to save configuration");
+            throw error; // Rethrow to allow caller to handle
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleApply = async () => {
+        if (!isValid) {
+            toast.error("Cannot deploy invalid configuration");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            // First save (as before)
+            await handleSave();
+
+            // Then apply
+            await apiClient.applyCollection(stackId);
+            toast.success("Stack deployed successfully!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to deploy stack");
         } finally {
             setIsSaving(false);
         }
@@ -201,9 +224,13 @@ export function StackEditor({ stackId }: StackEditorProps) {
                      <Button variant="ghost" size="sm" onClick={handleDownload} title="Download Config">
                         <Download className="h-3 w-3 mr-1" /> Export
                     </Button>
-                    <Button size="sm" onClick={handleSave} disabled={isSaving || !isValid || isLoading}>
+                    <Button size="sm" variant="outline" onClick={handleSave} disabled={isSaving || !isValid || isLoading}>
                         {isSaving ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
-                        Save Changes
+                        Save
+                    </Button>
+                    <Button size="sm" onClick={handleApply} disabled={isSaving || !isValid || isLoading} className="bg-green-600 hover:bg-green-700 text-white border-green-700">
+                        {isSaving ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <PlayCircle className="h-3 w-3 mr-1" />}
+                        Deploy
                     </Button>
                 </div>
             </CardHeader>
