@@ -17,6 +17,17 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+const (
+	// Time allowed to write a message to the peer.
+	writeWait = 10 * time.Second
+
+	// Time allowed to read the next pong message from the peer.
+	pongWait = 60 * time.Second
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	pingPeriod = (pongWait * 9) / 10
+)
+
 // handleLogsWS handles WebSocket connections for log streaming.
 func (a *Application) handleLogsWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +38,8 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		}
 		defer func() {
 			if err := conn.Close(); err != nil {
-				logging.GetLogger().Error("failed to close websocket connection", "error", err)
+				// Ignore close errors as connection might already be closed
+				logging.GetLogger().Debug("websocket connection closed", "error", err)
 			}
 		}()
 
@@ -35,18 +47,35 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		logCh, history := logging.GlobalBroadcaster.SubscribeWithHistory()
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
-		// Set write deadline
-		if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-			logging.GetLogger().Error("failed to set write deadline", "error", err)
+		// ⚡ BOLT: Start a read loop to process Pongs and Close frames.
+		// Without this, Pongs pile up in the buffer and the connection may become unhealthy.
+		// Randomized Selection from Top 5 High-Impact Targets
+		conn.SetReadLimit(512) // Limit incoming control/text frame size
+		if err := conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
 			return
 		}
 		conn.SetPongHandler(func(string) error {
-			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			return conn.SetReadDeadline(time.Now().Add(pongWait))
 		})
+
+		go func() {
+			for {
+				if _, _, err := conn.NextReader(); err != nil {
+					conn.Close()
+					break
+				}
+			}
+		}()
+
+		// Set initial write deadline
+		if err := conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+			logging.GetLogger().Error("failed to set write deadline", "error", err)
+			return
+		}
 
 		// Send history
 		for _, msg := range history {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+			if err := conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 				logging.GetLogger().Error("failed to set write deadline", "error", err)
 				return
 			}
@@ -57,24 +86,34 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		}
 
 		// Send ping periodically
-		go func() {
-			ticker := time.NewTicker(5 * time.Second)
-			defer ticker.Stop()
-			for range ticker.C {
-				if err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
+		ticker := time.NewTicker(pingPeriod)
+		defer ticker.Stop()
+
+		// Loop for writing messages and pings
+		for {
+			select {
+			case msg, ok := <-logCh:
+				if !ok {
+					// Channel closed (application shutdown?)
+					conn.WriteMessage(websocket.CloseMessage, []byte{})
 					return
 				}
-			}
-		}()
 
-		for msg := range logCh {
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-				logging.GetLogger().Error("failed to write log message to websocket", "error", err)
-				return
-			}
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				return
+				if err := conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+					return
+				}
+				if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+					logging.GetLogger().Error("failed to write log message to websocket", "error", err)
+					return
+				}
+
+			case <-ticker.C:
+				if err := conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+					return
+				}
+				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					return
+				}
 			}
 		}
 	}
