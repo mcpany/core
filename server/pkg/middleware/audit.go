@@ -139,6 +139,16 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	return nil
 }
 
+// Write allows writing a custom audit entry (e.g. for seeding/testing).
+func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.store == nil {
+		return fmt.Errorf("audit store not initialized")
+	}
+	return m.store.Write(ctx, entry)
+}
+
 // Execute intercepts tool execution to log audit events.
 //
 // ctx is the context for the request.

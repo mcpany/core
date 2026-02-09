@@ -953,10 +953,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list profiles');
         const data = await res.json();
         return data.profiles || [];
-    }
-
-
-
+    },
 
     // Secrets
 
@@ -1754,6 +1751,20 @@ export const apiClient = {
 
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
+        return res.json();
+    },
+
+    /**
+     * Seeds the audit logs with fake data (Debug/Test only).
+     * @param count The number of logs to seed.
+     */
+    seedAuditLogs: async (count: number) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ count })
+        });
+        if (!res.ok) throw new Error('Failed to seed audit logs');
         return res.json();
     }
 };
