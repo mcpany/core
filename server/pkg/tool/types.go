@@ -2037,7 +2037,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			// Redact secrets from stderr before returning it in the error message
+			redactedStderr := util.RedactSecrets(stderrBuf.String(), secrets)
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactedStderr)
 		}
 		return result, nil
 	}
@@ -2376,7 +2378,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			// Redact secrets from stderr before returning it in the error message
+			redactedStderr := util.RedactSecrets(stderrBuf.String(), secrets)
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactedStderr)
 		}
 		return result, nil
 	}

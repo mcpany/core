@@ -95,3 +95,52 @@ func TestCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 
 	assert.NotContains(t, stdout, secretValue, "Host environment variable should NOT be leaked via CommandTool")
 }
+
+func TestLocalCommandTool_LeaksSecretsInJSONError(t *testing.T) {
+	// Define a secret environment variable for the service
+	secretKey := "SERVICE_SECRET"
+	secretValue := "SuperSecretValueJSON"
+
+	toolProto := v1.Tool_builder{
+		Name: proto.String("test-json-leak"),
+	}.Build()
+
+	// Use sh to print not JSON to stdout and secret to stderr
+	cmd := "sh"
+	// We echo the secret value directly into stderr.
+	args := []string{"-c", "echo 'Not JSON'; echo \"Secret is $" + secretKey + "\" >&2"}
+
+	service := configv1.CommandLineUpstreamService_builder{
+		Command:               proto.String(cmd),
+		Local:                 proto.Bool(true),
+		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
+		Env:                   map[string]*configv1.SecretValue{
+			secretKey: configv1.SecretValue_builder{PlainText: proto.String(secretValue)}.Build(),
+		},
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: args,
+	}.Build()
+
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id-json")
+
+	req := &ExecutionRequest{
+		ToolName:  "test-json-leak",
+		Arguments: map[string]interface{}{},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	// Execute
+	_, err := localTool.Execute(context.Background(), req)
+
+	// We expect an error because stdout is "Not JSON"
+	assert.Error(t, err)
+
+	// The error message should contain stderr.
+	// The secret should be REDACTED.
+	if err != nil {
+		assert.NotContains(t, err.Error(), secretValue, "Error message leaked the secret!")
+		assert.Contains(t, err.Error(), "[REDACTED]", "Error message should contain redaction placeholder")
+	}
+}
