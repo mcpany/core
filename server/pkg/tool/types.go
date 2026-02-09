@@ -2853,76 +2853,85 @@ func isVersionSuffix(s string) bool {
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
-	quoteLevel := analyzeQuoteContext(template, placeholder)
+	quoteLevels := analyzeQuoteContexts(template, placeholder)
 
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
-	if isWindowsCmd && quoteLevel == 2 {
-		quoteLevel = 0
-	}
 
-	// Sentinel Security Update: Interpreter Injection Protection
-	if isInterpreter(command) {
-		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
-			return err
+	for _, quoteLevel := range quoteLevels {
+		if isWindowsCmd && quoteLevel == 2 {
+			quoteLevel = 0
 		}
-		// Sentinel Security Update: Interpreter Strict Mode
-		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val); err != nil {
+
+		// Sentinel Security Update: Interpreter Injection Protection
+		if isInterpreter(command) {
+			if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 				return err
 			}
-		}
-	}
-
-	if quoteLevel == 3 { // Backticked
-		return checkBacktickInjection(val, command)
-	}
-
-	if quoteLevel == 2 { // Single Quoted
-		if strings.Contains(val, "'") {
-			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
-		}
-
-		// Block backticks (used by Perl, Ruby, PHP for execution)
-		if strings.Contains(val, "`") {
-			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
-		}
-
-		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
-		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
-		// We normalize by removing whitespace to detect "system (" or "system\t(".
-		var b strings.Builder
-		b.Grow(len(val))
-		for _, r := range val {
-			if !unicode.IsSpace(r) {
-				b.WriteRune(r)
-			}
-		}
-		cleanVal := strings.ToLower(b.String())
-
-		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
-		for _, call := range dangerousCalls {
-			if strings.Contains(cleanVal, call) {
-				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
+			// Sentinel Security Update: Interpreter Strict Mode
+			// Block dangerous function calls and keywords commonly used for RCE
+			// in both single and double-quoted strings (which might be evaluated).
+			if quoteLevel == 1 || quoteLevel == 2 {
+				if err := checkInterpreterFunctionCalls(val); err != nil {
+					return err
+				}
 			}
 		}
 
-		return nil
-	}
-
-	if quoteLevel == 1 { // Double Quoted
-		// In double quotes, dangerous characters are double quote, $, and backtick
-		// We also need to block backslash because it can be used to escape the closing quote
-		// % is also dangerous in Windows CMD inside double quotes
-		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
-			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
+		if quoteLevel == 3 { // Backticked
+			if err := checkBacktickInjection(val, command); err != nil {
+				return err
+			}
+			continue
 		}
-		return nil
-	}
 
-	return checkUnquotedInjection(val, command)
+		if quoteLevel == 2 { // Single Quoted
+			if strings.Contains(val, "'") {
+				return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+			}
+
+			// Block backticks (used by Perl, Ruby, PHP for execution)
+			if strings.Contains(val, "`") {
+				return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
+			}
+
+			// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
+			// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
+			// We normalize by removing whitespace to detect "system (" or "system\t(".
+			var b strings.Builder
+			b.Grow(len(val))
+			for _, r := range val {
+				if !unicode.IsSpace(r) {
+					b.WriteRune(r)
+				}
+			}
+			cleanVal := strings.ToLower(b.String())
+
+			dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+			for _, call := range dangerousCalls {
+				if strings.Contains(cleanVal, call) {
+					return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
+				}
+			}
+
+			continue
+		}
+
+		if quoteLevel == 1 { // Double Quoted
+			// In double quotes, dangerous characters are double quote, $, and backtick
+			// We also need to block backslash because it can be used to escape the closing quote
+			// % is also dangerous in Windows CMD inside double quotes
+			if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
+			}
+			continue
+		}
+
+		if err := checkUnquotedInjection(val, command); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func checkInterpreterFunctionCalls(val string) error {
@@ -3161,13 +3170,13 @@ func getPrefix(s string, idx int) string {
 	return s[start+1 : idx]
 }
 
-func analyzeQuoteContext(template, placeholder string) int {
+func analyzeQuoteContexts(template, placeholder string) []int {
 	if template == "" || placeholder == "" {
-		return 0
+		return []int{0}
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
-	minLevel := 3
+	seenLevels := make(map[int]bool)
 
 	inSingle := false
 	inDouble := false
@@ -3190,9 +3199,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 				currentLevel = 3
 			}
 
-			if currentLevel < minLevel {
-				minLevel = currentLevel
-			}
+			seenLevels[currentLevel] = true
 
 			// Advance past placeholder
 			i += len(placeholder) - 1
@@ -3228,11 +3235,16 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	if !foundAny {
-		return 0 // Should not happen if called correctly, fallback to strict
+		return []int{0} // Should not happen if called correctly, fallback to strict
 	}
 
-	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
-	return minLevel
+	levels := make([]int, 0, len(seenLevels))
+	for l := range seenLevels {
+		levels = append(levels, l)
+	}
+
+	// logging.GetLogger().Info("analyzeQuoteContexts", "template", template, "placeholder", placeholder, "levels", levels)
+	return levels
 }
 
 func checkEnvInjection(val string) error {

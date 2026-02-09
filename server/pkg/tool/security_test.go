@@ -368,3 +368,51 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 		})
 	}
 }
+
+func TestAnalyzeQuoteContext_MixedQuotes(t *testing.T) {
+	template := `echo "{{input}}"; echo '{{input}}'`
+	placeholder := "{{input}}"
+
+	// Expected behavior: The system should detect that the input is used in BOTH double and single quotes.
+	// New behavior: It returns all unique levels found (Double=1, Single=2).
+
+	levels := analyzeQuoteContexts(template, placeholder)
+
+	hasLevel1 := false
+	hasLevel2 := false
+
+	for _, l := range levels {
+		if l == 1 { hasLevel1 = true }
+		if l == 2 { hasLevel2 = true }
+	}
+
+	if !hasLevel1 || !hasLevel2 {
+		t.Logf("Expected levels 1 and 2, got %v", levels)
+	}
+
+	// Now let's see if checkForShellInjection allows single quotes when level is 1.
+
+	val := "'; ls -la; #"
+	command := "bash"
+
+	err := checkForShellInjection(val, template, placeholder, command)
+
+	if err == nil {
+		t.Errorf("VULNERABILITY: checkForShellInjection allowed single quote payload in mixed quote context. Payload: %s", val)
+	} else {
+		t.Logf("Blocked as expected: %v", err)
+	}
+}
+
+func TestAnalyzeQuoteContext_SpaceInjection(t *testing.T) {
+	// Verify that we can still use spaces if both contexts allow it.
+	template := `echo "{{input}}"; echo '{{input}}'`
+	placeholder := "{{input}}"
+	val := "hello world"
+	command := "bash"
+
+	err := checkForShellInjection(val, template, placeholder, command)
+	if err != nil {
+		t.Errorf("False Positive: 'hello world' should be allowed in mixed double/single quotes, but was blocked: %v", err)
+	}
+}
