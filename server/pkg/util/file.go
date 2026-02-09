@@ -101,7 +101,11 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		copy(chunkCopy, readBuf)
 		chunks = append(chunks, chunkCopy)
 
-		if newlineCount >= n {
+		// We need to read more than N newlines to ensure we have the start of the Nth line from the end.
+		// If the file ends with a newline, we have N+1 newlines to capture N full lines.
+		// If the file does not end with a newline, N newlines are sufficient.
+		// To be safe, we read until we see > N newlines or hit BOF.
+		if newlineCount > n {
 			break
 		}
 	}
@@ -114,19 +118,27 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 	// Join chunks efficiently
 	collected := bytes.Join(chunks, nil)
 
-	// Now process 'collected'
-	scanner := bufio.NewScanner(bytes.NewReader(collected))
-	var allLines [][]byte
-	for scanner.Scan() {
-		// Copy bytes because scanner reuses buffer
-		b := scanner.Bytes()
-		tmp := make([]byte, len(b))
-		copy(tmp, b)
-		allLines = append(allLines, tmp)
+	// Process lines manually to avoid bufio.Scanner token limit (64KB).
+	// bytes.Split handles arbitrarily long lines.
+	splitLines := bytes.Split(collected, []byte{'\n'})
+
+	// If the file ends with a newline, bytes.Split produces an empty string at the end.
+	// We should ignore it to match standard line reading behavior.
+	if len(splitLines) > 0 && len(splitLines[len(splitLines)-1]) == 0 {
+		splitLines = splitLines[:len(splitLines)-1]
 	}
 
-	if len(allLines) > n {
-		return allLines[len(allLines)-n:], nil
+	// Take the last N lines
+	if len(splitLines) > n {
+		splitLines = splitLines[len(splitLines)-n:]
 	}
-	return allLines, nil
+
+	// Handle Windows CRLF: trim \r from the end of each line if present
+	for i := range splitLines {
+		if len(splitLines[i]) > 0 && splitLines[i][len(splitLines[i])-1] == '\r' {
+			splitLines[i] = splitLines[i][:len(splitLines[i])-1]
+		}
+	}
+
+	return splitLines, nil
 }
