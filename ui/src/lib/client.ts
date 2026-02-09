@@ -953,7 +953,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list profiles');
         const data = await res.json();
         return data.profiles || [];
-    }
+    },
 
 
 
@@ -1292,6 +1292,21 @@ export const apiClient = {
     getCollection: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/collections/${name}`);
         if (!res.ok) throw new Error('Failed to get collection');
+        return res.json();
+    },
+
+    /**
+     * Creates a new service collection (stack).
+     * @param collection The collection to create.
+     * @returns A promise that resolves when the collection is created.
+     */
+    createCollection: async (collection: any) => {
+        const res = await fetchWithAuth('/api/v1/collections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) throw new Error('Failed to create collection');
         return res.json();
     },
 
