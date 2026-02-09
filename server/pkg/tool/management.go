@@ -24,11 +24,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MCPServerProvider defines an interface for components that can provide an
-// instance of an *mcp.Server.
+// MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
 //
-// This interface is used to decouple the Manager from the concrete server implementation,
-// avoiding circular dependencies.
+// Summary: Interface for providing an MCP server instance to avoid circular dependencies.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
@@ -39,20 +37,23 @@ type MCPServerProvider interface {
 
 // ManagerInterface defines the contract for a tool manager.
 //
-// It outlines the methods required for managing the lifecycle, registration, discovery,
-// and execution of tools within the MCP Any server.
+// Summary: Interface for managing the lifecycle, registration, and execution of tools.
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
 	//
+// Summary: Registers a new tool with the manager, performing validation and integrity checks.
+//
 	// Parameters:
-	//   - tool: Tool. The tool definition to register.
+//   - tool: Tool. The tool instance to be added.
 	//
 	// Returns:
-	//   - error: An error if the tool cannot be registered (e.g., duplicate name).
+//   - error: An error if validation fails or the tool cannot be added.
 	AddTool(tool Tool) error
 
 	// GetTool retrieves a tool by its unique name or ID.
 	//
+// Summary: Retrieves a tool by name or ID.
+//
 	// Parameters:
 	//   - toolName: string. The name or ID of the tool to retrieve.
 	//
@@ -63,13 +64,15 @@ type ManagerInterface interface {
 
 	// ListTools returns a list of all currently registered tools.
 	//
+// Summary: Lists all registered tools.
+//
 	// Returns:
 	//   - []Tool: A slice of registered tools.
 	ListTools() []Tool
 
 	// ListMCPTools returns a list of all registered tools formatted for the MCP protocol.
 	//
-	// This method is optimized for the MCP `tools/list` request.
+// Summary: Lists all tools in MCP format.
 	//
 	// Returns:
 	//   - []*mcp.Tool: A slice of MCP tool definitions.
@@ -77,7 +80,7 @@ type ManagerInterface interface {
 
 	// ClearToolsForService removes all tools associated with a specific service ID.
 	//
-	// This is typically used when a service is reloaded or removed.
+// Summary: Removes all tools for a given service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -85,6 +88,8 @@ type ManagerInterface interface {
 
 	// ExecuteTool executes a specific tool with the provided request parameters.
 	//
+// Summary: Executes a tool with the given request.
+//
 	// Parameters:
 	//   - ctx: context.Context. The context for the execution.
 	//   - req: *ExecutionRequest. The request containing the tool name and arguments.
@@ -96,7 +101,7 @@ type ManagerInterface interface {
 
 	// SetMCPServer sets the MCP server provider for the manager.
 	//
-	// This allows the manager to register tool handlers with the underlying MCP server.
+// Summary: Sets the MCP server provider for the manager.
 	//
 	// Parameters:
 	//   - mcpServer: MCPServerProvider. The provider interface.
@@ -104,12 +109,16 @@ type ManagerInterface interface {
 
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
+// Summary: Adds a middleware to the execution chain.
+//
 	// Parameters:
 	//   - middleware: ExecutionMiddleware. The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
 
 	// AddServiceInfo adds metadata for a registered service.
 	//
+// Summary: Adds service metadata to the manager.
+//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//   - info: *ServiceInfo. The metadata associated with the service.
@@ -117,6 +126,8 @@ type ManagerInterface interface {
 
 	// GetServiceInfo retrieves metadata for a service by its ID.
 	//
+// Summary: Retrieves service metadata by ID.
+//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -127,13 +138,15 @@ type ManagerInterface interface {
 
 	// ListServices returns a list of all services known to the manager.
 	//
+// Summary: Lists all services known to the manager.
+//
 	// Returns:
 	//   - []*ServiceInfo: A slice of service metadata.
 	ListServices() []*ServiceInfo
 
 	// SetProfiles configures the active profiles and their definitions.
 	//
-	// This is used for filtering tools based on user profiles and permissions.
+// Summary: Sets the active profiles and their definitions.
 	//
 	// Parameters:
 	//   - enabled: []string. A list of enabled profile names.
@@ -142,6 +155,8 @@ type ManagerInterface interface {
 
 	// IsServiceAllowed checks if a specific service is accessible under a given profile.
 	//
+// Summary: Checks if a service is allowed for a profile.
+//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//   - profileID: string. The identifier of the profile to check against.
@@ -152,6 +167,8 @@ type ManagerInterface interface {
 
 	// ToolMatchesProfile checks if a specific tool is accessible under a given profile.
 	//
+// Summary: Checks if a tool matches a profile.
+//
 	// Parameters:
 	//   - tool: Tool. The tool to check.
 	//   - profileID: string. The identifier of the profile to check against.
@@ -162,7 +179,7 @@ type ManagerInterface interface {
 
 	// GetAllowedServiceIDs returns a set of allowed service IDs for a given profile.
 	//
-	// This is optimized for quick lookups during filtering.
+// Summary: Retrieves allowed service IDs for a profile.
 	//
 	// Parameters:
 	//   - profileID: string. The identifier of the profile.
@@ -174,6 +191,8 @@ type ManagerInterface interface {
 
 	// GetToolCountForService returns the number of tools registered for a given service.
 	//
+// Summary: Returns the count of tools for a service.
+//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -183,8 +202,12 @@ type ManagerInterface interface {
 }
 
 // ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
+//
+// Summary: Interface for execution middleware.
 type ExecutionMiddleware interface {
 	// Execute performs the middleware logic wrapping the next handler in the chain.
+	//
+	// Summary: Executes the middleware logic.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the execution.
@@ -198,6 +221,8 @@ type ExecutionMiddleware interface {
 }
 
 // Manager is the central component for managing tools in MCP Any.
+//
+// Summary: Manages tool registration, retrieval, execution, and filtering.
 //
 // It handles tool registration, retrieval, execution, and profile-based filtering.
 // It is thread-safe and supports efficient lookups via caching and indexing.
@@ -225,6 +250,8 @@ type Manager struct {
 }
 
 // NewManager creates and initializes a new Tool Manager.
+//
+// Summary: Creates a new Tool Manager.
 //
 // Parameters:
 //   - bus: *bus.Provider. The event bus provider for publishing tool execution events.

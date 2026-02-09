@@ -10,23 +10,32 @@ import (
 )
 
 // Session defines the interface for tools to interact with the client session.
-// It includes capabilities like Sampling (CreateMessage) and Roots inspection.
+//
+// Summary: Interface for client session capabilities like Sampling and Roots inspection.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Summary: Requests the client to create a message (sampling).
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//   - params: *mcp.CreateMessageParams. The parameters for the sampling request.
+	//
+	// Returns:
+	//   - *mcp.CreateMessageResult: The result of the sampling request.
+	//   - error: An error if the request fails.
 	CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error)
 
 	// ListRoots requests the list of roots from the client.
 	//
-	// ctx is the context for the request.
+	// Summary: Requests the client to list available filesystem roots.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//
+	// Returns:
+	//   - *mcp.ListRootsResult: The list of roots provided by the client.
+	//   - error: An error if the request fails.
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
 
@@ -37,20 +46,28 @@ type sessionContextKey struct{}
 
 // NewContextWithSession creates a new context with the given Session.
 //
-// ctx is the context for the request.
-// s is the s.
+// Summary: Embeds a Session into the context.
 //
-// Returns the result.
+// Parameters:
+//   - ctx: context.Context. The parent context.
+//   - s: Session. The session to embed.
+//
+// Returns:
+//   - context.Context: The new context containing the session.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
 
 // GetSession retrieves the Session from the context.
 //
-// ctx is the context for the request.
+// Summary: Retrieves the Session from the context if present.
 //
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - ctx: context.Context. The context to search.
+//
+// Returns:
+//   - Session: The session instance.
+//   - bool: True if the session was found, false otherwise.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok

@@ -24,12 +24,11 @@ import (
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
+// Summary: Manages the registration, lifecycle, and discovery of upstream services and their capabilities.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
-	// It establishes the connection to the upstream service and discovers its capabilities.
+	// Summary: Registers a new upstream service and discovers its capabilities.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The registration context.
@@ -44,7 +43,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// UnregisterService removes a service from the registry.
 	//
-	// It gracefully shuts down the upstream connection and cleans up associated resources.
+	// Summary: Removes a service from the registry, shutting down connections and cleaning up resources.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the unregistration.
@@ -56,12 +55,16 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetAllServices returns a list of all currently registered services.
 	//
+	// Summary: Retrieves a list of all currently registered service configurations.
+	//
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if retrieval fails (unlikely for in-memory registry).
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
+	//
+	// Summary: Retrieves metadata for a service by its unique identifier.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -73,6 +76,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceConfig returns the configuration for a given service ID.
 	//
+	// Summary: Retrieves the configuration for a service by its unique identifier.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -82,6 +87,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the last known registration or health error for a service.
+	//
+	// Summary: Retrieves the last known error associated with a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -111,6 +118,8 @@ type ServiceRegistry struct {
 }
 
 // New creates and initializes a new ServiceRegistry.
+//
+// Summary: Creates and initializes a new ServiceRegistry instance.
 //
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.
@@ -283,7 +292,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 // AddServiceInfo stores metadata about a service.
 //
-// Summary: Registers metadata for a service.
+// Summary: Stores metadata for a service in the registry.
 //
 // Parameters:
 //   - serviceID: string. The service ID.
@@ -348,7 +357,7 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 
 // UnregisterService removes a service from the registry.
 //
-// Summary: Deregisters and shuts down a service.
+// Summary: Deregisters and shuts down a service, cleaning up resources.
 //
 // Parameters:
 //   - ctx: context.Context. The context for shutdown operations.
@@ -356,6 +365,9 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Returns:
 //   - error: An error if the service is not found or if shutdown fails.
+//
+// Throws/Errors:
+//   - Returns an error if the service is not found or if shutdown fails.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

@@ -55,9 +55,13 @@ const detectSensitiveData = (text: string) => {
 };
 
 /**
- * RegisterServiceDialog.
+ * RegisterServiceDialog provides a modal for registering or editing an upstream service.
  *
- * @param serviceToEdit - The serviceToEdit.
+ * @param props - The component props.
+ * @param props.onSuccess - Callback function invoked upon successful registration/update.
+ * @param props.trigger - Custom trigger element to open the dialog (optional).
+ * @param props.serviceToEdit - The existing service configuration if editing (optional).
+ * @returns {JSX.Element} The rendered dialog component.
  */
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);

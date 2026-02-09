@@ -64,6 +64,7 @@ describe('ConnectClientButton', () => {
     // Actually window.location.origin is "http://localhost" in JSDOM.
 
     // Simpler: search for the text in the document
-    expect(screen.getByText(/api_key=my-secret-key/)).toBeInTheDocument();
+    // We check textContent because syntax highlighting might split nodes
+    expect(document.body.textContent).toContain('api_key=my-secret-key');
   });
 });

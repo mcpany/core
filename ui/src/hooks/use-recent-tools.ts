@@ -10,7 +10,15 @@ const MAX_RECENT_TOOLS = 5;
 
 /**
  * Hook for managing recently used tools.
- * @returns The recent tools state and functions.
+ *
+ * It maintains a list of recently used tools in local storage, with a maximum limit.
+ *
+ * @returns An object containing:
+ *          - recentTools: The list of recently used tool names.
+ *          - addRecent: Function to add a tool to the recent list.
+ *          - removeRecent: Function to remove a tool from the list.
+ *          - clearRecent: Function to clear all recent tools.
+ *          - isLoaded: Boolean indicating if the data has been loaded from storage.
  */
 export function useRecentTools() {
   const [recentTools, setRecentTools] = useState<string[]>([]);

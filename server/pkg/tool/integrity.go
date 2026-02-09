@@ -14,6 +14,14 @@ import (
 )
 
 // VerifyIntegrity checks if the tool definition matches its expected hash.
+//
+// Summary: Verifies the integrity of a tool definition against its hash.
+//
+// Parameters:
+//   - t: *v1.Tool. The tool definition to verify.
+//
+// Returns:
+//   - error: An error if the integrity check fails or the algorithm is unsupported.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -36,6 +44,14 @@ func VerifyIntegrity(t *v1.Tool) error {
 }
 
 // VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
+//
+// Summary: Verifies the integrity of a configuration tool definition against its hash.
+//
+// Parameters:
+//   - t: *configv1.ToolDefinition. The tool definition from configuration.
+//
+// Returns:
+//   - error: An error if the integrity check fails.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -58,6 +74,15 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 }
 
 // CalculateHash computes the SHA256 hash of a runtime tool definition.
+//
+// Summary: Calculates the SHA256 hash of a tool definition.
+//
+// Parameters:
+//   - t: *v1.Tool. The tool definition.
+//
+// Returns:
+//   - string: The calculated hash.
+//   - error: An error if marshaling fails.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -77,6 +102,15 @@ func CalculateHash(t *v1.Tool) (string, error) {
 }
 
 // CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
+//
+// Summary: Calculates the SHA256 hash of a configuration tool definition.
+//
+// Parameters:
+//   - t: *configv1.ToolDefinition. The tool definition.
+//
+// Returns:
+//   - string: The calculated hash.
+//   - error: An error if marshaling fails.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)
