@@ -64,7 +64,8 @@ export function useServiceHealthHistory() {
   useEffect(() => {
     async function fetchHealth() {
       try {
-        const res = await fetch("/api/dashboard/health");
+        // Use versioned API path which is proxied correctly
+        const res = await fetch("/api/v1/dashboard/health");
         if (res.ok) {
           const data: HealthResponse = await res.json();
 

@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -36,8 +37,8 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
-  login: (role: UserRole) => void;
+  /** Logs in the user with credentials. */
+  login: (username: string, password?: string) => Promise<void>;
   /** Logs out the current user. */
   logout: () => void;
 }
@@ -55,35 +56,49 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUser = async () => {
+    try {
+      // Check if we have a token first
+      const token = localStorage.getItem('mcp_auth_token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const u = await apiClient.getCurrentUser();
+      setUser({
+        id: u.id || u.name, // Use name as ID if ID is empty (common in basic auth)
+        name: u.displayName || u.id || u.name,
+        email: u.email || '',
+        role: (u.roles && u.roles.includes('admin')) ? 'admin' : 'viewer',
+        avatar: u.avatarUrl
+      });
+    } catch (e) {
+      console.warn("Failed to fetch user", e);
+      setUser(null);
+      // Optional: clear invalid token
+      // localStorage.removeItem('mcp_auth_token');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    fetchUser();
   }, []);
 
-  const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
+  const login = async (username: string, password?: string) => {
+    // Perform login via client which stores token
+    await apiClient.login(username, password);
+    // Refresh user state
+    await fetchUser();
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('mcp_user_role');
+    localStorage.removeItem('mcp_auth_token');
+    // Optional: Redirect to login
+    window.location.href = '/login';
   };
 
   return (

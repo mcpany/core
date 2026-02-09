@@ -8,10 +8,9 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
-        // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
-        // traffic points: Time (HH:MM), Total, Errors, Latency
+        // We use the '/api/v1/debug/seed' endpoint
         page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
         page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
         const now = new Date();
@@ -29,10 +28,11 @@ test.describe('Dashboard Real Data', () => {
             });
         }
 
-        const seedRes = await request.post('/api/v1/debug/seed_traffic', {
-            data: trafficPoints,
+        const seedRes = await request.post('/api/v1/debug/seed', {
+            data: { traffic: trafficPoints },
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
             }
         });
         expect(seedRes.ok()).toBeTruthy();
@@ -41,39 +41,30 @@ test.describe('Dashboard Real Data', () => {
         await page.goto('/');
 
         // Debug: Fetch traffic data directly to verify backend state
-        const trafficRes = await request.get('/api/v1/dashboard/traffic');
+        const trafficRes = await request.get('/api/v1/dashboard/traffic', {
+             headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+        });
         expect(trafficRes.ok()).toBeTruthy();
         const trafficData = await trafficRes.json();
-        console.log('DEBUG: Traffic Data:', JSON.stringify(trafficData));
+        console.log('DEBUG: Traffic Data Length:', trafficData.length);
+
         // Expect at least one point with requests > 0
         const hasData = trafficData.some((p: any) => p.requests > 0);
         expect(hasData).toBeTruthy();
 
         // 3. Verify metrics
-        // We seeded 100 requests per minute for 60 minutes = 6000 total requests?
-        // Wait, GetTrafficHistory returns the history.
-        // AnalyticsDashboard sums them up.
-        // 60 points * 100 requests = 6000 total requests.
-        // Check if "Total Requests" card shows 6,000 (formatted).
-
         await expect(page.locator('text=Total Requests')).toBeVisible();
 
-        // The endpoint returns points. The UI sums them up.
-        // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
-        // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        // Or simpler: find the value card.
-        // The card structure: Header "Total Requests", Content: "6,000"
-        // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
+        // Wait for data to load
+        // Find the card containing "Total Requests" and verify the value (text-2xl)
+        // We find the specific text element "Total Requests" and traverse up to the Card.
+        // "Total Requests" is in CardTitle (div) -> CardHeader (div) -> Card (div)
+        const totalRequestsText = page.getByText(/^Total Requests$/);
+        const totalRequestsCard = totalRequestsText.locator('../..');
+        // Find the value within the card
+        const totalRequestsValue = totalRequestsCard.locator('.text-2xl');
 
-        await expect(page.locator('text=Total Requests')).toBeVisible();
-        // Wait for data to load (it starts at 0 or empty)
-        await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden(); // Ensure no error text is shown if that was a thing?
-        // Just wait for non-zero requests
-        // We expect around 6,000.
-        // Use a more specific locator to debug and allow for potential data propagation delay
-        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+        await expect(totalRequestsValue).toHaveText(/[0-9,]+/, { timeout: 30000 });
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();
@@ -84,7 +75,6 @@ test.describe('Dashboard Real Data', () => {
         // Avg Throughput matches requests per minute?
         // 1.67 rps approx.
         await expect(page.getByText(/1\.6\d rps/)).toBeVisible();
-
 
         // 4. Verify charts existence (roughly)
         await expect(page.locator('.recharts-surface').first()).toBeVisible();
@@ -107,8 +97,12 @@ test.describe('Dashboard Real Data', () => {
              });
          }
 
-         const seedRes = await request.post('/api/v1/debug/seed_traffic', {
-             data: trafficPoints
+         const seedRes = await request.post('/api/v1/debug/seed', {
+             data: { traffic: trafficPoints },
+             headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
+            }
          });
          expect(seedRes.ok()).toBeTruthy();
 
@@ -116,10 +110,6 @@ test.describe('Dashboard Real Data', () => {
          // Check for "System Uptime" card
          await expect(page.locator('text=System Uptime')).toBeVisible();
 
-         // In HealthHistoryChart, we infer status from traffic.
-         // We might verify that we see some red bars (error status).
-         // This is hard to verify visually with text locators, but we can check if the chart renders.
-         // And maybe check if "Operational" text is there.
          await expect(page.locator('text=Operational')).toBeVisible();
     });
 });

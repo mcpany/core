@@ -124,6 +124,17 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
+		// Alias "me" to the current authenticated user
+		if id == "me" {
+			if uid, ok := auth.UserFromContext(r.Context()); ok {
+				id = uid
+			} else {
+				// Should not happen if auth middleware is active, but fail safe
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+		}
+
 		// Authorization: Users can only access their own profile, unless they are admin
 		currentUserID, ok := auth.UserFromContext(r.Context())
 		if !ok {

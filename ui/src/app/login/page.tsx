@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useUser } from "@/components/user-context";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required").max(100, "Username too long"),
@@ -35,6 +36,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { login } = useUser();
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -48,26 +50,9 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!res.ok) {
-        throw new Error("Invalid credentials");
-      }
-
-      const body = await res.json();
-      if (body.token) {
-        localStorage.setItem("mcp_auth_token", body.token);
-        // Redirect to dashboard
-        window.location.href = "/";
-      } else {
-        throw new Error("No token returned");
-      }
+      await login(data.username, data.password);
+      // Redirect to dashboard
+      window.location.href = "/";
     } catch (e) {
       console.error("Login failed", e);
       setError("Invalid credentials");

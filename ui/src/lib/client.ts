@@ -1605,5 +1605,52 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    /**
+     * Seeds data for testing/debugging.
+     * @param data The data to seed (users, services, secrets, traffic).
+     */
+    seedData: async (data: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Failed to seed data');
+        return res.json();
+    },
+
+    /**
+     * Gets the current authenticated user.
+     * @returns A promise that resolves to the current user.
+     */
+    getCurrentUser: async () => {
+        const res = await fetchWithAuth('/api/v1/users/me');
+        if (!res.ok) throw new Error('Failed to fetch current user');
+        return res.json();
+    },
+
+    /**
+     * Logs in the user (Basic Auth).
+     * @param username The username.
+     * @param password The password.
+     */
+    login: async (username: string, password?: string) => {
+        const token = btoa(`${username}:${password || ''}`);
+        // Verify credentials by calling /users/me with the token
+        const headers = new Headers();
+        headers.set('Authorization', `Basic ${token}`);
+        const res = await fetch('/api/v1/users/me', { headers });
+
+        if (!res.ok) {
+            throw new Error('Login failed');
+        }
+
+        // Store token if successful
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('mcp_auth_token', token);
+        }
+        return res.json();
     }
 };

@@ -16,44 +16,77 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
-                tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+            openapi_service: {
+                address: "http://ui-http-echo-server:5678",
+                spec_content: JSON.stringify({
+                    openapi: "3.0.0",
+                    info: { title: "Payment Gateway", version: "1.0.0" },
+                    paths: {
+                        "/pay": {
+                            post: {
+                                operationId: "process_payment",
+                                summary: "Process a payment",
+                                responses: { "200": { description: "OK" } }
+                            }
+                        }
+                    }
+                })
             }
         },
         {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
-                tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+            openapi_service: {
+                address: "http://ui-http-echo-server:5678",
+                spec_content: JSON.stringify({
+                    openapi: "3.0.0",
+                    info: { title: "User Service", version: "1.0.0" },
+                    paths: {
+                        "/user": {
+                            get: {
+                                operationId: "get_user",
+                                summary: "Get user details",
+                                responses: { "200": { description: "OK" } }
+                            }
+                        }
+                    }
+                })
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
-                tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+            openapi_service: {
+                address: "http://ui-http-echo-server:5678",
+                spec_content: JSON.stringify({
+                    openapi: "3.0.0",
+                    info: { title: "Math", version: "1.0.0" },
+                    paths: {
+                        "/calc": {
+                            post: {
+                                operationId: "calculator",
+                                summary: "calc",
+                                responses: { "200": { description: "OK" } }
+                            }
+                        }
+                    }
+                })
             }
         }
     ];
 
-    for (const svc of services) {
-        try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to seed service ${svc.name}: ${e}`);
+    try {
+        const res = await context.post('/api/v1/debug/seed', {
+            data: { services },
+            headers: HEADERS
+        });
+        if (!res.ok()) {
+            console.log(`Failed to seed services: ${res.status()} ${await res.text()}`);
         }
+    } catch (e) {
+        console.log(`Failed to seed services: ${e}`);
     }
 };
 
@@ -88,11 +121,29 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
-    ];
+
+    // Generate 60 points
+    const now = new Date();
+    const traffic = [];
+    for (let i = 59; i >= 0; i--) {
+        const t = new Date(now.getTime() - i * 60000);
+        const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        traffic.push({
+            time: timeStr,
+            requests: 100,
+            errors: 2,
+            latency: 50
+        });
+    }
+
     try {
-        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        const res = await context.post('/api/v1/debug/seed', {
+            data: { traffic },
+            headers: HEADERS
+        });
+        if (!res.ok()) {
+            console.log(`Failed to seed traffic: ${res.status()} ${await res.text()}`);
+        }
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
@@ -132,8 +183,15 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         roles: ["admin"]
     };
     try {
-        // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        // Use debug seed endpoint for atomic seeding
+        const res = await context.post('/api/v1/debug/seed', {
+            data: { users: [user] },
+            headers: HEADERS
+        });
+        if (!res.ok()) {
+             // Fallback to internal API if seed fails? No, debug seed should work.
+             console.log(`Failed to seed user: ${res.status()} ${await res.text()}`);
+        }
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
     }
