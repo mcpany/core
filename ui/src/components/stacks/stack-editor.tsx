@@ -1,242 +1,229 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import jsyaml from "js-yaml";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SourceEditor } from "@/components/services/editor/source-editor";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Save, ArrowLeft, Play } from "lucide-react";
+import Link from "next/link";
 import { apiClient } from "@/lib/client";
-
-// New Components
-import { ServicePalette } from "@/components/stacks/service-palette";
-import { StackVisualizer } from "@/components/stacks/stack-visualizer";
-import { ConfigEditor } from "./config-editor";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface StackEditorProps {
-    stackId: string;
+    stackId?: string; // If undefined, we are creating a new stack
+    initialData?: any;
 }
 
-/**
- * StackEditor.
- *
- * @param { stackId - The { stackId.
- */
-export function StackEditor({ stackId }: StackEditorProps) {
-    const [content, setContent] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isValid, setIsValid] = useState(true);
-    const [validationError, setValidationError] = useState<string | null>(null);
-    const [showPalette, setShowPalette] = useState(true);
-    const [showVisualizer, setShowVisualizer] = useState(true);
+const DEFAULT_YAML = `# MCP Any Stack Configuration
+name: my-stack
+description: A sample stack with a time service.
+version: 1.0.0
+services:
+  - name: time-service
+    command_line_service:
+      command: npx -y @modelcontextprotocol/server-time
+`;
 
-    // Initial load
+export function StackEditor({ stackId, initialData }: StackEditorProps) {
+    const [name, setName] = useState(initialData?.name || "");
+    const [description, setDescription] = useState(initialData?.description || "");
+    const [yamlContent, setYamlContent] = useState(DEFAULT_YAML);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { toast } = useToast();
+    const router = useRouter();
+
     useEffect(() => {
-        loadConfig();
-    }, [stackId]);
-
-    const loadConfig = async () => {
-        setIsLoading(true);
-        try {
-            const collection = await apiClient.getCollection(stackId);
-            console.log("DEBUG: collection:", JSON.stringify(collection));
-            // Transform services array to map for YAML Editor
-            const servicesMap: Record<string, any> = {};
-            if (collection.services && Array.isArray(collection.services)) {
-                collection.services.forEach((s: any) => {
-                    servicesMap[s.name] = s;
-                });
-            } else if (collection.services) {
-                // Already a map?
-                Object.assign(servicesMap, collection.services);
-            }
-
-            const configObj = {
-                ...collection,
-                services: servicesMap
-            };
-
-            const yaml = jsyaml.dump(configObj);
-            setContent(yaml);
-        } catch (error) {
-            console.error("DEBUG: loadConfig failed:", error);
-            toast.error("Failed to load stack configuration");
-        } finally {
-            setIsLoading(false);
+        if (initialData) {
+            setName(initialData.name);
+            setDescription(initialData.description);
+            // Fetch YAML config if editing
+            fetchConfig(initialData.name);
         }
-    };
+    }, [initialData]);
 
-    const handleContentChange = (newVal: string | undefined) => {
-        const value = newVal || "";
-        setContent(value);
-        validateYaml(value);
-    };
-
-    const validateYaml = (value: string) => {
+    const fetchConfig = async (id: string) => {
         try {
-            jsyaml.load(value);
-            setIsValid(true);
-            setValidationError(null);
-        } catch (e: unknown) {
-            setIsValid(false);
-            if (e instanceof Error) {
-                setValidationError(e.message);
-            } else {
-                setValidationError("Unknown validation error");
-            }
+            // Check if apiClient has getStackConfig, otherwise fallback to getCollection
+            // Based on client.ts, getStackConfig is a wrapper around getCollection but returns YAML?
+            // Wait, server api_stacks.go returns YAML text/plain for getStackConfig.
+            // client.ts getStackConfig calls getCollection which returns JSON.
+            // Ah, client.ts getStackConfig implementation:
+            // getStackConfig: async (stackId: string) => { return apiClient.getCollection(stackId); },
+            // This returns JSON object (Collection).
+            // But api_stacks.go returns YAML if I call /stacks/{id}/config.
+            // client.ts doesn't seem to have a method pointing to /api/v1/stacks/{id}/config !
+            // It points getStackConfig to getCollection (/api/v1/collections/{name}).
+
+            // This is a mismatch. I should use getCollection and convert to YAML on client side for now,
+            // OR blindly trust that I can fetch the config endpoint manually if I add a method.
+            // But I am not supposed to modify client.ts unless I have to.
+            // However, the previous plan step said "If not, add them".
+            // I verified they exist, but `getStackConfig` maps to `getCollection` (JSON).
+
+            // If I want the YAML source, I might need to construct it from JSON or fetch the text endpoint.
+            // Let's check client.ts again.
+            // It has `getStackConfig` calling `getCollection`.
+            // So it returns an object.
+
+            // I'll import 'js-yaml' to dump the JSON to YAML for the editor.
+            const col = await apiClient.getStackConfig(id);
+            // js-yaml dump
+            const yaml = (await import("js-yaml")).default;
+            setYamlContent(yaml.dump(col));
+        } catch (e) {
+            console.error("Failed to load stack config", e);
+            setError("Failed to load stack configuration.");
         }
     };
 
     const handleSave = async () => {
-        if (!isValid) {
-            toast.error("Cannot save invalid configuration");
-            return;
-        }
-
-        setIsSaving(true);
+        setLoading(true);
+        setError(null);
         try {
-            const configObj = jsyaml.load(content) as any;
+            // We save by sending the YAML string.
+            // client.ts `saveStackConfig` takes (id, config).
+            // `config` can be string or object.
+            // If string, it parses it as JSON?
+            // "const collection = typeof config === 'string' ? JSON.parse(config) : config;"
+            // It expects JSON string!
+            // But I have YAML string.
 
-            // Transform services map to array for Backend
-            let servicesArray: any[] = [];
-            if (configObj.services) {
-                if (Array.isArray(configObj.services)) {
-                     servicesArray = configObj.services;
-                } else {
-                    Object.entries(configObj.services).forEach(([key, val]: [string, any]) => {
-                        servicesArray.push({ ...val, name: key });
-                    });
-                }
+            // So I must parse YAML to JSON client-side before sending to `saveStackConfig`.
+            const yaml = (await import("js-yaml")).default;
+            const parsed = yaml.load(yamlContent) as any;
+
+            // Ensure name matches
+            if (name) parsed.name = name;
+            if (description) parsed.description = description;
+
+            // If creating, use name as ID
+            const targetId = stackId || name;
+
+            await apiClient.saveStackConfig(targetId, parsed);
+
+            toast({
+                title: "Stack Deployed",
+                description: `Stack ${targetId} has been successfully deployed.`,
+            });
+
+            if (!stackId) {
+                router.push("/stacks");
             }
-
-            const collection = {
-                ...configObj,
-                name: stackId, // Ensure ID matches
-                services: servicesArray
-            };
-
-            await apiClient.saveCollection(collection);
-            toast.success("Configuration saved successfully");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to save configuration");
+        } catch (e: any) {
+            console.error(e);
+            setError(e.message || "Failed to deploy stack.");
+            toast({
+                variant: "destructive",
+                title: "Deployment Failed",
+                description: e.message
+            });
         } finally {
-            setIsSaving(false);
+            setLoading(false);
         }
-    };
-
-    const handleDownload = () => {
-        const blob = new Blob([content], { type: 'text/yaml' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${stackId}-config.yaml`;
-        a.click();
-    };
-
-    const handleTemplateInsert = (snippet: string) => {
-        let newContent = content;
-
-        // Better insertion logic
-        const servicesRegex = /^services:\s*$/m;
-        const match = newContent.match(servicesRegex);
-
-        if (match) {
-            // Found services block.
-            // We want to insert AFTER the services block, but before the next root key if possible.
-            // Or just at the end of the services block.
-            // Since we can't easily parse partial YAML AST, we'll try to insert at the end of the file,
-            // assuming services is usually the main or last block.
-            // OR we can find the end of the services block by indentation.
-
-            // For now, simpler: Append to the end of the file, ensuring a newline.
-            // Users can move it if needed. The visualizer will still work.
-            if (!newContent.endsWith("\n")) newContent += "\n";
-            newContent += snippet;
-        } else {
-            // No services block found. Append services: block
-            if (!newContent.endsWith("\n") && newContent.length > 0) newContent += "\n";
-            newContent += "services:\n" + snippet;
-        }
-
-        setContent(newContent);
-        validateYaml(newContent);
-        toast.success("Service template added!");
     };
 
     return (
-        <Card className="flex flex-col h-[650px] border-muted/50 shadow-sm overflow-hidden">
-            <CardHeader className="py-2 px-4 border-b flex flex-row items-center justify-between bg-muted/10 shrink-0 h-14">
+        <div className="space-y-6 h-full flex flex-col">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" asChild>
+                        <Link href="/stacks">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            {stackId ? `Edit Stack: ${stackId}` : "New Stack"}
+                        </h1>
+                        <p className="text-muted-foreground text-sm">
+                            Define your service collection using YAML.
+                        </p>
+                    </div>
+                </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowPalette(!showPalette)}>
-                        {showPalette ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
-                    </Button>
-                    <FileText className="h-4 w-4 text-muted-foreground ml-2" />
-                    <span className="font-medium text-sm">config.yaml</span>
-                    {isValid ? (
-                         <Badge variant="outline" className="ml-2 bg-green-500/10 text-green-500 border-green-500/20 text-[10px] h-5">
-                             Valid YAML
-                         </Badge>
-                    ) : (
-                        <Badge variant="destructive" className="ml-2 text-[10px] h-5">
-                             Invalid YAML
-                        </Badge>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
-                     <Button variant="ghost" size="sm" onClick={() => setShowVisualizer(!showVisualizer)} title="Toggle Preview">
-                        <Columns className="h-4 w-4 mr-1" /> {showVisualizer ? "Hide Preview" : "Show Preview"}
-                     </Button>
-                     <div className="h-4 w-px bg-border mx-1" />
-                     <Button variant="ghost" size="sm" onClick={loadConfig} disabled={isLoading} title="Reset to last saved">
-                        <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} /> Reset
-                    </Button>
-                     <Button variant="ghost" size="sm" onClick={handleDownload} title="Download Config">
-                        <Download className="h-3 w-3 mr-1" /> Export
-                    </Button>
-                    <Button size="sm" onClick={handleSave} disabled={isSaving || !isValid || isLoading}>
-                        {isSaving ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
-                        Save Changes
+                    <Button onClick={handleSave} disabled={loading}>
+                        {loading ? <Play className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        {stackId ? "Redeploy Stack" : "Deploy Stack"}
                     </Button>
                 </div>
-            </CardHeader>
+            </div>
 
-            <CardContent className="p-0 flex-1 relative flex overflow-hidden">
-                {/* Left Panel: Palette */}
-                <div
-                    className={`transition-all duration-300 ease-in-out border-r overflow-hidden ${showPalette ? "w-[280px]" : "w-0 border-r-0"}`}
-                >
-                    <ServicePalette onTemplateSelect={handleTemplateInsert} />
+            {error && (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
+
+            <div className="grid gap-6 md:grid-cols-[300px_1fr] flex-1 min-h-0">
+                <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Details</CardTitle>
+                            <CardDescription>Stack metadata.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Name</Label>
+                                <Input
+                                    id="name"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                    disabled={!!stackId}
+                                    placeholder="my-stack"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="description">Description</Label>
+                                <Textarea
+                                    id="description"
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    placeholder="Purpose of this stack..."
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-muted/30">
+                        <CardHeader>
+                            <CardTitle>Documentation</CardTitle>
+                        </CardHeader>
+                        <CardContent className="text-xs text-muted-foreground space-y-2">
+                            <p>
+                                Define services under the <code>services</code> key.
+                            </p>
+                            <p>
+                                Supported service types:
+                                <ul className="list-disc list-inside mt-1 ml-1">
+                                    <li>command_line_service</li>
+                                    <li>http_service</li>
+                                    <li>mcp_service</li>
+                                </ul>
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {/* Center Panel: Editor */}
-                <div className="flex-1 relative flex flex-col bg-background overflow-hidden min-w-0">
-                     <ConfigEditor
-                        value={content}
-                        onChange={handleContentChange}
-                    />
-                     {validationError && (
-                        <div className="absolute bottom-0 left-0 right-0 py-2 px-4 bg-red-900/90 border-t border-red-500/50 text-red-200 text-xs font-mono z-10 flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-2 text-red-400" />
-                            {validationError}
-                        </div>
-                    )}
+                <div className="h-full flex flex-col">
+                    <Label className="mb-2">Configuration (YAML)</Label>
+                    <div className="flex-1 border rounded-md overflow-hidden bg-background">
+                        <SourceEditor value={yamlContent} onChange={(v) => setYamlContent(v || "")} />
+                    </div>
                 </div>
-
-                {/* Right Panel: Visualizer */}
-                <div
-                    className={`transition-all duration-300 ease-in-out border-l bg-muted/5 overflow-hidden ${showVisualizer ? "w-[280px]" : "w-0 border-l-0"}`}
-                >
-                    <StackVisualizer yamlContent={content} />
-                </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }

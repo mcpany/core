@@ -9,38 +9,48 @@ import { seedCollection, cleanupCollection } from './e2e/test-data';
 test.describe('Stack Editor', () => {
   test.beforeEach(async ({ request }) => {
       await seedCollection('default-stack', request);
-      // Wait a bit for potential backend sync (though seedCollection awaits response)
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupCollection('default-stack', request);
+      await cleanupCollection('new-stack', request);
   });
 
-  test('should load the editor and show initial config in graph', async ({ page }) => {
-    await page.goto('/stacks/default-stack');
-
-    // Check for React Flow container
-    const visualizer = page.locator('.stack-visualizer-container');
-    await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 30000 });
-
-    // Check for the node
-    // Using a more specific selector to ensure it's inside a node
-    const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' });
-    await expect(weatherNode).toBeVisible();
+  test('should list stacks', async ({ page }) => {
+    await page.goto('/stacks');
+    await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
+    await expect(page.getByText('default-stack')).toBeVisible();
   });
 
-  test('should update graph when template added', async ({ page }) => {
+  test('should load the editor for existing stack', async ({ page }) => {
     await page.goto('/stacks/default-stack');
-    const visualizer = page.locator('.stack-visualizer-container');
+    await expect(page.getByRole('heading', { name: 'Edit Stack: default-stack' })).toBeVisible();
+    // Verify YAML editor contains the name
+    // Monaco editor content is hard to test directly, but we can check if it loaded without error
+    await expect(page.locator('.monaco-editor')).toBeVisible();
+  });
 
-    // Wait for initial load
-    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 30000 });
+  test('should create a new stack', async ({ page }) => {
+    await page.goto('/stacks/new');
+    await expect(page.getByRole('heading', { name: 'New Stack' })).toBeVisible();
 
-    // Click on PostgreSQL template in the palette
-    await page.getByText('PostgreSQL').click();
+    await page.fill('input[id="name"]', 'new-stack');
+    await page.fill('textarea[id="description"]', 'My new stack');
 
-    // Verify new node appears in graph
-    const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: 'postgres-db' });
-    await expect(postgresNode).toBeVisible({ timeout: 10000 });
+    // We keep default YAML which has "my-stack".
+    // Ideally we update YAML to match name, but let's see if save works with default YAML (which has mismatched name).
+    // The backend might error "Stack name in config must match URL path" or simply use the ID from URL (which is 'new-stack' for create?).
+    // In create mode (POST /collections), the body determines the name.
+    // My StackEditor uses `saveStackConfig(stackId || name, parsed)`.
+    // If I enter 'new-stack' in input, `name` state is 'new-stack'.
+    // YAML has 'my-stack'.
+    // `parsed.name = name` sets it to 'new-stack'.
+    // So it should work!
+
+    await page.getByRole('button', { name: 'Deploy Stack' }).click();
+
+    // Should redirect to list
+    await expect(page).toHaveURL(/\/stacks$/);
+    await expect(page.getByText('new-stack')).toBeVisible();
   });
 });
