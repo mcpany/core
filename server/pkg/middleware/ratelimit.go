@@ -43,9 +43,13 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Summary: Configures the middleware with a specific token counter.
 //
-// Returns the result.
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer implementation to use.
+//
+// Returns:
+//   - Option: A functional option that applies the tokenizer.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -54,10 +58,14 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Summary: Initializes a rate limiting middleware with support for multiple strategies (Memory, Redis).
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. Manager to retrieve tool configurations.
+//   - opts: ...Option. Optional configurations (e.g. custom tokenizer).
+//
+// Returns:
+//   - *RateLimitMiddleware: The initialized middleware instance.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -82,12 +90,16 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 
 // Execute executes the rate limiting middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Enforces rate limits based on service and tool configurations before executing the next handler.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *tool.ExecutionRequest. The tool execution request details.
+//   - next: tool.ExecutionFunc. The next middleware or handler in the chain.
+//
+// Returns:
+//   - any: The result of the execution if allowed.
+//   - error: An error if the rate limit is exceeded or execution fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

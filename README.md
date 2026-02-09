@@ -1,6 +1,8 @@
 # MCP Any
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ## 1. Elevator Pitch
 
@@ -19,7 +21,7 @@ MCP Any uses a modular, adapter-based architecture to decouple the MCP protocol 
 
 1.  **Core Server**: A Go-based runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote/DB).
-3.  **Adapters**: specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine & Middleware**: Enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
 
 ```mermaid
@@ -82,8 +84,9 @@ Follow these steps to get up and running immediately.
 ### Hello World
 Once running, verify the server health:
 ```bash
-curl http://localhost:50050/health
+curl http://localhost:50050/healthz
 ```
+*(Note: The health endpoint is `/healthz`, not `/health`)*
 
 To connect an AI client (like Claude Desktop or Gemini CLI):
 ```bash
@@ -96,7 +99,7 @@ Ask your agent:
 
 The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
-## 4. Development
+## 4. Developer Workflow
 
 We follow a strict development workflow to ensure quality and maintainability.
 

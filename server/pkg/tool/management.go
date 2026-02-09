@@ -44,6 +44,8 @@ type MCPServerProvider interface {
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
 	//
+	// Summary: Registers a tool definition.
+	//
 	// Parameters:
 	//   - tool: Tool. The tool definition to register.
 	//
@@ -791,8 +793,7 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 
 // AddTool registers a new tool with the manager.
 //
-// It performs validation, sanitization, and integrity checks.
-// If an MCP server is configured, it also registers the tool with the server.
+// Summary: Registers a tool, performs validation/integrity checks, and updates indices.
 //
 // Parameters:
 //   - tool: Tool. The tool instance to be added.

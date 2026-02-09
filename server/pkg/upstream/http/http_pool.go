@@ -28,7 +28,10 @@ type httpPool struct {
 
 // Close closes the connection pool and the idle connections.
 //
-// Returns an error if the operation fails.
+// Summary: Shuts down the HTTP pool and closes idle transport connections.
+//
+// Returns:
+//   - error: An error if the underlying pool close operation fails.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -37,16 +40,19 @@ func (p *httpPool) Close() error {
 	return nil
 }
 
-// NewHTTPPool creates a new connection pool for HTTP clients. It is defined as
-// a variable to allow for easy mocking in tests.
+// NewHTTPPool creates a new connection pool for HTTP clients.
 //
-// minSize is the initial number of clients to create.
-// maxSize is the maximum number of clients the pool can hold.
-// idleTimeout is the duration after which an idle client may be closed (not
-// currently implemented).
-// healthCheck is the configuration for the health check.
-// It returns a new HTTP client pool or an error if the pool cannot be
-// created.
+// Summary: Factory function to create an HTTP client pool with TLS and resilience configuration.
+//
+// Parameters:
+//   - minSize: int. Initial number of clients to create (and max idle connections).
+//   - maxSize: int. Maximum number of clients the pool can hold.
+//   - idleTimeout: time.Duration. Duration after which an idle client may be closed.
+//   - config: *configv1.UpstreamServiceConfig. Configuration for the upstream service (TLS, Auth, etc).
+//
+// Returns:
+//   - pool.Pool[*client.HTTPClientWrapper]: The created HTTP client pool.
+//   - error: An error if pool creation fails (e.g. invalid TLS config).
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

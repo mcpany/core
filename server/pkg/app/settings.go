@@ -11,7 +11,14 @@ import (
 )
 
 // GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
-// It allows for dynamic updates to configuration values that are used across the application.
+//
+// Summary: Handles dynamic updates and thread-safe access to global configuration settings.
+//
+// Fields:
+//   - mu: Mutex for synchronizing updates.
+//   - apiKey: Atomic value storing the current API key string.
+//   - allowedIPs: Atomic value storing the list of allowed IP strings.
+//   - allowedOrigins: Atomic value storing the list of allowed CORS origin strings.
 type GlobalSettingsManager struct {
 	mu            sync.RWMutex
 	apiKey        atomic.Value // stores string

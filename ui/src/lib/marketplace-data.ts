@@ -6,32 +6,47 @@
 
 
 
+/**
+ * Configuration for running a marketplace tool.
+ */
 export interface MarketplaceItemConfig {
+  /** The command to execute (e.g. "npx", "docker"). */
   command: string;
+  /** Arguments to pass to the command. */
   args: string[];
+  /** Environment variables required by the tool. */
   envVars: EnvVarDefinition[];
 }
 
 /**
- * EnvVarDefinition type definition.
+ * Definition of an environment variable required by a marketplace tool.
  */
 export interface EnvVarDefinition {
+  /** The name of the environment variable (KEY). */
   name: string;
+  /** A human-readable description of what this variable is for. */
   description: string;
+  /** Whether this variable is mandatory. */
   required: boolean;
+  /** The input type for the UI (text, password, or file path). */
   type: "text" | "password" | "path";
-  // If true, this value is also appended to the command args
+  /** If true, this value is also appended to the command args. */
   addToArgs?: boolean;
 }
 
 /**
- * MarketplaceItem type definition.
+ * Definition of a tool available in the marketplace.
  */
 export interface MarketplaceItem {
+  /** Unique identifier for the item. */
   id: string;
+  /** Display name of the tool. */
   name: string;
+  /** Brief description of the tool's capabilities. */
   description: string;
-  icon: string; // We'll map string to Lucide icon in the UI
+  /** Icon name (mapped to Lucide icons in UI). */
+  icon: string;
+  /** Default configuration for running the tool. */
   config: MarketplaceItemConfig;
 }
 
