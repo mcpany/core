@@ -2806,6 +2806,11 @@ func isShellCommand(cmd string) bool {
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
+		// Wrappers
+		"nice", "nohup", "time", "timeout", "stdbuf", "taskset", "ionice",
+		"chroot", "unshare", "nsenter", "flock", "setsid", "valgrind",
+		// Additional interpreters
+		"gnuplot", "openssl", "octave", "matlab",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -3135,6 +3140,7 @@ func isInterpreter(command string) bool {
 		"expect", "tclsh", "wish",
 		"groovy", "jshell", "scala", "kotlin", "swift",
 		"erl", "escript", "ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"gnuplot", "octave", "matlab", "openssl",
 	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
