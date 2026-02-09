@@ -124,3 +124,39 @@ func TestHTTPRateLimitMiddleware_NoTrustProxy(t *testing.T) {
 	// This confirms that without TrustProxy, rate limiting is shared (Vulnerable behavior if behind proxy)
 	assert.Equal(t, http.StatusTooManyRequests, rec2.Code, "User 2 Request 1 should be blocked due to shared IP")
 }
+
+func TestHTTPRateLimitMiddleware_MaxItems(t *testing.T) {
+	// 5 RPS, burst 5, Max Items 2
+	limiter := NewHTTPRateLimitMiddleware(5, 5, WithMaxItems(2))
+	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	// IP 1: Allowed
+	req1 := httptest.NewRequest("GET", "/", nil)
+	req1.RemoteAddr = "1.1.1.1:1234"
+	rec1 := httptest.NewRecorder()
+	handler.ServeHTTP(rec1, req1)
+	assert.Equal(t, http.StatusOK, rec1.Code, "IP 1 should be allowed")
+
+	// IP 2: Allowed
+	req2 := httptest.NewRequest("GET", "/", nil)
+	req2.RemoteAddr = "2.2.2.2:1234"
+	rec2 := httptest.NewRecorder()
+	handler.ServeHTTP(rec2, req2)
+	assert.Equal(t, http.StatusOK, rec2.Code, "IP 2 should be allowed")
+
+	// IP 3: Should be blocked (Max Items exceeded)
+	req3 := httptest.NewRequest("GET", "/", nil)
+	req3.RemoteAddr = "3.3.3.3:1234"
+	rec3 := httptest.NewRecorder()
+	handler.ServeHTTP(rec3, req3)
+	assert.Equal(t, http.StatusServiceUnavailable, rec3.Code, "IP 3 should be blocked because pool is full")
+
+	// IP 1: Should still be allowed (Existing)
+	req1b := httptest.NewRequest("GET", "/", nil)
+	req1b.RemoteAddr = "1.1.1.1:1234"
+	rec1b := httptest.NewRecorder()
+	handler.ServeHTTP(rec1b, req1b)
+	assert.Equal(t, http.StatusOK, rec1b.Code, "IP 1 should still be allowed")
+}

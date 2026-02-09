@@ -19,6 +19,7 @@ type HTTPRateLimitMiddleware struct {
 	rps        rate.Limit
 	burst      int
 	trustProxy bool
+	maxItems   int
 }
 
 // HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
@@ -29,6 +30,14 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
+	}
+}
+
+// WithMaxItems sets the maximum number of unique IPs to track.
+// Defaults to 50,000.
+func WithMaxItems(max int) HTTPRateLimitOption {
+	return func(m *HTTPRateLimitMiddleware) {
+		m.maxItems = max
 	}
 }
 
@@ -47,6 +56,7 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 		limiters: cache.New(5*time.Minute, 10*time.Minute),
 		rps:      rate.Limit(rps),
 		burst:    burst,
+		maxItems: 50000,
 	}
 	for _, opt := range opts {
 		opt(m)
@@ -83,6 +93,19 @@ func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 		if val, found := m.limiters.Get(ip); found {
 			limiter = val.(*rate.Limiter)
 		} else {
+			// ⚡ BOLT: Prevent memory exhaustion from IP spoofing (unbounded cache growth)
+			// Randomized Selection from Top 5 High-Impact Targets
+			if m.limiters.ItemCount() >= m.maxItems {
+				// Try to clean up expired items to free space immediately
+				m.limiters.DeleteExpired()
+				if m.limiters.ItemCount() >= m.maxItems {
+					// Still full, reject new IPs to protect existing traffic and server memory.
+					// We return 503 to indicate temporary overload/incapacity.
+					http.Error(w, "Service Unavailable (Rate Limit Pool Full)", http.StatusServiceUnavailable)
+					return
+				}
+			}
+
 			limiter = rate.NewLimiter(m.rps, m.burst)
 			m.limiters.Set(ip, limiter, cache.DefaultExpiration)
 		}
