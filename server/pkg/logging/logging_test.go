@@ -170,7 +170,7 @@ func TestBroadcaster(t *testing.T) {
 
 func TestBroadcastHandler(t *testing.T) {
 	b := NewBroadcaster()
-	h := NewBroadcastHandler(b, slog.LevelInfo)
+	h := NewBroadcastHandler(b, nil, slog.LevelInfo)
 
 	ch := b.Subscribe()
 	defer b.Unsubscribe(ch)
@@ -211,7 +211,7 @@ func TestBroadcastHandler(t *testing.T) {
 
 func TestBroadcastHandler_Enabled(t *testing.T) {
 	b := NewBroadcaster()
-	h := NewBroadcastHandler(b, slog.LevelWarn)
+	h := NewBroadcastHandler(b, nil, slog.LevelWarn)
 
 	// Should be enabled for Warn and above
 	assert.True(t, h.Enabled(context.Background(), slog.LevelWarn))

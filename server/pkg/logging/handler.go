@@ -25,45 +25,8 @@ type LogEntry struct {
 	Metadata  map[string]any `json:"metadata,omitempty"`
 }
 
-// BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
-type BroadcastHandler struct {
-	broadcaster *Broadcaster
-	attrs       []slog.Attr
-	group       string
-	mu          sync.Mutex
-	level       slog.Level
-}
-
-// NewBroadcastHandler creates a new BroadcastHandler.
-//
-// broadcaster is the broadcaster.
-// level is the minimum log level to broadcast.
-//
-// Returns the result.
-func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
-	return &BroadcastHandler{
-		broadcaster: broadcaster,
-		level:       level,
-	}
-}
-
-// Enabled returns true if the level is greater than or equal to the handler's level.
-//
-// _ is an unused parameter.
-// level is the log level.
-//
-// Returns true if successful.
-func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return level >= h.level
-}
-
-// Handle handles the log record by converting it to LogEntry and broadcasting it.
-//
-// _ is an unused parameter.
-// r is the r.
-//
-// Returns an error if the operation fails.
-func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
+// RecordToEntry converts a slog.Record to a LogEntry.
+func RecordToEntry(r slog.Record) LogEntry {
 	entry := LogEntry{
 		ID:        uuid.New().String(),
 		Timestamp: r.Time.Format(time.RFC3339),
@@ -93,15 +56,56 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		return true
 	})
 
-	// If message is empty but we have attributes, maybe format them?
-	// For now, let's append attributes to message if it's debugging or specific keys
-	// This is a simplification. Ideally we'd send structured data.
-
 	// Also handle source from record PC if available
 	if entry.Source == "" && r.PC != 0 {
 		fs := runtime.CallersFrames([]uintptr{r.PC})
 		f, _ := fs.Next()
 		entry.Source = f.Function
+	}
+	return entry
+}
+
+// BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+// It also persists logs if a store provider is configured.
+type BroadcastHandler struct {
+	broadcaster   *Broadcaster
+	storeProvider func() LogStore
+	attrs         []slog.Attr
+	group         string
+	mu            sync.Mutex
+	level         slog.Level
+}
+
+// NewBroadcastHandler creates a new BroadcastHandler.
+//
+// broadcaster is the broadcaster.
+// storeProvider is a function that returns the current LogStore (or nil).
+// level is the minimum log level to broadcast.
+//
+// Returns the result.
+func NewBroadcastHandler(broadcaster *Broadcaster, storeProvider func() LogStore, level slog.Level) *BroadcastHandler {
+	return &BroadcastHandler{
+		broadcaster:   broadcaster,
+		storeProvider: storeProvider,
+		level:         level,
+	}
+}
+
+// Enabled returns true if the level is greater than or equal to the handler's level.
+func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return level >= h.level
+}
+
+// Handle handles the log record by converting it to LogEntry, persisting it, and broadcasting it.
+func (h *BroadcastHandler) Handle(ctx context.Context, r slog.Record) error {
+	entry := RecordToEntry(r)
+
+	// Persist to store if available
+	if h.storeProvider != nil {
+		if s := h.storeProvider(); s != nil {
+			// Best effort write
+			_ = s.Write(ctx, entry)
+		}
 	}
 
 	data, err := json.Marshal(entry)
@@ -114,34 +118,28 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new handler with the given attributes.
-//
-// attrs is the attrs.
-//
-// Returns the result.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return &BroadcastHandler{
-		broadcaster: h.broadcaster,
-		attrs:       append(h.attrs, attrs...),
-		group:       h.group,
-		level:       h.level,
+		broadcaster:   h.broadcaster,
+		storeProvider: h.storeProvider,
+		attrs:         append(h.attrs, attrs...),
+		group:         h.group,
+		level:         h.level,
 	}
 }
 
 // WithGroup returns a new handler with the given group.
-//
-// name is the name of the resource.
-//
-// Returns the result.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return &BroadcastHandler{
-		broadcaster: h.broadcaster,
-		attrs:       h.attrs,
-		group:       name,
-		level:       h.level,
+		broadcaster:   h.broadcaster,
+		storeProvider: h.storeProvider,
+		attrs:         h.attrs,
+		group:         name,
+		level:         h.level,
 	}
 }
 
@@ -151,20 +149,11 @@ type TeeHandler struct {
 }
 
 // NewTeeHandler creates a new TeeHandler.
-//
-// handlers is the handlers.
-//
-// Returns the result.
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }
 
 // Enabled returns true if any of the handlers are enabled.
-//
-// ctx is the context for the request.
-// level is the level.
-//
-// Returns true if successful.
 func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, level) {
@@ -175,11 +164,6 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 // Handle forwards the record to all enabled handlers.
-//
-// ctx is the context for the request.
-// r is the r.
-//
-// Returns an error if the operation fails.
 func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	var err error
 	for _, handler := range h.handlers {
@@ -193,10 +177,6 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new TeeHandler with the attributes applied to all handlers.
-//
-// attrs is the attrs.
-//
-// Returns the result.
 func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -206,10 +186,6 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new TeeHandler with the group applied to all handlers.
-//
-// name is the name of the resource.
-//
-// Returns the result.
 func (h *TeeHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {

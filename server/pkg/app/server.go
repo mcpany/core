@@ -353,6 +353,47 @@ func (a *Application) Run(opts RunOptions) error {
 
 	log.Info("Starting MCP Any Service...")
 
+	// Initialize Log Store (Persistent Logging)
+	// We use a separate database file for logs to avoid contention with configuration DB
+	// and to allow easy rotation/deletion.
+	logDBPath := filepath.Join(filepath.Dir(opts.DBPath), "logs.db")
+	if opts.DBPath == "" {
+		logDBPath = "logs.db"
+	}
+	// We use sqlite.NewDB to get WAL mode and optimizations, even though it creates config tables unnecessarily.
+	// In the future we might want a raw sql.Open here or a dedicated log db helper.
+	logDB, err := sqlite.NewDB(logDBPath)
+	if err != nil {
+		log.Error("Failed to open log database", "path", logDBPath, "error", err)
+	} else {
+		logStore, err := logging.NewSQLiteLogStore(logDB.DB)
+		if err != nil {
+			log.Error("Failed to initialize log store", "error", err)
+			_ = logDB.Close()
+		} else {
+			logging.SetLogStore(logStore)
+			log.Info("Log persistence enabled", "path", logDBPath)
+
+			// Hydrate Broadcaster from store
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			// Read latest 1000 logs. Query returns them in chronological order (Oldest -> Newest).
+			logs, err := logStore.Read(ctx, 1000, 0)
+			cancel()
+			if err != nil {
+				log.Error("Failed to hydrate logs from store", "error", err)
+			} else if len(logs) > 0 {
+				var msgs [][]byte
+				for _, l := range logs {
+					if b, err := json.Marshal(l); err == nil {
+						msgs = append(msgs, b)
+					}
+				}
+				logging.GlobalBroadcaster.Hydrate(msgs)
+				log.Info("Hydrated logs from store", "count", len(logs))
+			}
+		}
+	}
+
 	// Load initial services from config files and Storage
 	var storageStore config.Store
 	var storageCloser func() error

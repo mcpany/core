@@ -19,7 +19,23 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+	globalStore   atomic.Value // stores LogStore interface
 )
+
+// SetLogStore sets the global log store.
+// This allows the logger to persist logs to a storage backend.
+func SetLogStore(s LogStore) {
+	globalStore.Store(s)
+}
+
+// GetLogStore returns the global log store if set, otherwise nil.
+func GetLogStore() LogStore {
+	val := globalStore.Load()
+	if val == nil {
+		return nil
+	}
+	return val.(LogStore)
+}
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
@@ -29,6 +45,7 @@ func ForTestsOnlyResetLogger() {
 	defer mu.Unlock()
 	once = sync.Once{}
 	defaultLogger.Store(nil)
+	globalStore = atomic.Value{}
 }
 
 // Init initializes the application's global logger with a specific log level
@@ -75,7 +92,9 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			mainHandler = slog.NewTextHandler(output, opts)
 		}
 
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
+		// BroadcastHandler now handles both broadcasting and optional persistence via GetLogStore
+		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, GetLogStore, level)
+
 		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
 
 		defaultLogger.Store(slog.New(teeHandler))

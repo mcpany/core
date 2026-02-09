@@ -1755,5 +1755,23 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    /**
+     * Gets historical logs.
+     * @param params Query parameters.
+     * @returns A promise that resolves to the logs list.
+     */
+    getLogs: async (params?: { limit?: number; offset?: number; level?: string; source?: string; search?: string }) => {
+        const query = new URLSearchParams();
+        if (params?.limit) query.set('limit', params.limit.toString());
+        if (params?.offset) query.set('offset', params.offset.toString());
+        if (params?.level && params.level !== 'ALL') query.set('level', params.level);
+        if (params?.source && params.source !== 'ALL') query.set('source', params.source);
+        if (params?.search) query.set('search', params.search);
+
+        const res = await fetchWithAuth(`/api/v1/logs?${query.toString()}`);
+        if (!res.ok) throw new Error('Failed to fetch logs');
+        return res.json();
     }
 };

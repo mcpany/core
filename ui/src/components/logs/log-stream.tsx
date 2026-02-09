@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 
 import { useSearchParams } from "next/navigation"
+import { apiClient } from "@/lib/client"
 import dynamic from "next/dynamic";
 // ⚡ Bolt Optimization: Lazy load Virtuoso to avoid SSR issues.
 // react-virtuoso uses window/DOM which can cause hydration mismatches or server-side crashes.
@@ -292,6 +293,34 @@ export function LogStream({ source }: { source?: string }) {
   const logBufferRef = React.useRef<LogEntry[]>([])
 
   React.useEffect(() => {
+    // Fetch historical logs on mount (relying on persistent store if enabled)
+    const fetchHistory = async () => {
+      try {
+        const history = await apiClient.getLogs({ limit: 1000 });
+        if (history && history.length > 0) {
+          const processed = history.map((newLog: any) => {
+            newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
+            newLog.formattedTime = timeFormatter
+              ? timeFormatter.format(new Date(newLog.timestamp))
+              : new Date(newLog.timestamp).toLocaleTimeString()
+            return newLog;
+          });
+          setLogs(prev => {
+             // Deduplicate against existing logs
+             const existingIds = new Set(prev.map(l => l.id));
+             const uniqueNew = processed.filter((l: any) => !existingIds.has(l.id));
+             // Merge and sort (Oldest -> Newest)
+             const merged = [...uniqueNew, ...prev];
+             return merged.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+          });
+        }
+      } catch (e) {
+        console.error("Failed to fetch log history", e);
+      }
+    };
+
+    fetchHistory();
+
     // Optimization: Flush buffer periodically to limit re-renders
     const flushInterval = setInterval(() => {
       if (logBufferRef.current.length > 0) {
@@ -300,23 +329,29 @@ export function LogStream({ source }: { source?: string }) {
           logBufferRef.current = [] // Clear buffer
           const MAX_LOGS = 1000
 
+          // Deduplication
+          const existingIds = new Set(prev.map(l => l.id));
+          const uniqueBuffer = buffer.filter(l => !existingIds.has(l.id));
+
+          if (uniqueBuffer.length === 0) return prev;
+
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
           // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
 
           // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
+          if (prev.length + uniqueBuffer.length <= MAX_LOGS) {
+            return [...prev, ...uniqueBuffer]
           }
 
           // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
+          if (uniqueBuffer.length >= MAX_LOGS) {
+            return uniqueBuffer.slice(uniqueBuffer.length - MAX_LOGS)
           }
 
           // Case 3: Need to trim from prev to make room for buffer
           // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
+          const keepCount = MAX_LOGS - uniqueBuffer.length
+          return [...prev.slice(-keepCount), ...uniqueBuffer]
         })
       }
     }, 100) // Flush every 100ms
