@@ -1,0 +1,5 @@
+globalSettings:
+  audit:
+    enabled: true
+    storageType: STORAGE_TYPE_FILE
+    outputPath: audit.log

@@ -5,25 +5,34 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -46,25 +55,37 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
+    const { toast } = useToast();
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
 
     // Filters
-    const [toolName, setToolName] = useState("");
-    const [userId, setUserId] = useState("");
+    const [toolName, setToolName] = useState("all");
+    const [userId, setUserId] = useState("all");
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+    const [availableTools, setAvailableTools] = useState<string[]>([]);
+    const [availableUsers, setAvailableUsers] = useState<string[]>([]);
+
+    useEffect(() => {
+        apiClient.listTools().then(res => setAvailableTools(res.tools.map((t: any) => t.name))).catch(console.error);
+        apiClient.listUsers().then(res => {
+             const users = Array.isArray(res) ? res : res.users || [];
+             setAvailableUsers(users.map((u: any) => u.id));
+        }).catch(console.error);
+    }, []);
 
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
             const filters: any = {
-                limit: 50,
+                limit: 100, // Increased limit for better chart data
                 offset: 0
             };
-            if (toolName) filters.tool_name = toolName;
-            if (userId) filters.user_id = userId;
+            if (toolName && toolName !== "all") filters.tool_name = toolName;
+            if (userId && userId !== "all") filters.user_id = userId;
             if (startDate) filters.start_time = startDate.toISOString();
             if (endDate) filters.end_time = endDate.toISOString();
 
@@ -90,6 +111,32 @@ export function AuditLogViewer() {
         fetchLogs();
     }, [fetchLogs]);
 
+    const chartData = useMemo(() => {
+        const counts: Record<string, number> = {};
+        logs.forEach(log => {
+            const date = new Date(log.timestamp);
+            const key = date.getHours() + ":00";
+            counts[key] = (counts[key] || 0) + 1;
+        });
+        return Object.entries(counts)
+            .map(([time, count]) => ({ time, count }))
+            .sort((a, b) => parseInt(a.time) - parseInt(b.time));
+    }, [logs]);
+
+    const handleSeed = async () => {
+        setLoading(true);
+        try {
+            await apiClient.seedAuditLogs(50);
+            toast({ title: "Traffic Simulated", description: "Generated 50 audit logs." });
+            await fetchLogs();
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Simulation Failed", variant: "destructive", description: String(e) });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const formatJson = (jsonStr: string) => {
         if (!jsonStr) return null;
         try {
@@ -102,29 +149,69 @@ export function AuditLogViewer() {
 
     return (
         <div className="space-y-4 h-full flex flex-col">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="md:col-span-2">
+                    <CardHeader className="pb-2">
+                        <CardTitle>Activity Volume (Last 24h)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-[120px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={chartData}>
+                                    <XAxis dataKey="time" fontSize={12} tickLine={false} axisLine={false} />
+                                    <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: 'var(--background)', borderRadius: '8px', border: '1px solid var(--border)' }}
+                                        labelStyle={{ color: 'var(--muted-foreground)' }}
+                                    />
+                                    <Bar dataKey="count" fill="currentColor" radius={[4, 4, 0, 0]} className="fill-primary" />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle>Filters</CardTitle>
+                        <CardDescription>Refine your view.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                         <div className="space-y-2">
+                            <label className="text-xs font-medium">Tool Name</label>
+                            <Select value={toolName} onValueChange={setToolName}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Tools" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Tools</SelectItem>
+                                    {availableTools.map(t => (
+                                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-medium">User ID</label>
+                            <Select value={userId} onValueChange={setUserId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Users" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Users</SelectItem>
+                                    {availableUsers.map(u => (
+                                        <SelectItem key={u} value={u}>{u}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
             <Card className="flex-none">
-                <CardHeader className="pb-3">
-                    <CardTitle>Filters</CardTitle>
-                    <CardDescription>Search audit logs by tool, user, or date.</CardDescription>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row gap-4 items-end">
-                        <div className="grid gap-2 flex-1 w-full md:w-auto">
-                            <label className="text-sm font-medium">Tool Name</label>
-                            <Input
-                                placeholder="e.g. weather_get"
-                                value={toolName}
-                                onChange={(e) => setToolName(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2 flex-1 w-full md:w-auto">
-                            <label className="text-sm font-medium">User ID</label>
-                            <Input
-                                placeholder="e.g. alice"
-                                value={userId}
-                                onChange={(e) => setUserId(e.target.value)}
-                            />
-                        </div>
                         <div className="grid gap-2 flex-1 w-full md:w-auto">
                             <label className="text-sm font-medium">Date Range</label>
                             <div className="flex gap-2">
@@ -177,6 +264,9 @@ export function AuditLogViewer() {
                         <Button onClick={fetchLogs} disabled={loading}>
                             {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
                             Filter
+                        </Button>
+                        <Button variant="outline" onClick={handleSeed} disabled={loading}>
+                            <Zap className="mr-2 h-4 w-4" /> Simulate Traffic
                         </Button>
                     </div>
                 </CardContent>
@@ -234,16 +324,16 @@ export function AuditLogViewer() {
                 </CardContent>
             </Card>
 
-            <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Audit Log Detail</DialogTitle>
-                        <DialogDescription>
+            <Sheet open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+                <SheetContent className="sm:max-w-xl w-full overflow-y-auto">
+                    <SheetHeader>
+                        <SheetTitle>Audit Log Detail</SheetTitle>
+                        <SheetDescription>
                             Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
-                        </DialogDescription>
-                    </DialogHeader>
+                        </SheetDescription>
+                    </SheetHeader>
                     {selectedLog && (
-                        <div className="space-y-4">
+                        <div className="space-y-6 mt-6">
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <span className="font-semibold block text-muted-foreground">User ID</span>
@@ -297,8 +387,8 @@ export function AuditLogViewer() {
                             </div>
                         </div>
                     )}
-                </DialogContent>
-            </Dialog>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 }

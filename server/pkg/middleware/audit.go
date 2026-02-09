@@ -248,6 +248,16 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
+// Write allows writing a custom audit entry (e.g. for seeding/testing).
+func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.store == nil {
+		return fmt.Errorf("audit store not initialized")
+	}
+	return m.store.Write(ctx, entry)
+}
+
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan []byte, [][]byte) {
