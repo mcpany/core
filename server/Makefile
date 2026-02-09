@@ -130,6 +130,17 @@ prepare:
 	@echo "Preparing development environment..."
 	@mkdir -p $(LOCAL_BIN_DIR)
 	@mkdir -p $(TOOL_INSTALL_DIR)
+	@# Ensure dependencies are installed (unconditional check)
+	@if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v xz >/dev/null 2>&1; then \
+		echo "Dependencies missing. Installing curl, unzip, xz-utils..."; \
+		if command -v apt-get >/dev/null 2>&1; then \
+			apt-get update && apt-get install -y curl unzip xz-utils; \
+		elif command -v apk >/dev/null 2>&1; then \
+			apk add --no-cache curl unzip xz; \
+		else \
+			echo "Warning: Could not install dependencies. Ensure curl, unzip, and xz are installed."; \
+		fi; \
+	fi
 	@# Check if protoc is installed
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \
@@ -144,16 +155,6 @@ prepare:
 		fi; \
 	else \
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
-		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v xz >/dev/null 2>&1; then \
-			echo "Dependencies missing. Installing curl, unzip, xz-utils..."; \
-			if command -v apt-get >/dev/null 2>&1; then \
-				apt-get update && apt-get install -y curl unzip xz-utils; \
-			elif command -v apk >/dev/null 2>&1; then \
-				apk add --no-cache curl unzip xz; \
-			else \
-				echo "Warning: Could not install dependencies. Ensure curl, unzip, and xz are installed."; \
-			fi; \
-		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \

@@ -953,10 +953,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list profiles');
         const data = await res.json();
         return data.profiles || [];
-    }
-
-
-
+    },
 
     // Secrets
 
