@@ -326,7 +326,7 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 			bgCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 			defer cancel()
 
-			if err := semCache.Set(bgCtx, req.ToolName, embedding, result, config.GetTtl().AsDuration()); err != nil {
+			if err := semCache.Set(bgCtx, req.ToolName, inputStr, embedding, result, config.GetTtl().AsDuration()); err != nil {
 				logging.GetLogger().Error("Failed to set semantic cache", "error", err)
 			}
 		}()

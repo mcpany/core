@@ -13,9 +13,11 @@ import (
 
 type MockEmbeddingProvider struct {
 	embeddings map[string][]float32
+	callCount  int
 }
 
 func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
+	m.callCount++
 	if val, ok := m.embeddings[text]; ok {
 		return val, nil
 	}
@@ -41,7 +43,7 @@ func TestSemanticCache(t *testing.T) {
 	// 1. Set "hello" -> "world"
 	emb, err := provider.Embed(ctx, "hello")
 	assert.NoError(t, err)
-	err = cache.Set(ctx, key, emb, "world", 1*time.Minute)
+	err = cache.Set(ctx, key, "hello", emb, "world", 1*time.Minute)
 	assert.NoError(t, err)
 
 	// 2. Get "hello" (Exact match)
@@ -63,6 +65,33 @@ func TestSemanticCache(t *testing.T) {
 	assert.Nil(t, val)
 }
 
+func TestSemanticCache_ExactMatch(t *testing.T) {
+	provider := &MockEmbeddingProvider{
+		embeddings: map[string][]float32{
+			"hello": {1.0, 0.0, 0.0},
+		},
+	}
+	cache := NewSemanticCache(provider, nil, 0.9)
+	ctx := context.Background()
+	key := "test_tool"
+
+	// Set initial value (populates L1)
+	emb, _ := provider.Embed(ctx, "hello")
+	cache.Set(ctx, key, "hello", emb, "world", 1*time.Minute)
+
+	// Reset call count (Embed was called once above)
+	provider.callCount = 0
+
+	// Get exact match
+	val, _, hit, err := cache.Get(ctx, key, "hello")
+	assert.NoError(t, err)
+	assert.True(t, hit)
+	assert.Equal(t, "world", val)
+
+	// Verify Embed was NOT called
+	assert.Equal(t, 0, provider.callCount, "Embed should not be called on exact match")
+}
+
 func TestSemanticCache_Expiry(t *testing.T) {
 	provider := &MockEmbeddingProvider{
 		embeddings: map[string][]float32{
@@ -77,7 +106,7 @@ func TestSemanticCache_Expiry(t *testing.T) {
 	// Set with short expiry
 	emb, err := provider.Embed(ctx, "hello")
 	assert.NoError(t, err)
-	cache.Set(ctx, key, emb, "world", 1*time.Millisecond)
+	cache.Set(ctx, key, "hello", emb, "world", 1*time.Millisecond)
 
 	time.Sleep(10 * time.Millisecond)
 

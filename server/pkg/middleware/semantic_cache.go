@@ -6,6 +6,8 @@ package middleware
 import (
 	"context"
 	"time"
+
+	gocache "github.com/patrickmn/go-cache"
 )
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
@@ -46,9 +48,10 @@ type VectorStore interface {
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
-	provider  EmbeddingProvider
-	store     VectorStore
-	threshold float32
+	provider   EmbeddingProvider
+	store      VectorStore
+	threshold  float32
+	exactCache *gocache.Cache
 }
 
 // NewSemanticCache creates a new SemanticCache.
@@ -66,15 +69,24 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 		store = NewSimpleVectorStore()
 	}
 	return &SemanticCache{
-		provider:  provider,
-		store:     store,
-		threshold: threshold,
+		provider:   provider,
+		store:      store,
+		threshold:  threshold,
+		exactCache: gocache.New(5*time.Minute, 10*time.Minute),
 	}
 }
 
 // Get attempts to find a semantically similar cached result.
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
+	// ⚡ BOLT: Added L1 exact match cache to skip expensive embedding generation for repeated queries.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// Use composite key to prevent cross-tool collisions
+	cacheKey := key + ":" + input
+	if val, found := c.exactCache.Get(cacheKey); found {
+		return val, nil, true, nil
+	}
+
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
 		return nil, nil, false, err
@@ -82,6 +94,8 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 
 	result, score, found := c.store.Search(ctx, key, embedding)
 	if found && score >= c.threshold {
+		// Populate L1 cache on semantic hit for faster subsequent access
+		c.exactCache.Set(cacheKey, result, gocache.DefaultExpiration)
 		return result, embedding, true, nil
 	}
 	return nil, embedding, false, nil
@@ -91,11 +105,14 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 //
 // ctx is the context for the request.
 // key is the key.
+// input is the input string that generated the result.
 // embedding is the embedding.
 // result is the result.
 // ttl is the ttl.
 //
 // Returns an error if the operation fails.
-func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
+func (c *SemanticCache) Set(ctx context.Context, key string, input string, embedding []float32, result any, ttl time.Duration) error {
+	// Populate L1 cache
+	c.exactCache.Set(key+":"+input, result, ttl)
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }
