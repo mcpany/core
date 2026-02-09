@@ -74,7 +74,7 @@ describe("ToolForm", () => {
     await user.click(switchEl);
 
     // Submit
-    const submitBtn = screen.getByRole("button", { name: /build command/i });
+    const submitBtn = screen.getByRole("button", { name: /run tool/i });
     await user.click(submitBtn);
 
     await waitFor(() => {
@@ -94,7 +94,7 @@ describe("ToolForm", () => {
     render(<ToolForm tool={mockTool} onSubmit={onSubmit} onCancel={onCancel} />);
 
     // Submit without filling anything
-    const submitBtn = screen.getByRole("button", { name: /build command/i });
+    const submitBtn = screen.getByRole("button", { name: /run tool/i });
     await user.click(submitBtn);
 
     await waitFor(() => {
@@ -128,7 +128,7 @@ describe("ToolForm", () => {
      // Invalid Code
      await user.type(screen.getByLabelText(/code/i), "abc");
 
-     const submitBtn = screen.getByRole("button", { name: /build command/i });
+     const submitBtn = screen.getByRole("button", { name: /run tool/i });
      await user.click(submitBtn);
 
      await waitFor(() => {
