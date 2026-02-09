@@ -575,11 +575,6 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: Cache Tools
         uses: actions/cache@v4
