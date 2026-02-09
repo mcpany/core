@@ -2926,7 +2926,72 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterFunctionCalls(val string) error {
-	// Normalize value to detect obfuscation (e.g. system ( ) )
+	// Sentinel Security Update: Smart keyword detection with word boundary checks.
+	// This prevents false positives like "upload.file" matching "load." while still detecting
+	// "load(..." or "load . file".
+	valLower := strings.ToLower(val)
+
+	dangerousKeywords := []string{
+		"system", "exec", "popen", "eval",
+		"spawn", "fork",
+		"import", "require",
+		"subprocess", "child_process", "os", "sys",
+		"open", "read", "write",
+		// Sentinel Security Update: Added Lua/Ruby/Python specific execution functions
+		"load", "loadstring", "dofile",
+	}
+
+	for _, kw := range dangerousKeywords {
+		idx := 0
+		for {
+			// Find next occurrence of keyword
+			found := strings.Index(valLower[idx:], kw)
+			if found == -1 {
+				break
+			}
+			pos := idx + found
+
+			// Check preceding character (word boundary) to avoid suffixes (e.g. "upload" containing "load")
+			isSuffix := false
+			if pos > 0 && isWordChar(valLower[pos-1]) {
+				isSuffix = true
+			}
+
+			if !isSuffix {
+				// Check following characters for dangerous delimiters
+				end := pos + len(kw)
+
+				// Scan forward skipping whitespace using Rune reader to handle Unicode spaces correctly
+				reader := strings.NewReader(valLower[end:])
+				delimiterFound := false
+				for {
+					r, _, err := reader.ReadRune()
+					if err != nil {
+						break // EOF
+					}
+					if unicode.IsSpace(r) {
+						continue
+					}
+					// Check if it's a dangerous delimiter
+					if r == '(' || r == '\'' || r == '"' || r == '`' || r == '.' {
+						delimiterFound = true
+					}
+					// We found a non-space char. Whether it's dangerous or not, we stop scanning.
+					break
+				}
+
+				if delimiterFound {
+					return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+				}
+			}
+
+			// Advance index to continue searching in the string
+			idx = pos + 1
+		}
+	}
+
+	// Legacy cleanVal check for __import__ which is weird and hard to word-boundary check easily
+	// without specific logic, but it's rare enough to keep strict.
 	var b strings.Builder
 	b.Grow(len(val))
 	for _, r := range val {
@@ -2935,26 +3000,6 @@ func checkInterpreterFunctionCalls(val string) error {
 		}
 	}
 	cleanVal := strings.ToLower(b.String())
-
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
-		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
-	}
-
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
-		}
-	}
 
 	if strings.Contains(cleanVal, "__import__") {
 		return fmt.Errorf("interpreter injection detected: value contains '__import__'")

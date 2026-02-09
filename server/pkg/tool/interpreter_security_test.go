@@ -336,3 +336,136 @@ func TestInterpreterSecurity(t *testing.T) {
 		assert.Contains(t, err.Error(), "shell injection detected: perl qx execution", "Should detect qx execution in double quotes")
 	})
 }
+
+func TestInterpreterDotInjection(t *testing.T) {
+	// 8. Lua Dot Injection (os.execute)
+	t.Run("Lua_Dot_Injection", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{Name: proto.String("lua-tool")}).Build()
+		cmd := "lua"
+		service := (&configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}).Build()
+
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-e", "'{{code}}'"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				(&configv1.CommandLineParameterMapping_builder{
+					Schema: (&configv1.ParameterSchema_builder{Name: proto.String("code")}).Build(),
+				}).Build(),
+			},
+		}).Build()
+
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-lua")
+
+		payload := `os.execute("id")`
+		req := &ExecutionRequest{
+			ToolName:   "lua-tool",
+			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
+			Arguments: map[string]interface{}{
+				"code": payload,
+			},
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "interpreter injection detected")
+		assert.Contains(t, err.Error(), "os")
+	})
+
+	// 9. Python Dot Injection (subprocess.call)
+	t.Run("Python_Dot_Injection", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{Name: proto.String("python-tool")}).Build()
+		cmd := "python3"
+		service := (&configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}).Build()
+
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-c", "'import os; {{code}}'"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				(&configv1.CommandLineParameterMapping_builder{
+					Schema: (&configv1.ParameterSchema_builder{Name: proto.String("code")}).Build(),
+				}).Build(),
+			},
+		}).Build()
+
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-python")
+
+		payload := `subprocess.call("id")`
+		req := &ExecutionRequest{
+			ToolName:   "python-tool",
+			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
+			Arguments: map[string]interface{}{
+				"code": payload,
+			},
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "interpreter injection detected")
+		assert.Contains(t, err.Error(), "subprocess")
+	})
+}
+
+func TestInterpreterFalsePositives(t *testing.T) {
+	// 10. Python Suffix False Positives
+	t.Run("Python_Suffix_FalsePositives", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{
+			Name: proto.String("python_tool"),
+		}).Build()
+		cmd := "python3"
+		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}).Build()
+
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-c", "print(f'{{msg}}')"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				(&configv1.CommandLineParameterMapping_builder{
+					Schema: (&configv1.ParameterSchema_builder{
+						Name: proto.String("msg"),
+					}).Build(),
+				}).Build(),
+			},
+		}).Build()
+
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+
+		// Input: "upload.file" (contains "load.")
+		// Input: "download.status" (contains "load.")
+		// Input: "payload.id" (contains "load.")
+		// Input: "thread.start" (contains "read.")
+		// Input: "rewrite.rule" (contains "write.")
+		// Input: "pos.x" (contains "os.") -> pos.x -> os. ? Yes! "pos." -> "os.".
+
+		inputs := []string{
+			"upload.file",
+			"download.status",
+			"payload.id",
+			"thread.start",
+			"rewrite.rule",
+			"pos.x",
+		}
+
+		for _, input := range inputs {
+			t.Run(input, func(t *testing.T) {
+				req := &ExecutionRequest{
+					ToolName: "python_tool",
+					ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
+					Arguments: map[string]interface{}{
+						"msg": input,
+					},
+				}
+
+				_, err := tool.Execute(context.Background(), req)
+
+				// We expect NO "interpreter injection detected" error.
+				if err != nil {
+					assert.NotContains(t, err.Error(), "interpreter injection detected", "Valid input %q should not be flagged", input)
+				}
+			})
+		}
+	})
+}
