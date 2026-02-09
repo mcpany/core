@@ -1232,6 +1232,20 @@ export const apiClient = {
     },
 
     /**
+     * Seeds audit logs (Debug/Test only).
+     * @param count The number of logs to seed.
+     */
+    seedAuditLogs: async (count: number) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ count })
+        });
+        if (!res.ok) throw new Error('Failed to seed audit logs');
+        return res.json();
+    },
+
+    /**
      * Updates an alert status.
      * @param id The ID of the alert.
      * @param status The new status.

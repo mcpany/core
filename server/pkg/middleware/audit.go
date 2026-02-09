@@ -84,6 +84,19 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	return nil
 }
 
+// Write writes an audit entry to the underlying store.
+// This is used for seeding or testing purposes.
+func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	store := m.store
+	m.mu.RUnlock()
+
+	if store == nil {
+		return fmt.Errorf("audit store not initialized")
+	}
+	return store.Write(ctx, entry)
+}
+
 // SetStore sets the audit store.
 // This is primarily used for testing.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
