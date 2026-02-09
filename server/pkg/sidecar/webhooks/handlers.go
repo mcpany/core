@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"unicode/utf8"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -281,41 +280,45 @@ func paginateRecursive(data any, page, pageSize int) any {
 			return "Error: Input too large"
 		}
 
-		runesCount := utf8.RuneCountInString(v)
+		// ⚡ BOLT: Optimized pagination to use single-pass iteration.
+		// Randomized Selection from Top 5 High-Impact Targets
 		start := (page - 1) * pageSize
-
-		if start >= runesCount {
-			return fmt.Sprintf("Page %d (empty). Total length: %d", page, runesCount)
-		}
-
 		end := start + pageSize
-		if end > runesCount {
-			end = runesCount
-		}
 
-		// Find byte offsets
-		startByte := 0
-		endByte := 0
+		startByte := -1
+		endByte := -1
+		totalRunes := 0
 
-		// Optimization: iterate runes without allocating []rune
-		count := 0
 		for i := range v {
-			if count == start {
+			if totalRunes == start {
 				startByte = i
 			}
-			if count == end {
+			if totalRunes == end {
 				endByte = i
-				break
 			}
-			count++
+			totalRunes++
 		}
 
-		if endByte == 0 && end == runesCount {
+		if startByte == -1 {
+			// Check if we didn't find the start because it's beyond the end of the string
+			if totalRunes > 0 && start >= totalRunes {
+				return fmt.Sprintf("Page %d (empty). Total length: %d", page, totalRunes)
+			}
+			// If string is empty, totalRunes is 0, start is 0
+			startByte = 0
+		}
+
+		if endByte == -1 {
 			endByte = len(v)
 		}
 
+		// Handle empty page case correctly if start >= totalRunes (for cases where loop ran but start wasn't reached)
+		if start >= totalRunes {
+			return fmt.Sprintf("Page %d (empty). Total length: %d", page, totalRunes)
+		}
+
 		chunk := v[startByte:endByte]
-		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (runesCount+pageSize-1)/pageSize, chunk, runesCount)
+		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (totalRunes+pageSize-1)/pageSize, chunk, totalRunes)
 
 	case map[string]any:
 		for k, val := range v {

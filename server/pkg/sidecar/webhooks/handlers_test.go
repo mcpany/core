@@ -552,3 +552,19 @@ func TestPaginateHandler_UpperBound(t *testing.T) {
 	handler.Handle(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func BenchmarkPaginateRecursive(b *testing.B) {
+	// Create a large string
+	size := 100 * 1024 // 100KB
+	data := make([]byte, size)
+	for i := 0; i < size; i++ {
+		data[i] = 'a'
+	}
+	str := string(data)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		// Pass string directly to avoid map modification and measure pure string processing
+		paginateRecursive(str, 50, 1000)
+	}
+}
