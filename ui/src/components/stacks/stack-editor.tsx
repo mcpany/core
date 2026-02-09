@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,7 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const [content, setContent] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isDeploying, setIsDeploying] = useState(false);
     const [isValid, setIsValid] = useState(true);
     const [validationError, setValidationError] = useState<string | null>(null);
     const [showPalette, setShowPalette] = useState(true);
@@ -43,27 +44,14 @@ export function StackEditor({ stackId }: StackEditorProps) {
     }, [stackId]);
 
     const loadConfig = async () => {
+        if (stackId === "new") {
+            setContent("# Define your stack here\nname: my-stack\nservices:\n");
+            return;
+        }
+
         setIsLoading(true);
         try {
-            const collection = await apiClient.getCollection(stackId);
-            console.log("DEBUG: collection:", JSON.stringify(collection));
-            // Transform services array to map for YAML Editor
-            const servicesMap: Record<string, any> = {};
-            if (collection.services && Array.isArray(collection.services)) {
-                collection.services.forEach((s: any) => {
-                    servicesMap[s.name] = s;
-                });
-            } else if (collection.services) {
-                // Already a map?
-                Object.assign(servicesMap, collection.services);
-            }
-
-            const configObj = {
-                ...collection,
-                services: servicesMap
-            };
-
-            const yaml = jsyaml.dump(configObj);
+            const yaml = await apiClient.getStackConfig(stackId);
             setContent(yaml);
         } catch (error) {
             console.error("DEBUG: loadConfig failed:", error);
@@ -97,38 +85,59 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const handleSave = async () => {
         if (!isValid) {
             toast.error("Cannot save invalid configuration");
-            return;
+            throw new Error("Invalid configuration");
         }
 
         setIsSaving(true);
         try {
+            // Parse to get name if creating new
+            let targetId = stackId;
             const configObj = jsyaml.load(content) as any;
 
-            // Transform services map to array for Backend
-            let servicesArray: any[] = [];
-            if (configObj.services) {
-                if (Array.isArray(configObj.services)) {
-                     servicesArray = configObj.services;
-                } else {
-                    Object.entries(configObj.services).forEach(([key, val]: [string, any]) => {
-                        servicesArray.push({ ...val, name: key });
-                    });
-                }
+            if (stackId === "new") {
+                 if (!configObj.name) {
+                     throw new Error("Stack name is required in YAML (name: ...)");
+                 }
+                 targetId = configObj.name;
+            } else {
+                // Ensure name matches ID if we enforce it, or allow rename?
+                // Backend enforces name match for updates usually.
+                // We'll update the content to ensure consistency?
+                // Actually backend `saveStackConfig` might reject if name mismatches ID.
+                // Let's trust the user or backend validation.
             }
 
-            const collection = {
-                ...configObj,
-                name: stackId, // Ensure ID matches
-                services: servicesArray
-            };
-
-            await apiClient.saveCollection(collection);
+            await apiClient.saveStackConfig(targetId, content);
             toast.success("Configuration saved successfully");
-        } catch (error) {
+
+            if (stackId === "new") {
+                window.location.href = `/stacks/${targetId}`;
+            }
+            return targetId;
+        } catch (error: any) {
             console.error(error);
-            toast.error("Failed to save configuration");
+            toast.error(error.message || "Failed to save configuration");
+            throw error;
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleDeploy = async () => {
+        if (!isValid) return;
+        setIsDeploying(true);
+        try {
+             // Save first
+             const targetId = await handleSave();
+             if (!targetId) return;
+
+             await apiClient.deployStack(targetId);
+             toast.success("Stack deployed successfully!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to deploy stack");
+        } finally {
+            setIsDeploying(false);
         }
     };
 
@@ -149,15 +158,6 @@ export function StackEditor({ stackId }: StackEditorProps) {
         const match = newContent.match(servicesRegex);
 
         if (match) {
-            // Found services block.
-            // We want to insert AFTER the services block, but before the next root key if possible.
-            // Or just at the end of the services block.
-            // Since we can't easily parse partial YAML AST, we'll try to insert at the end of the file,
-            // assuming services is usually the main or last block.
-            // OR we can find the end of the services block by indentation.
-
-            // For now, simpler: Append to the end of the file, ensuring a newline.
-            // Users can move it if needed. The visualizer will still work.
             if (!newContent.endsWith("\n")) newContent += "\n";
             newContent += snippet;
         } else {
@@ -201,9 +201,13 @@ export function StackEditor({ stackId }: StackEditorProps) {
                      <Button variant="ghost" size="sm" onClick={handleDownload} title="Download Config">
                         <Download className="h-3 w-3 mr-1" /> Export
                     </Button>
-                    <Button size="sm" onClick={handleSave} disabled={isSaving || !isValid || isLoading}>
+                    <Button variant="outline" size="sm" onClick={() => handleSave()} disabled={isSaving || !isValid || isLoading}>
                         {isSaving ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
-                        Save Changes
+                        Save
+                    </Button>
+                    <Button size="sm" onClick={handleDeploy} disabled={isDeploying || isSaving || !isValid || isLoading}>
+                        {isDeploying ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <Play className="h-3 w-3 mr-1 fill-current" />}
+                        Deploy
                     </Button>
                 </div>
             </CardHeader>

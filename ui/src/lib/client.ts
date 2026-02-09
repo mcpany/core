@@ -953,7 +953,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list profiles');
         const data = await res.json();
         return data.profiles || [];
-    }
+    },
 
 
 
@@ -1339,24 +1339,48 @@ export const apiClient = {
     /**
      * Gets the configuration for a stack (Compatibility wrapper).
      * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration.
+     * @returns A promise that resolves to the stack configuration (text/plain).
      */
-    getStackConfig: async (stackId: string) => {
-        // Map to getCollection
-        return apiClient.getCollection(stackId);
+    getStackConfig: async (stackId: string): Promise<string> => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to get stack config');
+        return res.text();
     },
 
     /**
      * Saves the configuration for a stack (Compatibility wrapper).
      * @param stackId The ID of the stack.
-     * @param config The configuration content (Collection object).
+     * @param config The configuration content (YAML string).
      * @returns A promise that resolves when the config is saved.
      */
-    saveStackConfig: async (stackId: string, config: any) => {
-        // Map to saveCollection. Ensure name is set.
-        const collection = typeof config === 'string' ? JSON.parse(config) : config;
-        if (!collection.name) collection.name = stackId;
-        return apiClient.saveCollection(collection);
+    saveStackConfig: async (stackId: string, config: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            body: config, // Send raw YAML/text
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to save stack config: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Deploys (Applies) a stack.
+     * @param stackId The ID of the stack.
+     */
+    deployStack: async (stackId: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${stackId}/apply`, {
+            method: 'POST'
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to deploy stack: ${txt}`);
+        }
+        return res.json();
     },
 
 

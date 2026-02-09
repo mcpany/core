@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -83,17 +82,24 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 // handleTemplateDetail handles retrieving and deleting a specific service template.
 func (a *Application) handleTemplateDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		id := vars["id"]
-		// Fallback if mux vars not set (e.g. unit tests without router)
+		id := strings.TrimPrefix(r.URL.Path, "/templates/")
+		// Handle trailing slash or extra segments if any, though /templates/ should match prefix
+		// But api.go mounts it at /templates/
+		// So r.URL.Path will be /id (if StripPrefix is used) OR /templates/id
+		// api.go uses: mux.HandleFunc("/templates/", ...) on a mux that is already stripped of /api/v1?
+		// api.go: http.StripPrefix("/api/v1", a.createAPIHandler(store))
+		// So request to /api/v1/templates/123 -> /templates/123
+		// So TrimPrefix /templates/ is correct.
+
 		if id == "" {
+			// Fallback parsing just in case
 			pathParts := strings.Split(r.URL.Path, "/")
 			if len(pathParts) > 0 {
 				id = pathParts[len(pathParts)-1]
 			}
 		}
 
-		if id == "" {
+		if id == "" || id == "templates" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return
 		}
