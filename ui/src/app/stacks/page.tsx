@@ -1,77 +1,120 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import Link from "next/link";
-import { Layers, Cuboid } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+"use client";
 
-/**
- * StacksPage component.
- * @returns The rendered component.
- */
+import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
+import { ServiceCollection } from "@/lib/marketplace-service";
+import { StackList } from "@/components/stacks/stack-list";
+import { StackEditor } from "@/components/stacks/stack-editor";
+import { Button } from "@/components/ui/button";
+import { Plus, Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
 export default function StacksPage() {
-  // In a real Portainer, this would list multiple stacks.
-  // For MCP Any, we assume one main "MCP Any Stack" for now, or maybe files as stacks?
-  // Let's assume one "System" stack.
+    const [stacks, setStacks] = useState<ServiceCollection[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
+    const [isEditorOpen, setIsEditorOpen] = useState(false);
+    const { toast } = useToast();
 
-  const stacks = [
-    {
-      id: "system",
-      name: "mcpany-system",
-      status: "active",
-      services: "Dynamic",
-      type: "Compose"
-    }
-  ];
+    const fetchStacks = async () => {
+        setLoading(true);
+        try {
+            const res = await apiClient.listCollections();
+            setStacks(res || []);
+        } catch (e) {
+            console.error("Failed to fetch stacks", e);
+            toast({
+                title: "Error",
+                description: "Failed to load stacks.",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Stacks</h1>
-        <p className="text-muted-foreground">Manage your MCP Any configuration stacks.</p>
-      </div>
+    useEffect(() => {
+        fetchStacks();
+    }, []);
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {stacks.map((stack) => (
-          <Link key={stack.id} href={`/stacks/${stack.id}`}>
-             <Card className="hover:shadow-md transition-all cursor-pointer group border-transparent shadow-sm bg-card hover:bg-muted/50">
-               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Stack
-                  </CardTitle>
-                  <Cuboid className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-               </CardHeader>
-               <CardContent>
-                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-primary/10 rounded-lg group-hover:scale-105 transition-transform">
-                        <Layers className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                        <div className="text-2xl font-bold tracking-tight">{stack.name}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{stack.id}</div>
-                    </div>
-                 </div>
+    const handleCreate = () => {
+        setSelectedStackId("new");
+        setIsEditorOpen(true);
+    };
 
-                 <div className="flex items-center justify-between text-xs text-muted-foreground mt-4 pt-4 border-t">
-                    <div className="flex items-center gap-1.5">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        Online
-                    </div>
-                    <div>
-                        {stack.services} Services
-                    </div>
-                 </div>
-               </CardContent>
-             </Card>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
+    const handleEdit = (stack: ServiceCollection) => {
+        setSelectedStackId(stack.name);
+        setIsEditorOpen(true);
+    };
+
+    const handleDelete = async (stack: ServiceCollection) => {
+        if (!confirm(`Are you sure you want to delete stack "${stack.name}"?`)) return;
+        try {
+            await apiClient.deleteCollection(stack.name);
+            fetchStacks();
+            toast({ title: "Stack Deleted", description: `Stack ${stack.name} has been removed.` });
+        } catch (e: any) {
+            toast({ title: "Delete Failed", description: e.message, variant: "destructive" });
+        }
+    };
+
+    const handleApply = async (stack: ServiceCollection) => {
+        try {
+            await apiClient.applyStack(stack.name);
+            toast({ title: "Stack Applied", description: `Services in ${stack.name} have been updated.` });
+        } catch (e: any) {
+            toast({ title: "Apply Failed", description: e.message, variant: "destructive" });
+        }
+    };
+
+    return (
+        <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">Stacks</h2>
+                    <p className="text-muted-foreground">
+                        Manage infrastructure as code using YAML stacks.
+                    </p>
+                </div>
+                <Button onClick={handleCreate}>
+                    <Plus className="mr-2 h-4 w-4" /> Add Stack
+                </Button>
+            </div>
+
+            <StackList
+                stacks={stacks}
+                isLoading={loading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onApply={handleApply}
+            />
+
+            <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>{selectedStackId === "new" ? "New Stack" : `Edit ${selectedStackId}`}</DialogTitle>
+                        <DialogDescription>
+                            Define your services in YAML format.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {selectedStackId && (
+                        <StackEditor
+                            stackId={selectedStackId}
+                            onClose={() => setIsEditorOpen(false)}
+                            onSaved={() => {
+                                fetchStacks();
+                                setIsEditorOpen(false);
+                            }}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
 }

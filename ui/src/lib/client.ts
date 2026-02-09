@@ -1337,26 +1337,43 @@ export const apiClient = {
     },
 
     /**
-     * Gets the configuration for a stack (Compatibility wrapper).
+     * Gets the configuration for a stack in YAML format.
      * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration.
+     * @returns A promise that resolves to the stack configuration as a YAML string.
      */
     getStackConfig: async (stackId: string) => {
-        // Map to getCollection
-        return apiClient.getCollection(stackId);
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to get stack config');
+        return res.text();
     },
 
     /**
-     * Saves the configuration for a stack (Compatibility wrapper).
+     * Saves the configuration for a stack using YAML.
      * @param stackId The ID of the stack.
-     * @param config The configuration content (Collection object).
+     * @param configYaml The configuration content (YAML string).
      * @returns A promise that resolves when the config is saved.
      */
-    saveStackConfig: async (stackId: string, config: any) => {
-        // Map to saveCollection. Ensure name is set.
-        const collection = typeof config === 'string' ? JSON.parse(config) : config;
-        if (!collection.name) collection.name = stackId;
-        return apiClient.saveCollection(collection);
+    saveStackConfig: async (stackId: string, configYaml: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: configYaml
+        });
+        if (!res.ok) throw new Error('Failed to save stack config');
+        return res.json();
+    },
+
+    /**
+     * Applies a stack configuration (registers services).
+     * @param stackId The ID of the stack.
+     * @returns A promise that resolves when the stack is applied.
+     */
+    applyStack: async (stackId: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${stackId}/apply`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to apply stack');
+        return res.json();
     },
 
 
