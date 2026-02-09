@@ -1,3 +1,7 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package servicetemplates provides seeding logic for service templates.
 package servicetemplates
 
 import (
@@ -43,7 +47,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		// Read config.yaml
-		data, err := os.ReadFile(configPath)
+		data, err := os.ReadFile(configPath) //nolint:gosec // Path constructed from trusted examples dir
 		if err != nil {
 			fmt.Printf("Failed to read config for %s: %v\n", dirName, err)
 			continue
@@ -68,7 +72,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 
 		// Use the first service as the template
 		// svcMap, ok := services[0].(map[string]any)
-		if _, ok := services[0].(map[string]any); !ok {
+		if _, ok := services[0].(map[string]any); !ok { //nolint:staticcheck // logic placeholder
 			continue
 		}
 
@@ -266,6 +270,7 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 	}
 }
 
+//nolint:unused // Helper for future use
 func titleCase(s string) string {
 	if len(s) == 0 {
 		return ""

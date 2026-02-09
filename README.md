@@ -4,22 +4,20 @@
 
 ## 1. Elevator Pitch
 
-**What is this project and why does it exist?**
+**MCP Any** is a universal adapter that instantly transforms your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It serves as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
-**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
-
-**Why?**
-Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and maintenance overhead. MCP Any solves this by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint.
+**Why does it exist?**
+Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint.
 
 ## 2. Architecture
 
 **High-Level Overview**
 
-MCP Any uses a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. It is built with Go for performance and concurrency.
+MCP Any employs a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go, it is designed for high performance and concurrency.
 
 1.  **Core Server**: A Go-based runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote/DB).
-3.  **Adapters**: specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine & Middleware**: Enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
 
 ```mermaid
@@ -41,18 +39,18 @@ graph TD
 ```
 
 **Design Patterns:**
-*   **Adapter Pattern**: Translates MCP requests to upstream protocols.
-*   **Configuration as Code**: Services are defined declaratively.
-*   **Gateway/Sidecar**: Can be deployed as a central gateway or a Kubernetes sidecar.
+*   **Adapter Pattern**: Translates MCP requests to upstream protocols seamlessly.
+*   **Configuration as Code**: Services are defined declaratively, enabling GitOps workflows.
+*   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar.
 
 ## 3. Getting Started
 
-Follow these steps to get up and running immediately.
+Follow these steps to go from `git clone` to `Hello World` in minutes.
 
 ### Prerequisites
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
 *   `make` (for build automation)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized execution)
 
 ### Installation
 
@@ -66,13 +64,13 @@ Follow these steps to get up and running immediately.
     ```bash
     make prepare
     ```
-    This installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
+    This command installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
 
 3.  **Build the server:**
     ```bash
     make build
     ```
-    This creates the `server` binary in `build/bin/`.
+    This compiles the `server` binary into `build/bin/`.
 
 4.  **Run with an example configuration:**
     ```bash
@@ -80,7 +78,8 @@ Follow these steps to get up and running immediately.
     ```
 
 ### Hello World
-Once running, verify the server health:
+
+Once the server is running, verify its health:
 ```bash
 curl http://localhost:50050/health
 ```
@@ -94,11 +93,11 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 Ask your agent:
 > "What is the weather in Tokyo?"
 
-The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
+The agent will use the `wttr.in` tool exposed by MCP Any to fetch real-time weather data.
 
 ## 4. Development
 
-We follow a strict development workflow to ensure quality and maintainability.
+We adhere to a strict development workflow to ensure quality and maintainability.
 
 ### Testing
 Run all unit and integration tests to ensure code correctness.
@@ -141,7 +140,7 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
 
 ### Required Secrets
-Sensitive information (like upstream API keys) must **never** be hardcoded. Use environment variables reference in configuration files.
+Sensitive information (like upstream API keys) must **never** be hardcoded. Use environment variables referenced in configuration files.
 
 **Example Config:**
 ```yaml
