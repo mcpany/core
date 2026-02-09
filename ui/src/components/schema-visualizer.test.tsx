@@ -105,4 +105,53 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('items')).toBeInTheDocument();
         expect(screen.getByText('A tag')).toBeInTheDocument();
     });
+
+    it('renders deep nested objects collapsed by default', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                address: {
+                    type: 'object',
+                    properties: {
+                        details: {
+                            type: 'object',
+                            properties: {
+                                zip: { type: 'string' }
+                            }
+                        }
+                    },
+                },
+            },
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        // address (L0) is expanded.
+        expect(screen.getByText('address')).toBeInTheDocument();
+        // details (L1) is rendered because address is expanded.
+        expect(screen.getByText('details')).toBeInTheDocument();
+
+        // zip (L2) should NOT be visible because details (L1) is collapsed.
+        expect(screen.queryByText('zip')).not.toBeInTheDocument();
+
+        // Click expand on 'details' row.
+        // We need to find the expand button. It's a button with ChevronRight.
+        // It's in the row for 'details'.
+
+        // The button is inside the cell for 'details'.
+        // We can find the button by its role or simply by querying inside the row.
+        const detailsCell = screen.getByText('details').closest('td');
+        // The button is a sibling or parent? No, details is in a span inside a div.
+        // <div className="flex items-center gap-2"><button>...</button><span>details</span></div>
+        const expandButton = detailsCell?.querySelector('button');
+
+        if (expandButton) {
+            fireEvent.click(expandButton);
+        } else {
+             throw new Error("Expand button not found");
+        }
+
+        // Now zip should be visible
+        expect(screen.getByText('zip')).toBeInTheDocument();
+    });
 });
