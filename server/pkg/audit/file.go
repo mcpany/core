@@ -34,7 +34,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 		if err := validation.IsAllowedPath(path); err != nil {
 			return nil, fmt.Errorf("audit log file path not allowed: %w", err)
 		}
-		f, err = os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) //nolint:gosec
+		f, err = os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) //nolint:gosec // File path validated by caller
 		if err != nil {
 			return nil, fmt.Errorf("failed to open audit log file: %w", err)
 		}

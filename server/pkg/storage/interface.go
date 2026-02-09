@@ -144,55 +144,6 @@ type Storage interface {
 	//   - error: An error if saving fails.
 	SaveSecret(ctx context.Context, secret *configv1.Secret) error
 
-	// SaveServiceTemplate saves a service template.
-	//
-	// Summary: Persists a service template.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - template: *configv1.ServiceTemplate. The template to save.
-	//
-	// Returns:
-	//   - error: An error if saving fails.
-	// ListServiceTemplates lists all service templates.
-	//
-	// Summary: Lists all service templates.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//
-	// Returns:
-	//   - []*configv1.ServiceTemplate: A list of service templates.
-	//   - error: An error if listing fails.
-	ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error)
-
-	// GetServiceTemplate retrieves a service template by ID.
-	//
-	// Summary: Retrieves a service template.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - id: string. The template ID.
-	//
-	// Returns:
-	//   - *configv1.ServiceTemplate: The service template.
-	//   - error: An error if retrieval fails.
-	GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error)
-
-	SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
-
-	// DeleteServiceTemplate deletes a service template by ID.
-	//
-	// Summary: Deletes a service template.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - id: string. The template ID to delete.
-	//
-	// Returns:
-	//   - error: An error if deletion fails.
-	DeleteServiceTemplate(ctx context.Context, id string) error
-
 	// DeleteSecret deletes a secret by ID.
 	//
 	// Summary: Deletes a secret.

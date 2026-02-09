@@ -17,9 +17,9 @@ import (
 	"sync"
 
 	"al.essio.dev/pkg/shellescape"
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -123,7 +123,7 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
-	BundleBaseDir string
+	BundleBaseDir  string
 	globalSettings *configv1.GlobalSettings
 
 	mu        sync.RWMutex
@@ -488,7 +488,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 			command = "sudo"
 			args = newArgs
 		}
-		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is validated/configured by user
+		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command from config
 		cmd.Dir = stdio.GetWorkingDirectory()
 		cmd.Env = buildSafeEnv(resolvedEnv)
 		env := cmd.Env // For validation below
@@ -508,7 +508,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	// If no setup commands are provided, execute the command directly.
 	// This avoids shell injection risks and is safer.
 	if len(setupCommands) == 0 {
-		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is configured by user
+		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command from config
 		cmd.Dir = stdio.GetWorkingDirectory()
 		cmd.Env = buildSafeEnv(resolvedEnv)
 		env := cmd.Env // For validation below
@@ -538,7 +538,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	script := strings.Join(scriptCommands, " && ")
 
-	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script is configured by user
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script execution required
 	cmd.Dir = stdio.GetWorkingDirectory()
 	cmd.Env = buildSafeEnv(resolvedEnv)
 	env := cmd.Env // For validation below
@@ -1054,16 +1054,16 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	if newClientImplForTesting != nil {
 		toolClient = newClientImplForTesting(mcpSdkClient, nil, httpAddress, httpClient)
 		promptConnection = &mcpConnection{
-			client:      mcpSdkClient,
-			httpAddress: httpAddress,
-			httpClient:  httpClient,
+			client:          mcpSdkClient,
+			httpAddress:     httpAddress,
+			httpClient:      httpClient,
 			sessionRegistry: u.sessionRegistry,
 		}
 	} else {
 		conn := &mcpConnection{
-			client:      mcpSdkClient,
-			httpAddress: httpAddress,
-			httpClient:  httpClient,
+			client:          mcpSdkClient,
+			httpAddress:     httpAddress,
+			httpClient:      httpClient,
 			sessionRegistry: u.sessionRegistry,
 		}
 		toolClient = conn

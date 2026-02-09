@@ -155,9 +155,9 @@ const (
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
 	// LoopbackIP is the default loopback IP for testing.
-	LoopbackIP              = "127.0.0.1"
-	loopbackIP              = LoopbackIP
-	dynamicBindAddr         = loopbackIP + ":0"
+	LoopbackIP      = "127.0.0.1"
+	loopbackIP      = LoopbackIP
+	dynamicBindAddr = loopbackIP + ":0"
 )
 
 var (
@@ -621,10 +621,10 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Ensure the container is not already running from a previous failed run
 
 	stopCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
-	_ = stopCmd.Run()                                                                                    // Ignore error, it might not be running
+	_ = stopCmd.Run() // Ignore error, it might not be running
 
 	rmCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
-	_ = rmCmd.Run()                                                                                  // Ignore error, it might not exist
+	_ = rmCmd.Run() // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
 	dockerRunArgs = append(dockerRunArgs, runArgs...)
@@ -1072,7 +1072,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic // Helper
-		cmd := exec.CommandContext(context.Background(), dockerExe, pingArgs...)       //nolint:gosec // Test helper
+		cmd := exec.CommandContext(context.Background(), dockerExe, pingArgs...) //nolint:gosec // Test helper
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
@@ -1871,7 +1871,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	require.NoError(t, err)
 	_, err = os.Stat(absSpecPath)
 	require.NoError(t, err, "OpenAPI spec file not found: %s", absSpecPath)
-	specContent, err := os.ReadFile(absSpecPath) //nolint:gosec // Test file
+	specContent, err := os.ReadFile(absSpecPath) //nolint:gosec // Test helper
 	require.NoError(t, err)
 	spec := string(specContent)
 

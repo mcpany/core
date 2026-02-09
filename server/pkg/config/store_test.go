@@ -345,7 +345,7 @@ mcpServers:
 	_, err := store.Load(context.Background())
 	assert.Error(t, err)
 	// Expect a helpful error message guiding the user
-	assert.Contains(t, err.Error(), "Did you mean \"upstream_services\"?")
+	assert.Contains(t, err.Error(), "did you mean \"upstream_services\"?")
 	assert.Contains(t, err.Error(), "mcpServers")
 }
 

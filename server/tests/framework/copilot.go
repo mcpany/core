@@ -70,7 +70,7 @@ func (c *CopilotCLI) copilotCommand(args ...string) *exec.Cmd {
 	// The search result said 'npm install -g @github/copilot' and the binary might be 'github-copilot-cli'.
 	// We'll trust the package.json dependency.
 	copilotPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "github-copilot-cli")
-	return exec.CommandContext(context.Background(), copilotPath, args...) //nolint:gosec // Test utility
+	return exec.CommandContext(context.Background(), copilotPath, args...) //nolint:gosec // Test helper
 }
 
 // AddMCP adds an MCP server to the Copilot CLI configuration by writing to mcp-config.json.

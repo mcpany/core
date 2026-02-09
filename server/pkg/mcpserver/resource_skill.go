@@ -140,7 +140,7 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 	if r.assetPath == "" {
 		// Read main SKILL.md
 		path := filepath.Join(r.skill.Path, skill.SkillFileName)
-		content, err = os.ReadFile(path) //nolint:gosec
+		content, err = os.ReadFile(path) //nolint:gosec // Internal path
 	} else {
 		// Read asset
 		// Resolve the skill path to its canonical absolute path to prevent traversal via symlinks in the base path.
@@ -188,7 +188,7 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 			return nil, fmt.Errorf("invalid path: points outside skill directory")
 		}
 
-		content, err = os.ReadFile(realPath) //nolint:gosec // Path is sanitized and verified to be within skill directory
+		content, err = os.ReadFile(realPath) //nolint:gosec // Internal path
 	}
 
 	if err != nil {

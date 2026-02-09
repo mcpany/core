@@ -56,7 +56,7 @@ func TestReproduction_ClaudeConfig_HelpfulError(t *testing.T) {
 
 	assert.Error(t, errStrict)
 	// Verify the helpful message is present
-	assert.True(t, strings.Contains(errStrict.Error(), "Did you mean \"upstream_services\"?"), "Error message should contain helpful hint")
+	assert.True(t, strings.Contains(errStrict.Error(), "did you mean \"upstream_services\"?"), "Error message should contain helpful hint")
 }
 
 func TestReproduction_Typo_UnknownField_HelpfulError(t *testing.T) {
@@ -77,7 +77,7 @@ upstream_services:
 	// Now we expect a suggestion.
 	// It might suggest "address" or "http_address" depending on Levenshtein distance.
 	// Both are valid suggestions relative to "target_address".
-	hasSuggestion := strings.Contains(err.Error(), "Did you mean \"address\"?") || strings.Contains(err.Error(), "Did you mean \"http_address\"?")
+	hasSuggestion := strings.Contains(err.Error(), "did you mean \"address\"?") || strings.Contains(err.Error(), "did you mean \"http_address\"?")
 	assert.True(t, hasSuggestion, "Error message should contain a helpful suggestion")
 	t.Logf("Error: %v", err)
 }
@@ -98,5 +98,5 @@ func TestReproduction_YamlSyntaxError_HelpfulMessage(t *testing.T) {
 	t.Logf("Error: %v", err)
 	// Check if the error is reasonably descriptive
 	assert.True(t, strings.Contains(err.Error(), "found character that cannot start any token"), "Should mention tab error or token error")
-	assert.True(t, strings.Contains(err.Error(), "Hint: YAML files cannot contain tabs"), "Should provide hint about tabs")
+	assert.True(t, strings.Contains(err.Error(), "hint: YAML files cannot contain tabs"), "Should provide hint about tabs")
 }

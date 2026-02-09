@@ -28,7 +28,7 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		return nil, nil
 	}
 
-	f, err := os.Open(path) //nolint:gosec // Intended file inclusion
+	f, err := os.Open(path) //nolint:gosec // General file utility
 	if err != nil {
 		return nil, err
 	}

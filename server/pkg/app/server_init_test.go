@@ -239,33 +239,6 @@ func (m *MockStore) HasConfigSources() bool {
 	return true
 }
 
-// Service Templates
-func (m *MockStore) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
-	args := m.Called(ctx)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).([]*configv1.ServiceTemplate), args.Error(1)
-}
-
-func (m *MockStore) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
-	args := m.Called(ctx, id)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*configv1.ServiceTemplate), args.Error(1)
-}
-
-func (m *MockStore) SaveServiceTemplate(ctx context.Context, tmpl *configv1.ServiceTemplate) error {
-	args := m.Called(ctx, tmpl)
-	return args.Error(0)
-}
-
-func (m *MockStore) DeleteServiceTemplate(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
-	return args.Error(0)
-}
-
 func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}

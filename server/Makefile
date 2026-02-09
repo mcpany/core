@@ -235,7 +235,7 @@ prepare:
 				echo "Creating virtual environment..."; \
 				$$PYTHON_CMD -m venv $$VENV_DIR --without-pip; \
 				curl -sSL https://bootstrap.pypa.io/get-pip.py -o $$VENV_DIR/get-pip.py; \
-				$$VENV_DIR/bin/python $$VENV_DIR/get-pip.py; \
+				$$VENV_DIR/bin/python $$VENV_DIR/get-pip.py --index-url https://pypi.org/simple; \
 			fi; \
 			if ! test -f "$$VENV_DIR/bin/python"; then \
 				echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \

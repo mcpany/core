@@ -27,7 +27,7 @@ services:
 
 	assert.Error(t, err)
 	// Verify the specific helpful message
-	assert.True(t, strings.Contains(err.Error(), "Did you mean \"upstream_services\"? \"services\" is not a valid top-level key."), "Error message should contain specific hint for 'services'")
+	assert.True(t, strings.Contains(err.Error(), "did you mean \"upstream_services\"? \"services\" is not a valid top-level key."), "Error message should contain specific hint for 'services'")
 }
 
 func TestSuggestFix_Recursion_Excluded(t *testing.T) {
@@ -51,7 +51,7 @@ upstream_services:
 
 	assert.Error(t, err)
 	// "http_servic" is close to "http_service" which is in UpstreamServiceConfig (one of the allowed common messages)
-	assert.True(t, strings.Contains(err.Error(), "Did you mean \"http_service\"?"), "Should suggest http_service")
+	assert.True(t, strings.Contains(err.Error(), "did you mean \"http_service\"?"), "Should suggest http_service")
 }
 
 func TestSuggestFix_DeeplyNested_Included(t *testing.T) {
@@ -70,5 +70,5 @@ upstream_services:
 	_, err := store.Load(context.Background())
 
 	assert.Error(t, err)
-	assert.True(t, strings.Contains(err.Error(), "Did you mean \"address\"?"), "Should suggest address from HttpUpstreamService")
+	assert.True(t, strings.Contains(err.Error(), "did you mean \"address\"?"), "Should suggest address from HttpUpstreamService")
 }

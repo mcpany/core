@@ -86,7 +86,7 @@ global_settings:
 	store := NewFileStore(fs, []string{"/config.yaml"})
 	_, err = store.Load(context.Background())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "Did you mean \"mcp_listen_address\"?")
+	assert.Contains(t, err.Error(), "did you mean \"mcp_listen_address\"?")
 }
 
 func TestStore_JSON_Error_Suggestions(t *testing.T) {
@@ -116,5 +116,5 @@ func TestStore_JSON_UnknownField(t *testing.T) {
 	store := NewFileStore(fs, []string{"/config.json"})
 	_, err = store.Load(context.Background())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "Did you mean \"mcp_listen_address\"?")
+	assert.Contains(t, err.Error(), "did you mean \"mcp_listen_address\"?")
 }

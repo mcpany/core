@@ -17,14 +17,14 @@ func TestSuggestFix_Aliases(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{"url", "Did you mean \"address\"? (Common alias)"},
-		{"URL", "Did you mean \"address\"? (Common alias)"}, // Case insensitive
-		{"uri", "Did you mean \"address\"? (Common alias)"},
-		{"endpoint", "Did you mean \"address\"? (Common alias)"},
-		{"endpoints", "Did you mean \"address\"? (Common alias)"},
-		{"host", "Did you mean \"address\"? (Common alias)"},
-		{"cmd", "Did you mean \"command\"? (Common alias)"},
-		{"args", "Did you mean \"arguments\"? (Common alias)"},
+		{"url", "did you mean \"address\"? (Common alias)"},
+		{"URL", "did you mean \"address\"? (Common alias)"}, // Case insensitive
+		{"uri", "did you mean \"address\"? (Common alias)"},
+		{"endpoint", "did you mean \"address\"? (Common alias)"},
+		{"endpoints", "did you mean \"address\"? (Common alias)"},
+		{"host", "did you mean \"address\"? (Common alias)"},
+		{"cmd", "did you mean \"command\"? (Common alias)"},
+		{"args", "did you mean \"arguments\"? (Common alias)"},
 	}
 
 	for _, tt := range tests {
@@ -43,8 +43,8 @@ func TestSuggestFix_Fuzzy(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{"adres", "Did you mean \"address\"?"},
-		{"addres", "Did you mean \"address\"?"},
+		{"adres", "did you mean \"address\"?"},
+		{"addres", "did you mean \"address\"?"},
 		{"xyz", ""}, // No match
 	}
 

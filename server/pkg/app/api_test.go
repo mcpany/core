@@ -50,14 +50,13 @@ import (
 
 func setupApiTestApp() (*Application, storage.Storage) {
 	bp, _ := bus.NewProvider(nil)
-	store := memory.NewStore()
 	app := &Application{
 		PromptManager:   prompt.NewManager(),
 		ToolManager:     tool.NewManager(bp),
 		ResourceManager: resource.NewManager(),
 		busProvider:     bp,
-		Storage:         store,
 	}
+	store := memory.NewStore()
 	return app, store
 }
 
@@ -1243,9 +1242,26 @@ func TestHandleSystemStatus(t *testing.T) {
 	assert.GreaterOrEqual(t, resp["uptime_seconds"].(float64), float64(10))
 }
 
+func TestHandleTemplates(t *testing.T) {
+	tempDir := t.TempDir()
+	app := &Application{TemplateManager: NewTemplateManager(tempDir)}
+	handler := app.handleTemplates()
 
-// TestHandleTemplates removed in favor of api_templates_test.go
-
+	t.Run("CreateTemplate", func(t *testing.T) {
+		template := map[string]interface{}{
+			"name": "test-template",
+			"id":   "test-id",
+			"mcp_service": map[string]interface{}{
+				"http_connection": map[string]interface{}{"http_address": "http://localhost:8080"},
+			},
+		}
+		bodyBytes, _ := json.Marshal(template)
+		req, _ := http.NewRequest(http.MethodPost, "/templates", bytes.NewReader(bodyBytes))
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code)
+	})
+}
 
 func TestHandleUsers(t *testing.T) {
 	app := NewApplication()
@@ -1461,18 +1477,6 @@ func (s *MockServiceStore) SaveCredential(ctx context.Context, cred *configv1.Cr
 	return nil
 }
 func (s *MockServiceStore) DeleteCredential(ctx context.Context, id string) error { return nil }
-func (s *MockServiceStore) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
-	return nil, nil
-}
-func (s *MockServiceStore) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
-	return nil, nil
-}
-func (s *MockServiceStore) SaveServiceTemplate(ctx context.Context, tmpl *configv1.ServiceTemplate) error {
-	return nil
-}
-func (s *MockServiceStore) DeleteServiceTemplate(ctx context.Context, id string) error {
-	return nil
-}
 
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
