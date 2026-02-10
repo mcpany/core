@@ -795,6 +795,11 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Test UI
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
