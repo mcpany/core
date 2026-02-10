@@ -18,6 +18,14 @@ interface StackEditorProps {
     onCancel: () => void;
 }
 
+/**
+ * StackEditor component.
+ * @param props - The component props.
+ * @param props.initialContent - The initial content of the stack configuration.
+ * @param props.onSave - The callback to save the stack configuration.
+ * @param props.onCancel - The callback to cancel editing.
+ * @returns The rendered component.
+ */
 export function StackEditor({ initialContent, onSave, onCancel }: StackEditorProps) {
     const [content, setContent] = useState(initialContent);
     const [saving, setSaving] = useState(false);
