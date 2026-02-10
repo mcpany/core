@@ -146,7 +146,7 @@ prepare:
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
-			apt-get update && apt-get install -y curl unzip; \
+			apt-get update && apt-get install -y curl unzip xz-utils; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
@@ -317,7 +317,7 @@ prepare:
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
 		SC_VERSION="stable"; \
-		wget -qO- "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
 		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
