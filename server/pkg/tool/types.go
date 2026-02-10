@@ -3057,6 +3057,16 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 
 	if isPerl {
 		// Sentinel Security Update:
+		// Block pipe | and redirects < > in Perl inputs to prevent magic open() injection.
+		// open(F, "cmd |") executes cmd.
+		// open(F, ">file") overwrites file.
+		// open(F, "<file") reads file.
+		// This applies regardless of quoting because the danger is in how the string is INTERPRETED by open().
+		if idx := strings.IndexAny(val, "|<>"); idx != -1 {
+			return fmt.Errorf("perl magic open injection detected: value contains dangerous character %q", val[idx])
+		}
+
+		// Sentinel Security Update:
 		// Block qx operator (command execution) regardless of quoting.
 		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
 		// avoiding common shell injection filters.
