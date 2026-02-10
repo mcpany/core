@@ -20,6 +20,7 @@ interface ProfileStepProps {
   onComplete: (profileName: string) => void;
 }
 
+ /** Docs */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");
   const [submitting, setSubmitting] = useState(false);

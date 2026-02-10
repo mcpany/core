@@ -18,6 +18,7 @@ interface CatalogStepProps {
   onNext: (services: WizardService[]) => void;
 }
 
+ /** Docs */
 export function CatalogStep({ onNext }: CatalogStepProps) {
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
