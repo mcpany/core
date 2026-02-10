@@ -9,7 +9,15 @@ import { seedCollection, cleanupCollection } from './e2e/test-data';
 test.describe('Stack Editor', () => {
   test.beforeEach(async ({ request }) => {
       await seedCollection('default-stack', request);
-      // Wait a bit for potential backend sync (though seedCollection awaits response)
+      // Wait for service to be registered to avoid flakiness
+      await expect.poll(async () => {
+        const res = await request.get('/api/v1/services/weather-service');
+        return res.status();
+      }, {
+        message: 'Service was not registered in time',
+        timeout: 10000,
+        intervals: [1000]
+      }).toBe(200);
   });
 
   test.afterEach(async ({ request }) => {

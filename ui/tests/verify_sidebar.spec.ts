@@ -5,6 +5,8 @@
 
 
 import { test, expect } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
 
 test('verify sidebar navigation', async ({ page }) => {
   // Go to homepage
@@ -21,5 +23,10 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Take screenshot
-  await page.screenshot({ path: `.audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png` });
+  const dateStr = new Date().toISOString().split('T')[0];
+  const screenshotDir = `.audit/ui/${dateStr}`;
+  if (!fs.existsSync(screenshotDir)) {
+    fs.mkdirSync(screenshotDir, { recursive: true });
+  }
+  await page.screenshot({ path: `${screenshotDir}/unified_navigation_system.png` });
 });
