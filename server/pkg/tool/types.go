@@ -3184,6 +3184,7 @@ func isInterpreter(command string) bool {
 			return true
 		}
 	}
+	// Check if it is a code execution interpreter (python, ruby, etc.)
 	return isCodeExecutionInterpreter(command)
 }
 
