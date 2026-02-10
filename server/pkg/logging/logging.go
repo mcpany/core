@@ -44,7 +44,8 @@ func ForTestsOnlyResetLogger() {
 //   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
 //
 // Returns:
-//   None.
+//
+//	None.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -101,7 +102,7 @@ func GetLogger() *slog.Logger {
 	defer mu.Unlock()
 	once.Do(func() {
 		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-			Level:     slog.LevelInfo,
+			Level: slog.LevelInfo,
 			// ⚡ BOLT: Defaults to INFO, so AddSource is false by default.
 			AddSource: false,
 		})))

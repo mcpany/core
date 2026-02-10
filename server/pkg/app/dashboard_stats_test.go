@@ -260,11 +260,10 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	// We can set it up to return the same thing multiple times or use .Times() if strict.
 	// The mock implementation in api_error_test.go likely uses testify/mock which returns based on call order or arguments.
 	// If we just setup Return, it should apply to all calls matching signature.
-	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
-		s := &configv1.UpstreamServiceConfig{}
-		s.SetName("s1")
-		return []*configv1.UpstreamServiceConfig{s}
-	}(), nil)
+	s1 := &configv1.UpstreamServiceConfig{}
+	s1.SetName("s1")
+	services := []*configv1.UpstreamServiceConfig{s1}
+	mockRegistry.On("GetAllServices").Return(services, nil)
 	mockTM.EXPECT().ListTools().Return([]tool.Tool{&TestMockTool{}})
 
 	// Topology

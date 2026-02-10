@@ -2127,10 +2127,6 @@ func (m *mockBus[T]) SubscribeOnce(_ context.Context, _ string, _ func(T)) (unsu
 	return func() {}
 }
 
-func TestGRPCServer_PanicInRegistration(t *testing.T) {
-	t.Skip("Skipping TestGRPC_Panic as startGrpcServer no longer handles registration callbacks")
-}
-
 func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	// This test is designed to fail by timing out if the bug is present.
 	// Occupy a port to force a listen error.
@@ -2164,14 +2160,6 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	case <-time.After(2 * time.Second):
 		t.Fatal("Test hung for 2 seconds. The bug is still present.")
 	}
-}
-
-func TestStartGrpcServer_PanicHandling(t *testing.T) {
-	t.Skip("Skipping TestStartGrpcServer_PanicHandling because registration is external")
-}
-
-func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
-	t.Skip("Skipping TestStartGrpcServer_PanicInRegistrationRecovers because registration is external")
 }
 
 func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {

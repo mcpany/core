@@ -127,14 +127,12 @@ test.describe('Stack Composer', () => {
     }
   });
 
-  test.skip('should validate invalid YAML', async ({ page }) => {
-    // Skipping this test as it relies on Monaco Editor interaction which is flaky in E2E (CSP/Canvas issues)
-    // and difficult to mock perfectly without full editor loading.
+  test('should validate invalid YAML', async ({ page }) => {
     await page.goto('/stacks/e2e-test-stack');
     if (await page.getByText(/API Key Not Set/i).isVisible()) return;
 
     await page.getByRole('tab', { name: 'Editor' }).click({ timeout: 30000 });
-    const editor = page.locator('.monaco-editor');
+    const editor = page.locator('.monaco-editor .view-lines');
     try {
         await expect(editor).toBeVisible({ timeout: 15000 });
     } catch {
@@ -142,7 +140,14 @@ test.describe('Stack Composer', () => {
         return;
     }
     await editor.click();
+    // Select all and delete to ensure clean slate, then type invalid content
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Delete');
     await page.keyboard.type('!!!! invalid !!!!\n');
+
+    // Check for error indication (e.g. "Valid Configuration" disappears or "Invalid Configuration" appears)
+    // The visualizer usually shows "Invalid Configuration" or hides "Valid Configuration"
+    // Assuming "Valid Configuration" is visible when valid.
     await expect(page.locator('.stack-visualizer-container').getByText('Valid Configuration')).not.toBeVisible({ timeout: 10000 });
   });
 });

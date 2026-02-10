@@ -143,6 +143,13 @@ export const ToolTable = memo(function ToolTable({
           </TableRow>
         </TableHeader>
         <TableBody>
+          {tools.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={10} className="h-24 text-center text-muted-foreground">
+                No tools found.
+              </TableCell>
+            </TableRow>
+          )}
           {tools.map((tool) => (
             <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selected.has(tool.name) ? "bg-muted/50" : "")}>
                <TableCell className={cn("pr-0", isCompact ? "py-0 px-2" : "")}>
