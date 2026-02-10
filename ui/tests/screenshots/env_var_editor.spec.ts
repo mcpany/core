@@ -47,11 +47,17 @@ test.describe('Service Configuration Editor', () => {
 
     // Take screenshot of the editor
     const date = new Date().toISOString().split('T')[0];
-    const auditDir = path.join('.audit/ui', date);
+    const auditDir = path.join('test-results', '.audit/ui', date);
     if (!fs.existsSync(auditDir)) {
-        fs.mkdirSync(auditDir, { recursive: true });
+        try {
+            fs.mkdirSync(auditDir, { recursive: true });
+        } catch (e) {
+            console.warn(`Could not create audit directory: ${e}. Skipping screenshot.`);
+        }
     }
-    await page.screenshot({ path: path.join(auditDir, 'env_var_editor.png') });
+    if (fs.existsSync(auditDir)) {
+        await page.screenshot({ path: path.join(auditDir, 'env_var_editor.png') });
+    }
 
     // Verify inputs
     await expect(page.getByPlaceholder('KEY')).toHaveValue('TEST_ENV');

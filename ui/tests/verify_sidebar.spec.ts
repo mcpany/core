@@ -24,9 +24,19 @@ test('verify sidebar navigation', async ({ page }) => {
 
   // Take screenshot
   const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join('.audit/ui', date);
+  // Use test-results to ensure write permissions in CI
+  const auditDir = path.join('test-results', '.audit/ui', date);
   if (!fs.existsSync(auditDir)) {
-      fs.mkdirSync(auditDir, { recursive: true });
+      try {
+        fs.mkdirSync(auditDir, { recursive: true });
+      } catch (e) {
+        console.warn(`Could not create audit directory: ${e}. Skipping screenshot save.`);
+        return;
+      }
   }
-  await page.screenshot({ path: path.join(auditDir, 'unified_navigation_system.png') });
+  try {
+    await page.screenshot({ path: path.join(auditDir, 'unified_navigation_system.png') });
+  } catch (e) {
+    console.warn(`Failed to take screenshot: ${e}`);
+  }
 });
