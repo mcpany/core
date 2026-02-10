@@ -51,6 +51,8 @@ func TestCheckConnection_Coverage(t *testing.T) {
 }
 
 func TestSafeDialer_Coverage(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false") // Default
+
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -71,10 +73,10 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	resp.Body.Close()
 
 	// Direct SafeDialContext usage
-	// Should fail for loopback if default
+	// Should fail for loopback if default settings
 	dialer := NewSafeDialer()
 	// Split ts.URL (http://127.0.0.1:port)
-	u, _ :=  ts.Listener.Addr().(*net.TCPAddr)
+	u, _ := ts.Listener.Addr().(*net.TCPAddr)
 	addr := u.String()
 
 	_, err = dialer.DialContext(context.Background(), "tcp", addr)
