@@ -40,7 +40,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "https://example.com", // Dummy external address to avoid localhost connection refused in K8s
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
