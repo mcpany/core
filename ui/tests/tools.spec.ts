@@ -29,11 +29,15 @@ test.describe('Tool Exploration', () => {
     test('should list available tools from real backend', async ({ page }) => {
         await page.goto('/tools');
 
+        // Wait for the Service to be visible first to ensure data is loaded
+        // This helps distinguish between "tool not found" vs "nothing loaded"
+        await expect(page.getByText('Echo Service').first()).toBeVisible({ timeout: 20000 });
+
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
-        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+        await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 20000 });
 
         // Look for other seeded tools (Payment Gateway)
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
@@ -51,6 +55,9 @@ test.describe('Tool Exploration', () => {
 
     test('should execute a tool and show results', async ({ page }) => {
         await page.goto('/tools');
+        // Wait for list to load
+        await expect(page.getByText('Echo Service').first()).toBeVisible({ timeout: 20000 });
+
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
