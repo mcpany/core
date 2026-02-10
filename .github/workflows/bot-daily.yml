@@ -5,7 +5,7 @@ name: Delete Stale Branches
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight
+    - cron: "0 0 * * *" # Runs daily at midnight
   workflow_dispatch:
 
 jobs:
@@ -91,14 +91,14 @@ jobs:
 
           # Find open PRs updated before the threshold
           gh pr list \
-            --repo mcpany/core \
+            --repo ${{ github.repository }} \
             --search "state:open updated:<$DATE_THRESHOLD" \
             --json number,updatedAt,url \
             --jq '.[] | .number' | \
           while read pr_number; do
             echo "Closing stale PR #$pr_number"
-            gh pr comment $pr_number --repo mcpany/core --body "🤖 **Automated Cleanup:** This PR has been inactive for more than $DAYS_THRESHOLD days. Closing it now."
-            gh pr close $pr_number --repo mcpany/core
+            gh pr comment $pr_number --repo ${{ github.repository }} --body "🤖 **Automated Cleanup:** This PR has been inactive for more than $DAYS_THRESHOLD days. Closing it now."
+            gh pr close $pr_number --repo ${{ github.repository }}
           done
 
       - name: Delete Stale Branches
@@ -141,9 +141,42 @@ jobs:
             # Let's assume yes, or maybe check if it's draft?
             # To be safe, let's ONLY check the date for now as requested.
 
-            if [[ $commit_date -lt $CUTOFF_DATE ]]; then
-              echo "Deleting stale branch: $branch_name (Last commit: $(date -d @$commit_date))"
-              # Use git push to delete
+            # Check for open PRs associated with this branch first
+            # We use the head branch name to find PRs
+            pr_info=$(gh pr list \
+              --repo ${{ github.repository }} \
+              --head "$branch_name" \
+              --state open \
+              --json number,updatedAt,isDraft \
+              --jq '.[0]')
+
+            if [[ -n "$pr_info" && "$pr_info" != "null" ]]; then
+              pr_number=$(echo "$pr_info" | jq -r '.number')
+              pr_updated_at=$(echo "$pr_info" | jq -r '.updatedAt')
+              pr_is_draft=$(echo "$pr_info" | jq -r '.isDraft')
+
+              # Convert PR updated date to seconds
+              pr_updated_sec=$(date -d "$pr_updated_at" +%s)
+
+              if [[ "$pr_is_draft" == "true" ]]; then
+                echo "Skipping branch $branch_name: Associated PR #$pr_number is a draft."
+                continue
+              elif [[ $pr_updated_sec -ge $CUTOFF_DATE ]]; then
+                echo "Skipping branch $branch_name: Associated PR #$pr_number was updated recently ($(date -d @$pr_updated_sec))."
+                continue
+              else
+                 echo "Processing stale branch: $branch_name (Last commit: $(date -d @$commit_date), PR updated: $(date -d @$pr_updated_sec))"
+                 echo "Closing stale PR #$pr_number associated with branch $branch_name"
+                 gh pr close "$pr_number" \
+                   --repo ${{ github.repository }} \
+                   --comment "🤖 **Automated Cleanup:** Closing stale PR associated with stale branch."
+
+                 # Delete branch
+                 git push origin --delete "$branch_name" || echo "Failed to delete $branch_name"
+              fi
+            elif [[ $commit_date -lt $CUTOFF_DATE ]]; then
+              echo "Processing stale branch: $branch_name (Last commit: $(date -d @$commit_date))"
+              # Delete branch
               git push origin --delete "$branch_name" || echo "Failed to delete $branch_name"
             else
               echo "Keeping active branch: $branch_name (Last commit: $(date -d @$commit_date))"

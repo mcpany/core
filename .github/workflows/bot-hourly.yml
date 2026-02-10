@@ -5,7 +5,7 @@ name: Manage PRs (Merge & Cleanup)
 
 on:
   schedule:
-    - cron: '*/10 * * * *' # Runs every 10 minutes
+    - cron: "*/10 * * * *" # Runs every 10 minutes
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -84,9 +84,9 @@ jobs:
         run: |
           # Find PRs that are open, passing CI, and have no merge conflicts
           gh pr list \
-            --repo mcpany/core \
+            --repo ${{ github.repository }} \
             --base main \
-            --search "is:pr is:open status:success author:@me" \
+            --search "is:pr is:open author:@me sort:updated-desc" \
             --json number \
             --jq '.[].number' | \
           while read pr_number; do
@@ -98,7 +98,7 @@ jobs:
             success=false
 
             while [ $retry_count -lt $max_retries ]; do
-              if gh pr merge $pr_number --squash --repo mcpany/core; then
+              if gh pr merge $pr_number --squash --repo ${{ github.repository }}; then
                 success=true
                 echo "Successfully merged PR #$pr_number"
                 break
@@ -111,7 +111,7 @@ jobs:
 
             if [ "$success" = false ]; then
               echo "Could not merge PR #$pr_number after $max_retries attempts. Closing it."
-              gh pr comment $pr_number --repo mcpany/core --body "🤖 **Automated Cleanup:** This PR has merge conflicts. Please resolve them locally and reopen or open a new PR."
-              gh pr close $pr_number --repo mcpany/core
+              gh pr comment $pr_number --repo ${{ github.repository }} --body "🤖 **Automated Cleanup:** This PR has merge conflicts. Please resolve them locally and reopen or open a new PR."
+              gh pr close $pr_number --repo ${{ github.repository }}
             fi
           done
