@@ -4,10 +4,10 @@
  */
 
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
+import path from 'path';
 
 test.describe('Service Configuration Editor', () => {
-  test('should allow editing environment variables for command line service', async ({ page }) => {
+  test('should allow editing environment variables for command line service', async ({ page }, testInfo) => {
     // Navigate to services page
     await page.goto('/upstream-services');
     await expect(page).toHaveTitle(/MCPAny Manager/);
@@ -45,12 +45,9 @@ test.describe('Service Configuration Editor', () => {
     await page.getByPlaceholder('VALUE').fill('test_value');
 
     // Take screenshot of the editor
-    const date = new Date().toISOString().split('T')[0];
-    const dir = `.audit/ui/${date}`;
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
-    }
-    await page.screenshot({ path: `${dir}/env_var_editor.png` });
+    // Use testInfo.outputDir which is guaranteed to be writable and managed by Playwright
+    const screenshotPath = path.join(testInfo.outputDir, 'env_var_editor.png');
+    await page.screenshot({ path: screenshotPath });
 
     // Verify inputs
     await expect(page.getByPlaceholder('KEY')).toHaveValue('TEST_ENV');

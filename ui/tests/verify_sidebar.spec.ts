@@ -5,9 +5,9 @@
 
 
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
+import path from 'path';
 
-test('verify sidebar navigation', async ({ page }) => {
+test('verify sidebar navigation', async ({ page }, testInfo) => {
   // Go to homepage
   await page.goto('/');
 
@@ -22,10 +22,7 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Take screenshot
-  const date = new Date().toISOString().split('T')[0];
-  const dir = `.audit/ui/${date}`;
-  if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir, { recursive: true });
-  }
-  await page.screenshot({ path: `${dir}/unified_navigation_system.png` });
+  // Use testInfo.outputDir which is guaranteed to be writable and managed by Playwright
+  const screenshotPath = path.join(testInfo.outputDir, 'unified_navigation_system.png');
+  await page.screenshot({ path: screenshotPath });
 });
