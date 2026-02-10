@@ -39,7 +39,18 @@ export function StackEditor({ stackId }: StackEditorProps) {
 
     // Initial load
     useEffect(() => {
-        loadConfig();
+        if (stackId === 'new') {
+            // Default template for new stack
+            const defaultStack = {
+                name: "my-stack",
+                description: "A new service stack.",
+                version: "1.0.0",
+                services: {}
+            };
+            setContent(jsyaml.dump(defaultStack));
+        } else {
+            loadConfig();
+        }
     }, [stackId]);
 
     const loadConfig = async () => {
