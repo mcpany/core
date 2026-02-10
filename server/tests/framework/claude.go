@@ -49,7 +49,7 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 	require.NoError(c.t, err)
 	// Assuming the binary is 'claude'
 	claudePath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "claude")
-	return exec.CommandContext(context.Background(), claudePath, args...)
+	return exec.CommandContext(context.Background(), claudePath, args...) //nolint:gosec // Test utility
 }
 
 // AddMCP adds an MCP server to the Claude CLI configuration.

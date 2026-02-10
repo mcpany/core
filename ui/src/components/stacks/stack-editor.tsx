@@ -142,51 +142,33 @@ export function StackEditor({ stackId }: StackEditorProps) {
     };
 
     const handleTemplateInsert = (snippet: string) => {
-        try {
-            const currentConfig = jsyaml.load(content) as any;
+        let newContent = content;
 
-            // Clean up snippet indentation to make it parsable
-            // Snippets in palette usually start with 2 spaces indentation
-            const lines = snippet.split('\n');
-            const refIndent = lines[0].search(/\S|$/);
-            const cleanSnippet = lines.map(line => {
-                if (line.trim().length === 0) return line;
-                return line.slice(refIndent);
-            }).join('\n');
+        // Better insertion logic
+        const servicesRegex = /^services:\s*$/m;
+        const match = newContent.match(servicesRegex);
 
-            const templateObj = jsyaml.load(cleanSnippet) as any;
+        if (match) {
+            // Found services block.
+            // We want to insert AFTER the services block, but before the next root key if possible.
+            // Or just at the end of the services block.
+            // Since we can't easily parse partial YAML AST, we'll try to insert at the end of the file,
+            // assuming services is usually the main or last block.
+            // OR we can find the end of the services block by indentation.
 
-            // Initialize services if missing
-            if (!currentConfig.services) {
-                currentConfig.services = {};
-            }
-
-            // Convert array to map if necessary (though loadConfig ensures map usually, user edits might change it)
-            if (Array.isArray(currentConfig.services)) {
-                const map: Record<string, any> = {};
-                currentConfig.services.forEach((s: any) => {
-                    map[s.name] = s;
-                });
-                currentConfig.services = map;
-            }
-
-            // Merge
-            Object.assign(currentConfig.services, templateObj);
-
-            // Dump back to string
-            const newYaml = jsyaml.dump(currentConfig);
-            setContent(newYaml);
-            validateYaml(newYaml);
-            toast.success("Service template added!");
-        } catch (e) {
-            console.error("Failed to insert template:", e);
-            toast.error("Failed to insert template: Invalid YAML or Snippet");
-
-            // Fallback to naive append if parsing fails (legacy behavior expectation?)
-            // Or just fail. Better to fail safely.
-            // But let's verify snippet validity in `service-palette.tsx` if possible.
-            // For now, this safe merge is much better.
+            // For now, simpler: Append to the end of the file, ensuring a newline.
+            // Users can move it if needed. The visualizer will still work.
+            if (!newContent.endsWith("\n")) newContent += "\n";
+            newContent += snippet;
+        } else {
+            // No services block found. Append services: block
+            if (!newContent.endsWith("\n") && newContent.length > 0) newContent += "\n";
+            newContent += "services:\n" + snippet;
         }
+
+        setContent(newContent);
+        validateYaml(newContent);
+        toast.success("Service template added!");
     };
 
     return (

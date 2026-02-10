@@ -22,10 +22,6 @@ interface AuthStepProps {
     onBack: () => void;
 }
 
-/**
- * Step for authenticating services.
- * @param props Component properties.
- */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
     const [authServices, setAuthServices] = useState<WizardService[]>([...services]);
     const [loadingAuth, setLoadingAuth] = useState<Record<string, boolean>>({});
@@ -140,7 +136,7 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
                         <CardContent className="py-3">
                             {svc.templateId === 'google-calendar' || svc.templateId === 'linear' ? (
                                 <div className="flex items-center gap-4">
-                                    <Button
+                                     <Button
                                         variant="outline"
                                         onClick={() => initiateOAuth(idx)}
                                         disabled={loadingAuth[svc.instanceName] || svc.isAuthenticated}
@@ -150,7 +146,7 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
                                         {!loadingAuth[svc.instanceName] && <ExternalLink className="ml-2 h-4 w-4" />}
                                      </Button>
                                      <p className="text-sm text-muted-foreground">
-                                        {svc.isAuthenticated
+                                         {svc.isAuthenticated
                                             ? "Access granted."
                                             : "Requires OAuth2 authentication."}
                                      </p>
@@ -158,7 +154,7 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
                             ) : svc.templateId === 'github' ? (
                                 <div className="grid gap-2">
                                      <Label>Personal Access Token</Label>
-                                        <Input
+                                     <Input
                                         type="password"
                                         placeholder="ghp_..."
                                         onChange={(e) => handleTokenInput(idx, e.target.value)}

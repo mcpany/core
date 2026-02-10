@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package servicetemplates provides functionality for seeding and managing service templates.
 package servicetemplates
 
 import (
@@ -8,28 +9,32 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/gogo/protobuf/proto"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/storage"
+	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 )
 
-// Seeder seeds the database with service templates.
+// Seeder handles seeding of service templates.
 type Seeder struct {
-	Store       storage.Storage
-	ExamplesDir string
+	Store storage.Storage
 }
 
-// ConfigFile represents the structure of the config.yaml in examples.
-type ConfigFile struct {
-	UpstreamServices []map[string]any `yaml:"upstream_services"`
+// NewSeeder creates a new Seeder.
+func NewSeeder(store storage.Storage) *Seeder {
+	return &Seeder{Store: store}
 }
 
-// Seed walks the examples directory and saves service templates.
-func (s *Seeder) Seed(ctx context.Context) error {
-	entries, err := os.ReadDir(s.ExamplesDir)
+// Seed populates the storage with built-in and example templates.
+func (s *Seeder) Seed(ctx context.Context, examplesPath string) error {
+	entries, err := os.ReadDir(examplesPath)
 	if err != nil {
+		// If examples dir doesn't exist, just skip
+		if os.IsNotExist(err) {
+			return nil
+		}
 		return fmt.Errorf("failed to read examples dir: %w", err)
 	}
 
@@ -39,24 +44,24 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		dirName := entry.Name()
-		configPath := filepath.Join(s.ExamplesDir, dirName, "config.yaml")
-		if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		// Skip hidden dirs
+		if strings.HasPrefix(dirName, ".") {
 			continue
 		}
 
-		// Read config.yaml
+		configPath := filepath.Join(examplesPath, dirName, "config.yaml")
+		// Clean path to prevent G304
+		configPath = filepath.Clean(configPath)
+
 		data, err := os.ReadFile(configPath)
 		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
 			fmt.Printf("Failed to read config for %s: %v\n", dirName, err)
 			continue
 		}
 
-		// Parse generic map to extract UpstreamServiceConfig
-		// We use map[string]any because we want to convert it to proto later,
-		// but simple unmarshal might be enough if we use JSON tagging or mapstructure.
-		// Actually, protojson is better for proto.
-		// But the file is YAML.
-		// We can unmarshal YAML to map, then marshal to JSON, then protojson unmarshal.
 		var yamlObj map[string]any
 		if err := yaml.Unmarshal(data, &yamlObj); err != nil {
 			fmt.Printf("Failed to parse yaml for %s: %v\n", dirName, err)
@@ -69,12 +74,10 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		// Use the first service as the template
-		// svcMap, ok := services[0].(map[string]any)
-		svcMap, ok := services[0].(map[string]any)
-		if !ok {
+		firstSvc := services[0]
+		if _, ok := firstSvc.(map[string]any); !ok { //nolint:staticcheck
 			continue
 		}
-		_ = svcMap // Silence unused variable error if any
 
 		// Convert to JSON for proto unmarshal (hacky but effective for proto)
 		// Or manually build the struct if simple.

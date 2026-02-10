@@ -20,10 +20,6 @@ interface ProfileStepProps {
   onComplete: (profileName: string) => void;
 }
 
-/**
- * Step for finalizing the profile configuration.
- * @param props Component properties.
- */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");
   const [submitting, setSubmitting] = useState(false);

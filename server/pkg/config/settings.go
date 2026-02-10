@@ -64,9 +64,8 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 // Load initializes the global settings from the command line and config files.
 //
 // Parameters:
-//
-//	cmd: The cobra command containing flags.
-//	fs: The file system interface for reading config files.
+//   cmd: The cobra command containing flags.
+//   fs: The file system interface for reading config files.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -91,7 +90,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	}
 
 	if logfile := viper.GetString("logfile"); logfile != "" {
-		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600) //nolint:gosec // Log file configuration
 		if err != nil {
 			return fmt.Errorf("failed to open logfile: %w", err)
 		}

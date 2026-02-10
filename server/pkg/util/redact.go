@@ -261,7 +261,7 @@ var sensitiveKeys = []string{
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
-
+	//nolint:gosec // Zero-copy conversion for optimization
 	// For IsSensitiveKey, we don't need to validate the key context (quotes and colon) because we are checking the key itself.
 	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
 }

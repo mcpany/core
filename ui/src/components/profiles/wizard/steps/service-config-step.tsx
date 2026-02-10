@@ -20,10 +20,6 @@ interface ServiceConfigStepProps {
     onBack: () => void;
 }
 
-/**
- * Step for configuring service parameters.
- * @param props Component properties.
- */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(

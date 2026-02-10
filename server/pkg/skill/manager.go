@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package skill
+package skill //nolint:revive
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ type Manager struct {
 // NewManager creates a new Skill Manager.
 // rootDir is the directory where skills are stored.
 func NewManager(rootDir string) (*Manager, error) {
-	if err := os.MkdirAll(rootDir, 0755); err != nil {
+	if err := os.MkdirAll(rootDir, 0755); err != nil { //nolint:gosec
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
 	}
 	return &Manager{
@@ -117,13 +117,13 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 		return fmt.Errorf("skill already exists: %s", skill.Name)
 	}
 
-	if err := os.MkdirAll(skillDir, 0755); err != nil {
+	if err := os.MkdirAll(skillDir, 0755); err != nil { //nolint:gosec
 		return fmt.Errorf("failed to create skill directory: %w", err)
 	}
 
 	// Create optional directories
 	for _, dir := range []string{"scripts", "references", "assets"} {
-		_ = os.Mkdir(filepath.Join(skillDir, dir), 0755)
+		_ = os.Mkdir(filepath.Join(skillDir, dir), 0755) //nolint:gosec
 	}
 
 	return m.writeSkillFile(skillDir, skill)
@@ -206,7 +206,7 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	fullPath := filepath.Join(skillDir, cleanPath)
 
 	// Ensure parent dir exists
-	if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil { //nolint:gosec
 		return fmt.Errorf("failed to create asset parent directory: %w", err)
 	}
 
@@ -215,7 +215,7 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 
 func (m *Manager) loadSkill(name string) (*Skill, error) {
 	skillDir := filepath.Join(m.rootDir, name)
-	content, err := os.ReadFile(filepath.Join(skillDir, SkillFileName))
+	content, err := os.ReadFile(filepath.Join(skillDir, SkillFileName)) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}

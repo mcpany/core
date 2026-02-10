@@ -100,7 +100,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 	// Case 7: Improved quote detection allows safe chars in quotes
 	t.Run("improved_quote_detection", func(t *testing.T) {
-		cmd := "python3"
+		cmd := "python"
 		tool := createTestCommandToolWithTemplate(cmd, "print('Prefix: {{input}}')")
 		// This input is safe in python string but blocked by strict check currently
 		req := &ExecutionRequest{

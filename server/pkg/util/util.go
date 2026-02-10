@@ -280,8 +280,7 @@ const TrueStr = "true"
 // Summary: Generates a random UUID.
 //
 // Parameters:
-//
-//	None.
+//   None.
 //
 // Returns:
 //   - string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
@@ -384,7 +383,7 @@ func SanitizeOperationID(input string) string {
 // stringToBytes converts a string to a byte slice without allocation.
 // IMPORTANT: The returned byte slice must not be modified.
 func stringToBytes(s string) []byte {
-	return unsafe.Slice(unsafe.StringData(s), len(s))
+	return unsafe.Slice(unsafe.StringData(s), len(s)) //nolint:gosec // Standard zero-copy conversion
 }
 
 // BytesToString converts a byte slice to a string without allocation.
@@ -398,7 +397,7 @@ func stringToBytes(s string) []byte {
 // Returns:
 //   - string: The resulting string.
 func BytesToString(b []byte) string {
-	return unsafe.String(unsafe.SliceData(b), len(b))
+	return unsafe.String(unsafe.SliceData(b), len(b)) //nolint:gosec // Standard zero-copy conversion
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.

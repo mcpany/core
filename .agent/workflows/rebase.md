@@ -19,8 +19,8 @@ Rebase the [target branch or current branch] onto the latest main, resolve any c
 If merge conflicts arise, analyze the code to resolve them logically. If a resolution is ambiguous, stop and ask for clarification.
 
 ### Verification (Quality Gate):
-- Run "make docker-lint" and resolve any linting/formatting errors.
-- Run "make docker-test" and ensure all unit tests MUST pass 100%.
+- Run "make lint" and resolve any linting/formatting errors.
+- Run "make test" and ensure all unit tests MUST pass 100%.
 - Run "make k8s-e2e" and make sure all tests MUST pass 100%.
 - Check github actions, all operations there, including building docker images steps, MUST pass 100%.
 

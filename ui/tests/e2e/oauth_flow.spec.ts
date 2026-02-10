@@ -74,15 +74,6 @@ test.describe('OAuth Flow Integration', () => {
     await page.route('**/api/v1/registration/templates', async route => {
         await route.fulfill({ json: { templates: [] } });
     });
-
-    // Mock template create/save
-    await page.route('**/api/v1/templates', async route => {
-      if (route.request().method() === 'POST') {
-        await route.fulfill({ json: { id: 'test-template' } });
-      } else {
-        await route.continue();
-      }
-    });
   });
 
   test('should complete the OAuth flow via Auth Wizard', async ({ page }) => {

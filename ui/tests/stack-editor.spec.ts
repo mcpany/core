@@ -41,6 +41,6 @@ test.describe('Stack Editor', () => {
 
     // Verify new node appears in graph
     const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: 'postgres-db' });
-    await expect(postgresNode).toBeVisible({ timeout: 60000 });
+    await expect(postgresNode).toBeVisible({ timeout: 10000 });
   });
 });

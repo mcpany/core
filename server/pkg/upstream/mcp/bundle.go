@@ -14,12 +14,12 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types/mount"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -85,7 +85,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 
 	// 2. Read Manifest
 	manifestPath := filepath.Join(tempDir, "manifest.json")
-	manifestFile, err := os.Open(manifestPath)
+	manifestFile, err := os.Open(manifestPath) //nolint:gosec // Path constructed from secure temp dir
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to open manifest.json: %w", err)
 	}
@@ -276,7 +276,7 @@ func unzipBundle(src, dest string) error {
 			return err
 		}
 
-		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode()) //nolint:gosec // Path validated in loop
 		if err != nil {
 			return err
 		}

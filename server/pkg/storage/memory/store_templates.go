@@ -10,6 +10,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ListServiceTemplates lists all service templates.
+//
 // _ is an unused parameter.
 //
 // Returns the result.

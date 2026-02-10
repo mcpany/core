@@ -484,7 +484,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Args:  cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
 			filename := args[0]
-			data, err := os.ReadFile(filename)
+			data, err := os.ReadFile(filename) //nolint:gosec // Intended file inclusion
 			if err != nil {
 				return fmt.Errorf("failed to read file %q: %w", filename, err)
 			}

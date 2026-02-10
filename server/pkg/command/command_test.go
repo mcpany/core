@@ -242,26 +242,10 @@ func TestDockerExecutor(t *testing.T) {
 		absPath, err := filepath.Abs(tmpfile.Name())
 		require.NoError(t, err)
 
-		hostPath := absPath
-		if root := os.Getenv("HOST_WORKSPACE_ROOT"); root != "" {
-			t.Logf("HOST_WORKSPACE_ROOT: %s", root)
-			// In Docker-in-Docker (via socket), we need to map the internal path
-			// (e.g. /workspace/...) to the host path (e.g. /usr/local/google/...).
-			if strings.HasPrefix(absPath, "/workspace") {
-				hostPath = filepath.Join(root, strings.TrimPrefix(absPath, "/workspace"))
-				t.Logf("Rewrote path %s to %s", absPath, hostPath)
-				// Allow the host path in validation
-				validation.SetAllowedPaths([]string{root})
-				t.Cleanup(func() { validation.SetAllowedPaths(nil) })
-			}
-		} else {
-			t.Logf("HOST_WORKSPACE_ROOT not set, using path %s", absPath)
-		}
-
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			hostPath: "/mnt/test",
+			absPath: "/mnt/test",
 		})
 		executor := NewExecutor(containerEnv)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
