@@ -3184,10 +3184,10 @@ func analyzeQuoteContext(template, placeholder string) int {
 			switch {
 			case inSingle:
 				currentLevel = 2
-			case inDouble:
-				currentLevel = 1
 			case inBacktick:
 				currentLevel = 3
+			case inDouble:
+				currentLevel = 1
 			}
 
 			if currentLevel < minLevel {
@@ -3221,7 +3221,7 @@ func analyzeQuoteContext(template, placeholder string) int {
 				inDouble = !inDouble
 			}
 		case '`':
-			if !inSingle && !inDouble {
+			if !inSingle {
 				inBacktick = !inBacktick
 			}
 		}
