@@ -27,7 +27,7 @@ COPY .build-context/core/proto ./proto/
 WORKDIR /app/server
 
 # Install GCC for CGO
-RUN apt-get update && apt-get install -y gcc curl
+RUN apt-get update && apt-get install -y gcc curl xz-utils
 
 # Copy server source (context is server/)
 COPY . .
