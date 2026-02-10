@@ -3,23 +3,32 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
 
 test('verify sidebar navigation', async ({ page }) => {
-  // Go to homepage
+  // Navigate to home
   await page.goto('/');
+  await expect(page).toHaveTitle(/MCPAny/);
 
-  // Check if sidebar is visible
-  await expect(page.locator('button[data-sidebar="trigger"]')).toBeVisible();
+  // Check sidebar elements
+  const sidebar = page.locator('aside');
+  await expect(sidebar).toBeVisible();
 
-  // Check if "Platform" group exists
-  await expect(page.getByText('Platform')).toBeVisible();
-
-  // Check links
-  await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
+  // Verify links
+  await expect(sidebar.getByRole('link', { name: 'Dashboard' })).toBeVisible();
+  await expect(sidebar.getByRole('link', { name: 'Services' })).toBeVisible();
+  await expect(sidebar.getByRole('link', { name: 'Tools' })).toBeVisible();
+  await expect(sidebar.getByRole('link', { name: 'Resources' })).toBeVisible();
+  await expect(sidebar.getByRole('link', { name: 'Prompts' })).toBeVisible();
+  await expect(sidebar.getByRole('link', { name: 'Settings' })).toBeVisible();
 
   // Take screenshot
-  await page.screenshot({ path: `.audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png` });
+  const date = new Date().toISOString().split('T')[0];
+  const screenshotDir = `.audit/ui/${date}`;
+  if (!fs.existsSync(screenshotDir)) {
+    fs.mkdirSync(screenshotDir, { recursive: true });
+  }
+  await page.screenshot({ path: `${screenshotDir}/unified_navigation_system.png` });
 });
