@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make wget
 
       - name: Prepare environment
         run: make prepare
@@ -126,12 +126,8 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Skip mirror config as restarting docker fails on these runners
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -245,12 +241,8 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Skip mirror config as restarting docker fails on these runners
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -613,12 +605,8 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Skip mirror config as restarting docker fails on these runners
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -700,12 +688,8 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Skip mirror config as restarting docker fails on these runners
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -762,6 +746,11 @@ jobs:
       #          swap-storage: true
       #
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make wget
 
       - name: Detect Architecture
         id: detect-arch
