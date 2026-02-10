@@ -1,260 +1,60 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
+import { useState } from "react";
+import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import jsyaml from "js-yaml";
-import { apiClient } from "@/lib/client";
-
-// New Components
-import { ServicePalette } from "@/components/stacks/service-palette";
-import { StackVisualizer } from "@/components/stacks/stack-visualizer";
-import { ConfigEditor } from "./config-editor";
+import { Loader2, Save, X } from "lucide-react";
 
 interface StackEditorProps {
-    stackId: string;
+  initialValue: string;
+  onSave: (value: string) => Promise<void>;
+  onCancel: () => void;
 }
 
-/**
- * StackEditor.
- *
- * @param { stackId - The { stackId.
- */
-export function StackEditor({ stackId }: StackEditorProps) {
-    const [content, setContent] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isValid, setIsValid] = useState(true);
-    const [validationError, setValidationError] = useState<string | null>(null);
-    const [showPalette, setShowPalette] = useState(true);
-    const [showVisualizer, setShowVisualizer] = useState(true);
+export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps) {
+  const [value, setValue] = useState(initialValue);
+  const [saving, setSaving] = useState(false);
 
-    // Initial load
-    useEffect(() => {
-        loadConfig();
-    }, [stackId]);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(value);
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    const loadConfig = async () => {
-        setIsLoading(true);
-        try {
-            const collection = await apiClient.getCollection(stackId);
-            console.log("DEBUG: collection:", JSON.stringify(collection));
-            // Transform services array to map for YAML Editor
-            const servicesMap: Record<string, any> = {};
-            if (collection.services && Array.isArray(collection.services)) {
-                collection.services.forEach((s: any) => {
-                    servicesMap[s.name] = s;
-                });
-            } else if (collection.services) {
-                // Already a map?
-                Object.assign(servicesMap, collection.services);
-            }
-
-            const configObj = {
-                ...collection,
-                services: servicesMap
-            };
-
-            const yaml = jsyaml.dump(configObj);
-            setContent(yaml);
-        } catch (error) {
-            console.error("DEBUG: loadConfig failed:", error);
-            toast.error("Failed to load stack configuration");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleContentChange = (newVal: string | undefined) => {
-        const value = newVal || "";
-        setContent(value);
-        validateYaml(value);
-    };
-
-    const validateYaml = (value: string) => {
-        try {
-            jsyaml.load(value);
-            setIsValid(true);
-            setValidationError(null);
-        } catch (e: unknown) {
-            setIsValid(false);
-            if (e instanceof Error) {
-                setValidationError(e.message);
-            } else {
-                setValidationError("Unknown validation error");
-            }
-        }
-    };
-
-    const handleSave = async () => {
-        if (!isValid) {
-            toast.error("Cannot save invalid configuration");
-            return;
-        }
-
-        setIsSaving(true);
-        try {
-            const configObj = jsyaml.load(content) as any;
-
-            // Transform services map to array for Backend
-            let servicesArray: any[] = [];
-            if (configObj.services) {
-                if (Array.isArray(configObj.services)) {
-                     servicesArray = configObj.services;
-                } else {
-                    Object.entries(configObj.services).forEach(([key, val]: [string, any]) => {
-                        servicesArray.push({ ...val, name: key });
-                    });
-                }
-            }
-
-            const collection = {
-                ...configObj,
-                name: stackId, // Ensure ID matches
-                services: servicesArray
-            };
-
-            await apiClient.saveCollection(collection);
-            toast.success("Configuration saved successfully");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to save configuration");
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const handleDownload = () => {
-        const blob = new Blob([content], { type: 'text/yaml' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${stackId}-config.yaml`;
-        a.click();
-    };
-
-    const handleTemplateInsert = (snippet: string) => {
-        try {
-            const currentConfig = jsyaml.load(content) as any;
-
-            // Clean up snippet indentation to make it parsable
-            // Snippets in palette usually start with 2 spaces indentation
-            const lines = snippet.split('\n');
-            const refIndent = lines[0].search(/\S|$/);
-            const cleanSnippet = lines.map(line => {
-                if (line.trim().length === 0) return line;
-                return line.slice(refIndent);
-            }).join('\n');
-
-            const templateObj = jsyaml.load(cleanSnippet) as any;
-
-            // Initialize services if missing
-            if (!currentConfig.services) {
-                currentConfig.services = {};
-            }
-
-            // Convert array to map if necessary (though loadConfig ensures map usually, user edits might change it)
-            if (Array.isArray(currentConfig.services)) {
-                const map: Record<string, any> = {};
-                currentConfig.services.forEach((s: any) => {
-                    map[s.name] = s;
-                });
-                currentConfig.services = map;
-            }
-
-            // Merge
-            Object.assign(currentConfig.services, templateObj);
-
-            // Dump back to string
-            const newYaml = jsyaml.dump(currentConfig);
-            setContent(newYaml);
-            validateYaml(newYaml);
-            toast.success("Service template added!");
-        } catch (e) {
-            console.error("Failed to insert template:", e);
-            toast.error("Failed to insert template: Invalid YAML or Snippet");
-
-            // Fallback to naive append if parsing fails (legacy behavior expectation?)
-            // Or just fail. Better to fail safely.
-            // But let's verify snippet validity in `service-palette.tsx` if possible.
-            // For now, this safe merge is much better.
-        }
-    };
-
-    return (
-        <Card className="flex flex-col h-[650px] border-muted/50 shadow-sm overflow-hidden">
-            <CardHeader className="py-2 px-4 border-b flex flex-row items-center justify-between bg-muted/10 shrink-0 h-14">
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowPalette(!showPalette)}>
-                        {showPalette ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
-                    </Button>
-                    <FileText className="h-4 w-4 text-muted-foreground ml-2" />
-                    <span className="font-medium text-sm">config.yaml</span>
-                    {isValid ? (
-                         <Badge variant="outline" className="ml-2 bg-green-500/10 text-green-500 border-green-500/20 text-[10px] h-5">
-                             Valid YAML
-                         </Badge>
-                    ) : (
-                        <Badge variant="destructive" className="ml-2 text-[10px] h-5">
-                             Invalid YAML
-                        </Badge>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
-                     <Button variant="ghost" size="sm" onClick={() => setShowVisualizer(!showVisualizer)} title="Toggle Preview">
-                        <Columns className="h-4 w-4 mr-1" /> {showVisualizer ? "Hide Preview" : "Show Preview"}
-                     </Button>
-                     <div className="h-4 w-px bg-border mx-1" />
-                     <Button variant="ghost" size="sm" onClick={loadConfig} disabled={isLoading} title="Reset to last saved">
-                        <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} /> Reset
-                    </Button>
-                     <Button variant="ghost" size="sm" onClick={handleDownload} title="Download Config">
-                        <Download className="h-3 w-3 mr-1" /> Export
-                    </Button>
-                    <Button size="sm" onClick={handleSave} disabled={isSaving || !isValid || isLoading}>
-                        {isSaving ? <RefreshCw className="h-3 w-3 mr-1 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
-                        Save Changes
-                    </Button>
-                </div>
-            </CardHeader>
-
-            <CardContent className="p-0 flex-1 relative flex overflow-hidden">
-                {/* Left Panel: Palette */}
-                <div
-                    className={`transition-all duration-300 ease-in-out border-r overflow-hidden ${showPalette ? "w-[280px]" : "w-0 border-r-0"}`}
-                >
-                    <ServicePalette onTemplateSelect={handleTemplateInsert} />
-                </div>
-
-                {/* Center Panel: Editor */}
-                <div className="flex-1 relative flex flex-col bg-background overflow-hidden min-w-0">
-                     <ConfigEditor
-                        value={content}
-                        onChange={handleContentChange}
-                    />
-                     {validationError && (
-                        <div className="absolute bottom-0 left-0 right-0 py-2 px-4 bg-red-900/90 border-t border-red-500/50 text-red-200 text-xs font-mono z-10 flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-2 text-red-400" />
-                            {validationError}
-                        </div>
-                    )}
-                </div>
-
-                {/* Right Panel: Visualizer */}
-                <div
-                    className={`transition-all duration-300 ease-in-out border-l bg-muted/5 overflow-hidden ${showVisualizer ? "w-[280px]" : "w-0 border-l-0"}`}
-                >
-                    <StackVisualizer yamlContent={content} />
-                </div>
-            </CardContent>
-        </Card>
-    );
+  return (
+    <div className="flex flex-col h-full border rounded-md overflow-hidden bg-background">
+      <div className="flex items-center justify-between p-2 border-b bg-muted/40">
+        <div className="text-sm font-medium text-muted-foreground ml-2">
+          Stack Configuration (YAML)
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={onCancel}>
+            <X className="mr-2 h-4 w-4" /> Cancel
+          </Button>
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            Save & Deploy
+          </Button>
+        </div>
+      </div>
+      <div className="flex-1 min-h-0">
+        <Editor
+          height="100%"
+          defaultLanguage="yaml"
+          value={value}
+          onChange={(v) => setValue(v || "")}
+          theme="vs-dark"
+          options={{
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            fontSize: 14,
+            automaticLayout: true,
+          }}
+        />
+      </div>
+    </div>
+  );
 }
