@@ -118,10 +118,19 @@ test.describe('User Guide Walkthrough', () => {
 
     // Check for system stack or empty state
     const systemStack = page.getByText('mcpany-system');
+    const emptyState = page.getByText(/No stacks found/i);
+
+    // Wait until one of them is visible to avoid race conditions
+    await expect(async () => {
+        const isStackVisible = await systemStack.isVisible();
+        const isEmptyVisible = await emptyState.isVisible();
+        expect(isStackVisible || isEmptyVisible).toBe(true);
+    }).toPass({ timeout: 15000 });
+
     if (await systemStack.isVisible()) {
         await expect(systemStack).toBeVisible();
     } else {
-        await expect(page.getByText(/No stacks found/i)).toBeVisible();
+        await expect(emptyState).toBeVisible();
     }
   });
 

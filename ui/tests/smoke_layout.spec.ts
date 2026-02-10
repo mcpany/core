@@ -24,6 +24,15 @@ test('layout smoke test', async ({ page }) => {
 
   // Check for the "mcpany-system" stack OR empty state
   const systemStack = page.locator('text=mcpany-system');
+  const emptyState = page.getByText(/No stacks found/i);
+
+  // Wait until one of them is visible to avoid race conditions
+  await expect(async () => {
+      const isStackVisible = await systemStack.isVisible();
+      const isEmptyVisible = await emptyState.isVisible();
+      expect(isStackVisible || isEmptyVisible).toBe(true);
+  }).toPass({ timeout: 15000 });
+
   if (await systemStack.isVisible()) {
     // Navigate to Stack Detail
     await Promise.all([
@@ -37,6 +46,6 @@ test('layout smoke test', async ({ page }) => {
     await expect(page.getByRole('tab', { name: 'Editor' })).toBeVisible();
   } else {
     // If no stack, we should see "No stacks found" or similar
-    await expect(page.getByText(/No stacks found/i)).toBeVisible();
+    await expect(emptyState).toBeVisible();
   }
 });
