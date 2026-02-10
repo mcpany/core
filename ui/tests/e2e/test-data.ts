@@ -51,7 +51,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Echo Service",
             version: "v1.0",
             command_line_service: {
-                command: "echo",
+                command: "/bin/echo",
                 tools: [
                     {
                         name: "echo_tool",
