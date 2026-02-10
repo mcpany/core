@@ -14,12 +14,27 @@ import { apiClient } from "@/lib/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+/**
+ * Props for the ProfileStep component.
+ */
 interface ProfileStepProps {
+  /** The list of services to include in the profile. */
   services: WizardService[];
+  /** Callback to go back to the previous step. */
   onBack: () => void;
+  /** Callback when the profile is successfully created. */
   onComplete: (profileName: string) => void;
 }
 
+/**
+ * A wizard step for finalizing and creating the new profile.
+ *
+ * @param props - The component props.
+ * @param props.services - The list of services to include in the profile.
+ * @param props.onBack - Callback to go back to the previous step.
+ * @param props.onComplete - Callback when the profile is successfully created.
+ * @returns The rendered ProfileStep component.
+ */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");
   const [submitting, setSubmitting] = useState(false);

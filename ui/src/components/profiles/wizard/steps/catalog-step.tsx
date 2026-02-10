@@ -14,10 +14,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { WizardService } from "../wizard-dialog";
 import { Loader2 } from "lucide-react";
 
+/**
+ * Props for the CatalogStep component.
+ */
 interface CatalogStepProps {
+  /** Callback when proceeding to the next step. */
   onNext: (services: WizardService[]) => void;
 }
 
+/**
+ * A wizard step for selecting service templates from the catalog.
+ *
+ * @param props - The component props.
+ * @param props.onNext - Callback when proceeding to the next step.
+ * @returns The rendered CatalogStep component.
+ */
 export function CatalogStep({ onNext }: CatalogStepProps) {
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
