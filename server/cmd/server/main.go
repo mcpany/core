@@ -106,6 +106,23 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 
+			// Initialize logging
+			logLevel := logging.ToSlogLevel(cfg.LogLevel())
+			logFormat := "text"
+			if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON {
+				logFormat = "json"
+			}
+
+			// Determine log file (Default to mcpany.log if not specified and not in stdio mode)
+			logFile := cfg.LogFile()
+			if logFile == "" && !cfg.Stdio() {
+				logFile = "mcpany.log"
+			}
+
+			// Initialize global logger with dual output (Console + File)
+			// Console format obeys user preference. File is always JSON for hydration compatibility.
+			logging.Init(logLevel, os.Stderr, logFile, logFormat)
+
 			if err := metrics.Initialize(); err != nil {
 				logging.GetLogger().Error("Failed to initialize metrics", "error", err)
 				os.Exit(1)
@@ -117,14 +134,19 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			stdio := cfg.Stdio()
 			configPaths := cfg.ConfigPaths()
 
-			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
+			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths, "log-file", logFile)
 
 			// Track 2: Product Gap - Log Persistence
-			// Hydrate logs from file if configured for JSON.
-			if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON && cfg.LogFile() != "" {
+			// Hydrate logs from file unconditionally if we have a log file.
+			if logFile != "" {
 				go func() {
-					if err := logging.HydrateFromFile(cfg.LogFile()); err != nil {
-						log.Warn("Failed to hydrate logs from file", "error", err)
+					// We read the last N lines to populate the in-memory ring buffer.
+					// This ensures users see historical logs immediately after a restart.
+					if err := logging.HydrateFromFile(logFile); err != nil {
+						// It's normal to fail if file doesn't exist yet (first run)
+						if !os.IsNotExist(err) {
+							log.Warn("Failed to hydrate logs from file", "error", err)
+						}
 					} else {
 						log.Info("Hydrated log history from file")
 					}

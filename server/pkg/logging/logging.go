@@ -5,6 +5,7 @@
 package logging
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -41,11 +42,12 @@ func ForTestsOnlyResetLogger() {
 // Parameters:
 //   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
 //   - output: io.Writer. The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
+//   - logFile: string. Optional path to a log file. If provided, logs will be written to this file in JSON format.
 //   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
 //
 // Returns:
 //   None.
-func Init(level slog.Level, output io.Writer, format ...string) {
+func Init(level slog.Level, output io.Writer, logFile string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
@@ -67,16 +69,38 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			},
 		}
 
-		var mainHandler slog.Handler
+		var handlers []slog.Handler
+
+		// 1. Console Handler (User Preference)
+		var consoleHandler slog.Handler
 		if fmtStr == "json" {
 			output = &RedactingWriter{w: output}
-			mainHandler = slog.NewJSONHandler(output, opts)
+			consoleHandler = slog.NewJSONHandler(output, opts)
 		} else {
-			mainHandler = slog.NewTextHandler(output, opts)
+			consoleHandler = slog.NewTextHandler(output, opts)
+		}
+		handlers = append(handlers, consoleHandler)
+
+		// 2. File Handler (Always JSON, Optional)
+		if logFile != "" {
+			f, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				// Fallback: Just print to stderr since logger isn't ready
+				fmt.Fprintf(os.Stderr, "Failed to open log file %s: %v\n", logFile, err)
+			} else {
+				// We use a separate JSON handler for the file to ensure it's always machine-readable for hydration
+				fileOutput := &RedactingWriter{w: f}
+				fileHandler := slog.NewJSONHandler(fileOutput, opts)
+				handlers = append(handlers, fileHandler)
+			}
 		}
 
+		// 3. Broadcast Handler (WebSocket)
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
-		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
+		handlers = append(handlers, broadcastHandler)
+
+		// Combine all handlers
+		teeHandler := NewTeeHandler(handlers...)
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})
