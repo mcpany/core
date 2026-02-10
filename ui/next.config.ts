@@ -123,7 +123,24 @@ const nextConfig: NextConfig = {
     // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
     const localProto = path.join(__dirname, 'proto');
     const rootProto = path.join(__dirname, '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+
+    // Check specific Docker location first
+    const dockerProto = '/app/proto';
+
+    let protoPath = rootProto;
+    if (fs.existsSync(dockerProto)) {
+       protoPath = dockerProto;
+    } else if (fs.existsSync(localProto)) {
+       protoPath = localProto;
+    }
+
+    console.log(`[NextConfig] Resolving @proto to: ${protoPath}`);
+    console.log(`[NextConfig] __dirname: ${__dirname}`);
+    if (fs.existsSync(protoPath)) {
+        console.log(`[NextConfig] Contents of ${protoPath}:`, fs.readdirSync(protoPath));
+    } else {
+        console.warn(`[NextConfig] WARNING: proto path does not exist: ${protoPath}`);
+    }
 
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -131,7 +148,10 @@ const nextConfig: NextConfig = {
       '@google': path.join(protoPath, 'google'),
     };
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
-    config.resolve.symlinks = false;
+    // Only needed if using ../proto
+    if (protoPath === rootProto) {
+        config.resolve.symlinks = false;
+    }
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
