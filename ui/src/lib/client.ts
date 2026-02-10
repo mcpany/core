@@ -385,6 +385,10 @@ export const apiClient = {
             tags: config.tags,
         };
 
+        if (config.upstreamAuth) {
+            payload.upstream_auth = config.upstreamAuth;
+        }
+
         if (config.httpService) {
             payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
@@ -473,6 +477,10 @@ export const apiClient = {
             tags: config.tags,
         };
         // Reuse mapping logic or duplicate for now safely
+        if (config.upstreamAuth) {
+            payload.upstream_auth = config.upstreamAuth;
+        }
+
          if (config.httpService) {
             payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
@@ -571,6 +579,10 @@ export const apiClient = {
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
         };
+
+        if (config.upstreamAuth) {
+            payload.upstream_auth = config.upstreamAuth;
+        }
 
         if (config.httpService) {
             payload.http_service = HttpUpstreamService.toJSON(config.httpService);
@@ -1660,6 +1672,10 @@ export const apiClient = {
             load_balancing_strategy: template.loadBalancingStrategy,
             tags: template.tags,
         };
+
+        if (template.upstreamAuth) {
+            payload.upstream_auth = template.upstreamAuth;
+        }
 
         if (template.httpService) {
             payload.http_service = { address: template.httpService.address };
