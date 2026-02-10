@@ -13,10 +13,10 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
-  fullyParallel: true,
+  fullyParallel: false, // Serial execution to prevent state conflicts
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 4 : 4, // Limit workers to prevent server overload
+  workers: process.env.CI ? 1 : 1, // Serial execution to prevent shared backend state conflicts
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 120000,
