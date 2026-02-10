@@ -16,9 +16,11 @@ Navigate to `/secrets` (or **Settings > Secrets**).
 
 ### 2. Add Secret
 1. Click **"Add Secret"**.
-2. Enter the **Key** (e.g., `OPENAI_API_KEY`).
-3. Enter the **Value** (e.g., `sk-...`).
-4. Click **"Save"**.
+2. Select the **Provider** (e.g., "Custom", "OpenAI").
+3. Enter a **Friendly Name** (e.g., "Production OpenAI Key").
+4. Enter the **Key Name (Env Var)** (e.g., `OPENAI_API_KEY`).
+5. Enter the **Secret Value** (e.g., `sk-...`).
+6. Click **"Save Secret"**.
 
 ![Create Secret](screenshots/secret_create_modal.png)
 
