@@ -106,6 +106,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})
+	// Init complete
 }
 
 // GetLogger returns the shared global logger instance. If the logger has not yet
