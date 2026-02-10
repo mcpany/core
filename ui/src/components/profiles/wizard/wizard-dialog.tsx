@@ -14,8 +14,10 @@ import { ServiceConfigStep } from "./steps/service-config-step";
 import { AuthStep } from "./steps/auth-step";
 import { ProfileStep } from "./steps/profile-step";
 import { toast } from "sonner";
-import { apiClient } from "@/lib/client";
 
+/**
+ * WizardService represents a service selected in the wizard.
+ */
 export interface WizardService {
     templateId: string;
     instanceName: string; // e.g. "my-google-cal"
@@ -24,11 +26,14 @@ export interface WizardService {
     credentials?: any;
 }
 
+/**
+ * WizardDialog is a dialog for creating a new profile with services.
+ */
 export function WizardDialog({ onProfileCreated }: { onProfileCreated: () => void }) {
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState(1);
     const [selectedServices, setSelectedServices] = useState<WizardService[]>([]);
-    
+
     // Reset state when opening
     const handleOpenChange = (newOpen: boolean) => {
         if (newOpen) {
@@ -82,16 +87,16 @@ export function WizardDialog({ onProfileCreated }: { onProfileCreated: () => voi
                         }
                     </p>
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto p-6">
                     {step === 1 && (
                         <CatalogStep onNext={handleServicesSelected} />
                     )}
                     {step === 2 && (
-                        <ServiceConfigStep 
-                            services={selectedServices} 
-                            onNext={handleConfigComplete} 
-                            onBack={prevStep} 
+                        <ServiceConfigStep
+                            services={selectedServices}
+                            onNext={handleConfigComplete}
+                            onBack={prevStep}
                         />
                     )}
                     {step === 3 && (

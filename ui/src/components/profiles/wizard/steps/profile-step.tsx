@@ -20,6 +20,9 @@ interface ProfileStepProps {
   onComplete: (profileName: string) => void;
 }
 
+/**
+ * ProfileStep allows the user to finalize and create the profile.
+ */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");
   const [submitting, setSubmitting] = useState(false);

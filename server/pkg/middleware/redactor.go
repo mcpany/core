@@ -148,8 +148,10 @@ func (r *Redactor) RedactString(s string) string {
 		}
 	} else {
 		hasAt = strings.IndexByte(s, '@') != -1
-		for c := byte('0'); c <= '9'; c++ {
-			if strings.IndexByte(s, c) != -1 {
+		// ⚡ BOLT: Optimized digit scan from O(10*N) to O(N) using manual range check.
+		// Randomized Selection from Top 5 High-Impact Targets
+		for i := 0; i < len(s); i++ {
+			if s[i] >= '0' && s[i] <= '9' {
 				hasDigit = true
 				break
 			}
