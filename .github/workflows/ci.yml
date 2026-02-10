@@ -91,9 +91,14 @@ jobs:
             ${{ runner.os }}-lint-cache-
 
       - name: Install dependencies
+
+
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make wget
+          if command -v apk; then
+            sudo apk add --no-cache make wget
+          elif command -v apt-get; then
+            sudo apt-get update && sudo apt-get install -y make wget
+          fi
 
       - name: Prepare environment
         run: make prepare
@@ -125,9 +130,14 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install dependencies
+
+
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make wget
+          if command -v apk; then
+            sudo apk add --no-cache make wget
+          elif command -v apt-get; then
+            sudo apt-get update && sudo apt-get install -y make wget
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -245,9 +255,14 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install dependencies
+
+
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make wget
+          if command -v apk; then
+            sudo apk add --no-cache make wget
+          elif command -v apt-get; then
+            sudo apt-get update && sudo apt-get install -y make wget
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -504,9 +519,14 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install dependencies
+
+
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make wget
+          if command -v apk; then
+            sudo apk add --no-cache make wget
+          elif command -v apt-get; then
+            sudo apt-get update && sudo apt-get install -y make wget
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -621,9 +641,14 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install dependencies
+
+
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make wget
+          if command -v apk; then
+            sudo apk add --no-cache make wget
+          elif command -v apt-get; then
+            sudo apt-get update && sudo apt-get install -y make wget
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -770,9 +795,14 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install dependencies
+
+
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make wget
+          if command -v apk; then
+            sudo apk add --no-cache make wget
+          elif command -v apt-get; then
+            sudo apt-get update && sudo apt-get install -y make wget
+          fi
 
       - name: Detect Architecture
         id: detect-arch
