@@ -1931,6 +1931,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
 	mux.Handle("/api/v1/debug/seed_audit", authMiddleware(http.HandlerFunc(a.handleDebugSeedAuditLogs)))
+	mux.Handle("/api/v1/audit/export", authMiddleware(http.HandlerFunc(a.handleAuditExport)))
 
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {

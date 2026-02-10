@@ -107,14 +107,14 @@ func (a *Application) handleDebugSeedAuditLogs(w http.ResponseWriter, r *http.Re
 
 	for i := 0; i < count; i++ {
 		// Random time within last 24h
-		offset := time.Duration(rand.Int63n(int64(24 * time.Hour)))
+		offset := time.Duration(rand.Int63n(int64(24 * time.Hour))) //nolint:gosec // Usage for debug seeding
 		ts := now.Add(-offset)
 
-		toolName := tools[rand.Intn(len(tools))]
-		user := users[rand.Intn(len(users))]
-		profile := profiles[rand.Intn(len(profiles))]
+		toolName := tools[rand.Intn(len(tools))]       //nolint:gosec // Usage for debug seeding
+		user := users[rand.Intn(len(users))]           //nolint:gosec // Usage for debug seeding
+		profile := profiles[rand.Intn(len(profiles))] //nolint:gosec // Usage for debug seeding
 
-		success := rand.Float32() > 0.1 // 90% success
+		success := rand.Float32() > 0.1 //nolint:gosec // Usage for debug seeding
 
 		var errStr string
 		var result any
@@ -122,14 +122,14 @@ func (a *Application) handleDebugSeedAuditLogs(w http.ResponseWriter, r *http.Re
 		if success {
 			result = map[string]string{"status": "ok", "data": "simulated_success"}
 		} else {
-			if rand.Float32() > 0.5 {
+			if rand.Float32() > 0.5 { //nolint:gosec // Usage for debug seeding
 				errStr = "connection timeout"
 			} else {
 				errStr = "invalid arguments"
 			}
 		}
 
-		durationMs := rand.Int63n(2000)
+		durationMs := rand.Int63n(2000) //nolint:gosec // Usage for debug seeding
 		duration := time.Duration(durationMs) * time.Millisecond
 
 		entry := audit.Entry{

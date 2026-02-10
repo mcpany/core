@@ -16,6 +16,12 @@ ifeq ($(shell $(DOCKER_CMD) buildx version >/dev/null 2>&1 && echo 1 || echo 0),
 	DOCKER_BUILD_CMD := $(DOCKER_CMD) build
 endif
 
+# Check for docker compose v2 vs v1
+DOCKER_COMPOSE_CMD := docker compose
+ifeq ($(shell docker compose version >/dev/null 2>&1 && echo 1 || echo 0), 0)
+    DOCKER_COMPOSE_CMD := docker-compose
+endif
+
 
 .PHONY: test test-local build-test-docker audit lint
 
@@ -38,11 +44,11 @@ export TEST_GID
 test: clean-test-results build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
-	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) $(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml down --remove-orphans || true
 	if [ -z '$(ARGS)' ]; then \
-		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) $(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) $(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
 clean-test-results:
@@ -63,14 +69,14 @@ build-server-docker:
 # Run audit tests (generate screenshots)
 audit: build-test-docker build-server-docker
 	@mkdir -p test-results playwright-report .audit docs
-	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ./docker-compose.test.yml down -v
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true $(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	$(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml down -v
 
 test-ci: clean-test-results
 	mkdir -p test-results .audit ../build/playwright-report
 	chmod -R 777 test-results .audit ../build/playwright-report || true
-	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ./docker-compose.test.yml down -v
+	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" $(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
+	$(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml down -v
 
 # Local test target (runs natively)
 test-local:
@@ -94,4 +100,4 @@ build:
 
 update-screenshots:
 	@echo "Updating screenshots..."
-	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=mcpany/server:latest docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=mcpany/server:latest $(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts

@@ -104,7 +104,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make wget xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -140,9 +140,10 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          # Try to restart docker in various ways, or ignore if not possible
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, continuing..."
           docker info # Verify the mirrors are listed
 
       - name: Install make
@@ -265,9 +266,9 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, continuing..."
           docker info # Verify the mirrors are listed
 
       - name: Install make
@@ -525,8 +526,8 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, continuing..."
           docker info
 
       - name: Set up Go
@@ -639,9 +640,9 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, continuing..."
           docker info # Verify the mirrors are listed
 
       - name: Install make
@@ -732,9 +733,9 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, continuing..."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -824,11 +825,6 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
-
-      - name: Install make
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make
 
       - name: Install make
         run: |
