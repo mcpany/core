@@ -34,6 +34,9 @@ ui/coverage
 
 # Proto specific excludes
 # We MUST NOT exclude proto/ unless it's node_modules
+# Explicitly include proto directory and its contents
+!proto/
+!proto/**
 proto/node_modules
 
 # Note: We do NOT start with '*' to ensure all other files (like proto/**/*.ts)
