@@ -1,3 +1,5 @@
+// Package servicetemplates provides functionality for managing service templates,
+// including seeding initial templates from example configurations.
 package servicetemplates
 
 import (
@@ -37,7 +39,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		dirName := entry.Name()
-		configPath := filepath.Join(s.ExamplesDir, dirName, "config.yaml")
+		configPath := filepath.Clean(filepath.Join(s.ExamplesDir, dirName, "config.yaml"))
 		if _, err := os.Stat(configPath); os.IsNotExist(err) {
 			continue
 		}
@@ -67,7 +69,6 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		// Use the first service as the template
-		// svcMap, ok := services[0].(map[string]any)
 		if _, ok := services[0].(map[string]any); !ok {
 			continue
 		}
@@ -266,9 +267,3 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 	}
 }
 
-func titleCase(s string) string {
-	if len(s) == 0 {
-		return ""
-	}
-	return strings.ToUpper(s[:1]) + s[1:]
-}
