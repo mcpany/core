@@ -16,31 +16,13 @@ test.describe('Stack Editor', () => {
       await cleanupCollection('default-stack', request);
   });
 
-  test('should load the editor and show initial config in graph', async ({ page }) => {
+  test('should load the YAML editor', async ({ page }) => {
     await page.goto('/stacks/default-stack');
 
-    // Check for React Flow container
-    const visualizer = page.locator('.stack-visualizer-container');
-    await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+    // Check for Monaco Editor
+    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 30000 });
 
-    // Check for the node
-    // Using a more specific selector to ensure it's inside a node
-    const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' });
-    await expect(weatherNode).toBeVisible();
-  });
-
-  test('should update graph when template added', async ({ page }) => {
-    await page.goto('/stacks/default-stack');
-    const visualizer = page.locator('.stack-visualizer-container');
-
-    // Wait for initial load
-    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 30000 });
-
-    // Click on PostgreSQL template in the palette
-    await page.getByText('PostgreSQL').click();
-
-    // Verify new node appears in graph
-    const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: 'postgres-db' });
-    await expect(postgresNode).toBeVisible({ timeout: 10000 });
+    // Check for Save button
+    await expect(page.getByRole('button', { name: 'Save & Deploy' })).toBeVisible();
   });
 });
