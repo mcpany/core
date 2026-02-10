@@ -101,8 +101,8 @@ export default function MarketplacePage() {
     if (!importUrl) return;
     try {
         const col = await marketplaceService.importCollection(importUrl);
-        marketplaceService.saveLocalCollection(col);
-        toast({ title: "Collection Imported", description: `Saved ${col.name} to Local Marketplace` });
+        await apiClient.createCollection(col);
+        toast({ title: "Collection Imported", description: `Saved ${col.name} to Stacks` });
         setIsImportDialogOpen(false);
         setImportUrl("");
         loadData();

@@ -1,214 +1,112 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { StackEditor } from "@/components/stacks/stack-editor";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
-import { use } from "react";
 import { apiClient } from "@/lib/client";
-
-// Placeholder for StackStatus if we want a separate component
-/**
- * StackStatus component.
- * @param props - The component props.
- * @param props.stackId - The unique identifier for stack.
- * @returns The rendered component.
- */
-function StackStatus({ stackId }: { stackId: string }) {
-    const [services, setServices] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const fetchStatus = async () => {
-        setIsLoading(true);
-        try {
-            const collection = await apiClient.getCollection(stackId);
-            const svcList = collection.services || [];
-
-            const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
-                // Default values if status fetch fails
-                let status = "Unknown";
-                let metrics = { uptime: "-", cpu: "-", mem: "-" };
-
-                try {
-                    const statusData = await apiClient.getServiceStatus(svc.name);
-                    status = statusData.status || "Unknown";
-                    if (statusData.metrics) {
-                         metrics = { ...metrics, ...statusData.metrics };
-                    }
-                } catch (e) {
-                    // ignore error, keep defaults
-                }
-
-                return {
-                    name: svc.name,
-                    status: status,
-                    uptime: metrics.uptime || "-",
-                    cpu: metrics.cpu || "-",
-                    mem: metrics.mem || "-"
-                };
-            }));
-            setServices(servicesWithStatus);
-        } catch (error) {
-            console.error("Failed to load stack status", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchStatus();
-    }, [stackId]);
-
-    return (
-        <div className="space-y-4">
-             <div className="flex items-center gap-4">
-                 <Card className="flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Total Services</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{services.length}</div>
-                    </CardContent>
-                 </Card>
-                 <Card className="flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Running</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-500">
-                            {services.filter(s => s.status === "Active" || s.status === "Running").length}
-                        </div>
-                    </CardContent>
-                 </Card>
-                 <Card className="flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Errors</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-muted-foreground">
-                             {/* Placeholder logic for errors */}
-                             0
-                        </div>
-                    </CardContent>
-                 </Card>
-             </div>
-
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle className="text-lg">Runtime Status</CardTitle>
-                        <CardDescription>Live status of services defined in this stack.</CardDescription>
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={fetchStatus} disabled={isLoading}>
-                        <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                </CardHeader>
-                <CardContent>
-                    <div className="rounded-md border">
-                        <div className="grid grid-cols-6 gap-4 p-4 border-b font-medium text-sm bg-muted/50">
-                            <div className="col-span-2">Service Name</div>
-                            <div>Status</div>
-                            <div>Uptime</div>
-                            <div>CPU</div>
-                            <div className="text-right">Actions</div>
-                        </div>
-                        {services.length === 0 && !isLoading && (
-                            <div className="p-4 text-center text-sm text-muted-foreground">No services in this stack.</div>
-                        )}
-                        {services.map((svc) => (
-                            <div key={svc.name} className="grid grid-cols-6 gap-4 p-4 items-center text-sm border-b last:border-0 hover:bg-muted/10 transition-colors">
-                                <div className="col-span-2 font-mono flex items-center gap-2">
-                                    <Box className="h-4 w-4 text-muted-foreground" />
-                                    {svc.name}
-                                </div>
-                                <div>
-                                    <Badge variant={(svc.status === "Running" || svc.status === "Active") ? "default" : "secondary"} className={(svc.status === "Running" || svc.status === "Active") ? "bg-green-500 hover:bg-green-600" : ""}>
-                                        {svc.status}
-                                    </Badge>
-                                </div>
-                                <div className="text-muted-foreground">{svc.uptime}</div>
-                                <div className="text-muted-foreground font-mono text-xs">{svc.cpu} / {svc.mem}</div>
-                                <div className="flex justify-end gap-2">
-                                    {(svc.status === "Running" || svc.status === "Active") ? (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" title="Stop">
-                                            <StopCircle className="h-4 w-4" />
-                                        </Button>
-                                    ) : (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500" title="Start">
-                                            <PlayCircle className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                    <Button variant="ghost" size="icon" className="h-8 w-8" title="Logs">
-                                        <Activity className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-             </Card>
-        </div>
-    );
-}
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 /**
  * StackDetailPage component.
- * @param props - The component props.
- * @param props.params - The params property.
  * @returns The rendered component.
  */
-export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
-    const resolvedParams = use(params);
-    const [activeTab, setActiveTab] = useState("editor");
+export default function StackDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [yamlContent, setYamlContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const stackName = params.name as string;
 
-    return (
-        <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                     <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                        {resolvedParams.stackId}
-                        <Badge variant="outline" className="text-xs font-normal">Stack</Badge>
-                     </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                    {/* Refresh button here refreshes the page/tabs? Or specific component? */}
-                    {/* For now let's leave it generic or connected to context. But component has internal refresh */}
-                    <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-                        <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
-                    </Button>
-                    {activeTab === "editor" && (
-                         <Button size="sm" onClick={() => {
-                             // This button duplicates the Save inside Editor,
-                             // maybe just let Editor handle it or use a global context/ref
-                         }} className="hidden">
-                            Deploy Stack
-                        </Button>
-                    )}
-                </div>
-            </div>
+  useEffect(() => {
+      async function load() {
+          try {
+              const yaml = await apiClient.getStackConfig(stackName);
+              setYamlContent(yaml);
+          } catch (e) {
+              console.error("Failed to load stack config", e);
+              toast({ variant: "destructive", title: "Error", description: "Failed to load stack configuration." });
+          } finally {
+              setLoading(false);
+          }
+      }
+      load();
+  }, [stackName, toast]);
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col space-y-4">
-                <TabsList>
-                    <TabsTrigger value="status">Overview & Status</TabsTrigger>
-                    <TabsTrigger value="editor">Editor</TabsTrigger>
-                </TabsList>
+  const handleSave = async (yamlContent: string) => {
+      setSaving(true);
+      try {
+          await apiClient.saveStackConfig(stackName, yamlContent);
+          toast({
+              title: "Stack Updated",
+              description: `Configuration for "${stackName}" has been saved.`
+          });
+      } catch (e: any) {
+          console.error("Failed to update stack", e);
+          toast({
+              variant: "destructive",
+              title: "Update Failed",
+              description: e.message || "Failed to update stack."
+          });
+      } finally {
+          setSaving(false);
+      }
+  };
 
-                <TabsContent value="status" className="flex-1">
-                     <StackStatus stackId={resolvedParams.stackId} />
-                </TabsContent>
+  const handleDelete = async () => {
+      if (!confirm(`Are you sure you want to delete stack "${stackName}"?`)) return;
+      try {
+          await apiClient.deleteCollection(stackName);
+          toast({ title: "Stack Deleted", description: "Stack has been removed." });
+          router.push("/stacks");
+      } catch (e) {
+          toast({ variant: "destructive", title: "Error", description: "Failed to delete stack." });
+      }
+  };
 
-                <TabsContent value="editor" className="flex-1 flex flex-col h-full min-h-0">
-                    <StackEditor stackId={resolvedParams.stackId} />
-                </TabsContent>
-            </Tabs>
+  if (loading) {
+      return <div className="p-8">Loading...</div>;
+  }
+
+  return (
+    <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight">{stackName}</h1>
+            <p className="text-muted-foreground">Manage stack configuration.</p>
         </div>
-    );
+        <Button variant="destructive" onClick={handleDelete}>
+            <Trash2 className="mr-2 h-4 w-4" /> Delete Stack
+        </Button>
+      </div>
+
+      <Card className="flex-1 flex flex-col overflow-hidden">
+          <CardHeader>
+              <CardTitle>Configuration</CardTitle>
+              <CardDescription>
+                  Edit the YAML configuration for this stack.
+              </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 overflow-hidden p-0">
+              <div className="h-full p-6 pt-0">
+                <StackEditor
+                    initialYaml={yamlContent}
+                    onSave={handleSave}
+                    onCancel={() => router.back()}
+                    isSaving={saving}
+                />
+              </div>
+          </CardContent>
+      </Card>
+    </div>
+  );
 }

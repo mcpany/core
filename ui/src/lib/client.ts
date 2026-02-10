@@ -1296,6 +1296,24 @@ export const apiClient = {
     },
 
     /**
+     * Creates a new service collection (stack).
+     * @param collection The collection to create.
+     * @returns A promise that resolves to the created collection.
+     */
+    createCollection: async (collection: any) => {
+        const res = await fetchWithAuth('/api/v1/collections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to create collection: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
      * Saves a service collection (stack).
      * @param collection The collection to save.
      * @returns A promise that resolves when the collection is saved.
@@ -1337,26 +1355,33 @@ export const apiClient = {
     },
 
     /**
-     * Gets the configuration for a stack (Compatibility wrapper).
+     * Gets the configuration for a stack in YAML format.
      * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration.
+     * @returns A promise that resolves to the stack configuration YAML string.
      */
-    getStackConfig: async (stackId: string) => {
-        // Map to getCollection
-        return apiClient.getCollection(stackId);
+    getStackConfig: async (stackId: string): Promise<string> => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to get stack config');
+        return res.text();
     },
 
     /**
-     * Saves the configuration for a stack (Compatibility wrapper).
+     * Saves the configuration for a stack in YAML format.
      * @param stackId The ID of the stack.
-     * @param config The configuration content (Collection object).
+     * @param configYaml The configuration content (YAML string).
      * @returns A promise that resolves when the config is saved.
      */
-    saveStackConfig: async (stackId: string, config: any) => {
-        // Map to saveCollection. Ensure name is set.
-        const collection = typeof config === 'string' ? JSON.parse(config) : config;
-        if (!collection.name) collection.name = stackId;
-        return apiClient.saveCollection(collection);
+    saveStackConfig: async (stackId: string, configYaml: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: configYaml
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to save stack config: ${txt}`);
+        }
+        return res.json();
     },
 
 
