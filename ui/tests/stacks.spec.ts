@@ -42,17 +42,20 @@ services:
     // 6. Navigate back to list
     await page.goto('/stacks');
     // Ensure the stack is present
-    await expect(page.locator('.group', { hasText: stackName })).toBeVisible();
+    await expect(page.locator('.grid > a', { hasText: stackName })).toBeVisible();
 
     // 7. Delete stack
     page.on('dialog', dialog => dialog.accept());
 
-    const cardContent = page.locator('.group', { hasText: stackName });
-    const deleteBtn = cardContent.getByRole('button');
+    const cardLink = page.locator('.grid > a', { hasText: stackName });
+    // We need to click the delete button which is inside the card.
+    // The card is the link. The delete button stops propagation?
+    // In page.tsx: onClick={(e) => handleDelete(e, stack.name)} and e.preventDefault().
+    const deleteBtn = cardLink.getByRole('button');
     await deleteBtn.click();
 
     // 8. Verify removal
-    // Check that the card is gone. Ignore toasts.
-    await expect(page.locator('.group', { hasText: stackName })).not.toBeVisible();
+    // Check that the card is gone. We use the specific card locator.
+    await expect(page.locator('.grid > a', { hasText: stackName })).not.toBeVisible();
   });
 });

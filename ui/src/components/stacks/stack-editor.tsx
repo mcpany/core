@@ -12,6 +12,7 @@ import { ServicePalette } from "./service-palette";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save, X, PanelLeftClose, PanelLeftOpen, Columns, Maximize2 } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import * as yaml from "js-yaml";
 
 interface StackEditorProps {
   initialValue: string;
@@ -44,10 +45,35 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
   };
 
   const handleTemplateSelect = (snippet: string) => {
-      // Append snippet to services block or end of file
-      // Simple logic: append to end
-      const newValue = value + "\n" + snippet;
-      setValue(newValue);
+      try {
+          const doc = yaml.load(value) as any || {};
+          const template = yaml.load(snippet) as any;
+
+          // Template is usually an array of one item: [{name: ...}]
+          const newService = Array.isArray(template) ? template[0] : template;
+
+          if (!doc.services) {
+              doc.services = [];
+          }
+
+          // Check if services is array or map
+          if (Array.isArray(doc.services)) {
+              doc.services.push(newService);
+          } else if (typeof doc.services === 'object') {
+              // It's a map, we need to convert newService to map entry
+              // newService is {name: "foo", ...}
+              const name = newService.name || `service-${Object.keys(doc.services).length + 1}`;
+              const { name: _, ...rest } = newService;
+              doc.services[name] = rest;
+          }
+
+          const newYaml = yaml.dump(doc, { indent: 2, lineWidth: -1 });
+          setValue(newYaml);
+      } catch (e) {
+          console.error("Failed to smartly insert template, falling back to append", e);
+          const newValue = value + "\n" + snippet;
+          setValue(newValue);
+      }
   };
 
   return (
