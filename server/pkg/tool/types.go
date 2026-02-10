@@ -2862,6 +2862,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	// Sentinel Security Update: Interpreter Injection Protection
+	// Check if the main command is an interpreter
 	if isInterpreter(command) {
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
 			return err
@@ -2872,6 +2873,26 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if quoteLevel == 1 || quoteLevel == 2 {
 			if err := checkInterpreterFunctionCalls(val); err != nil {
 				return err
+			}
+		}
+	}
+
+	// Check if the argument itself (template) invokes an interpreter.
+	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
+	// and the argument is the command line for that interpreter.
+	args := strings.Fields(template)
+	if len(args) > 0 {
+		argBase := strings.ToLower(filepath.Base(args[0]))
+		// Avoid double checking if it's the same command (already checked above)
+		if argBase != base && isInterpreter(argBase) {
+			if err := checkInterpreterInjection(val, template, argBase, quoteLevel); err != nil {
+				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
+			}
+			// Also check function calls for the detected interpreter context
+			if quoteLevel == 1 || quoteLevel == 2 {
+				if err := checkInterpreterFunctionCalls(val); err != nil {
+					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
+				}
 			}
 		}
 	}
@@ -3060,10 +3081,21 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 
 func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
+	// Also block redirection > and < to prevent arbitrary file read/write
+	// And block getline to prevent file reading
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
+		}
+		if strings.Contains(val, ">") {
+			return fmt.Errorf("awk injection detected: value contains '>'")
+		}
+		if strings.Contains(val, "<") {
+			return fmt.Errorf("awk injection detected: value contains '<'")
+		}
+		if strings.Contains(val, "getline") {
+			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
 	}
 	return nil
