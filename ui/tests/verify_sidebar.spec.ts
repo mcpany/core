@@ -25,7 +25,8 @@ test('verify sidebar navigation', async ({ page }) => {
   const dateDir = new Date().toISOString().split('T')[0];
   const fs = await import('fs');
   const path = await import('path');
-  const dir = path.join('.audit/ui', dateDir);
+  // Use test-results directory which should be writable
+  const dir = path.join('test-results', 'audit', 'ui', dateDir);
   if (!fs.existsSync(dir)){
       fs.mkdirSync(dir, { recursive: true });
   }
