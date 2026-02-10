@@ -23,11 +23,12 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Ensure directory exists
-  const dir = `.audit/ui/${new Date().toISOString().split('T')[0]}`;
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  const date = new Date().toISOString().split('T')[0];
+  const auditDir = path.join(__dirname, '../.audit/ui', date);
+  if (!fs.existsSync(auditDir)) {
+    fs.mkdirSync(auditDir, { recursive: true });
   }
 
   // Take screenshot
-  await page.screenshot({ path: `${dir}/unified_navigation_system.png` });
+  await page.screenshot({ path: path.join(auditDir, 'unified_navigation_system.png') });
 });
