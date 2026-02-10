@@ -20,6 +20,18 @@ interface ProfileStepProps {
   onComplete: (profileName: string) => void;
 }
 
+/**
+ * ProfileStep finalizes the profile creation.
+ *
+ * Summary: Profile finalization step.
+ *
+ * @param props - The component props.
+ * @param props.services - The list of configured services.
+ * @param props.onBack - Callback to go back.
+ * @param props.onComplete - Callback when profile creation is complete.
+ *
+ * @returns The rendered component.
+ */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");
   const [submitting, setSubmitting] = useState(false);

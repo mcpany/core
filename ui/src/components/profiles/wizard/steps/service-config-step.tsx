@@ -20,6 +20,18 @@ interface ServiceConfigStepProps {
     onBack: () => void;
 }
 
+/**
+ * ServiceConfigStep handles detailed configuration for selected services.
+ *
+ * Summary: Service configuration step.
+ *
+ * @param props - The component props.
+ * @param props.services - The list of selected services.
+ * @param props.onNext - Callback when configuration is complete.
+ * @param props.onBack - Callback to go back.
+ *
+ * @returns The rendered component.
+ */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(
@@ -64,7 +76,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
                         <CardContent className="py-3">
                             <div className="grid gap-2">
                                 <Label>Service Instance Name</Label>
-                                <Input 
+                                <Input
                                     value={svc.instanceName}
                                     onChange={(e) => updateName(idx, e.target.value)}
                                     placeholder="e.g. my-google-calendar"

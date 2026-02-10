@@ -1,3 +1,7 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package servicetemplates provides functionality to seed the database with service templates.
 package servicetemplates
 
 import (
@@ -5,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
@@ -43,6 +48,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		// Read config.yaml
+		//nolint:gosec // Potential file inclusion via variable is intended here as we scan examples dir
 		data, err := os.ReadFile(configPath)
 		if err != nil {
 			fmt.Printf("Failed to read config for %s: %v\n", dirName, err)
@@ -68,7 +74,10 @@ func (s *Seeder) Seed(ctx context.Context) error {
 
 		// Use the first service as the template
 		// svcMap, ok := services[0].(map[string]any)
-		if _, ok := services[0].(map[string]any); !ok {
+		switch services[0].(type) {
+		case map[string]any:
+			// ok
+		default:
 			continue
 		}
 
@@ -112,6 +121,14 @@ func (s *Seeder) Seed(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+//nolint:unused // Function is currently unused but kept for future logic
+func titleCase(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
 }
 
 func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
@@ -264,11 +281,4 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 	}
-}
-
-func titleCase(s string) string {
-	if len(s) == 0 {
-		return ""
-	}
-	return strings.ToUpper(s[:1]) + s[1:]
 }
