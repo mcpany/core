@@ -4,6 +4,8 @@
  */
 
 import { test, expect } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
 
 test.describe('Service Configuration Editor', () => {
   test('should allow editing environment variables for command line service', async ({ page }) => {
@@ -44,7 +46,12 @@ test.describe('Service Configuration Editor', () => {
     await page.getByPlaceholder('VALUE').fill('test_value');
 
     // Take screenshot of the editor
-    await page.screenshot({ path: '.audit/ui/2025-02-20/env_var_editor.png' });
+    const date = new Date().toISOString().split('T')[0];
+    const screenshotDir = path.join('.audit/ui', date);
+    if (!fs.existsSync(screenshotDir)) {
+        fs.mkdirSync(screenshotDir, { recursive: true });
+    }
+    await page.screenshot({ path: path.join(screenshotDir, 'env_var_editor.png') });
 
     // Verify inputs
     await expect(page.getByPlaceholder('KEY')).toHaveValue('TEST_ENV');
