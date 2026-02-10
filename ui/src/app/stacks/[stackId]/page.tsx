@@ -5,210 +5,180 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { StackEditor } from "@/components/stacks/stack-editor";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
-import { use } from "react";
 import { apiClient } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
-// Placeholder for StackStatus if we want a separate component
-/**
- * StackStatus component.
- * @param props - The component props.
- * @param props.stackId - The unique identifier for stack.
- * @returns The rendered component.
- */
-function StackStatus({ stackId }: { stackId: string }) {
-    const [services, setServices] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const fetchStatus = async () => {
-        setIsLoading(true);
-        try {
-            const collection = await apiClient.getCollection(stackId);
-            const svcList = collection.services || [];
-
-            const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
-                // Default values if status fetch fails
-                let status = "Unknown";
-                let metrics = { uptime: "-", cpu: "-", mem: "-" };
-
-                try {
-                    const statusData = await apiClient.getServiceStatus(svc.name);
-                    status = statusData.status || "Unknown";
-                    if (statusData.metrics) {
-                         metrics = { ...metrics, ...statusData.metrics };
-                    }
-                } catch (e) {
-                    // ignore error, keep defaults
-                }
-
-                return {
-                    name: svc.name,
-                    status: status,
-                    uptime: metrics.uptime || "-",
-                    cpu: metrics.cpu || "-",
-                    mem: metrics.mem || "-"
-                };
-            }));
-            setServices(servicesWithStatus);
-        } catch (error) {
-            console.error("Failed to load stack status", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchStatus();
-    }, [stackId]);
-
-    return (
-        <div className="space-y-4">
-             <div className="flex items-center gap-4">
-                 <Card className="flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Total Services</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{services.length}</div>
-                    </CardContent>
-                 </Card>
-                 <Card className="flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Running</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-500">
-                            {services.filter(s => s.status === "Active" || s.status === "Running").length}
-                        </div>
-                    </CardContent>
-                 </Card>
-                 <Card className="flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Errors</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-muted-foreground">
-                             {/* Placeholder logic for errors */}
-                             0
-                        </div>
-                    </CardContent>
-                 </Card>
-             </div>
-
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle className="text-lg">Runtime Status</CardTitle>
-                        <CardDescription>Live status of services defined in this stack.</CardDescription>
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={fetchStatus} disabled={isLoading}>
-                        <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                </CardHeader>
-                <CardContent>
-                    <div className="rounded-md border">
-                        <div className="grid grid-cols-6 gap-4 p-4 border-b font-medium text-sm bg-muted/50">
-                            <div className="col-span-2">Service Name</div>
-                            <div>Status</div>
-                            <div>Uptime</div>
-                            <div>CPU</div>
-                            <div className="text-right">Actions</div>
-                        </div>
-                        {services.length === 0 && !isLoading && (
-                            <div className="p-4 text-center text-sm text-muted-foreground">No services in this stack.</div>
-                        )}
-                        {services.map((svc) => (
-                            <div key={svc.name} className="grid grid-cols-6 gap-4 p-4 items-center text-sm border-b last:border-0 hover:bg-muted/10 transition-colors">
-                                <div className="col-span-2 font-mono flex items-center gap-2">
-                                    <Box className="h-4 w-4 text-muted-foreground" />
-                                    {svc.name}
-                                </div>
-                                <div>
-                                    <Badge variant={(svc.status === "Running" || svc.status === "Active") ? "default" : "secondary"} className={(svc.status === "Running" || svc.status === "Active") ? "bg-green-500 hover:bg-green-600" : ""}>
-                                        {svc.status}
-                                    </Badge>
-                                </div>
-                                <div className="text-muted-foreground">{svc.uptime}</div>
-                                <div className="text-muted-foreground font-mono text-xs">{svc.cpu} / {svc.mem}</div>
-                                <div className="flex justify-end gap-2">
-                                    {(svc.status === "Running" || svc.status === "Active") ? (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" title="Stop">
-                                            <StopCircle className="h-4 w-4" />
-                                        </Button>
-                                    ) : (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500" title="Start">
-                                            <PlayCircle className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                    <Button variant="ghost" size="icon" className="h-8 w-8" title="Logs">
-                                        <Activity className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-             </Card>
-        </div>
-    );
-}
+const DEFAULT_STACK_YAML = `name: my-stack
+description: "A description of my stack"
+services:
+  - name: weather
+    mcpService:
+      httpConnection:
+        httpAddress: http://localhost:8082
+`;
 
 /**
  * StackDetailPage component.
- * @param props - The component props.
- * @param props.params - The params property.
  * @returns The rendered component.
  */
-export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
-    const resolvedParams = use(params);
-    const [activeTab, setActiveTab] = useState("editor");
+export default function StackDetailPage() {
+  const { stackId } = useParams<{ stackId: string }>();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [yaml, setYaml] = useState<string>("");
+  const [stackData, setStackData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("config");
 
-    return (
-        <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                     <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                        {resolvedParams.stackId}
-                        <Badge variant="outline" className="text-xs font-normal">Stack</Badge>
-                     </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                    {/* Refresh button here refreshes the page/tabs? Or specific component? */}
-                    {/* For now let's leave it generic or connected to context. But component has internal refresh */}
-                    <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-                        <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
-                    </Button>
-                    {activeTab === "editor" && (
-                         <Button size="sm" onClick={() => {
-                             // This button duplicates the Save inside Editor,
-                             // maybe just let Editor handle it or use a global context/ref
-                         }} className="hidden">
-                            Deploy Stack
-                        </Button>
-                    )}
-                </div>
-            </div>
+  useEffect(() => {
+    if (stackId === "new") {
+      setYaml(DEFAULT_STACK_YAML);
+      setLoading(false);
+      setActiveTab("config");
+      return;
+    }
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col space-y-4">
-                <TabsList>
-                    <TabsTrigger value="status">Overview & Status</TabsTrigger>
-                    <TabsTrigger value="editor">Editor</TabsTrigger>
-                </TabsList>
+    // Default to overview for existing stacks
+    setActiveTab("overview");
 
-                <TabsContent value="status" className="flex-1">
-                     <StackStatus stackId={resolvedParams.stackId} />
-                </TabsContent>
+    const loadStack = async () => {
+      try {
+        const [content, data] = await Promise.all([
+            apiClient.getStackYaml(stackId),
+            apiClient.getCollection(stackId).catch(() => null) // Ignore error if collection fetch fails but yaml works?
+        ]);
+        setYaml(content);
+        setStackData(data);
+      } catch (e) {
+        console.error("Failed to load stack", e);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load stack configuration."
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadStack();
+  }, [stackId, toast]);
 
-                <TabsContent value="editor" className="flex-1 flex flex-col h-full min-h-0">
-                    <StackEditor stackId={resolvedParams.stackId} />
-                </TabsContent>
-            </Tabs>
+  const handleSave = async (content: string) => {
+    try {
+      let targetId = stackId;
+      if (stackId === "new") {
+        const match = content.match(/^name:\s*(.+)$/m);
+        if (match) {
+            targetId = match[1].trim().replace(/['"]/g, "");
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Invalid Config",
+                description: "Stack name is required in YAML (name: ...)"
+            });
+            throw new Error("Stack name missing");
+        }
+      }
+
+      await apiClient.saveStackYaml(targetId, content);
+      toast({
+        title: "Stack Saved",
+        description: "Configuration has been applied successfully."
+      });
+
+      if (stackId === "new") {
+        router.push(`/stacks/${targetId}`);
+      } else {
+          // Refresh data
+          const data = await apiClient.getCollection(targetId);
+          setStackData(data);
+      }
+    } catch (e) {
+      console.error("Failed to save stack", e);
+      toast({
+        variant: "destructive",
+        title: "Save Failed",
+        description: String(e)
+      });
+      throw e;
+    }
+  };
+
+  if (loading) {
+    return <div className="p-8">Loading...</div>;
+  }
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 space-y-4">
+      <div className="flex items-center gap-4">
+        <Link href="/stacks">
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {stackId === "new" ? "New Stack" : stackId}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {stackId === "new" ? "Define a new stack using YAML." : "Manage stack services and configuration."}
+          </p>
         </div>
-    );
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+        <TabsList className="w-fit">
+            <TabsTrigger value="overview" disabled={stackId === "new"}>Overview</TabsTrigger>
+            <TabsTrigger value="config">Configuration</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="flex-1 overflow-auto mt-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {stackData?.services?.map((svc: any) => (
+                    <Card key={svc.name}>
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center justify-between">
+                                {svc.name}
+                                <Badge variant="outline">{svc.version || "latest"}</Badge>
+                            </CardTitle>
+                            <CardDescription className="text-xs truncate">
+                                {svc.id || svc.name}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-xs text-muted-foreground">
+                                {svc.mcpService ? "MCP Service" :
+                                 svc.commandLineService ? "Command Line" :
+                                 svc.httpService ? "HTTP Service" : "Unknown Type"}
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+                {(!stackData?.services || stackData.services.length === 0) && (
+                    <div className="col-span-full text-center p-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                        No services in this stack.
+                    </div>
+                )}
+            </div>
+        </TabsContent>
+
+        <TabsContent value="config" className="flex-1 min-h-0 mt-4 h-full">
+             <StackEditor
+                initialValue={yaml}
+                onSave={handleSave}
+                onCancel={() => router.push("/stacks")}
+            />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }
