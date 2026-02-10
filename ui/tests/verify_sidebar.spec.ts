@@ -24,11 +24,11 @@ test('verify sidebar navigation', async ({ page }) => {
 
   // Ensure directory exists
   const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, '../.audit/ui', date);
+  const auditDir = `.audit/ui/${date}`;
   if (!fs.existsSync(auditDir)) {
     fs.mkdirSync(auditDir, { recursive: true });
   }
 
   // Take screenshot
-  await page.screenshot({ path: path.join(auditDir, 'unified_navigation_system.png') });
+  await page.screenshot({ path: `${auditDir}/unified_navigation_system.png` });
 });
