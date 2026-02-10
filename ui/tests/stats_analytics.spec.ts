@@ -41,10 +41,15 @@ test('verify stats page', async ({ page }) => {
   // Take a screenshot
   if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       const date = new Date().toISOString().split('T')[0];
-      const screenshotDir = path.resolve(__dirname, '../.audit/ui', date);
-      if (!fs.existsSync(screenshotDir)) {
-          fs.mkdirSync(screenshotDir, { recursive: true });
+      // Use test-results directory which is writable in CI
+      const screenshotDir = path.resolve(process.cwd(), 'test-results/artifacts/audit/ui', date);
+      try {
+        if (!fs.existsSync(screenshotDir)) {
+            fs.mkdirSync(screenshotDir, { recursive: true });
+        }
+        await page.screenshot({ path: path.join(screenshotDir, 'stats_analytics.png'), fullPage: true });
+      } catch (e) {
+        console.warn('Failed to save screenshot:', e);
       }
-      await page.screenshot({ path: path.join(screenshotDir, 'stats_analytics.png'), fullPage: true });
   }
 });

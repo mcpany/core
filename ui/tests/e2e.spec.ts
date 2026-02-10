@@ -8,7 +8,8 @@ import path from 'path';
 import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
-const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
+// Use test-results directory which is writable in CI
+const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DATE}`);
 
 test.describe('MCP Any UI E2E Tests', () => {
   test.describe.configure({ mode: 'serial' });
