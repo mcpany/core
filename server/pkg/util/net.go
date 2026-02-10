@@ -82,6 +82,8 @@ func getBoolEnv(key string) bool {
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
 func NewSafeDialer() *SafeDialer {
+	// Initial configuration based on environment at creation time.
+	// Note: DialContext will also re-check environment variables to support dynamic updates (e.g. in tests).
 	d := &SafeDialer{
 		AllowLoopback:  false,
 		AllowPrivate:   false,
@@ -115,6 +117,24 @@ func NewSafeDialer() *SafeDialer {
 //   - (net.Conn): The established connection.
 //   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+	// Dynamically check environment variables to override settings.
+	// This is critical for tests where environment variables might change after the dialer is created,
+	// and for global singletons (like in config package) to respect runtime configuration changes.
+	allowLoopback := d.AllowLoopback
+	allowPrivate := d.AllowPrivate
+	// LinkLocal is currently not overridable via env for safety, but we can stick to struct config.
+
+	if getBoolEnv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") {
+		allowLoopback = true
+		allowPrivate = true
+	}
+	if getBoolEnv("MCPANY_ALLOW_LOOPBACK_RESOURCES") {
+		allowLoopback = true
+	}
+	if getBoolEnv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") {
+		allowPrivate = true
+	}
+
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split host and port: %w", err)
@@ -143,13 +163,13 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 	// Check all resolved IPs. If any are forbidden, block the request.
 	for _, ip := range ips {
-		if !d.AllowLoopback && (ip.IsLoopback() || isNAT64Loopback(ip) || ip.IsUnspecified()) {
+		if !allowLoopback && (ip.IsLoopback() || isNAT64Loopback(ip) || ip.IsUnspecified()) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to loopback ip %s", host, ip)
 		}
 		if !d.AllowLinkLocal && (ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || isNAT64LinkLocal(ip)) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to link-local ip %s", host, ip)
 		}
-		if !d.AllowPrivate && IsPrivateNetworkIP(ip) {
+		if !allowPrivate && IsPrivateNetworkIP(ip) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to private ip %s", host, ip)
 		}
 	}
