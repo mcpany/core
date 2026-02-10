@@ -15,6 +15,10 @@ interface StackDetailPageProps {
   params: Promise<{ stackId: string }>;
 }
 
+/**
+ * StackDetailPage component.
+ * @returns The rendered component.
+ */
 export default function StackDetailPage({ params }: StackDetailPageProps) {
   const [stackId, setStackId] = useState<string | null>(null);
   const router = useRouter();

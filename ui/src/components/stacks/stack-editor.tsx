@@ -25,6 +25,11 @@ services:
       address: http://localhost:8080
 `;
 
+/**
+ * StackEditor component for editing stack configurations in YAML.
+ * @param props - Component properties.
+ * @returns The rendered editor.
+ */
 export function StackEditor({ initialYaml, onSave, onCancel, loading }: StackEditorProps) {
   const [yaml, setYaml] = useState(initialYaml || DEFAULT_YAML);
   const [saving, setSaving] = useState(false);
