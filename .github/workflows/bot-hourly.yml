@@ -109,9 +109,9 @@ jobs:
               fi
             done
 
-            if [ "$success" = false ]; then
-              echo "Could not merge PR #$pr_number after $max_retries attempts. Closing it."
-              gh pr comment $pr_number --repo ${{ github.repository }} --body "🤖 **Automated Cleanup:** This PR has merge conflicts. Please resolve them locally and reopen or open a new PR."
-              gh pr close $pr_number --repo ${{ github.repository }}
-            fi
+            # if [ "$success" = false ]; then
+            #   echo "Could not merge PR #$pr_number after $max_retries attempts. Closing it."
+            #   gh pr comment $pr_number --repo ${{ github.repository }} --body "🤖 **Automated Cleanup:** This PR has merge conflicts. Please resolve them locally and reopen or open a new PR."
+            #   gh pr close $pr_number --repo ${{ github.repository }}
+            # fi
           done
