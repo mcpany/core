@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
@@ -124,15 +123,30 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			// Thanks to our robust logging setup, we always maintain a JSON log file
 			// (defaulting to mcpany.log) even if the console output is text.
 			// This allows us to reliably hydrate the "Live Logs" history on startup.
-			if cfg.LogFile() != "" {
+			// We prioritize the persistence file ("mcpany.log") if the user is logging TEXT to a custom file,
+			// because hydration requires JSON.
+
+			hydrateSource := cfg.LogFile()
+			// If format is TEXT and logfile is custom, we know settings.go enabled persistence to "mcpany.log".
+			// But settings.go logic puts "mcpany.log" into cfg.LogFile() only if cfg.LogFile() was empty.
+			// If cfg.LogFile() is NOT empty (user provided) AND format is text, cfg.LogFile() points to the text log.
+			// In that case, we should hydrate from "mcpany.log" (the hardcoded persistence path).
+
+			// Simple heuristic: If configured for text, try "mcpany.log" unless logfile itself is json-compatible.
+			// But simpler: settings.go guarantees "mcpany.log" exists if persistence is needed.
+			if cfg.LogFormat() != configv1.GlobalSettings_LOG_FORMAT_JSON {
+				hydrateSource = "mcpany.log"
+			}
+
+			if hydrateSource != "" {
 				go func() {
-					if err := logging.HydrateFromFile(cfg.LogFile()); err != nil {
+					if err := logging.HydrateFromFile(hydrateSource); err != nil {
 						// Only warn if the file exists but failed to read/parse
 						if !os.IsNotExist(err) {
-							log.Warn("Failed to hydrate logs from file", "error", err)
+							log.Warn("Failed to hydrate logs from file", "error", err, "path", hydrateSource)
 						}
 					} else {
-						log.Info("Hydrated log history from file", "path", cfg.LogFile())
+						log.Info("Hydrated log history from file", "path", hydrateSource)
 					}
 				}()
 			}
