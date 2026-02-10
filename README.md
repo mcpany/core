@@ -2,7 +2,7 @@
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 
-## 1. Elevator Pitch
+## 1. Project Identity
 
 **What is this project and why does it exist?**
 
@@ -11,41 +11,7 @@
 **Why?**
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and maintenance overhead. MCP Any solves this by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint.
 
-## 2. Architecture
-
-**High-Level Overview**
-
-MCP Any uses a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. It is built with Go for performance and concurrency.
-
-1.  **Core Server**: A Go-based runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote/DB).
-3.  **Adapters**: specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine & Middleware**: Enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration Store]
-        Registry -->|Policy| Auth[Authentication & Policy Engine]
-    end
-
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
-```
-
-**Design Patterns:**
-*   **Adapter Pattern**: Translates MCP requests to upstream protocols.
-*   **Configuration as Code**: Services are defined declaratively.
-*   **Gateway/Sidecar**: Can be deployed as a central gateway or a Kubernetes sidecar.
-
-## 3. Getting Started
+## 2. Quick Start
 
 Follow these steps to get up and running immediately.
 
@@ -96,7 +62,7 @@ Ask your agent:
 
 The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
-## 4. Development
+## 3. Developer Workflow
 
 We follow a strict development workflow to ensure quality and maintainability.
 
@@ -124,6 +90,40 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 ```bash
 make gen
 ```
+
+## 4. Architecture
+
+**High-Level Overview**
+
+MCP Any uses a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. It is built with Go for performance and concurrency.
+
+1.  **Core Server**: A Go-based runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote/DB).
+3.  **Adapters**: specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+4.  **Policy Engine & Middleware**: Enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration Store]
+        Registry -->|Policy| Auth[Authentication & Policy Engine]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
+**Design Patterns:**
+*   **Adapter Pattern**: Translates MCP requests to upstream protocols.
+*   **Configuration as Code**: Services are defined declaratively.
+*   **Gateway/Sidecar**: Can be deployed as a central gateway or a Kubernetes sidecar.
 
 ## 5. Configuration
 

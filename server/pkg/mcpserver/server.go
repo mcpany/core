@@ -910,7 +910,12 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // its JSON content only when logged.
 type LazyRedact []byte
 
-// LogValue implements slog.LogValuer.
+// LogValue implements the slog.LogValuer interface.
+//
+// It returns a redacted string representation of the JSON content for secure logging.
+//
+// Returns:
+//   - slog.Value: The redacted value as a string.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -922,7 +927,13 @@ type LazyLogResult struct {
 	Value any
 }
 
-// LogValue implements slog.LogValuer.
+// LogValue implements the slog.LogValuer interface.
+//
+// It computes the log representation of the tool result, summarizing large content
+// and redacting sensitive data.
+//
+// Returns:
+//   - slog.Value: The summarized and redacted value suitable for logging.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")
