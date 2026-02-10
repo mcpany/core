@@ -2942,6 +2942,7 @@ func checkInterpreterFunctionCalls(val string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"execute", "kill", "exit",
 	}
 
 	for _, kw := range dangerousKeywords {
