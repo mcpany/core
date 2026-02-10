@@ -8,9 +8,13 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 
 /**
- * useServiceSiblings.
+ * useServiceSiblings fetches sibling services.
  *
- * @param currentServiceId - The currentServiceId.
+ * @summary Fetches sibling services.
+ *
+ * @param currentServiceId - string. The ID of the current service.
+ * @returns { label: string; href: string }[]. A list of sibling services with labels and links.
+ * @throws None.
  */
 export function useServiceSiblings(currentServiceId: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
@@ -29,10 +33,14 @@ export function useServiceSiblings(currentServiceId: string) {
 }
 
 /**
- * useToolSiblings.
+ * useToolSiblings fetches sibling tools within a service.
  *
- * @param serviceId - The serviceId.
- * @param currentToolName - The currentToolName.
+ * @summary Fetches sibling tools within a service.
+ *
+ * @param serviceId - string. The ID of the service.
+ * @param currentToolName - string. The name of the current tool.
+ * @returns { label: string; href: string }[]. A list of sibling tools with labels and links.
+ * @throws None.
  */
 export function useToolSiblings(serviceId: string, currentToolName: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);

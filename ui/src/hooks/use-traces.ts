@@ -13,9 +13,19 @@ interface UseTracesOptions {
 /**
  * Hook to manage trace subscriptions via WebSocket.
  *
- * @param options - Configuration options for the trace hook.
- * @param options.initialPaused - Whether to start in a paused state.
- * @returns An object containing the current traces, loading state, connection status, and controls.
+ * @summary Manages trace subscriptions via WebSocket.
+ *
+ * @param options - UseTracesOptions. Configuration options for the trace hook.
+ * @param options.initialPaused - boolean. Whether to start in a paused state.
+ * @returns object. An object containing:
+ *          - traces: Trace[]. The list of received traces.
+ *          - loading: boolean. True if the connection is being established.
+ *          - isConnected: boolean. True if the WebSocket is connected.
+ *          - isPaused: boolean. True if the subscription is paused.
+ *          - setIsPaused: (paused: boolean) => void. Function to pause/resume the subscription.
+ *          - clearTraces: () => void. Function to clear the traces.
+ *          - refresh: () => void. Function to reconnect and refresh traces.
+ * @throws None.
  */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);

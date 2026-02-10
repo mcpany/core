@@ -7,11 +7,15 @@ import { useState, useEffect } from "react";
 
 /**
  * ServiceStatus represents the possible health states of a service.
+ *
+ * @summary Defines the possible health states of a service.
  */
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
  * ServiceHealth describes the current health information of a service.
+ *
+ * @summary Describes the current health information of a service.
  */
 export interface ServiceHealth {
   /** The unique identifier of the service. */
@@ -30,6 +34,8 @@ export interface ServiceHealth {
 
 /**
  * HealthHistoryPoint represents a single data point in the health history of a service.
+ *
+ * @summary Represents a single data point in the health history of a service.
  */
 export interface HealthHistoryPoint {
   /** The timestamp of the health check in milliseconds. */
@@ -40,6 +46,8 @@ export interface HealthHistoryPoint {
 
 /**
  * ServiceHistory maps service IDs to their list of historical health points.
+ *
+ * @summary Maps service IDs to their list of historical health points.
  */
 export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
@@ -52,9 +60,16 @@ interface HealthResponse {
 
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
+ *
+ * @summary Fetches and maintains the health history of services.
+ *
  * It polls the backend API for health data (which now includes server-side history).
  *
- * @returns An object containing the current services list, their health history, and a loading state.
+ * @returns object. An object containing:
+ *          - services: ServiceHealth[]. The current list of services.
+ *          - history: ServiceHistory. The health history of the services.
+ *          - isLoading: boolean. True if the data is being fetched.
+ * @throws None.
  */
 export function useServiceHealthHistory() {
   const [history, setHistory] = useState<ServiceHistory>({});

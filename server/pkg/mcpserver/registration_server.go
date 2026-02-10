@@ -24,10 +24,6 @@ import (
 // RegistrationServer implements the gRPC server for service registration.
 //
 // Summary: Handles gRPC requests for registering and managing upstream services.
-//
-// Side Effects:
-//   - Publishes messages to the event bus.
-//   - Interacts with the authentication manager.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
 	bus         *bus.Provider
@@ -37,9 +33,6 @@ type RegistrationServer struct {
 // NewRegistrationServerHook is a test hook for overriding the creation of a RegistrationServer.
 //
 // Summary: Test hook to override RegistrationServer creation.
-//
-// Side Effects:
-//   - If set, this hook is called instead of the standard constructor logic.
 var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*RegistrationServer, error)
 
 // NewRegistrationServer creates a new RegistrationServer initialized with the event bus and auth manager.
@@ -47,7 +40,7 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 // Summary: Initializes a new RegistrationServer instance.
 //
 // Parameters:
-//   - bus: *bus.Provider. The event bus used for communication with workers.
+//   - bus: *bus.Provider. The event bus used for communication with workers. Must not be nil.
 //   - authManager: *auth.Manager. Manager for handling authentication and OAuth flows.
 //
 // Returns:
@@ -79,8 +72,8 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 //   - *v1.ValidateServiceResponse: The response containing validation results, discovered tools, and resources.
 //   - error: An error if the validation request itself is invalid (e.g. missing config).
 //
-// Side Effects:
-//   - Temporarily creates an upstream connection and then closes it.
+// Throws/Errors:
+//   - codes.InvalidArgument: If the configuration is missing or invalid.
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -146,9 +139,10 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 //   - *v1.RegisterServiceResponse: The response containing the registration status, service key, and discovered tools.
 //   - error: An error if the registration fails, times out, or arguments are invalid.
 //
-// Side Effects:
-//   - Publishes a registration request to the event bus.
-//   - Waits for a response on a dedicated result channel.
+// Throws/Errors:
+//   - codes.InvalidArgument: If the configuration or service name is missing/invalid.
+//   - codes.Internal: If registration fails internally.
+//   - codes.DeadlineExceeded: If the registration times out.
 func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.RegisterServiceRequest) (*v1.RegisterServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -227,6 +221,9 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 // Returns:
 //   - *v1.UnregisterServiceResponse: The response indicating success or failure.
 //   - error: Always returns an Unimplemented error.
+//
+// Throws/Errors:
+//   - codes.Unimplemented: Always.
 func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
@@ -287,6 +284,9 @@ func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.Ini
 // Returns:
 //   - *v1.RegisterToolsResponse: A response indicating success or failure.
 //   - error: Always returns an Unimplemented error.
+//
+// Throws/Errors:
+//   - codes.Unimplemented: Always.
 func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
@@ -302,6 +302,9 @@ func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterTool
 // Returns:
 //   - *v1.GetServiceStatusResponse: The response with the service status.
 //   - error: Always returns an Unimplemented error.
+//
+// Throws/Errors:
+//   - codes.Unimplemented: Always.
 func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }

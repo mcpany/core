@@ -11,6 +11,8 @@ import { useTopology } from '../contexts/service-health-context';
 
 /**
  * State and actions for the network graph visualization.
+ *
+ * @summary Defines the state and actions for the network graph visualization.
  */
 export interface NetworkGraphState {
     /** Current list of nodes in the graph. */
@@ -69,10 +71,13 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 /**
  * Hook to fetch and manage network topology data.
  *
+ * @summary Fetches and manages network topology data.
+ *
  * It periodically polls the backend for topology updates and handles layouting
  * using Dagre for automatic positioning of nodes and edges.
  *
- * @returns {NetworkGraphState} The network graph state and actions including nodes, edges, and event handlers.
+ * @returns NetworkGraphState. The network graph state and actions including nodes, edges, and event handlers.
+ * @throws None.
  */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -249,8 +254,12 @@ export function useNetworkTopology() {
 
 /**
  * Calculates the layout style for a node based on its type.
- * @param node The topology node.
- * @returns The style object.
+ *
+ * @summary Calculates the layout style for a node based on its type.
+ *
+ * @param node - TopologyNode. The topology node.
+ * @returns object. The style object.
+ * @throws None.
  */
 function getNodeLayout(node: TopologyNode) {
     return {
@@ -269,8 +278,12 @@ function getNodeLayout(node: TopologyNode) {
 
 /**
  * Determines the CSS class name for a node based on its type and theme.
- * @param node The topology node.
- * @returns The Tailwind CSS class string.
+ *
+ * @summary Determines the CSS class name for a node based on its type and theme.
+ *
+ * @param node - TopologyNode. The topology node.
+ * @returns string. The Tailwind CSS class string.
+ * @throws None.
  */
 function getNodeClassName(node: TopologyNode): string {
     const base = "transition-all duration-200 shadow-sm hover:shadow-md";

@@ -9,7 +9,17 @@ const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
  * Hook for pinnedtools.
- * @returns The result.
+ *
+ * @summary Manages pinned tools in local storage.
+ *
+ * @returns object. An object containing:
+ *          - pinnedTools: string[]. The list of pinned tool names.
+ *          - togglePin: (toolName: string) => void. Toggles the pinned state of a tool.
+ *          - bulkPin: (names: string[]) => void. Pins multiple tools.
+ *          - bulkUnpin: (names: string[]) => void. Unpins multiple tools.
+ *          - isPinned: (toolName: string) => boolean. Checks if a tool is pinned.
+ *          - isLoaded: boolean. True if the tools have been loaded from storage.
+ * @throws None.
  */
 export function usePinnedTools() {
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);

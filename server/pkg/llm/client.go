@@ -15,11 +15,12 @@ import (
 )
 
 // Client is the interface for an LLM client.
+//
+// Summary: Defines the interface for interacting with an LLM provider.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
-	// Summary:
-	//   Sends a chat completion request to the configured LLM provider.
+	// Summary: Sends a chat completion request to the configured LLM provider.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
@@ -29,32 +30,37 @@ type Client interface {
 	//   - *ChatResponse: The chat response from the LLM.
 	//   - error: An error if the request fails or the response is invalid.
 	//
-	// Errors:
-	//   - Returns error if marshaling fails, network request fails, or API returns non-200 status.
-	//
-	// Side Effects:
-	//   - Makes a network request to the LLM provider.
+	// Throws/Errors:
+	//   - fmt.Errorf: If marshaling fails, network request fails, or API returns non-200 status.
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
 
 // ChatRequest represents a chat completion request.
+//
+// Summary: Represents a chat completion request.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
 // Message represents a chat message.
+//
+// Summary: Represents a chat message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
 // ChatResponse represents a chat completion response.
+//
+// Summary: Represents a chat completion response.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
 // OpenAIClient implements Client for OpenAI.
+//
+// Summary: Implements Client for OpenAI.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string
@@ -62,6 +68,18 @@ type OpenAIClient struct {
 }
 
 // NewOpenAIClient creates a new OpenAIClient.
+//
+// Summary: Creates a new OpenAIClient.
+//
+// Parameters:
+//   - apiKey: string. The API key for OpenAI.
+//   - baseURL: string. The base URL for the API (defaults to "https://api.openai.com/v1" if empty).
+//
+// Returns:
+//   - *OpenAIClient: A new instance of OpenAIClient.
+//
+// Throws/Errors:
+//   - None.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -90,6 +108,19 @@ type openAIChatResponse struct {
 }
 
 // ChatCompletion performs a chat completion request.
+//
+// Summary: Performs a chat completion request to OpenAI.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: ChatRequest. The chat request parameters.
+//
+// Returns:
+//   - *ChatResponse: The chat response from the LLM.
+//   - error: An error if the request fails or the response is invalid.
+//
+// Throws/Errors:
+//   - fmt.Errorf: If marshaling fails, network request fails, API returns non-200 status, or response decoding fails.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)
