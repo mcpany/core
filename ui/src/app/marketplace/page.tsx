@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Package, Globe, ExternalLink, Users, Search } from "lucide-react";
+import { Download, Package, Globe, ExternalLink, Users, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
@@ -25,6 +25,7 @@ import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
+import { SERVICE_REGISTRY } from "@/lib/service-registry";
 
 /**
  * MarketplacePage component.
@@ -140,70 +141,43 @@ export default function MarketplacePage() {
   };
 
   const openInstantiateCommunity = (server: CommunityServer) => {
-      // Best-effort config generation logic
-      const isPython = server.tags.some(t => t.includes('🐍'));
+      // Check Registry First
+      const registryMatch = SERVICE_REGISTRY.find(item => {
+          // Check by name exact match
+          if (item.name.toLowerCase() === server.name.toLowerCase()) return true;
+          // Check by repo URL substring match
+          if (server.url.includes(item.repo)) return true;
+          return false;
+      });
 
-      // Try to extract repo name for npx
       let command = "";
-      const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
-
-      if (repoMatch) {
-          const owner = repoMatch[1];
-          const repo = repoMatch[2];
-          if (isPython) {
-             command = `uvx ${repo}`;
-          } else {
-             if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
-                 command = `npx -y @modelcontextprotocol/${repo}`;
-             } else {
-                 command = `npx -y ${repo}`;
-             }
-          }
-      } else {
-          command = isPython ? "uvx package-name" : "npx -y package-name";
-      }
-
-      // Smart Schema Injection
       let configurationSchema = "";
 
-      // Cloudflare
-      if (repoMatch && (repoMatch[2] === "mcp-server-cloudflare" || server.name.toLowerCase().includes("cloudflare"))) {
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "Cloudflare Configuration",
-              properties: {
-                  "CLOUDFLARE_API_TOKEN": {
-                      type: "string",
-                      title: "Cloudflare API Token",
-                      description: "Your Cloudflare API Token (Account.Read permissions required)",
-                  },
-                  "CLOUDFLARE_ACCOUNT_ID": {
-                      type: "string",
-                      title: "Account ID",
-                      description: "Your Cloudflare Account ID"
-                  }
-              },
-              required: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
-          });
-      }
+      if (registryMatch) {
+          command = registryMatch.command;
+          configurationSchema = JSON.stringify(registryMatch.configurationSchema);
+      } else {
+          // Fallback to best-effort heuristic
+          const isPython = server.tags.some(t => t.includes('🐍'));
 
-      // Postgres
-      if (repoMatch && (repoMatch[2] === "server-postgres" || server.name.toLowerCase().includes("postgres"))) {
-           // PostgreSQL usually takes args but some wrappers use env.
-           // For the official one, it takes connection string as arg.
-           // But let's assume we can pass it via env if we wrap it, or just for demo of the UI capability.
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "PostgreSQL Configuration",
-              properties: {
-                  "POSTGRES_URL": {
-                      type: "string",
-                      title: "Connection URL",
-                      description: "postgresql://user:pass@host:5432/db",
-                  }
-              },
-              required: ["POSTGRES_URL"]
-          });
+          // Try to extract repo name for npx
+          const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
+
+          if (repoMatch) {
+              const owner = repoMatch[1];
+              const repo = repoMatch[2];
+              if (isPython) {
+                 command = `uvx ${repo}`;
+              } else {
+                 if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
+                     command = `npx -y @modelcontextprotocol/${repo}`;
+                 } else {
+                     command = `npx -y ${repo}`;
+                 }
+              }
+          } else {
+              command = isPython ? "uvx package-name" : "npx -y package-name";
+          }
       }
 
       const config: UpstreamServiceConfig = {
@@ -243,6 +217,14 @@ export default function MarketplacePage() {
   const openCollectionDetails = (col: ServiceCollection) => {
       setSelectedCollection(col);
       setIsDetailsOpen(true);
+  };
+
+  const isVerified = (server: CommunityServer) => {
+       return SERVICE_REGISTRY.some(item => {
+          if (item.name.toLowerCase() === server.name.toLowerCase()) return true;
+          if (server.url.includes(item.repo)) return true;
+          return false;
+      });
   };
 
   // Filter Community Servers
@@ -411,8 +393,11 @@ export default function MarketplacePage() {
                           <Card key={idx} className="flex flex-col">
                               <CardHeader>
                                   <div className="flex justify-between items-start gap-2">
-                                      <CardTitle className="text-lg truncate" title={server.name}>
+                                      <CardTitle className="text-lg truncate flex items-center gap-2" title={server.name}>
                                           {server.name}
+                                          {isVerified(server) && (
+                                              <ShieldCheck className="h-4 w-4 text-blue-500" aria-label="Verified Config" />
+                                          )}
                                       </CardTitle>
                                       <a href={server.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                                           <ExternalLink className="h-4 w-4" />
