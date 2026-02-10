@@ -2857,7 +2857,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
-	if isWindowsCmd && quoteLevel == 2 {
+	// Old Level 2 (Single) -> New Level 3
+	if isWindowsCmd && quoteLevel == 3 {
 		quoteLevel = 0
 	}
 
@@ -2869,18 +2870,19 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		// Old: 1(Double) || 2(Single). New: 2(Double) || 3(Single).
+		if quoteLevel == 2 || quoteLevel == 3 {
 			if err := checkInterpreterFunctionCalls(val); err != nil {
 				return err
 			}
 		}
 	}
 
-	if quoteLevel == 3 { // Backticked
+	if quoteLevel == 1 { // Backticked (Previously 3)
 		return checkBacktickInjection(val, command)
 	}
 
-	if quoteLevel == 2 { // Single Quoted
+	if quoteLevel == 3 { // Single Quoted (Previously 2)
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
@@ -2912,7 +2914,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
-	if quoteLevel == 1 { // Double Quoted
+	if quoteLevel == 2 { // Double Quoted (Previously 1)
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
@@ -3004,7 +3006,8 @@ func checkPythonInjection(val, template, base string) error {
 
 func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+	// Old: 1(Double) || 3(Backtick). New: 2(Double) || 1(Backtick).
+	if strings.HasPrefix(base, "ruby") && (quoteLevel == 2 || quoteLevel == 1) { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
@@ -3022,13 +3025,15 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
 
-	if isNode && quoteLevel == 3 { // Backtick
+	// Old: 3(Backtick). New: 1(Backtick).
+	if isNode && quoteLevel == 1 { // Backtick
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
 		}
 	}
 	// Perl and PHP interpolate variables in both double quotes and backticks
-	if (isPerl || isPhp) && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+	// Old: 1(Double) || 3(Backtick). New: 2(Double) || 1(Backtick).
+	if (isPerl || isPhp) && (quoteLevel == 2 || quoteLevel == 1) { // Double Quoted or Backticked
 		if strings.Contains(val, "${") {
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
@@ -3044,12 +3049,14 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 			// While qx// inside double quotes is technically a string literal in some contexts,
 			// sophisticated interpolation attacks or misinterpretation of quote context makes it risky.
 			// Blocking "qx" is aggressive but necessary for strict security on Perl input.
-			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
+			// Old: 0, 1(Double), 3(Backtick). New: 0, 2(Double), 1(Backtick).
+			if quoteLevel == 0 || quoteLevel == 2 || quoteLevel == 1 {
 				return fmt.Errorf("shell injection detected: perl qx execution")
 			}
 		}
 
-		if quoteLevel == 1 || quoteLevel == 3 {
+		// Old: 1(Double) || 3(Backtick). New: 2(Double) || 1(Backtick).
+		if quoteLevel == 2 || quoteLevel == 1 {
 			if strings.Contains(val, "@{") {
 				return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
 			}
@@ -3166,7 +3173,8 @@ func analyzeQuoteContext(template, placeholder string) int {
 		return 0
 	}
 
-	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
+	// Levels: 0 = Unquoted (Strict), 1 = Backtick (High Risk), 2 = Double (Medium Risk), 3 = Single (Low Risk)
+	// We start with the least strict level (3 = Single) and downgrade if we find a stricter context.
 	minLevel := 3
 
 	inSingle := false
@@ -3183,11 +3191,11 @@ func analyzeQuoteContext(template, placeholder string) int {
 			currentLevel := 0
 			switch {
 			case inSingle:
-				currentLevel = 2
-			case inDouble:
-				currentLevel = 1
-			case inBacktick:
 				currentLevel = 3
+			case inBacktick:
+				currentLevel = 1
+			case inDouble:
+				currentLevel = 2
 			}
 
 			if currentLevel < minLevel {
@@ -3221,7 +3229,9 @@ func analyzeQuoteContext(template, placeholder string) int {
 				inDouble = !inDouble
 			}
 		case '`':
-			if !inSingle && !inDouble {
+			// Backticks can be nested inside double quotes.
+			// However, inside single quotes, everything is literal.
+			if !inSingle {
 				inBacktick = !inBacktick
 			}
 		}
