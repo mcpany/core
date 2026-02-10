@@ -22,6 +22,14 @@ interface AuthStepProps {
     onBack: () => void;
 }
 
+/**
+ * AuthStep allows users to configure authentication for selected services.
+ *
+ * @param props - The component props.
+ * @param props.services - The list of services to configure.
+ * @param props.onNext - Callback when the user proceeds to the next step.
+ * @param props.onBack - Callback when the user goes back to the previous step.
+ */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
     const [authServices, setAuthServices] = useState<WizardService[]>([...services]);
     const [loadingAuth, setLoadingAuth] = useState<Record<string, boolean>>({});
@@ -30,24 +38,24 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
         const svc = authServices[index];
         setLoadingAuth(prev => ({ ...prev, [svc.instanceName]: true }));
         try {
-            // Register service first? 
+            // Register service first?
             // The InitiateOAuth endpoint requires service_id.
             // But we haven't registered the service yet!
-            // 
+            //
             // Issue: We can't auth against a non-existent service config in backend usually,
             // UNLESS the backend allows "template" auth or we register it now.
-            // 
-            // Strategy: 
+            //
+            // Strategy:
             // 1. Register the service now (with auth disabled/incomplete).
             // 2. Perform Auth.
-            // 3. Update Service with Auth tokens (if flow returns them to backend directly) 
+            // 3. Update Service with Auth tokens (if flow returns them to backend directly)
             //    OR backend handles callback and updates service.
             //
             // Better Strategy for Wizard:
             // "Register on Connect".
             // We register the service *now* using the config we have.
             // Then we initiate OAuth.
-            
+
             // Check if already registered?
             try {
                 await apiClient.getService(svc.instanceName);
@@ -60,7 +68,7 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
             }
 
             const res = await apiClient.initiateOAuth(
-                svc.instanceName, 
+                svc.instanceName,
                 svc.instanceName, // credential_id same as service for 1:1 binding
                 window.location.href // Redirect back here? Or a special callback page?
                 // Actually, backend needs to handle the code.
@@ -69,14 +77,14 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
                 //
                 // We should open a popup.
             );
-            
+
             // Open popup
             const popup = window.open(res.authorization_url, "mcp_auth", "width=600,height=700");
-            
+
             // Poll for completion? or separate "I have authenticated" button?
             // For MVP, user clicks "I've finished connecting" or we listen to window message if backend redirects to a /close-popup page.
             // Let's assume user manually confirms for now or we just show link.
-            
+
             if (popup) {
                 toast.info("Please complete authentication in the popup");
             } else {
@@ -136,8 +144,8 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
                         <CardContent className="py-3">
                             {svc.templateId === 'google-calendar' || svc.templateId === 'linear' ? (
                                 <div className="flex items-center gap-4">
-                                     <Button 
-                                        variant="outline" 
+                                     <Button
+                                        variant="outline"
                                         onClick={() => initiateOAuth(idx)}
                                         disabled={loadingAuth[svc.instanceName] || svc.isAuthenticated}
                                     >
@@ -146,15 +154,15 @@ export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
                                         {!loadingAuth[svc.instanceName] && <ExternalLink className="ml-2 h-4 w-4" />}
                                      </Button>
                                      <p className="text-sm text-muted-foreground">
-                                         {svc.isAuthenticated 
-                                            ? "Access granted." 
+                                         {svc.isAuthenticated
+                                            ? "Access granted."
                                             : "Requires OAuth2 authentication."}
                                      </p>
                                 </div>
                             ) : svc.templateId === 'github' ? (
                                 <div className="grid gap-2">
                                      <Label>Personal Access Token</Label>
-                                     <Input 
+                                     <Input
                                         type="password"
                                         placeholder="ghp_..."
                                         onChange={(e) => handleTokenInput(idx, e.target.value)}

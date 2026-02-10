@@ -6,10 +6,10 @@
 
 **What is this project and why does it exist?**
 
-**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
+**MCP Any** is the universal adapter for the AI era. It instantly transforms your existing APIs (REST, gRPC, OpenAPI, CLI) into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools without writing code.
 
 **Why?**
-Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and maintenance overhead. MCP Any solves this by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint.
+Building individual MCP servers for every tool leads to "binary fatigue" and maintenance nightmares. MCP Any solves this by acting as a single, configuration-driven gateway. It unifies your infrastructure into one secure, observable endpoint, allowing AI agents to interact with your entire backend ecosystem through simple YAML configurations.
 
 ## 2. Architecture
 
@@ -19,7 +19,7 @@ MCP Any uses a modular, adapter-based architecture to decouple the MCP protocol 
 
 1.  **Core Server**: A Go-based runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote/DB).
-3.  **Adapters**: specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine & Middleware**: Enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
 
 ```mermaid

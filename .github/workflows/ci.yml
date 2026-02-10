@@ -401,7 +401,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          
+
           # Server
           make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
           docker save -o server.tar mcpany/server:latest
@@ -923,7 +923,7 @@ jobs:
           if ! command -v gh &> /dev/null; then
             echo "gh not found. Installing..."
             install_dependencies
-            
+
             GH_VERSION="2.65.0"
             ARCH=$(uname -m)
             case $ARCH in
@@ -943,7 +943,7 @@ jobs:
             fi
 
             BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
-            
+
             if [ -w /usr/local/bin ]; then
                cp "$BIN_PATH" /usr/local/bin/
             elif command -v sudo &> /dev/null; then
@@ -953,7 +953,7 @@ jobs:
                cp "$BIN_PATH" "$HOME/.local/bin/"
                echo "$HOME/.local/bin" >> $GITHUB_PATH
             fi
-            
+
             rm -rf /tmp/gh-install
             echo "gh installed successfully."
           else

@@ -18,6 +18,12 @@ interface CatalogStepProps {
   onNext: (services: WizardService[]) => void;
 }
 
+/**
+ * CatalogStep allows users to browse and select service templates.
+ *
+ * @param props - The component props.
+ * @param props.onNext - Callback when the user proceeds to the next step.
+ */
 export function CatalogStep({ onNext }: CatalogStepProps) {
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
