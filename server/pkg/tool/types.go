@@ -298,14 +298,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -1762,7 +1762,7 @@ func NewLocalCommandTool(
 		// If --sandbox is not supported, sed usually exits with error "illegal option"
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 		defer cancel()
-		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version") //nolint:gosec // Trusted command from config
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
 		if err := checkCmd.Run(); err == nil {
 			t.sandboxArgs = []string{"--sandbox"}
 			logging.GetLogger().Info("Enabled sandbox mode for sed tool", "tool", tool.GetName())
@@ -3049,7 +3049,7 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 			}
 		}
 
-		if (quoteLevel == 1 || quoteLevel == 3) {
+		if quoteLevel == 1 || quoteLevel == 3 {
 			if strings.Contains(val, "@{") {
 				return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
 			}

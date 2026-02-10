@@ -10,7 +10,7 @@ on:
 
 jobs:
   delete-stale-branches:
-    runs-on: oci-runner
+    runs-on: ubuntu-slim
     permissions:
       contents: write
       pull-requests: read
@@ -42,7 +42,7 @@ jobs:
           if ! command -v gh &> /dev/null; then
             echo "gh not found. Installing..."
             install_dependencies
-            
+
             GH_VERSION="2.65.0"
             ARCH=$(uname -m)
             case $ARCH in
@@ -62,7 +62,7 @@ jobs:
             fi
 
             BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
-            
+
             if [ -w /usr/local/bin ]; then
                cp "$BIN_PATH" /usr/local/bin/
             elif command -v sudo &> /dev/null; then
@@ -72,7 +72,7 @@ jobs:
                cp "$BIN_PATH" "$HOME/.local/bin/"
                echo "$HOME/.local/bin" >> $GITHUB_PATH
             fi
-            
+
             rm -rf /tmp/gh-install
             echo "gh installed successfully."
           else
@@ -86,9 +86,9 @@ jobs:
           DAYS_THRESHOLD=3
           # Calculate date threshold in YYYY-MM-DD for gh search
           DATE_THRESHOLD=$(date -d "$DAYS_THRESHOLD days ago" +%Y-%m-%d)
-          
+
           echo "Closing PRs updated before $DATE_THRESHOLD..."
-          
+
           # Find open PRs updated before the threshold
           gh pr list \
             --repo mcpany/core \

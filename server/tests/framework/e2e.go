@@ -313,7 +313,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 		sourcePath := filepath.Join(root, "examples/upstream_service_demo/http/server/weather_server/weather_server.go")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, "go", "build", "-o", binaryPath, sourcePath) //nolint:gosec
+		cmd := exec.CommandContext(ctx, "go", "build", "-o", binaryPath, sourcePath)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()

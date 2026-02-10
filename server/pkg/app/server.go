@@ -337,6 +337,7 @@ func NewApplication() *Application {
 //   - Starts HTTP and gRPC servers.
 //   - Initializes background workers.
 //   - Loads configuration.
+//
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
@@ -2138,9 +2139,7 @@ func (a *Application) runServerMode(
 			Certificates: []tls.Certificate{cert},
 			MinVersion:   tls.VersionTLS12,
 		}
-
 		if tlsClientCA != "" {
-			//nolint:gosec // File path comes from trusted configuration
 			caCert, err := os.ReadFile(tlsClientCA)
 			if err != nil {
 				return fmt.Errorf("failed to read TLS client CA: %w", err)
@@ -2335,7 +2334,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 		})
 	}
 }
-
 
 // HTTPRequestContextMiddleware injects the HTTP request into the context.
 //

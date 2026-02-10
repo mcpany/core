@@ -196,3 +196,35 @@ update-screenshots:
 # Forward other targets to server by default
 %:
 	$(MAKE) -C server $@
+
+# Dockerized targets
+# We mount $(pwd)/build to /workspace/build to reuse cache.
+# We set XDG_CACHE_HOME to /workspace/build/.cache to reuse tool caches.
+# We set GOCACHE and GOMODCACHE to reuse Go caches.
+# We use a separate PRE_COMMIT_HOME to avoid absolute path issues between host and container.
+DOCKER_RUN_OPTS := --rm \
+	-v $(shell pwd):/workspace \
+	-v $(shell pwd)/build:/workspace/build \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-w /workspace \
+	-e GOCACHE=/workspace/build/.cache/go-build \
+	-e GOMODCACHE=/workspace/build/.cache/go-mod \
+	-e GOLANGCI_LINT_CACHE=/workspace/build/.cache/golangci-lint \
+	-e XDG_CACHE_HOME=/workspace/build/.cache \
+	-e PRE_COMMIT_HOME=/workspace/build/.cache/docker-pre-commit \
+	-e INSIDE_DOCKER_CONTAINER=1 \
+	-e HOME=/workspace/build/home \
+	-e HOST_WORKSPACE_ROOT=$(shell pwd) \
+	-e MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true \
+	--net=host \
+	-u $(shell id -u):$(shell id -g) \
+	$(if $(shell getent group docker),--group-add $(shell getent group docker | cut -d: -f3)) \
+	mcpany/core-test
+
+docker-test:
+	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
+	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test'"
+
+docker-lint:
+	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
+	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make lint'"

@@ -23,3 +23,7 @@ ui/*.log
 
 proto/node_modules
 **/node_modules
+server/tools/go
+server/tools/license
+server/tools/license-header-remover
+server/tools/mockgen.go

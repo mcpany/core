@@ -297,7 +297,7 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 		return fmt.Errorf("field 'value' is not addressable")
 	}
 
-	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
+	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
 	f.Set(reflect.ValueOf(val))
 	return nil
 }
@@ -407,7 +407,7 @@ func fixID(id interface{}) interface{} {
 
 	if f.CanAddr() {
 		// Use unsafe to read unexported field
-		rf := reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
+		rf := reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
 		// Recursively fix the extracted value (to handle int conversion)
 		return fixIDExtracted(rf.Interface())
 	}

@@ -265,7 +265,7 @@ prepare:
 		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
 			(cd tests/integration/upstream && npm install) || true; \
-			if [ -n "$(CI)" ]; then \
+			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
 				echo "CI detected, installing Playwright with system dependencies..."; \
 				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
 			else \
@@ -343,12 +343,12 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v2.7.2"); \
+	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v1.64.5"); \
 	if [ -n "$$LINT_VER_CHECK" ]; then \
-		echo "golangci-lint v2.7.2 is already installed."; \
+		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
-		echo "Installing golangci-lint v2.7.2 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.7.2; \
+		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
@@ -455,7 +455,7 @@ else
 	@echo "Running lint (using pre-commit)..."
 	@mkdir -p $(BUILD_DIR)/.cache/pre-commit $(BUILD_DIR)/.cache/golangci-lint
 	@export PATH=$(TOOL_INSTALL_DIR):$(BUILD_DIR)/venv/bin:$$PATH && \
-	export PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit && \
+	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
 	$(GOLANGCI_LINT_BIN) run --timeout 10m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
