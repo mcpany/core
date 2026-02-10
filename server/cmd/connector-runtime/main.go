@@ -23,6 +23,17 @@ func main() {
 	}
 }
 
+// run initializes and starts the connector runtime.
+//
+// It parses command-line arguments, configures the runtime mode (e.g., sidecar),
+// and waits for termination signals.
+//
+// Parameters:
+//   - args: []string. The command-line arguments (including the program name).
+//   - stop: chan os.Signal. A channel to listen for termination signals (SIGINT, SIGTERM).
+//
+// Returns:
+//   - error: An error if argument parsing fails or if required flags are missing.
 func run(args []string, stop chan os.Signal) error {
 	fs := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	connectorName := fs.String("name", "", "Name of the connector to run")
