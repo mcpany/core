@@ -12,20 +12,22 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Play, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ActivityChart } from "@/components/audit/activity-chart";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -51,33 +53,49 @@ export function AuditLogViewer() {
     const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
 
     // Filters
-    const [toolName, setToolName] = useState("");
-    const [userId, setUserId] = useState("");
+    const [toolName, setToolName] = useState("all");
+    const [userId, setUserId] = useState("all");
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+    const [knownTools, setKnownTools] = useState<string[]>([]);
+    const [knownUsers, setKnownUsers] = useState<string[]>([]);
+    const [isSeeding, setIsSeeding] = useState(false);
+
+    // Fetch filters data
+    useEffect(() => {
+        const loadFilters = async () => {
+            try {
+                const toolsRes = await apiClient.listTools();
+                const usersRes = await apiClient.listUsers();
+
+                if (toolsRes && toolsRes.tools) {
+                    setKnownTools(Array.from(new Set(toolsRes.tools.map((t: any) => t.name))).sort());
+                }
+
+                // Users might be array or object depending on API
+                const usersList = Array.isArray(usersRes) ? usersRes : (usersRes.users || []);
+                setKnownUsers(Array.from(new Set(usersList.map((u: any) => u.id))).sort());
+            } catch (e) {
+                console.error("Failed to load filters", e);
+            }
+        };
+        loadFilters();
+    }, []);
 
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
             const filters: any = {
-                limit: 50,
+                limit: 100, // Increased limit
                 offset: 0
             };
-            if (toolName) filters.tool_name = toolName;
-            if (userId) filters.user_id = userId;
+            if (toolName && toolName !== "all") filters.tool_name = toolName;
+            if (userId && userId !== "all") filters.user_id = userId;
             if (startDate) filters.start_time = startDate.toISOString();
             if (endDate) filters.end_time = endDate.toISOString();
 
             const res = await apiClient.listAuditLogs(filters);
-            // Map snake_case to camelCase manually if needed, but assuming client returns what server sends.
-            // Server sends protobuf JSON which is camelCase by default for fields?
-            // Actually, grpc-gateway default uses snake_case for JSON unless configured otherwise.
-            // But I implemented manual marshalling in `server.go` using `AuditLogEntry` struct?
-            // No, I used `pb.AuditLogEntry`. Protobuf JSON serialization uses camelCase by default in Go (protojson).
-            // Let's assume camelCase.
-            // Wait, looking at `admin.proto`:
-            // string tool_name = 2;
-            // In JSON it will be `toolName`.
             setLogs(res.entries || []);
         } catch (e) {
             console.error("Failed to fetch audit logs", e);
@@ -89,6 +107,18 @@ export function AuditLogViewer() {
     useEffect(() => {
         fetchLogs();
     }, [fetchLogs]);
+
+    const handleSeed = async () => {
+        setIsSeeding(true);
+        try {
+            await fetch("/api/v1/debug/seed_audit?count=50", { method: "POST" });
+            fetchLogs();
+        } catch (e) {
+            console.error("Seed failed", e);
+        } finally {
+            setIsSeeding(false);
+        }
+    };
 
     const formatJson = (jsonStr: string) => {
         if (!jsonStr) return null;
@@ -102,28 +132,52 @@ export function AuditLogViewer() {
 
     return (
         <div className="space-y-4 h-full flex flex-col">
+            <ActivityChart data={logs} loading={loading && logs.length === 0} />
+
             <Card className="flex-none">
                 <CardHeader className="pb-3">
-                    <CardTitle>Filters</CardTitle>
-                    <CardDescription>Search audit logs by tool, user, or date.</CardDescription>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle>Filters</CardTitle>
+                            <CardDescription>Search audit logs by tool, user, or date.</CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                             <Button variant="outline" size="sm" onClick={handleSeed} disabled={isSeeding}>
+                                <Play className="mr-2 h-4 w-4" />
+                                {isSeeding ? "Simulating..." : "Simulate Traffic"}
+                            </Button>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 items-end">
                         <div className="grid gap-2 flex-1 w-full md:w-auto">
                             <label className="text-sm font-medium">Tool Name</label>
-                            <Input
-                                placeholder="e.g. weather_get"
-                                value={toolName}
-                                onChange={(e) => setToolName(e.target.value)}
-                            />
+                            <Select value={toolName} onValueChange={setToolName}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Tools" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Tools</SelectItem>
+                                    {knownTools.map(t => (
+                                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="grid gap-2 flex-1 w-full md:w-auto">
                             <label className="text-sm font-medium">User ID</label>
-                            <Input
-                                placeholder="e.g. alice"
-                                value={userId}
-                                onChange={(e) => setUserId(e.target.value)}
-                            />
+                            <Select value={userId} onValueChange={setUserId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Users" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Users</SelectItem>
+                                    {knownUsers.map(u => (
+                                        <SelectItem key={u} value={u}>{u}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="grid gap-2 flex-1 w-full md:w-auto">
                             <label className="text-sm font-medium">Date Range</label>
@@ -234,39 +288,50 @@ export function AuditLogViewer() {
                 </CardContent>
             </Card>
 
-            <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Audit Log Detail</DialogTitle>
-                        <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
-                        </DialogDescription>
-                    </DialogHeader>
+            <Sheet open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+                <SheetContent className="sm:max-w-2xl overflow-y-auto">
+                    <SheetHeader>
+                        <SheetTitle>Audit Log Detail</SheetTitle>
+                        <SheetDescription>
+                            Execution details for {selectedLog?.toolName}
+                        </SheetDescription>
+                    </SheetHeader>
                     {selectedLog && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-6 mt-6">
+                            <div className="flex items-center justify-between">
+                                <Badge variant={selectedLog.error ? "destructive" : "outline"} className={selectedLog.error ? "" : "text-green-500 border-green-500/50"}>
+                                    {selectedLog.error ? "Failed" : "Success"}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground font-mono">
+                                    {new Date(selectedLog.timestamp).toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 text-sm border p-4 rounded-lg bg-muted/20">
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
+                                    <span className="text-xs font-medium text-muted-foreground block mb-1">User ID</span>
+                                    <span className="font-mono">{selectedLog.userId || "N/A"}</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
+                                    <span className="text-xs font-medium text-muted-foreground block mb-1">Profile ID</span>
+                                    <span className="font-mono">{selectedLog.profileId || "N/A"}</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                    <span className="text-xs font-medium text-muted-foreground block mb-1">Duration</span>
+                                    <span className="font-mono">{selectedLog.duration} ({selectedLog.durationMs}ms)</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Status</span>
-                                    {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
+                                    <span className="text-xs font-medium text-muted-foreground block mb-1">Tool</span>
+                                    <span className="font-mono truncate block" title={selectedLog.toolName}>{selectedLog.toolName}</span>
                                 </div>
                             </div>
 
                             {selectedLog.error && (
                                 <div className="bg-red-900/20 border border-red-900/50 rounded-md p-3 text-red-200 text-sm">
-                                    <span className="font-semibold block mb-1">Error:</span>
-                                    {selectedLog.error}
+                                    <span className="font-semibold block mb-1 flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4" /> Error
+                                    </span>
+                                    <pre className="whitespace-pre-wrap font-mono text-xs mt-2">{selectedLog.error}</pre>
                                 </div>
                             )}
 
@@ -289,7 +354,7 @@ export function AuditLogViewer() {
                                     <SyntaxHighlighter
                                         language="json"
                                         style={vscDarkPlus}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
+                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '400px' }}
                                     >
                                         {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
                                     </SyntaxHighlighter>
@@ -297,8 +362,8 @@ export function AuditLogViewer() {
                             </div>
                         </div>
                     )}
-                </DialogContent>
-            </Dialog>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 }

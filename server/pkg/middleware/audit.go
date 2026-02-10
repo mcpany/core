@@ -264,6 +264,27 @@ func (m *AuditMiddleware) Unsubscribe(ch chan []byte) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
+// Write writes a custom audit entry to the underlying store.
+func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	store := m.store
+	m.mu.RUnlock()
+
+	if store == nil {
+		return fmt.Errorf("audit store not initialized")
+	}
+
+	// also broadcast for real-time updates
+	if m.broadcaster != nil {
+		b, err := json.Marshal(entry)
+		if err == nil {
+			m.broadcaster.Broadcast(b)
+		}
+	}
+
+	return store.Write(ctx, entry)
+}
+
 // Read reads audit entries from the underlying store.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
