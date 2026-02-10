@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -352,6 +353,48 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 var FileExists = func(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err
+	}
+	return nil
+}
+
+var sensitiveRegexps = func() []*regexp.Regexp {
+	patterns := []string{
+		// Environment files
+		`^\.env.*$`,
+		// Git directory
+		`^\.git.*$`,
+		// SSH keys
+		`^\.ssh.*$`,
+		// AWS credentials
+		`^\.aws.*$`,
+		// Kubernetes config
+		`^\.kube.*$`,
+		// Shell history
+		`.*_history$`,
+		// Private keys
+		`^id_rsa.*$`, `^id_ed25519.*$`, `^id_dsa.*$`, `^id_ecdsa.*$`, `.*\.pem$`, `.*\.key$`,
+	}
+	var res []*regexp.Regexp
+	for _, p := range patterns {
+		res = append(res, regexp.MustCompile(p))
+	}
+	return res
+}()
+
+// IsSensitivePath checks if the path corresponds to a sensitive file or directory.
+//
+// Summary: Checks for sensitive filenames.
+func IsSensitivePath(path string) error {
+	// Check if any component of the path is sensitive
+	parts := strings.Split(filepath.Clean(path), string(os.PathSeparator))
+	for _, part := range parts {
+		// Sentinel Security Update: Case-insensitive check
+		partLower := strings.ToLower(part)
+		for _, re := range sensitiveRegexps {
+			if re.MatchString(partLower) {
+				return fmt.Errorf("access to sensitive file or directory %q is blocked", part)
+			}
+		}
 	}
 	return nil
 }
