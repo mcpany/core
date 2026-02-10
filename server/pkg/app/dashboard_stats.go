@@ -32,10 +32,20 @@ func (a *Application) setStatsCache(key string, data any) {
 	defer a.statsCacheMu.Unlock()
 
 	// ⚡ Bolt Security: Prevent DoS by bounding cache size.
-	if len(a.statsCache) > 100 {
-		// Simple eviction: Clear all if limit reached.
-		// This is safe and effective for this use case.
-		a.statsCache = make(map[string]statsCacheEntry)
+	if len(a.statsCache) >= 100 {
+		// ⚡ Bolt Optimization: Randomized Eviction
+		// Instead of clearing the entire cache (which causes a thundering herd),
+		// we evict a random subset (approx 25%) to make room.
+		// Randomized Selection from Top 5 High-Impact Targets
+
+		toEvict := len(a.statsCache) / 4
+		for k := range a.statsCache {
+			delete(a.statsCache, k)
+			toEvict--
+			if toEvict <= 0 {
+				break
+			}
+		}
 	}
 
 	a.statsCache[key] = statsCacheEntry{
