@@ -14,6 +14,10 @@
 !go.work
 !go.work.sum
 
+# Explicitly include generated proto files just in case
+!proto/**/*.ts
+!proto/**/*.pb.go
+
 ui/node_modules
 ui/.next
 ui/test-results
