@@ -566,3 +566,32 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_CleanupSessions(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// Add a recent session
+	m.sessions["recent"] = &SessionStats{
+		ID:         "recent",
+		LastActive: time.Now(),
+	}
+
+	// Add an old session
+	m.sessions["old"] = &SessionStats{
+		ID:         "old",
+		LastActive: time.Now().Add(-25 * time.Hour),
+	}
+
+	m.cleanupSessions()
+
+	m.mu.RLock()
+	_, recentExists := m.sessions["recent"]
+	_, oldExists := m.sessions["old"]
+	m.mu.RUnlock()
+
+	assert.True(t, recentExists, "Recent session should remain")
+	assert.False(t, oldExists, "Old session should be cleaned up")
+}
