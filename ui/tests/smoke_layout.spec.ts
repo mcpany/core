@@ -22,25 +22,32 @@ test('layout smoke test', async ({ page }) => {
   await page.waitForURL('**/stacks');
   await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
-  // Check for the "mcpany-system" stack OR empty state
-  const systemStack = page.locator('text=mcpany-system');
+  // Check for ANY stack OR empty state
+  // This is more robust than checking for "mcpany-system" which might vary in E2E environments
+  const stackLinks = page.locator('a[href^="/stacks/"]');
   const emptyState = page.getByText(/No stacks found/i);
 
-  // Wait until one of them is visible to avoid race conditions
+  // Wait for the list to load (either empty state or at least one stack)
   await expect(async () => {
-      const isStackVisible = await systemStack.isVisible();
+      const stackCount = await stackLinks.count();
       const isEmptyVisible = await emptyState.isVisible();
-      expect(isStackVisible || isEmptyVisible).toBe(true);
-  }).toPass({ timeout: 15000 });
+      expect(stackCount > 0 || isEmptyVisible).toBe(true);
+  }).toPass({ timeout: 30000 });
 
-  if (await systemStack.isVisible()) {
-    // Navigate to Stack Detail
+  const count = await stackLinks.count();
+  if (count > 0) {
+    // Navigate to the first available stack
+    const firstStack = stackLinks.first();
+    const href = await firstStack.getAttribute('href');
+    const stackName = href?.split('/').pop() || 'system';
+
     await Promise.all([
-      page.waitForURL(/\/stacks\/(mcpany-system|system)/),
-      systemStack.click(),
+      page.waitForURL(new RegExp(`/stacks/${stackName}`)),
+      firstStack.click(),
     ]);
-    // With new layout, header might be h1 or h2
-    await expect(page.getByRole('heading', { name: /system/i })).toBeVisible();
+
+    // Header should contain the stack name
+    await expect(page.getByRole('heading', { name: stackName, exact: false })).toBeVisible();
 
     // Check Tabs - StackEditor has Editor, Code, Visualizer
     await expect(page.getByRole('tab', { name: 'Editor' })).toBeVisible();

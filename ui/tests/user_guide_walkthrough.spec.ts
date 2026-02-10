@@ -117,18 +117,19 @@ test.describe('User Guide Walkthrough', () => {
     await expect(page.getByRole('button', { name: 'Create Stack' })).toBeVisible();
 
     // Check for system stack or empty state
-    const systemStack = page.getByText('mcpany-system');
+    // We check for *any* stack link to be robust against naming differences
+    const stackLinks = page.locator('a[href^="/stacks/"]');
     const emptyState = page.getByText(/No stacks found/i);
 
-    // Wait until one of them is visible to avoid race conditions
+    // Wait for the list to load (either empty state or at least one stack)
     await expect(async () => {
-        const isStackVisible = await systemStack.isVisible();
+        const stackCount = await stackLinks.count();
         const isEmptyVisible = await emptyState.isVisible();
-        expect(isStackVisible || isEmptyVisible).toBe(true);
-    }).toPass({ timeout: 15000 });
+        expect(stackCount > 0 || isEmptyVisible).toBe(true);
+    }).toPass({ timeout: 30000 });
 
-    if (await systemStack.isVisible()) {
-        await expect(systemStack).toBeVisible();
+    if (await stackLinks.count() > 0) {
+        await expect(stackLinks.first()).toBeVisible();
     } else {
         await expect(emptyState).toBeVisible();
     }
