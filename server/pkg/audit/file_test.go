@@ -28,6 +28,7 @@ func TestNewFileAuditStore_File(t *testing.T) {
 
 	assert.NotNil(t, store.file)
 	assert.Equal(t, logFile, store.file.Name())
+	assert.Equal(t, logFile, store.path)
 }
 
 func TestNewFileAuditStore_Stdout(t *testing.T) {
@@ -36,6 +37,7 @@ func TestNewFileAuditStore_Stdout(t *testing.T) {
 	defer store.Close()
 
 	assert.Nil(t, store.file)
+	assert.Empty(t, store.path)
 }
 
 func TestNewFileAuditStore_Error(t *testing.T) {
@@ -61,13 +63,13 @@ func TestFileAuditStore_Write_File(t *testing.T) {
 
 	entry := Entry{
 		ToolName: "test-tool",
-		Error:    "test-error", // Replacing Status with Error, as Status doesn't exist
+		Error:    "test-error",
 	}
 
 	err = store.Write(context.Background(), entry)
 	require.NoError(t, err)
 
-	// Read file content
+	// Read file content directly to verify
 	content, err := os.ReadFile(logFile)
 	require.NoError(t, err)
 
@@ -128,13 +130,56 @@ func TestFileAuditStore_Close_Stdout(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestFileAuditStore_Read_Error(t *testing.T) {
+func TestFileAuditStore_Read(t *testing.T) {
+	tmpDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
+	logFile := filepath.Join(tmpDir, "audit.log")
+
+	store, err := NewFileAuditStore(logFile)
+	require.NoError(t, err)
+	defer store.Close()
+
+	// Write 3 entries
+	entries := []Entry{
+		{ToolName: "tool1", Error: "err1"},
+		{ToolName: "tool2", Error: "err2"},
+		{ToolName: "tool1", Error: "err3"}, // Same tool as 1
+	}
+
+	for _, e := range entries {
+		require.NoError(t, store.Write(context.Background(), e))
+	}
+
+	// Read All (expect reverse order)
+	readEntries, err := store.Read(context.Background(), Filter{})
+	require.NoError(t, err)
+	assert.Len(t, readEntries, 3)
+	assert.Equal(t, "tool1", readEntries[0].ToolName) // Last written (tool1, err3)
+	assert.Equal(t, "err3", readEntries[0].Error)
+	assert.Equal(t, "tool2", readEntries[1].ToolName)
+	assert.Equal(t, "tool1", readEntries[2].ToolName)
+
+	// Filter by ToolName
+	readEntries, err = store.Read(context.Background(), Filter{ToolName: "tool2"})
+	require.NoError(t, err)
+	assert.Len(t, readEntries, 1)
+	assert.Equal(t, "tool2", readEntries[0].ToolName)
+
+	// Limit
+	readEntries, err = store.Read(context.Background(), Filter{Limit: 1})
+	require.NoError(t, err)
+	assert.Len(t, readEntries, 1)
+	assert.Equal(t, "tool1", readEntries[0].ToolName) // Newest
+}
+
+func TestFileAuditStore_Read_Stdout(t *testing.T) {
+	// Should return empty list, not error, as per new implementation
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
 	defer store.Close()
 
 	entries, err := store.Read(context.Background(), Filter{})
-	assert.Error(t, err)
-	assert.Nil(t, entries)
-	assert.Contains(t, err.Error(), "read not implemented")
+	require.NoError(t, err)
+	assert.Empty(t, entries)
 }

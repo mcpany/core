@@ -1731,5 +1731,15 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    /**
+     * Gets the dashboard health including history.
+     * @returns A promise that resolves to the health response.
+     */
+    getDashboardHealth: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch dashboard health');
+        return res.json();
     }
 };

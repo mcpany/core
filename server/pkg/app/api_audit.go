@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -68,4 +69,57 @@ func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) 
 			fmt.Sprintf("%d", entry.DurationMs),
 		})
 	}
+}
+
+func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Basic filtering from query params
+	filter := audit.Filter{}
+	if start := r.URL.Query().Get("start_time"); start != "" {
+		if t, err := time.Parse(time.RFC3339, start); err == nil {
+			filter.StartTime = &t
+		}
+	}
+	if end := r.URL.Query().Get("end_time"); end != "" {
+		if t, err := time.Parse(time.RFC3339, end); err == nil {
+			filter.EndTime = &t
+		}
+	}
+	filter.ToolName = r.URL.Query().Get("tool_name")
+	filter.UserID = r.URL.Query().Get("user_id")
+	filter.ProfileID = r.URL.Query().Get("profile_id")
+
+	// Limit/Offset
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		var limit int
+		if _, err := fmt.Sscanf(limitStr, "%d", &limit); err == nil {
+			filter.Limit = limit
+		}
+	}
+	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
+		var offset int
+		if _, err := fmt.Sscanf(offsetStr, "%d", &offset); err == nil {
+			filter.Offset = offset
+		}
+	}
+
+	if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+		// Return empty list if not configured
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode([]audit.Entry{})
+		return
+	}
+
+	entries, err := a.standardMiddlewares.Audit.Read(r.Context(), filter)
+	if err != nil {
+		http.Error(w, "Failed to read audit logs: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(entries)
 }

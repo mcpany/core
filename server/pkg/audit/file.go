@@ -4,6 +4,7 @@
 package audit
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -19,6 +20,7 @@ type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
 	out  io.Writer
+	path string
 }
 
 // NewFileAuditStore creates a new FileAuditStore.
@@ -42,6 +44,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	return &FileAuditStore{
 		file: f,
 		out:  os.Stdout,
+		path: path,
 	}, nil
 }
 
@@ -66,8 +69,79 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
-func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
-	return nil, fmt.Errorf("read not implemented for file audit store")
+func (s *FileAuditStore) Read(_ context.Context, filter Filter) ([]Entry, error) {
+	if s.path == "" {
+		// If writing to stdout, we can't read back history easily.
+		// Return empty list or error? Empty list is safer for UI.
+		return []Entry{}, nil
+	}
+
+	// Open file for reading
+	f, err := os.Open(s.path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []Entry{}, nil
+		}
+		return nil, fmt.Errorf("failed to open audit log for reading: %w", err)
+	}
+	defer func() { _ = f.Close() }()
+
+	var entries []Entry
+	scanner := bufio.NewScanner(f)
+	// Increase buffer for large log lines (default is 64k)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 1024*1024) // 1MB max line
+
+	for scanner.Scan() {
+		var entry Entry
+		if err := json.Unmarshal(scanner.Bytes(), &entry); err != nil {
+			continue // Skip malformed lines
+		}
+
+		// Apply filters
+		if filter.ToolName != "" && entry.ToolName != filter.ToolName {
+			continue
+		}
+		if filter.UserID != "" && entry.UserID != filter.UserID {
+			continue
+		}
+		if filter.ProfileID != "" && entry.ProfileID != filter.ProfileID {
+			continue
+		}
+		if filter.StartTime != nil && entry.Timestamp.Before(*filter.StartTime) {
+			continue
+		}
+		if filter.EndTime != nil && entry.Timestamp.After(*filter.EndTime) {
+			continue
+		}
+
+		entries = append(entries, entry)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed to scan audit log: %w", err)
+	}
+
+	// Reverse (Newest First)
+	for i := len(entries)/2 - 1; i >= 0; i-- {
+		opp := len(entries) - 1 - i
+		entries[i], entries[opp] = entries[opp], entries[i]
+	}
+
+	// Pagination
+	start := filter.Offset
+	if start >= len(entries) {
+		return []Entry{}, nil
+	}
+	end := len(entries)
+	if filter.Limit > 0 {
+		end = start + filter.Limit
+		if end > len(entries) {
+			end = len(entries)
+		}
+	}
+
+	return entries[start:end], nil
 }
 
 // Close closes the file.
