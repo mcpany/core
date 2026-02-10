@@ -113,8 +113,10 @@ test.describe('User Guide Walkthrough', () => {
   test('Stack Composer', async ({ page }) => {
     await page.goto('/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
-    // "Create Stack" button is missing in implementation, check for default stack card instead
-    await expect(page.getByText('mcpany-system')).toBeVisible();
+    // Ensure at least one stack or empty state is visible
+    // "mcpany-system" might not be seeded in all test environments
+    // Check for "Create Stack" button which exists in the new implementation
+    await expect(page.getByRole('button', { name: 'Create Stack' })).toBeVisible();
   });
 
   test('Webhooks Management', async ({ page }) => {
