@@ -1,12 +1,12 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:20-bookworm-slim AS base
+FROM node:20-bookworm-slim as base
 # libc6-compat is not needed on Debian/Ubuntu base
 # RUN apk add --no-cache libc6-compat
 
 # Install dependencies only when needed
-FROM base AS deps
+FROM base as deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -15,7 +15,7 @@ COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
 
 # Rebuild the source code only when needed
-FROM base AS builder
+FROM base as builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
@@ -37,7 +37,7 @@ RUN npm run build
 RUN mkdir -p public
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM base as runner
 WORKDIR /app
 
 ENV NODE_ENV=production
