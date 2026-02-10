@@ -21,5 +21,13 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Take screenshot
-  await page.screenshot({ path: `.audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png` });
+  // Ensure directory exists
+  const dateDir = new Date().toISOString().split('T')[0];
+  const fs = await import('fs');
+  const path = await import('path');
+  const dir = path.join('.audit/ui', dateDir);
+  if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir, { recursive: true });
+  }
+  await page.screenshot({ path: path.join(dir, 'unified_navigation_system.png') });
 });
