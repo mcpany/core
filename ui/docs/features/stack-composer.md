@@ -24,7 +24,7 @@ To add a service:
 
 1. Open the **Service Palette** (if collapsed).
 2. Click on a template (e.g. `Postgres`, `Redis`).
-3. The corresponding YAML configuration is injected into the editor cursor position.
+3. The corresponding YAML configuration is added to the configuration.
 
 ![Service Palette](screenshots/stack_composer_palette.png)
 

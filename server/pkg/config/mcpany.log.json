@@ -1,0 +1,7 @@
+{"time":"2026-02-10T18:16:14.812387202Z","level":"INFO","msg":"test log entry"}
+{"time":"2026-02-10T18:16:14.812834857Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"profile1","error":"profile not found: profile1"}
+{"time":"2026-02-10T18:16:14.812871104Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"profile2","error":"profile not found: profile2"}
+{"time":"2026-02-10T18:16:14.812890608Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-10T18:16:14.813307978Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-10T18:16:14.813339505Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-10T18:16:17.314126818Z","level":"INFO","msg":"Registered HTTP service","serviceID":"weather","toolsAdded":1}

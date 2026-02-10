@@ -730,6 +730,10 @@ func validateCommandLineService(ctx context.Context, commandLineService *configv
 		if err := validateCommandExists(ctx, commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
 			return WrapActionableError("command_line_service command validation failed", err)
 		}
+
+		if err := validateStdioArgs(ctx, commandLineService.GetCommand(), commandLineService.GetArgs(), commandLineService.GetWorkingDirectory()); err != nil {
+			return WrapActionableError("command_line_service argument validation failed", err)
+		}
 	}
 
 	if err := validateContainerEnvironment(ctx, commandLineService.GetContainerEnvironment()); err != nil {

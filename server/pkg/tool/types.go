@@ -2156,6 +2156,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	args := []string{}
+	if t.service.GetArgs() != nil {
+		args = append(args, t.service.GetArgs()...)
+	}
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
