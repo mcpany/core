@@ -24,7 +24,7 @@ func TestRedactionInLogs(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 
 	logBuffer := &threadSafeBuffer{}
-	logging.Init(slog.LevelInfo, logBuffer)
+	logging.Init(slog.LevelInfo, logBuffer, "")
 
 	// Reset logger cleanup
 	defer logging.ForTestsOnlyResetLogger()

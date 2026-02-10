@@ -271,7 +271,7 @@ func TestDockerTransport_Connect_NoImage(t *testing.T) {
 func TestDockerReadWriteCloser_Close_Error(t *testing.T) {
 	var buf bytes.Buffer
 	logging.ForTestsOnlyResetLogger()
-	logging.Init(slog.LevelInfo, &buf)
+	logging.Init(slog.LevelInfo, &buf, "")
 
 	mockClient := &mockDockerClient{
 		ContainerStopFunc: func(_ context.Context, _ string, _ container.StopOptions) error {

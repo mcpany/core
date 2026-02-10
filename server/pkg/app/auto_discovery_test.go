@@ -21,7 +21,7 @@ func TestAutoDiscoveryStatus(t *testing.T) {
 	// Setup logger capture to ensure we don't spam stdout, though we are not relying on logs primarily now.
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
-	logging.Init(slog.LevelInfo, &buf)
+	logging.Init(slog.LevelInfo, &buf, "")
 
 	// Setup config with auto_discover_local enabled
 	fs := afero.NewMemMapFs()

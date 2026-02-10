@@ -100,7 +100,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		logOutput = f
 	}
 	logFormat := viper.GetString("log-format")
-	logging.Init(logLevel, logOutput, logFormat)
+	logging.Init(logLevel, logOutput, "", logFormat)
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
