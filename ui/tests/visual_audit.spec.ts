@@ -25,7 +25,12 @@ test.describe('Visual Audit', () => {
       await page.waitForTimeout(1000);
 
       if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-        const screenshotPath = path.resolve(__dirname, `../../.audits/ui/${pageInfo.name}.png`);
+        const fs = require('fs');
+        const dir = path.resolve(__dirname, `../test-results/audit/ui`);
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        const screenshotPath = path.resolve(dir, `${pageInfo.name}.png`);
         await page.screenshot({ path: screenshotPath, fullPage: true });
       }
     });

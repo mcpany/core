@@ -35,7 +35,7 @@ test('verify sidebar navigation', async ({ request, page }) => {
 
   // Take screenshot
   const date = new Date().toISOString().split('T')[0];
-  const dir = path.join('.audit', 'ui', date);
+  const dir = path.join('test-results', 'audit', 'ui', date);
   if (!fs.existsSync(dir)){
       fs.mkdirSync(dir, { recursive: true });
   }

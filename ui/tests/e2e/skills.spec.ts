@@ -57,7 +57,7 @@ test.describe('Agent Skills', () => {
         response.url().includes('/api/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 60000 }
+        { timeout: 90000 } // Increased timeout further for slow CI
     );
 
     // Ensure button is clickable

@@ -44,7 +44,13 @@ test.describe('Service Configuration Editor', () => {
     await page.getByPlaceholder('VALUE').fill('test_value');
 
     // Take screenshot of the editor
-    await page.screenshot({ path: '.audit/ui/2025-02-20/env_var_editor.png' });
+    const fs = require('fs');
+    const path = require('path');
+    const dir = path.resolve('test-results/audit/ui');
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    await page.screenshot({ path: path.join(dir, 'env_var_editor.png') });
 
     // Verify inputs
     await expect(page.getByPlaceholder('KEY')).toHaveValue('TEST_ENV');

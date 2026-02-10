@@ -14,7 +14,7 @@ test.describe('Feature Screenshot', () => {
     // test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
 
     const date = new Date().toISOString().split('T')[0];
-    const auditDir = path.join(__dirname, '../.audit/ui', date);
+    const auditDir = path.join(__dirname, '../test-results/audit/ui', date);
 
     test.beforeAll(async () => {
         if (!fs.existsSync(auditDir)) {

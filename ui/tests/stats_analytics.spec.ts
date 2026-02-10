@@ -41,7 +41,7 @@ test('verify stats page', async ({ page }) => {
   // Take a screenshot
   if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       const date = new Date().toISOString().split('T')[0];
-      const screenshotDir = path.resolve(__dirname, '../.audit/ui', date);
+      const screenshotDir = path.resolve(__dirname, '../test-results/audit/ui', date);
       if (!fs.existsSync(screenshotDir)) {
           fs.mkdirSync(screenshotDir, { recursive: true });
       }

@@ -117,6 +117,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
+        await context.delete('/api/v1/services/Payment Gateway Updated', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
     } catch (e) {

@@ -7,8 +7,14 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
+import fs from 'fs';
+
 const DATE = new Date().toISOString().split('T')[0];
-const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
+const AUDIT_DIR = path.join(__dirname, `../../test-results/audit/ui/${DATE}`);
+// Ensure directory exists
+if (!fs.existsSync(AUDIT_DIR)){
+    fs.mkdirSync(AUDIT_DIR, { recursive: true });
+}
 
 test.describe('Service Config Diff', () => {
     test.beforeEach(async ({ request, page }) => {
