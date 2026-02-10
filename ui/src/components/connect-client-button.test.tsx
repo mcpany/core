@@ -8,6 +8,11 @@ import { ConnectClientButton } from './connect-client-button';
 import React from 'react';
 import { vi } from 'vitest';
 
+// Mock JsonView to simplify testing of data prop propagation
+vi.mock('@/components/ui/json-view', () => ({
+  JsonView: ({ data }: { data: any }) => <div data-testid="json-view">{JSON.stringify(data)}</div>,
+}));
+
 // Mock ResizeObserver which is used by some UI components but not in JSDOM
 global.ResizeObserver = class ResizeObserver {
   observe() {}
@@ -49,21 +54,15 @@ describe('ConnectClientButton', () => {
     expect(screen.getByText('Claude Desktop Configuration')).toBeInTheDocument();
   });
 
-  it('allows API key input', () => {
+  it('allows API key input', async () => {
     render(<ConnectClientButton />);
     fireEvent.click(screen.getByText('Connect'));
     const input = screen.getByPlaceholderText('Optional (if configured)');
     fireEvent.change(input, { target: { value: 'my-secret-key' } });
     expect(input).toHaveValue('my-secret-key');
 
-    // Check if JSON updated (approximate check)
-    // The JsonView renders a pre tag.
-    // We expect the text to contain the api key in the URL.
-    // Since JsonView renders JSON string, we can look for the string.
-    // "http://localhost/sse?api_key=my-secret-key" (localhost is default in JSDOM)
-    // Actually window.location.origin is "http://localhost" in JSDOM.
-
-    // Simpler: search for the text in the document
-    expect(screen.getByText(/api_key=my-secret-key/)).toBeInTheDocument();
+    // Check if the mocked JsonView contains the API key in the generated URL
+    // We expect the URL http://localhost(:port)/sse?api_key=my-secret-key to be present in the JSON data
+    expect(screen.getByTestId('json-view')).toHaveTextContent(/http:\/\/localhost(:\d+)?\/sse\?api_key=my-secret-key/);
   });
 });
