@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -54,6 +55,23 @@ type SafeDialer struct {
 	Dialer NetDialer
 }
 
+// getBoolEnv parses an environment variable as a boolean.
+// It handles "true", "1", "True", "TRUE" as true.
+// It explicitly trims quotes to handle cases like 'true' in Docker Compose.
+func getBoolEnv(key string) bool {
+	val := os.Getenv(key)
+	if val == "" {
+		return false
+	}
+	// Trim quotes just in case
+	val = strings.Trim(val, "'\"")
+	b, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+	return b
+}
+
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
 //
 // Summary: Initializes a SafeDialer with secure defaults.
@@ -69,14 +87,14 @@ func NewSafeDialer() *SafeDialer {
 		AllowPrivate:   false,
 		AllowLinkLocal: false,
 	}
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if getBoolEnv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") {
 		d.AllowLoopback = true
 		d.AllowPrivate = true
 	}
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if getBoolEnv("MCPANY_ALLOW_LOOPBACK_RESOURCES") {
 		d.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if getBoolEnv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") {
 		d.AllowPrivate = true
 	}
 	return d
@@ -188,12 +206,9 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
+	// No need to check individual envs here, NewSafeDialer already does.
+	// But we keep this for backwards compatibility/explicitness if NewSafeDialer logic changes.
+	// Actually NewSafeDialer logic covers it.
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
 
 	return &http.Client{
@@ -249,19 +264,7 @@ func CheckConnection(ctx context.Context, address string) error {
 
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
-	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
+	// NewSafeDialer already checks env vars.
 
 	dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
 
