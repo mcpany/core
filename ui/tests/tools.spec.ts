@@ -4,71 +4,37 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, cleanupServices } from './e2e/test-data';
 
-test.describe('Tool Exploration', () => {
-    test.beforeEach(async ({ page }) => {
-        // Mock tools endpoint directly (matching ToolsPage fetch)
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({
-                json: {
-                    tools: [
-                        {
-                            name: 'weather-tool',
-                            description: 'Get weather for a location',
-                            source: 'configured',
-                            serviceId: 'weather-service',
-                            inputSchema: {
-                                type: 'object',
-                                properties: {
-                                    location: { type: 'string', description: 'City name' }
-                                }
-                            }
-                        },
-                        {
-                            name: 'calculator',
-                            description: 'Perform basic math',
-                            source: 'discovered',
-                            serviceId: 'math-service'
-                        }
-                    ]
-                }
-            });
-        });
+test.describe('Tool Management (Real Data)', () => {
+    test.beforeEach(async ({ request }) => {
+        await seedServices(request);
     });
 
-    test('should list available tools', async ({ page }) => {
-        await page.goto('/tools');
-        // Wait for loading to finish (if applicable, though mock is instant)
-        // Adjust selector if you add a specific loading state for tools
-
-        await expect(page.getByText('weather-tool').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Get weather for a location').first()).toBeVisible({ timeout: 10000 });
-
-        await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Perform basic math').first()).toBeVisible({ timeout: 10000 });
+    test.afterEach(async ({ request }) => {
+        await cleanupServices(request);
     });
 
-    test.skip('should show empty state when no tools', async ({ page }) => {
-        // Unroute previous mock from beforeEach
-        await page.unroute((url) => url.pathname.includes('/api/v1/tools'));
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({ json: { tools: [] } });
-        });
-
+    test('should list available tools from backend', async ({ page }) => {
         await page.goto('/tools');
-        // The table shows one row with "No tools found." when empty
-        await expect(page.locator('table tbody tr')).toHaveCount(1);
-        await expect(page.locator('text=No tools found.')).toBeVisible();
+        // Check for the builtin/config tool (weather-service -> get_weather)
+        await expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 15000 });
     });
 
-    test('should allow inspecting a tool', async ({ page }) => {
+    test('should execute a tool and show results', async ({ page }) => {
         await page.goto('/tools');
-        // Inspection relies on schema being present in the tool definition
-        // The mock in beforeEach includes a basic definition
-        const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
-        await toolRow.getByText('Inspect').click();
 
-        await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('weather-tool').first()).toBeVisible();
+        const toolRow = page.locator('tr', { hasText: 'get_weather' });
+        await toolRow.getByRole('button', { name: 'Inspect' }).click();
+
+        await expect(page.getByRole('dialog')).toBeVisible();
+
+        // Click Execute (default input is fine for this tool)
+        await page.getByRole('button', { name: 'Execute' }).click();
+
+        // Verify Result
+        // The output is the result of `echo '{"weather": "sunny"}'`
+        // It should contain "sunny" in the stdout field.
+        await expect(page.getByText('sunny')).toBeVisible({ timeout: 10000 });
     });
 });
