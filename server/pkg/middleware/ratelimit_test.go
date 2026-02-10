@@ -9,7 +9,6 @@ import (
 	"errors"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/go-redis/redismock/v9"
 	busproto "github.com/mcpany/core/proto/bus"
@@ -321,11 +320,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 			return redis.NewClient(opts)
 		})
 
-		fixedTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-		middleware.SetTimeNowForTests(func() time.Time {
-			return fixedTime
-		})
-		defer middleware.SetTimeNowForTests(time.Now)
+		// ⚡ BOLT: No longer mocking time here as RedisLimiter uses server-side time (redis.call("TIME"))
 
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
@@ -365,12 +360,12 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// The script returns 1 (allowed)
 		s := redis.NewScript(middleware.RedisRateLimitScript)
 		// Updated expectation: key now includes "service" scope suffix "service:service"
+		// ⚡ BOLT: Updated expectation to match new script signature (no timestamp passed)
 		mockRedis.ExpectEvalSha(
 			s.Hash(),
 			[]string{"ratelimit:service:service"},
 			10.0,
 			10,
-			fixedTime.UnixMicro(),
 			1,
 		).SetVal(int64(1))
 
@@ -396,11 +391,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 			return redis.NewClient(opts)
 		})
 
-		fixedTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-		middleware.SetTimeNowForTests(func() time.Time {
-			return fixedTime
-		})
-		defer middleware.SetTimeNowForTests(time.Now)
+		// ⚡ BOLT: No longer mocking time here as RedisLimiter uses server-side time (redis.call("TIME"))
 
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
@@ -438,12 +429,12 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		// Mock Redis calls
 		s := redis.NewScript(middleware.RedisRateLimitScript)
+		// ⚡ BOLT: Updated expectation to match new script signature (no timestamp passed)
 		mockRedis.ExpectEvalSha(
 			s.Hash(),
 			[]string{"ratelimit:service:service"},
 			10.0,
 			10,
-			fixedTime.UnixMicro(),
 			1,
 		).SetErr(errors.New("redis connection failed"))
 
