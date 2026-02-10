@@ -134,7 +134,7 @@ prepare:
 	@if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v xz >/dev/null 2>&1; then \
 		echo "Dependencies missing. Installing curl, unzip, xz-utils..."; \
 		if command -v apt-get >/dev/null 2>&1; then \
-			apt-get update && apt-get install -y curl unzip xz-utils; \
+			sudo apt-get update && sudo apt-get install -y curl unzip xz-utils; \
 		elif command -v apk >/dev/null 2>&1; then \
 			apk add --no-cache curl unzip xz; \
 		else \

@@ -118,7 +118,7 @@ func (s *SQLiteLogStore) Query(ctx context.Context, opts LogQueryOptions) ([]Log
 	}
 	defer rows.Close()
 
-	var logs []LogEntry
+	logs := make([]LogEntry, 0)
 	for rows.Next() {
 		var l LogEntry
 		var metaStr string
