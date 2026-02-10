@@ -74,7 +74,7 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.getByText('99.9%').first()).toBeVisible();
   });
 
-  test.skip('should navigate to analytics from sidebar', async ({ page }) => {
+  test('should navigate to analytics from sidebar', async ({ page }) => {
     // Verify direct navigation first (and warm up the route)
     await page.goto('/stats');
     await expect(page.locator('h1')).toContainText('Analytics & Stats');

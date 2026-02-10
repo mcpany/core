@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 
 /**
  * ServiceStatus represents the possible health states of a service.
@@ -45,11 +46,6 @@ export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
 }
 
-interface HealthResponse {
-  services: ServiceHealth[];
-  history: ServiceHistory;
-}
-
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
  * It polls the backend API for health data (which now includes server-side history).
@@ -64,14 +60,33 @@ export function useServiceHealthHistory() {
   useEffect(() => {
     async function fetchHealth() {
       try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data: HealthResponse = await res.json();
+        const servicesList = await apiClient.listServices();
 
-          // Backend returns history keyed by ID
-          setServices(data.services || []);
-          setHistory(data.history || {});
-        }
+        const mappedServices: ServiceHealth[] = servicesList.map((svc: any) => {
+             let status: ServiceStatus = "healthy";
+             if (svc.disable) {
+                 status = "inactive";
+             } else if (svc.lastError || svc.configError) {
+                 status = "unhealthy";
+             }
+
+             return {
+                 id: svc.id || svc.name,
+                 name: svc.name,
+                 status: status,
+                 latency: "--", // No latency in UpstreamServiceConfig yet
+                 uptime: "--",
+                 message: svc.lastError || svc.configError
+             };
+        });
+
+        setServices(mappedServices);
+
+        // History: Currently the backend does not provide efficient per-service history.
+        // We leave it empty for now. The widget will display current status without sparkline.
+        // Future: Implement per-service history API.
+        setHistory({});
+
       } catch (error) {
         console.warn("Failed to fetch health data", error);
       } finally {
