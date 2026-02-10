@@ -23,7 +23,7 @@ func (p *mcpServerProvider) Server() *mcp.Server {
 
 // NewMCPServerProvider creates a new MCPServerProvider.
 //
-// Summary: Initializes a provider for the MCP server.
+// Summary: Creates a new MCPServerProvider.
 //
 // Parameters:
 //   - server: *mcp.Server. The server instance to wrap.

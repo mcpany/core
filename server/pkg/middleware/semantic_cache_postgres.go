@@ -15,12 +15,16 @@ import (
 )
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
+//
+// Summary: Implements VectorStore using PostgreSQL and pgvector.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
 // It connects to the database and ensures the schema exists.
+//
+// Summary: Creates a new PostgresVectorStore.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -42,6 +46,8 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
 // It ensures the schema exists.
+//
+// Summary: Creates a new PostgresVectorStore using an existing database connection.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)

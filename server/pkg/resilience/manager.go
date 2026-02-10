@@ -10,6 +10,8 @@ import (
 )
 
 // Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+//
+// Summary: Orchestrates resilience features like circuit breakers, retries, and timeouts.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry
@@ -21,6 +23,8 @@ type Manager struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Summary: Creates a new Manager with the given resilience configuration.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil

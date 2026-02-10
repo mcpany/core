@@ -56,6 +56,8 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints. It handles the registration of tools
 // defined in the service configuration.
+//
+// Summary: Implements the upstream.Upstream interface for services that are exposed via standard HTTP endpoints.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -107,6 +109,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - An implementation of the upstream.Upstream interface.
+//
+// Summary: Creates a new instance of Upstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

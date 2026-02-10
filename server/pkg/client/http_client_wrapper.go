@@ -16,6 +16,8 @@ import (
 // `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
 // connection pool, which can help control the number of concurrent connections
 // and reuse them where appropriate.
+//
+// Summary: Wraps an `*http.Client` to adapt it to the `pool.ClosableClient` interface.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -25,6 +27,8 @@ type HTTPClientWrapper struct {
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
 // It accepts a shared health checker to avoid creating a new one for every client.
+//
+// Summary: Creates a new HTTPClientWrapper.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {

@@ -8,6 +8,8 @@ import (
 )
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
+//
+// Summary: Manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan []byte]struct{}
@@ -25,6 +27,8 @@ var (
 // NewBroadcaster creates a new Broadcaster.
 //
 // Returns the result.
+//
+// Summary: Creates a new Broadcaster.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
 		subscribers: make(map[chan []byte]struct{}),

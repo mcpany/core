@@ -12,12 +12,16 @@ import (
 )
 
 // ErrResourceNotFound is returned when a requested resource cannot be found.
+//
+// Summary: Is returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
 //
 // A resource represents a data source (e.g., a file, a database record) that can be
 // read by an MCP client.
+//
+// Summary: Defines the interface for a resource that can be managed by the Manager.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -55,6 +59,8 @@ type Resource interface {
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
 // as managing callbacks for list changes.
+//
+// Summary: Defines the interface for managing a collection of resources.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -101,6 +107,8 @@ type ManagerInterface interface {
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
 // and efficient listing via caching.
+//
+// Summary: A thread-safe implementation of the ManagerInterface.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -112,6 +120,8 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Summary: Creates and returns a new, empty Manager.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),

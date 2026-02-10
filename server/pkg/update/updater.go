@@ -21,6 +21,8 @@ import (
 // Updater handles the self-update process.
 //
 // It manages checking for updates on GitHub and applying them to the local executable.
+//
+// Summary: Handles the self-update process.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -34,6 +36,8 @@ type Updater struct {
 //
 // Returns:
 //   - *Updater: A new Updater instance.
+//
+// Summary: Creates a new Updater.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient

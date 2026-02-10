@@ -15,6 +15,8 @@ import (
 )
 
 // AuditHandler is a slog.Handler that exports logs to audit sinks.
+//
+// Summary: A slog.Handler that exports logs to audit sinks.
 type AuditHandler struct {
 	next   slog.Handler
 	config *configv1.AuditConfig
@@ -22,6 +24,8 @@ type AuditHandler struct {
 }
 
 // NewAuditHandler creates a new AuditHandler.
+//
+// Summary: Creates a new AuditHandler.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,

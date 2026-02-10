@@ -52,6 +52,8 @@ func (p *poolWithChecker[T]) Close() error {
 // dialer is an optional custom dialer for creating network connections.
 // creds is the per-RPC credentials to be used for authentication.
 // It returns a new gRPC client pool or an error if the pool cannot be created.
+//
+// Summary: Creates a new connection pool for gRPC clients.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

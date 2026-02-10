@@ -10,6 +10,8 @@ import (
 )
 
 // TmpfsProvider provides access to a temporary in-memory filesystem.
+//
+// Summary: Provides access to a temporary in-memory filesystem.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
@@ -17,6 +19,8 @@ type TmpfsProvider struct {
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Returns the result.
+//
+// Summary: Creates a new TmpfsProvider.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),

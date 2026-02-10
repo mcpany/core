@@ -18,6 +18,8 @@ import (
 )
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+// Summary: Handles automatic error recovery using LLM.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -26,6 +28,8 @@ type SmartRecoveryMiddleware struct {
 }
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+//
+// Summary: Creates a new SmartRecoveryMiddleware.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,

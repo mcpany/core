@@ -47,6 +47,8 @@ func (p *httpPool) Close() error {
 // healthCheck is the configuration for the health check.
 // It returns a new HTTP client pool or an error if the pool cannot be
 // created.
+//
+// Summary: Creates a new connection pool for HTTP clients.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

@@ -14,6 +14,8 @@ import (
 )
 
 // State represents the current state of the circuit breaker.
+//
+// Summary: Represents the current state of the circuit breaker.
 type State int32
 
 const (
@@ -27,6 +29,8 @@ const (
 
 // CircuitBreaker implements the circuit breaker pattern. It prevents the
 // application from performing operations that are likely to fail.
+//
+// Summary: Implements the circuit breaker pattern.
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
@@ -43,6 +47,8 @@ type CircuitBreaker struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Summary: Creates a new CircuitBreaker with the given configuration.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -205,6 +211,8 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 }
 
 // CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
+//
+// Summary: Is returned when the circuit breaker is in the Open state.
 type CircuitBreakerOpenError struct{}
 
 // Error returns the error message for a CircuitBreakerOpenError.

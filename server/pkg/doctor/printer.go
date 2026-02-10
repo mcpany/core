@@ -23,6 +23,8 @@ import (
 //
 // Side Effects:
 //   - Writes formatted text to the provided writer.
+//
+// Summary: Prints the doctor check results in a structured table to the provided writer.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

@@ -16,6 +16,8 @@ import (
 
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
+//
+// Summary: Implements the Resource interface for resources that are fetched dynamically by executing a tool.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -23,7 +25,7 @@ type DynamicResource struct {
 
 // NewDynamicResource creates a new instance of DynamicResource.
 //
-// Summary: Initializes a dynamic resource backed by a tool.
+// Summary: Creates a new instance of DynamicResource.
 //
 // Parameters:
 //   - def: *configv1.ResourceDefinition. The resource definition.

@@ -24,6 +24,8 @@ import (
 )
 
 // BinaryType defines the type of the binary being validated.
+//
+// Summary: Defines the type of the binary being validated.
 type BinaryType int
 
 const (
@@ -41,6 +43,8 @@ const (
 )
 
 // AuthValidationContext defines the context for authentication validation.
+//
+// Summary: Defines the context for authentication validation.
 type AuthValidationContext int
 
 const (
@@ -68,6 +72,8 @@ var (
 )
 
 // ValidationError encapsulates a validation error for a specific service.
+//
+// Summary: Encapsulates a validation error for a specific service.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -82,7 +88,7 @@ func (e *ValidationError) Error() string {
 
 // Validate inspects the given McpAnyServerConfig for correctness and consistency.
 //
-// Summary: Validates the entire server configuration.
+// Summary: Inspects the given McpAnyServerConfig for correctness and consistency.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the validation (used for secret resolution).
@@ -464,7 +470,7 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 //
-// Summary: Validates a single upstream service.
+// Summary: Validates a single upstream service configuration and returns an error if it's invalid.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the validation.

@@ -14,6 +14,8 @@ import (
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
 // It is thread-safe and supports dynamic updates.
+//
+// Summary: Restricts access to allowed IP addresses.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
@@ -25,6 +27,8 @@ type IPAllowlistMiddleware struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new IPAllowlistMiddleware.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {

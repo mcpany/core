@@ -33,7 +33,7 @@ var (
 // connection pool. Implementations must provide methods for closing the
 // connection and checking its health.
 //
-// Summary: Interface for poolable clients.
+// Summary: Defines the interface for clients that can be managed by the connection pool.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -57,7 +57,7 @@ type ClosableClient interface {
 
 // Pool defines the interface for a generic connection pool.
 //
-// Summary: Interface for a connection pool.
+// Summary: Defines the interface for a generic connection pool.
 type Pool[T ClosableClient] interface {
 	// Get retrieves a client from the pool.
 	//
@@ -117,7 +117,7 @@ type poolImpl[T ClosableClient] struct {
 // New creates a new connection pool with the specified factory and size
 // constraints.
 //
-// Summary: Creates a new generic pool.
+// Summary: Creates a new connection pool with the specified factory and size constraints.
 //
 // Parameters:
 //   - factory: func(context.Context) (T, error). The factory function.
@@ -490,7 +490,7 @@ func (p *poolImpl[T]) Len() int {
 
 // UntypedPool defines a non-generic interface for a pool.
 //
-// Summary: Interface for untyped pool management.
+// Summary: Defines a non-generic interface for a pool.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -504,7 +504,7 @@ type UntypedPool interface {
 
 // Manager provides a way to manage multiple named connection pools.
 //
-// Summary: Manages a collection of pools.
+// Summary: Provides a way to manage multiple named connection pools.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex
@@ -512,7 +512,7 @@ type Manager struct {
 
 // NewManager creates and returns a new pool Manager.
 //
-// Summary: Initializes a new Pool Manager.
+// Summary: Creates and returns a new pool Manager.
 //
 // Returns:
 //   - *Manager: The initialized manager.
@@ -567,7 +567,7 @@ func (m *Manager) Deregister(name string) {
 
 // Get retrieves a typed pool from the manager by name.
 //
-// Summary: Retrieves a pool by name and type.
+// Summary: Retrieves a typed pool from the manager by name.
 //
 // Parameters:
 //   - m: *Manager. The manager.

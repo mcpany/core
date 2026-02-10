@@ -28,6 +28,8 @@ var (
 )
 
 // Manager handles the storage and retrieval of skills.
+//
+// Summary: Handles the storage and retrieval of skills.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
@@ -36,6 +38,8 @@ type Manager struct {
 
 // NewManager creates a new Skill Manager.
 // rootDir is the directory where skills are stored.
+//
+// Summary: Creates a new Skill Manager.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)

@@ -14,6 +14,8 @@ import (
 
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
 // based on tool name and arguments.
+//
+// Summary: A middleware that enforces call policies (allow/deny) based on tool name and arguments.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
@@ -23,6 +25,8 @@ type CallPolicyMiddleware struct {
 // toolManager is the toolManager.
 //
 // Returns the result.
+//
+// Summary: Creates a new CallPolicyMiddleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,

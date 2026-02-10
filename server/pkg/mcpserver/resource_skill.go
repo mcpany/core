@@ -22,6 +22,8 @@ import (
 //
 // It provides a way to expose skill documentation and associated assets (like images or text files)
 // as MCP resources, making them accessible to clients.
+//
+// Summary: Adapts a Skill (or its asset) to the Resource interface.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
@@ -40,6 +42,8 @@ var _ resource.Resource = &SkillResource{}
 //
 // Returns:
 //   - *SkillResource: A new instance of SkillResource pointing to the skill's documentation.
+//
+// Summary: Creates a new resource for the main SKILL.md.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -56,6 +60,8 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 //
 // Returns:
 //   - *SkillResource: A new instance of SkillResource pointing to the specified asset.
+//
+// Summary: Creates a new resource for a skill asset.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -264,6 +270,8 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 //
 // Returns:
 //   - error: An error if listing skills fails.
+//
+// Summary: Registers all skills from the manager into the resource manager.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

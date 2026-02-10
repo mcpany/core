@@ -11,6 +11,8 @@ import (
 
 // Session defines the interface for tools to interact with the client session.
 // It includes capabilities like Sampling (CreateMessage) and Roots inspection.
+//
+// Summary: Defines the interface for tools to interact with the client session.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
@@ -31,6 +33,8 @@ type Session interface {
 }
 
 // Sampler is an alias for Session for backward compatibility.
+//
+// Summary: Is an alias for Session for backward compatibility.
 type Sampler = Session
 
 type sessionContextKey struct{}
@@ -41,6 +45,8 @@ type sessionContextKey struct{}
 // s is the s.
 //
 // Returns the result.
+//
+// Summary: Creates a new context with the given Session.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
@@ -51,6 +57,8 @@ func NewContextWithSession(ctx context.Context, s Session) context.Context {
 //
 // Returns the result.
 // Returns true if successful.
+//
+// Summary: Retrieves the Session from the context.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok
@@ -59,6 +67,8 @@ func GetSession(ctx context.Context) (Session, bool) {
 // NewContextWithSampler creates a new context with the given Sampler.
 //
 // Deprecated: Use NewContextWithSession instead.
+//
+// Summary: Creates a new context with the given Sampler.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
@@ -66,6 +76,8 @@ func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 // GetSampler retrieves the Sampler from the context.
 //
 // Deprecated: Use GetSession instead.
+//
+// Summary: Retrieves the Sampler from the context.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

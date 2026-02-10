@@ -109,7 +109,7 @@ The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
 ## 4. Development
 
-We adhere to a strict development workflow to ensure code quality and maintainability.
+We adhere to a strict development workflow and the **Gold Standard** for documentation to ensure code quality and maintainability.
 
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing.

@@ -17,6 +17,8 @@ import (
 // Severity indicates the importance of a linting result.
 //
 // It is used to categorize findings based on their impact and urgency.
+//
+// Summary: Indicates the importance of a linting result.
 type Severity int
 
 const (
@@ -50,6 +52,8 @@ func (s Severity) String() string {
 // Result represents a single linting finding.
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
+//
+// Summary: Represents a single linting finding.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -82,6 +86,8 @@ func (r Result) String() string {
 // Linter performs static analysis on the configuration.
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
+//
+// Summary: Performs static analysis on the configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -93,6 +99,8 @@ type Linter struct {
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
+//
+// Summary: Creates a new Linter instance.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }

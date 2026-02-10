@@ -32,6 +32,8 @@ import (
 // Returns:
 //   A string containing the generated Markdown documentation.
 //   An error if documentation generation fails (e.g., if a service cannot be initialized).
+//
+// Summary: Generates Markdown documentation for the tools defined in the configuration.
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

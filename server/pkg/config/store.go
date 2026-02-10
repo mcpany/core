@@ -31,7 +31,7 @@ import (
 
 // Engine defines the interface for configuration unmarshaling from different file formats.
 //
-// Summary: Abstraction for parsing configuration files into protobuf messages.
+// Summary: Defines the interface for configuration unmarshaling from different file formats.
 type Engine interface {
 	// Unmarshal parses the given byte slice and populates the provided proto.Message.
 	//
@@ -48,7 +48,7 @@ type Engine interface {
 
 // StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
 //
-// Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
+// Summary: Defines an interface for engines that can unmarshal directly from a map structure.
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
@@ -67,7 +67,7 @@ type StructuredEngine interface {
 
 // ConfigurableEngine defines an interface for engines that support configuration options.
 //
-// Summary: Interface for engines that can be configured (e.g. skip validation).
+// Summary: Defines an interface for engines that support configuration options.
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
@@ -89,7 +89,7 @@ type ConfigurableEngine interface {
 
 // NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
 //
-// Summary: Factory function to create the appropriate Engine for a given file path.
+// Summary: Returns a configuration engine capable of unmarshaling the format indicated by the file extension.
 //
 // Parameters:
 //   - path: string. The file path used to determine the configuration format.
@@ -294,7 +294,7 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 
 // Store defines the interface for loading MCP-X server configurations.
 //
-// Summary: Abstraction for configuration sources.
+// Summary: Defines the interface for loading MCP-X server configurations.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
@@ -319,7 +319,7 @@ type Store interface {
 
 // ServiceStore extends Store to provide CRUD operations for UpstreamServices.
 //
-// Summary: Interface for stores that support managing individual services.
+// Summary: Extends Store to provide CRUD operations for UpstreamServices.
 type ServiceStore interface {
 	Store
 	// SaveService saves or updates a service configuration.
@@ -575,7 +575,7 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 
 // FileStore implements the `Store` interface for loading configurations from files.
 //
-// Summary: Loads configurations from the filesystem.
+// Summary: Implements the `Store` interface for loading configurations from files.
 type FileStore struct {
 	fs               afero.Fs
 	paths            []string
@@ -606,7 +606,7 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 
 // NewFileStore creates a new FileStore with the given filesystem and paths.
 //
-// Summary: Initializes a new FileStore.
+// Summary: Creates a new FileStore with the given filesystem and paths.
 //
 // Parameters:
 //   - fs: afero.Fs. The filesystem to use.
@@ -620,7 +620,7 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 
 // NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files.
 //
-// Summary: Initializes a new FileStore that tolerates errors in config files.
+// Summary: Creates a new FileStore that skips malformed config files.
 //
 // Parameters:
 //   - fs: afero.Fs. The filesystem to use.
@@ -1186,14 +1186,14 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.
 //
-// Summary: Combines multiple stores into a single logical store.
+// Summary: Implements the Store interface for loading configurations from multiple stores.
 type MultiStore struct {
 	stores []Store
 }
 
 // NewMultiStore creates a new MultiStore with the given stores.
 //
-// Summary: Initializes a new MultiStore.
+// Summary: Creates a new MultiStore with the given stores.
 //
 // Parameters:
 //   - stores: ...Store. The stores to aggregate.

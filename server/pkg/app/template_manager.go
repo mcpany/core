@@ -16,6 +16,8 @@ import (
 )
 
 // TemplateManager manages the persistence and lifecycle of service templates.
+//
+// Summary: Manages the persistence and lifecycle of service templates.
 type TemplateManager struct {
 	mu        sync.RWMutex
 	templates []*configv1.UpstreamServiceConfig
@@ -24,7 +26,7 @@ type TemplateManager struct {
 
 // NewTemplateManager creates a new instance of TemplateManager.
 //
-// Summary: Initializes a new TemplateManager.
+// Summary: Creates a new instance of TemplateManager.
 //
 // Parameters:
 //   - dataDir: string. The directory where template data is persisted.

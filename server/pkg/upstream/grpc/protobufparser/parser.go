@@ -28,6 +28,8 @@ import (
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
+//
+// Summary: Holds the structured data extracted from MCP (Model Context Protocol) annotations within a set of protobuf files.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -36,6 +38,8 @@ type ParsedMcpAnnotations struct {
 
 // McpTool represents the information extracted from a gRPC method that has been
 // annotated as an MCP tool.
+//
+// Summary: Represents the information extracted from a gRPC method that has been annotated as an MCP tool.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -54,6 +58,8 @@ type McpTool struct {
 
 // McpField represents a field within a protobuf message, including its name,
 // description, type, and whether it is repeated.
+//
+// Summary: Represents a field within a protobuf message, including its name, description, type, and whether it is repeated.
 type McpField struct {
 	Name        string
 	Description string
@@ -93,6 +99,8 @@ func (f *McpField) GetIsRepeated() bool {
 // ProtoDefinition and a ProtoCollection. It writes the proto files to a
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
 // then returns the parsed FileDescriptorSet.
+//
+// Summary: Parses a set of protobuf definitions from a slice of ProtoDefinition and a ProtoCollection.
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
@@ -305,6 +313,8 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
+//
+// Summary: Represents the information extracted from a gRPC method that has been annotated as an MCP prompt.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -318,6 +328,8 @@ type McpPrompt struct {
 
 // McpResource represents a protobuf message that has been annotated as an MCP
 // resource.
+//
+// Summary: Represents a protobuf message that has been annotated as an MCP resource.
 type McpResource struct {
 	Name        string
 	Description string
@@ -330,6 +342,8 @@ type McpResource struct {
 //
 // ctx is the context for the reflection process, including timeouts.
 // target is the address of the gRPC service to connect to.
+//
+// Summary: Connects to a gRPC service that has server reflection enabled, discovers its entire set of protobuf definitions, including all dependencies, and returns them as a complete FileDescriptorSet.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -519,6 +533,8 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // fds is the FileDescriptorSet to be parsed.
 // It returns a ParsedMcpAnnotations struct containing the extracted information
 // or an error if the parsing fails.
+//
+// Summary: Iterates through a FileDescriptorSet, parsing any MCP (Model Context Protocol) options found in service methods and messages.
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

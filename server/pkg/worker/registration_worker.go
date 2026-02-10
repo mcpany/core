@@ -22,6 +22,8 @@ import (
 // service registration requests. It listens for ServiceRegistrationRequest
 // messages on the event bus, processes them using the service registry, and
 // publishes the results as ServiceRegistrationResult messages.
+//
+// Summary: A background worker responsible for handling service registration requests.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -37,6 +39,8 @@ type ServiceRegistrationWorker struct {
 //
 // Returns:
 //   - *ServiceRegistrationWorker: A new service registration worker.
+//
+// Summary: Creates a new ServiceRegistrationWorker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,

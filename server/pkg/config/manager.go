@@ -25,11 +25,13 @@ import (
 )
 
 // MergeStrategyReplace indicates that the new configuration list should replace the existing one.
+//
+// Summary: Indicates that the new configuration list should replace the existing one.
 const MergeStrategyReplace = "replace"
 
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 //
-// Summary: Handles loading, validating, and merging service configurations from various sources.
+// Summary: Manages the lifecycle and configuration of upstream services.
 //
 // Side Effects:
 //   - Stores the final, merged UpstreamServiceConfig objects.
@@ -48,7 +50,7 @@ type UpstreamServiceManager struct {
 
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
 //
-// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
+// Summary: Creates a new instance of UpstreamServiceManager.
 //
 // Parameters:
 //   - enabledProfiles: []string. A list of profile names that are active. Services must match one of these profiles to be loaded.

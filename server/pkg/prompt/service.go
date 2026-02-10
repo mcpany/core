@@ -14,6 +14,8 @@ import (
 // Service handles the business logic for the prompts feature. It provides
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
+//
+// Summary: Handles the business logic for the prompts feature.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
@@ -21,7 +23,7 @@ type Service struct {
 
 // NewService creates and returns a new Service instance.
 //
-// Summary: Initializes a new Prompt Service.
+// Summary: Creates and returns a new Service instance.
 //
 // Parameters:
 //   - promptManager: ManagerInterface. The manager handling prompt lifecycle.

@@ -14,6 +14,8 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: Wraps the sql.DB connection.
 type DB struct {
 	*sql.DB
 }
@@ -24,6 +26,8 @@ type DB struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Opens a PostgreSQL database connection.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
@@ -35,6 +39,8 @@ func NewDB(dsn string) (*DB, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Opens a database connection with the specified driver.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -67,6 +73,8 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new DB wrapper from an existing sql.DB connection.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

@@ -16,6 +16,8 @@ import (
 
 // LogEntry is the structure for logs sent over WebSocket.
 // It matches the frontend expectation.
+//
+// Summary: Is the structure for logs sent over WebSocket.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -26,6 +28,8 @@ type LogEntry struct {
 }
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+//
+// Summary: Implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -40,6 +44,8 @@ type BroadcastHandler struct {
 // level is the minimum log level to broadcast.
 //
 // Returns the result.
+//
+// Summary: Creates a new BroadcastHandler.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
@@ -146,6 +152,8 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 }
 
 // TeeHandler is a slog.Handler that writes to multiple handlers.
+//
+// Summary: A slog.Handler that writes to multiple handlers.
 type TeeHandler struct {
 	handlers []slog.Handler
 }
@@ -155,6 +163,8 @@ type TeeHandler struct {
 // handlers is the handlers.
 //
 // Returns the result.
+//
+// Summary: Creates a new TeeHandler.
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }

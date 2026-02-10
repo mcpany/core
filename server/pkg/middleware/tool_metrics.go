@@ -77,6 +77,8 @@ var (
 )
 
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
+//
+// Summary: Provides detailed metrics for tool executions.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
@@ -89,6 +91,8 @@ type ToolMetricsMiddleware struct {
 //
 // Returns:
 //   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+//
+// Summary: Creates a new ToolMetricsMiddleware.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)

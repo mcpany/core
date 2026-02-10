@@ -36,6 +36,8 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 // For critical security, use a custom Dialer that validates the IP after resolution.
 //
 // IsSafeURL is a variable to allow mocking in tests.
+//
+// Summary: Checks if the URL is safe to connect to.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {

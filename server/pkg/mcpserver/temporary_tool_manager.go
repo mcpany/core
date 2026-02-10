@@ -10,12 +10,16 @@ import (
 // TemporaryToolManager is a tool manager that stores service info temporarily.
 // It is intended for use in ValidateService where we need to store service info
 // for the duration of the validation request but discard it afterwards.
+//
+// Summary: A tool manager that stores service info temporarily.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	serviceInfo map[string]*tool.ServiceInfo
 }
 
 // NewTemporaryToolManager creates a new TemporaryToolManager.
+//
+// Summary: Creates a new TemporaryToolManager.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),

@@ -12,6 +12,8 @@ import (
 )
 
 // RBACMiddleware provides middleware for Role-Based Access Control.
+//
+// Summary: Provides middleware for Role-Based Access Control.
 type RBACMiddleware struct {
 	enforcer *auth.RBACEnforcer
 }
@@ -19,6 +21,8 @@ type RBACMiddleware struct {
 // NewRBACMiddleware creates a new RBACMiddleware.
 //
 // Returns the result.
+//
+// Summary: Creates a new RBACMiddleware.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),

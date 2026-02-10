@@ -12,6 +12,8 @@ import (
 )
 
 // CheckResult represents a single check result.
+//
+// Summary: Represents a single check result.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -20,9 +22,13 @@ type CheckResult struct {
 }
 
 // CheckFunc is a function that performs a health check.
+//
+// Summary: A function that performs a health check.
 type CheckFunc func(context.Context) CheckResult
 
 // DoctorReport represents the full doctor report.
+//
+// Summary: Represents the full doctor report.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
@@ -30,6 +36,8 @@ type DoctorReport struct {
 }
 
 // Doctor is the health check handler.
+//
+// Summary: Is the health check handler.
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex
@@ -39,6 +47,8 @@ type Doctor struct {
 // NewDoctor creates a new Doctor.
 //
 // Returns the result.
+//
+// Summary: Creates a new Doctor.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),

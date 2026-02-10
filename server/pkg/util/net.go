@@ -20,6 +20,8 @@ import (
 
 // IPResolver defines an interface for looking up IP addresses.
 // It matches the signature of net.Resolver.LookupIP.
+//
+// Summary: Defines an interface for looking up IP addresses.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
 	// It returns a slice of that host's IPv4 and IPv6 addresses.
@@ -28,6 +30,8 @@ type IPResolver interface {
 
 // NetDialer defines an interface for dialing network connections.
 // It matches the signature of net.Dialer.DialContext.
+//
+// Summary: Defines an interface for dialing network connections.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using
 	// the provided context.
@@ -35,6 +39,8 @@ type NetDialer interface {
 }
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+//
+// Summary: Provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -52,7 +58,7 @@ type SafeDialer struct {
 
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
 //
-// Summary: Initializes a SafeDialer with secure defaults.
+// Summary: Creates a new SafeDialer with strict default security settings.
 //
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
 //
@@ -142,7 +148,7 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
 //
-// Summary: Dials an address with default security protections.
+// Summary: Creates a connection to the given address with strict SSRF protection.
 //
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
 //
@@ -160,7 +166,7 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
-// Summary: Creates a secure HTTP client.
+// Summary: Creates a new HTTP client configured to prevent SSRF attacks.
 //
 // It uses a custom Transport backed by SafeDialer.
 //
@@ -198,6 +204,8 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
+//
+// Summary: Verifies if a TCP connection can be established to the given address.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -269,6 +277,8 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
+//
+// Summary: Attempts to listen on the given address with retries to handle transient port conflicts.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

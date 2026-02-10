@@ -16,6 +16,8 @@ import (
 )
 
 // Bus is a message bus implementation using NATS.
+//
+// Summary: A message bus implementation using NATS.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
@@ -33,6 +35,8 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized NATS bus.
 //   - error: An error if the connection or embedded server startup fails.
+//
+// Summary: Creates and initializes a new NATS bus.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {

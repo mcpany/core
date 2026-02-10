@@ -116,6 +116,8 @@ func init() {
 //
 // Returns:
 //   - []byte: The redacted JSON output.
+//
+// Summary: Parses a JSON byte slice and redacts sensitive keys.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -145,6 +147,8 @@ func RedactJSON(input []byte) []byte {
 //
 // Returns:
 //   - map[string]interface{}: The potentially redacted map.
+//
+// Summary: Recursively redacts sensitive keys in a map.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -258,6 +262,8 @@ var sensitiveKeys = []string{
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
+//
+// Summary: Checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -494,6 +500,8 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
+//
+// Summary: Redacts the password from a DSN string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -598,6 +606,8 @@ func RedactDSN(dsn string) string {
 //
 // Returns:
 //   - string: The redacted text.
+//
+// Summary: Replaces all occurrences of the given secrets in the text with [REDACTED].
 func RedactSecrets(text string, secrets []string) string {
 	if text == "" || len(secrets) == 0 {
 		return text

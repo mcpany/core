@@ -35,7 +35,7 @@ var (
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
 //
-// Summary: A client for fetching configuration from GitHub.
+// Summary: Represents a client for interacting with the GitHub API to fetch configuration files or directories.
 //
 // Fields:
 //   - Owner: string. The owner of the repository (user or organization).
@@ -65,6 +65,8 @@ type GitHub struct {
 // Returns:
 //   - A pointer to a new GitHub client.
 //   - An error if the URL is invalid.
+//
+// Summary: Creates a new GitHub client by parsing a GitHub URL.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -118,7 +120,7 @@ func (g *GitHub) ToRawContentURL() string {
 
 // Content represents a file or directory in a GitHub repository.
 //
-// Summary: Metadata for a file or directory in a GitHub repository.
+// Summary: Represents a file or directory in a GitHub repository.
 //
 // Fields:
 //   - Name: string. The name of the file or directory.

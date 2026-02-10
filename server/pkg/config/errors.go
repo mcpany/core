@@ -10,7 +10,7 @@ import (
 
 // ActionableError is an error that includes a suggestion for fixing the issue.
 //
-// Summary: An error type that pairs an underlying error with a user-facing suggestion.
+// Summary: Is an error that includes a suggestion for fixing the issue.
 //
 // Fields:
 //   - Err: error. The original error that occurred.
@@ -37,6 +37,8 @@ func (e *ActionableError) Unwrap() error {
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
 // If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
 // Otherwise, it returns a standard wrapped error.
+//
+// Summary: Wraps an error with context, preserving ActionableError semantics if present.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

@@ -15,6 +15,8 @@ import (
 
 // Conn is an interface that represents a gRPC client connection.
 // It is used to allow for mocking of the gRPC client in tests.
+//
+// Summary: Is an interface that represents a gRPC client connection.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -30,6 +32,8 @@ type Conn interface {
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
+//
+// Summary: Wraps a `Conn` to adapt it to the `pool.ClosableClient` interface.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig
@@ -39,6 +43,8 @@ type GrpcClientWrapper struct {
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
 // It accepts a shared health checker to avoid creating a new one for every client.
+//
+// Summary: Creates a new GrpcClientWrapper.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {

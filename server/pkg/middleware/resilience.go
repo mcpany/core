@@ -12,6 +12,8 @@ import (
 )
 
 // ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
+//
+// Summary: Provides circuit breaker and retry functionality for tool executions.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
@@ -22,6 +24,8 @@ type ResilienceMiddleware struct {
 // toolManager is the toolManager.
 //
 // Returns the result.
+//
+// Summary: Creates a new ResilienceMiddleware.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,

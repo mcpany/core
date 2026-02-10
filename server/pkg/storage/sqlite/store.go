@@ -14,6 +14,8 @@ import (
 )
 
 // Store implements config.Store using SQLite.
+//
+// Summary: Implements config.Store using SQLite.
 type Store struct {
 	db *DB
 }
@@ -23,6 +25,8 @@ type Store struct {
 // db is the db.
 //
 // Returns the result.
+//
+// Summary: Creates a new SQLite store.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }

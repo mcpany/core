@@ -17,6 +17,8 @@ import (
 
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
+//
+// Summary: Implements the Resource interface for resources that are defined statically in the configuration (e.g.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -26,7 +28,7 @@ type StaticResource struct {
 
 // NewStaticResource creates a new instance of StaticResource.
 //
-// Summary: Initializes a static resource.
+// Summary: Creates a new instance of StaticResource.
 //
 // Parameters:
 //   - def: *configv1.ResourceDefinition. The resource definition.

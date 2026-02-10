@@ -33,6 +33,8 @@ type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
+//
+// Summary: Implements the upstream.Upstream interface for services that communicate over WebRTC data channels.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -73,6 +75,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+//
+// Summary: Creates a new instance of WebrtcUpstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

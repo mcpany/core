@@ -13,6 +13,8 @@ import (
 )
 
 // LocalLimiter is an in-memory implementation of Limiter.
+//
+// Summary: Is an in-memory implementation of Limiter.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -53,11 +55,15 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 }
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+//
+// Summary: Implements RateLimitStrategy for local in-memory rate limiting.
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Returns the result.
+//
+// Summary: Creates a new LocalStrategy.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }

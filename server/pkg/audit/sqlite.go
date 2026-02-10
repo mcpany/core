@@ -18,6 +18,8 @@ import (
 )
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
+//
+// Summary: Writes audit logs to a SQLite database.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -29,6 +31,8 @@ type SQLiteAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new SQLiteAuditStore.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")

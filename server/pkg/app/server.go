@@ -126,7 +126,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 
 // RunOptions configuration for starting the MCP Any application.
 //
-// Summary: Options for configuring the application runtime.
+// Summary: Configuration for starting the MCP Any application.
 //
 // Fields:
 //   - Ctx: context.Context. The context for the application.
@@ -158,7 +158,7 @@ type RunOptions struct {
 
 // Runner defines the interface for running the application.
 //
-// Summary: Interface for application execution and management.
+// Summary: Defines the interface for running the application.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
@@ -187,7 +187,7 @@ type Runner interface {
 
 // Application is the main application struct, holding the dependencies and logic for the MCP Any server.
 //
-// Summary: The main application container.
+// Summary: Is the main application struct, holding the dependencies and logic for the MCP Any server.
 //
 // Fields:
 //   - PromptManager: prompt.ManagerInterface. Manages AI prompts.
@@ -301,7 +301,7 @@ type statsCacheEntry struct {
 
 // NewApplication creates a new Application with default dependencies.
 //
-// Summary: Initializes a new Application instance.
+// Summary: Creates a new Application with default dependencies.
 //
 // Returns:
 //   - *Application: The initialized application.
@@ -1378,6 +1378,8 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
+//
+// Summary: Performs a health check against a running server by sending an HTTP GET request to its /healthz endpoint.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1401,6 +1403,8 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
+//
+// Summary: Performs a health check against a running server by sending an HTTP GET request to its /healthz endpoint.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,

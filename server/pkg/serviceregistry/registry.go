@@ -26,6 +26,8 @@ import (
 //
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
+//
+// Summary: Defines the interface for a service registry.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -96,6 +98,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 //
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
+//
+// Summary: Is the concrete implementation of ServiceRegistryInterface.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -121,6 +125,8 @@ type ServiceRegistry struct {
 //
 // Returns:
 //   - *ServiceRegistry: A pointer to the newly created ServiceRegistry.
+//
+// Summary: Creates and initializes a new ServiceRegistry.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),

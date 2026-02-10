@@ -20,7 +20,7 @@ import (
 // This is useful for debugging and monitoring the flow of requests through the
 // server.
 //
-// Summary: MCP Middleware for request logging.
+// Summary: Creates an MCP middleware that logs information about each incoming request.
 //
 // Parameters:
 //   - log: *slog.Logger. The logger to be used. If `nil`, the default global logger will be used.

@@ -15,6 +15,8 @@ import (
 )
 
 // FileAuditStore writes audit logs to a file or stdout.
+//
+// Summary: Writes audit logs to a file or stdout.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -27,6 +29,8 @@ type FileAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new FileAuditStore.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error

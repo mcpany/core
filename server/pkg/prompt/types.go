@@ -16,9 +16,13 @@ import (
 )
 
 // ErrPromptNotFound is returned when a requested prompt is not found.
+//
+// Summary: Is returned when a requested prompt is not found.
 var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
+//
+// Summary: Is the fundamental interface for any executable prompt in the system.
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
 	//
@@ -47,6 +51,8 @@ type Prompt interface {
 // MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
 //
 // This is used to decouple the Manager from the concrete server implementation.
+//
+// Summary: Defines an interface for components that can provide an instance of an *mcp.Server.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
@@ -56,6 +62,8 @@ type MCPServerProvider interface {
 }
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
+//
+// Summary: Implements the Prompt interface for a prompt that is defined by a template.
 type TemplatedPrompt struct {
 	definition *configv1.PromptDefinition
 	serviceID  string
@@ -69,6 +77,8 @@ type TemplatedPrompt struct {
 //
 // Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
+//
+// Summary: Creates a new TemplatedPrompt instance.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) *TemplatedPrompt {
 	return &TemplatedPrompt{
 		definition: definition,
@@ -191,6 +201,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // Returns:
 //   - Prompt: The created Prompt instance.
 //   - error: An error if the prompt cannot be created.
+//
+// Summary: Creates a new Prompt from a configuration definition.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID), nil
 }

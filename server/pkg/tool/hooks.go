@@ -29,6 +29,8 @@ type compiledRule struct {
 }
 
 // PolicyHook implements PreCallHook using CallPolicy.
+//
+// Summary: Implements PreCallHook using CallPolicy.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -39,6 +41,8 @@ type PolicyHook struct {
 // policy is the policy.
 //
 // Returns the result.
+//
+// Summary: Creates a new PolicyHook with the given call policy.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -134,6 +138,8 @@ func (h *PolicyHook) ExecutePre(
 // (Deprecated hooks removed)
 
 // WebhookClient handles the communication with an external webhook.
+//
+// Summary: Handles the communication with an external webhook.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -146,6 +152,8 @@ type WebhookClient struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Summary: Creates a new WebhookClient.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -223,6 +231,8 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 }
 
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+//
+// Summary: Supports modification of requests and responses via external webhook using CloudEvents.
 type WebhookHook struct {
 	client *WebhookClient
 }
@@ -232,6 +242,8 @@ type WebhookHook struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Summary: Creates a new WebhookHook.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -364,6 +376,8 @@ func (h *WebhookHook) ExecutePost(
 }
 
 // WebhookStatus represents the status returned by the webhook.
+//
+// Summary: Represents the status returned by the webhook.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -372,6 +386,8 @@ type WebhookStatus struct {
 }
 
 // SigningRoundTripper signs the request using the webhook signer.
+//
+// Summary: Signs the request using the webhook signer.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper

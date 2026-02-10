@@ -19,7 +19,7 @@ import (
 // intended to inspect incoming requests and use the provided `AuthManager` to
 // verify credentials before passing the request to the next handler.
 //
-// Summary: MCP Middleware for request authentication.
+// Summary: Creates an MCP middleware for handling authentication.
 //
 // Parameters:
 //   - authManager: *auth.Manager. The authentication manager.

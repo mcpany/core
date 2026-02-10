@@ -12,13 +12,15 @@ import (
 
 // CallableTool implements the Tool interface for a tool that is executed by a
 // Callable.
+//
+// Summary: Implements the Tool interface for a tool that is executed by a Callable.
 type CallableTool struct {
 	*baseTool
 }
 
 // NewCallableTool creates a new CallableTool.
 //
-// Summary: Creates a new tool that wraps a Callable interface.
+// Summary: Creates a new CallableTool.
 //
 // Parameters:
 //   - toolDef: *configv1.ToolDefinition. The definition of the tool.

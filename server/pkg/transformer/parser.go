@@ -29,6 +29,8 @@ var (
 // plain text) and extract data into a structured map. It uses a configuration
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
+//
+// Summary: Provides functionality to parse various text formats (JSON, XML, plain text) and extract data into a structured map.
 type TextParser struct {
 	transformer *Transformer
 }
@@ -41,6 +43,8 @@ var (
 // NewTextParser returns a shared instance of TextParser.
 //
 // Returns the result.
+//
+// Summary: Returns a shared instance of TextParser.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{

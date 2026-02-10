@@ -25,6 +25,8 @@ import (
 )
 
 // Executor is an interface for executing commands.
+//
+// Summary: Is an interface for executing commands.
 type Executor interface {
 	// Execute executes a command and returns the stdout and stderr as streams.
 	//
@@ -60,6 +62,8 @@ type Executor interface {
 // containerEnv is the containerEnv.
 //
 // Returns the result.
+//
+// Summary: Creates a new command executor.
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -70,6 +74,8 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 // NewLocalExecutor creates a new local command executor.
 //
 // Returns the result.
+//
+// Summary: Creates a new local command executor.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }

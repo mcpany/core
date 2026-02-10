@@ -34,6 +34,8 @@ import (
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
+//
+// Summary: Implements the upstream.Upstream interface for services that are defined by an OpenAPI specification.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -56,6 +58,8 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
+//
+// Summary: Creates a new instance of OpenAPIUpstream.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),

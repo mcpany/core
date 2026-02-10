@@ -17,6 +17,8 @@ import (
 )
 
 // SftpProvider provides access to files via SFTP.
+//
+// Summary: Provides access to files via SFTP.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client
@@ -29,6 +31,8 @@ type SftpProvider struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new SftpProvider from the given configuration.
 func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("sftp config is nil")

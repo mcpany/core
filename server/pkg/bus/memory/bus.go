@@ -21,6 +21,8 @@ const (
 // DefaultBus is the default, thread-safe implementation of the Bus interface.
 // It uses channels to deliver messages to subscribers, with each subscriber
 // having its own dedicated goroutine for message processing.
+//
+// Summary: Is the default, thread-safe implementation of the Bus interface.
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
 	subscribers    map[string]map[uintptr]chan T
@@ -33,6 +35,8 @@ type DefaultBus[T any] struct {
 // default publish timeout.
 //
 // The type parameter T specifies the type of message that the bus will handle.
+//
+// Summary: Creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),

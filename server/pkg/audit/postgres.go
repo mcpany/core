@@ -15,6 +15,8 @@ import (
 )
 
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
+//
+// Summary: Writes audit logs to a PostgreSQL database.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -26,6 +28,8 @@ type PostgresAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new PostgresAuditStore.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")

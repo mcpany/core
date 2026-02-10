@@ -32,7 +32,7 @@ const (
 
 // ContextWithAPIKey returns a new context with the API Key embedded.
 //
-// Summary: Embeds an API key into the context.
+// Summary: Returns a new context with the API Key embedded.
 //
 // Parameters:
 //   - ctx: context.Context. The context to extend.
@@ -46,7 +46,7 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 
 // APIKeyFromContext returns the API Key from the context if present.
 //
-// Summary: Retrieves the API key from the context.
+// Summary: Returns the API Key from the context if present.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -61,7 +61,7 @@ func APIKeyFromContext(ctx context.Context) (string, bool) {
 
 // ContextWithUser returns a new context with the user ID embedded.
 //
-// Summary: Embeds a user ID into the context.
+// Summary: Returns a new context with the user ID embedded.
 //
 // Parameters:
 //   - ctx: context.Context. The context to extend.
@@ -75,7 +75,7 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 
 // UserFromContext returns the user ID from the context if present.
 //
-// Summary: Retrieves the user ID from the context.
+// Summary: Returns the user ID from the context if present.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -90,7 +90,7 @@ func UserFromContext(ctx context.Context) (string, bool) {
 
 // ContextWithProfileID returns a new context with the profile ID embedded.
 //
-// Summary: Embeds a profile ID into the context.
+// Summary: Returns a new context with the profile ID embedded.
 //
 // Parameters:
 //   - ctx: context.Context. The context to extend.
@@ -104,7 +104,7 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 
 // ProfileIDFromContext returns the profile ID from the context if present.
 //
-// Summary: Retrieves the profile ID from the context.
+// Summary: Returns the profile ID from the context if present.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -119,7 +119,7 @@ func ProfileIDFromContext(ctx context.Context) (string, bool) {
 
 // Authenticator defines the interface for authentication mechanisms.
 //
-// Summary: Interface for authenticating HTTP requests.
+// Summary: Defines the interface for authentication mechanisms.
 type Authenticator interface {
 	// Authenticate checks if a request is authenticated and returns the updated context.
 	//
@@ -137,7 +137,7 @@ type Authenticator interface {
 
 // APIKeyAuthenticator provides an authentication mechanism based on a static API key.
 //
-// Summary: Authenticates requests using a static API key.
+// Summary: Provides an authentication mechanism based on a static API key.
 type APIKeyAuthenticator struct {
 	ParamName string
 	In        configv1.APIKeyAuth_Location
@@ -146,7 +146,7 @@ type APIKeyAuthenticator struct {
 
 // NewAPIKeyAuthenticator creates a new APIKeyAuthenticator instance.
 //
-// Summary: Initializes an APIKeyAuthenticator.
+// Summary: Creates a new APIKeyAuthenticator instance.
 //
 // Parameters:
 //   - config: *configv1.APIKeyAuth. The configuration settings.
@@ -199,7 +199,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 
 // BasicAuthenticator authenticates using HTTP Basic Auth and bcrypt password hashing.
 //
-// Summary: Authenticates requests using HTTP Basic Auth.
+// Summary: Authenticates using HTTP Basic Auth and bcrypt password hashing.
 type BasicAuthenticator struct {
 	PasswordHash string
 	Username     string
@@ -207,7 +207,7 @@ type BasicAuthenticator struct {
 
 // NewBasicAuthenticator creates a new BasicAuthenticator instance.
 //
-// Summary: Initializes a BasicAuthenticator.
+// Summary: Creates a new BasicAuthenticator instance.
 //
 // Parameters:
 //   - config: *configv1.BasicAuth. The configuration settings.
@@ -259,7 +259,7 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 
 // TrustedHeaderAuthenticator authenticates using a trusted header.
 //
-// Summary: Authenticates requests based on the presence/value of a specific header.
+// Summary: Authenticates using a trusted header.
 type TrustedHeaderAuthenticator struct {
 	HeaderName  string
 	HeaderValue string // Optional: if empty, just checks presence
@@ -267,7 +267,7 @@ type TrustedHeaderAuthenticator struct {
 
 // NewTrustedHeaderAuthenticator creates a new TrustedHeaderAuthenticator instance.
 //
-// Summary: Initializes a TrustedHeaderAuthenticator.
+// Summary: Creates a new TrustedHeaderAuthenticator instance.
 //
 // Parameters:
 //   - config: *configv1.TrustedHeaderAuth. The configuration settings.
@@ -311,7 +311,7 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 
 // Manager oversees the authentication process for the server.
 //
-// Summary: Manages authentication strategies and user sessions.
+// Summary: Oversees the authentication process for the server.
 type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
@@ -327,7 +327,7 @@ type Manager struct {
 
 // NewManager creates and initializes a new Manager with an empty authenticator registry.
 //
-// Summary: Initializes a new Authentication Manager.
+// Summary: Creates and initializes a new Manager with an empty authenticator registry.
 //
 // Returns:
 //   - *Manager: A new Manager instance.
@@ -538,7 +538,7 @@ var (
 
 // ValidateAuthentication validates the authentication request against the provided configuration.
 //
-// Summary: Validates a request against a specific auth configuration.
+// Summary: Validates the authentication request against the provided configuration.
 //
 // Parameters:
 //   - ctx: context.Context. The request context.

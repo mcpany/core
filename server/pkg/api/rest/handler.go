@@ -17,7 +17,7 @@ import (
 
 // ValidateConfigHandler handles requests to validate configuration.
 //
-// Summary: Validates configuration content against schema and logic.
+// Summary: Handles requests to validate configuration.
 //
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.

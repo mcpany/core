@@ -66,7 +66,7 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
 //
-// Summary: Interface for defining and executing tools.
+// Summary: Is the fundamental interface for any executable tool in the system.
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
@@ -99,7 +99,7 @@ type Tool interface {
 // ServiceInfo holds metadata about a registered upstream service, including its
 // configuration and any associated protobuf file descriptors.
 //
-// Summary: Metadata for a registered service.
+// Summary: Holds metadata about a registered upstream service, including its configuration and any associated protobuf file descriptors.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -123,7 +123,7 @@ type ServiceInfo struct {
 // ExecutionRequest represents a request to execute a specific tool, including
 // its name and input arguments as a raw JSON message.
 //
-// Summary: Request payload for tool execution.
+// Summary: Represents a request to execute a specific tool, including its name and input arguments as a raw JSON message.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -145,7 +145,7 @@ type ExecutionRequest struct {
 // and service information. It is used for dependency injection to decouple
 // components from the main service registry.
 //
-// Summary: Interface for tool and service lookup.
+// Summary: Defines an interface for a component that can look up tools and service information.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
@@ -177,6 +177,8 @@ type ServiceRegistry interface {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Summary: Represents the next middleware in the chain.
 type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
 
 type contextKey string
@@ -191,13 +193,15 @@ const toolContextKey = contextKey("tool")
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
+//
+// Summary: Creates a new context with the given tool embedded.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
 // GetFromContext retrieves a tool from the context if present.
 //
-// Summary: Retrieves a tool from the context.
+// Summary: Retrieves a tool from the context if present.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -212,7 +216,7 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 
 // Callable is an interface that represents a callable tool.
 //
-// Summary: Interface for executing a tool.
+// Summary: Is an interface that represents a callable tool.
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
@@ -227,6 +231,8 @@ type Callable interface {
 }
 
 // Action defines the decision made by a pre-call hook.
+//
+// Summary: Defines the decision made by a pre-call hook.
 type Action int
 
 const (
@@ -242,7 +248,7 @@ const (
 
 // CacheControl is a mutable struct to pass cache control instructions via context.
 //
-// Summary: Context-based cache control instructions.
+// Summary: A mutable struct to pass cache control instructions via context.
 type CacheControl struct {
 	Action Action
 }
@@ -257,13 +263,15 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
+//
+// Summary: Creates a new context with the given CacheControl.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
 // GetCacheControl retrieves the CacheControl from the context.
 //
-// Summary: Retrieves CacheControl from the context.
+// Summary: Retrieves the CacheControl from the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -278,7 +286,7 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 
 // PreCallHook defines the interface for hooks executed before a tool call.
 //
-// Summary: Interface for pre-execution hooks.
+// Summary: Defines the interface for hooks executed before a tool call.
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
@@ -287,7 +295,7 @@ type PreCallHook interface {
 
 // PostCallHook defines the interface for hooks executed after a tool call.
 //
-// Summary: Interface for post-execution hooks.
+// Summary: Defines the interface for hooks executed after a tool call.
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
@@ -297,6 +305,8 @@ type PostCallHook interface {
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
+//
+// Summary: Implements the Tool interface for a tool that is exposed via a gRPC endpoint.
 type GRPCTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -321,6 +331,8 @@ type GRPCTool struct {
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
+//
+// Summary: Creates a new GRPCTool instance.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -441,6 +453,8 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
 // It constructs and sends an HTTP request based on the tool definition and
 // input, handling parameter mapping, authentication, and transformations.
+//
+// Summary: Implements the Tool interface for a tool exposed via an HTTP endpoint.
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -484,6 +498,8 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
+//
+// Summary: Creates a new HTTPTool instance.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1184,6 +1200,8 @@ func (t *HTTPTool) redactURL(u *url.URL) string {
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service. It acts as a proxy, forwarding the tool call to the
 // downstream MCP service.
+//
+// Summary: Implements the Tool interface for a tool that is exposed via another MCP-compliant service.
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1207,6 +1225,8 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
+//
+// Summary: Creates a new MCPTool instance.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1395,6 +1415,8 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 // OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
 // specification. It constructs and sends an HTTP request based on the OpenAPI
 // operation definition.
+//
+// Summary: Implements the Tool interface for a tool defined in an OpenAPI specification.
 type OpenAPITool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1426,6 +1448,8 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
+//
+// Summary: Creates a new OpenAPITool instance.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1663,6 +1687,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // CommandTool implements the Tool interface for a tool that is executed as a
 // local command-line process. It maps tool inputs to command-line arguments and
 // environment variables.
+//
+// Summary: Implements the Tool interface for a tool that is executed as a local command-line process.
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -1686,6 +1712,8 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
+//
+// Summary: Creates a new CommandTool instance.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1710,6 +1738,8 @@ func NewCommandTool(
 // LocalCommandTool implements the Tool interface for a tool that is executed as a
 // local command-line process. It maps tool inputs to command-line arguments and
 // environment variables.
+//
+// Summary: Implements the Tool interface for a tool that is executed as a local command-line process.
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -1733,6 +1763,8 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
+//
+// Summary: Creates a new LocalCommandTool instance.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,

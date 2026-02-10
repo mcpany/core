@@ -12,7 +12,7 @@ import (
 
 // Storage defines the interface for persisting configuration.
 //
-// Summary: Interface for backend storage operations.
+// Summary: Defines the interface for persisting configuration.
 type Storage interface {
 	// Load retrieves the full server configuration.
 	//
@@ -144,16 +144,6 @@ type Storage interface {
 	//   - error: An error if saving fails.
 	SaveSecret(ctx context.Context, secret *configv1.Secret) error
 
-	// SaveServiceTemplate saves a service template.
-	//
-	// Summary: Persists a service template.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - template: *configv1.ServiceTemplate. The template to save.
-	//
-	// Returns:
-	//   - error: An error if saving fails.
 	// ListServiceTemplates lists all service templates.
 	//
 	// Summary: Lists all service templates.
@@ -179,6 +169,16 @@ type Storage interface {
 	//   - error: An error if retrieval fails.
 	GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error)
 
+	// SaveServiceTemplate saves a service template.
+	//
+	// Summary: Persists a service template.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - template: *configv1.ServiceTemplate. The template to save.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
 	SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
 
 	// DeleteServiceTemplate deletes a service template by ID.

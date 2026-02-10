@@ -13,6 +13,8 @@ import (
 )
 
 // Store implements config.Store using PostgreSQL.
+//
+// Summary: Implements config.Store using PostgreSQL.
 type Store struct {
 	db *DB
 }
@@ -22,6 +24,8 @@ type Store struct {
 // db is the db.
 //
 // Returns the result.
+//
+// Summary: Creates a new PostgreSQL store.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }

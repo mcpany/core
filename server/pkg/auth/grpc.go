@@ -15,6 +15,8 @@ import (
 // PerRPCCredentials adapts an UpstreamAuthenticator to the gRPC
 // credentials.PerRPCCredentials interface. It allows applying upstream
 // authentication headers to outgoing gRPC requests.
+//
+// Summary: Adapts an UpstreamAuthenticator to the gRPC credentials.PerRPCCredentials interface.
 type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }
@@ -24,6 +26,8 @@ type PerRPCCredentials struct {
 //
 // authenticator is the upstream authenticator to be used for generating gRPC
 // request metadata.
+//
+// Summary: Creates a new gRPC PerRPCCredentials from an UpstreamAuthenticator.
 func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRPCCredentials {
 	if authenticator == nil {
 		return nil

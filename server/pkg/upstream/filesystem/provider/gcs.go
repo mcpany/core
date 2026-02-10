@@ -21,6 +21,8 @@ import (
 )
 
 // GcsProvider provides access to files in a Google Cloud Storage bucket.
+//
+// Summary: Provides access to files in a Google Cloud Storage bucket.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client
@@ -35,6 +37,8 @@ var newStorageClient = storage.NewClient
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new GcsProvider from the given configuration.
 func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")

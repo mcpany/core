@@ -19,7 +19,7 @@ const remoteIPContextKey = contextKey("remote_ip")
 
 // ContextWithRemoteIP creates a new context containing the remote IP address.
 //
-// Summary: Injects the remote IP into the context.
+// Summary: Creates a new context containing the remote IP address.
 //
 // Parameters:
 //   - ctx: context.Context. The parent context.
@@ -33,7 +33,7 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 
 // ExtractIP extracts and validates the IP address from a string.
 //
-// Summary: Parses and sanitizes an IP address string.
+// Summary: Extracts and validates the IP address from a string.
 //
 // It handles "host:port" formats, strips IPv6 brackets, and removes zone indices.
 //
@@ -65,7 +65,7 @@ func ExtractIP(addr string) string {
 
 // GetClientIP extracts the client IP address from an HTTP request.
 //
-// Summary: Determines the client's IP address.
+// Summary: Extracts the client IP address from an HTTP request.
 //
 // Parameters:
 //   - r: *http.Request. The HTTP request to inspect.
@@ -101,7 +101,7 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 
 // RemoteIPFromContext retrieves the remote IP address stored in the context.
 //
-// Summary: Retrieves the remote IP from the context.
+// Summary: Retrieves the remote IP address stored in the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to retrieve the IP from.
@@ -116,7 +116,7 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 
 // IsPrivateNetworkIP checks if the IP address belongs to a private network.
 //
-// Summary: Checks if an IP is a private network address.
+// Summary: Checks if the IP address belongs to a private network.
 //
 // This includes RFC1918 (Private IPv4), RFC4193 (Unique Local IPv6), and RFC6598 (CGNAT).
 // It does NOT include loopback or link-local addresses.
@@ -132,7 +132,7 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 
 // IsPrivateIP checks if the IP address is private, link-local, or loopback.
 //
-// Summary: Checks if an IP is internal/private.
+// Summary: Checks if the IP address is private, link-local, or loopback.
 //
 // This is a comprehensive check for any "internal" IP address that shouldn't be publicly routable.
 //

@@ -15,6 +15,8 @@ import (
 )
 
 // SkillServiceServer implements the SkillService gRPC interface.
+//
+// Summary: Implements the SkillService gRPC interface.
 type SkillServiceServer struct {
 	pb.UnimplementedSkillServiceServer
 	manager *skill.Manager
@@ -25,6 +27,8 @@ type SkillServiceServer struct {
 // manager handles the resource management.
 //
 // Returns the result.
+//
+// Summary: Creates a new SkillServiceServer.
 func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 	return &SkillServiceServer{
 		manager: manager,

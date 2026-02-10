@@ -60,6 +60,8 @@ func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 // connection to communicate with the remote service. This is useful for
 // scenarios requiring low-latency, peer-to-peer communication directly from the
 // server.
+//
+// Summary: Implements the Tool interface for a tool that is exposed via a WebRTC data channel.
 type WebrtcTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -81,6 +83,8 @@ type WebrtcTool struct {
 // authenticator handles adding authentication credentials to the signaling request.
 // callDefinition contains the configuration for the WebRTC call, such as
 // parameter mappings and transformers.
+//
+// Summary: Creates a new WebrtcTool.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,

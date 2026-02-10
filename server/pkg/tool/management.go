@@ -29,6 +29,8 @@ import (
 //
 // This interface is used to decouple the Manager from the concrete server implementation,
 // avoiding circular dependencies.
+//
+// Summary: Defines an interface for components that can provide an instance of an *mcp.Server.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
@@ -41,6 +43,8 @@ type MCPServerProvider interface {
 //
 // It outlines the methods required for managing the lifecycle, registration, discovery,
 // and execution of tools within the MCP Any server.
+//
+// Summary: Defines the contract for a tool manager.
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
 	//
@@ -183,6 +187,8 @@ type ManagerInterface interface {
 }
 
 // ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
+//
+// Summary: Defines the interface for middleware that intercepts tool execution.
 type ExecutionMiddleware interface {
 	// Execute performs the middleware logic wrapping the next handler in the chain.
 	//
@@ -201,6 +207,8 @@ type ExecutionMiddleware interface {
 //
 // It handles tool registration, retrieval, execution, and profile-based filtering.
 // It is thread-safe and supports efficient lookups via caching and indexing.
+//
+// Summary: Is the central component for managing tools in MCP Any.
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
@@ -231,6 +239,8 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
+//
+// Summary: Creates and initializes a new Tool Manager.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,

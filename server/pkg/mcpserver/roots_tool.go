@@ -19,6 +19,8 @@ import (
 //
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
+//
+// Summary: Implements the Tool interface for listing roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -30,6 +32,8 @@ type RootsTool struct {
 //
 // Returns:
 //   - *RootsTool: A pointer to the initialized RootsTool.
+//
+// Summary: Creates a new instance of the RootsTool.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{

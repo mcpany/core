@@ -16,6 +16,8 @@ import (
 )
 
 // ZipProvider provides access to files within a zip archive.
+//
+// Summary: Provides access to files within a zip archive.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
@@ -27,6 +29,8 @@ type ZipProvider struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new ZipProvider from the given configuration.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)

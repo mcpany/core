@@ -15,6 +15,8 @@ import (
 )
 
 // MilvusClient implements VectorClient for Milvus.
+//
+// Summary: Implements VectorClient for Milvus.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
@@ -26,6 +28,8 @@ type MilvusClient struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new Milvus client.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
 		return nil, fmt.Errorf("address is required for Milvus")

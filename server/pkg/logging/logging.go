@@ -24,6 +24,8 @@ var (
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
 // test cases. This function should not be used in production code.
+//
+// Summary: Is for use in tests to reset the `sync.Once` mechanism.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -36,7 +38,7 @@ func ForTestsOnlyResetLogger() {
 // typically at the start of the application, to ensure a consistent logging
 // setup.
 //
-// Summary: Initializes the global logger singleton.
+// Summary: Initializes the application's global logger with a specific log level and output destination.
 //
 // Parameters:
 //   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
@@ -112,7 +114,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // been initialized through a call to `Init`, this function will initialize it
 // with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
-// Summary: Retrieves the global logger instance.
+// Summary: Returns the shared global logger instance.
 //
 // Returns:
 //   - *slog.Logger: The global `*slog.Logger` instance.
@@ -137,7 +139,7 @@ func GetLogger() *slog.Logger {
 
 // ToSlogLevel converts a string log level to a slog.Level.
 //
-// Summary: Converts protobuf log level to slog level.
+// Summary: Converts a string log level to a slog.Level.
 //
 // Parameters:
 //   - level: configv1.GlobalSettings_LogLevel. The log level from the configuration.

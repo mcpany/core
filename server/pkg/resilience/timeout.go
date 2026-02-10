@@ -10,6 +10,8 @@ import (
 )
 
 // Timeout implements a timeout policy for operations.
+//
+// Summary: Implements a timeout policy for operations.
 type Timeout struct {
 	duration *durationpb.Duration
 }
@@ -19,6 +21,8 @@ type Timeout struct {
 // duration is the duration.
 //
 // Returns the result.
+//
+// Summary: Creates a new Timeout instance with the given duration.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

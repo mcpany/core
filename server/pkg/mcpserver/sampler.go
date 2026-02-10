@@ -13,14 +13,14 @@ import (
 
 // MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
 //
-// Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
+// Summary: Wraps an MCP session to provide client interaction capabilities like sampling and roots.
 type MCPSession struct {
 	session *mcp.ServerSession
 }
 
 // NewMCPSession creates a new MCPSession.
 //
-// Summary: Initializes a new MCPSession instance.
+// Summary: Creates a new MCPSession.
 //
 // Parameters:
 //   - session: *mcp.ServerSession. The underlying MCP server session.
@@ -33,7 +33,7 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 
 // NewMCPSampler is a deprecated alias for NewMCPSession.
 //
-// Summary: Creates a new MCPSession (deprecated alias).
+// Summary: A deprecated alias for NewMCPSession.
 //
 // Parameters:
 //   - session: *mcp.ServerSession. The underlying MCP server session.

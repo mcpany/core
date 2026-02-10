@@ -24,6 +24,8 @@ import (
 // WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
 // connection. It handles sending and receiving messages over a persistent
 // WebSocket connection managed by a connection pool.
+//
+// Summary: Implements the Tool interface for a tool exposed via a WebSocket connection.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -45,6 +47,8 @@ type WebsocketTool struct {
 // authenticator handles adding authentication credentials to the connection request.
 // callDefinition contains the configuration for the WebSocket call, such as
 // parameter mappings and transformers.
+//
+// Summary: Creates a new WebsocketTool.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,

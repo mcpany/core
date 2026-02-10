@@ -15,6 +15,8 @@ import (
 // ManagerInterface defines the interface for a prompt manager.
 //
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
+//
+// Summary: Defines the interface for a prompt manager.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -60,6 +62,8 @@ type ManagerInterface interface {
 // Manager is a thread-safe manager for registering and retrieving prompts.
 //
 // It supports concurrent access and uses caching for efficient list operations.
+//
+// Summary: A thread-safe manager for registering and retrieving prompts.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -71,6 +75,8 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
+//
+// Summary: Creates and returns a new, empty Manager.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),

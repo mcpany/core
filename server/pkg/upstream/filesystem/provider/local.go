@@ -14,6 +14,8 @@ import (
 )
 
 // LocalProvider provides access to the local filesystem.
+//
+// Summary: Provides access to the local filesystem.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
@@ -31,6 +33,8 @@ type LocalProvider struct {
 // symlinkMode is the symlinkMode.
 //
 // Returns the result.
+//
+// Summary: Creates a new LocalProvider from the given configuration.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),

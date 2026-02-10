@@ -19,6 +19,8 @@ var (
 
 // GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
 // It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
+//
+// Summary: A gRPC stats handler that records metrics for RPCs and connections.
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }

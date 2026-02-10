@@ -16,6 +16,8 @@ import (
 
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
 // and an in-memory cache for fast search.
+//
+// Summary: Implements VectorStore using SQLite for persistence and an in-memory cache for fast search.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
@@ -23,6 +25,8 @@ type SQLiteVectorStore struct {
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
 // It loads existing entries from the database into memory.
+//
+// Summary: Creates a new SQLiteVectorStore.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")

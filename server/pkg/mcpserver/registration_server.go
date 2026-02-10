@@ -23,7 +23,7 @@ import (
 
 // RegistrationServer implements the gRPC server for service registration.
 //
-// Summary: Handles gRPC requests for registering and managing upstream services.
+// Summary: Implements the gRPC server for service registration.
 //
 // Side Effects:
 //   - Publishes messages to the event bus.
@@ -36,7 +36,7 @@ type RegistrationServer struct {
 
 // NewRegistrationServerHook is a test hook for overriding the creation of a RegistrationServer.
 //
-// Summary: Test hook to override RegistrationServer creation.
+// Summary: A test hook for overriding the creation of a RegistrationServer.
 //
 // Side Effects:
 //   - If set, this hook is called instead of the standard constructor logic.
@@ -44,7 +44,7 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 
 // NewRegistrationServer creates a new RegistrationServer initialized with the event bus and auth manager.
 //
-// Summary: Initializes a new RegistrationServer instance.
+// Summary: Creates a new RegistrationServer initialized with the event bus and auth manager.
 //
 // Parameters:
 //   - bus: *bus.Provider. The event bus used for communication with workers.

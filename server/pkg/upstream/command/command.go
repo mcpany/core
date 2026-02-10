@@ -29,6 +29,8 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed as command-line tools. It discovers and registers tools based on
 // a list of commands defined in the service configuration.
+//
+// Summary: Implements the upstream.Upstream interface for services that are exposed as command-line tools.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -52,6 +54,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of CommandUpstream.
 //
 // Returns the result.
+//
+// Summary: Creates a new instance of CommandUpstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

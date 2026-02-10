@@ -30,6 +30,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
+//
+// Summary: Implements the upstream.Upstream interface for filesystem services.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -39,6 +41,8 @@ type Upstream struct {
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Returns the result.
+//
+// Summary: Creates a new instance of FilesystemUpstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),

@@ -19,6 +19,8 @@ import (
 // listens for ToolExecutionRequest messages on the event bus, uses the
 // tool manager to execute the requested tool, and then publishes the outcome as
 // a ToolExecutionResult message.
+//
+// Summary: A background worker that handles tool execution requests.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -33,6 +35,8 @@ type UpstreamWorker struct {
 //
 // Returns:
 //   - *UpstreamWorker: A new upstream worker.
+//
+// Summary: Creates a new UpstreamWorker.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,

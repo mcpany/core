@@ -21,6 +21,8 @@ import (
 )
 
 // AuditMiddleware provides audit logging for tool executions.
+//
+// Summary: Provides audit logging for tool executions.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig
@@ -35,6 +37,8 @@ type AuditMiddleware struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new AuditMiddleware.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,

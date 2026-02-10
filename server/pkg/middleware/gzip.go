@@ -61,6 +61,8 @@ var byteBufferPool = sync.Pool{
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
 // It checks the Accept-Encoding header and only compresses if the client supports gzip.
 // It also checks the Content-Type to ensure we only compress compressible types.
+//
+// Summary: Returns a middleware that compresses HTTP responses using Gzip.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {

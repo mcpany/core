@@ -25,6 +25,8 @@ import (
 
 // Factory defines the interface for a factory that creates upstream service
 // instances.
+//
+// Summary: Defines the interface for a factory that creates upstream service instances.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -37,6 +39,8 @@ type Factory interface {
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
 // It creates different types of upstream services based on the service
 // configuration.
+//
+// Summary: A concrete implementation of the Factory interface.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
@@ -51,6 +55,8 @@ type UpstreamServiceFactory struct {
 //
 // Returns:
 //   Factory: A new Factory instance.
+//
+// Summary: Creates a new UpstreamServiceFactory.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,

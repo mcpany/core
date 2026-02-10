@@ -40,7 +40,7 @@ import (
 // After sanitizing each string individually, it joins them with a "." separator to form
 // the final identifier.
 //
-// Summary: Creates a sanitized, unique identifier from a list of string parts.
+// Summary: Sanitizes a slice of strings to form a valid ID.
 //
 // Parameters:
 //   - ids: []string. A slice of strings to be sanitized and joined.
@@ -208,7 +208,7 @@ func isValidChar(c byte) bool {
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
 //
-// Summary: Sanitizes a service name to be safe for use as an identifier.
+// Summary: Sanitizes the given service name.
 //
 // Parameters:
 //   - name: string. The service name to sanitize.
@@ -225,7 +225,7 @@ func SanitizeServiceName(name string) (string, error) {
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
 //
-// Summary: Sanitizes a tool name to be safe for use as an identifier.
+// Summary: Sanitizes the given tool name.
 //
 // Parameters:
 //   - name: string. The tool name to sanitize.
@@ -273,11 +273,13 @@ func init() {
 
 // TrueStr is a string constant representing the boolean value true.
 // It is used for consistent string comparisons and parsing of boolean-like strings.
+//
+// Summary: A string constant representing the boolean value true.
 const TrueStr = "true"
 
 // GenerateUUID creates a new random (version 4) UUID.
 //
-// Summary: Generates a random UUID.
+// Summary: Creates a new random (version 4) UUID.
 //
 // Parameters:
 //
@@ -293,7 +295,7 @@ func GenerateUUID() string {
 // and bare tool name components. It splits the name using the standard
 // separator.
 //
-// Summary: Parses a fully qualified tool name.
+// Summary: Deconstructs a fully qualified tool name into its service key and bare tool name components.
 //
 // Parameters:
 //   - toolName: string. The fully qualified tool name to parse.
@@ -315,7 +317,7 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 // hexadecimal hash of that sequence, ensuring uniqueness while preserving as
 // much of the original string as possible.
 //
-// Summary: Sanitizes a string for use as an operation ID.
+// Summary: Cleans an input string to make it suitable for use as an operation ID.
 //
 // Parameters:
 //   - input: string. The string to be sanitized.
@@ -390,7 +392,7 @@ func stringToBytes(s string) []byte {
 // BytesToString converts a byte slice to a string without allocation.
 // IMPORTANT: The byte slice must not be modified while the string is in use.
 //
-// Summary: Zero-copy conversion from bytes to string.
+// Summary: Converts a byte slice to a string without allocation.
 //
 // Parameters:
 //   - b: []byte. The byte slice to convert.
@@ -405,7 +407,7 @@ func BytesToString(b []byte) string {
 // It checks the USE_SUDO_FOR_DOCKER environment variable to determine if
 // "sudo" should be prepended to the command.
 //
-// Summary: Retrieves the appropriate Docker command (with optional sudo).
+// Summary: Returns the command and base arguments for running Docker.
 //
 // Returns:
 //   - string: The command to run (e.g., "docker" or "sudo").
@@ -424,7 +426,7 @@ func GetDockerCommand() (string, []string) {
 // ReplaceURLPath replaces placeholders in a URL path with values from a params map.
 // It handles URL escaping of values unless specified otherwise.
 //
-// Summary: Substitutes placeholders in a URL path.
+// Summary: Replaces placeholders in a URL path with values from a params map.
 //
 // Parameters:
 //   - urlPath: string. The URL path containing placeholders in the format "{{key}}".
@@ -440,7 +442,7 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 // ReplaceURLQuery replaces placeholders in a URL query string with values from a params map.
 // It handles URL query escaping of values unless specified otherwise.
 //
-// Summary: Substitutes placeholders in a URL query string.
+// Summary: Replaces placeholders in a URL query string with values from a params map.
 //
 // Parameters:
 //   - urlQuery: string. The URL query string containing placeholders in the format "{{key}}".
@@ -493,7 +495,7 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 
 // IsNil checks if an interface value is nil or holds a nil pointer.
 //
-// Summary: Checks if a value is nil or a nil interface.
+// Summary: Checks if an interface value is nil or holds a nil pointer.
 //
 // Parameters:
 //   - i: any. The interface value to check.
@@ -520,7 +522,7 @@ func IsNil(i any) bool {
 // Optimization: We manually handle all standard Go numeric types to avoid the overhead
 // of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 //
-// Summary: Converts any value to a string efficiently.
+// Summary: Converts a value to a string representation efficiently.
 //
 // Parameters:
 //   - v: any. The value to convert to a string.
@@ -625,7 +627,7 @@ func toStringRecursive(v any, depth int) string {
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
 // It uses the global math/rand source.
 //
-// Summary: Generates a random float.
+// Summary: Returns a random float64 in [0.0, 1.0).
 //
 // Returns:
 //   - float64: A random float64 value.
@@ -637,7 +639,7 @@ func RandomFloat64() float64 {
 // It removes any directory components, null bytes, and restricts characters
 // to alphanumeric, dots, dashes, and underscores.
 //
-// Summary: Sanitizes a filename.
+// Summary: Cleans a filename to ensure it is safe to use.
 //
 // Parameters:
 //   - filename: string. The filename to sanitize.

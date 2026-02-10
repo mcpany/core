@@ -28,6 +28,8 @@ import (
 )
 
 // Server implements the AdminServiceServer interface.
+//
+// Summary: Implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware
@@ -48,6 +50,8 @@ type Server struct {
 // auditMiddleware provides access to audit logs.
 //
 // Returns the result.
+//
+// Summary: Creates a new Admin Server.
 func NewServer(
 	cache *middleware.CachingMiddleware,
 	toolManager tool.ManagerInterface,

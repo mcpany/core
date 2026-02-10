@@ -12,6 +12,8 @@ import (
 )
 
 // MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
+//
+// Summary: A mock implementation of grpc.ClientConnInterface for testing.
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T
@@ -25,6 +27,8 @@ type MockClientConn struct {
 //
 // Returns:
 //   - *MockClientConn: A new mock client connection.
+//
+// Summary: Creates a new mock client connection.
 func NewMockClientConn(t *testing.T) *MockClientConn {
 	return &MockClientConn{
 		t:       t,

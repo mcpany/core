@@ -8,6 +8,8 @@ import (
 )
 
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
+//
+// Summary: Contains the seed configurations for high-value MCP servers.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
 func init() {

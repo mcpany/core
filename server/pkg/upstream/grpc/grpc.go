@@ -39,6 +39,8 @@ import (
 // Upstream implements the upstream.Upstream interface for gRPC services.
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
+//
+// Summary: Implements the upstream.Upstream interface for gRPC services.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
@@ -68,6 +70,8 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
+//
+// Summary: Creates a new instance of Upstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),

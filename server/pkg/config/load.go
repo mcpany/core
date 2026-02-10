@@ -16,7 +16,7 @@ import (
 
 // LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
 //
-// Summary: Loads and validates the server configuration.
+// Summary: Loads, validates, and processes the MCP Any server configuration from a given store.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the operation.
@@ -96,7 +96,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
-// Summary: Loads configuration with merging and defaults but without strict validation.
+// Summary: Loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the operation.

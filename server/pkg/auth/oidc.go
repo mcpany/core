@@ -15,6 +15,8 @@ import (
 )
 
 // OIDCConfig holds the configuration for the OIDC provider.
+//
+// Summary: Holds the configuration for the OIDC provider.
 type OIDCConfig struct {
 	Issuer       string
 	ClientID     string
@@ -23,6 +25,8 @@ type OIDCConfig struct {
 }
 
 // OIDCProvider handles OIDC authentication flow.
+//
+// Summary: Handles OIDC authentication flow.
 type OIDCProvider struct {
 	config       OIDCConfig
 	provider     *oidc.Provider
@@ -37,6 +41,8 @@ type OIDCProvider struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Creates a new OIDCProvider.
 func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, error) {
 	provider, err := oidc.NewProvider(ctx, config.Issuer)
 	if err != nil {
