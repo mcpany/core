@@ -24,7 +24,8 @@ test('verify sidebar navigation', async ({ page }) => {
 
   // Take screenshot
   const dateStr = new Date().toISOString().split('T')[0];
-  const screenshotDir = path.resolve(__dirname, `../../.audit/ui/${dateStr}`);
+  // Align with audit-logs.spec.ts which uses ../.audit/ui relative to tests dir
+  const screenshotDir = path.join(__dirname, '../.audit/ui', dateStr);
 
   if (!fs.existsSync(screenshotDir)) {
     fs.mkdirSync(screenshotDir, { recursive: true });

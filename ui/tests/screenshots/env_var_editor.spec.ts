@@ -47,11 +47,11 @@ test.describe('Service Configuration Editor', () => {
 
     // Take screenshot of the editor
     const dateStr = new Date().toISOString().split('T')[0];
-    const screenshotDir = `.audit/ui/${dateStr}`;
+    const screenshotDir = path.join(__dirname, '../../.audit/ui', dateStr);
     if (!fs.existsSync(screenshotDir)) {
       fs.mkdirSync(screenshotDir, { recursive: true });
     }
-    await page.screenshot({ path: `${screenshotDir}/env_var_editor.png` });
+    await page.screenshot({ path: path.join(screenshotDir, 'env_var_editor.png') });
 
     // Verify inputs
     await expect(page.getByPlaceholder('KEY')).toHaveValue('TEST_ENV');
