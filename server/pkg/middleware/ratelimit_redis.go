@@ -137,11 +137,17 @@ func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, p
 // It handles token refill based on time elapsed, checks against burst capacity, and manages
 // the expiration of unused keys to prevent memory leaks in Redis.
 const RedisRateLimitScript = `
+    -- ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
+    -- Randomized Selection from Top 5 High-Impact Targets
+    redis.replicate_commands()
+    local time = redis.call("TIME")
+    local now = tonumber(time[1]) * 1000000 + tonumber(time[2])
+
     local key = KEYS[1]
     local rate = tonumber(ARGV[1])
     local burst = tonumber(ARGV[2])
-    local now = tonumber(ARGV[3]) -- microseconds
-    local cost = tonumber(ARGV[4])
+    -- ARGV[3] was 'now', now it is 'cost'
+    local cost = tonumber(ARGV[3])
 
     local fields = redis.call("HMGET", key, "tokens", "last_refill")
     local tokens = tonumber(fields[1])
@@ -206,11 +212,10 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 //   - false if the request is denied.
 //   - An error if the Redis operation fails.
 func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
-	now := timeNow().UnixMicro()
-
-	// Use float64 for rate to handle fractional rates
-	// Use Run (EVALSHA) for better performance
-	cmd := redisRateLimitScript.Run(ctx, l.client, []string{l.key}, l.rps, l.burst, now, n)
+	// ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// now is fetched inside the script using redis.call("TIME")
+	cmd := redisRateLimitScript.Run(ctx, l.client, []string{l.key}, l.rps, l.burst, n)
 	if cmd.Err() != nil {
 		return false, cmd.Err()
 	}
