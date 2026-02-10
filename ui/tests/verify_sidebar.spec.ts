@@ -5,7 +5,6 @@
 
 
 import { test, expect } from '@playwright/test';
-import * as fs from 'fs';
 import * as path from 'path';
 
 test('verify sidebar navigation', async ({ page }) => {
@@ -22,11 +21,8 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
-  // Take screenshot
+  // Take screenshot - save to test-results which is writable
   const date = new Date().toISOString().split('T')[0];
-  const screenshotDir = path.join('.audit/ui', date);
-  if (!fs.existsSync(screenshotDir)) {
-      fs.mkdirSync(screenshotDir, { recursive: true });
-  }
-  await page.screenshot({ path: path.join(screenshotDir, 'unified_navigation_system.png') });
+  const screenshotPath = path.join('test-results', 'screenshots', date, 'unified_navigation_system.png');
+  await page.screenshot({ path: screenshotPath });
 });

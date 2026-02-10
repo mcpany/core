@@ -5,15 +5,11 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import fs from 'fs';
 import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
-const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
-
-if (!fs.existsSync(AUDIT_DIR)) {
-    fs.mkdirSync(AUDIT_DIR, { recursive: true });
-}
+// Use test-results instead of .audit/ui to avoid permission issues in CI
+const AUDIT_DIR = path.join('test-results', 'screenshots', DATE);
 
 test.describe('Service Config Diff', () => {
     test.beforeEach(async ({ request, page }) => {
