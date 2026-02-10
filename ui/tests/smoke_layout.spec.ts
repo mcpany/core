@@ -23,12 +23,13 @@ test('layout smoke test', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
   // Check for the "mcpany-system" stack
-  await expect(page.locator('text=mcpany-system')).toBeVisible();
+  const stackCard = page.locator('.text-2xl', { hasText: 'mcpany-system' });
+  await expect(stackCard).toBeVisible();
 
   // Navigate to Stack Detail
   await Promise.all([
-    page.waitForURL(/\/stacks\/system/),
-    page.click('text=mcpany-system'),
+    page.waitForURL(/\/stacks\/mcpany-system/),
+    stackCard.click(),
   ]);
   await expect(page.locator('h2')).toContainText('system');
   await expect(page.locator('h2')).toContainText('Stack');
