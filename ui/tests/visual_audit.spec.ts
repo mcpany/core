@@ -25,8 +25,15 @@ test.describe('Visual Audit', () => {
       await page.waitForTimeout(1000);
 
       if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-        const screenshotPath = path.resolve(__dirname, `../../.audits/ui/${pageInfo.name}.png`);
-        await page.screenshot({ path: screenshotPath, fullPage: true });
+        // Use test-results directory which is writable in CI
+        const screenshotPath = path.resolve(process.cwd(), `test-results/artifacts/audit/ui/${pageInfo.name}.png`);
+        const fs = require('fs');
+        try {
+            fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+            await page.screenshot({ path: screenshotPath, fullPage: true });
+        } catch (e) {
+            console.warn('Failed to save screenshot:', e);
+        }
       }
     });
   }

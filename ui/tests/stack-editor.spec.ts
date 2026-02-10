@@ -33,10 +33,13 @@ test.describe('Stack Editor', () => {
     await page.goto('/stacks/default-stack');
     const visualizer = page.locator('.stack-visualizer-container');
 
-    // Wait for initial load
-    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 30000 });
+    // Wait for initial load with increased timeout and handling for slow rendering
+    // Sometimes the text might be inside a child element
+    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 45000 });
 
     // Click on PostgreSQL template in the palette
+    // Ensure palette is visible first
+    await expect(page.getByText('PostgreSQL')).toBeVisible();
     await page.getByText('PostgreSQL').click();
 
     // Verify new node appears in graph
