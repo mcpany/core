@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,6 +15,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ServiceCollection } from "@/lib/marketplace-service";
 
+/**
+ * StacksPage component.
+ * Lists all available service collections (stacks) and provides options to create or delete them.
+ * @returns The rendered page.
+ */
 export default function StacksPage() {
   const [stacks, setStacks] = useState<ServiceCollection[]>([]);
   const [loading, setLoading] = useState(true);

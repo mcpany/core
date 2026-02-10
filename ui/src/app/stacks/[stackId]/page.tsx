@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,6 +21,11 @@ services:
       command: "echo 'Hello World'"
 `;
 
+/**
+ * StackDetailPage component.
+ * Displays the Stack Editor for creating or editing a stack.
+ * @returns The rendered page.
+ */
 export default function StackDetailPage() {
   const params = useParams();
   const stackId = Array.isArray(params?.stackId) ? params.stackId[0] : params?.stackId;
