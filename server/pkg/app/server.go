@@ -1501,7 +1501,11 @@ func (a *Application) runServerMode(
 	// Wrap the HTTP handler with OpenTelemetry instrumentation
 	// Note: We don't inject HTTPRequestContextKey here anymore because we do it globally
 	// in the HTTPRequestContextMiddleware.
-	httpHandler := otelhttp.NewHandler(rawHTTPHandler, "server-request")
+	// We apply JSONRPCComplianceMiddleware here instead of globally, to avoid interfering with REST APIs.
+	httpHandler := otelhttp.NewHandler(
+		middleware.JSONRPCComplianceMiddleware(rawHTTPHandler),
+		"server-request",
+	)
 
 	// Check if auth middleware is disabled in config
 	var authDisabled bool
@@ -1980,17 +1984,16 @@ func (a *Application) runServerMode(
 		}
 	}
 
-	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
+	// Middleware order: SecurityHeaders -> CORS -> CSRF -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
+	// Note: JSONRPCComplianceMiddleware is now applied only to the JSON-RPC handler in the mux.
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			csrfMiddleware.Handler(
-				middleware.JSONRPCComplianceMiddleware(
-					middleware.RecoveryMiddleware(
-						a.HTTPRequestContextMiddleware(
-							ipMiddleware.Handler(
-								rateLimiter.Handler(finalHandler),
-							),
+				middleware.RecoveryMiddleware(
+					a.HTTPRequestContextMiddleware(
+						ipMiddleware.Handler(
+							rateLimiter.Handler(finalHandler),
 						),
 					),
 				),
