@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StackEditor } from "@/components/stacks/stack-editor";
 import { apiClient } from "@/lib/client";
@@ -20,14 +20,28 @@ import { Button } from "@/components/ui/button";
  * @returns The rendered component.
  */
 export default function StackDetailPage(props: { params: Promise<{ stackId: string }> }) {
-  const params = use(props.params);
+  // Handle Next.js 15 params as Promise without React.use (since we are on React 18)
+  const [stackId, setStackId] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
-  const isNew = params.stackId === "new";
 
   useEffect(() => {
+    let mounted = true;
+    props.params.then((p) => {
+      if (mounted) {
+        setStackId(p.stackId);
+      }
+    });
+    return () => { mounted = false; };
+  }, [props.params]);
+
+  useEffect(() => {
+    if (!stackId) return;
+
+    const isNew = stackId === "new";
+
     if (isNew) {
       setContent(`# New Stack Configuration
 name: new-stack
@@ -48,7 +62,7 @@ services:
 
     async function loadStack() {
       try {
-        const yaml = await apiClient.getStackYaml(params.stackId);
+        const yaml = await apiClient.getStackYaml(stackId!);
         setContent(yaml);
       } catch (error) {
         console.error("Failed to load stack", error);
@@ -62,9 +76,10 @@ services:
       }
     }
     loadStack();
-  }, [isNew, params.stackId, toast]);
+  }, [stackId, toast]);
 
   const handleSave = async (newContent: string) => {
+    if (!stackId) return;
     try {
       // Simple regex to find name
       const nameMatch = newContent.match(/^name:\s*(.+)$/m);
@@ -80,7 +95,7 @@ services:
         description: `Stack ${name} has been deployed.`
       });
 
-      if (isNew || name !== params.stackId) {
+      if (stackId === "new" || name !== stackId) {
         router.push(`/stacks/${name}`);
       }
     } catch (error: any) {
@@ -89,9 +104,11 @@ services:
     }
   };
 
-  if (loading) {
+  if (loading || !stackId) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin" /></div>;
   }
+
+  const isNew = stackId === "new";
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-8 pt-6 space-y-4">
@@ -102,7 +119,7 @@ services:
           </Button>
         </Link>
         <h1 className="text-2xl font-bold tracking-tight">
-          {isNew ? "New Stack" : params.stackId}
+          {isNew ? "New Stack" : stackId}
         </h1>
       </div>
 
