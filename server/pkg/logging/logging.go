@@ -41,11 +41,12 @@ func ForTestsOnlyResetLogger() {
 // Parameters:
 //   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
 //   - output: io.Writer. The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
+//   - logFilePath: string. Optional path to a log file. If provided, JSON logs will be written here.
 //   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
 //
 // Returns:
 //   None.
-func Init(level slog.Level, output io.Writer, format ...string) {
+func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
@@ -67,6 +68,9 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			},
 		}
 
+		var handlers []slog.Handler
+
+		// 1. Main Output (Stderr/Stdout)
 		var mainHandler slog.Handler
 		if fmtStr == "json" {
 			output = &RedactingWriter{w: output}
@@ -74,9 +78,30 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 		} else {
 			mainHandler = slog.NewTextHandler(output, opts)
 		}
+		handlers = append(handlers, mainHandler)
 
+		// 2. File Output (JSON only, for hydration)
+		if logFilePath != "" {
+			// Ensure file can be opened/created
+			// We use O_APPEND to preserve logs across restarts (until rotation logic is added)
+			f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+			if err != nil {
+				// Fallback: log to stderr that we failed to open log file
+				// Use a temporary logger since defaultLogger is not set yet
+				// Best effort.
+				_, _ = os.Stderr.WriteString("Failed to open log file: " + err.Error() + "\n")
+			} else {
+				// Use JSON handler for file to ensure hydration works
+				fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
+				handlers = append(handlers, fileHandler)
+			}
+		}
+
+		// 3. Broadcast Handler (WebSocket)
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
-		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
+		handlers = append(handlers, broadcastHandler)
+
+		teeHandler := NewTeeHandler(handlers...)
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})

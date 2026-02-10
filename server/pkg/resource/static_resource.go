@@ -79,6 +79,9 @@ func (r *StaticResource) Service() string {
 // Returns:
 //   - *mcp.ReadResourceResult: The resource content.
 //   - error: An error if fetching fails.
+//
+// Side Effects:
+//   - Performs an HTTP GET request to the resource URI (if not inline content).
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte

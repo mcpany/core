@@ -116,6 +116,8 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 
 // IsPrivateNetworkIP checks if the IP address belongs to a private network.
 //
+// Summary: Checks if an IP is a private network address.
+//
 // This includes RFC1918 (Private IPv4), RFC4193 (Unique Local IPv6), and RFC6598 (CGNAT).
 // It does NOT include loopback or link-local addresses.
 //
@@ -129,6 +131,8 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 }
 
 // IsPrivateIP checks if the IP address is private, link-local, or loopback.
+//
+// Summary: Checks if an IP is internal/private.
 //
 // This is a comprehensive check for any "internal" IP address that shouldn't be publicly routable.
 //

@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jellydator/ttlcache/v3"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/patrickmn/go-cache"
 	"golang.org/x/time/rate"
 )
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 type HTTPRateLimitMiddleware struct {
-	limiters   *cache.Cache
+	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
 	burst      int
 	trustProxy bool
@@ -42,9 +42,18 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 // Returns:
 //   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
-	// Cleanup limiters every 10 minutes, expire after 5 minutes of inactivity
+	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
+	// Randomized Selection from Top 5 High-Impact Targets
+	limiters := ttlcache.New[string, *rate.Limiter](
+		ttlcache.WithTTL[string, *rate.Limiter](5*time.Minute),
+		ttlcache.WithCapacity[string, *rate.Limiter](100000),
+	)
+
+	// Start the cache cleaner in a goroutine
+	go limiters.Start()
+
 	m := &HTTPRateLimitMiddleware{
-		limiters: cache.New(5*time.Minute, 10*time.Minute),
+		limiters: limiters,
 		rps:      rate.Limit(rps),
 		burst:    burst,
 	}
@@ -80,11 +89,11 @@ func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 		}
 
 		var limiter *rate.Limiter
-		if val, found := m.limiters.Get(ip); found {
-			limiter = val.(*rate.Limiter)
+		if item := m.limiters.Get(ip); item != nil {
+			limiter = item.Value()
 		} else {
 			limiter = rate.NewLimiter(m.rps, m.burst)
-			m.limiters.Set(ip, limiter, cache.DefaultExpiration)
+			m.limiters.Set(ip, limiter, ttlcache.DefaultTTL)
 		}
 
 		if !limiter.Allow() {

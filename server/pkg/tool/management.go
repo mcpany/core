@@ -551,6 +551,11 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Errors:
 //   - ErrToolNotFound: If the tool cannot be found (includes fuzzy matching suggestions).
+//
+// Side Effects:
+//   - Executes the tool logic (which may have side effects).
+//   - Runs pre/post-execution hooks.
+//   - Logs execution details.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -1042,6 +1047,9 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 //
 // Returns:
 //   - []*mcp.Tool: A slice of MCP tool definitions.
+//
+// Side Effects:
+//   - Updates internal caches if they are invalid.
 func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedMCPTools != nil {
@@ -1089,6 +1097,10 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 //
 // Parameters:
 //   - serviceID: string. The unique identifier for the service.
+//
+// Side Effects:
+//   - Removes entries from the tools map and secondary indices.
+//   - Invalidates internal caches.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

@@ -7,7 +7,6 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/go-redis/redismock/v9"
 	busproto "github.com/mcpany/core/proto/bus"
@@ -27,11 +26,7 @@ func TestRedisLimiter(t *testing.T) {
 		return redis.NewClient(opts)
 	})
 
-	fixedTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-	middleware.SetTimeNowForTests(func() time.Time {
-		return fixedTime
-	})
-	defer middleware.SetTimeNowForTests(time.Now)
+	// ⚡ BOLT: No longer mocking time here as RedisLimiter uses server-side time (redis.call("TIME"))
 
 	t.Run("NewRedisLimiter missing config", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{}.Build()
@@ -52,7 +47,8 @@ func TestRedisLimiter(t *testing.T) {
 		l.Update(20, 20)
 
 		s := redis.NewScript(middleware.RedisRateLimitScript)
-		mockRedis.ExpectEvalSha(s.Hash(), []string{"ratelimit:service"}, 20.0, 20, fixedTime.UnixMicro(), 1).SetVal(int64(1))
+		// ⚡ BOLT: Updated expectation to match new script signature (no timestamp passed)
+		mockRedis.ExpectEvalSha(s.Hash(), []string{"ratelimit:service"}, 20.0, 20, 1).SetVal(int64(1))
 		allowed, err := l.Allow(context.Background())
 		assert.NoError(t, err)
 		assert.True(t, allowed)
@@ -68,12 +64,12 @@ func TestRedisLimiter(t *testing.T) {
 		l, _ := middleware.NewRedisLimiter("service", config)
 
 		s := redis.NewScript(middleware.RedisRateLimitScript)
+		// ⚡ BOLT: Updated expectation to match new script signature (no timestamp passed)
 		mockRedis.ExpectEvalSha(
 			s.Hash(),
 			[]string{"ratelimit:service"},
 			10.0,
 			10,
-			fixedTime.UnixMicro(),
 			1,
 		).SetErr(errors.New("redis error"))
 		allowed, err := l.Allow(context.Background())
@@ -90,12 +86,12 @@ func TestRedisLimiter(t *testing.T) {
 		l, _ := middleware.NewRedisLimiter("service", config)
 
 		s := redis.NewScript(middleware.RedisRateLimitScript)
+		// ⚡ BOLT: Updated expectation to match new script signature (no timestamp passed)
 		mockRedis.ExpectEvalSha(
 			s.Hash(),
 			[]string{"ratelimit:service"},
 			10.0,
 			10,
-			fixedTime.UnixMicro(),
 			1,
 		).SetVal("not-int")
 		allowed, err := l.Allow(context.Background())

@@ -31,6 +31,14 @@ type AuthTestResponse struct {
 	Message string `json:"message"`
 }
 
+// Variables for dependency injection in tests.
+var (
+	execLookPath   = exec.LookPath
+	makeHTTPClient = func(timeout time.Duration) *http.Client {
+		return &http.Client{Timeout: timeout}
+	}
+)
+
 func (a *Application) handleAuthTest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -176,7 +184,7 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 		// Add other auth types as needed (Basic, etc.)
 	}
 
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := makeHTTPClient(5 * time.Second)
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("connection failed: %w", err)
@@ -216,7 +224,7 @@ func testCommandConnection(_ context.Context, cfg *configv1.UpstreamServiceConfi
 	}
 
 	executable := args[0]
-	path, err := exec.LookPath(executable)
+	path, err := execLookPath(executable)
 	if err != nil {
 		return fmt.Errorf("executable '%s' not found in PATH: %w", executable, err)
 	}
