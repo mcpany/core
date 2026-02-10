@@ -31,7 +31,7 @@ type AuthTestResponse struct {
 	Message string `json:"message"`
 }
 
-// Variables for dependency injection in tests
+// Variables for dependency injection in tests.
 var (
 	execLookPath   = exec.LookPath
 	makeHTTPClient = func(timeout time.Duration) *http.Client {
