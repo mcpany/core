@@ -31,7 +31,8 @@ test.describe('Tool Exploration', () => {
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
-        await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 10000 });
+        // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
+        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 10000 });
         await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 10000 });
 
         // Look for other seeded tools (Payment Gateway)
@@ -40,7 +41,8 @@ test.describe('Tool Exploration', () => {
 
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
-        const toolRow = page.locator('tr').filter({ hasText: 'echo_tool' });
+        // Use regex for filtering row as well
+        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
@@ -49,7 +51,7 @@ test.describe('Tool Exploration', () => {
 
     test('should execute a tool and show results', async ({ page }) => {
         await page.goto('/tools');
-        const toolRow = page.locator('tr').filter({ hasText: 'echo_tool' });
+        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
