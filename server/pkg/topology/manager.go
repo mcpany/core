@@ -10,6 +10,7 @@ import (
 	"time"
 
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -378,6 +379,22 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		m.sessions["seed-data"].RequestCount += p.Total
 		m.sessions["seed-data"].ErrorCount += p.Errors
 		m.sessions["seed-data"].TotalLatency += time.Duration(p.Latency*p.Total) * time.Millisecond
+
+		// Update health status based on error rate
+		services, _ := m.serviceRegistry.GetAllServices()
+		for _, svc := range services {
+			if p.Total > 0 {
+				errorRate := float64(p.Errors) / float64(p.Total)
+				status := "up" // Default healthy
+				if errorRate > 0.5 {
+					status = "down"
+				} else if errorRate > 0.05 {
+					status = "degraded"
+				}
+				// AddHealthStatus takes string.
+				health.AddHealthStatus(svc.GetName(), status)
+			}
+		}
 	}
 }
 

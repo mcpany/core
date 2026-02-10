@@ -9,9 +9,11 @@ import (
 	"log/slog"
 	"os"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redismock/v9"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -28,16 +30,30 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
-		redisAddr = "127.0.0.1:6379"
+		// Try default local redis
+		client := redis.NewClient(&redis.Options{
+			Addr: "127.0.0.1:6379",
+		})
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		if _, err := client.Ping(ctx).Result(); err == nil {
+			t.Cleanup(func() {
+				_ = client.Close()
+			})
+			return client
+		}
+		_ = client.Close()
+
+		// Fallback to miniredis
+		mr, err := miniredis.Run()
+		require.NoError(t, err)
+		t.Cleanup(mr.Close)
+		redisAddr = mr.Addr()
 	}
+
 	client := redis.NewClient(&redis.Options{
 		Addr: redisAddr,
 	})
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-	if _, err := client.Ping(ctx).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
 	t.Cleanup(func() {
 		_ = client.Close()
 	})
@@ -546,10 +562,12 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 	topic := "test-subscribe-panic"
 
 	handlerCalled := make(chan bool, 2)
+	var callCount int32
 
 	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
 		handlerCalled <- true
-		if len(handlerCalled) == 1 {
+		count := atomic.AddInt32(&callCount, 1)
+		if count == 1 {
 			panic("handler panic")
 		}
 		assert.Equal(t, "second message", msg)

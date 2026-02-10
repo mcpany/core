@@ -75,7 +75,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
     // Default mock global fetch (Success case)
     global.fetch = vi.fn((url: string | Request, _init?: RequestInit) => {
-        if (typeof url === 'string' && url.includes("/api/dashboard/health")) {
+        if (typeof url === 'string' && url.includes("/api/v1/dashboard/health")) {
             return Promise.resolve({
                 ok: true,
                 json: () => Promise.resolve([
@@ -132,7 +132,7 @@ describe("ConnectionDiagnosticDialog", () => {
     expect(screen.getByText("Configuration valid")).toBeInTheDocument();
 
     // Check if backend health check was successful
-    expect(global.fetch).toHaveBeenCalledWith("/api/dashboard/health", expect.any(Object));
+    expect(global.fetch).toHaveBeenCalledWith("/api/v1/dashboard/health", expect.any(Object));
     expect(screen.getByText("Connected")).toBeInTheDocument();
 
     // Check Operational Verification
