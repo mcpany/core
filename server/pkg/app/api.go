@@ -704,11 +704,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			tools := a.ToolManager.ListTools()
-			var toolList []*mcp.Tool
-			for _, t := range tools {
-				toolList = append(toolList, t.MCPTool())
-			}
+			toolList := a.ToolManager.ListMCPTools()
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
 		default:
