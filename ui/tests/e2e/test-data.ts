@@ -28,7 +28,11 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                // In UI tests (Docker), 'localhost' refers to the container itself.
+                // We use 'ui-http-echo-server' hostname if we want it reachable, but these are just dummies for list verification.
+                // However, the backend validation might try to reach them if health checks run immediately.
+                // Using a non-existent port on localhost (relative to the backend container) is fine if we allow local IPs.
+                address: "http://localhost:50051",
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
