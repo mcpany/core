@@ -120,8 +120,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 
 			// Track 2: Product Gap - Log Persistence
-			// Hydrate logs from file if configured for JSON.
-			if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON && cfg.LogFile() != "" {
+			// Hydrate logs from file if available.
+			if cfg.LogFile() != "" {
 				go func() {
 					if err := logging.HydrateFromFile(cfg.LogFile()); err != nil {
 						log.Warn("Failed to hydrate logs from file", "error", err)

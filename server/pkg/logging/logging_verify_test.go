@@ -15,7 +15,7 @@ func TestInitAddSourceBehavior(t *testing.T) {
 	ForTestsOnlyResetLogger()
 
 	var buf bytes.Buffer
-	Init(slog.LevelInfo, &buf)
+	Init(slog.LevelInfo, &buf, "")
 
 	l := GetLogger()
 	l.Info("test message")
@@ -27,7 +27,7 @@ func TestInitAddSourceBehavior(t *testing.T) {
 	// Reset again for Debug
 	ForTestsOnlyResetLogger()
 	buf.Reset()
-	Init(slog.LevelDebug, &buf)
+	Init(slog.LevelDebug, &buf, "")
 
 	l = GetLogger()
 	l.Debug("debug message")

@@ -9,6 +9,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -90,18 +91,18 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		logOutput = os.Stderr
 	}
 
-	if logfile := viper.GetString("logfile"); logfile != "" {
-		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
-		if err != nil {
-			return fmt.Errorf("failed to open logfile: %w", err)
-		}
-		// Note: We cannot easily defer close here as this function returns.
-		// The OS will close the file on exit, or we'd need to track it in Settings.
-		logOutput = f
+	// We pass logFile separately to Init so it can handle it (force JSON, Tee)
+	logFile := viper.GetString("logfile")
+	// If no log file specified and not in stdio mode, default to data/logs/mcpany.log
+	if logFile == "" && !viper.GetBool("stdio") {
+		logFile = filepath.Join("data", "logs", "mcpany.log")
+		// Ensure directory exists, ignore error (logging will fail later if critical)
+		_ = os.MkdirAll(filepath.Dir(logFile), 0755)
 	}
+
 	logFormat := viper.GetString("log-format")
-	logging.Init(logLevel, logOutput, logFormat)
-	s.logFile = viper.GetString("logfile")
+	logging.Init(logLevel, logOutput, logFile, logFormat)
+	s.logFile = logFile
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")

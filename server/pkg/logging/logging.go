@@ -41,11 +41,12 @@ func ForTestsOnlyResetLogger() {
 // Parameters:
 //   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
 //   - output: io.Writer. The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
+//   - logFile: string. Path to the log file (optional). If provided, logs will be written to this file in JSON format.
 //   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
 //
 // Returns:
 //   None.
-func Init(level slog.Level, output io.Writer, format ...string) {
+func Init(level slog.Level, output io.Writer, logFile string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
@@ -75,8 +76,27 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			mainHandler = slog.NewTextHandler(output, opts)
 		}
 
+		handlers := []slog.Handler{mainHandler}
+
+		// Add File Handler if logFile is provided
+		if logFile != "" {
+			f, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err == nil {
+				// We force JSON for the file to ensure hydration works
+				fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
+				handlers = append(handlers, fileHandler)
+			} else {
+				// If we can't open the file, we log to stderr (which is likely mainHandler anyway)
+				// but we can't use the logger yet as we are initializing it!
+				// So we just print to stderr.
+				_, _ = os.Stderr.WriteString("Failed to open log file: " + err.Error() + "\n")
+			}
+		}
+
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
-		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
+		handlers = append(handlers, broadcastHandler)
+
+		teeHandler := NewTeeHandler(handlers...)
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})
