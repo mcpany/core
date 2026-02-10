@@ -157,6 +157,11 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //   - []*config.ToolDefinition: Discovered tools.
 //   - []*config.ResourceDefinition: Discovered resources.
 //   - error: An error if any step fails.
+//
+// Side Effects:
+//   - Modifies the internal service registry state.
+//   - Initiates network connections to upstream services.
+//   - Registers tools, prompts, and resources with their respective managers.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -356,6 +361,11 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Returns:
 //   - error: An error if the service is not found or if shutdown fails.
+//
+// Side Effects:
+//   - Closes network connections to the upstream service.
+//   - Removes service data from internal maps.
+//   - Clears associated tools, prompts, and resources from managers.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

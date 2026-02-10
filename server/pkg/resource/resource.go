@@ -135,11 +135,13 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 
 // AddResource adds a new resource to the manager.
 //
-// It updates the internal storage, invalidates the list cache, and triggers any registered
-// change callbacks.
-//
 // Parameters:
 //   - resource: Resource. The resource to add.
+//
+// Side Effects:
+//   - Updates the internal resource storage.
+//   - Invalidates the list cache.
+//   - Triggers the on-change callback if registered.
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
@@ -155,11 +157,13 @@ func (rm *Manager) AddResource(resource Resource) {
 
 // RemoveResource removes a resource from the manager by its URI.
 //
-// It updates the internal storage, invalidates the list cache, and triggers any registered
-// change callbacks.
-//
 // Parameters:
 //   - uri: string. The URI of the resource.
+//
+// Side Effects:
+//   - Updates the internal resource storage.
+//   - Invalidates the list cache.
+//   - Triggers the on-change callback if registered.
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
@@ -250,6 +254,11 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //
 // Parameters:
 //   - serviceID: string. The service ID.
+//
+// Side Effects:
+//   - Removes matching resources from storage.
+//   - Invalidates the list cache.
+//   - Triggers the on-change callback.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

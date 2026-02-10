@@ -344,6 +344,9 @@ func NewManager() *Manager {
 //
 // Parameters:
 //   - users: []*configv1.User. The list of users.
+//
+// Side Effects:
+//   - Updates the internal user map.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -358,6 +361,9 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 //
 // Parameters:
 //   - s: storage.Storage. The storage implementation.
+//
+// Side Effects:
+//   - Updates the internal storage reference.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
@@ -387,6 +393,9 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 //
 // Parameters:
 //   - apiKey: string. The API key.
+//
+// Side Effects:
+//   - Updates the internal API key.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -401,6 +410,9 @@ func (am *Manager) SetAPIKey(apiKey string) {
 //
 // Returns:
 //   - error: Error if authenticator is nil.
+//
+// Side Effects:
+//   - Adds or updates an entry in the authenticators map.
 func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
 	if authenticator == nil {
 		return fmt.Errorf("authenticator for service %s is nil", serviceID)
@@ -490,6 +502,9 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 //
 // Parameters:
 //   - serviceID: string. The service ID.
+//
+// Side Effects:
+//   - Removes an entry from the authenticators map.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }
