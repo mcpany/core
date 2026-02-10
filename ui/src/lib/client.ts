@@ -1347,6 +1347,36 @@ export const apiClient = {
     },
 
     /**
+     * Gets the configuration for a stack (YAML format).
+     * @param stackId The ID of the stack.
+     * @returns A promise that resolves to the stack configuration (YAML string).
+     */
+    getStackYaml: async (stackId: string): Promise<string> => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to get stack config');
+        return res.text();
+    },
+
+    /**
+     * Saves the configuration for a stack (YAML format).
+     * @param stackId The ID of the stack.
+     * @param content The configuration content (YAML string).
+     * @returns A promise that resolves when the config is saved.
+     */
+    saveStackYaml: async (stackId: string, content: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: content
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to save stack config: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
      * Saves the configuration for a stack (Compatibility wrapper).
      * @param stackId The ID of the stack.
      * @param config The configuration content (Collection object).
