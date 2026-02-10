@@ -45,6 +45,27 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     { name: "calculator", description: "calc" }
                 ]
             }
+        },
+        {
+            id: "svc_echo",
+            name: "Echo Service",
+            version: "v1.0",
+            command_line_service: {
+                command: "echo",
+                tools: [
+                    {
+                        name: "echo_tool",
+                        description: "Echoes back input",
+                        inputSchema: { type: "object" },
+                        call_id: "echo_call"
+                    }
+                ],
+                calls: {
+                    echo_call: {
+                        args: ["echoed_output"]
+                    }
+                }
+            }
         }
     ];
 
@@ -104,6 +125,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
