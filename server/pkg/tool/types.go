@@ -3167,7 +3167,8 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
-	minLevel := 3
+	// Initialize with -1 to indicate no context found yet.
+	foundLevel := -1
 
 	inSingle := false
 	inDouble := false
@@ -3190,8 +3191,15 @@ func analyzeQuoteContext(template, placeholder string) int {
 				currentLevel = 3
 			}
 
-			if currentLevel < minLevel {
-				minLevel = currentLevel
+			if foundLevel == -1 {
+				foundLevel = currentLevel
+			} else if foundLevel != currentLevel {
+				// Sentinel Security Update: Conflict detected!
+				// The placeholder is used in different quoting contexts (e.g. Double and Single).
+				// We must fallback to strict (Unquoted) mode because a payload safe for one context
+				// (e.g. single quote inside double quotes) might be dangerous in the other
+				// (e.g. single quote inside single quotes breaks out).
+				return 0
 			}
 
 			// Advance past placeholder
@@ -3231,8 +3239,12 @@ func analyzeQuoteContext(template, placeholder string) int {
 		return 0 // Should not happen if called correctly, fallback to strict
 	}
 
-	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
-	return minLevel
+	if foundLevel == -1 {
+		return 0 // Should not happen given foundAny is true
+	}
+
+	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", foundLevel)
+	return foundLevel
 }
 
 func checkEnvInjection(val string) error {
