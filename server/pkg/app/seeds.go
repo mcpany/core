@@ -206,7 +206,7 @@ func init() {
 	}
 
 	DefaultStack = configv1.Collection_builder{
-		Name: proto.String("System"),
+		Name: proto.String("mcpany-system"),
 		Services: []*configv1.UpstreamServiceConfig{
 			mkTemplate("memory", "Memory", "{}", "npx -y @modelcontextprotocol/server-memory"),
 		},

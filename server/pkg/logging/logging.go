@@ -85,12 +85,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 			// Ensure file can be opened/created
 			// We use O_APPEND to preserve logs across restarts (until rotation logic is added)
 			f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				// Fallback: log to main output that we failed to open log file
-				// Use a temporary logger since defaultLogger is not set yet
-				// Actually we can't log easily yet. Just ignore or print to stderr?
-				// Best effort.
-			} else {
+			if err == nil {
 				// Use JSON handler for file to ensure hydration works
 				fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
 				handlers = append(handlers, fileHandler)
