@@ -48,6 +48,17 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
@@ -111,16 +122,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - uses: actions/checkout@v5
 
@@ -128,8 +139,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -231,16 +241,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - uses: actions/checkout@v5
 
@@ -248,8 +258,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -500,14 +509,24 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -615,14 +634,24 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -703,14 +732,24 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
