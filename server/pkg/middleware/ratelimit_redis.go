@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/redis/go-redis/v9"
@@ -20,15 +19,6 @@ var redisClientCreator = redis.NewClient
 // creator: A function that takes Redis options and returns a client instance.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
-}
-
-var timeNow = time.Now
-
-// SetTimeNowForTests allows injecting a mock time provider for deterministic testing.
-//
-// nowFunc: A function that returns the current time.
-func SetTimeNowForTests(nowFunc func() time.Time) {
-	timeNow = nowFunc
 }
 
 // RedisLimiter implements a distributed rate limiter backed by Redis.
