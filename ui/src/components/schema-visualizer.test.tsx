@@ -105,4 +105,90 @@ describe('SchemaVisualizer', () => {
         expect(screen.getByText('items')).toBeInTheDocument();
         expect(screen.getByText('A tag')).toBeInTheDocument();
     });
+
+    it('collapses deep nodes (>1 level) by default', () => {
+        const schema = {
+            type: 'object',
+            properties: {
+                level1: {
+                    type: 'object',
+                    properties: {
+                        level2: {
+                            type: 'object',
+                            properties: {
+                                level3: { type: 'string' }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        // Level 1 visible (root prop)
+        expect(screen.getByText('level1')).toBeInTheDocument();
+
+        // Level 2 visible (child of level 1)
+        // Level 1 is level=0 in the loop? No.
+        // SchemaVisualizer -> SchemaNode(level=0, name="level1")
+        //   -> expands because 0 < 2
+        //   -> renders children: SchemaNode(level=1, name="level2")
+        //      -> expands because 1 < 2
+        //      -> renders children: SchemaNode(level=2, name="level3") -- WAIT
+
+        // Let's trace carefully:
+        // Root loop (SchemaVisualizer): renders SchemaNode for "level1" with level=0.
+        // SchemaNode(level=0): expanded=true (0<2). Renders children.
+        // Children of level1: "level2". Renders SchemaNode for "level2" with level=1.
+        // SchemaNode(level=1): expanded=true (1<2). Renders children.
+        // Children of level2: "level3". Renders SchemaNode for "level3" with level=2.
+        // SchemaNode(level=2): expanded=FALSE (2<2 is false). Renders ITSELF (the row "level3"), but NOT ITS CHILDREN.
+
+        // So "level3" IS visible as a row.
+        // But if "level3" had children, THEY would be hidden.
+
+        expect(screen.getByText('level2')).toBeInTheDocument();
+        expect(screen.getByText('level3')).toBeInTheDocument();
+
+        // Let's go deeper to verify the collapse.
+        // We need level4.
+    });
+
+    it('collapses very deep nodes (>2 levels) by default', () => {
+         const schema = {
+            type: 'object',
+            properties: {
+                l1: {
+                    type: 'object',
+                    properties: {
+                        l2: {
+                            type: 'object',
+                            properties: {
+                                l3: {
+                                    type: 'object',
+                                    properties: {
+                                        l4: { type: 'string' }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        render(<SchemaVisualizer schema={schema} />);
+
+        expect(screen.getByText('l1')).toBeInTheDocument(); // Level 0
+        expect(screen.getByText('l2')).toBeInTheDocument(); // Level 1
+        expect(screen.getByText('l3')).toBeInTheDocument(); // Level 2. Rendered, but collapsed?
+
+        // SchemaNode(l3, level=2). expanded=false.
+        // It renders the row for "l3".
+        // It does NOT render children of l3.
+        // Child of l3 is l4.
+
+        expect(screen.queryByText('l4')).not.toBeInTheDocument();
+    });
 });
