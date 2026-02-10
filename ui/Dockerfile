@@ -24,6 +24,9 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
+# DEBUG: List proto files to verify they are present in Docker context
+RUN echo "Checking /proto directory..." && ls -la /proto && ls -R /proto/config || echo "Proto config not found"
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
