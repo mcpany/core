@@ -6,6 +6,13 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * GET retrieves the list of configured webhooks.
+ *
+ * Currently returns mock data for demonstration purposes.
+ *
+ * @returns A NextResponse containing an array of webhook objects.
+ */
 export async function GET() {
   const webhooks = [
     { id: "wh_1", url: "https://example.com/webhook", events: ["service.up", "service.down"], active: true },

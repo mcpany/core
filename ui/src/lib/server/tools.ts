@@ -11,7 +11,8 @@ export interface Tool {
 }
 
 /**
- * The BuiltInTools const.
+ * BuiltInTools contains the definitions and implementations of standard tools
+ * provided by the server, such as calculator, echo, and system info.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
@@ -98,10 +99,12 @@ export const BuiltInTools: Record<string, Tool> = {
 };
 
 /**
- * executeTool.
+ * executeTool executes a built-in tool by name with the provided arguments.
  *
- * @param toolName - The toolName.
- * @param args - The args.
+ * @param toolName - The name of the tool to execute.
+ * @param args - The arguments for the tool execution.
+ * @returns The result of the tool execution.
+ * @throws Error if the tool is not found or execution fails.
  */
 export async function executeTool(toolName: string, args: any) {
   const tool = BuiltInTools[toolName];
