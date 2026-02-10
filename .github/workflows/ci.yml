@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make wget xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -131,7 +131,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not available (e.g. in some containers)
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker, mirrors might not be applied"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +252,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not available
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker, mirrors might not be applied"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -620,7 +622,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not available
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker, mirrors might not be applied"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -708,7 +711,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not available
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker, mirrors might not be applied"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
