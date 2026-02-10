@@ -20,6 +20,14 @@ interface StackEditorProps {
     isNew?: boolean;
 }
 
+/**
+ * StackEditor component allows users to edit stack configurations using a YAML editor.
+ * @param props The component props.
+ * @param props.initialContent The initial YAML content.
+ * @param props.stackId The ID of the stack.
+ * @param props.isNew Whether this is a new stack.
+ * @returns The rendered component.
+ */
 const DEFAULT_TEMPLATE = `name: my-new-stack
 description: A collection of services
 services:

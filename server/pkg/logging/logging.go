@@ -56,6 +56,8 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 
 		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
 		// Randomized Selection from Top 5 High-Impact Targets
+		// Fix empty block lint error by removing it or adding logic if needed.
+		// For now, we just ensure opts are created.
 		opts := &slog.HandlerOptions{
 			Level:     level,
 			AddSource: level == slog.LevelDebug,
