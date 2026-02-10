@@ -3,6 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem represents an item in the service registry.
+ *
+ * It defines the metadata and configuration schema for a tool or service that
+ * can be registered with MCP Any.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +18,12 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY is the list of available services in the registry.
+ *
+ * It contains the definitions for all supported tools and services, including
+ * their default configuration schemas.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

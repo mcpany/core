@@ -14,12 +14,26 @@ import (
 )
 
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+//
+// Summary: Middleware for CSRF protection.
+//
+// Fields:
+//   - allowedOrigins: map[string]bool. Set of allowed origins.
+//   - mu: sync.RWMutex. Mutex for safe concurrent access.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
 }
 
 // NewCSRFMiddleware creates a new CSRFMiddleware.
+//
+// Summary: Initializes a new CSRFMiddleware.
+//
+// Parameters:
+//   - allowedOrigins: []string. List of allowed origins.
+//
+// Returns:
+//   - *CSRFMiddleware: The initialized middleware instance.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -29,6 +43,11 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 }
 
 // Update updates the allowed origins.
+//
+// Summary: Updates the configuration of allowed origins.
+//
+// Parameters:
+//   - origins: []string. New list of allowed origins.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -39,6 +58,14 @@ func (m *CSRFMiddleware) Update(origins []string) {
 }
 
 // Handler returns the HTTP handler.
+//
+// Summary: Returns the HTTP handler for CSRF protection.
+//
+// Parameters:
+//   - next: http.Handler. The next handler.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

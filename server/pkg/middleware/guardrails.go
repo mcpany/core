@@ -13,15 +13,24 @@ import (
 )
 
 // GuardrailsConfig defines patterns to block.
+//
+// Summary: Configuration for Guardrails.
+//
+// Fields:
+//   - BlockedPhrases: []string. List of phrases to block.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }
 
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
-// config holds the configuration settings.
+// Summary: Middleware for blocking malicious inputs.
 //
-// Returns the result.
+// Parameters:
+//   - config: GuardrailsConfig. The configuration.
+//
+// Returns:
+//   - gin.HandlerFunc: The Gin middleware handler.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

@@ -15,6 +15,8 @@ import (
 )
 
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
+//
+// Summary: Strategy for creating Redis-backed limiters.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per service. Key is serviceID.
 	redisClients sync.Map
@@ -22,7 +24,10 @@ type RedisStrategy struct {
 
 // NewRedisStrategy creates a new RedisStrategy.
 //
-// Returns the result.
+// Summary: Initializes a RedisStrategy.
+//
+// Returns:
+//   - *RedisStrategy: The initialized strategy.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }
@@ -34,14 +39,18 @@ type cachedRedisClient struct {
 
 // Create creates a new RedisLimiter.
 //
-// _ is an unused parameter.
-// serviceID is the serviceID.
-// limitScopeKey is the limitScopeKey.
-// partitionKey is the partitionKey.
-// config holds the configuration settings.
+// Summary: Creates a new Redis-backed limiter based on config.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. Unused.
+//   - serviceID: string. The service ID.
+//   - limitScopeKey: string. The limit scope.
+//   - partitionKey: string. The partition key.
+//   - config: *configv1.RateLimitConfig. The configuration.
+//
+// Returns:
+//   - Limiter: The created RedisLimiter.
+//   - error: An error if creation fails.
 func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")

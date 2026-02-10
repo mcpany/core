@@ -11,6 +11,13 @@ import (
 )
 
 // SimpleVectorStore is a naive in-memory vector store.
+//
+// Summary: In-memory vector store.
+//
+// Fields:
+//   - mu: sync.RWMutex. Mutex for safe concurrent access.
+//   - items: map. The storage map.
+//   - maxEntries: int. Maximum entries per key.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -18,6 +25,14 @@ type SimpleVectorStore struct {
 }
 
 // VectorEntry represents a single entry in the vector store.
+//
+// Summary: A cached vector entry.
+//
+// Fields:
+//   - Vector: []float32. The embedding.
+//   - Result: any. The cached value.
+//   - ExpiresAt: time.Time. Expiration time.
+//   - Norm: float32. Precomputed norm.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32
@@ -30,7 +45,8 @@ type VectorEntry struct {
 }
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
+//
+// Summary: Initializes a new in-memory vector store.
 //
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
@@ -42,13 +58,14 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 }
 
 // Add adds a new entry to the vector store.
-// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
+//
+// Summary: Adds a vector and result to memory.
 //
 // Parameters:
-//   - key: The key associated with the entry.
-//   - vector: The embedding vector.
-//   - result: The result to cache.
-//   - ttl: The time-to-live for the entry.
+//   - key: string. The key associated with the entry.
+//   - vector: []float32. The embedding vector.
+//   - result: any. The result to cache.
+//   - ttl: time.Duration. The time-to-live for the entry.
 //
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
@@ -75,11 +92,12 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 }
 
 // Search searches for the most similar entry in the vector store for the given key and query vector.
-// It returns the result, the similarity score, and a boolean indicating if a match was found.
+//
+// Summary: Searches for a similar vector in memory.
 //
 // Parameters:
-//   - key: The key to search for.
-//   - query: The query vector.
+//   - key: string. The key to search for.
+//   - query: []float32. The query vector.
 //
 // Returns:
 //   - any: The cached result if found.
@@ -119,8 +137,10 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 
 // Prune removes expired entries from the vector store for the given key.
 //
+// Summary: Removes expired entries from memory.
+//
 // Parameters:
-//   - key: The key to prune entries for.
+//   - key: string. The key to prune entries for.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

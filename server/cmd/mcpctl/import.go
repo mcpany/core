@@ -87,6 +87,12 @@ type StdioConnection struct {
 	Env     map[string]string `yaml:"env,omitempty"`
 }
 
+// newImportCmd creates the import command.
+//
+// Summary: Imports configuration from other MCP tools (e.g. Claude Desktop).
+//
+// Returns:
+//   - *cobra.Command: The configured import command.
 func newImportCmd() *cobra.Command {
 	var outputPath string
 

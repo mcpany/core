@@ -77,11 +77,18 @@ var (
 )
 
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
+//
+// Summary: Middleware for tool execution metrics.
+//
+// Fields:
+//   - tokenizer: tokenizer.Tokenizer. Tokenizer for counting tokens.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+//
+// Summary: Initializes a new ToolMetricsMiddleware.
 //
 // Parameters:
 //   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
@@ -109,12 +116,16 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 
 // Execute executes the tool metrics middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Captures metrics for tool execution.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next middleware.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

@@ -13,8 +13,12 @@ import (
 )
 
 // DebugMiddleware returns a middleware function that logs the full request and
-// response of each MCP method call. This is useful for debugging and
-// understanding the flow of data through the server.
+// response of each MCP method call.
+//
+// Summary: Middleware for debugging MCP requests/responses.
+//
+// Returns:
+//   - mcp.Middleware: The debugging middleware.
 func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

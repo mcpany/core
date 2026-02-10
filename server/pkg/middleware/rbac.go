@@ -12,13 +12,21 @@ import (
 )
 
 // RBACMiddleware provides middleware for Role-Based Access Control.
+//
+// Summary: Middleware for RBAC.
+//
+// Fields:
+//   - enforcer: *auth.RBACEnforcer. The RBAC enforcer.
 type RBACMiddleware struct {
 	enforcer *auth.RBACEnforcer
 }
 
 // NewRBACMiddleware creates a new RBACMiddleware.
 //
-// Returns the result.
+// Summary: Initializes a new RBACMiddleware.
+//
+// Returns:
+//   - *RBACMiddleware: The initialized middleware.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
@@ -26,7 +34,14 @@ func NewRBACMiddleware() *RBACMiddleware {
 }
 
 // RequireRole returns an HTTP middleware that requires the user to have the specified role.
-// It assumes that the user roles are already populated in the request context (e.g., by an authentication middleware).
+//
+// Summary: Middleware that requires a specific role.
+//
+// Parameters:
+//   - role: string. The required role.
+//
+// Returns:
+//   - func(http.Handler) http.Handler: The HTTP middleware.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,9 +66,13 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 
 // RequireAnyRole returns an HTTP middleware that requires the user to have at least one of the specified roles.
 //
-// roles is the roles.
+// Summary: Middleware that requires any of the specified roles.
 //
-// Returns the result.
+// Parameters:
+//   - roles: ...string. The list of allowed roles.
+//
+// Returns:
+//   - func(http.Handler) http.Handler: The HTTP middleware.
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -80,9 +99,13 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 
 // EnforcePolicy allows passing a custom policy function.
 //
-// _ is an unused parameter.
+// Summary: Middleware for custom policy enforcement (placeholder).
 //
-// Returns the result.
+// Parameters:
+//   - f: func(*configv1.User) bool. The policy function.
+//
+// Returns:
+//   - func(http.Handler) http.Handler: The HTTP middleware.
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

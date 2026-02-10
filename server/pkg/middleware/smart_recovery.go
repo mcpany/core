@@ -18,6 +18,14 @@ import (
 )
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+// Summary: Middleware for AI-based error recovery.
+//
+// Fields:
+//   - config: *configv1.SmartRecoveryConfig. The configuration.
+//   - llmClient: llm.Client. The LLM client.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - mu: sync.RWMutex. Mutex for concurrency.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -26,6 +34,15 @@ type SmartRecoveryMiddleware struct {
 }
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+//
+// Summary: Initializes a new SmartRecoveryMiddleware.
+//
+// Parameters:
+//   - config: *configv1.SmartRecoveryConfig. The configuration.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//
+// Returns:
+//   - *SmartRecoveryMiddleware: The initialized middleware.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -34,6 +51,17 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 }
 
 // Execute executes the middleware logic.
+//
+// Summary: Attempts to recover from tool errors using LLM.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next middleware.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if recovery fails or original error persists.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

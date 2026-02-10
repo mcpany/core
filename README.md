@@ -107,7 +107,7 @@ Ask your agent:
 
 The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
-## 4. Development
+## 4. Developer Workflow
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
@@ -131,6 +131,12 @@ make lint
 Compile the server binary and UI assets.
 ```bash
 make build
+```
+
+### Running Locally
+Run the server with the default configuration.
+```bash
+make run
 ```
 
 ### Code Generation

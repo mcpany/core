@@ -17,6 +17,15 @@ import (
 )
 
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
+//
+// Summary: Embedding provider using a generic HTTP API.
+//
+// Fields:
+//   - url: string. The API endpoint.
+//   - headers: map. Request headers.
+//   - bodyTemplate: *template.Template. Template for the request body.
+//   - responseJSONPath: string. JSONPath to extract embedding from response.
+//   - client: *http.Client. The HTTP client.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
@@ -27,13 +36,17 @@ type HTTPEmbeddingProvider struct {
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
-// url is the url.
-// headers is the headers.
-// bodyTemplateStr is the bodyTemplateStr.
-// responseJSONPath is the responseJSONPath.
+// Summary: Initializes an HTTP embedding provider.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - url: string. The endpoint URL.
+//   - headers: map[string]string. Request headers.
+//   - bodyTemplateStr: string. Template for the request body (Go template).
+//   - responseJSONPath: string. JSONPath to extract the embedding.
+//
+// Returns:
+//   - *HTTPEmbeddingProvider: The initialized provider.
+//   - error: An error if initialization fails.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
@@ -57,11 +70,15 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 // Embed generates an embedding for the given text.
 //
-// ctx is the context for the request.
-// text is the text.
+// Summary: Generates an embedding using the HTTP API.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - text: string. The input text.
+//
+// Returns:
+//   - []float32: The embedding vector.
+//   - error: An error if the API call fails.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?

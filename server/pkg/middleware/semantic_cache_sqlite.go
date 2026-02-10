@@ -16,13 +16,27 @@ import (
 
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
 // and an in-memory cache for fast search.
+//
+// Summary: Vector store backed by SQLite.
+//
+// Fields:
+//   - memoryStore: *SimpleVectorStore. The in-memory cache.
+//   - db: *sql.DB. The SQLite database connection.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
 }
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
-// It loads existing entries from the database into memory.
+//
+// Summary: Initializes a SQLite-backed vector store.
+//
+// Parameters:
+//   - path: string. Path to the SQLite database file.
+//
+// Returns:
+//   - *SQLiteVectorStore: The initialized store.
+//   - error: An error if opening the database fails.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -157,13 +171,17 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 
 // Add adds a new entry to both memory and DB.
 //
-// ctx is the context for the request.
-// key is the key.
-// vector is the vector.
-// result is the result.
-// ttl is the ttl.
+// Summary: Stores a vector and result.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - key: string. The cache key.
+//   - vector: []float32. The embedding vector.
+//   - result: any. The result to cache.
+//   - ttl: time.Duration. Time to live.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -206,21 +224,28 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 
 // Search searches in memory.
 //
-// ctx is the context for the request.
-// key is the key.
-// query is the query.
+// Summary: Searches for a similar vector.
 //
-// Returns the result.
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - key: string. The cache key.
+//   - query: []float32. The query vector.
+//
+// Returns:
+//   - any: The found result.
+//   - float32: The similarity score.
+//   - bool: True if a match was found.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
 
 // Prune removes expired entries from both memory and DB.
 //
-// ctx is the context for the request.
-// key is the key.
+// Summary: Removes expired entries.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - key: string. The cache key.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -230,7 +255,10 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 
 // Close closes the database connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the store.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

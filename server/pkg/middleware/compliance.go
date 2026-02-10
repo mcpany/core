@@ -13,6 +13,13 @@ import (
 )
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
+//
+// Summary: JSON-RPC error structure.
+//
+// Fields:
+//   - Code: int. Error code.
+//   - Message: string. Error message.
+//   - Data: any. Additional error data.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -20,6 +27,13 @@ type JSONRPCError struct {
 }
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
+//
+// Summary: JSON-RPC response structure.
+//
+// Fields:
+//   - JSONRPC: string. Version string ("2.0").
+//   - ID: any. Request ID.
+//   - Error: *JSONRPCError. Error object if failed.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
@@ -27,8 +41,14 @@ type JSONRPCResponse struct {
 }
 
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
-// It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format.
-// Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+//
+// Summary: Middleware to ensure JSON-RPC compliance.
+//
+// Parameters:
+//   - next: http.Handler. The next handler.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -84,14 +104,20 @@ type smartResponseWriter struct {
 
 // Header returns the header map that will be sent by WriteHeader.
 //
-// Returns the result.
+// Summary: Accesses the response headers.
+//
+// Returns:
+//   - http.Header: The header map.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
 // WriteHeader sends an HTTP response header with the provided status code.
 //
-// code is the code.
+// Summary: Writes the HTTP status code.
+//
+// Parameters:
+//   - code: int. The status code.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -116,10 +142,14 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 
 // Write writes the data to the connection as part of an HTTP reply.
 //
-// b is the b.
+// Summary: Writes response data.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - b: []byte. The data to write.
+//
+// Returns:
+//   - int: Bytes written.
+//   - error: An error if write fails.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)

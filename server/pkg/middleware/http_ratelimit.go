@@ -14,6 +14,14 @@ import (
 )
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
+//
+// Summary: Middleware for HTTP rate limiting.
+//
+// Fields:
+//   - limiters: *ttlcache.Cache. Cache of rate limiters per IP.
+//   - rps: rate.Limit. Requests per second.
+//   - burst: int. Burst size.
+//   - trustProxy: bool. Whether to trust X-Forwarded-For.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -22,10 +30,19 @@ type HTTPRateLimitMiddleware struct {
 }
 
 // HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
+//
+// Summary: Functional option for configuration.
 type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
 // WithTrustProxy enables trusting the X-Forwarded-For header.
-// This should only be used when the server is behind a trusted reverse proxy.
+//
+// Summary: Configures proxy trust.
+//
+// Parameters:
+//   - trust: bool. Whether to trust proxy headers.
+//
+// Returns:
+//   - HTTPRateLimitOption: The option.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -34,10 +51,12 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
 //
+// Summary: Initializes HTTP rate limit middleware.
+//
 // Parameters:
-//   - rps: Requests per second allowed per IP.
-//   - burst: Maximum burst size allowed per IP.
-//   - opts: Optional configuration options.
+//   - rps: float64. Requests per second allowed per IP.
+//   - burst: int. Maximum burst size allowed per IP.
+//   - opts: ...HTTPRateLimitOption. Optional configuration options.
 //
 // Returns:
 //   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
@@ -65,8 +84,10 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 
 // Handler wraps an http.Handler with rate limiting.
 //
+// Summary: Returns the rate-limited HTTP handler.
+//
 // Parameters:
-//   - next: The next http.Handler in the chain.
+//   - next: http.Handler. The next http.Handler in the chain.
 //
 // Returns:
 //   - http.Handler: An http.Handler that enforces rate limiting.

@@ -26,6 +26,8 @@ import (
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
+//
+// Summary: Factory function for embedding providers.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -38,6 +40,14 @@ var (
 )
 
 // CachingMiddleware handles caching of tool execution results.
+//
+// Summary: Middleware for caching tool results.
+//
+// Fields:
+//   - cache: *cache.Cache. The underlying cache storage.
+//   - toolManager: tool.ManagerInterface. Manager for accessing tool info.
+//   - semanticCaches: sync.Map. Map of initialized semantic caches.
+//   - providerFactory: ProviderFactory. Factory for creating embedding providers.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -49,9 +59,13 @@ type CachingMiddleware struct {
 
 // NewCachingMiddleware creates a new CachingMiddleware.
 //
-// toolManager is the toolManager.
+// Summary: Initializes a new CachingMiddleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//
+// Returns:
+//   - *CachingMiddleware: The initialized middleware.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -112,19 +126,26 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 
 // SetProviderFactory allows overriding the default provider factory for testing.
 //
-// factory is the factory.
+// Summary: Sets the provider factory (for testing).
+//
+// Parameters:
+//   - factory: ProviderFactory. The factory to use.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
 // Execute executes the caching middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Handles caching for tool execution.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next middleware in the chain.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -419,9 +440,13 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 // Clear clears the cache.
 //
-// ctx is the context for the request.
+// Summary: Clears all cached entries.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }
