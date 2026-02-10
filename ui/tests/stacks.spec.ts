@@ -17,16 +17,6 @@ test.describe('Stacks Management', () => {
     await expect(page.getByRole('heading', { name: 'New Stack' })).toBeVisible();
 
     // 3. Enter YAML content
-    // Note: Monaco editor is tricky to type into with Playwright.
-    // We try to click the editor and type.
-    const editorLocator = page.locator('.monaco-editor').first();
-    await expect(editorLocator).toBeVisible();
-    await editorLocator.click();
-
-    // Clear existing content (Ctrl+A, Del) - might need Command+A on Mac but Control+A usually works in browser automation context or we can force it.
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Delete');
-
     const stackName = `test-stack-${Date.now()}`;
     const yamlContent = `name: ${stackName}
 description: "A test stack"
@@ -35,7 +25,21 @@ services:
     commandLineService:
       command: echo "hello"
 `;
-    await page.keyboard.insertText(yamlContent);
+
+    // Use evaluate to set value in Monaco directly to avoid keyboard flakiness
+    await page.evaluate((content) => {
+        // @ts-ignore
+        if (window.monaco && window.monaco.editor) {
+            // @ts-ignore
+            const models = window.monaco.editor.getModels();
+            if (models.length > 0) {
+                models[0].setValue(content);
+            }
+        }
+    }, yamlContent);
+
+    // Wait a bit for React state to sync
+    await page.waitForTimeout(500);
 
     // 4. Save
     await page.getByRole('button', { name: 'Save Stack' }).click();

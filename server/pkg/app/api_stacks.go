@@ -34,9 +34,17 @@ func (a *Application) handleStackConfig(store storage.Storage) http.HandlerFunc 
 		// api.go: mux.HandleFunc("/stacks/", a.handleStackConfig(store)) -- NOTE: I need to update api.go to route correctly.
 		// If api.go routes "/stacks/" -> this handler, we need to parse.
 		// Assuming standard pattern: /api/v1/stacks/{id}/config
-		path := strings.TrimPrefix(r.URL.Path, "/stacks/")
+		// Handle potential /api/v1 prefix if middleware didn't strip it cleanly
+		path := r.URL.Path
+		if strings.HasPrefix(path, "/api/v1/stacks/") {
+			path = strings.TrimPrefix(path, "/api/v1/stacks/")
+		} else {
+			path = strings.TrimPrefix(path, "/stacks/")
+		}
+
 		parts := strings.Split(path, "/")
 		if len(parts) < 2 || parts[1] != "config" {
+			logging.GetLogger().Warn("Invalid stack config path", "path", r.URL.Path, "parsed", path)
 			http.NotFound(w, r)
 			return
 		}
