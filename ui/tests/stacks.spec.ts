@@ -42,7 +42,13 @@ services:
     await page.waitForTimeout(500);
 
     // 4. Save
+    // Wait for network response to debug if it's 404/500
+    const savePromise = page.waitForResponse(response =>
+      response.url().includes('/api/v1/stacks/') && response.request().method() === 'POST'
+    );
     await page.getByRole('button', { name: 'Save Stack' }).click();
+    const saveResponse = await savePromise;
+    expect(saveResponse.status()).toBe(200);
 
     // 5. Verify redirection to detail page (URL should contain stack name)
     await expect(page).toHaveURL(new RegExp(`/stacks/${stackName}`));
