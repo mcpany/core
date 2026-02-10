@@ -392,6 +392,16 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
+
+      - name: Configure Docker Registry Mirrors
+        run: |
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
+          sudo systemctl restart docker
+          docker info # Verify the mirrors are listed
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
