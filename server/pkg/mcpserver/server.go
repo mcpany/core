@@ -74,6 +74,9 @@ type Server struct {
 //
 // Returns:
 //   - *mcp.Server: The underlying server instance.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -102,6 +105,9 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Throws/Errors:
+//   - error: If initialization fails.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -339,6 +345,9 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // Returns:
 //   - *mcp.ListPromptsResult: A list of available prompts.
 //   - error: An error if the retrieval fails.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -366,6 +375,9 @@ func (s *Server) ListPrompts(
 // Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation.
 //   - error: An error if no active session is found in context or if the operation fails.
+//
+// Throws/Errors:
+//   - error: If no active session is found in context or if the operation fails.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -428,6 +440,9 @@ func (s *Server) GetPrompt(
 // Returns:
 //   - *mcp.ListResourcesResult: A list of available resources.
 //   - error: An error if the retrieval fails.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -486,6 +501,9 @@ func (s *Server) ReadResource(
 //
 // Returns:
 //   - *auth.Manager: The authentication manager instance.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
@@ -497,6 +515,9 @@ func (s *Server) AuthManager() *auth.Manager {
 //
 // Returns:
 //   - tool.ManagerInterface: The tool manager interface.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
@@ -508,6 +529,9 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 //
 // Returns:
 //   - prompt.ManagerInterface: The prompt manager interface.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
@@ -519,6 +543,9 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 //
 // Returns:
 //   - resource.ManagerInterface: The resource manager interface.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
@@ -529,6 +556,9 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 //
 // Returns:
 //   - *serviceregistry.ServiceRegistry: The service registry instance.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
@@ -540,6 +570,9 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //   - info: *tool.ServiceInfo. The service information to add.
 //
 // Returns:
+//   None.
+//
+// Throws/Errors:
 //   None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
@@ -553,6 +586,9 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 // Returns:
 //   - tool.Tool: The tool instance if found.
 //   - bool: A boolean indicating whether the tool was found.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -561,6 +597,9 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //
 // Returns:
 //   - []tool.Tool: A slice of all available tools.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -579,6 +618,9 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Throws/Errors:
+//   - error: If the tool execution fails or access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -738,6 +780,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //
 // Returns:
 //   None.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -749,6 +794,9 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 //
 // Returns:
 //   - error: An error if the tool cannot be added (e.g., if it already exists).
+//
+// Throws/Errors:
+//   - error: If the tool cannot be added.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -761,6 +809,9 @@ func (s *Server) AddTool(t tool.Tool) error {
 // Returns:
 //   - *tool.ServiceInfo: A pointer to the ServiceInfo if found.
 //   - bool: A boolean indicating whether the service was found.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -776,6 +827,9 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //
 // Returns:
 //   None.
+//
+// Throws/Errors:
+//   None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -786,6 +840,9 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //   - f: func(context.Context) error. The function to execute on reload.
 //
 // Returns:
+//   None.
+//
+// Throws/Errors:
 //   None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
@@ -798,6 +855,9 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Returns:
 //   - error: An error if the reload function fails.
+//
+// Throws/Errors:
+//   - error: If the reload function fails.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)

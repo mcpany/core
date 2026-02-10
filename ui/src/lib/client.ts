@@ -223,12 +223,10 @@ export const apiClient = {
     /**
      * Lists all registered upstream services.
      *
-     * Summary: Fetches the list of all configured upstream services from the backend.
+     * Fetches the list of all configured upstream services from the backend.
      *
-     * @returns A promise that resolves to a list of services.
+     * @returns Promise<UpstreamServiceConfig[]> A list of services.
      * @throws {Error} If the network request fails or the response is not OK.
-     *
-     * Side Effects: Makes a GET request to /api/v1/services.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -268,13 +266,11 @@ export const apiClient = {
     /**
      * Gets a single service by its ID.
      *
-     * Summary: Retrieves the configuration details for a specific upstream service.
+     * Retrieves the configuration details for a specific upstream service.
      *
-     * @param id - The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     * @param id - string. The ID of the service to retrieve.
+     * @returns Promise<UpstreamServiceConfig> The service configuration.
      * @throws {Error} If the service is not found or the request fails.
-     *
-     * Side Effects: Makes a gRPC call or GET request to /api/v1/services/:id.
      */
     getService: async (id: string) => {
          try {
@@ -365,13 +361,11 @@ export const apiClient = {
     /**
      * Registers a new upstream service.
      *
-     * Summary: Registers a new upstream service with the provided configuration.
+     * Registers a new upstream service with the provided configuration.
      *
-     * @param config - The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     * @param config - UpstreamServiceConfig. The configuration of the service to register.
+     * @returns Promise<UpstreamServiceConfig> The registered service configuration.
      * @throws {Error} If the registration fails (e.g., validation error, duplicate ID).
-     *
-     * Side Effects: Makes a POST request to /api/v1/services.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -953,7 +947,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list profiles');
         const data = await res.json();
         return data.profiles || [];
-    }
+    },
 
 
 
@@ -1017,12 +1011,10 @@ export const apiClient = {
     /**
      * Gets the global server settings.
      *
-     * Summary: Retrieves the global configuration settings for the server.
+     * Retrieves the global configuration settings for the server.
      *
-     * @returns A promise that resolves to the global settings.
+     * @returns Promise<GlobalSettings> The global settings.
      * @throws {Error} If the request fails.
-     *
-     * Side Effects: Makes a GET request to /api/v1/settings.
      */
     getGlobalSettings: async () => {
         const res = await fetchWithAuth('/api/v1/settings');

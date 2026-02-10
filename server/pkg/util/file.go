@@ -21,8 +21,9 @@ import (
 //   - [][]byte: A slice of byte slices representing the lines.
 //   - error: An error if the file cannot be opened or read.
 //
-// Side Effects:
-//   - Opens and reads the specified file from the filesystem.
+// Throws/Errors:
+//   - os.PathError: If the file cannot be opened or accessed.
+//   - io.EOF: If an unexpected end of file is encountered during reading.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil
