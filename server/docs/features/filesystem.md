@@ -54,6 +54,39 @@ upstream_services:
         bucket: "my-gcs-bucket"
 ```
 
+#### 4. SFTP (SSH File Transfer Protocol)
+
+```yaml
+upstream_services:
+  - name: "sftp-fs"
+    filesystem:
+      sftp:
+        address: "sftp.example.com:22"
+        username: "user"
+        password: "password" # Or key_path
+        # key_path: "/path/to/private/key"
+```
+
+#### 5. ZIP (Zip Archive)
+
+```yaml
+upstream_services:
+  - name: "zip-fs"
+    filesystem:
+      zip:
+        path: "/path/to/archive.zip"
+```
+
+#### 6. TMPFS (Temporary Filesystem)
+
+```yaml
+upstream_services:
+  - name: "tmpfs-fs"
+    filesystem:
+      tmpfs:
+        size_mb: 100
+```
+
 ## Tools Exposed
 
 When a filesystem service is configured, it automatically registers the following tools:
