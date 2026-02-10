@@ -24,20 +24,19 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_02_fixed",
-            name: "User Service Fixed",
+            id: "svc_02_debug",
+            name: "User Service Debug",
             version: "v1.0",
             http_service: {
-                address: "https://example.com", // Dummy address, visibility checks don't need health but needs to be reachable to avoid registration delays
+                address: "https://example.com", // Dummy address
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
-            id: "svc_03_fixed",
-            name: "Math Fixed",
+            id: "svc_03_debug",
+            name: "Math Debug",
             version: "v1.0",
             http_service: {
                 address: "https://example.com", // Dummy
@@ -71,6 +70,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            console.log(`Seeding service: ${svc.name} -> ${svc.http_service?.address || svc.command_line_service?.command}`);
             await context.post('/api/v1/services', { data: svc, headers: HEADERS });
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
@@ -125,8 +127,10 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service Fixed', { headers: HEADERS });
+        await context.delete('/api/v1/services/User Service Debug', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Math Fixed', { headers: HEADERS });
+        await context.delete('/api/v1/services/Math Debug', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
