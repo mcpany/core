@@ -32,6 +32,7 @@ func TestRedisLimiter_RateZero_Bypass(t *testing.T) {
 	defer rdb.Close()
 
 	// Inject Redis creator
+	// Note: SetRedisClientCreatorForTests is exported in ratelimit_redis.go for this purpose
 	middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
 		return redis.NewClient(opts) // Use real client connected to miniredis
 	})
@@ -40,6 +41,7 @@ func TestRedisLimiter_RateZero_Bypass(t *testing.T) {
 	})
 
 	// Inject Time
+	// Note: SetTimeNowForTests is exported in ratelimit_redis.go
 	mockTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 	middleware.SetTimeNowForTests(func() time.Time {
 		return mockTime
