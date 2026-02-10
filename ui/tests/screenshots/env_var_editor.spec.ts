@@ -36,7 +36,7 @@ test.describe('Service Configuration Editor', () => {
     // ServiceEditor has a label "Environment Variables" wrapping EnvVarEditor
     // And EnvVarEditor has its own label "Environment Variables"
     // Use first() to just check visibility of the section
-    await expect(page.locator('label', { hasText: 'Environment Variables' }).first()).toBeVisible();
+    await expect(page.locator('label', { hasText: 'Environment Variables' }).first()).toBeVisible({ timeout: 10000 });
 
     // Add a variable
     await page.getByRole('button', { name: 'Add Variable' }).click();

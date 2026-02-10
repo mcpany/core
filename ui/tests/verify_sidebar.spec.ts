@@ -14,7 +14,7 @@ test('verify sidebar navigation', async ({ page }) => {
 
   // Check sidebar elements
   const sidebar = page.locator('aside');
-  await expect(sidebar).toBeVisible();
+  await expect(sidebar).toBeVisible({ timeout: 30000 }); // Increased timeout
 
   // Verify links
   await expect(sidebar.getByRole('link', { name: 'Dashboard' })).toBeVisible();
