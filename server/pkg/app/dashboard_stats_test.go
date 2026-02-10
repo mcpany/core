@@ -160,6 +160,9 @@ func TestHandleDashboardTraffic(t *testing.T) {
 		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
 	}
 
+	// Mock GetAllServices for health updates in SeedTrafficHistory
+	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{}, nil)
+
 	// Seed traffic relative to now to ensure it appears in GetTrafficHistory
 	nowStr := time.Now().Add(-5 * time.Minute).Format("15:04")
 	tm.SeedTrafficHistory([]topology.TrafficPoint{
@@ -201,6 +204,9 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 	app := &Application{
 		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
 	}
+
+	// Mock GetAllServices for health updates in SeedTrafficHistory
+	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{}, nil)
 
 	points := []topology.TrafficPoint{
 		{Time: "10:00", Total: 123, Latency: 10},
@@ -250,6 +256,10 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	mockTM := tool.NewMockManagerInterface(ctrl)
 
 	// Mock Managers for Counts
+	// SeedTrafficHistory calls GetAllServices, and handleDashboardMetrics also calls it.
+	// We can set it up to return the same thing multiple times or use .Times() if strict.
+	// The mock implementation in api_error_test.go likely uses testify/mock which returns based on call order or arguments.
+	// If we just setup Return, it should apply to all calls matching signature.
 	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
 		s := &configv1.UpstreamServiceConfig{}
 		s.SetName("s1")
