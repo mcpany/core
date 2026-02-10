@@ -319,7 +319,11 @@ prepare:
 		SC_VERSION="stable"; \
 		if ! command -v xz >/dev/null 2>&1; then \
 			echo "xz not found. Installing xz-utils..."; \
-			apt-get update && apt-get install -y xz-utils; \
+			if command -v sudo >/dev/null 2>&1; then \
+				sudo apt-get update && sudo apt-get install -y xz-utils; \
+			else \
+				apt-get update && apt-get install -y xz-utils; \
+			fi; \
 		fi; \
 		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \

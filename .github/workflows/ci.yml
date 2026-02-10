@@ -95,6 +95,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y make
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Prepare environment
         run: make prepare
 
@@ -354,6 +359,21 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Prepare environment
         run: make prepare
 
@@ -401,6 +421,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Prune Docker
+        run: docker system prune -af
+
       - name: Build and Save Images
         run: |
           PLATFORM="${{ matrix.platform }}"
@@ -409,34 +432,42 @@ jobs:
           # Server
           make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
           docker save -o server.tar mcpany/server:latest
+          docker rmi mcpany/server:latest
 
           # HTTP Echo
           make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
           docker save -o http-echo.tar mcpany/http-echo-server:latest
+          docker rmi mcpany/http-echo-server:latest
 
           # Time Server
           make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
           docker save -o time-server.tar mcpany-e2e-time-server
+          docker rmi mcpany-e2e-time-server
 
           # Cowsay
           make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+          docker rmi mcpany/e2e-cowsay-server:latest
 
           # Everything
           make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
           docker save -o everything.tar mcpany/everything:latest
+          docker rmi mcpany/everything:latest
 
           # UI
           make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
           docker save -o ui.tar mcpany/ui:latest
+          docker rmi mcpany/ui:latest
 
           # Operator
           make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
           docker save -o operator.tar mcpany/operator:latest
+          docker rmi mcpany/operator:latest
 
           # UI Test Image
           make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
           docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+          docker rmi mcpany-ui-e2e:latest
 
       - name: Upload Server Image
         uses: actions/upload-artifact@v4
@@ -887,6 +918,11 @@ jobs:
       - name: Load Docker Images already loaded above
         run: |
           echo "Images already loaded in previous step."
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Run K8s E2E Tests
         run: |
