@@ -107,17 +107,13 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	// Default to "mcpany.log" in the current directory.
 	persistencePath := "mcpany.log"
 
-	// Avoid conflicts if the user-configured logfile is the same as our persistence path
+	// Avoid conflicts if the user-configured logfile is the same as our persistence path.
+	// If the user-configured log file is the same as the persistence path ("mcpany.log"),
+	// we disable the separate persistence handler.
+	// Case 1 (JSON): If user is already logging JSON to this file, we don't need a separate handler (deduplication).
+	// Case 2 (Text): If user is logging TEXT to this file, we can't append JSON to it without corruption, so we disable persistence.
 	if s.logFile == persistencePath {
-		if logFormat == "json" {
-			// If user is already logging JSON to this file, we don't need a separate handler
-			persistencePath = ""
-		} else {
-			// If user is logging TEXT to this file, we can't append JSON to it without corruption.
-			// In this case, we disable the separate persistence handler and warn (via logger later).
-			// This means hydration won't work for this specific configuration.
-			persistencePath = ""
-		}
+		persistencePath = ""
 	}
 
 	logging.Init(logLevel, logOutput, logFormat, persistencePath)
