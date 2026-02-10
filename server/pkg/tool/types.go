@@ -1868,6 +1868,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
+					// If running git, validate inputs for git injection
+					if isGitCommand(t.service.GetCommand()) {
+						if err := checkGitInjection(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1899,6 +1905,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
 							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+						// If running git, validate inputs for git injection
+						if isGitCommand(t.service.GetCommand()) {
+							if err := checkGitInjection(argStr); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2624,12 +2636,29 @@ func checkForPathTraversal(val string) error {
 	return nil
 }
 
+func isGitCommand(cmd string) bool {
+	base := strings.ToLower(filepath.Base(cmd))
+	return base == "git" || base == "git.exe" || base == "git-shell" || base == "git-shell.exe"
+}
+
+func checkGitInjection(val string) error {
+	// Block ext:: protocol which allows RCE
+	// Case-insensitive check
+	valLower := strings.ToLower(val)
+	if strings.HasPrefix(valLower, "ext::") {
+		return fmt.Errorf("git injection detected: disallowed protocol 'ext::'")
+	}
+	return nil
+}
+
 var dangerousEnvVars = map[string]bool{
 	// Git
 	"GIT_SSH": true, "GIT_SSH_COMMAND": true, "GIT_ASKPASS": true,
 	"GIT_PAGER": true, "GIT_EDITOR": true, "GIT_EXTERNAL_DIFF": true,
 	"GIT_MAN_VIEWER": true, "GIT_SEQUENCE_EDITOR": true,
 	"GIT_CONFIG_PARAMETERS": true, "GIT_CONFIG_COUNT": true,
+	"GIT_ALLOW_PROTOCOL": true, "GIT_CONFIG": true,
+	"GIT_CONFIG_GLOBAL": true, "GIT_CONFIG_SYSTEM": true,
 
 	// Interpreters
 	"PYTHONPATH": true, "PYTHONSTARTUP": true, "PYTHONHOME": true,
