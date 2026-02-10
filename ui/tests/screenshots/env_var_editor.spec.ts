@@ -47,7 +47,7 @@ test.describe('Service Configuration Editor', () => {
 
     // Take screenshot of the editor
     const date = new Date().toISOString().split('T')[0];
-    const auditDir = path.join('test-results', '.audit/ui', date);
+    const auditDir = path.join('test-results', 'audit-screenshots', date);
     if (!fs.existsSync(auditDir)) {
         try {
             fs.mkdirSync(auditDir, { recursive: true });

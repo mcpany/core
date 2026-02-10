@@ -25,7 +25,7 @@ test('verify sidebar navigation', async ({ page }) => {
   // Take screenshot
   const date = new Date().toISOString().split('T')[0];
   // Use test-results to ensure write permissions in CI
-  const auditDir = path.join('test-results', '.audit/ui', date);
+  const auditDir = path.join('test-results', 'audit-screenshots', date);
   if (!fs.existsSync(auditDir)) {
       try {
         fs.mkdirSync(auditDir, { recursive: true });
