@@ -24,8 +24,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_02",
-            name: "User Service",
+            id: "svc_02_fixed",
+            name: "User Service Fixed",
             version: "v1.0",
             http_service: {
                 address: "https://example.com", // Dummy address, visibility checks don't need health but needs to be reachable to avoid registration delays
@@ -36,8 +36,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         },
         // Add a service with calculator for existing test compatibility if desired
         {
-            id: "svc_03",
-            name: "Math",
+            id: "svc_03_fixed",
+            name: "Math Fixed",
             version: "v1.0",
             http_service: {
                 address: "https://example.com", // Dummy
@@ -124,7 +124,9 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     try {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
+        await context.delete('/api/v1/services/User Service Fixed', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete('/api/v1/services/Math Fixed', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
