@@ -1,3 +1,7 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package servicetemplates provides functionality for seeding service templates.
 package servicetemplates
 
 import (
@@ -37,12 +41,18 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		dirName := entry.Name()
-		configPath := filepath.Join(s.ExamplesDir, dirName, "config.yaml")
+		// G304: Potential file inclusion via variable
+		// Validate dirName does not contain path traversal characters
+		if strings.Contains(dirName, "..") || strings.Contains(dirName, "/") || strings.Contains(dirName, "\\") {
+			continue
+		}
+		configPath := filepath.Clean(filepath.Join(s.ExamplesDir, dirName, "config.yaml"))
 		if _, err := os.Stat(configPath); os.IsNotExist(err) {
 			continue
 		}
 
 		// Read config.yaml
+		// nolint:gosec // Path is constructed from trusted ExamplesDir and validated dirName
 		data, err := os.ReadFile(configPath)
 		if err != nil {
 			fmt.Printf("Failed to read config for %s: %v\n", dirName, err)
@@ -50,7 +60,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		// Parse generic map to extract UpstreamServiceConfig
-		// We use map[string]any because we want to convert it to proto later,
+		// We use map[string]any because we want to convert to proto later,
 		// but simple unmarshal might be enough if we use JSON tagging or mapstructure.
 		// Actually, protojson is better for proto.
 		// But the file is YAML.
@@ -67,8 +77,9 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		}
 
 		// Use the first service as the template
-		// svcMap, ok := services[0].(map[string]any)
-		if _, ok := services[0].(map[string]any); !ok {
+		switch services[0].(type) {
+		case map[string]any:
+		default:
 			continue
 		}
 
@@ -264,11 +275,4 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 	}
-}
-
-func titleCase(s string) string {
-	if len(s) == 0 {
-		return ""
-	}
-	return strings.ToUpper(s[:1]) + s[1:]
 }

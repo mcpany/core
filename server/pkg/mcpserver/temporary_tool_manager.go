@@ -4,6 +4,8 @@
 package mcpserver
 
 import (
+	"sync"
+
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
@@ -12,6 +14,7 @@ import (
 // for the duration of the validation request but discard it afterwards.
 type TemporaryToolManager struct {
 	NoOpToolManager
+	mu          sync.RWMutex
 	serviceInfo map[string]*tool.ServiceInfo
 }
 
@@ -24,6 +27,8 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 
 // AddServiceInfo implements tool.ManagerInterface.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if m.serviceInfo == nil {
 		m.serviceInfo = make(map[string]*tool.ServiceInfo)
 	}
@@ -32,6 +37,8 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 
 // GetServiceInfo implements tool.ManagerInterface.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
 	if m.serviceInfo == nil {
 		return nil, false
 	}

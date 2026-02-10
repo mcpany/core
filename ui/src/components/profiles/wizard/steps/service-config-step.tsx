@@ -14,12 +14,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/client";
 
+/**
+ * ServiceConfigStepProps defines properties for the service config step component.
+ */
 interface ServiceConfigStepProps {
     services: WizardService[];
     onNext: (services: WizardService[]) => void;
     onBack: () => void;
 }
 
+/**
+ * ServiceConfigStep handles configuration of selected services.
+ */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(
@@ -64,7 +70,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
                         <CardContent className="py-3">
                             <div className="grid gap-2">
                                 <Label>Service Instance Name</Label>
-                                <Input 
+                                <Input
                                     value={svc.instanceName}
                                     onChange={(e) => updateName(idx, e.target.value)}
                                     placeholder="e.g. my-google-calendar"
