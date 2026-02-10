@@ -27,8 +27,10 @@ test.describe('Tool Exploration', () => {
     });
 
     test('should show empty state when no tools', async ({ page, request }) => {
-        // Clean up services to simulate empty state
-        await cleanupServices(request);
+        // Mock empty tools response to ensure reliable empty state testing
+        await page.route('**/api/v1/tools*', async route => {
+            await route.fulfill({ json: [] });
+        });
 
         await page.goto('/tools');
         // The table shows one row with "No tools found." when empty
