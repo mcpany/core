@@ -316,8 +316,25 @@ prepare:
 		echo "ShellCheck is already installed."; \
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
+		if ! command -v xz >/dev/null 2>&1; then \
+			echo "xz not found. Installing xz-utils..."; \
+			if command -v apt-get >/dev/null 2>&1; then \
+				sudo apt-get update && sudo apt-get install -y xz-utils; \
+			elif command -v apk >/dev/null 2>&1; then \
+				apk add --no-cache xz; \
+			else \
+				echo "Warning: Cannot install xz. ShellCheck installation might fail."; \
+			fi; \
+		fi; \
 		SC_VERSION="stable"; \
-		wget -qO- "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		ARCH=$$(uname -m); \
+		case $${ARCH} in \
+			x86_64) SC_ARCH="x86_64" ;; \
+			aarch64) SC_ARCH="aarch64" ;; \
+			*) echo "Unsupported architecture for ShellCheck: $${ARCH}"; exit 1 ;; \
+		esac; \
+		echo "Downloading ShellCheck ($${SC_VERSION}) for $${SC_ARCH}..."; \
+		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.$${SC_ARCH}.tar.xz" | tar -xJv -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
 		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
