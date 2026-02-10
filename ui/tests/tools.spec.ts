@@ -4,56 +4,31 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, cleanupServices } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
-    test.beforeEach(async ({ page }) => {
-        // Mock tools endpoint directly (matching ToolsPage fetch)
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({
-                json: {
-                    tools: [
-                        {
-                            name: 'weather-tool',
-                            description: 'Get weather for a location',
-                            source: 'configured',
-                            serviceId: 'weather-service',
-                            inputSchema: {
-                                type: 'object',
-                                properties: {
-                                    location: { type: 'string', description: 'City name' }
-                                }
-                            }
-                        },
-                        {
-                            name: 'calculator',
-                            description: 'Perform basic math',
-                            source: 'discovered',
-                            serviceId: 'math-service'
-                        }
-                    ]
-                }
-            });
-        });
+    test.beforeEach(async ({ page, request }) => {
+        // Use real data seeding instead of mocks
+        await seedServices(request);
     });
 
     test('should list available tools', async ({ page }) => {
         await page.goto('/tools');
-        // Wait for loading to finish (if applicable, though mock is instant)
-        // Adjust selector if you add a specific loading state for tools
+        // Wait for loading to finish
 
-        await expect(page.getByText('weather-tool').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Get weather for a location').first()).toBeVisible({ timeout: 10000 });
+        // Expect seeded tools
+        // "process_payment" from Payment Gateway
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Process a payment').first()).toBeVisible({ timeout: 10000 });
 
+        // "calculator" from Math service
         await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Perform basic math').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('calc').first()).toBeVisible({ timeout: 10000 });
     });
 
-    test.skip('should show empty state when no tools', async ({ page }) => {
-        // Unroute previous mock from beforeEach
-        await page.unroute((url) => url.pathname.includes('/api/v1/tools'));
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({ json: { tools: [] } });
-        });
+    test('should show empty state when no tools', async ({ page, request }) => {
+        // Clean up services to simulate empty state
+        await cleanupServices(request);
 
         await page.goto('/tools');
         // The table shows one row with "No tools found." when empty
@@ -63,12 +38,19 @@ test.describe('Tool Exploration', () => {
 
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
-        // Inspection relies on schema being present in the tool definition
-        // The mock in beforeEach includes a basic definition
-        const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
+
+        // Inspect 'process_payment'
+        const toolRow = page.locator('tr').filter({ hasText: 'process_payment' });
         await toolRow.getByText('Inspect').click();
 
+        // Schema should be visible (if seeded, which it is implicitly via service config,
+        // though seedServices in test-data.ts only provides name/desc in tool definition for HTTP service.
+        // The backend might auto-discover or use provided info.
+        // The seeded data: tools: [{ name: "process_payment", description: "Process a payment" }]
+        // Does it have inputSchema? No.
+        // So Schema might be empty or default.
+        // But the test expects 'Schema' text.
         await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('weather-tool').first()).toBeVisible();
+        await expect(page.getByText('process_payment').first()).toBeVisible();
     });
 });

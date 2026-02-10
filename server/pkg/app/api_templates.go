@@ -28,6 +28,27 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 				return
 			}
 
+			// Append built-in templates
+			// We use JSON round-trip to convert UpstreamServiceConfig to ServiceTemplate
+			// assuming they share the same schema as implied by client usage.
+			for _, builtin := range BuiltinTemplates {
+				bBytes, _ := protojson.Marshal(builtin)
+				var t configv1.ServiceTemplate
+				if err := protojson.Unmarshal(bBytes, &t); err == nil {
+					// Check for duplicates by ID to avoid showing builtins if they are already saved (overridden)
+					isDuplicate := false
+					for _, existing := range templates {
+						if existing.GetId() == t.GetId() {
+							isDuplicate = true
+							break
+						}
+					}
+					if !isDuplicate {
+						templates = append(templates, &t)
+					}
+				}
+			}
+
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
 			var buf []byte

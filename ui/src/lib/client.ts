@@ -811,72 +811,9 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
-                serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
-                    }
-                }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
-                }
-            }
-        ];
+        return apiClient.listTemplates();
     },
 
     /**
