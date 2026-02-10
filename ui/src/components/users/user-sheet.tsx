@@ -63,6 +63,15 @@ interface UserSheetProps {
     onSave: (user: UserValues, authType: "password" | "api_key", generatedKey?: string) => Promise<void>;
 }
 
+/**
+ * UserSheet component.
+ * @param props - The component props.
+ * @param props.open - Whether the sheet is open.
+ * @param props.onOpenChange - Callback for open state change.
+ * @param props.user - The user to edit, or null for creating a new user.
+ * @param props.onSave - Callback for saving the user.
+ * @returns The rendered component.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const [authType, setAuthType] = useState<"password" | "api_key">("password");
     const [generatedKey, setGeneratedKey] = useState("");

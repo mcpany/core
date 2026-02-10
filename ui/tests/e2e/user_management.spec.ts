@@ -27,7 +27,7 @@ test.describe('User Management', () => {
         // Open the Sheet
         await page.click('button:has-text("Add User")');
         await expect(page.getByRole('dialog')).toBeVisible(); // Sheet is a dialog role
-        await expect(page.getByText('Add User')).toBeVisible(); // Sheet Title
+        await expect(page.getByRole('heading', { name: 'Add User' })).toBeVisible(); // Sheet Title
 
         // Fill Form
         await page.fill('input[name="id"]', 'test-api-user');

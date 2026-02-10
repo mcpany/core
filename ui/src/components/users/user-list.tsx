@@ -41,6 +41,9 @@ import {
 import { cn } from "@/lib/utils";
 
 // Define the User interface locally as it's not exported from client.ts
+/**
+ * User interface definition.
+ */
 export interface User {
     id: string;
     roles: string[];
@@ -62,6 +65,15 @@ interface UserListProps {
     onDelete: (id: string) => void;
 }
 
+/**
+ * UserList component.
+ * @param props - The component props.
+ * @param props.users - The list of users to display.
+ * @param props.loading - Whether the list is loading.
+ * @param props.onEdit - Callback for editing a user.
+ * @param props.onDelete - Callback for deleting a user.
+ * @returns The rendered component.
+ */
 export function UserList({ users, loading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
 
