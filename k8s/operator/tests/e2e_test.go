@@ -101,6 +101,10 @@ nodes:
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build ui image: %v", err)
 		}
+		// Build echo server image
+		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-http-echo-docker"); err != nil {
+			t.Fatalf("Failed to build http-echo-server image: %v", err)
+		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
@@ -115,6 +119,10 @@ nodes:
 	}
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
+	}
+	// Load echo server image (default tag is usually latest from makefile)
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
+		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
 	// 6. Install Helm Chart
@@ -152,6 +160,18 @@ nodes:
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
+	// 7.5 Deploy Echo Server for UI tests to use as dummy backend
+	t.Log("Deploying echo server for UI tests...")
+	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:latest", "--image-pull-policy=Never", "--port=5678", "-n", namespace, "--", "--port=5678"); err != nil {
+		t.Fatalf("Failed to deploy echo server: %v", err)
+	}
+	if err := runCommand(t, ctx, rootDir, "kubectl", "expose", "pod", "echo-server", "--port=5678", "--target-port=5678", "--name=echo-server", "-n", namespace); err != nil {
+		t.Fatalf("Failed to expose echo server: %v", err)
+	}
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "echo-server", "-n", namespace, "--timeout=60s"); err != nil {
+		t.Fatalf("Failed to wait for echo server: %v", err)
+	}
+
 	// 8. Run UI Tests
 	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
 
@@ -178,7 +198,15 @@ nodes:
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+	playwrightCmd.Env = append(os.Environ(),
+		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
+		"SKIP_WEBSERVER=true",
+		// Use the K8s internal DNS name for the echo server.
+		// Note: The UI tests run locally (via npx), but they make API calls to the server (via localhost:NodePort).
+		// The server (in K8s) then connects to the echo server.
+		// So the ECHO_SERVER_URL must be reachable *from the server pod inside K8s*.
+		fmt.Sprintf("ECHO_SERVER_URL=http://echo-server.%s.svc.cluster.local:5678", namespace),
+	)
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 

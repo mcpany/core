@@ -9,6 +9,10 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
+// In Docker Compose, the echo server is reachable at 'ui-http-echo-server'.
+// In K8s E2E, we need to pass a different URL via env var, or fallback to a dummy that doesn't cause blocking.
+const ECHO_SERVER_URL = process.env.ECHO_SERVER_URL || 'http://ui-http-echo-server:5678';
+
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -17,7 +21,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: ECHO_SERVER_URL,
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -28,11 +32,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                // In UI tests (Docker), 'localhost' refers to the container itself.
-                // We use 'ui-http-echo-server' hostname if we want it reachable, but these are just dummies for list verification.
-                // However, the backend validation might try to reach them if health checks run immediately.
-                // Using a non-existent port on localhost (relative to the backend container) is fine if we allow local IPs.
-                address: "http://localhost:50051",
+                address: ECHO_SERVER_URL,
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -44,7 +44,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: ECHO_SERVER_URL,
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
