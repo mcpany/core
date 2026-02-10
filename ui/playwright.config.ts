@@ -4,7 +4,6 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
-import os from 'os';
 
 // Use TEST_PORT env var if set, otherwise default to 9111
 const PORT = process.env.TEST_PORT || 9111;
@@ -49,6 +48,7 @@ export default defineConfig({
         command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: false,
+        timeout: 120 * 1000,
         env: {
           BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',

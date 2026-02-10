@@ -4,8 +4,8 @@
  */
 
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GET } from './route';
-import { NextResponse } from 'next/server';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock fetch

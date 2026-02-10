@@ -20,9 +20,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
-COPY proto/ /app/proto/
-# Debug: Verify proto files are present
-RUN ls -R /app/proto
+COPY proto/ ./proto/
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry

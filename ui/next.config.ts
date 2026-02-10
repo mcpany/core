@@ -125,12 +125,16 @@ const nextConfig: NextConfig = {
     const rootProto = path.join(__dirname, '../proto');
 
     // Check specific Docker location first
-    const dockerProto = '/app/proto';
+    // In Dockerfile, WORKDIR is /app, and we copy proto to ./proto, so it is at /app/proto
+    // However, __dirname is /app/ui (or wherever next.config.ts is).
+    // If we run `npm run build` inside /app/ui, then `path.join(__dirname, '../proto')` resolves to `/app/proto`.
+
+    // So actually, `rootProto` (../proto) should work if we copy it to /app/proto and the build runs in /app/ui.
 
     let protoPath = rootProto;
-    if (fs.existsSync(dockerProto)) {
-       protoPath = dockerProto;
-    } else if (fs.existsSync(localProto)) {
+
+    // Fallback or override logic if needed.
+    if (fs.existsSync(localProto)) {
        protoPath = localProto;
     }
 
