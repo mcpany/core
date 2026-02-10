@@ -18,7 +18,7 @@ func TestLazyLogResult_PanicRepro(t *testing.T) {
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 	var logBuffer bytes.Buffer
-	logging.Init(slog.LevelInfo, &logBuffer, "text")
+	logging.Init(slog.LevelInfo, &logBuffer, "", "text")
 	defer func() {
 		logging.ForTestsOnlyResetLogger()
 		logging.GetLogger()

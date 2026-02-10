@@ -1,0 +1,14 @@
+{"time":"2026-02-10T11:41:01.50038506Z","level":"INFO","msg":"test log entry"}
+{"time":"2026-02-10T11:41:01.500730355Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"profile1","error":"profile not found: profile1"}
+{"time":"2026-02-10T11:41:01.500765151Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"profile2","error":"profile not found: profile2"}
+{"time":"2026-02-10T11:41:01.50078407Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-10T11:41:01.501295968Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-10T11:41:01.501330376Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-10T11:41:03.996320129Z","level":"INFO","msg":"Registered HTTP service","serviceID":"weather","toolsAdded":1}
+{"time":"2026-02-10T11:41:54.729710468Z","level":"INFO","msg":"test log entry"}
+{"time":"2026-02-10T11:41:54.730393434Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"profile1","error":"profile not found: profile1"}
+{"time":"2026-02-10T11:41:54.730451348Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"profile2","error":"profile not found: profile2"}
+{"time":"2026-02-10T11:41:54.730484928Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-10T11:41:54.731391443Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-10T11:41:54.731450132Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-10T11:41:57.269559456Z","level":"INFO","msg":"Registered HTTP service","serviceID":"weather","toolsAdded":1}
