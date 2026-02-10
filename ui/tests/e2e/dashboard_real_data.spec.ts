@@ -39,9 +39,21 @@ test.describe('Dashboard Real Data', () => {
         const trafficPoints = [];
 
         // Generate 60 points for the last 60 minutes
+        // Important: Use UTC to match backend parsing assumptions if necessary, or just local HH:MM.
+        // The backend uses time.Parse("15:04", p.Time) which uses 0000-01-01 then adjusts to "today".
+        // If client and server timezones differ, this might be off.
+        // But for "hasData", as long as the backend buckets it into "today" (last 60m logic), it should appear?
+        // Wait, backend GetTrafficHistory iterates last 60m using time.Now().
+        // If we seed 10:45 and backend is 10:45, it matches.
+        // But the test runs in browser (client) time, backend in server time.
+        // In CI/local, usually same time.
+
         for (let i = 59; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 60000);
-            const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            // Ensure 24-hour format with leading zeros: HH:MM
+            const hours = t.getHours().toString().padStart(2, '0');
+            const minutes = t.getMinutes().toString().padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
             trafficPoints.push({
                 time: timeStr,
                 requests: 100, // Constant request rate for easy verification

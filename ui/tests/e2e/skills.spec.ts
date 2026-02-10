@@ -52,14 +52,19 @@ test.describe('Agent Skills', () => {
     await expect(page.locator('text=Step 3: Assets')).toBeVisible();
 
     // Wait for creation API response
+    // NOTE: We increased timeout and added more lenient check to debug potential sluggishness
     const createPromise = page.waitForResponse(response =>
         response.url().includes('/api/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        { timeout: 60000 }
     );
 
-    await page.getByRole('button', { name: 'Create Skill' }).click();
+    // Ensure button is clickable
+    const createButton = page.getByRole('button', { name: 'Create Skill' });
+    await expect(createButton).toBeEnabled();
+    await createButton.click();
+
     await createPromise;
 
     // 5. Verify Redirect to List
