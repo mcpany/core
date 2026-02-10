@@ -155,27 +155,33 @@ const RedisRateLimitScript = `
     local delta = (now - last_refill) / 1000000 -- seconds
     local filled_tokens = math.min(burst, tokens + (delta * rate))
 
+    local allowed = 0
+    local new_tokens = filled_tokens
+
     if filled_tokens >= cost then
-        local new_tokens = filled_tokens - cost
-        redis.call("HMSET", key, "tokens", new_tokens, "last_refill", now)
-
-        -- Expire key after enough time to refill completely + buffer
-        local ttl = 60
-        if rate > 0 then
-             ttl = math.ceil(burst / rate * 2)
-        end
-        if ttl < 1 then ttl = 1 end
-
-        -- Optimization: Only write EXPIRE if necessary to reduce replication traffic.
-        -- TTL command returns -1 if no expiry, -2 if missing (should not happen here).
-        local current_ttl = redis.call("TTL", key)
-        if current_ttl < (ttl / 2) then
-             redis.call("EXPIRE", key, ttl)
-        end
-        return 1
+        new_tokens = filled_tokens - cost
+        allowed = 1
     end
 
-    return 0
+    -- ⚡ BOLT: Prevent key expiration during active blocking (fixes Rate=0 bypass).
+    -- Always update state (refill tokens) and refresh TTL
+    redis.call("HMSET", key, "tokens", new_tokens, "last_refill", now)
+
+    -- Expire key after enough time to refill completely + buffer
+    local ttl = 60
+    if rate > 0 then
+            ttl = math.ceil(burst / rate * 2)
+    end
+    if ttl < 1 then ttl = 1 end
+
+    -- Optimization: Only write EXPIRE if necessary to reduce replication traffic.
+    -- TTL command returns -1 if no expiry, -2 if missing (should not happen here).
+    local current_ttl = redis.call("TTL", key)
+    if current_ttl < (ttl / 2) then
+            redis.call("EXPIRE", key, ttl)
+    end
+
+    return allowed
     `
 
 var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
