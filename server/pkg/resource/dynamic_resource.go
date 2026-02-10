@@ -82,6 +82,9 @@ func (r *DynamicResource) Service() string {
 // Returns:
 //   - *mcp.ReadResourceResult: The resource content.
 //   - error: An error if the tool execution fails.
+//
+// Side Effects:
+//   - Executes the underlying tool, which may have its own side effects.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.

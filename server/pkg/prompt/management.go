@@ -94,6 +94,10 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Parameters:
 //   - prompt: Prompt. The prompt to add.
+//
+// Side Effects:
+//   - Updates the internal prompt registry.
+//   - Invalidates the list cache.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
@@ -114,6 +118,10 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // Parameters:
 //   - prompt: Prompt. The prompt definition to update.
+//
+// Side Effects:
+//   - Updates the internal prompt registry.
+//   - Invalidates the list cache.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -182,6 +190,10 @@ func (pm *Manager) ListPrompts() []Prompt {
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
+//
+// Side Effects:
+//   - Removes matching prompts from the registry.
+//   - Invalidates the list cache.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {
