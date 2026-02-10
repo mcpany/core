@@ -1,15 +1,9 @@
-# Copyright 2025 Author(s) of MCP Any
+# Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
-
-version: "2"
 
 run:
   timeout: 5m
   tests: false
-  skip-dirs:
-    - build
-    - vendor
-    - node_modules
 
 linters:
   enable:

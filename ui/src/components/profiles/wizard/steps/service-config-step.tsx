@@ -20,6 +20,10 @@ interface ServiceConfigStepProps {
     onBack: () => void;
 }
 
+/**
+ * Step for configuring service parameters.
+ * @param props Component properties.
+ */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits
     const [configs, setConfigs] = useState<WizardService[]>(
@@ -64,7 +68,7 @@ export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigSte
                         <CardContent className="py-3">
                             <div className="grid gap-2">
                                 <Label>Service Instance Name</Label>
-                                <Input 
+                                <Input
                                     value={svc.instanceName}
                                     onChange={(e) => updateName(idx, e.target.value)}
                                     placeholder="e.g. my-google-calendar"

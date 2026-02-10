@@ -325,7 +325,7 @@ func TestServiceRegistry_Close(t *testing.T) {
 	}
 	// Register another service to test error
 	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("test-service-2"),
+		Name: proto.String("shutdown-test-service"),
 	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.NoError(t, err)

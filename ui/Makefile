@@ -45,13 +45,21 @@ test: clean-test-results build-test-docker build-server-docker
 		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
+
+# Handle Docker-in-Docker path mapping
+ifdef HOST_WORKSPACE_ROOT
+  MOUNT_ROOT := $(HOST_WORKSPACE_ROOT)/ui
+else
+  MOUNT_ROOT := $(shell pwd)
+endif
+
 clean-test-results:
 	@echo "Cleaning test results..."
-	@docker run --rm -v $(PWD)/test-results:/work/ui/test-results alpine sh -c "rm -rf /work/ui/test-results/*" || true
-	@docker run --rm -v $(PWD)/.audit:/work/ui/.audit alpine sh -c "rm -rf /work/ui/.audit/*" || true
-	@docker run --rm -v $(PWD)/playwright-report:/work/ui/playwright-report alpine sh -c "rm -rf /work/ui/playwright-report/*" || true
+	@docker run --rm -v $(MOUNT_ROOT)/test-results:/work/ui/test-results alpine sh -c "rm -rf /work/ui/test-results/*" || true
+	@docker run --rm -v $(MOUNT_ROOT)/.audit:/work/ui/.audit alpine sh -c "rm -rf /work/ui/.audit/*" || true
+	@docker run --rm -v $(MOUNT_ROOT)/playwright-report:/work/ui/playwright-report alpine sh -c "rm -rf /work/ui/playwright-report/*" || true
 	@# Fix permissions for reports directory to ensure reporter can write
-	@docker run --rm -v $(PWD):/work/ui alpine chown -R $(TEST_UID):$(TEST_GID) /work/ui/playwright-report /work/ui/test-results || true
+	@docker run --rm -v $(MOUNT_ROOT):/work/ui alpine chown -R $(TEST_UID):$(TEST_GID) /work/ui/playwright-report /work/ui/test-results || true
 
 
 build-server-docker:

@@ -155,9 +155,9 @@ const (
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
 	// LoopbackIP is the default loopback IP for testing.
-	LoopbackIP              = "127.0.0.1"
-	loopbackIP              = LoopbackIP
-	dynamicBindAddr         = loopbackIP + ":0"
+	LoopbackIP      = "127.0.0.1"
+	loopbackIP      = LoopbackIP
+	dynamicBindAddr = loopbackIP + ":0"
 )
 
 var (
@@ -578,13 +578,13 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
-	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
+	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...)
 	if err := cmd.Run(); err != nil {
 		return false
 	}
 
 	// Also check if we can run a container (catch overlayfs issues in dind)
-	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...) //nolint:gosec // Test helper
+	runCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine:latest", "true")...)
 	if err := runCmd.Run(); err != nil {
 		return false
 	}
@@ -620,18 +620,18 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 
 	// Ensure the container is not already running from a previous failed run
 
-	stopCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
-	_ = stopCmd.Run()                                                                                    // Ignore error, it might not be running
+	stopCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...)
+	_ = stopCmd.Run() // Ignore error, it might not be running
 
-	rmCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
-	_ = rmCmd.Run()                                                                                  // Ignore error, it might not exist
+	rmCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("rm", containerName)...)
+	_ = rmCmd.Run() // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
 	dockerRunArgs = append(dockerRunArgs, runArgs...)
 	dockerRunArgs = append(dockerRunArgs, imageName)
 	dockerRunArgs = append(dockerRunArgs, command...)
 
-	startCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // Test helper
+	startCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs(dockerRunArgs...)...)
 	// Capture stderr for better error reporting
 	var stderr bytes.Buffer
 	startCmd.Stderr = &stderr
@@ -644,7 +644,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
 
-		stopCleanupCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
+		stopCleanupCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...)
 		err := stopCleanupCmd.Run()
 		if err != nil {
 			// Log as error, but don't fail the test, as cleanup failure is secondary.
@@ -957,7 +957,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	}
 
 	// Use -p -1 to let NATS pick a random free port
-	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", "-1", "-a", loopbackIP) //nolint:gosec // Test helper
+	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", "-1", "-a", loopbackIP)
 
 	// Capture output to find the port
 	// We need a thread-safe buffer because we might read while it writes (though wait loop handles this?)
@@ -1039,7 +1039,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		portArgs = append(portArgs, dockerBaseArgs...)
 		portArgs = append(portArgs, "port", containerName, "6379/tcp")
 
-		cmd := exec.CommandContext(context.Background(), dockerExe, portArgs...) //nolint:gosec // Test helper
+		cmd := exec.CommandContext(context.Background(), dockerExe, portArgs...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("docker port failed: %v, output: %s", err, string(output))
@@ -1072,7 +1072,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic // Helper
-		cmd := exec.CommandContext(context.Background(), dockerExe, pingArgs...)       //nolint:gosec // Test helper
+		cmd := exec.CommandContext(context.Background(), dockerExe, pingArgs...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
@@ -1871,7 +1871,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	require.NoError(t, err)
 	_, err = os.Stat(absSpecPath)
 	require.NoError(t, err, "OpenAPI spec file not found: %s", absSpecPath)
-	specContent, err := os.ReadFile(absSpecPath) //nolint:gosec // Test file
+	specContent, err := os.ReadFile(absSpecPath)
 	require.NoError(t, err)
 	spec := string(specContent)
 
