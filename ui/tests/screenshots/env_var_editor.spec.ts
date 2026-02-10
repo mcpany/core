@@ -46,7 +46,8 @@ test.describe('Service Configuration Editor', () => {
     await page.getByPlaceholder('VALUE').fill('test_value');
 
     // Take screenshot of the editor
-    const screenshotDir = '.audit/ui/2025-02-20';
+    const dateStr = new Date().toISOString().split('T')[0];
+    const screenshotDir = `.audit/ui/${dateStr}`;
     if (!fs.existsSync(screenshotDir)) {
       fs.mkdirSync(screenshotDir, { recursive: true });
     }

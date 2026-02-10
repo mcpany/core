@@ -24,9 +24,10 @@ test('verify sidebar navigation', async ({ page }) => {
 
   // Take screenshot
   const dateStr = new Date().toISOString().split('T')[0];
-  const screenshotDir = `.audit/ui/${dateStr}`;
+  const screenshotDir = path.resolve(__dirname, `../../.audit/ui/${dateStr}`);
+
   if (!fs.existsSync(screenshotDir)) {
     fs.mkdirSync(screenshotDir, { recursive: true });
   }
-  await page.screenshot({ path: `${screenshotDir}/unified_navigation_system.png` });
+  await page.screenshot({ path: path.join(screenshotDir, 'unified_navigation_system.png') });
 });
