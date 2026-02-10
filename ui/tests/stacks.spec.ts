@@ -20,11 +20,15 @@ test('create and edit stack', async ({ page }) => {
   // Click Deploy Stack
   await page.getByRole('button', { name: 'Deploy Stack' }).click();
 
+  // Wait for potential network request and toast
+  // Fix strict mode violation by being specific
+  // The toast usually has a title and description.
+  // We can target the toast region or look for the specific text instance that is visible/role=status
+  const toast = page.getByText('Stack Saved').first(); // Or use a better selector if possible
+  await expect(toast).toBeVisible({ timeout: 20000 });
+
   // 4. Verify redirection to /stacks/new-stack
   await expect(page).toHaveURL(/\/stacks\/new-stack/, { timeout: 20000 });
-
-  // 5. Verify success toast
-  await expect(page.getByText('Stack Saved')).toBeVisible();
 
   // 6. Navigate back to list to verify persistence
   await page.goto('/stacks');

@@ -42,11 +42,11 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Standard SQL Database",
         icon: Database,
         category: "Database",
-        yamlSnippet: `  postgres-db:
+        yamlSnippet: `  - name: postgres-db
     image: postgres:15
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: ${"${POSTGRES_PASSWORD}"}
+      POSTGRES_PASSWORD: "${"${POSTGRES_PASSWORD}"}"
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
@@ -58,7 +58,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "In-memory key-value store",
         icon: Database,
         category: "Database",
-        yamlSnippet: `  redis-cache:
+        yamlSnippet: `  - name: redis-cache
     image: redis:alpine
     ports:
       - "6379:6379"
@@ -70,10 +70,12 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Local file access",
         icon: HardDrive,
         category: "MCP Server",
-        yamlSnippet: `  filesystem-mcp:
-    command: npx -y @modelcontextprotocol/server-filesystem /path/to/allowed/dir
-    environment:
-      NODE_ENV: production
+        yamlSnippet: `  - name: filesystem-mcp
+    command_line_service:
+      command: npx -y @modelcontextprotocol/server-filesystem /path/to/allowed/dir
+      env:
+        NODE_ENV:
+          plain_text: production
 `
     },
     {
@@ -82,11 +84,14 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Slack integration",
         icon: MessageSquare,
         category: "MCP Server",
-        yamlSnippet: `  slack-mcp:
-    command: npx -y @modelcontextprotocol/server-slack
-    environment:
-      SLACK_BOT_TOKEN: \${SLACK_BOT_TOKEN}
-      SLACK_SIGNING_SECRET: \${SLACK_SIGNING_SECRET}
+        yamlSnippet: `  - name: slack-mcp
+    command_line_service:
+      command: npx -y @modelcontextprotocol/server-slack
+      env:
+        SLACK_BOT_TOKEN:
+          plain_text: \${SLACK_BOT_TOKEN}
+        SLACK_SIGNING_SECRET:
+          plain_text: \${SLACK_SIGNING_SECRET}
 `
     },
     {
@@ -95,8 +100,9 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Graph-based memory",
         icon: Cpu,
         category: "MCP Server",
-        yamlSnippet: `  memory-mcp:
-    command: npx -y @modelcontextprotocol/server-memory
+        yamlSnippet: `  - name: memory-mcp
+    command_line_service:
+      command: npx -y @modelcontextprotocol/server-memory
 `
     },
     {
@@ -105,10 +111,9 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Generic HTTP API",
         icon: Globe,
         category: "Utility",
-        yamlSnippet: `  my-api-service:
-    image: my-repo/api:latest
-    environment:
-      PORT: 8080
+        yamlSnippet: `  - name: my-api-service
+    http_service:
+      address: http://localhost:8080
 `
     },
     {
@@ -117,9 +122,10 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Local script execution",
         icon: Terminal,
         category: "Utility",
-        yamlSnippet: `  local-script:
-    command: python3 ./scripts/worker.py
-    working_dir: ./
+        yamlSnippet: `  - name: local-script
+    command_line_service:
+      command: python3 ./scripts/worker.py
+      working_directory: ./
 `
     }
 ];

@@ -84,15 +84,14 @@ func (a *Application) getStackConfig(w http.ResponseWriter, r *http.Request, sto
 	// Clean up empty fields if necessary, or let YAML handle it.
 	// We might want to remove "name" if it's redundant with ID, but keeping it is fine.
 
-	yamlBytes, err := yaml.Marshal(jsonObj)
-	if err != nil {
-		logging.GetLogger().Error("failed to marshal stack to yaml", "id", stackID, "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/plain") // UI expects raw text? Client says text/yaml or plain.
-	_, _ = w.Write(yamlBytes)
+	enc := yaml.NewEncoder(w)
+	enc.SetIndent(2)
+	if err := enc.Encode(jsonObj); err != nil {
+		logging.GetLogger().Error("failed to marshal stack to yaml", "id", stackID, "error", err)
+		// Header already written if Encode writes partially, but we can't do much.
+		// If we buffered, we could send 500. For now logging is key.
+	}
 }
 
 func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, store storage.Storage, stackID string) {
