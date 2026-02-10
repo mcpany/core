@@ -269,3 +269,16 @@ func (m *MockStorage) Close() error {
 	args := m.Called()
 	return args.Error(0)
 }
+
+func (m *MockStorage) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
+	return nil, nil
+}
+func (m *MockStorage) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
+	return nil, nil
+}
+func (m *MockStorage) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
+	return nil
+}
+func (m *MockStorage) DeleteServiceTemplate(ctx context.Context, id string) error {
+	return nil
+}

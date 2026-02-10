@@ -3004,11 +3004,14 @@ func checkPythonInjection(val, template, base string) error {
 
 func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "#{") {
+	if strings.HasPrefix(base, "ruby") {
+		if (quoteLevel == 1 || quoteLevel == 3) && strings.Contains(val, "#{") { // Double Quoted or Backticked
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
+
 		// Block leading pipe | to prevent open("|cmd") injection
+		// This is dangerous regardless of quoting level (even in single quotes)
+		// because open('|cmd') executes the command.
 		if strings.HasPrefix(strings.TrimSpace(val), "|") {
 			return fmt.Errorf("ruby open injection detected: value starts with '|'")
 		}
@@ -3040,13 +3043,13 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
 		// avoiding common shell injection filters.
 		if strings.Contains(val, "qx") {
-			// Sentinel Security Update: Block qx in all contexts (unquoted, double-quoted, backticked).
+			// Sentinel Security Update: Block qx in all contexts.
 			// While qx// inside double quotes is technically a string literal in some contexts,
 			// sophisticated interpolation attacks or misinterpretation of quote context makes it risky.
 			// Blocking "qx" is aggressive but necessary for strict security on Perl input.
-			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
-				return fmt.Errorf("shell injection detected: perl qx execution")
-			}
+			// We block it even in single quotes (level 2) because for the interpreter,
+			// the single-quoted shell argument IS the code.
+			return fmt.Errorf("shell injection detected: perl qx execution")
 		}
 
 		if quoteLevel == 1 || quoteLevel == 3 {
