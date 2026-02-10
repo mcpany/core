@@ -37,6 +37,19 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
         const description = prop.description || "";
         const title = prop.title || key;
 
+        // Determine input type
+        let inputType = "text";
+        if (prop.format === "password") {
+            inputType = "password";
+        } else if (
+            key.toLowerCase().includes("token") ||
+            key.toLowerCase().includes("secret") ||
+            key.toLowerCase().includes("key") ||
+            key.toLowerCase().includes("password")
+        ) {
+            inputType = "password";
+        }
+
         return (
           <div key={key} className="grid gap-2">
             <Label htmlFor={key} className="flex items-center gap-1">
@@ -74,7 +87,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                     value={value[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
                     placeholder={prop.default || `Enter ${title}`}
-                    type={key.toLowerCase().includes("token") || key.toLowerCase().includes("secret") || key.toLowerCase().includes("key") ? "password" : "text"}
+                    type={inputType}
                 />
             )}
 
