@@ -1359,7 +1359,35 @@ export const apiClient = {
         return apiClient.saveCollection(collection);
     },
 
+    /**
+     * Gets the stack configuration as YAML.
+     * @param stackId The ID of the stack.
+     * @returns A promise that resolves to the YAML configuration string.
+     */
+    getStackYaml: async (stackId: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to get stack config');
+        return res.text();
+    },
 
+    /**
+     * Saves the stack configuration from YAML.
+     * @param stackId The ID of the stack.
+     * @param content The YAML content.
+     * @returns A promise that resolves when saved.
+     */
+    saveStackYaml: async (stackId: string, content: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: content
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to save stack config: ${txt}`);
+        }
+        return res.json();
+    },
 
     // User Management
 
