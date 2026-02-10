@@ -68,10 +68,18 @@ test.describe('User Guide Walkthrough', () => {
   test('Global Search Modal', async ({ page }) => {
     await page.goto('/');
 
+    // Wait for hydration/network idle to ensure event listeners are attached
+    // "domcontentloaded" is not enough for React effect listeners sometimes
+    await page.waitForLoadState('networkidle');
+
     // Press Ctrl+K
+    // Try forcing focus on body first
+    await page.locator('body').focus();
     await page.keyboard.press('Control+k');
 
     // Check for Search Input placeholder or identifying element
+    // Fallback: If Ctrl+K fails (flaky in CI headless), try clicking the search button if available
+    // But for now, just increasing stability of the keypress
     await expect(page.getByPlaceholder('Type a command or search...')).toBeVisible({ timeout: 20000 });
 
     // Close modal (Esc key or click outside/close button)

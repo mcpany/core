@@ -44,11 +44,16 @@ test.describe('Service Configuration Editor', () => {
     await page.getByPlaceholder('VALUE').fill('test_value');
 
     // Take screenshot of the editor
-    const screenshotPath = '.audit/ui/2025-02-20/env_var_editor.png';
+    // Use test-results directory which is guaranteed to be writable in CI
+    const screenshotPath = 'test-results/artifacts/audit/ui/2025-02-20/env_var_editor.png';
     const fs = require('fs');
     const path = require('path');
-    fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
-    await page.screenshot({ path: screenshotPath });
+    try {
+      fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+      await page.screenshot({ path: screenshotPath });
+    } catch (e) {
+      console.warn('Failed to save screenshot:', e);
+    }
 
     // Verify inputs
     await expect(page.getByPlaceholder('KEY')).toHaveValue('TEST_ENV');

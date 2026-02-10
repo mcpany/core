@@ -21,9 +21,14 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Take screenshot
-  const screenshotPath = `.audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png`;
+  // Use test-results directory which is guaranteed to be writable in CI
+  const screenshotPath = `test-results/artifacts/audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png`;
   const fs = require('fs');
   const path = require('path');
-  fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
-  await page.screenshot({ path: screenshotPath });
+  try {
+    fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+    await page.screenshot({ path: screenshotPath });
+  } catch (e) {
+    console.warn('Failed to save screenshot:', e);
+  }
 });
