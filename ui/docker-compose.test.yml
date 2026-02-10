@@ -40,6 +40,7 @@ services:
       - NEXT_PUBLIC_API_URL=http://server:50050
       - MCPANY_API_KEY=test-token
       - NEXT_PUBLIC_MCPANY_API_KEY=test-token
+      - ECHO_SERVICE_URL=http://ui-http-echo-server:5678
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}

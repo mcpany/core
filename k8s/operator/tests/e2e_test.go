@@ -160,6 +160,29 @@ nodes:
 		t.Fatalf("NodePort failed to become accessible: %v", err)
 	}
 
+	// 9. Port-forward Backend Service for Seeding
+	backendPort, err := getFreePort()
+	if err != nil {
+		t.Fatalf("Failed to get free backend port: %v", err)
+	}
+	t.Logf("Using host port %d for Backend access", backendPort)
+
+	// Port forward in background
+	pfCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "-n", namespace, "svc/mcpany", fmt.Sprintf("%d:50050", backendPort))
+	if err := pfCmd.Start(); err != nil {
+		t.Fatalf("Failed to start port-forward: %v", err)
+	}
+	defer func() {
+		if pfCmd.Process != nil {
+			pfCmd.Process.Kill()
+		}
+	}()
+
+	// Wait for Backend to be accessible
+	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", backendPort), 60*time.Second); err != nil {
+		t.Fatalf("Backend port failed to become accessible: %v", err)
+	}
+
 	// Run Playwright tests
 	// We assume 'npx' is available and we are in the root or can find ui dir
 	uiDir := filepath.Join(rootDir, "ui")
@@ -177,7 +200,11 @@ nodes:
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+	playwrightCmd.Env = append(os.Environ(),
+		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
+		fmt.Sprintf("BACKEND_URL=http://127.0.0.1:%d", backendPort),
+		"SKIP_WEBSERVER=true",
+	)
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 

@@ -7,6 +7,10 @@ import { request, APIRequestContext } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+// Use external httpbin by default (works for K8s E2E if internet available),
+// but allow override for Docker Compose to use internal echo server.
+const ECHO_SERVICE_URL = process.env.ECHO_SERVICE_URL || 'https://httpbin.org';
+
 const HEADERS = { 'X-API-Key': API_KEY };
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
@@ -17,13 +21,13 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: ECHO_SERVICE_URL,
                 tools: [
                     { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
                 ],
                 calls: {
                     "process_payment_call": {
-                        endpoint_path: "/v1/charges",
+                        endpoint_path: "/post", // Compatible with httpbin.org/post and likely echo server
                         method: "HTTP_METHOD_POST"
                     }
                 }
@@ -34,13 +38,13 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://server:50051", // Use internal hostname for container-to-container
+                address: ECHO_SERVICE_URL,
                 tools: [
                      { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
                 calls: {
                     "get_user_call": {
-                        endpoint_path: "/users",
+                        endpoint_path: "/get", // Compatible with httpbin.org/get
                         method: "HTTP_METHOD_GET"
                     }
                 }
@@ -52,13 +56,13 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://ui-http-echo-server:5678", // Use echo server
+                address: ECHO_SERVICE_URL,
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
                 calls: {
                     "calc_call": {
-                        endpoint_path: "/calc",
+                        endpoint_path: "/post",
                         method: "HTTP_METHOD_POST"
                     }
                 }
