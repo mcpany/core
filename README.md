@@ -68,7 +68,7 @@ Follow these steps to get up and running immediately.
     ```
     This installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
 
-3.  **Build the server:**
+3.  **Build the server and UI:**
     ```bash
     make build
     ```
@@ -109,8 +109,15 @@ make test
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, JSDoc for TS). We enforce **100% documentation coverage**.
 All exported functions, types, and constants must have a comprehensive docstring (Summary, Parameters, Returns).
+
+To lint the server (Go):
 ```bash
 make lint
+```
+
+To lint the UI (TypeScript):
+```bash
+make -C ui lint
 ```
 
 ### Building

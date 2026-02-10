@@ -5,6 +5,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * GET handler for downloading resources.
+ * Fetches the resource content from the backend and streams it to the client.
+ *
+ * @param request - The incoming NextRequest containing 'uri', 'name', and optional 'token'.
+ * @returns A NextResponse with the file content or an error message.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');

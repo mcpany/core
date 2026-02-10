@@ -16,6 +16,9 @@ import { ProfileStep } from "./steps/profile-step";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/client";
 
+/**
+ * Represents a service being configured in the wizard.
+ */
 export interface WizardService {
     templateId: string;
     instanceName: string; // e.g. "my-google-cal"
@@ -24,6 +27,13 @@ export interface WizardService {
     credentials?: any;
 }
 
+/**
+ * A dialog component that guides the user through creating a new profile.
+ *
+ * @param props - The component props.
+ * @param props.onProfileCreated - Callback function invoked when the profile is successfully created.
+ * @returns The rendered WizardDialog component.
+ */
 export function WizardDialog({ onProfileCreated }: { onProfileCreated: () => void }) {
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState(1);

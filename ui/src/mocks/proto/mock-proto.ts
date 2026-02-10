@@ -5,12 +5,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Mock implementation of GrpcWebImpl for testing/development.
+ */
 export class GrpcWebImpl {
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * Mock implementation of RegistrationServiceClientImpl for testing/development.
  */
 export class RegistrationServiceClientImpl {
     constructor(_rpc: any) {}
@@ -18,7 +21,7 @@ export class RegistrationServiceClientImpl {
 }
 
 /**
- * UpstreamServiceConfig type definition.
+ * Mock UpstreamServiceConfig type definition for testing/development.
  */
 export interface UpstreamServiceConfig {
     id?: string;

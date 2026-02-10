@@ -22,6 +22,15 @@ interface AuthStepProps {
     onBack: () => void;
 }
 
+/**
+ * Step for authenticating the selected services.
+ *
+ * @param props - The component props.
+ * @param props.services - The list of services to authenticate.
+ * @param props.onNext - Callback to proceed to the next step.
+ * @param props.onBack - Callback to go back to the previous step.
+ * @returns The rendered AuthStep component.
+ */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
     const [authServices, setAuthServices] = useState<WizardService[]>([...services]);
     const [loadingAuth, setLoadingAuth] = useState<Record<string, boolean>>({});
