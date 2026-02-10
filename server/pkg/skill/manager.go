@@ -8,11 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/validation"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v3"
 )
 
@@ -71,17 +73,38 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 	}
 
 	skills := make([]*Skill, 0, len(entries))
+	var mu sync.Mutex
+	var g errgroup.Group
+	g.SetLimit(20) // Limit concurrency to avoid too many open files
+
+	// ⚡ BOLT: Load skills in parallel to reduce startup time.
+	// Randomized Selection from Top 5 High-Impact Targets
 	for _, entry := range entries {
+		entry := entry // Capture loop variable
 		if !entry.IsDir() {
 			continue
 		}
-		skill, err := m.loadSkill(entry.Name())
-		if err != nil {
-			logging.GetLogger().Warn("Failed to load skill", "name", entry.Name(), "error", err)
-			continue
-		}
-		skills = append(skills, skill)
+		g.Go(func() error {
+			skill, err := m.loadSkill(entry.Name())
+			if err != nil {
+				logging.GetLogger().Warn("Failed to load skill", "name", entry.Name(), "error", err)
+				return nil // Don't fail the whole group
+			}
+			mu.Lock()
+			skills = append(skills, skill)
+			mu.Unlock()
+			return nil
+		})
 	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	// Sort by name to ensure deterministic order
+	sort.Slice(skills, func(i, j int) bool {
+		return skills[i].Name < skills[j].Name
+	})
 
 	m.cache = skills
 	return skills, nil
