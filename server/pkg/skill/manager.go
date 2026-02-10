@@ -8,11 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/validation"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v3"
 )
 
@@ -70,18 +72,41 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 		return nil, fmt.Errorf("failed to read skill root directory: %w", err)
 	}
 
+	// ⚡ BOLT: Parallelized skill loading to reduce I/O waterfall latency.
+	// Randomized Selection from Top 5 High-Impact Targets
 	skills := make([]*Skill, 0, len(entries))
+	var skillsMu sync.Mutex
+
+	g := new(errgroup.Group)
+	g.SetLimit(20) // Limit concurrency to avoid file descriptor exhaustion
+
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			continue
 		}
-		skill, err := m.loadSkill(entry.Name())
-		if err != nil {
-			logging.GetLogger().Warn("Failed to load skill", "name", entry.Name(), "error", err)
-			continue
-		}
-		skills = append(skills, skill)
+		entryName := entry.Name() // Capture loop variable
+		g.Go(func() error {
+			skill, err := m.loadSkill(entryName)
+			if err != nil {
+				logging.GetLogger().Warn("Failed to load skill", "name", entryName, "error", err)
+				return nil // Continue even if one fails
+			}
+
+			skillsMu.Lock()
+			skills = append(skills, skill)
+			skillsMu.Unlock()
+			return nil
+		})
 	}
+
+	if err := g.Wait(); err != nil {
+		return nil, fmt.Errorf("failed to load skills: %w", err)
+	}
+
+	// Deterministic order is required because parallel loading shuffles results
+	sort.Slice(skills, func(i, j int) bool {
+		return skills[i].Name < skills[j].Name
+	})
 
 	m.cache = skills
 	return skills, nil
