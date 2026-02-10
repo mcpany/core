@@ -48,7 +48,7 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -122,13 +122,18 @@ jobs:
       #     docker-images: true
       #     swap-storage: true
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Attempt to merge if jq exists and file exists, otherwise overwrite/create
+          if [ -f /etc/docker/daemon.json ] && command -v jq &> /dev/null; then
+             sudo jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/daemon.json
+          else
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -241,13 +246,18 @@ jobs:
       #     docker-images: true
       #     swap-storage: true
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Attempt to merge if jq exists and file exists, otherwise overwrite/create
+          if [ -f /etc/docker/daemon.json ] && command -v jq &> /dev/null; then
+             sudo jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/daemon.json
+          else
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -391,13 +401,18 @@ jobs:
           large-packages: true
           docker-images: false
           swap-storage: true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Attempt to merge if jq exists and file exists, otherwise overwrite/create
+          if [ -f /etc/docker/daemon.json ] && command -v jq &> /dev/null; then
+             sudo jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/daemon.json
+          else
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -508,13 +523,21 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
+          # Attempt to merge if jq exists and file exists, otherwise overwrite/create
+          if [ -f /etc/docker/daemon.json ] && command -v jq &> /dev/null; then
+             sudo jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/daemon.json
+          else
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
+
           sudo systemctl restart docker
-          docker info
+          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -620,13 +643,18 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Attempt to merge if jq exists and file exists, otherwise overwrite/create
+          if [ -f /etc/docker/daemon.json ] && command -v jq &> /dev/null; then
+             sudo jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/daemon.json
+          else
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -707,13 +735,18 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Attempt to merge if jq exists and file exists, otherwise overwrite/create
+          if [ -f /etc/docker/daemon.json ] && command -v jq &> /dev/null; then
+             sudo jq '. + {"registry-mirrors": ["https://mirror.gcr.io"]}' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/daemon.json
+          else
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -772,7 +805,7 @@ jobs:
       #          docker-images: false
       #          swap-storage: true
       #
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Detect Architecture
         id: detect-arch
@@ -815,7 +848,7 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
