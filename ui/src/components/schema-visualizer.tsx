@@ -24,6 +24,9 @@ interface SchemaNodeProps {
   level?: number;
 }
 
+// ⚡ BOLT: Collapse deep nodes to improve rendering performance for large schemas.
+// Randomized Selection from Top 5 High-Impact Targets
+
 /**
  * TypeBadge component.
  * @param props - The component props.
@@ -61,7 +64,8 @@ const TypeBadge = ({ type }: { type: string }) => {
  * @returns The rendered component.
  */
 const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps) => {
-  const [expanded, setExpanded] = useState(true);
+  // ⚡ BOLT: Collapse deep nodes to improve rendering performance for large schemas.
+  const [expanded, setExpanded] = useState(level < 2);
 
   if (!schema) return null;
 
