@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package memory
 
 import (
@@ -7,6 +10,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ListServiceTemplates lists all service templates.
+//
 // _ is an unused parameter.
 //
 // Returns the result.
@@ -51,7 +56,7 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
-func (s *Store) DeleteServiceTemplate(ctx context.Context, id string) error {
+func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
