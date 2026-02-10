@@ -10,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -25,6 +27,10 @@ import (
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
+
+	mu            sync.RWMutex
+	cachedContent []byte
+	lastModTime   time.Time
 }
 
 // Ensure SkillResource implements resource.Resource.
@@ -122,6 +128,55 @@ func (r *SkillResource) Resource() *mcp.Resource {
 	}
 }
 
+// resolvePath determines the absolute path to the resource file.
+func (r *SkillResource) resolvePath() (string, error) {
+	if r.assetPath == "" {
+		// Read main SKILL.md
+		return filepath.Join(r.skill.Path, skill.SkillFileName), nil
+	}
+
+	// Read asset
+	// Resolve the skill path to its canonical absolute path
+	skillPath, err := filepath.Abs(r.skill.Path)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve absolute skill path: %w", err)
+	}
+	skillPath, err = filepath.EvalSymlinks(skillPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve symlinks for skill path: %w", err)
+	}
+
+	path := filepath.Join(skillPath, r.assetPath)
+
+	// Security check: Path Traversal
+	if err = validation.IsSecurePath(r.assetPath); err != nil {
+		return "", fmt.Errorf("invalid asset path: %w", err)
+	}
+
+	// Resolve Symlinks in target path
+	realPath, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", fmt.Errorf("asset does not exist: %w", os.ErrNotExist)
+		}
+		logging.GetLogger().Error("Failed to resolve asset path", "path", path, "error", err)
+		return "", fmt.Errorf("failed to resolve asset path")
+	}
+
+	realPath, err = filepath.Abs(realPath)
+	if err != nil {
+		logging.GetLogger().Error("Failed to get absolute path", "path", realPath, "error", err)
+		return "", fmt.Errorf("failed to resolve asset path")
+	}
+
+	// Security check: Jailbreak
+	if !strings.HasPrefix(realPath, skillPath+string(os.PathSeparator)) && realPath != skillPath {
+		return "", fmt.Errorf("invalid path: points outside skill directory")
+	}
+
+	return realPath, nil
+}
+
 // Read returns the contents of the resource.
 //
 // It reads the file content from disk, verifying that the path is secure and within the
@@ -134,71 +189,48 @@ func (r *SkillResource) Resource() *mcp.Resource {
 //   - *mcp.ReadResourceResult: The result containing the resource content (text or blob).
 //   - error: An error if the file cannot be read or if the path is invalid.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
-	var content []byte
-	var err error
-
-	if r.assetPath == "" {
-		// Read main SKILL.md
-		path := filepath.Join(r.skill.Path, skill.SkillFileName)
-		content, err = os.ReadFile(path)
-	} else {
-		// Read asset
-		// Resolve the skill path to its canonical absolute path to prevent traversal via symlinks in the base path.
-		var skillPath string
-		skillPath, err = filepath.Abs(r.skill.Path)
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve absolute skill path: %w", err)
-		}
-		skillPath, err = filepath.EvalSymlinks(skillPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve symlinks for skill path: %w", err)
-		}
-
-		path := filepath.Join(skillPath, r.assetPath)
-
-		// Use centralized validation to ensure path is safe and within allowable bounds (which includes checking traversal)
-		// However, validation.IsAllowedPath checks against CWD or AllowedPaths.
-		// Here we specifically want to check if it is inside skillPath.
-		// We can reuse validation.IsSecurePath to check for '..' traversal in the path string itself first.
-		if err = validation.IsSecurePath(r.assetPath); err != nil {
-			return nil, fmt.Errorf("invalid asset path: %w", err)
-		}
-
-		// Now verify it resolves to inside skillPath.
-		// We must resolve symlinks in the final path to ensure we don't traverse out via a symlink in the asset path.
-		var realPath string
-		realPath, err = filepath.EvalSymlinks(path)
-		if err != nil {
-			if os.IsNotExist(err) {
-				// Don't leak the full path in the error, but preserve error type
-				return nil, fmt.Errorf("asset does not exist: %w", os.ErrNotExist)
-			}
-			logging.GetLogger().Error("Failed to resolve asset path", "path", path, "error", err)
-			return nil, fmt.Errorf("failed to resolve asset path")
-		}
-
-		realPath, err = filepath.Abs(realPath)
-		if err != nil {
-			logging.GetLogger().Error("Failed to get absolute path", "path", realPath, "error", err)
-			return nil, fmt.Errorf("failed to resolve asset path")
-		}
-
-		// Check if the resolved path is inside the resolved skill path
-		if !strings.HasPrefix(realPath, skillPath+string(os.PathSeparator)) && realPath != skillPath {
-			return nil, fmt.Errorf("invalid path: points outside skill directory")
-		}
-
-		content, err = os.ReadFile(realPath)
+	realPath, err := r.resolvePath()
+	if err != nil {
+		return nil, err
 	}
 
+	// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets
+	// Optimization: Check file modification time to serve from cache if possible.
+	info, err := os.Stat(realPath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, fmt.Errorf("skill file does not exist: %w", os.ErrNotExist)
 		}
+		logging.GetLogger().Error("Failed to stat skill file", "error", err)
+		return nil, fmt.Errorf("failed to read skill file")
+	}
+
+	r.mu.RLock()
+	// Check cache validity
+	if !r.lastModTime.IsZero() && info.ModTime().Equal(r.lastModTime) && r.cachedContent != nil {
+		content := r.cachedContent
+		r.mu.RUnlock()
+		return r.createResult(content)
+	}
+	r.mu.RUnlock()
+
+	// Cache Miss: Read file
+	content, err := os.ReadFile(realPath)
+	if err != nil {
 		logging.GetLogger().Error("Failed to read skill file", "error", err)
 		return nil, fmt.Errorf("failed to read skill file")
 	}
 
+	// Update Cache
+	r.mu.Lock()
+	r.cachedContent = content
+	r.lastModTime = info.ModTime()
+	r.mu.Unlock()
+
+	return r.createResult(content)
+}
+
+func (r *SkillResource) createResult(content []byte) (*mcp.ReadResourceResult, error) {
 	mimeType := r.Resource().MIMEType
 	resourceContent := &mcp.ResourceContents{
 		URI:      r.URI(),
