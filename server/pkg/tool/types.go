@@ -2894,6 +2894,15 @@ func checkForShellInjection(val string, template string, placeholder string, com
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
+
+			// Sentinel Security Update: Nested Interpreter Protection
+			// If we are in Single Quotes (Level 2) and passing to a code execution interpreter,
+			// we must also block Double Quotes (") because the interpreter might be using them
+			// for strings (e.g. bash -c 'python -c "print(\"...\")"').
+			// Since we can't see the inner quoting, we must fail closed.
+			if quoteLevel == 2 && isCodeExecutionInterpreter(argBase) && strings.Contains(val, "\"") {
+				return fmt.Errorf("argument interpreter injection detected (%s): value contains double quote in single-quoted argument (nested context)", argBase)
+			}
 		}
 	}
 
@@ -2980,6 +2989,16 @@ func checkInterpreterFunctionCalls(val string) error {
 	if strings.Contains(cleanVal, "__import__") {
 		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
 	}
+
+	// Sentinel Security Update: Check for specific module access that bypasses function call checks
+	// e.g. subprocess.run (where 'run' is not in dangerousKeywords to avoid false positives)
+	dangerousModules := []string{"subprocess", "child_process"}
+	for _, mod := range dangerousModules {
+		if strings.Contains(cleanVal, mod+".") {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous module access %q", mod)
+		}
+	}
+
 	return nil
 }
 
@@ -3159,6 +3178,18 @@ func isInterpreter(command string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"busybox",
+	}
+	for _, interp := range interpreters {
+		if base == interp || strings.HasPrefix(base, interp) {
+			return true
+		}
+	}
+	return isCodeExecutionInterpreter(command)
+}
+
+func isCodeExecutionInterpreter(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	interpreters := []string{
 		// Interpreters
 		"python", "ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
