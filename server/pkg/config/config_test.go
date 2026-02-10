@@ -19,7 +19,7 @@ import (
 func TestLogLevel_InvalidLevelWarning(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var buf bytes.Buffer
-	logging.Init(slog.LevelInfo, &buf)
+	logging.Init(slog.LevelInfo, &buf, "", "")
 
 	settings := &Settings{
 		logLevel: "invalid-level",

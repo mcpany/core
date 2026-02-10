@@ -100,8 +100,34 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		logOutput = f
 	}
 	logFormat := viper.GetString("log-format")
-	logging.Init(logLevel, logOutput, logFormat)
 	s.logFile = viper.GetString("logfile")
+
+	// 🛠️ Feature: Robust Log Persistence
+	// We always want to maintain a JSON history file for the UI to hydrate from.
+	// Default to "mcpany.log" in the current directory.
+	persistencePath := "mcpany.log"
+
+	// Avoid conflicts if the user-configured logfile is the same as our persistence path
+	if s.logFile == persistencePath {
+		if logFormat == "json" {
+			// If user is already logging JSON to this file, we don't need a separate handler
+			persistencePath = ""
+		} else {
+			// If user is logging TEXT to this file, we can't append JSON to it without corruption.
+			// In this case, we disable the separate persistence handler and warn (via logger later).
+			// This means hydration won't work for this specific configuration.
+			persistencePath = ""
+		}
+	}
+
+	logging.Init(logLevel, logOutput, logFormat, persistencePath)
+
+	// Update s.logFile to point to persistencePath if it wasn't set,
+	// so that main.go knows where to hydrate from.
+	if s.logFile == "" {
+		s.logFile = "mcpany.log"
+	}
+
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")

@@ -34,7 +34,7 @@ func TestServer_CallTool_LogsArgsRedacted(t *testing.T) {
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 	var logBuffer bytes.Buffer
-	logging.Init(slog.LevelInfo, &logBuffer, "text")
+	logging.Init(slog.LevelInfo, &logBuffer, "text", "")
 
 	// Restore logger after test
 	defer func() {

@@ -120,13 +120,19 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 
 			// Track 2: Product Gap - Log Persistence
-			// Hydrate logs from file if configured for JSON.
-			if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON && cfg.LogFile() != "" {
+			// Hydrate logs from file.
+			// Thanks to our robust logging setup, we always maintain a JSON log file
+			// (defaulting to mcpany.log) even if the console output is text.
+			// This allows us to reliably hydrate the "Live Logs" history on startup.
+			if cfg.LogFile() != "" {
 				go func() {
 					if err := logging.HydrateFromFile(cfg.LogFile()); err != nil {
-						log.Warn("Failed to hydrate logs from file", "error", err)
+						// Only warn if the file exists but failed to read/parse
+						if !os.IsNotExist(err) {
+							log.Warn("Failed to hydrate logs from file", "error", err)
+						}
 					} else {
-						log.Info("Hydrated log history from file")
+						log.Info("Hydrated log history from file", "path", cfg.LogFile())
 					}
 				}()
 			}

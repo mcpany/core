@@ -24,7 +24,7 @@ func TestGetLogger(t *testing.T) {
 
 	// Capture the output of the logger to verify its configuration.
 	var buf bytes.Buffer
-	Init(slog.LevelDebug, &buf)
+	Init(slog.LevelDebug, &buf, "", "")
 
 	// Retrieve the logger instance.
 	logger := GetLogger()
@@ -65,14 +65,14 @@ func TestInit_Once(t *testing.T) {
 
 	// The first Init call should configure the logger.
 	var buf1 bytes.Buffer
-	Init(slog.LevelDebug, &buf1)
+	Init(slog.LevelDebug, &buf1, "", "")
 	GetLogger().Debug("first init")
 	assert.True(t, strings.Contains(buf1.String(), "first init"), "Logger should be initialized by the first call")
 
 	// A second Init call should be ignored. The logger should continue to write
 	// to the first buffer, not the second one.
 	var buf2 bytes.Buffer
-	Init(slog.LevelError, &buf2)
+	Init(slog.LevelError, &buf2, "", "")
 	GetLogger().Debug("second init")
 	assert.True(t, strings.Contains(buf1.String(), "second init"), "Logger should not be re-initialized by the second call")
 	assert.Empty(t, buf2.String(), "Second Init call should be a no-op")
@@ -338,7 +338,7 @@ func TestRedaction(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ForTestsOnlyResetLogger()
 			var buf bytes.Buffer
-			Init(slog.LevelInfo, &buf, tc.format)
+			Init(slog.LevelInfo, &buf, tc.format, "")
 			logger := GetLogger()
 
 			tc.logFunc(logger)

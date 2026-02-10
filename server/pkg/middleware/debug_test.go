@@ -20,7 +20,7 @@ import (
 func TestDebugMiddleware(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
-	logging.Init(slog.LevelDebug, &logOutput)
+	logging.Init(slog.LevelDebug, &logOutput, "", "")
 
 	mw := DebugMiddleware()
 	handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
@@ -45,7 +45,7 @@ func TestDebugMiddleware(t *testing.T) {
 func TestDebugMiddleware_NoLoggingWhenDisabled(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
-	logging.Init(slog.LevelInfo, &logOutput)
+	logging.Init(slog.LevelInfo, &logOutput, "", "")
 
 	mw := DebugMiddleware()
 	handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
@@ -76,7 +76,7 @@ func (m *mockUnmarshallableResult) MarshalJSON() ([]byte, error) {
 func TestDebugMiddleware_MarshalErrors(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
-	logging.Init(slog.LevelDebug, &logOutput)
+	logging.Init(slog.LevelDebug, &logOutput, "", "")
 
 	mw := DebugMiddleware()
 
@@ -105,7 +105,7 @@ func (u *unmarshallableRequest) MarshalJSON() ([]byte, error) {
 func TestDebugMiddleware_RequestMarshalError(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
-	logging.Init(slog.LevelDebug, &logOutput)
+	logging.Init(slog.LevelDebug, &logOutput, "", "")
 
 	mw := DebugMiddleware()
 	handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {

@@ -114,7 +114,7 @@ func TestDefaultBus_PublishTimeout(t *testing.T) {
 	// 1. Set up a logger to capture output
 	var logBuffer bytes.Buffer
 	logging.ForTestsOnlyResetLogger()
-	logging.Init(slog.LevelWarn, &logBuffer)
+	logging.Init(slog.LevelWarn, &logBuffer, "", "")
 
 	// 2. Create a bus with a very short timeout
 	bus := New[string]()

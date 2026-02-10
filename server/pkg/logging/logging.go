@@ -41,17 +41,18 @@ func ForTestsOnlyResetLogger() {
 // Parameters:
 //   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
 //   - output: io.Writer. The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
-//   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
+//   - format: string. Format string ("json" or "text"). Defaults to "text" if empty.
+//   - persistencePath: string. Optional path to a file where logs should be persisted in JSON format.
 //
 // Returns:
 //   None.
-func Init(level slog.Level, output io.Writer, format ...string) {
+func Init(level slog.Level, output io.Writer, format string, persistencePath string) {
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
 		fmtStr := "text"
-		if len(format) > 0 {
-			fmtStr = format[0]
+		if format != "" {
+			fmtStr = format
 		}
 
 		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
@@ -75,8 +76,33 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			mainHandler = slog.NewTextHandler(output, opts)
 		}
 
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
-		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
+		handlers := []slog.Handler{mainHandler, NewBroadcastHandler(GlobalBroadcaster, level)}
+
+		// 🛠️ Feature: Robust Log Persistence
+		// If a persistence path is provided, we attach a dedicated JSON handler.
+		// This ensures that even if the console output is "text", we maintain a structured
+		// history on disk that can be used for hydration.
+		if persistencePath != "" {
+			// We intentionally ignore errors here to prevent crashing the app if logging fails,
+			// but we try to open the file.
+			f, err := os.OpenFile(persistencePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+			if err == nil {
+				// We don't close f here; it remains open for the lifetime of the logger.
+				// OS will close on exit.
+
+				// Use the same opts (redaction, level)
+				// Ensure we use RedactingWriter wrapper for the file too
+				fileOutput := &RedactingWriter{w: f}
+				fileHandler := slog.NewJSONHandler(fileOutput, opts)
+				handlers = append(handlers, fileHandler)
+			} else {
+				// Fallback: print to stderr that persistence failed
+				// We can't use the logger yet as we are creating it!
+				_, _ = os.Stderr.WriteString("Failed to open persistence log file: " + err.Error() + "\n")
+			}
+		}
+
+		teeHandler := NewTeeHandler(handlers...)
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})

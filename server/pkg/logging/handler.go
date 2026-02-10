@@ -75,13 +75,16 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	// Track source priority to ensure we get the most specific source
 	sourcePriority := 0 // 0: none, 1: component/source, 2: toolName
 
-	// Try to find source in attributes or use default
-	r.Attrs(func(a slog.Attr) bool {
+	// Helper to process an attribute
+	processAttr := func(a slog.Attr) {
 		// Collect all attributes into Metadata
 		entry.Metadata[a.Key] = a.Value.Any()
 
 		if a.Key == "source" || a.Key == "component" {
-			if sourcePriority < 1 {
+			// Update source if we don't have a high-priority source yet,
+			// or if we are overwriting a previous source/component.
+			// Note: Record attributes are processed last, so they naturally override.
+			if sourcePriority <= 1 {
 				entry.Source = a.Value.String()
 				sourcePriority = 1
 			}
@@ -90,6 +93,17 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 			entry.Source = a.Value.String()
 			sourcePriority = 2
 		}
+	}
+
+	// 1. Process handler attributes (from WithAttrs)
+	for _, a := range h.attrs {
+		processAttr(a)
+	}
+
+	// 2. Process record attributes
+	// Try to find source in attributes or use default
+	r.Attrs(func(a slog.Attr) bool {
+		processAttr(a)
 		return true
 	})
 

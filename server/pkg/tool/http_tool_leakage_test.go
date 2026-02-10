@@ -35,7 +35,7 @@ func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
 
 	// Capture logs
 	var logBuf bytes.Buffer
-	logging.Init(slog.LevelDebug, &logBuf)
+	logging.Init(slog.LevelDebug, &logBuf, "", "")
 
 	// Setup upstream that returns error (500) to trigger logging
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

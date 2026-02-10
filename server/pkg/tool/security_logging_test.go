@@ -41,7 +41,7 @@ func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
 
 	// Create a buffer to capture logs
 	var logBuf bytes.Buffer
-	logging.Init(slog.LevelDebug, &logBuf)
+	logging.Init(slog.LevelDebug, &logBuf, "", "")
 	defer logging.ForTestsOnlyResetLogger()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

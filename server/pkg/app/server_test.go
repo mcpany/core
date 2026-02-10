@@ -538,7 +538,7 @@ func TestSetup(t *testing.T) {
 	t.Run("with nil fs", func(t *testing.T) {
 		logging.ForTestsOnlyResetLogger()
 		var buf ThreadSafeBuffer
-		logging.Init(slog.LevelError, &buf)
+		logging.Init(slog.LevelError, &buf, "", "")
 
 		fs, err := setup(nil)
 		assert.Error(t, err, "setup should return an error when fs is nil")
@@ -789,7 +789,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
-	logging.Init(slog.LevelInfo, &buf)
+	logging.Init(slog.LevelInfo, &buf, "", "")
 
 	// Occupy a port to ensure the HTTP server fails to start.
 	l, err := net.Listen("tcp", "127.0.0.1:0")
@@ -932,7 +932,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
-	logging.Init(slog.LevelInfo, &buf)
+	logging.Init(slog.LevelInfo, &buf, "", "")
 
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
@@ -1043,7 +1043,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
-	logging.Init(slog.LevelInfo, &buf)
+	logging.Init(slog.LevelInfo, &buf, "", "")
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -3077,7 +3077,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		go func() { time.Sleep(50 * time.Millisecond); cancel() }()
 		logging.ForTestsOnlyResetLogger()
 		var buf ThreadSafeBuffer
-		logging.Init(slog.LevelInfo, &buf)
+		logging.Init(slog.LevelInfo, &buf, "", "")
 		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil, "", "", "")
 		assert.Contains(t, buf.String(), "No UI directory found")
 	})
