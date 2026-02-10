@@ -23,6 +23,9 @@ export async function GET(request: Request) {
     if (authHeader) {
       headers['Authorization'] = authHeader;
     }
+    if (process.env.MCPANY_API_KEY) {
+      headers['X-API-Key'] = process.env.MCPANY_API_KEY;
+    }
 
     const res = await fetch(`${backendUrl}/api/v1/services`, {
       cache: 'no-store', // Always fetch fresh data
