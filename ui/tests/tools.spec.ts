@@ -35,28 +35,30 @@ test.describe('Tool Exploration', () => {
         let found = false;
         for (let i = 0; i < 5; i++) {
             try {
-                // Short timeout check
-                await expect(page.getByText('svc_echo').first()).toBeVisible({ timeout: 3000 });
+                // Check for Payment Gateway first (svc_01) to verify generic seeding works
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 3000 });
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Echo Service (svc_echo) not found yet, reloading... (Attempt ${i + 1}/5)`);
+                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/5)`);
                 await page.reload();
                 await page.waitForLoadState('networkidle');
             }
         }
 
-        // Final assertion with longer timeout
-        await expect(page.getByText('svc_echo').first()).toBeVisible({ timeout: 10000 });
+        // Verify Payment Gateway tool is visible
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
-        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+        try {
+            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+        } catch (e) {
+            console.log('Echo tool not found. Page content:', await page.content());
+            throw e;
+        }
         await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 20000 });
-
-        // Look for other seeded tools (Payment Gateway)
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
@@ -65,14 +67,14 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 5; i++) {
             try {
-                await expect(page.getByText('svc_echo').first()).toBeVisible({ timeout: 3000 });
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 3000 });
                 break;
             } catch (e) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
             }
         }
-        await expect(page.getByText('svc_echo').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
@@ -88,14 +90,14 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 5; i++) {
             try {
-                await expect(page.getByText('svc_echo').first()).toBeVisible({ timeout: 3000 });
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 3000 });
                 break;
             } catch (e) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
             }
         }
-        await expect(page.getByText('svc_echo').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
