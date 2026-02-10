@@ -1,15 +1,16 @@
 # Authentication
 
-The `mcpany` server supports flexible authentication mechanisms.
- for both incoming requests (securing your MCP server) and outgoing requests (authenticating with upstream services). These are configured **per upstream service**.
+The `mcpany` server supports flexible authentication mechanisms for both incoming requests (securing your MCP server) and outgoing requests (authenticating with upstream services).
 
 ## Configuration
 
-Incoming authentication is configured under `authentication`. Outgoing authentication is configured under `upstream_auth`.
+Incoming authentication is configured under `authentication`. Outgoing authentication is configured under `upstream_auth` for each service.
 
 ### Incoming Authentication
 
-To secure access to a specific service exposed by MCP Any:
+To secure access to a specific service exposed by MCP Any, you can use the following methods:
+
+#### 1. API Key
 
 ```yaml
 upstream_services:
@@ -17,13 +18,49 @@ upstream_services:
     authentication:
       api_key:
         param_name: "X-Mcp-Api-Key"
-        in: "HEADER"
+        in: "HEADER" # Options: HEADER, QUERY, COOKIE
         key_value: "my-secret-key"
+```
+
+#### 2. Basic Auth
+
+```yaml
+upstream_services:
+  - name: "secure-service"
+    authentication:
+      basic_auth:
+        username: "admin"
+        password_hash: "$2a$10$..." # Bcrypt hash
+```
+
+#### 3. OAuth2 / OIDC
+
+```yaml
+upstream_services:
+  - name: "secure-service"
+    authentication:
+      oidc:
+        issuer: "https://accounts.google.com"
+        audience: ["my-client-id"]
+```
+
+#### 4. Trusted Header
+
+Useful when running behind a proxy that handles authentication.
+
+```yaml
+upstream_services:
+  - name: "secure-service"
+    authentication:
+      trusted_header:
+        header_name: "X-Forwarded-User"
 ```
 
 ### Outgoing Authentication
 
-To authenticate with an upstream service:
+To authenticate with an upstream service, you can use:
+
+#### 1. Bearer Token
 
 ```yaml
 upstream_services:
@@ -36,25 +73,51 @@ upstream_services:
       address: "https://api.secure.com"
 ```
 
-## Use Case
+#### 2. API Key
 
-**Incoming**: You want to prevent unauthorized users from calling tool X.
-**Outgoing**: Upstream API Y requires an API key or an OAuth token.
+```yaml
+upstream_services:
+  - name: "secure-upstream"
+    upstream_auth:
+      api_key:
+        param_name: "apikey"
+        in: "QUERY"
+        value:
+          environment_variable: "API_KEY"
+```
 
-Clients calling `secure-service` must provide the configured authentication (e.g., adding `X-Mcp-Api-Key` header).
+#### 3. Basic Auth
+
+```yaml
+upstream_services:
+  - name: "secure-upstream"
+    upstream_auth:
+      basic_auth:
+        username: "user"
+        password:
+          environment_variable: "PASSWORD"
+```
+
+#### 4. OAuth2 (Client Credentials)
+
+```yaml
+upstream_services:
+  - name: "secure-upstream"
+    upstream_auth:
+      oauth2:
+        client_id:
+          environment_variable: "CLIENT_ID"
+        client_secret:
+          environment_variable: "CLIENT_SECRET"
+        token_url: "https://oauth.provider.com/token"
+        scopes: "read write"
+```
 
 ## Real World Example: IPInfo
 
-This example demonstrates how to configure an upstream service (`ipinfo.io`) that requires an API key, load that key from an environment variable, and verify it using the Gemini CLI.
+This example demonstrates how to configure an upstream service (`ipinfo.io`) that requires an API key.
 
-### 1. Prerequisite: Get an API Key
-
-1.  Sign up at [ipinfo.io](https://ipinfo.io/signup).
-2.  Copy your access token from the dashboard.
-
-### 2. Configuration
-
-Create a file named `config.yaml` with the following content. We use `${IPINFO_API_KEY}` to load the access token securely from the environment.
+### Configuration
 
 ```yaml
 upstream_services:
@@ -73,42 +136,11 @@ upstream_services:
           environment_variable: "IPINFO_API_KEY"
 ```
 
-### 3. Run the Server
+### Verification
 
 Set the environment variable and start the server:
 
 ```bash
 export IPINFO_API_KEY="your_actual_token_here"
-# Assuming you have the mcp-any binary built
 ./bin/mcp-any --config config.yaml
 ```
-
-### 4. Verification with Gemini CLI
-
-We can use the `@google/gemini-cli` to verify that the tool works effectively.
-
-1.  **Install Gemini CLI** (if not already installed):
-    ```bash
-    npm install -g @google/gemini-cli
-    ```
-    *Note: You can also use `npx -y @google/gemini-cli` to run it without installing globaly.*
-
-2.  **Authenticate Gemini CLI**:
-    You need a Gemini API Key from [AI Studio](https://aistudio.google.com/).
-    ```bash
-    export GEMINI_API_KEY="your_gemini_api_key"
-    ```
-
-3.  **Connect and Test**:
-    Add the local MCP server to Gemini CLI and ask it to use the tool.
-
-    ```bash
-    # Add the local server (assuming default port 8080)
-    npx -y @google/gemini-cli mcp add --transport http mcp-server http://localhost:8080/mcp/v1
-
-    # Ask a question that triggers the tool
-    npx -y @google/gemini-cli -p "What is my IP address info?"
-    ```
-
-    **Expected Output**:
-    The CLI should show the tool call `ipinfo` -> `get_ip_info` and then print the JSON response containing your IP details.

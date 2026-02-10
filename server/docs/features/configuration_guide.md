@@ -42,7 +42,7 @@ upstream_services:
 
 ## Pain Point: "My Config is huge!"
 
-Split your configuration using `imports` or directory scanning (if supported) or keep it modular by functionality.
+Split your configuration by providing a directory path to the `--config-path` flag. The server will merge all `.yaml` files found in the directory.
 
 ### Best Practices
 - **Global Settings** at the top.

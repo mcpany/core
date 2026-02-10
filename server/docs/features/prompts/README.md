@@ -13,6 +13,7 @@ Prompts are defined within the `prompts` block of a service.
 | `name`        | `string` | unique name of the prompt      |
 | `description` | `string` | description of what it does    |
 | `messages`    | `list`   | list of messages in the prompt |
+| `input_schema`| `object` | JSON Schema for the arguments  |
 
 ### Configuration Snippet
 
@@ -24,6 +25,13 @@ upstream_services:
       prompts:
         - name: "welcomer"
           description: "Welcomes the user"
+          input_schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                description: "The name of the user"
+            required: ["name"]
           messages:
             - role: "USER"
               text:

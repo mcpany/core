@@ -13,6 +13,7 @@ Rate limiting is configured within the `rate_limit` block of an upstream service
 | `is_enabled`          | `bool`   | Whether rate limiting is enabled.                            |
 | `requests_per_second` | `double` | The maximum number of requests allowed per second.           |
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
+| `key_by`              | `enum`   | The key to use for rate limiting: `KEY_BY_IP` (default), `KEY_BY_USER_ID`, or `KEY_BY_API_KEY`. |
 | `storage`             | `enum`   | The storage backend to use: `STORAGE_MEMORY` (default) or `STORAGE_REDIS`. |
 | `redis`               | `object` | Redis connection details (required if storage is `STORAGE_REDIS`). |
 | `tool_limits`         | `map`    | Tool-specific rate limits. Key is the tool name, value is a RateLimitConfig object. |
@@ -26,6 +27,7 @@ upstream_services:
       is_enabled: true
       requests_per_second: 10.0
       burst: 20
+      key_by: KEY_BY_IP # Optional: Rate limit by IP address
     http_service:
       address: "https://api.example.com"
 ```
