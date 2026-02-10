@@ -50,7 +50,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) {
+                 console.log(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
+                 // We don't throw here strictly because some tests might expect services to exist/not exist or handle duplicates,
+                 // but ideally we should. For now, let's keep it logging but verbose.
+            }
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
         }
@@ -79,10 +84,13 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
     try {
         const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
         if (!res.ok()) {
-            console.log(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
+            const errorText = await res.text();
+            console.log(`Failed to seed collection ${name}: ${res.status()} ${errorText}`);
+            throw new Error(`Failed to seed collection ${name}: ${res.status()} ${errorText}`);
         }
     } catch (e) {
         console.log(`Failed to seed collection ${name}: ${e}`);
+        throw e;
     }
 };
 
