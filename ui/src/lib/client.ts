@@ -386,7 +386,45 @@ export const apiClient = {
         };
 
         if (config.upstreamAuth) {
-            payload.upstream_auth = config.upstreamAuth;
+            // Map inner camelCase to snake_case for backend
+            const auth: any = {};
+            if (config.upstreamAuth.apiKey) {
+                auth.api_key = {
+                     value: config.upstreamAuth.apiKey.value,
+                     file: config.upstreamAuth.apiKey.file,
+                     env: config.upstreamAuth.apiKey.env,
+                     plain_text: config.upstreamAuth.apiKey.plainText
+                };
+            }
+            if (config.upstreamAuth.bearerToken) {
+                 auth.bearer_token = {
+                     token: {
+                        value: config.upstreamAuth.bearerToken.token?.value,
+                        file: config.upstreamAuth.bearerToken.token?.file,
+                        env: config.upstreamAuth.bearerToken.token?.env,
+                        plain_text: config.upstreamAuth.bearerToken.token?.plainText
+                     }
+                 };
+            }
+            if (config.upstreamAuth.oauth2) {
+                 auth.oauth2 = {
+                     client_id: {
+                         value: config.upstreamAuth.oauth2.clientId?.value,
+                         file: config.upstreamAuth.oauth2.clientId?.file,
+                         env: config.upstreamAuth.oauth2.clientId?.env,
+                         plain_text: config.upstreamAuth.oauth2.clientId?.plainText
+                     },
+                     client_secret: {
+                         value: config.upstreamAuth.oauth2.clientSecret?.value,
+                         file: config.upstreamAuth.oauth2.clientSecret?.file,
+                         env: config.upstreamAuth.oauth2.clientSecret?.env,
+                         plain_text: config.upstreamAuth.oauth2.clientSecret?.plainText
+                     },
+                     token_url: config.upstreamAuth.oauth2.tokenUrl,
+                     scopes: config.upstreamAuth.oauth2.scopes
+                 };
+            }
+            payload.upstream_auth = auth;
         }
 
         if (config.httpService) {
@@ -478,7 +516,45 @@ export const apiClient = {
         };
         // Reuse mapping logic or duplicate for now safely
         if (config.upstreamAuth) {
-            payload.upstream_auth = config.upstreamAuth;
+            // Reuse logic? Just deep copy/map manually for update as well
+            const auth: any = {};
+             if (config.upstreamAuth.apiKey) {
+                auth.api_key = {
+                     value: config.upstreamAuth.apiKey.value,
+                     file: config.upstreamAuth.apiKey.file,
+                     env: config.upstreamAuth.apiKey.env,
+                     plain_text: config.upstreamAuth.apiKey.plainText
+                };
+            }
+            if (config.upstreamAuth.bearerToken) {
+                 auth.bearer_token = {
+                     token: {
+                        value: config.upstreamAuth.bearerToken.token?.value,
+                        file: config.upstreamAuth.bearerToken.token?.file,
+                        env: config.upstreamAuth.bearerToken.token?.env,
+                        plain_text: config.upstreamAuth.bearerToken.token?.plainText
+                     }
+                 };
+            }
+            if (config.upstreamAuth.oauth2) {
+                 auth.oauth2 = {
+                     client_id: {
+                         value: config.upstreamAuth.oauth2.clientId?.value,
+                         file: config.upstreamAuth.oauth2.clientId?.file,
+                         env: config.upstreamAuth.oauth2.clientId?.env,
+                         plain_text: config.upstreamAuth.oauth2.clientId?.plainText
+                     },
+                     client_secret: {
+                         value: config.upstreamAuth.oauth2.clientSecret?.value,
+                         file: config.upstreamAuth.oauth2.clientSecret?.file,
+                         env: config.upstreamAuth.oauth2.clientSecret?.env,
+                         plain_text: config.upstreamAuth.oauth2.clientSecret?.plainText
+                     },
+                     token_url: config.upstreamAuth.oauth2.tokenUrl,
+                     scopes: config.upstreamAuth.oauth2.scopes
+                 };
+            }
+            payload.upstream_auth = auth;
         }
 
          if (config.httpService) {
@@ -581,7 +657,44 @@ export const apiClient = {
         };
 
         if (config.upstreamAuth) {
-            payload.upstream_auth = config.upstreamAuth;
+             const auth: any = {};
+             if (config.upstreamAuth.apiKey) {
+                auth.api_key = {
+                     value: config.upstreamAuth.apiKey.value,
+                     file: config.upstreamAuth.apiKey.file,
+                     env: config.upstreamAuth.apiKey.env,
+                     plain_text: config.upstreamAuth.apiKey.plainText
+                };
+            }
+            if (config.upstreamAuth.bearerToken) {
+                 auth.bearer_token = {
+                     token: {
+                        value: config.upstreamAuth.bearerToken.token?.value,
+                        file: config.upstreamAuth.bearerToken.token?.file,
+                        env: config.upstreamAuth.bearerToken.token?.env,
+                        plain_text: config.upstreamAuth.bearerToken.token?.plainText
+                     }
+                 };
+            }
+             if (config.upstreamAuth.oauth2) {
+                 auth.oauth2 = {
+                     client_id: {
+                         value: config.upstreamAuth.oauth2.clientId?.value,
+                         file: config.upstreamAuth.oauth2.clientId?.file,
+                         env: config.upstreamAuth.oauth2.clientId?.env,
+                         plain_text: config.upstreamAuth.oauth2.clientId?.plainText
+                     },
+                     client_secret: {
+                         value: config.upstreamAuth.oauth2.clientSecret?.value,
+                         file: config.upstreamAuth.oauth2.clientSecret?.file,
+                         env: config.upstreamAuth.oauth2.clientSecret?.env,
+                         plain_text: config.upstreamAuth.oauth2.clientSecret?.plainText
+                     },
+                     token_url: config.upstreamAuth.oauth2.tokenUrl,
+                     scopes: config.upstreamAuth.oauth2.scopes
+                 };
+            }
+            payload.upstream_auth = auth;
         }
 
         if (config.httpService) {
@@ -1674,7 +1787,44 @@ export const apiClient = {
         };
 
         if (template.upstreamAuth) {
-            payload.upstream_auth = template.upstreamAuth;
+             const auth: any = {};
+             if (template.upstreamAuth.apiKey) {
+                auth.api_key = {
+                     value: template.upstreamAuth.apiKey.value,
+                     file: template.upstreamAuth.apiKey.file,
+                     env: template.upstreamAuth.apiKey.env,
+                     plain_text: template.upstreamAuth.apiKey.plainText
+                };
+            }
+            if (template.upstreamAuth.bearerToken) {
+                 auth.bearer_token = {
+                     token: {
+                        value: template.upstreamAuth.bearerToken.token?.value,
+                        file: template.upstreamAuth.bearerToken.token?.file,
+                        env: template.upstreamAuth.bearerToken.token?.env,
+                        plain_text: template.upstreamAuth.bearerToken.token?.plainText
+                     }
+                 };
+            }
+             if (template.upstreamAuth.oauth2) {
+                 auth.oauth2 = {
+                     client_id: {
+                         value: template.upstreamAuth.oauth2.clientId?.value,
+                         file: template.upstreamAuth.oauth2.clientId?.file,
+                         env: template.upstreamAuth.oauth2.clientId?.env,
+                         plain_text: template.upstreamAuth.oauth2.clientId?.plainText
+                     },
+                     client_secret: {
+                         value: template.upstreamAuth.oauth2.clientSecret?.value,
+                         file: template.upstreamAuth.oauth2.clientSecret?.file,
+                         env: template.upstreamAuth.oauth2.clientSecret?.env,
+                         plain_text: template.upstreamAuth.oauth2.clientSecret?.plainText
+                     },
+                     token_url: template.upstreamAuth.oauth2.tokenUrl,
+                     scopes: template.upstreamAuth.oauth2.scopes
+                 };
+            }
+            payload.upstream_auth = auth;
         }
 
         if (template.httpService) {
