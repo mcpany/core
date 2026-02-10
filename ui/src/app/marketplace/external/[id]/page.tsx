@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Download, Terminal } from "lucide-react";
-import Link from "next/link";
 
 /**
  * ExternalMarketplacePage component.

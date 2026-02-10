@@ -81,6 +81,7 @@ function OAuthCallbackContent() {
                     setTimeout(() => router.push(context.returnPath || "/upstream-services"), 1500);
                 }
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
                 console.error("OAuth Exchange Failed", e);
                 setStatus("error");

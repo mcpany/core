@@ -7,7 +7,7 @@ FROM node:20-bookworm-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-WORKDIR /app
+WORKDIR /app/ui
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
@@ -16,11 +16,12 @@ RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-aud
 
 # Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+WORKDIR /app/ui
+COPY --from=deps /app/ui/node_modules ./node_modules
 COPY ui/ .
-COPY --from=deps /app/package-lock.json ./package-lock.json
-COPY proto/ ./proto/
+COPY --from=deps /app/ui/package-lock.json ./package-lock.json
+# Copy proto to /app/proto so it is accessible as ../proto from /app/ui
+COPY proto/ /app/proto/
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -49,7 +50,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Handle public directory if it exists
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/ui/public ./public
 
 
 # Set the correct permission for prerender cache
@@ -58,8 +59,8 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/ui/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/ui/.next/static ./.next/static
 
 USER nextjs
 

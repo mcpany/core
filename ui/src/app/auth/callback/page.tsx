@@ -78,6 +78,7 @@ function OAuthCallbackContent() {
                 sessionStorage.removeItem('oauth_redirect_url');
                 sessionStorage.removeItem('oauth_return_path');
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
                 setStatus('error');
                 setErrorMessage(e.message || 'Failed to complete authentication.');

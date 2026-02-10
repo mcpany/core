@@ -124,24 +124,22 @@ const nextConfig: NextConfig = {
     const localProto = path.join(__dirname, 'proto');
     const rootProto = path.join(__dirname, '../proto');
 
-    // Check specific Docker location first
-    // In Dockerfile, WORKDIR is /app, and we copy proto to ./proto, so it is at /app/proto
-    // However, __dirname is /app/ui (or wherever next.config.ts is).
-    // If we run `npm run build` inside /app/ui, then `path.join(__dirname, '../proto')` resolves to `/app/proto`.
+    // Explicitly add alias for @proto to resolve external directory
+    // In Docker, we copy proto to /app/proto and ui to /app/ui. WORKDIR is /app/ui.
+    // So ../proto resolves to /app/proto.
+    // Locally, ui is at ./ui and proto is at ./proto. So ../proto works too.
 
-    // So actually, `rootProto` (../proto) should work if we copy it to /app/proto and the build runs in /app/ui.
+    const localProto = path.join(__dirname, 'proto');
+    const rootProto = path.join(__dirname, '../proto');
 
     let protoPath = rootProto;
-
-    // Fallback or override logic if needed.
     if (fs.existsSync(localProto)) {
        protoPath = localProto;
     }
 
     console.log(`[NextConfig] Resolving @proto to: ${protoPath}`);
-    console.log(`[NextConfig] __dirname: ${__dirname}`);
     if (fs.existsSync(protoPath)) {
-        console.log(`[NextConfig] Contents of ${protoPath}:`, fs.readdirSync(protoPath));
+       // console.log(`[NextConfig] Contents of ${protoPath}:`, fs.readdirSync(protoPath));
     } else {
         console.warn(`[NextConfig] WARNING: proto path does not exist: ${protoPath}`);
     }
@@ -152,10 +150,7 @@ const nextConfig: NextConfig = {
       '@google': path.join(protoPath, 'google'),
     };
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
-    // Only needed if using ../proto
-    if (protoPath === rootProto) {
-        config.resolve.symlinks = false;
-    }
+    config.resolve.symlinks = false;
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support

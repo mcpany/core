@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { apiClient } from "@/lib/client";
 
 /**
  * SchemaPlaygroundPage provides an interactive environment for users to test and validate
@@ -64,6 +63,7 @@ export default function SchemaPlaygroundPage() {
         valid: data.valid,
         message: data.message || data.error || "Unknown response",
       });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setResult({
         valid: false,

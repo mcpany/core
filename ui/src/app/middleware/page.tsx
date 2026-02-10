@@ -10,7 +10,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { GripVertical, Plus, Trash2, Settings } from "lucide-react";
+import { GripVertical, Plus, Settings } from "lucide-react";
 
 interface Middleware {
     id: string;
