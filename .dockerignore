@@ -1,34 +1,40 @@
-*
-!ui/
-!proto/
-!proto/**
-!server/
-!go.mod
-!go.sum
-!Makefile
-!ui/Dockerfile.e2e
-!.dockerignore
-!server/
-!k8s/
-!go.mod
-!go.sum
-!go.work
-!go.work.sum
+# Copyright (C) 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
 
-# Explicitly include generated proto files just in case
-!proto/**/*.ts
-!proto/**/*.pb.go
+# Top-level directories to exclude (reduce context size)
+server/
+k8s/
+docs/
+marketplace/
+build/
+.git/
+.github/
+node_modules/
 
+# Files to exclude
+.DS_Store
+coverage/
+*.log
+.gemini/
+.audits/
+.audit/
+lint_report.*
+.last-run
+**/.last-run.json
+client_info.json
+oauth_env.sh
+AUDIT_REPORT.md
+
+# UI specific excludes (retained from original logic but explicit here)
 ui/node_modules
 ui/.next
 ui/test-results
 ui/playwright-report
 ui/coverage
-ui/*.log
 
+# Proto specific excludes
+# We MUST NOT exclude proto/ unless it's node_modules
 proto/node_modules
-**/node_modules
-server/tools/go
-server/tools/license
-server/tools/license-header-remover
-server/tools/mockgen.go
+
+# Note: We do NOT start with '*' to ensure all other files (like proto/**/*.ts)
+# are included by default unless explicitly excluded above.
