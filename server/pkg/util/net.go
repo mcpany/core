@@ -18,6 +18,10 @@ import (
 	"time"
 )
 
+// TrueStr is a string constant representing the boolean value true.
+// It is used for consistent string comparisons and parsing of boolean-like strings.
+const TrueStr = "true"
+
 // IPResolver defines an interface for looking up IP addresses.
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
@@ -55,15 +59,27 @@ type SafeDialer struct {
 // Summary: Initializes a SafeDialer with secure defaults.
 //
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
+// It respects MCPANY_DANGEROUS_ALLOW_LOCAL_IPS env var to override defaults.
 //
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
 func NewSafeDialer() *SafeDialer {
-	return &SafeDialer{
+	d := &SafeDialer{
 		AllowLoopback:  false,
 		AllowPrivate:   false,
 		AllowLinkLocal: false,
 	}
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		d.AllowLoopback = true
+		d.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		d.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		d.AllowPrivate = true
+	}
+	return d
 }
 
 // DialContext establishes a network connection to the given address while enforcing egress policies.
