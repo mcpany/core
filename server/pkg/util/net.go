@@ -102,6 +102,20 @@ func NewSafeDialer() *SafeDialer {
 	return d
 }
 
+// parseEnvBool parses a boolean env var, returning (value, exists).
+func parseEnvBool(key string) (bool, bool) {
+	val := os.Getenv(key)
+	if val == "" {
+		return false, false
+	}
+	val = strings.Trim(val, "'\"")
+	b, err := strconv.ParseBool(val)
+	if err != nil {
+		return false, false
+	}
+	return b, true
+}
+
 // DialContext establishes a network connection to the given address while enforcing egress policies.
 //
 // Summary: Dials a network address securely.
@@ -120,19 +134,22 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 	// Dynamically check environment variables to override settings.
 	// This is critical for tests where environment variables might change after the dialer is created,
 	// and for global singletons (like in config package) to respect runtime configuration changes.
+	//
+	// We allow environment variables to BOTH enable and disable permissions.
+	// This ensures that t.Setenv("...", "false") works even if the dialer was initialized with "true".
 	allowLoopback := d.AllowLoopback
 	allowPrivate := d.AllowPrivate
 	// LinkLocal is currently not overridable via env for safety, but we can stick to struct config.
 
-	if getBoolEnv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") {
-		allowLoopback = true
-		allowPrivate = true
+	if val, ok := parseEnvBool("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"); ok {
+		allowLoopback = val
+		allowPrivate = val
 	}
-	if getBoolEnv("MCPANY_ALLOW_LOOPBACK_RESOURCES") {
-		allowLoopback = true
+	if val, ok := parseEnvBool("MCPANY_ALLOW_LOOPBACK_RESOURCES"); ok {
+		allowLoopback = val
 	}
-	if getBoolEnv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") {
-		allowPrivate = true
+	if val, ok := parseEnvBool("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"); ok {
+		allowPrivate = val
 	}
 
 	host, port, err := net.SplitHostPort(addr)
