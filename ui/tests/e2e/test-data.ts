@@ -144,7 +144,12 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
     };
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        const res = await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        if (res.ok()) {
+            console.log(`Successfully seeded user: ${username}`);
+        } else {
+            console.log(`Failed to seed user ${username}: ${res.status()} ${await res.text()}`);
+        }
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
     }

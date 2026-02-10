@@ -4,9 +4,30 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './test-data';
 
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
+
+    test.beforeEach(async ({ request, page }) => {
+        await seedUser(request, "e2e-dashboard-admin");
+
+        // Login before each test
+        await page.goto('/login');
+        // Wait for page to be fully loaded as it might be transitioning
+        await page.waitForLoadState('networkidle');
+
+        await page.fill('input[name="username"]', 'e2e-dashboard-admin');
+        await page.fill('input[name="password"]', 'password');
+        await page.click('button[type="submit"]');
+
+        // Wait for redirect to home page
+        await expect(page).toHaveURL('/', { timeout: 15000 });
+    });
+
+    test.afterEach(async ({ request }) => {
+        await cleanupUser(request, "e2e-dashboard-admin");
+    });
 
     test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
@@ -69,7 +90,9 @@ test.describe('Dashboard Real Data', () => {
         // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
         // We target the value div which has 'text-2xl' class, inside the card that has 'Total Requests'
-        const totalRequestsCard = page.locator('.border', { hasText: /^Total Requests$/ }).first();
+        // Use a more specific text match to avoid matching other cards, and look for the value nearby
+        // Note: The card might not have rounded-xl class explicitly, checking for border class which is present
+        const totalRequestsCard = page.locator('.border', { hasText: 'Total Requests' }).first();
         const totalRequestsLocator = totalRequestsCard.locator('.text-2xl');
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
 

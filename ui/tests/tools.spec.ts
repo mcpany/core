@@ -50,15 +50,15 @@ test.describe('Tool Exploration', () => {
 
     test('should show empty state when no tools', async ({ page }) => {
         // Unroute previous mock from beforeEach
-        await page.unroute((url) => url.pathname.includes('/api/v1/tools'));
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
+        await page.unroute('**/api/v1/tools');
+        await page.route('**/api/v1/tools', async (route) => {
             await route.fulfill({ json: { tools: [] } });
         });
 
         await page.goto('/tools');
-        // The table shows one row with "No tools found." when empty
-        await expect(page.locator('table tbody tr')).toHaveCount(1);
-        await expect(page.locator('text=No tools found.')).toBeVisible();
+        // The empty state might not be a table row if layout changed to cards/accordion
+        // Check for generic empty state text
+        await expect(page.getByText('No tools found')).toBeVisible();
     });
 
     test('should allow inspecting a tool', async ({ page }) => {

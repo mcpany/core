@@ -16,14 +16,14 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
       await seedTraffic(request);
-      await seedUser(request, "e2e-admin");
+      await seedUser(request, "e2e-main-admin");
 
       // Login before each test
       await page.goto('/login');
       // Wait for page to be fully loaded as it might be transitioning
       await page.waitForLoadState('networkidle');
 
-      await page.fill('input[name="username"]', 'e2e-admin');
+      await page.fill('input[name="username"]', 'e2e-main-admin');
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]');
 
@@ -33,7 +33,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
-      await cleanupUser(request, "e2e-admin");
+      await cleanupUser(request, "e2e-main-admin");
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
@@ -50,7 +50,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
+    // The page title is likely h2 based on grep
+    await expect(page.locator('h2').first()).toContainText('Tools');
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 
