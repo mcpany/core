@@ -4,11 +4,13 @@
 package app
 
 import (
+	"google.golang.org/protobuf/proto"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
+var DefaultStack *configv1.Collection
 
 func init() {
 	BuiltinTemplates = []*configv1.UpstreamServiceConfig{
@@ -202,6 +204,13 @@ func init() {
 			"npx -y @modelcontextprotocol/server-cloudflare",
 		),
 	}
+
+	DefaultStack = configv1.Collection_builder{
+		Name: proto.String("System"),
+		Services: []*configv1.UpstreamServiceConfig{
+			mkTemplate("memory", "Memory", "{}", "npx -y @modelcontextprotocol/server-memory"),
+		},
+	}.Build()
 }
 
 func mkTemplate(id, name, schema, command string) *configv1.UpstreamServiceConfig {

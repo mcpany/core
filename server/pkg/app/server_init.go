@@ -117,6 +117,11 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		if err := s.SaveService(ctx, weatherService); err != nil {
 			return fmt.Errorf("failed to save default weather service: %w", err)
 		}
+		if DefaultStack != nil {
+			if err := s.SaveServiceCollection(ctx, DefaultStack); err != nil {
+				return fmt.Errorf("failed to save default stack: %w", err)
+			}
+		}
 	} else {
 		log.Warn("Store/Storage does not support saving defaults.")
 	}
