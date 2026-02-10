@@ -229,6 +229,10 @@ func TestHandleAuthTest_Detailed(t *testing.T) {
 
 	t.Run("HTTP_Unsafe_URL", func(t *testing.T) {
 		resetMocks()
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
+
 		reqBody := AuthTestRequest{
 			ServiceType: "HTTP",
 			ServiceConfig: map[string]any{
