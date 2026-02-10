@@ -98,7 +98,23 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(ipAddress)})
 		if err == nil {
-			break // Success
+			if !res.IsError {
+				break // Success
+			}
+			// Handle tool-level errors (e.g. 429 Too Many Requests)
+			var errorText string
+			if len(res.Content) > 0 {
+				if tc, ok := res.Content[0].(*mcp.TextContent); ok {
+					errorText = tc.Text
+				}
+			}
+			if strings.Contains(errorText, "Too Many Requests") || strings.Contains(errorText, "503") {
+				t.Logf("Attempt %d/%d: Call to ip-api.com failed with a transient tool error: %s. Retrying...", i+1, maxRetries, errorText)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+			// Fail for other tool errors
+			t.Fatalf("Tool execution failed: %s", errorText)
 		}
 
 		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
@@ -118,6 +134,7 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	require.NoError(t, err, "Error calling getIPInfo tool")
 	require.NotNil(t, res, "Nil response from getIPInfo tool")
+	require.False(t, res.IsError, "Tool execution returned an error")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
