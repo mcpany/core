@@ -42,7 +42,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Standard SQL Database",
         icon: Database,
         category: "Database",
-        yamlSnippet: `  postgres-db:
+        yamlSnippet: `  - name: postgres-db
     image: postgres:15
     environment:
       POSTGRES_USER: user
@@ -58,7 +58,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "In-memory key-value store",
         icon: Database,
         category: "Database",
-        yamlSnippet: `  redis-cache:
+        yamlSnippet: `  - name: redis-cache
     image: redis:alpine
     ports:
       - "6379:6379"
@@ -70,7 +70,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Local file access",
         icon: HardDrive,
         category: "MCP Server",
-        yamlSnippet: `  filesystem-mcp:
+        yamlSnippet: `  - name: filesystem-mcp
     command: npx -y @modelcontextprotocol/server-filesystem /path/to/allowed/dir
     environment:
       NODE_ENV: production
@@ -82,7 +82,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Slack integration",
         icon: MessageSquare,
         category: "MCP Server",
-        yamlSnippet: `  slack-mcp:
+        yamlSnippet: `  - name: slack-mcp
     command: npx -y @modelcontextprotocol/server-slack
     environment:
       SLACK_BOT_TOKEN: \${SLACK_BOT_TOKEN}
@@ -95,7 +95,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Graph-based memory",
         icon: Cpu,
         category: "MCP Server",
-        yamlSnippet: `  memory-mcp:
+        yamlSnippet: `  - name: memory-mcp
     command: npx -y @modelcontextprotocol/server-memory
 `
     },
@@ -105,7 +105,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Generic HTTP API",
         icon: Globe,
         category: "Utility",
-        yamlSnippet: `  my-api-service:
+        yamlSnippet: `  - name: my-api-service
     image: my-repo/api:latest
     environment:
       PORT: 8080
@@ -117,7 +117,7 @@ const TEMPLATES: ServiceTemplate[] = [
         description: "Local script execution",
         icon: Terminal,
         category: "Utility",
-        yamlSnippet: `  local-script:
+        yamlSnippet: `  - name: local-script
     command: python3 ./scripts/worker.py
     working_dir: ./
 `
