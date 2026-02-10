@@ -127,17 +127,19 @@ func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, st
 
 	// Ensure ID matches path?
 	if collection.GetName() == "" {
+		if stackID == "new" {
+			http.Error(w, "Stack name is required in config", http.StatusBadRequest)
+			return
+		}
 		collection.SetName(stackID)
-	} else if collection.GetName() != stackID {
+	} else if collection.GetName() != stackID && stackID != "new" {
 		// Allow name change? No, ID in path should be authoritative for the update target.
 		// But "Name" is the primary key in Store usually?
 		// store.SaveServiceCollection uses Name as ID usually? or we have ID field?
 		// Collection proto has `optional string name`.
 		// existing logic uses Name.
-		if collection.GetName() != stackID {
-			http.Error(w, "Stack name in config must match URL path", http.StatusBadRequest)
-			return
-		}
+		http.Error(w, "Stack name in config must match URL path", http.StatusBadRequest)
+		return
 	}
 
 	// Validate services inside
