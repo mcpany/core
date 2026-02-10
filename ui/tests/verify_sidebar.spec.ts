@@ -21,5 +21,9 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Take screenshot
-  await page.screenshot({ path: `.audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png` });
+  const screenshotPath = `.audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png`;
+  const fs = require('fs');
+  const path = require('path');
+  fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+  await page.screenshot({ path: screenshotPath });
 });
