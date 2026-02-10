@@ -1360,16 +1360,6 @@ export const apiClient = {
     // User Management
 
     /**
-     * Lists all profiles.
-     * @returns A promise that resolves to a list of profiles.
-     */
-    listProfiles: async () => {
-        const res = await fetchWithAuth('/api/v1/profiles');
-        if (!res.ok) throw new Error('Failed to fetch profiles');
-        return res.json();
-    },
-
-    /**
      * Creates a new profile.
      * @param profile The profile definition.
      * @returns A promise that resolves to the created profile.
