@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
