@@ -58,17 +58,19 @@ var byteBufferPool = sync.Pool{
 	},
 }
 
+// ⚡ BOLT: Global pool for gzip writers to reduce allocations and GC pressure.
+// Randomized Selection from Top 5 High-Impact Targets.
+var gzipWriterPool = sync.Pool{
+	New: func() interface{} {
+		w, _ := gzip.NewWriterLevel(io.Discard, gzip.BestSpeed)
+		return w
+	},
+}
+
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
 // It checks the Accept-Encoding header and only compresses if the client supports gzip.
 // It also checks the Content-Type to ensure we only compress compressible types.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
-	pool := sync.Pool{
-		New: func() interface{} {
-			w, _ := gzip.NewWriterLevel(io.Discard, gzip.BestSpeed)
-			return w
-		},
-	}
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// specific check for websocket upgrade requests
 		if r.Header.Get("Upgrade") != "" {
@@ -86,7 +88,6 @@ func GzipCompressionMiddleware(next http.Handler) http.Handler {
 
 		gzw := &gzipResponseWriter{
 			ResponseWriter: w,
-			pool:           &pool,
 			buf:            pb,
 			code:           http.StatusOK, // Default status code
 		}
@@ -99,7 +100,6 @@ func GzipCompressionMiddleware(next http.Handler) http.Handler {
 type gzipResponseWriter struct {
 	http.ResponseWriter
 	writer *gzip.Writer
-	pool   *sync.Pool
 
 	headerWritten bool
 	code          int
@@ -185,7 +185,7 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 		w.Header().Add("Vary", "Accept-Encoding")
 		w.ResponseWriter.WriteHeader(w.code)
 
-		w.writer = w.pool.Get().(*gzip.Writer)
+		w.writer = gzipWriterPool.Get().(*gzip.Writer)
 		w.writer.Reset(w.ResponseWriter)
 
 		if len(w.buf.data) > 0 {
@@ -212,7 +212,7 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
 		_ = w.writer.Close()
-		w.pool.Put(w.writer)
+		gzipWriterPool.Put(w.writer)
 		w.writer = nil
 		return
 	}
