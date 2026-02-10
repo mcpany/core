@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -16,6 +17,11 @@ import (
 )
 
 func TestValidateFileExists(t *testing.T) {
+	// Mock validation.IsAllowedPath to focus on file existence check
+	oldIsAllowed := validation.IsAllowedPath
+	defer func() { validation.IsAllowedPath = oldIsAllowed }()
+	validation.IsAllowedPath = func(path string) error { return nil }
+
 	// Create a temporary file
 	f, err := os.CreateTemp("", "testfile")
 	require.NoError(t, err)
