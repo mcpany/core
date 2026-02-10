@@ -21,11 +21,11 @@ test('verify sidebar navigation', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Network Graph' })).toBeVisible();
 
   // Take screenshot
-  // Ensure directory exists
+  // Take screenshot
+  // Use test-results directory which is guaranteed to be writable in CI
   const fs = require('fs');
   const path = require('path');
-  const dateStr = new Date().toISOString().split('T')[0];
-  const dir = `.audit/ui/${dateStr}`;
+  const dir = `test-results/audit/ui`;
   if (!fs.existsSync(dir)){
       fs.mkdirSync(dir, { recursive: true });
   }

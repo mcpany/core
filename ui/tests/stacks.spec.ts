@@ -48,6 +48,9 @@ services:
     );
     await page.getByRole('button', { name: 'Save Stack' }).click();
     const saveResponse = await savePromise;
+    if (saveResponse.status() !== 200) {
+        console.log(`Save failed with status ${saveResponse.status()}: ${await saveResponse.text()}`);
+    }
     expect(saveResponse.status()).toBe(200);
 
     // 5. Verify redirection to detail page (URL should contain stack name)
