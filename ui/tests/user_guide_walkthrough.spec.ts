@@ -4,6 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
@@ -102,11 +103,22 @@ test.describe('User Guide Walkthrough', () => {
     await expect(page.getByText('Monitor system health')).toBeVisible();
   });
 
-  test('Stack Composer', async ({ page }) => {
+  test('Stack Composer', async ({ page, request }) => {
+    // Seed the stack expected by the test
+    const stackName = 'walkthrough-stack';
+    await cleanupCollection(stackName, request);
+    await seedCollection(stackName, request);
+
     await page.goto('/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible();
+
+    // Sometimes backend is slow to update listing index? Reload to be sure
+    await page.reload();
+
     // "Create Stack" button is missing in implementation, check for default stack card instead
-    await expect(page.getByText('mcpany-system')).toBeVisible();
+    await expect(page.getByText(stackName)).toBeVisible();
+
+    await cleanupCollection(stackName, request);
   });
 
   test('Webhooks Management', async ({ page }) => {
