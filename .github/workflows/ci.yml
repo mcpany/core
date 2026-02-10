@@ -131,7 +131,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Attempt to restart docker, but ignore failure if systemd/init system is missing
+          sudo service docker restart || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +252,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Attempt to restart docker, but ignore failure if systemd/init system is missing
+          sudo service docker restart || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -506,7 +508,8 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          # Attempt to restart docker, but ignore failure if systemd/init system is missing
+          sudo service docker restart || true
           docker info
 
       - name: Set up Go
@@ -621,7 +624,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Attempt to restart docker, but ignore failure if systemd/init system is missing
+          sudo service docker restart || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -709,7 +713,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Attempt to restart docker, but ignore failure if systemd/init system is missing
+          sudo service docker restart || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
