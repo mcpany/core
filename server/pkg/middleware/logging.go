@@ -47,12 +47,23 @@ func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 			// Optimization: Removed redundant "Request received" log to reduce I/O and noise.
 			// We log completion/failure below which is sufficient.
 			result, err := next(ctx, method, req)
+
+			// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets
+			// Use LogAttrs for zero-allocation logging in the hot path.
+			duration := time.Since(start)
 			if err != nil {
 				metrics.IncrCounter(metricRequestError, 1)
-				log.Error("Request failed", "method", method, "duration", time.Since(start), "error", err)
+				log.LogAttrs(ctx, slog.LevelError, "Request failed",
+					slog.String("method", method),
+					slog.Duration("duration", duration),
+					slog.Any("error", err),
+				)
 			} else {
 				metrics.IncrCounter(metricRequestSuccess, 1)
-				log.Info("Request completed", "method", method, "duration", time.Since(start))
+				log.LogAttrs(ctx, slog.LevelInfo, "Request completed",
+					slog.String("method", method),
+					slog.Duration("duration", duration),
+				)
 			}
 			return result, err
 		}
