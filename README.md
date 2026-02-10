@@ -1,6 +1,7 @@
 # MCP Any
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ## 1. Elevator Pitch
 
@@ -47,7 +48,7 @@ graph TD
 
 *   **Adapter Pattern**: Seamlessly translates MCP requests to various upstream protocols.
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON.
-*   **Gateway/Sidecar**: deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
+*   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
 
 ## 3. Getting Started
 
@@ -96,6 +97,7 @@ curl http://localhost:50050/health
 **Connect an AI Client:**
 To connect an AI client (like Claude Desktop or Gemini CLI):
 ```bash
+# Example assuming you have a compatible client
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
@@ -148,9 +150,15 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_MCP_LISTEN_ADDRESS` | MCP server's bind address (host:port) | `50050` |
 | `MCPANY_CONFIG_PATH` | Comma-separated paths to config files/dirs | `[]` |
 | `MCPANY_METRICS_LISTEN_ADDRESS` | Address to expose Prometheus metrics | Disabled |
+| `MCPANY_GRPC_PORT` | Port for the gRPC registration server | Disabled |
+| `MCPANY_STDIO` | Enable stdio mode for JSON-RPC communication | `false` |
 | `MCPANY_DEBUG` | Enable debug logging | `false` |
 | `MCPANY_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
+| `MCPANY_LOG_FORMAT` | Log format (text, json) | `text` |
 | `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
+| `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
+| `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
 
 ### Required Secrets
 

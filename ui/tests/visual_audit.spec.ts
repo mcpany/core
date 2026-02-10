@@ -27,6 +27,7 @@ test.describe('Visual Audit', () => {
       if (process.env.CAPTURE_SCREENSHOTS === 'true') {
         // Use test-results directory which is writable in CI
         const screenshotPath = path.resolve(process.cwd(), `test-results/artifacts/audit/ui/${pageInfo.name}.png`);
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const fs = require('fs');
         try {
             fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });

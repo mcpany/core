@@ -83,7 +83,10 @@ let mockSecrets: Secret[] = [
 ];
 
 /**
- * The SecretsStore class.
+ * SecretsStore provides an interface for managing secrets.
+ *
+ * It supports adding, retrieving (masked), and deleting secrets.
+ * Note: This implementation currently uses an in-memory mock store.
  */
 export const SecretsStore = {
     getAllDecrypted: () => {

@@ -90,6 +90,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 				// Use a temporary logger since defaultLogger is not set yet
 				// Actually we can't log easily yet. Just ignore or print to stderr?
 				// Best effort.
+				_ = err // prevent empty block lint error
 			} else {
 				// Use JSON handler for file to ensure hydration works
 				fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)

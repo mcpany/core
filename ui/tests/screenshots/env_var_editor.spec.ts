@@ -46,7 +46,9 @@ test.describe('Service Configuration Editor', () => {
     // Take screenshot of the editor
     // Use test-results directory which is guaranteed to be writable in CI
     const screenshotPath = 'test-results/artifacts/audit/ui/2025-02-20/env_var_editor.png';
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const path = require('path');
     try {
       fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });

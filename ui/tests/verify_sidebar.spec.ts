@@ -23,7 +23,9 @@ test('verify sidebar navigation', async ({ page }) => {
   // Take screenshot
   // Use test-results directory which is guaranteed to be writable in CI
   const screenshotPath = `test-results/artifacts/audit/ui/${new Date().toISOString().split('T')[0]}/unified_navigation_system.png`;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
   try {
     fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
