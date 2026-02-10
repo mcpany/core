@@ -13,9 +13,7 @@ export interface ServiceRegistryItem {
 }
 
 /**
- * A curated list of available MCP services.
- *
- * Summary: Registry of community and official MCP servers.
+ * Registry of community and official MCP servers.
  */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
