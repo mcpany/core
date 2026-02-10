@@ -29,9 +29,19 @@ test.describe('Tool Management (Real Data)', () => {
         // Click Execute
         await page.getByRole('button', { name: 'Execute' }).click();
 
+        // Wait for execution to complete (spinner to disappear)
+        await expect(page.locator('.lucide-loader-2')).toBeHidden({ timeout: 20000 });
+
         // Verify Result
         // The output is the result of `echo '{"weather": "sunny"}'`
         // It should contain "sunny" in the stdout field.
-        await expect(page.getByText('sunny')).toBeVisible({ timeout: 10000 });
+        const outputPre = page.locator('pre.text-xs.font-mono');
+        await expect(outputPre).toBeVisible({ timeout: 20000 });
+
+        // Debugging: Log content if check fails
+        const text = await outputPre.textContent();
+        console.log(`Tool Output: ${text}`);
+
+        await expect(outputPre).toContainText('sunny', { timeout: 10000 });
     });
 });

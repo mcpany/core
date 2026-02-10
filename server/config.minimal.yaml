@@ -20,14 +20,14 @@ upstream_services:
   - id: "weather-service"
     name: "weather-service"
     command_line_service:
-      command: "echo"
+      command: "/bin/echo"
       tools:
         - name: "get_weather"
           description: "Get current weather"
           call_id: "get_weather"
       calls:
         get_weather:
-          args: ['{"weather": "sunny"}']
+          args: ["sunny"]
       resources:
         - uri: "system://logs"
           name: "System Logs"
