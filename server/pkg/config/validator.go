@@ -281,6 +281,12 @@ func validateFileExists(ctx context.Context, path string, workingDir string) err
 		targetPath = filepath.Join(workingDir, path)
 	}
 
+	// Security: Ensure the file path is within allowed directories (CWD or allowed_paths)
+	// This prevents executing scripts/files outside the intended scope.
+	if err := validation.IsAllowedPath(targetPath); err != nil {
+		return fmt.Errorf("file path %q is not allowed: %w", targetPath, err)
+	}
+
 	info, err := osStat(targetPath)
 	if err != nil {
 		if os.IsNotExist(err) {
