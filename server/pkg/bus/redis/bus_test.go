@@ -216,7 +216,7 @@ func TestBus_Subscribe_UnmarshalError(t *testing.T) {
 	// Capture log output
 	var logBuffer ThreadSafeBuffer
 	logging.ForTestsOnlyResetLogger()
-	logging.Init(slog.LevelDebug, &logBuffer)
+	logging.Init(slog.LevelDebug, &logBuffer, "")
 	defer logging.ForTestsOnlyResetLogger()
 
 	handlerCalled := make(chan bool, 1)

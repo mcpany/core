@@ -22,7 +22,7 @@ func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
 	// This benchmark measures the overhead of logging when debug is disabled.
 	// Reset logger and set to INFO to disable DEBUG logs
 	logging.ForTestsOnlyResetLogger()
-	logging.Init(slog.LevelInfo, io.Discard)
+	logging.Init(slog.LevelInfo, io.Discard, "")
 
 	// Create a large JSON input
 	largeInput := make(map[string]interface{})

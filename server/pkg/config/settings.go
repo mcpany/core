@@ -29,6 +29,7 @@ type Settings struct {
 	debug           bool
 	logLevel        string
 	logFile         string
+	persistentLog   string
 	shutdownTimeout time.Duration
 	profiles        []string
 	dbPath          string
@@ -100,7 +101,16 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		logOutput = f
 	}
 	logFormat := viper.GetString("log-format")
-	logging.Init(logLevel, logOutput, logFormat)
+
+	// Always maintain a persistent JSON log for hydration
+	// Use configured logfile if it is JSON, otherwise use default
+	persistentLog := "mcpany.log.json"
+	if s.logFile != "" && strings.ToLower(logFormat) == "json" {
+		persistentLog = s.logFile
+	}
+	logging.Init(logLevel, logOutput, persistentLog, logFormat)
+	s.persistentLog = persistentLog
+
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
@@ -209,6 +219,11 @@ func (s *Settings) IsDebug() bool {
 // Returns the result.
 func (s *Settings) LogFile() string {
 	return s.logFile
+}
+
+// PersistentLog returns the path to the persistent log file used for hydration.
+func (s *Settings) PersistentLog() string {
+	return s.persistentLog
 }
 
 // ShutdownTimeout returns the graceful shutdown timeout.
