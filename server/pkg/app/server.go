@@ -84,6 +84,17 @@ var healthCheckClient = &http.Client{
 	},
 }
 
+// uploadFile handles file uploads.
+//
+// Summary: Handles file uploads to the server.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
+//
+// Side Effects:
+//   - Reads file from request body.
+//   - Responds with filename and size (but discards content).
 func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -1292,6 +1303,14 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 }
 
 // configHealthCheck checks the status of the configuration.
+//
+// Summary: Checks if configuration is valid.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//
+// Returns:
+//   - health.CheckResult: The result of the health check.
 func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()
@@ -1316,6 +1335,15 @@ func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
 	}
 }
 
+// filesystemHealthCheck checks the status of the filesystem access for services.
+//
+// Summary: Checks if service root paths are accessible.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//
+// Returns:
+//   - health.CheckResult: The result of the health check.
 func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResult {
 	if a.ServiceRegistry == nil {
 		return health.CheckResult{Status: "ok"}

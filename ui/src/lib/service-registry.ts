@@ -12,6 +12,12 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY is the list of available services in the marketplace.
+ *
+ * It defines the metadata for each service, including repository URL, installation command,
+ * and configuration schema.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

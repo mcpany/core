@@ -7,7 +7,7 @@
 
 **What is this project?**
 
-**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
+**MCP Any** is the universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
 **Why does it exist?**
 
@@ -172,6 +172,15 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+
+## 6. Contributing
+
+We welcome contributions! Please follow the standard GitHub workflow:
+1.  Fork the repository.
+2.  Create a feature branch.
+3.  Submit a Pull Request.
+
+Ensure your code passes all linting and testing checks (`make lint`, `make test`).
 
 ## License
 

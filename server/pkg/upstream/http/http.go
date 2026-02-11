@@ -56,6 +56,15 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints. It handles the registration of tools
 // defined in the service configuration.
+//
+// Summary: HTTP Upstream implementation.
+//
+// Fields:
+//   - poolManager: *pool.Manager. The connection pool manager.
+//   - serviceID: string. The unique service ID.
+//   - address: string. The base URL of the service.
+//   - checker: health.Checker. The health checker.
+//   - mu: sync.RWMutex. Mutex for thread safety.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -65,6 +74,14 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Checks service health.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the check.
+//
+// Returns:
+//   - error: An error if the service is unhealthy.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -86,6 +103,14 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
+//
+// Summary: Shuts down the upstream.
+//
+// Parameters:
+//   - ctx: context.Context. The context for shutdown.
+//
+// Returns:
+//   - error: An error if shutdown fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -102,11 +127,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
+// Summary: Creates a new HTTP Upstream.
+//
 // Parameters:
-//   - poolManager: The connection pool manager to be used for managing HTTP connections.
+//   - poolManager: *pool.Manager. The connection pool manager to be used for managing HTTP connections.
 //
 // Returns:
-//   - An implementation of the upstream.Upstream interface.
+//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -116,6 +143,22 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
+//
+// Summary: Registers the HTTP service and its tools.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - promptManager: prompt.ManagerInterface. The prompt manager.
+//   - resourceManager: resource.ManagerInterface. The resource manager.
+//   - isReload: bool. Whether this is a reload operation.
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: Discovered tools.
+//   - []*configv1.ResourceDefinition: Discovered resources.
+//   - error: An error if registration fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
