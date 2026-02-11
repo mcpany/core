@@ -17,7 +17,7 @@ export const seedServices = async (requestContext?: APIRequestContext, suffix: s
             name: "Payment Gateway" + suffix,
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: "http://localhost:8080", // Use local dummy address to avoid external network issues in CI
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
