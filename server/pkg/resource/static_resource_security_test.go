@@ -33,6 +33,11 @@ func TestStaticResource_SSRFProtection(t *testing.T) {
 
 	r := NewStaticResource(def, "test-service")
 
+	// Ensure HTTP client is initialized
+	if r.httpClient == nil {
+		t.Fatal("NewStaticResource returned nil httpClient")
+	}
+
 	_, err := r.Read(context.Background())
 	assert.Error(t, err)
 	// The error message comes from SafeDialer in util/net.go

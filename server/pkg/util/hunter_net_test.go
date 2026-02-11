@@ -59,6 +59,9 @@ func TestSafeDialer_Coverage(t *testing.T) {
 
 	// By default, SafeDialer blocks loopback
 	client := NewSafeHTTPClient()
+	if client == nil {
+		t.Fatal("NewSafeHTTPClient returned nil")
+	}
 	_, err := client.Get(ts.URL)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "loopback")
