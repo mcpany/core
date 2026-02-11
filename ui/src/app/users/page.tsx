@@ -19,6 +19,20 @@ import { apiClient } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Key, RotateCw, Copy, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const AVAILABLE_ROLES = [
+  { value: "admin", label: "Admin", description: "Full access to all resources and settings." },
+  { value: "editor", label: "Editor", description: "Can manage resources but cannot change global settings." },
+  { value: "viewer", label: "Viewer", description: "Read-only access to resources." },
+];
 
 interface User {
   id: string;
@@ -235,7 +249,8 @@ export default function UsersPage() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>User ID</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
+                        <TableHead>User</TableHead>
                         <TableHead>Roles</TableHead>
                         <TableHead>Auth Method</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -244,10 +259,20 @@ export default function UsersPage() {
                 <TableBody>
                     {users.map((user) => (
                         <TableRow key={user.id}>
+                             <TableCell>
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={`https://avatar.vercel.sh/${user.id}.png`} alt={user.id} />
+                                    <AvatarFallback>{user.id.substring(0, 2).toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                            </TableCell>
                             <TableCell className="font-medium">{user.id}</TableCell>
                             <TableCell>
                                 {user.roles.map(role => (
-                                    <Badge key={role} variant="outline" className="mr-1">
+                                    <Badge
+                                        key={role}
+                                        variant={role === 'admin' ? "destructive" : role === 'editor' ? "default" : "secondary"}
+                                        className="mr-1 capitalize"
+                                    >
                                         {role}
                                     </Badge>
                                 ))}
@@ -268,7 +293,7 @@ export default function UsersPage() {
                     ))}
                      {users.length === 0 && !loading && (
                         <TableRow>
-                            <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                            <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
                                 No users found.
                             </TableCell>
                         </TableRow>
@@ -307,9 +332,23 @@ export default function UsersPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Role</FormLabel>
-                      <FormControl>
-                        <Input placeholder="admin, viewer, etc." {...field} />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {AVAILABLE_ROLES.map((role) => (
+                            <SelectItem key={role.value} value={role.value}>
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium">{role.label}</span>
+                                <span className="text-xs text-muted-foreground">{role.description}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
