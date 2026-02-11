@@ -26,6 +26,9 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The authentication middleware function.
+//
+// Errors/Throws:
+//   - The returned middleware returns an error if authentication fails.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
