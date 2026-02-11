@@ -12,6 +12,10 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of known/verified MCP servers with their configuration schemas.
+ * This list is used to power the "One-Click Install" feature in the Marketplace.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

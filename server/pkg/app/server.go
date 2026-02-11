@@ -406,6 +406,12 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
+	// Seed Collections (Idempotent)
+	if err := a.seedCollections(opts.Ctx, storageStore); err != nil {
+		log.Error("Failed to seed collections", "error", err)
+		// Non-fatal, continue
+	}
+
 	// Determine config sources
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
