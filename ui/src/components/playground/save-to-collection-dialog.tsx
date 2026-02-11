@@ -21,6 +21,15 @@ interface SaveToCollectionDialogProps {
     toolArgs: Record<string, unknown>;
 }
 
+/**
+ * Dialog component for saving a tool execution as a test case in a collection.
+ *
+ * @param props - The component props
+ * @param props.open - Whether the dialog is open
+ * @param props.onOpenChange - Callback when open state changes
+ * @param props.toolName - The name of the tool to save
+ * @param props.toolArgs - The arguments used for the tool
+ */
 export function SaveToCollectionDialog({ open, onOpenChange, toolName, toolArgs }: SaveToCollectionDialogProps) {
     const [collections, setCollections] = useState<Collection[]>([]);
     const [selectedCollectionId, setSelectedCollectionId] = useState<string>("");

@@ -39,6 +39,14 @@ interface CollectionsPanelProps {
     className?: string;
 }
 
+/**
+ * Panel for managing and running test case collections.
+ * Allows creating collections, adding/removing test cases, and executing them.
+ *
+ * @param props - The component props
+ * @param props.onRunTestCase - Callback to execute a test case (tool execution)
+ * @param props.className - Optional CSS class names
+ */
 export function CollectionsPanel({ onRunTestCase, className }: CollectionsPanelProps) {
     const [collections, setCollections] = useState<Collection[]>([]);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
