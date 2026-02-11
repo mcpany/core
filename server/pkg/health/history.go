@@ -22,6 +22,9 @@ type ServiceHealthHistory struct {
 var (
 	historyStore = make(map[string]*ServiceHealthHistory)
 	historyMu    sync.RWMutex
+
+	latencyStore = make(map[string]time.Duration)
+	latencyMu    sync.RWMutex
 )
 
 // AddHealthStatus adds a status point to the history.
@@ -72,4 +75,91 @@ func GetHealthHistory() map[string][]HistoryPoint {
 		result[name] = points
 	}
 	return result
+}
+
+// UpdateLatency updates the latest latency for a service.
+func UpdateLatency(serviceName string, d time.Duration) {
+	latencyMu.Lock()
+	defer latencyMu.Unlock()
+	latencyStore[serviceName] = d
+}
+
+// GetLatestLatency returns the latest latency for a service.
+func GetLatestLatency(serviceName string) time.Duration {
+	latencyMu.RLock()
+	defer latencyMu.RUnlock()
+	return latencyStore[serviceName]
+}
+
+// CalculateUptime calculates the percentage of time a service was healthy within the given window.
+func CalculateUptime(serviceName string, window time.Duration) float64 {
+	historyMu.RLock()
+	defer historyMu.RUnlock()
+
+	hist, ok := historyStore[serviceName]
+	if !ok || len(hist.Points) == 0 {
+		return 0.0
+	}
+
+	now := time.Now()
+	startTime := now.Add(-window)
+	windowStart := startTime.UnixMilli()
+	endTime := now.UnixMilli()
+
+	var upDuration time.Duration
+	var totalDuration time.Duration
+
+	points := hist.Points
+
+	for i := 0; i < len(points); i++ {
+		var segStart, segEnd int64
+		var status string
+
+		segStart = points[i].Timestamp
+		status = points[i].Status
+
+		if i < len(points)-1 {
+			segEnd = points[i+1].Timestamp
+		} else {
+			segEnd = endTime
+		}
+
+		// Intersect [segStart, segEnd] with [windowStart, endTime]
+		overlapStart := maxInt64(segStart, windowStart)
+		overlapEnd := minInt64(segEnd, endTime)
+
+		if overlapEnd > overlapStart {
+			duration := time.Duration(overlapEnd-overlapStart) * time.Millisecond
+			totalDuration += duration
+			if isHealthy(status) {
+				upDuration += duration
+			}
+		}
+	}
+
+	if totalDuration == 0 {
+		return 0
+	}
+
+	return (float64(upDuration) / float64(totalDuration)) * 100.0
+}
+
+func isHealthy(status string) bool {
+	// Check against "up", "UP", "healthy"
+	s := status
+	return s == "up" || s == "UP" || s == "healthy" || s == "HEALTHY"
+}
+
+func maxInt64(a, b int64) int64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func minInt64(a, b int64) int64 {
+	if a < b {
+		return a
+	}
+	return b
 }

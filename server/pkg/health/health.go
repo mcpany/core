@@ -130,8 +130,10 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	check.Check = func(ctx context.Context) error {
 		start := time.Now()
 		err := originalCheck(ctx)
-		duration := time.Since(start).Seconds()
-		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration), []metrics.Label{
+		duration := time.Since(start)
+		durationSeconds := duration.Seconds()
+		UpdateLatency(serviceName, duration)
+		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(durationSeconds), []metrics.Label{
 			{Name: "service", Value: serviceName},
 			{Name: "status", Value: lo.Ternary(err == nil, "success", "failure")},
 		})

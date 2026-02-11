@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -537,8 +538,8 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: health.GetLatestLatency(name).String(),
+				Uptime:  fmt.Sprintf("%.1f%%", health.CalculateUptime(name, 24*time.Hour)),
 				Message: msg,
 			})
 		}

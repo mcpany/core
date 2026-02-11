@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,49 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestHandleDashboardHealth(t *testing.T) {
+	// Setup dependencies
+	mockRegistry := new(MockServiceRegistry)
+	app := &Application{
+		ServiceRegistry: mockRegistry,
+		statsCache:      make(map[string]statsCacheEntry),
+	}
+
+	// Mock ServiceRegistry to return a service
+	svc := &configv1.UpstreamServiceConfig{}
+	svc.SetName("test-service")
+	svc.SetId("svc-123")
+	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc}, nil)
+	mockRegistry.On("GetServiceError", "svc-123").Return("", false)
+
+	// Seed health history and latency
+	// We need to access health package internals or use public API.
+	// AddHealthStatus and UpdateLatency are public.
+	health.AddHealthStatus("test-service", "up")
+	health.UpdateLatency("test-service", 50*time.Millisecond)
+
+	// Make request
+	req, _ := http.NewRequest("GET", "/dashboard/health", nil)
+	rr := httptest.NewRecorder()
+
+	handler := app.handleDashboardHealth()
+	handler.ServeHTTP(rr, req)
+
+	// Verify response
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var resp ServiceHealthResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	require.Len(t, resp.Services, 1)
+	s := resp.Services[0]
+	assert.Equal(t, "test-service", s.Name)
+	assert.Equal(t, "healthy", s.Status)
+	assert.Equal(t, "50ms", s.Latency) // Verified dynamic value!
+
+	// Uptime check
+	assert.Contains(t, s.Uptime, "%")
 }
