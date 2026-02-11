@@ -9,6 +9,22 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
+// MOCK_SERVER_HOST allows overriding the target host for mock services.
+// In Docker Compose, this should be set to the service name (e.g. 'ui-http-echo-server').
+// In local dev, it defaults to 'localhost'.
+const MOCK_HOST = process.env.MOCK_SERVER_HOST || 'localhost';
+const MOCK_PORT = process.env.MOCK_SERVER_PORT || '5678'; // Default to echo server port if running locally? or 8080?
+// Actually local default was 8080/50051 in original file.
+// But if we want to use the echo server in docker, we need its port 5678.
+// Let's keep logic simple: use env var if present, else original defaults.
+
+const getServiceAddress = (defaultPort: string) => {
+    if (process.env.MOCK_SERVER_HOST) {
+        return `http://${process.env.MOCK_SERVER_HOST}:${process.env.MOCK_SERVER_PORT || '5678'}`;
+    }
+    return `http://localhost:${defaultPort}`;
+};
+
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -17,7 +33,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: getServiceAddress("8080"), // Use mock server instead of stripe.com to avoid external deps/flakes
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -28,7 +44,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: getServiceAddress("50051"),
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -40,7 +56,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: getServiceAddress("8080"),
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
