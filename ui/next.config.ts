@@ -4,6 +4,8 @@
  */
 
 import type {NextConfig} from 'next';
+import path from 'path';
+import fs from 'fs';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -115,8 +117,27 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // rewrites moved to middleware.ts for runtime/dynamic proxy support
-  // async rewrites() { ... }
+  webpack: (config) => {
+    // Explicitly add alias for @proto to resolve external directory
+    // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
+    const localProto = path.join(__dirname, 'proto');
+    const rootProto = path.join(__dirname, '../proto');
+    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@proto': protoPath,
+      // Force resolution for these packages to avoid "Module not found" in Docker
+      'long': path.resolve(__dirname, 'node_modules/long'),
+      '@bufbuild/protobuf/wire': path.resolve(__dirname, 'node_modules/@bufbuild/protobuf/dist/esm/wire/index.js'),
+      'browser-headers': path.resolve(__dirname, 'node_modules/browser-headers'),
+      '@improbable-eng/grpc-web': path.resolve(__dirname, 'node_modules/@improbable-eng/grpc-web'),
+    };
+
+    // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path
+    config.resolve.symlinks = false;
+    return config;
+  },
 };
 
 export default nextConfig;

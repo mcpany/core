@@ -74,12 +74,10 @@ RUN find google/api -name "*.proto" -exec protoc \
 
 WORKDIR /app
 
-# Patch tsconfig.json to look for protos in ./proto instead of ../proto
-# This ensures that TypeScript compilation finds the locally generated files
+# Patch tsconfig.json:
+# 1. Change @proto/* path to ./proto/*
+# 2. Update include to look for ./proto/**/*.ts
 RUN sed -i 's|\.\./proto|./proto|g' tsconfig.json
-
-# Verify tsconfig.json content
-RUN cat tsconfig.json
 
 # Verify generation (fail if missing)
 # Note: we check /app/proto now
