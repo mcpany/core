@@ -7,7 +7,7 @@
 
 import { apiClient, ToolDefinition } from "@/lib/client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,51 +39,119 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 
 import { useSearchParams } from "next/navigation";
 
+export interface Session {
+    id: string;
+    name: string;
+    messages: Message[];
+    updatedAt: number;
+}
+
 /**
  * PlaygroundClientPro component.
  * @returns The rendered component.
  */
 export function PlaygroundClientPro() {
-  const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
+  const [sessions, setSessions, isInitialized] = useLocalStorage<Session[]>("playground-sessions-v1", []);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+
   const [input, setInput] = useState("");
   const searchParams = useSearchParams();
 
-  // Initialize with welcome message if empty and only after local storage is loaded
+  // Initialize
   useEffect(() => {
     if (isInitialized) {
-        // We only add welcome message if the array is empty AND
-        // we check if the key was missing from localStorage (implies first visit).
-        // However, useLocalStorage handles default value if key is missing.
-        // If the user explicitly clears the chat, we set it to empty array.
-        // So `messages` being empty array means either:
-        // 1. First visit (default value used)
-        // 2. User cleared chat
-
-        // To strictly follow "persistence", if the user cleared it, it should stay cleared.
-        // But for UX, if I open the page and it's empty, a welcome message is nice.
-        // Let's rely on checking if localStorage has the key to distinguish first visit.
-        const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
-
-        if (!hasKey && messages.length === 0) {
-            setMessages([
-                {
+        if (sessions.length === 0) {
+            // Create default session
+            const defaultSession: Session = {
+                id: crypto.randomUUID(),
+                name: "New Session",
+                messages: [{
                     id: "1",
                     type: "assistant",
                     content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
                     timestamp: new Date(),
-                }
-            ]);
+                }],
+                updatedAt: Date.now()
+            };
+            setSessions([defaultSession]);
+            setCurrentSessionId(defaultSession.id);
+        } else if (!currentSessionId) {
+            // Restore last active session (most recently updated)
+            const sorted = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
+            setCurrentSessionId(sorted[0].id);
         }
     }
-  }, [isInitialized]); // Only run when initialization status changes
+  }, [isInitialized, sessions.length, currentSessionId, setSessions]);
+
+  const currentSession = useMemo(() =>
+      sessions.find(s => s.id === currentSessionId) || sessions[0],
+  [sessions, currentSessionId]);
 
   // Revive dates from stored messages (JSON strings)
   const displayMessages = useMemo(() => {
-      return messages.map(m => ({
+      if (!currentSession) return [];
+      return currentSession.messages.map(m => ({
           ...m,
           timestamp: new Date(m.timestamp)
       }));
-  }, [messages]);
+  }, [currentSession]);
+
+  const createSession = useCallback(() => {
+      const newSession: Session = {
+          id: crypto.randomUUID(),
+          name: "New Session",
+          messages: [],
+          updatedAt: Date.now()
+      };
+      setSessions(prev => [newSession, ...prev]);
+      setCurrentSessionId(newSession.id);
+  }, [setSessions]);
+
+  const switchSession = useCallback((id: string) => {
+      setCurrentSessionId(id);
+  }, []);
+
+  const renameSession = useCallback((id: string, name: string) => {
+      setSessions(prev => prev.map(s => s.id === id ? { ...s, name, updatedAt: Date.now() } : s));
+  }, [setSessions]);
+
+  const deleteSession = useCallback((id: string) => {
+      setSessions(prev => {
+          const filtered = prev.filter(s => s.id !== id);
+          if (filtered.length === 0) {
+               // Ensure at least one session exists
+               return [{
+                   id: crypto.randomUUID(),
+                   name: "New Session",
+                   messages: [],
+                   updatedAt: Date.now()
+               }];
+          }
+          return filtered;
+      });
+      if (currentSessionId === id) {
+          setCurrentSessionId(null); // Effect will pick new one
+      }
+  }, [setSessions, currentSessionId]);
+
+  const updateCurrentSessionMessages = useCallback((updater: (msgs: Message[]) => Message[]) => {
+      if (!currentSessionId) return;
+      setSessions(prev => prev.map(s => {
+          if (s.id === currentSessionId) {
+              return {
+                  ...s,
+                  messages: updater(s.messages),
+                  updatedAt: Date.now()
+              };
+          }
+          return s;
+      }));
+  }, [currentSessionId, setSessions]);
+
+  const clearCurrentSession = useCallback(() => {
+      updateCurrentSessionMessages(() => []);
+  }, [updateCurrentSessionMessages]);
+
 
   useEffect(() => {
     const tool = searchParams.get('tool');
@@ -146,10 +214,16 @@ export function PlaygroundClientPro() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    updateCurrentSessionMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
     setShowSuggestions(false);
+
+    // Auto-rename session if it's the first user message
+    if (currentSession && currentSession.messages.length <= 1 && currentSession.name === "New Session") {
+        const firstWord = input.split(' ')[0];
+        renameSession(currentSession.id, firstWord || "Session");
+    }
 
     processResponse(input);
   };
@@ -195,7 +269,7 @@ export function PlaygroundClientPro() {
              try {
                 toolArgs = JSON.parse(argsStr);
             } catch {
-                 setMessages(prev => [...prev, {
+                 updateCurrentSessionMessages(prev => [...prev, {
                     id: Date.now().toString(),
                     type: "error",
                     content: "Invalid JSON arguments. Use format: tool_name {\"key\": \"value\"}",
@@ -207,7 +281,7 @@ export function PlaygroundClientPro() {
           }
       }
 
-      setMessages(prev => [...prev, {
+      updateCurrentSessionMessages(prev => [...prev, {
           id: Date.now().toString() + "-tool",
           type: "tool-call",
           toolName: toolName,
@@ -221,36 +295,37 @@ export function PlaygroundClientPro() {
               arguments: toolArgs
           }, isDryRun);
 
-          // Find previous execution for diffing
-          let previousResult: unknown | undefined;
-          const reversedMessages = [...messages].reverse();
-          const previousCall = reversedMessages.find(m =>
-              m.type === "tool-call" &&
-              m.toolName === toolName &&
-              JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
-          );
+          updateCurrentSessionMessages(prev => {
+              let previousResult: unknown | undefined;
+              const reversedMessages = [...prev].reverse();
+              const previousCall = reversedMessages.find(m =>
+                  m.type === "tool-call" &&
+                  m.toolName === toolName &&
+                  JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
+              );
 
-          if (previousCall) {
-              const callIndex = messages.findIndex(m => m.id === previousCall.id);
-              if (callIndex !== -1 && callIndex + 1 < messages.length) {
-                  const resultMsg = messages[callIndex + 1];
-                  if (resultMsg.type === "tool-result") {
-                      previousResult = resultMsg.toolResult;
+              if (previousCall) {
+                  const callIndex = prev.findIndex(m => m.id === previousCall.id);
+                  if (callIndex !== -1 && callIndex + 1 < prev.length) {
+                      const resultMsg = prev[callIndex + 1];
+                      if (resultMsg.type === "tool-result") {
+                          previousResult = resultMsg.toolResult;
+                      }
                   }
               }
-          }
 
-          setMessages(prev => [...prev, {
-              id: Date.now().toString() + "-result",
-              type: "tool-result",
-              toolName: toolName,
-              toolResult: result,
-              previousResult,
-              timestamp: new Date(),
-          }]);
+              return [...prev, {
+                  id: Date.now().toString() + "-result",
+                  type: "tool-result",
+                  toolName: toolName,
+                  toolResult: result,
+                  previousResult,
+                  timestamp: new Date(),
+              }];
+          });
 
       } catch (err: unknown) {
-          setMessages(prev => [...prev, {
+          updateCurrentSessionMessages(prev => [...prev, {
               id: Date.now().toString(),
               type: "error",
               content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
@@ -264,7 +339,7 @@ export function PlaygroundClientPro() {
   };
 
   const handleExportHistory = () => {
-    const data = JSON.stringify(messages, null, 2);
+    const data = JSON.stringify(displayMessages, null, 2);
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -300,7 +375,7 @@ export function PlaygroundClientPro() {
             throw new Error("Invalid format: Root must be an array");
         }
 
-        setMessages(importedMessages);
+        updateCurrentSessionMessages(() => importedMessages);
         toast({
             title: "History Imported",
             description: `Successfully loaded ${importedMessages.length} messages.`
@@ -356,6 +431,12 @@ export function PlaygroundClientPro() {
              <ToolSidebar
                 tools={availableTools}
                 onSelectTool={setToolToConfigure}
+                sessions={sessions}
+                currentSessionId={currentSessionId}
+                onCreateSession={createSession}
+                onSwitchSession={switchSession}
+                onRenameSession={renameSession}
+                onDeleteSession={deleteSession}
              />
          </ResizablePanel>
 
@@ -379,6 +460,9 @@ export function PlaygroundClientPro() {
                         <h2 className="font-semibold text-sm flex items-center gap-2">
                             <Terminal className="h-4 w-4 text-primary" />
                             Console
+                            {currentSession && (
+                                <span className="text-muted-foreground font-normal"> / {currentSession.name}</span>
+                            )}
                         </h2>
                      </div>
                      <div className="flex items-center gap-2">
@@ -421,7 +505,7 @@ export function PlaygroundClientPro() {
                             variant="outline"
                             size="sm"
                             className="h-7 text-xs"
-                            onClick={() => setMessages([])}
+                            onClick={clearCurrentSession}
                             disabled={displayMessages.length === 0}
                           >
                               Clear
@@ -440,6 +524,12 @@ export function PlaygroundClientPro() {
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
                                     <Sparkles className="size-3 text-primary" />
                                     <span className="italic">Processing execution...</span>
+                                </div>
+                            )}
+                            {displayMessages.length === 0 && (
+                                <div className="flex flex-col items-center justify-center h-[50vh] text-muted-foreground">
+                                    <Terminal className="h-12 w-12 opacity-20 mb-4" />
+                                    <p>Start by selecting a tool or typing a command.</p>
                                 </div>
                             )}
                             <div className="h-4" /> {/* Spacer */}
