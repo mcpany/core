@@ -550,9 +550,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	}.Build()
 }
 
-// cleanupSessions removes sessions that have been inactive for more than 24 hours.
-// ⚡ BOLT: Prevent memory leak by cleaning up old sessions.
-// Randomized Selection from Top 5 High-Impact Targets
+// Randomized Selection from Top 5 High-Impact Targets.
 func (m *Manager) cleanupSessions() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
