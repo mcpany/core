@@ -101,3 +101,62 @@ func TestLocalCommandTool_PHPInjection_Backtick(t *testing.T) {
 	assert.Error(t, err)
 	assert.True(t, strings.Contains(err.Error(), "variable interpolation injection detected"), "Expected variable interpolation error, got: %v", err)
 }
+
+func TestLocalCommandTool_RubyInjection_Open(t *testing.T) {
+	// This test demonstrates that Ruby 'open' function should be BLOCKED
+	// even if called with alias or tricks (though open is in dangerous keywords).
+
+	t.Parallel()
+
+	toolProto := (&v1.Tool_builder{Name: proto.String("ruby-open-tool")}).Build()
+	service := (&configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("ruby"),
+		Local:   proto.Bool(true),
+	}).Build()
+
+	// Pattern: ruby -e 'puts "{{input}}"'
+	callDef := (&configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-e", "puts '{{input}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			(&configv1.CommandLineParameterMapping_builder{
+				Schema: (&configv1.ParameterSchema_builder{Name: proto.String("input")}).Build(),
+			}).Build(),
+		},
+	}).Build()
+
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
+
+	// Payload: '; open("|echo injected"); '
+	// This breaks out of single quotes using '.
+	// This should be caught by shell injection detector (value contains quote).
+	payload := "'; open(\"|echo injected\"); '"
+
+	args := map[string]interface{}{
+		"input": payload,
+	}
+	inputs, _ := json.Marshal(args)
+	req := &ExecutionRequest{
+		ToolName:   "ruby-open-tool",
+		ToolInputs: inputs,
+	}
+
+	result, err := localTool.Execute(context.Background(), req)
+
+	// We expect the security layer to BLOCK this injection.
+	assert.Error(t, err, "Expected security error, got nil")
+	if err != nil {
+		assert.True(t, strings.Contains(err.Error(), "shell injection detected") || strings.Contains(err.Error(), "interpreter injection detected"), "Error should indicate injection detected: %v", err)
+	}
+
+	if result != nil {
+		if resMap, ok := result.(map[string]interface{}); ok {
+			var output string
+			if s, ok := resMap["stdout"].(string); ok {
+				output += s
+			}
+			if strings.Contains(output, "injected") {
+				t.Errorf("VULNERABILITY CONFIRMED: Output contains 'injected'")
+			}
+		}
+	}
+}

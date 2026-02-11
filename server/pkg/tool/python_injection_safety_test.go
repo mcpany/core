@@ -5,12 +5,15 @@ package tool
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func strPtrInj(s string) *string { return &s }
@@ -86,5 +89,72 @@ func TestPythonDoubleQuoteInjection(t *testing.T) {
 
         stdout, _ := resMap["stdout"].(string)
         t.Logf("Stdout: %s", stdout)
+	}
+}
+
+func TestLocalCommandTool_PythonEvalInjection_FunctionAlias(t *testing.T) {
+	// This test demonstrates that Python interpreter injection can bypass
+	// function call checks by aliasing dangerous functions, even inside
+	// an exec/eval context which the security layer attempts to protect.
+
+	t.Parallel()
+
+	toolProto := (&pb.Tool_builder{Name: proto.String("python-eval-tool")}).Build()
+	service := (&configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("python3"),
+		Local:   proto.Bool(true),
+	}).Build()
+
+	// Pattern: python -c 'exec("{{input}}")'
+	// The config uses exec(), effectively allowing code execution,
+	// BUT the security layer attempts to filter dangerous calls like system().
+	callDef := (&configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "exec(\"{{input}}\")"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			(&configv1.CommandLineParameterMapping_builder{
+				Schema: (&configv1.ParameterSchema_builder{Name: proto.String("input")}).Build(),
+			}).Build(),
+		},
+	}).Build()
+
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
+
+	// Payload: import os; s=os.system; s('echo injected')
+	// Uses single quotes to bypass Level 1 (Double Quoted) check which blocks "
+	// Uses aliasing to bypass checkInterpreterFunctionCalls which blocks system(
+	payload := "import os; s=os.system; s('echo injected')"
+
+	args := map[string]interface{}{
+		"input": payload,
+	}
+	inputs, _ := json.Marshal(args)
+	req := &ExecutionRequest{
+		ToolName:   "python-eval-tool",
+		ToolInputs: inputs,
+	}
+
+	result, err := localTool.Execute(context.Background(), req)
+
+	// We expect the security layer to BLOCK this injection.
+	// So err should be non-nil and contain detection message.
+	assert.Error(t, err, "Expected security error, got nil")
+	if err != nil {
+		assert.Contains(t, err.Error(), "interpreter injection detected", "Error should indicate interpreter injection")
+	}
+
+	if result != nil {
+		resMap, ok := result.(map[string]interface{})
+		if ok {
+			var output string
+			if s, ok := resMap["stdout"].(string); ok {
+				output += s
+			}
+			if s, ok := resMap["combined_output"].(string); ok {
+				output += s
+			}
+			if strings.Contains(output, "injected") {
+				t.Errorf("VULNERABILITY CONFIRMED: Output contains 'injected'")
+			}
+		}
 	}
 }

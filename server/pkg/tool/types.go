@@ -2963,6 +2963,8 @@ func checkInterpreterFunctionCalls(val string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"getattr", "setattr", // Added to prevent aliasing via getattr(os, "system")
+		"passthru", "shell_exec", "proc_open", // PHP specific dangerous functions
 	}
 
 	for _, kw := range dangerousKeywords {
@@ -2974,6 +2976,30 @@ func checkInterpreterFunctionCalls(val string) error {
 			strings.Contains(cleanVal, kw+"\"") ||
 			strings.Contains(cleanVal, kw+"`") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+		}
+
+		// Sentinel Security Update: Check for dangerous patterns that indicate aliasing or import abuse.
+		// Examples: s=os.system, import os, import sys
+		// Since cleanVal removes spaces, 'import os' becomes 'importos'
+		// 's = os.system' becomes 's=os.system'
+
+		// 1. Direct Module Usage: os.system -> os.system (contains "os.")
+		if kw == "os" || kw == "sys" || kw == "subprocess" {
+			if strings.Contains(cleanVal, kw+".") {
+				return fmt.Errorf("interpreter injection detected: value contains dangerous module usage %q", kw)
+			}
+		}
+
+		// 2. Importing dangerous modules: import os -> importos
+		if kw == "os" || kw == "sys" || kw == "subprocess" {
+			if strings.Contains(cleanVal, "import"+kw) {
+				return fmt.Errorf("interpreter injection detected: value contains dangerous import %q", kw)
+			}
+		}
+
+		// 3. Aliasing via Assignment: =system, =exec
+		if strings.Contains(cleanVal, "="+kw) {
+			return fmt.Errorf("interpreter injection detected: value contains assignment of dangerous function %q", kw)
 		}
 	}
 
