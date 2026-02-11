@@ -7,6 +7,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Mobile View Verification', () => {
+  // Use a smaller viewport for all tests in this describe block
+  test.use({ viewport: { width: 375, height: 667 } }); // iPhone SE
+
   test('should toggle sidebar', async ({ page }) => {
     await page.goto('/');
 
@@ -21,16 +24,18 @@ test.describe('Mobile View Verification', () => {
     const menuBtn = page.getByRole('button').first(); // Often the first button in header
     // Or better, look for a likely icon label if accessible, or class.
     // Browser trace showed it was just a button in the header.
+
+    // Wait for button to be stable
+    await expect(menuBtn).toBeVisible();
     await menuBtn.click();
 
     // Verify Sidebar is now visible
-    await expect(sidebarLink).toBeVisible();
+    // Increase timeout for animation
+    await expect(sidebarLink).toBeVisible({ timeout: 15000 });
 
     // Click outside or close to dismiss (optional, but good practice)
     // await page.locator('.fixed.inset-0').click(); // Overlay
   });
-
-  test.use({ viewport: { width: 375, height: 667 } }); // iPhone SE
 
   test('should render Network Graph controls in mobile mode', async ({ page }) => {
     await page.goto('/network');

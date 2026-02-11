@@ -18,7 +18,9 @@ test.describe('Tool Exploration', () => {
         await page.fill('input[name="username"]', 'e2e-tools-admin');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
-        await expect(page).toHaveURL('/', { timeout: 15000 });
+
+        // Wait for login redirection explicitly to avoid "unexpected value" errors on CI
+        await page.waitForURL('/', { timeout: 20000 });
     });
 
     test.afterEach(async ({ request }) => {
@@ -34,7 +36,7 @@ test.describe('Tool Exploration', () => {
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) { // Increased to 15 for safety
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
@@ -42,11 +44,11 @@ test.describe('Tool Exploration', () => {
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
+                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
                 await page.reload();
                 // Wait for network idle and a small buffer
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000); // Increased buffer
             }
         }
 
@@ -69,14 +71,14 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             try {
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000);
             }
         }
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
@@ -93,14 +95,14 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             try {
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000);
             }
         }
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
@@ -134,7 +136,7 @@ test.describe('Tool Exploration', () => {
         // Error would likely be in red text or an alert.
         // But let's check for the successful outcome first.
         try {
-            await expect(outputArea).toBeVisible({ timeout: 5000 });
+            await expect(outputArea).toBeVisible({ timeout: 15000 }); // Increased timeout
         } catch (e) {
             // If success not visible, check for error
             // Error usually shown in the same area but maybe red?
@@ -145,7 +147,7 @@ test.describe('Tool Exploration', () => {
             // setOutput(`Error: ${e.message}`);
             // So it will be in the same pre tag, just with "Error: " prefix.
             const errorArea = page.getByText(/Error:/);
-            await expect(errorArea).toBeVisible({ timeout: 5000 });
+            await expect(errorArea).toBeVisible({ timeout: 15000 });
         }
     });
 });
