@@ -22,7 +22,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     { name: "process_payment", description: "Process a payment", call_id: "pay" }
                 ],
                 calls: {
-                    pay: { method: "POST", endpoint_path: "/v1/charges" }
+                    pay: { method: "HTTP_METHOD_POST", endpoint_path: "/v1/charges" }
                 }
             }
         },
@@ -36,7 +36,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                      { name: "get_user", description: "Get user details", call_id: "get" }
                 ],
                 calls: {
-                    get: { method: "GET", endpoint_path: "/users/1" }
+                    get: { method: "HTTP_METHOD_GET", endpoint_path: "/users/1" }
                 }
             }
         },
@@ -51,7 +51,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     { name: "calculator", description: "calc", call_id: "do_calc" }
                 ],
                 calls: {
-                    do_calc: { method: "POST", endpoint_path: "/calc" }
+                    do_calc: { method: "HTTP_METHOD_POST", endpoint_path: "/calc" }
                 }
             }
         },
