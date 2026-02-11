@@ -20,6 +20,10 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
+/**
+ * The Form component is a wrapper around react-hook-form's FormProvider.
+ * It provides the form context to all child components.
+ */
 const Form = FormProvider
 
 type FormFieldContextValue<
@@ -33,6 +37,13 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+/**
+ * FormField is a wrapper around react-hook-form's Controller.
+ * It provides context for the field name and handles registration.
+ *
+ * @param props - The controller props.
+ * @returns The rendered field provider and controller.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -46,6 +57,13 @@ const FormField = <
   )
 }
 
+/**
+ * useFormField hook to access field state and context.
+ * Must be used within a <FormField>.
+ *
+ * @returns The field state, ID, and descriptive IDs for ARIA attributes.
+ * @throws Error if used outside of <FormField>.
+ */
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)

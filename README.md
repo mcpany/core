@@ -7,11 +7,19 @@
 
 **What is this project?**
 
-**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
+**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, GraphQL, Command-line) and AI agents.
 
 **Why does it exist?**
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
+
+**Key Features:**
+
+*   **Configuration over Code**: Enable new capabilities via YAML/JSON config, not new binaries.
+*   **Universal Adapter**: Supports gRPC, OpenAPI, HTTP, GraphQL, and CLI commands.
+*   **Dynamic Discovery**: Auto-discovers tools from Proto files, OpenAPI specs, or Reflection.
+*   **Enterprise Security**: Built-in Policy Engine for strict egress control, DLP, and audit logging.
+*   **Secret Management**: Upstream authentication (API Keys, mTLS, OAuth) is handled by the proxy, keeping secrets away from the AI.
 
 ## 2. Architecture
 
@@ -62,6 +70,8 @@ Follow these steps to get up and running with MCP Any immediately.
 
 ### Installation
 
+#### Option A: Build from Source
+
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/mcpany/core.git
@@ -84,6 +94,15 @@ Follow these steps to get up and running with MCP Any immediately.
     ```bash
     ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
     ```
+
+#### Option B: Docker Quickstart
+
+```bash
+docker run -p 50050:50050 \
+  -v $(pwd)/server/examples/popular_services/wttr.in/config.yaml:/etc/mcpany/config.yaml \
+  mcpany/server:latest \
+  run --config-path /etc/mcpany/config.yaml
+```
 
 ### Hello World
 
@@ -120,12 +139,14 @@ make test
 ### Linting
 We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
+*   **TypeScript:** We use `eslint` with strict rules for TSDoc.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
 To run linters:
 ```bash
 make lint
 ```
+(Note: `make lint` covers both Go and TypeScript components)
 
 ### Building
 Compile the server binary and UI assets.
@@ -159,6 +180,7 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow connections to local IPs (Dev only) | `false` |
 
 ### Required Secrets
 

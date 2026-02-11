@@ -3,15 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents a service available in the registry.
+ */
 export interface ServiceRegistryItem {
+  /** The unique identifier for the service (e.g., "postgres"). */
   id: string;
+  /** The display name of the service (e.g., "PostgreSQL"). */
   name: string;
-  repo: string; // Used for matching against community URLs
+  /** The repository URL, used for matching against community URLs. */
+  repo: string;
+  /** The command to install/run the service (e.g., "npx -y @modelcontextprotocol/server-postgres"). */
   command: string;
+  /** A brief description of the service's capabilities. */
   description: string;
+  /** The JSON Schema for the service's configuration. */
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * A curated list of popular services available for one-click configuration.
+ *
+ * This registry is used to populate the "Add Service" wizard and provide
+ * default configurations for common tools.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
