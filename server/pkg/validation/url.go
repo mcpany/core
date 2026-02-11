@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -73,6 +74,82 @@ var IsSafeURL = func(urlStr string) error {
 
 	ips, err := lookupIPFunc(ctx, "ip", host)
 	if err != nil {
+		return fmt.Errorf("failed to resolve host %q: %w", host, err)
+	}
+
+	if len(ips) == 0 {
+		return fmt.Errorf("no IP addresses found for host %q", host)
+	}
+
+	// Check all resolved IPs
+	for _, ip := range ips {
+		if err := validateIP(ip, allowLoopback, allowPrivate); err != nil {
+			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
+		}
+	}
+
+	return nil
+}
+
+// IsSafeURLGenerous checks if the URL is safe, allowing a broader set of schemes
+// but still blocking loopback/private IPs.
+//
+// This is suitable for CLI tools that support various protocols (git, ssh, ftp, etc.)
+// but should still be prevented from accessing internal network resources (SSRF protection).
+var IsSafeURLGenerous = func(urlStr string) error {
+	// Bypass if explicitly allowed (for testing/development)
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
+		return nil
+	}
+
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
+
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		// Not a valid URL structure, likely a simple string argument.
+		// We don't enforce URL checks on non-URLs.
+		return nil
+	}
+
+	// If scheme is missing, it's treated as a relative path or string.
+	// We only validate if a scheme is present to catch "http://..." etc.
+	if u.Scheme == "" {
+		return nil
+	}
+
+	// Explicitly block file scheme
+	if strings.EqualFold(u.Scheme, "file") {
+		return fmt.Errorf("file scheme is not allowed")
+	}
+
+	// If host is missing, it might be opaque (like mailto:user@domain).
+	// We primarily care about network requests to specific hosts.
+	if u.Host == "" {
+		return nil
+	}
+
+	// Resolve Host
+	host := u.Hostname()
+	if host == "" {
+		return nil
+	}
+
+	// Check if host is an IP literal
+	if ip := net.ParseIP(host); ip != nil {
+		return validateIP(ip, allowLoopback, allowPrivate)
+	}
+
+	// Resolve Domain
+	// Use a timeout for resolution
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	ips, err := lookupIPFunc(ctx, "ip", host)
+	if err != nil {
+		// If resolution fails, we fail closed for security?
+		// Or assume it's safe if it doesn't resolve?
+		// Standard SSRF protection usually fails closed.
 		return fmt.Errorf("failed to resolve host %q: %w", host, err)
 	}
 

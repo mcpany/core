@@ -3304,6 +3304,13 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
+	// Sentinel Security Update: Check for SSRF (Server-Side Request Forgery) in command arguments.
+	// This prevents tools from accessing internal network resources (localhost, private IPs, metadata services)
+	// unless explicitly allowed via configuration.
+	if err := validation.IsSafeURLGenerous(val); err != nil {
+		return fmt.Errorf("unsafe URL: %w", err)
+	}
+
 	if err := checkForArgumentInjection(val); err != nil {
 		return err
 	}
