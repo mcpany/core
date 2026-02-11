@@ -61,7 +61,9 @@ const TypeBadge = ({ type }: { type: string }) => {
  * @returns The rendered component.
  */
 const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps) => {
-  const [expanded, setExpanded] = useState(true);
+  // ⚡ BOLT: Default to collapsed for deeper levels to prevent recursive rendering of large schemas.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const [expanded, setExpanded] = useState(level < 2);
 
   if (!schema) return null;
 
