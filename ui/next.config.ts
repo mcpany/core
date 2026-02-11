@@ -134,16 +134,11 @@ const nextConfig: NextConfig = {
       '@google': path.join(protoPath, 'google'),
     };
 
-    // Use standard require.resolve for robust dependency lookup,
-    // but wrap in try-catch to avoid breaking local dev if node_modules are weird.
-    try {
-       config.resolve.alias['long'] = require.resolve('long');
-       config.resolve.alias['@bufbuild/protobuf/wire'] = require.resolve('@bufbuild/protobuf/wire');
-       config.resolve.alias['browser-headers'] = require.resolve('browser-headers');
-       config.resolve.alias['@improbable-eng/grpc-web'] = require.resolve('@improbable-eng/grpc-web');
-    } catch (e) {
-       console.warn('Failed to resolve robust aliases, falling back to standard resolution:', e);
-    }
+    // Note: We intentionally do NOT alias libraries like 'long' or '@bufbuild/protobuf' here.
+    // Since we are now generating code into src/proto (inside the project root),
+    // standard Node.js module resolution should work correctly for finding dependencies
+    // in node_modules without explicit aliases.
+    // Explicit aliases can sometimes cause issues with ESM/CJS interop if not careful.
 
     config.resolve.symlinks = false;
     return config;
