@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,6 +19,21 @@ import (
 func TestStore_SSRF_Protection(t *testing.T) {
 	// This test confirms that the SSRF protection blocks access to 127.0.0.1.
 	// It relies on the default configuration of the secure http client.
+
+	// Ensure dangerous mode is OFF for this test, even if running in CI
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+
+	// Swap the global httpClient with a fresh one that respects the cleared environment
+	oldClient := httpClient
+	defer func() { httpClient = oldClient }()
+
+	httpClient = util.NewSafeHTTPClient()
+	httpClient.Timeout = 5 * time.Second
+	httpClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
 
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

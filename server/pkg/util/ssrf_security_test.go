@@ -7,7 +7,6 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 	"time"
 
@@ -26,9 +25,9 @@ func TestSSRFProtection(t *testing.T) {
 	// 1. Default behavior: Block local IPs
 	t.Run("BlockLocalIPs", func(t *testing.T) {
 		// Ensure environment variables are unset
-		os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
-		os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
-		os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 
 		client := NewSafeHTTPClient()
 		// Reduce timeout for test speed
@@ -50,8 +49,8 @@ func TestSSRFProtection(t *testing.T) {
 
 	// 2. Allow Loopback behavior
 	t.Run("AllowLoopback", func(t *testing.T) {
-		os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
-		defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 		client := NewSafeHTTPClient()
 		client.Timeout = 1 * time.Second
