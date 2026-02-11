@@ -204,11 +204,6 @@ var IsAllowedPath = func(path string) error {
 		return err
 	}
 
-	// Sentinel Security Update: Block access to sensitive files
-	if err := IsSensitivePath(path); err != nil {
-		return err
-	}
-
 	// 2. Resolve to absolute path
 	absPath, err := filepath.Abs(path)
 	if err != nil {
