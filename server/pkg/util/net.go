@@ -158,6 +158,12 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
+// isTrue checks if a string value represents "true", handling optional quotes and case insensitivity.
+func isTrue(val string) bool {
+	val = strings.Trim(strings.TrimSpace(val), "'\"")
+	return strings.ToLower(val) == TrueStr
+}
+
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.
@@ -167,15 +173,23 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Configuration is loaded from environment variables:
 //   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
+//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow both loopback and private.
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+
+	// Allow overriding safety checks via environment variables (consistent with CheckConnection)
+	if isTrue(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")) {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
+
+	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
@@ -234,16 +248,16 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")) {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 
