@@ -50,7 +50,8 @@ const nextConfig: NextConfig = {
     //   },
     // },
   },
-  transpilePackages: ['@bufbuild/protobuf', 'long', 'browser-headers', '@improbable-eng/grpc-web'],
+  // Only transpile packages that are strictly necessary and might be ESM-only or untranspiled
+  transpilePackages: ['@bufbuild/protobuf', '@improbable-eng/grpc-web'],
   async headers() {
     const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
@@ -124,21 +125,17 @@ const nextConfig: NextConfig = {
     const rootProto = path.join(__dirname, '../proto');
 
     // In Docker, we generate to src/proto. Locally, we might use ../proto.
-    // Check if src/proto/config exists (it should in Docker)
+    // Check if src/proto exists directly, which is more robust than checking for a subfolder
     const fs = require('fs');
-    const protoPath = fs.existsSync(path.join(srcProto, 'config')) ? srcProto : rootProto;
+    const protoPath = fs.existsSync(srcProto) ? srcProto : rootProto;
+
+    console.log(`[Next.js Config] Resolving @proto alias to: ${protoPath}`);
 
     config.resolve.alias = {
       ...config.resolve.alias,
       '@proto': protoPath,
       '@google': path.join(protoPath, 'google'),
     };
-
-    // Note: We intentionally do NOT alias libraries like 'long' or '@bufbuild/protobuf' here.
-    // Since we are now generating code into src/proto (inside the project root),
-    // standard Node.js module resolution should work correctly for finding dependencies
-    // in node_modules without explicit aliases.
-    // Explicit aliases can sometimes cause issues with ESM/CJS interop if not careful.
 
     config.resolve.symlinks = false;
     return config;
