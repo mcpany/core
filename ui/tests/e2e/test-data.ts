@@ -73,6 +73,18 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     }
                 }
             }
+        },
+        // ⚡ Bolt Fix: Dedicated service for Diff/Edit tests to avoid concurrency conflicts with Payment Gateway
+        {
+            id: "svc_diff",
+            name: "Diff Service",
+            version: "v1.0",
+            http_service: {
+                address: "http://localhost:50051", // Dummy address is fine for config editing tests
+                tools: [
+                    { name: "diff_tool", description: "Tool for diffing" }
+                ]
+            }
         }
     ];
 
@@ -133,6 +145,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        await context.delete('/api/v1/services/Diff Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
