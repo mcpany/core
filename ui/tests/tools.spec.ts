@@ -45,9 +45,9 @@ test.describe('Tool Exploration', () => {
             } catch (e) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/20)`);
                 await page.reload();
-                // Wait for network idle and a small buffer
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
+                // Wait for DOM content loaded and a small buffer to avoid networkidle flakes and long timeouts
+                await page.waitForLoadState('domcontentloaded');
+                await page.waitForTimeout(1000);
             }
         }
 
