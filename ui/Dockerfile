@@ -14,12 +14,12 @@ COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 # Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
 RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
 
-# Install protoc for generating types
-RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
-
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+
+# Install protoc for generating types
+RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
