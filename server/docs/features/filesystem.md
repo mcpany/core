@@ -94,7 +94,8 @@ When a filesystem service is configured, it automatically registers the followin
 - `list_directory`: List files and directories in a given path.
 - `read_file`: Read the content of a file.
 - `write_file`: Write content to a file (disabled if `read_only` is true).
-- `delete_file`: Delete a file or empty directory (disabled if `read_only` is true).
+- `delete_file`: Delete a file or directory. Supports `recursive: true` for non-empty directories (disabled if `read_only` is true).
+- `move_file`: Move or rename a file or directory (disabled if `read_only` is true).
 - `search_files`: Search for a text pattern (regex) in files within a directory.
 - `get_file_info`: Get metadata (size, mod time) about a file or directory.
 
