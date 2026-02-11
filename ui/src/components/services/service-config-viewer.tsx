@@ -84,6 +84,15 @@ function ConfigRow({ label, value, secret = false }: { label: string; value: Rea
     );
 }
 
+/**
+ * ServiceConfigViewer displays the read-only configuration of an upstream service.
+ * It provides categorized views for Identity, Connection, Authentication, and Policies,
+ * with secure masking for sensitive values.
+ *
+ * @param props - The component props.
+ * @param props.service - The upstream service configuration to display.
+ * @returns The rendered configuration viewer.
+ */
 export function ServiceConfigViewer({ service }: ServiceConfigViewerProps) {
     const type = service.httpService ? "HTTP" :
                  service.grpcService ? "gRPC" :

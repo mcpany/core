@@ -25,13 +25,18 @@ test.describe('Service Config Viewer', () => {
             api_key: {
                 in: 0, // Header
                 param_name: "X-My-Key",
-                value: { plain_text: "super-secret-key" }
+                value: { plainText: "super-secret-key" }
             }
         },
         priority: 5,
         tags: ["test", "e2e"]
       }
     });
+
+    if (!response.ok()) {
+        console.error(`Failed to seed service: ${response.status} ${response.statusText}`);
+        console.error(await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
