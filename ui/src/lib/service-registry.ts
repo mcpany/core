@@ -3,15 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Interface representing a service registry item.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
   repo: string; // Used for matching against community URLs
   command: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * A curated registry of known services and their configuration schemas.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

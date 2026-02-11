@@ -21,6 +21,13 @@ interface OnboardingWizardProps {
     onComplete: () => void;
 }
 
+/**
+ * OnboardingWizard component.
+ * Guides the user through the initial setup process, offering a one-click demo deployment.
+ *
+ * @param props - Component props.
+ * @param props.onComplete - Callback fired when the onboarding is successfully completed.
+ */
 export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     const [step, setStep] = useState<"welcome" | "deploying" | "success" | "error">("welcome");
     const [error, setError] = useState<string | null>(null);
