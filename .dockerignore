@@ -21,6 +21,7 @@ ui/playwright-report
 ui/coverage
 ui/*.log
 
+!proto/**/*.ts
 proto/node_modules
 **/node_modules
 server/tools/go
