@@ -5,7 +5,6 @@
 
 import type {NextConfig} from 'next';
 import path from 'path';
-import fs from 'fs';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -51,6 +50,7 @@ const nextConfig: NextConfig = {
     //   },
     // },
   },
+  transpilePackages: ['@bufbuild/protobuf', 'long', 'browser-headers', '@improbable-eng/grpc-web'],
   async headers() {
     const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
@@ -117,12 +117,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config, { isServer }) => {
-    // Explicitly add alias for @proto to resolve external directory
-    // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
-    const localProto = path.join(__dirname, 'proto');
+  webpack: (config) => {
+    // Explicitly add alias for @proto to resolve generated source directory
+    const srcProto = path.join(__dirname, 'src/proto');
+    // Local dev fallback (if we run locally without Docker/src-gen)
     const rootProto = path.join(__dirname, '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+
+    // In Docker, we generate to src/proto. Locally, we might use ../proto.
+    // Check if src/proto/config exists (it should in Docker)
+    const fs = require('fs');
+    const protoPath = fs.existsSync(path.join(srcProto, 'config')) ? srcProto : rootProto;
 
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -130,19 +134,17 @@ const nextConfig: NextConfig = {
       '@google': path.join(protoPath, 'google'),
     };
 
-    // Force resolution for these packages using require.resolve() to handle module resolution correctly in Docker
-    // This bypasses potential issues with path.resolve() assumptions about node_modules structure
+    // Use standard require.resolve for robust dependency lookup,
+    // but wrap in try-catch to avoid breaking local dev if node_modules are weird.
     try {
-        config.resolve.alias['long'] = require.resolve('long');
-        config.resolve.alias['@bufbuild/protobuf/wire'] = require.resolve('@bufbuild/protobuf/wire');
-        config.resolve.alias['browser-headers'] = require.resolve('browser-headers');
-        config.resolve.alias['@improbable-eng/grpc-web'] = require.resolve('@improbable-eng/grpc-web');
+       config.resolve.alias['long'] = require.resolve('long');
+       config.resolve.alias['@bufbuild/protobuf/wire'] = require.resolve('@bufbuild/protobuf/wire');
+       config.resolve.alias['browser-headers'] = require.resolve('browser-headers');
+       config.resolve.alias['@improbable-eng/grpc-web'] = require.resolve('@improbable-eng/grpc-web');
     } catch (e) {
-        console.error('Failed to resolve aliases via require.resolve:', e);
-        // Fallback or let webpack fail naturally if modules are missing
+       console.warn('Failed to resolve robust aliases, falling back to standard resolution:', e);
     }
 
-    // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path
     config.resolve.symlinks = false;
     return config;
   },

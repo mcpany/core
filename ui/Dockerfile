@@ -35,59 +35,56 @@ RUN curl -sSL https://github.com/googleapis/googleapis/archive/master.zip -o goo
     unzip -q googleapis.zip && \
     mv googleapis-master /googleapis
 
-# Create local proto directory in app
-RUN mkdir -p /app/proto
+# Create local proto directory in app/src/proto
+# This ensures files are within the Next.js src root
+RUN mkdir -p /app/src/proto
 
 # 1. Generate Repo Protos
 # Input: /proto/... (relative to /proto)
-# Output: /app/proto/...
+# Output: /app/src/proto/...
 WORKDIR /proto
 RUN find . -name "*.proto" -exec protoc \
     --proto_path=. \
     --proto_path=/googleapis \
     --proto_path=/usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/app/proto \
+    --ts_proto_out=/app/src/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
 # 2. Generate Standard Protos (google/protobuf/*.proto)
-# Output: /app/proto/google/protobuf/...
+# Output: /app/src/proto/google/protobuf/...
 WORKDIR /usr/include
 RUN find google/protobuf -name "*.proto" -exec protoc \
     --proto_path=. \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/app/proto \
+    --ts_proto_out=/app/src/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
 # 3. Generate Google APIs (google/api/*.proto)
-# Output: /app/proto/google/api/...
+# Output: /app/src/proto/google/api/...
 WORKDIR /googleapis
 RUN find google/api -name "*.proto" -exec protoc \
     --proto_path=. \
     --proto_path=/usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/app/proto \
+    --ts_proto_out=/app/src/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
 WORKDIR /app
 
 # Patch tsconfig.json:
-# 1. Change @proto/* path to ./proto/*
-# 2. Update include to look for ./proto/**/*.ts
-RUN sed -i 's|\.\./proto|./proto|g' tsconfig.json
+# Change @proto/* path to ./src/proto/*
+RUN sed -i 's|\.\./proto|./src/proto|g' tsconfig.json
 
 # Verify generation (fail if missing)
-# Note: we check /app/proto now
+# Note: we check /app/src/proto now
 RUN echo "Checking for generated files..." && \
-    ls -l /app/proto/config/v1/auth.ts || (echo "auth.ts MISSING" && exit 1) && \
-    ls -l /app/proto/google/protobuf/struct.ts || (echo "struct.ts MISSING" && exit 1) && \
-    ls -l /app/proto/google/api/annotations.ts || (echo "annotations.ts MISSING" && exit 1)
-
-# Ensure node_modules exists (basic sanity check)
-RUN ls -d node_modules || (echo "node_modules missing" && exit 1)
+    ls -l /app/src/proto/config/v1/auth.ts || (echo "auth.ts MISSING" && exit 1) && \
+    ls -l /app/src/proto/google/protobuf/struct.ts || (echo "struct.ts MISSING" && exit 1) && \
+    ls -l /app/src/proto/google/api/annotations.ts || (echo "annotations.ts MISSING" && exit 1)
 
 # -----------------------------------------------------------------------------
 
