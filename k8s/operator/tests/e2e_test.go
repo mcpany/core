@@ -159,7 +159,15 @@ nodes:
 
 	// 6.5 Deploy http-echo-server (after namespace creation)
 	t.Log("Deploying http-echo-server as dummy service...")
-	// Use explicit Pod YAML to guarantee ImagePullPolicy: Never
+	// List loaded images for debugging
+	t.Log("Listing loaded images in Kind...")
+	// Use crictl via docker exec on the kind node
+	if err := runCommand(t, ctx, rootDir, "docker", "exec", clusterName+"-control-plane", "crictl", "images"); err != nil {
+		t.Logf("Failed to list images: %v", err)
+	}
+
+	// Use explicit Pod YAML with ImagePullPolicy: IfNotPresent (safer default than Never if tag is tricky)
+	// But :local tag should force local usage.
 	podYAML := fmt.Sprintf(`
 apiVersion: v1
 kind: Pod
@@ -172,7 +180,7 @@ spec:
   containers:
   - name: echo-server
     image: mcpany/http-echo-server:local
-    imagePullPolicy: Never
+    imagePullPolicy: IfNotPresent
     ports:
     - containerPort: 8080
 `, namespace)
