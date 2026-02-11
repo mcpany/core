@@ -76,8 +76,8 @@ services:
     command:
       - "--port=5678"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5678/"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5678/health"]
       interval: 2s
       timeout: 2s
       retries: 5
-      start_period: 1s
+      start_period: 5s
