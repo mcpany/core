@@ -660,7 +660,13 @@ export const apiClient = {
 
     /**
      * Lists all available tools.
+     *
+     * Summary: Retrieves a list of all tools exposed by registered services.
+     *
      * @returns A promise that resolves to a list of tools.
+     * @throws {Error} If the network request fails or the response is not OK.
+     *
+     * Side Effects: Makes a GET request to /api/v1/tools.
      */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
@@ -679,9 +685,15 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
-     * @param request The execution request (tool name, arguments, etc.).
-     * @param dryRun If true, performs a dry run without side effects.
+     *
+     * Summary: Invokes a specific tool on an upstream service.
+     *
+     * @param request - The execution request object containing tool name and arguments.
+     * @param dryRun - If true, performs a dry run without executing side effects.
      * @returns A promise that resolves to the execution result.
+     * @throws {Error} If the execution fails or the server returns an error.
+     *
+     * Side Effects: Makes a POST request to /api/v1/execute, potentially triggering external actions.
      */
     executeTool: async (request: any, dryRun?: boolean) => {
         try {
@@ -731,7 +743,13 @@ export const apiClient = {
 
     /**
      * Lists all available resources.
+     *
+     * Summary: Retrieves a list of resources exposed by registered services.
+     *
      * @returns A promise that resolves to a list of resources.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/resources.
      */
     listResources: async () => {
         const res = await fetchWithAuth('/api/v1/resources');
@@ -741,8 +759,14 @@ export const apiClient = {
 
     /**
      * Reads the content of a resource.
-     * @param uri The URI of the resource to read.
+     *
+     * Summary: Fetches the content of a specific resource by URI.
+     *
+     * @param uri - The URI of the resource to read.
      * @returns A promise that resolves to the resource content.
+     * @throws {Error} If the resource cannot be read or found.
+     *
+     * Side Effects: Makes a GET request to /api/v1/resources/read.
      */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
@@ -768,7 +792,13 @@ export const apiClient = {
 
     /**
      * Lists all available prompts.
+     *
+     * Summary: Retrieves a list of prompts exposed by registered services.
+     *
      * @returns A promise that resolves to a list of prompts.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/prompts.
      */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
@@ -793,9 +823,15 @@ export const apiClient = {
 
     /**
      * Executes a prompt with the given arguments.
-     * @param name The name of the prompt.
-     * @param args The arguments for the prompt.
-     * @returns A promise that resolves to the prompt execution result.
+     *
+     * Summary: Invokes a specific prompt on an upstream service.
+     *
+     * @param name - The name of the prompt to execute.
+     * @param args - Key-value pairs of arguments for the prompt.
+     * @returns A promise that resolves to the prompt result.
+     * @throws {Error} If execution fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/prompts/execute.
      */
     executePrompt: async (name: string, args: Record<string, string>) => {
         const res = await fetchWithAuth('/api/v1/prompts/execute', {
@@ -907,7 +943,14 @@ export const apiClient = {
 
     /**
      * Creates a new profile.
-     * @param profileData The profile configuration.
+     *
+     * Summary: Registers a new profile with the given configuration.
+     *
+     * @param profileData - The configuration object for the new profile.
+     * @returns A promise that resolves to the created profile.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/profiles.
      */
     createProfile: async (profileData: any) => {
         const res = await fetchWithAuth('/api/v1/profiles', {
@@ -947,6 +990,13 @@ export const apiClient = {
 
     /**
      * Lists all profiles.
+     *
+     * Summary: Retrieves all registered profiles.
+     *
+     * @returns A promise that resolves to a list of profiles.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/profiles.
      */
     listProfiles: async () => {
         const res = await fetchWithAuth('/api/v1/profiles');
@@ -962,7 +1012,13 @@ export const apiClient = {
 
     /**
      * Lists all stored secrets.
+     *
+     * Summary: Retrieves all stored secrets.
+     *
      * @returns A promise that resolves to a list of secrets.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/secrets.
      */
     listSecrets: async () => {
         const res = await fetchWithAuth('/api/v1/secrets');
@@ -1081,7 +1137,13 @@ export const apiClient = {
 
     /**
      * Lists all alerts.
+     *
+     * Summary: Retrieves a list of triggered alerts.
+     *
      * @returns A promise that resolves to a list of alerts.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts.
      */
     listAlerts: async () => {
         const res = await fetchWithAuth('/api/v1/alerts');
@@ -1091,7 +1153,13 @@ export const apiClient = {
 
     /**
      * Lists all alert rules.
+     *
+     * Summary: Retrieves all configured alert rules.
+     *
      * @returns A promise that resolves to a list of alert rules.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts/rules.
      */
     listAlertRules: async () => {
         const res = await fetchWithAuth('/api/v1/alerts/rules');
@@ -1101,8 +1169,14 @@ export const apiClient = {
 
     /**
      * Creates a new alert rule.
-     * @param rule The rule to create.
+     *
+     * Summary: Creates a new rule for triggering alerts.
+     *
+     * @param rule - The alert rule configuration.
      * @returns A promise that resolves to the created rule.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/alerts/rules.
      */
     createAlertRule: async (rule: any) => {
         const res = await fetchWithAuth('/api/v1/alerts/rules', {
@@ -1182,7 +1256,13 @@ export const apiClient = {
 
     /**
      * Gets the system status.
+     *
+     * Summary: Retrieves the current health and status of the system.
+     *
      * @returns A promise that resolves to the system status.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/system/status.
      */
     getSystemStatus: async (): Promise<SystemStatus> => {
         const res = await fetchWithAuth('/api/v1/system/status');
@@ -1276,7 +1356,13 @@ export const apiClient = {
 
     /**
      * Lists all service collections (stacks).
+     *
+     * Summary: Retrieves all registered service collections.
+     *
      * @returns A promise that resolves to a list of collections.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/collections.
      */
     listCollections: async () => {
         const res = await fetchWithAuth('/api/v1/collections');
@@ -1395,7 +1481,13 @@ export const apiClient = {
 
     /**
      * Lists all users.
+     *
+     * Summary: Retrieves all registered users.
+     *
      * @returns A promise that resolves to a list of users.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/users.
      */
     listUsers: async () => {
         // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
@@ -1512,7 +1604,13 @@ export const apiClient = {
 
     /**
      * Lists all stored credentials.
+     *
+     * Summary: Retrieves all stored credentials.
+     *
      * @returns A promise that resolves to a list of credentials.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/credentials.
      */
     listCredentials: async () => {
         const res = await fetchWithAuth('/api/v1/credentials');
@@ -1593,7 +1691,13 @@ export const apiClient = {
 
     /**
      * Lists all service templates.
+     *
+     * Summary: Retrieves all persisted service templates.
+     *
      * @returns A promise that resolves to a list of templates.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/templates.
      */
     listTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
@@ -1695,7 +1799,13 @@ export const apiClient = {
 
     /**
      * Gets the doctor status report.
+     *
+     * Summary: Runs a full system diagnostic and returns the report.
+     *
      * @returns A promise that resolves to the doctor report.
+     * @throws {Error} If the diagnostics fail to run.
+     *
+     * Side Effects: Makes a GET request to /api/v1/doctor.
      */
     getDoctorStatus: async (): Promise<DoctorReport> => {
         const res = await fetchWithAuth('/api/v1/doctor');

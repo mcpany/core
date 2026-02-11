@@ -120,7 +120,14 @@ make test
 ### Linting
 We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
+*   **TypeScript:** We use `check-ts-doc` to enforce JSDoc standards.
 *   **Protocol:** We check for breaking changes in `.proto` files.
+
+### Documentation Standards
+We adhere to a strict "Gold Standard" for documentation.
+*   **Go:** All exported symbols must have GoDoc comments.
+*   **TypeScript:** All exported symbols must have JSDoc comments.
+*   **Structure:** Comments must include a summary, parameters, returns, errors, and side effects where applicable.
 
 To run linters:
 ```bash
