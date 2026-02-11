@@ -135,7 +135,14 @@ const nextConfig: NextConfig = {
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
-  // async rewrites() { ... }
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/v1/:path*',
+  //       destination: `${process.env.BACKEND_URL || 'http://127.0.0.1:50050'}/api/v1/:path*`,
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;

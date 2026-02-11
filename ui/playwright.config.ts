@@ -46,11 +46,12 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
+        // Use 127.0.0.1 to avoid IPv6 issues in CI
+        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://127.0.0.1:50050'} npx next dev -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: false,
         env: {
-          BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
+          BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:50050',
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
         },
       },
