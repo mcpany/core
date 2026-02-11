@@ -16,12 +16,23 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                // Use localhost instead of stripe.com to avoid external network dependency/blocking in CI.
-                // Connection refused is expected and acceptable, tools should still register.
-                address: "http://127.0.0.1:12345",
+            // Use command_line_service to avoid network dependency in tests.
+            // This ensures the tool is always registered successfully.
+            command_line_service: {
+                command: "/bin/echo",
+                args: ["payment_processed"],
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
+                    {
+                        name: "process_payment",
+                        description: "Process a payment",
+                        inputSchema: {
+                            type: "object",
+                            properties: {
+                                amount: { type: "number" },
+                                currency: { type: "string" }
+                            }
+                        }
+                    }
                 ]
             }
         },
