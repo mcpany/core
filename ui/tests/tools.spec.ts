@@ -24,8 +24,8 @@ test.describe('Tool Exploration', () => {
                 id: UNIQUE_SERVICE_ID,
                 name: UNIQUE_SERVICE_NAME,
                 version: "v1.2.0",
-                http_service: {
-                    address: "https://stripe.com",
+                command_line_service: {
+                    command: "/bin/echo",
                     tools: [
                         { name: UNIQUE_PAYMENT_TOOL, description: "Process a payment" }
                     ]
