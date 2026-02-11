@@ -1,0 +1,759 @@
+{"time":"2026-02-11T18:26:13.914650251Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:26:13.915122231Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"wttr.in","disabled_field":false}
+{"time":"2026-02-11T18:26:13.915235884Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"wttr.in","priority":0}
+{"time":"2026-02-11T18:26:13.915326215Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T18:26:13.915693995Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"0.0.0.0:50050","registration-port":"","stdio":false,"config-path":["server/examples/popular_services/wttr.in/config.yaml"]}
+{"time":"2026-02-11T18:26:13.915761134Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["server/examples/popular_services/wttr.in/config.yaml"]}
+{"time":"2026-02-11T18:26:13.915899176Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T18:26:13.916203454Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T18:26:13.916450898Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T18:26:13.917020082Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T18:26:13.925058295Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["server/examples/popular_services/wttr.in/config.yaml"]}
+{"time":"2026-02-11T18:26:14.010567808Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:26:14.010682179Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:26:14.010709794Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:26:14.010729967Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:26:14.010747357Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:26:14.01076756Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"wttr.in","disabled_field":false}
+{"time":"2026-02-11T18:26:14.010795284Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"wttr.in","priority":0}
+{"time":"2026-02-11T18:26:14.012245301Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":3}
+{"time":"2026-02-11T18:26:14.014030066Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T18:26:14.014310566Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T18:26:14.015172391Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T18:26:14.016029287Z","level":"INFO","msg":"Queueing service for registration from config","service":"vis-check"}
+{"time":"2026-02-11T18:26:14.016120579Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-11T18:26:14.016145006Z","level":"INFO","msg":"Queueing service for registration from config","service":"wttr.in"}
+{"time":"2026-02-11T18:26:14.0166033Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T18:26:14.016629642Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:14.016680646Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:14.016641332Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:14.016832517Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017127423Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017156993Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.01717974Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017194781Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017212748Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017225758Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017247122Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017260614Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.017273892Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T18:26:14.01748409Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T18:26:14.020883504Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T18:26:14.020885695Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:26:14.022526042Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:26:14.02306695Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:26:14.023256769Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T18:26:14.024172042Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:26:14.024632627Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:26:14.030102356Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T18:26:14.040851434Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:26:14.056346217Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:26:15.168021861Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"wttrin_b658db5c.get_moon_phase","toolName":"wttrin_b658db5c.get_moon_phase","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get the Moon phase information (returns text/ASCII art).\n","inputSchema":{"properties":{"args":{"default":"","description":"Optional arguments to append (e.g. '@2016-10-25' for date, or ',London' for location).","type":"string"}},"type":"object"},"name":"wttrin_b658db5c.get_moon_phase"}}
+{"time":"2026-02-11T18:26:15.168914947Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"wttrin_b658db5c.get_weather","toolName":"wttrin_b658db5c.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get the weather forecast for a location in JSON format.\nBy default uses 'en' language.\n","inputSchema":{"properties":{"lang":{"default":"en","description":"Language code (e.g. 'en', 'fr', 'de'). Defaults to 'en'.","type":"string"},"location":{"description":"The location to query. Can be:\n- City name (e.g. \"Paris\")\n- Airport code (e.g. \"muc\")\n- Area code (e.g. \"94107\")\n- GPS coordinates (e.g. \"-78.46,106.79\")\n- Special locations: \"~Eiffel+tower\"\n","type":"string"}},"required":["location"],"type":"object"},"name":"wttrin_b658db5c.get_weather"}}
+{"time":"2026-02-11T18:26:15.169023122Z","level":"INFO","msg":"Registered HTTP service","serviceID":"wttrin_b658db5c","toolsAdded":2}
+{"time":"2026-02-11T18:26:15.169105955Z","level":"WARN","msg":"Duplicate tool name detected across services","tool":"get_weather","service_new":"wttr.in","service_existing":"weather-service","warning":"Potential confusion or shadowing"}
+{"time":"2026-02-11T18:26:17.343111762Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"wttr.in","tools_count":2,"resources_count":0}
+{"time":"2026-02-11T18:26:54.734008087Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service"}
+{"time":"2026-02-11T18:26:54.734944015Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:26:54.736185563Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:26:54.73625875Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:26:54.736291114Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:26:54.736313464Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:26:54.736332696Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:26:54.736501706Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-11T18:26:54.736536718Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:26:54.736559088Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:26:54.736698661Z","level":"INFO","msg":"Removing service","service":"wttr.in"}
+{"time":"2026-02-11T18:26:54.736780675Z","level":"INFO","msg":"Shutting down upstream","service":"wttr.in"}
+{"time":"2026-02-11T18:26:54.736856591Z","level":"INFO","msg":"Closing old entry","name":"wttrin_b658db5c"}
+{"time":"2026-02-11T18:26:54.736952471Z","level":"INFO","msg":"Upstream shutdown complete","service":"wttr.in"}
+{"time":"2026-02-11T18:26:54.737138504Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.737168924Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.737191573Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.737259088Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.737292881Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.737310811Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.737328124Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:26:54.737352481Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.737376484Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.737399768Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:26:54.737521752Z","level":"INFO","msg":"ReloadConfig completed","duration":2640681}
+{"time":"2026-02-11T18:26:54.737953422Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:54.7381874Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:54.738315166Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:26:54.738525917Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:26:54.738556467Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:26:54.738579334Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:26:54.738650175Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:26:54.762660071Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:26:54.777932622Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:26:54.813974734Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:26:54.823716985Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:26:54.827341209Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:26:54.827418797Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:26:54.827444106Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:26:54.827464136Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:26:54.827480541Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:26:54.827496989Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"visibility-test-service","disabled_field":false}
+{"time":"2026-02-11T18:26:54.827512534Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"visibility-test-service","priority":0}
+{"time":"2026-02-11T18:26:54.827799284Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":3}
+{"time":"2026-02-11T18:26:54.827845684Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:26:54.82786552Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:26:54.827915334Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.827935749Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.827957338Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:26:54.827988393Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.828052675Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:26:54.828079036Z","level":"INFO","msg":"Adding new service","service":"visibility-test-service"}
+{"time":"2026-02-11T18:26:54.828098035Z","level":"INFO","msg":"Queued service for registration update","service":"visibility-test-service"}
+{"time":"2026-02-11T18:26:54.828123616Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.828140028Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.82815621Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.828184415Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:26:54.828222189Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:26:54.828213415Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:54.828331416Z","level":"INFO","msg":"ReloadConfig completed","duration":4628087}
+{"time":"2026-02-11T18:26:54.828419085Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:26:54.828777261Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:26:54.828865443Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:26:54.828578194Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:54.828918449Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:26:54.828952314Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:26:54.828605596Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:26:54.84764592Z","level":"INFO","msg":"Registered HTTP service","serviceID":"visibility-test-service","toolsAdded":0}
+{"time":"2026-02-11T18:26:54.847507488Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:26:54.863683263Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"visibility-test-service","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:26:54.879863869Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:11.467575418Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:27:11.467783193Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T18:27:11.467582776Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:27:11.473597876Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"d4bc5dd7-f73e-488b-833c-bf498ffc4a20","serviceName":"visibility-test-service"}
+{"time":"2026-02-11T18:27:11.99706102Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service/status"}
+{"time":"2026-02-11T18:27:12.056533689Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-11T18:27:13.225385779Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:27:13.393700241Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/prompts"}
+{"time":"2026-02-11T18:27:13.751308536Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/resources"}
+{"time":"2026-02-11T18:27:14.591375Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service"}
+{"time":"2026-02-11T18:27:14.596169097Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:27:14.599191029Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:27:14.599263793Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:27:14.599909867Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:27:14.599966948Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:27:14.600008274Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:27:14.600031342Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"visibility-test-service","disabled_field":false}
+{"time":"2026-02-11T18:27:14.600062388Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"visibility-test-service","priority":0}
+{"time":"2026-02-11T18:27:14.60032555Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":3}
+{"time":"2026-02-11T18:27:14.600368807Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:27:14.60038832Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:27:14.600528901Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:27:14.600566842Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:27:14.600593465Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:27:14.600647531Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:27:14.600767039Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:27:14.600834264Z","level":"INFO","msg":"Updating service","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:14.600857643Z","level":"INFO","msg":"Shutting down upstream","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:14.600896753Z","level":"INFO","msg":"Closing old entry","name":"visibility-test-service"}
+{"time":"2026-02-11T18:27:14.600957099Z","level":"INFO","msg":"Upstream shutdown complete","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:14.600997564Z","level":"INFO","msg":"Queued service for registration update","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:14.601047765Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:27:14.601080297Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:27:14.601102469Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:27:14.601029421Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:14.601144192Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:27:14.601132149Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:14.601190369Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:14.601175958Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:27:14.601472331Z","level":"INFO","msg":"ReloadConfig completed","duration":5304945}
+{"time":"2026-02-11T18:27:14.601346853Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:27:14.602657158Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:27:14.603150523Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:27:14.603736975Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:27:14.603789852Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:27:14.618700343Z","level":"INFO","msg":"Registered HTTP service","serviceID":"visibility-test-service","toolsAdded":0}
+{"time":"2026-02-11T18:27:14.620144185Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:27:14.636532832Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"visibility-test-service","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:14.638212983Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T18:27:14.640329106Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"08bebe59-365d-4db0-8539-023a5223a128","serviceName":"visibility-test-service"}
+{"time":"2026-02-11T18:27:14.651121779Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:14.859834558Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service/status"}
+{"time":"2026-02-11T18:27:15.073246035Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-11T18:27:20.187274184Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:27:20.187594891Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:27:20.189169825Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T18:27:20.189453261Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"d893ba91-adfc-47f3-86a7-0b62c7daa55a","serviceName":"visibility-test-service"}
+{"time":"2026-02-11T18:27:21.121202026Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service/status"}
+{"time":"2026-02-11T18:27:21.145368796Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-11T18:27:21.690372589Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:27:21.827673908Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/prompts"}
+{"time":"2026-02-11T18:27:21.957380535Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/resources"}
+{"time":"2026-02-11T18:27:22.128960471Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service"}
+{"time":"2026-02-11T18:27:22.171419045Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/visibility-test-service"}
+{"time":"2026-02-11T18:27:22.175062316Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:27:22.176504353Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:27:22.176572793Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:27:22.176599071Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:27:22.176619251Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:27:22.176636066Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:27:22.176798633Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-11T18:27:22.176827911Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:27:22.176845896Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:27:22.176931223Z","level":"INFO","msg":"Removing service","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:22.176957627Z","level":"INFO","msg":"Shutting down upstream","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:22.176980376Z","level":"INFO","msg":"Closing old entry","name":"visibility-test-service"}
+{"time":"2026-02-11T18:27:22.177013367Z","level":"INFO","msg":"Upstream shutdown complete","service":"visibility-test-service"}
+{"time":"2026-02-11T18:27:22.177048994Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:27:22.177065801Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:27:22.17708232Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:27:22.177146475Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:27:22.17717983Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:27:22.177199175Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:27:22.177214348Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:27:22.177234888Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:27:22.177257391Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:27:22.177275879Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:27:22.177360398Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:22.177410653Z","level":"INFO","msg":"ReloadConfig completed","duration":2353818}
+{"time":"2026-02-11T18:27:22.177430486Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:22.177579311Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:27:22.178177135Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:27:22.178218309Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:27:22.178247603Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:27:22.178402253Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:27:22.191713976Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:27:22.210059409Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.373090028Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:27:57.374223195Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:27:57.37585773Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:27:57.375932528Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.375961584Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:27:57.375993287Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:27:57.376013047Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:27:57.376031033Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Payment Gateway","disabled_field":false}
+{"time":"2026-02-11T18:27:57.376050289Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Payment Gateway","priority":0}
+{"time":"2026-02-11T18:27:57.376215272Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":3}
+{"time":"2026-02-11T18:27:57.37625186Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:27:57.376274274Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:27:57.376328471Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.376354349Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.37638757Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.376471645Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.376564466Z","level":"INFO","msg":"Adding new service","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.376596957Z","level":"INFO","msg":"Queued service for registration update","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.376626509Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.37664512Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.376671033Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:27:57.37670819Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.376699055Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.376747833Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.376734228Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.376872968Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.376983672Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:27:57.37711854Z","level":"INFO","msg":"ReloadConfig completed","duration":2900709}
+{"time":"2026-02-11T18:27:57.377158679Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:27:57.377979116Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:27:57.378446762Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:27:57.378532939Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:27:57.378585479Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:27:57.392164306Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.406783469Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.419953786Z","level":"INFO","msg":"Registered HTTP service","serviceID":"PaymentGateway_8a1dc807","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.422552361Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:27:57.423665356Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:27:57.429095181Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:27:57.429159342Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.429184364Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:27:57.429204379Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:27:57.429222499Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:27:57.429239107Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Payment Gateway","disabled_field":false}
+{"time":"2026-02-11T18:27:57.429267058Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Payment Gateway","priority":0}
+{"time":"2026-02-11T18:27:57.429283175Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"User Service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.429298547Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"User Service","priority":0}
+{"time":"2026-02-11T18:27:57.429617364Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":4}
+{"time":"2026-02-11T18:27:57.429654867Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:27:57.429674282Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:27:57.450126206Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Payment Gateway","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.450375013Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.450431929Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.450456475Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:27:57.450621985Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.450696883Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.45074099Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.450760941Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.450780237Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.450825229Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.450846661Z","level":"INFO","msg":"Updating service","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.450867225Z","level":"INFO","msg":"Shutting down upstream","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.450883577Z","level":"INFO","msg":"Closing old entry","name":"PaymentGateway_8a1dc807"}
+{"time":"2026-02-11T18:27:57.450905115Z","level":"INFO","msg":"Upstream shutdown complete","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.450927117Z","level":"INFO","msg":"Queued service for registration update","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.450905474Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.450985265Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.450985497Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.450951817Z","level":"INFO","msg":"Adding new service","service":"User Service"}
+{"time":"2026-02-11T18:27:57.451148958Z","level":"INFO","msg":"Queued service for registration update","service":"User Service"}
+{"time":"2026-02-11T18:27:57.451178748Z","level":"INFO","msg":"Reload complete","tools_count":2}
+{"time":"2026-02-11T18:27:57.451082914Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:27:57.451441848Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:27:57.451747398Z","level":"INFO","msg":"ReloadConfig completed","duration":28083303}
+{"time":"2026-02-11T18:27:57.451780901Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:27:57.451807793Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:27:57.451996633Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:27:57.452071859Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.45264502Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"User Service"}
+{"time":"2026-02-11T18:27:57.453603955Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: User Service\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:27:57.453720148Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"User Service","address":"http://localhost:50051"}
+{"time":"2026-02-11T18:27:57.453823028Z","level":"INFO","msg":"Registered HTTP service","serviceID":"UserService_24b0727b","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.454061207Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"User Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.465044178Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.479734977Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:27:57.479458421Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.480966994Z","level":"INFO","msg":"Registered HTTP service","serviceID":"PaymentGateway_8a1dc807","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.483400891Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:27:57.488380557Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:27:57.488453151Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.488478202Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:27:57.488549645Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:27:57.488575108Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:27:57.488591523Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Payment Gateway","disabled_field":false}
+{"time":"2026-02-11T18:27:57.488607Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Payment Gateway","priority":0}
+{"time":"2026-02-11T18:27:57.488622933Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"User Service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.488637429Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"User Service","priority":0}
+{"time":"2026-02-11T18:27:57.4886555Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Math","disabled_field":false}
+{"time":"2026-02-11T18:27:57.488669725Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Math","priority":0}
+{"time":"2026-02-11T18:27:57.488817198Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":5}
+{"time":"2026-02-11T18:27:57.488846794Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:27:57.488867698Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:27:57.512389236Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Payment Gateway","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.512626933Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.512683025Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.512709274Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:27:57.512742795Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.512808528Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.512846102Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.512862966Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.512879965Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.512914437Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.512950779Z","level":"INFO","msg":"Adding new service","service":"Math"}
+{"time":"2026-02-11T18:27:57.512969652Z","level":"INFO","msg":"Queued service for registration update","service":"Math"}
+{"time":"2026-02-11T18:27:57.512991112Z","level":"INFO","msg":"Updating service","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.513010513Z","level":"INFO","msg":"Shutting down upstream","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.512997097Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.513046524Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.51302923Z","level":"INFO","msg":"Closing old entry","name":"PaymentGateway_8a1dc807"}
+{"time":"2026-02-11T18:27:57.513113973Z","level":"INFO","msg":"Upstream shutdown complete","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.513108608Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.513162481Z","level":"INFO","msg":"Queued service for registration update","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.513198755Z","level":"INFO","msg":"Updating service","service":"User Service"}
+{"time":"2026-02-11T18:27:57.513219093Z","level":"INFO","msg":"Shutting down upstream","service":"User Service"}
+{"time":"2026-02-11T18:27:57.513237937Z","level":"INFO","msg":"Closing old entry","name":"UserService_24b0727b"}
+{"time":"2026-02-11T18:27:57.513257954Z","level":"INFO","msg":"Upstream shutdown complete","service":"User Service"}
+{"time":"2026-02-11T18:27:57.51327956Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.51325183Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:27:57.513396059Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:27:57.513455983Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:27:57.513536984Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:27:57.513605537Z","level":"INFO","msg":"Queued service for registration update","service":"User Service"}
+{"time":"2026-02-11T18:27:57.513651382Z","level":"INFO","msg":"Reload complete","tools_count":2}
+{"time":"2026-02-11T18:27:57.513830862Z","level":"INFO","msg":"ReloadConfig completed","duration":30435922}
+{"time":"2026-02-11T18:27:57.51384916Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"Math"}
+{"time":"2026-02-11T18:27:57.514004347Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.5142681Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: Math\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:27:57.51431784Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"Math","address":"http://localhost:8080"}
+{"time":"2026-02-11T18:27:57.51455395Z","level":"INFO","msg":"Registered HTTP service","serviceID":"Math","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.514589167Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"User Service"}
+{"time":"2026-02-11T18:27:57.514674505Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Math","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.514756131Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: User Service\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:27:57.514792471Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"User Service","address":"http://localhost:50051"}
+{"time":"2026-02-11T18:27:57.514834357Z","level":"INFO","msg":"Registered HTTP service","serviceID":"UserService_24b0727b","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.515216728Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"User Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.515270721Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:27:57.530022613Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.543261666Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.54509113Z","level":"INFO","msg":"Registered HTTP service","serviceID":"PaymentGateway_8a1dc807","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.551699216Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:27:57.575299057Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Payment Gateway","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.583470117Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-11T18:27:57.586779986Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:27:57.589325132Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:27:57.589392489Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.589419613Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:27:57.589449262Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:27:57.589466643Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:27:57.589556029Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Payment Gateway","disabled_field":false}
+{"time":"2026-02-11T18:27:57.589581094Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Payment Gateway","priority":0}
+{"time":"2026-02-11T18:27:57.589598014Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"User Service","disabled_field":false}
+{"time":"2026-02-11T18:27:57.589613412Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"User Service","priority":0}
+{"time":"2026-02-11T18:27:57.589629447Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Math","disabled_field":false}
+{"time":"2026-02-11T18:27:57.589645158Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Math","priority":0}
+{"time":"2026-02-11T18:27:57.589790186Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":5}
+{"time":"2026-02-11T18:27:57.589817296Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:27:57.589835734Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:27:57.589990761Z","level":"INFO","msg":"Updating service","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.590037708Z","level":"INFO","msg":"Shutting down upstream","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.590061314Z","level":"INFO","msg":"Closing old entry","name":"PaymentGateway_8a1dc807"}
+{"time":"2026-02-11T18:27:57.590091955Z","level":"INFO","msg":"Upstream shutdown complete","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.590159257Z","level":"INFO","msg":"Queued service for registration update","service":"Payment Gateway"}
+{"time":"2026-02-11T18:27:57.590192522Z","level":"INFO","msg":"Updating service","service":"User Service"}
+{"time":"2026-02-11T18:27:57.590210836Z","level":"INFO","msg":"Shutting down upstream","service":"User Service"}
+{"time":"2026-02-11T18:27:57.590228614Z","level":"INFO","msg":"Closing old entry","name":"UserService_24b0727b"}
+{"time":"2026-02-11T18:27:57.590249474Z","level":"INFO","msg":"Upstream shutdown complete","service":"User Service"}
+{"time":"2026-02-11T18:27:57.590274674Z","level":"INFO","msg":"Queued service for registration update","service":"User Service"}
+{"time":"2026-02-11T18:27:57.590295377Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.590311092Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.590327016Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:27:57.590345012Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.590368382Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:27:57.590391692Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.59040898Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.590424833Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.590450155Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:27:57.590417579Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.590471823Z","level":"INFO","msg":"Updating service","service":"Math"}
+{"time":"2026-02-11T18:27:57.590658845Z","level":"INFO","msg":"Shutting down upstream","service":"Math"}
+{"time":"2026-02-11T18:27:57.590688863Z","level":"INFO","msg":"Closing old entry","name":"Math"}
+{"time":"2026-02-11T18:27:57.590666051Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.590718966Z","level":"INFO","msg":"Upstream shutdown complete","service":"Math"}
+{"time":"2026-02-11T18:27:57.590461324Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.590749874Z","level":"INFO","msg":"Queued service for registration update","service":"Math"}
+{"time":"2026-02-11T18:27:57.590772984Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:27:57.590814701Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.59090003Z","level":"INFO","msg":"ReloadConfig completed","duration":4123740}
+{"time":"2026-02-11T18:27:57.591683948Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:27:57.591997291Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"Math"}
+{"time":"2026-02-11T18:27:57.591997357Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"User Service"}
+{"time":"2026-02-11T18:27:57.592048529Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:27:57.592208934Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: User Service\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:27:57.592242848Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"User Service","address":"http://localhost:50051"}
+{"time":"2026-02-11T18:27:57.592227212Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:27:57.592260081Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:27:57.592289851Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:27:57.592301583Z","level":"INFO","msg":"Registered HTTP service","serviceID":"UserService_24b0727b","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.592312615Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:27:57.592325257Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: Math\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:27:57.592357265Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"Math","address":"http://localhost:8080"}
+{"time":"2026-02-11T18:27:57.592407488Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"User Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.592417349Z","level":"INFO","msg":"Registered HTTP service","serviceID":"Math","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.592651052Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Math","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.605332469Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.620299867Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:27:57.620758203Z","level":"INFO","msg":"Registered HTTP service","serviceID":"PaymentGateway_8a1dc807","toolsAdded":0}
+{"time":"2026-02-11T18:27:57.652669186Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Payment Gateway","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:28:02.395960312Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:02.396361783Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:11.247764889Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:11.247814521Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:11.251475984Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:11.255719729Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:11.286793072Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:28:17.806160973Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:17.806254992Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:17.808678258Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:17.811682884Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:28:17.838261619Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:22.789265967Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:22.796233949Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:25.681485781Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:25.681537005Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:25.683812546Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:25.683896898Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:28:25.694059498Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:30.64889604Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:30.657115909Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:33.810199491Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:33.81162182Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:33.811940258Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:33.815461933Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:33.845901852Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:28:38.777754142Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:38.784864158Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:41.751733803Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:41.751886005Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:41.754474188Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:41.755693653Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:41.772241215Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:28:46.726258853Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:46.726265232Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:49.707872572Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:49.711763399Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:49.723052266Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:49.723651289Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:49.744112262Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:28:54.655923254Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:54.665539145Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:58.074904814Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:28:58.075001794Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:28:58.075096724Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:28:58.079640248Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:28:58.080047219Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:29:03.031148541Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:03.031286328Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:05.757298288Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:05.757525721Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:29:05.759694227Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:29:05.759782721Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:05.779718083Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:29:13.055866005Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:13.059350185Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:15.316765997Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:15.321055737Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:29:15.324118368Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:29:15.327944043Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:29:15.341811198Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:20.264433645Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:20.270003873Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:24.885893324Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:29:24.88604169Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:29:24.885911117Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:29:24.891700349Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:24.915777234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:29.853174313Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:29.858375634Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:32.569728527Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:29:32.570007714Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:29:32.571714505Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:32.575735184Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:32.594543815Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-11T18:29:37.576183502Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:37.576262941Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:42.562802164Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T18:29:42.563008177Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T18:29:43.820977617Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Payment Gateway"}
+{"time":"2026-02-11T18:29:43.821608643Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:29:43.82459756Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:29:43.824788737Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:29:43.824828792Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:29:43.824852469Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:29:43.824883092Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:29:43.824901497Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"User Service","disabled_field":false}
+{"time":"2026-02-11T18:29:43.82491855Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"User Service","priority":0}
+{"time":"2026-02-11T18:29:43.824935124Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Math","disabled_field":false}
+{"time":"2026-02-11T18:29:43.824950659Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Math","priority":0}
+{"time":"2026-02-11T18:29:43.825141648Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":4}
+{"time":"2026-02-11T18:29:43.825177469Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:29:43.825198504Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:29:43.825252204Z","level":"INFO","msg":"Removing service","service":"Payment Gateway"}
+{"time":"2026-02-11T18:29:43.825312611Z","level":"INFO","msg":"Shutting down upstream","service":"Payment Gateway"}
+{"time":"2026-02-11T18:29:43.825345952Z","level":"INFO","msg":"Closing old entry","name":"PaymentGateway_8a1dc807"}
+{"time":"2026-02-11T18:29:43.825391371Z","level":"INFO","msg":"Upstream shutdown complete","service":"Payment Gateway"}
+{"time":"2026-02-11T18:29:43.825431955Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.825449463Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.825463353Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:29:43.825484845Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.825515638Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.82554071Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.825558933Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.825578352Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.825608401Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.825629341Z","level":"INFO","msg":"Updating service","service":"Math"}
+{"time":"2026-02-11T18:29:43.825645517Z","level":"INFO","msg":"Shutting down upstream","service":"Math"}
+{"time":"2026-02-11T18:29:43.825659886Z","level":"INFO","msg":"Closing old entry","name":"Math"}
+{"time":"2026-02-11T18:29:43.825680362Z","level":"INFO","msg":"Upstream shutdown complete","service":"Math"}
+{"time":"2026-02-11T18:29:43.825701538Z","level":"INFO","msg":"Queued service for registration update","service":"Math"}
+{"time":"2026-02-11T18:29:43.825719598Z","level":"INFO","msg":"Updating service","service":"User Service"}
+{"time":"2026-02-11T18:29:43.825736223Z","level":"INFO","msg":"Shutting down upstream","service":"User Service"}
+{"time":"2026-02-11T18:29:43.825785312Z","level":"INFO","msg":"Closing old entry","name":"UserService_24b0727b"}
+{"time":"2026-02-11T18:29:43.825804377Z","level":"INFO","msg":"Upstream shutdown complete","service":"User Service"}
+{"time":"2026-02-11T18:29:43.825827443Z","level":"INFO","msg":"Queued service for registration update","service":"User Service"}
+{"time":"2026-02-11T18:29:43.825848975Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:29:43.825967184Z","level":"INFO","msg":"ReloadConfig completed","duration":4362115}
+{"time":"2026-02-11T18:29:43.826172307Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.82647446Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"User Service"}
+{"time":"2026-02-11T18:29:43.826717877Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: User Service\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:50051\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:29:43.826763696Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"User Service","address":"http://localhost:50051"}
+{"time":"2026-02-11T18:29:43.826815438Z","level":"INFO","msg":"Registered HTTP service","serviceID":"UserService_24b0727b","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.826992094Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"User Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.82707858Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.827350445Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.828327616Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.828657164Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"Math"}
+{"time":"2026-02-11T18:29:43.828750619Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:29:43.828880216Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: Math\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:29:43.82891968Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"Math","address":"http://localhost:8080"}
+{"time":"2026-02-11T18:29:43.828968065Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:29:43.828969777Z","level":"INFO","msg":"Registered HTTP service","serviceID":"Math","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.829004181Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:29:43.829033586Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:29:43.829147007Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Math","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.82921666Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:29:43.841678681Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.855798813Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.857268546Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/User Service"}
+{"time":"2026-02-11T18:29:43.857638672Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:29:43.859504532Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:29:43.859645379Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:29:43.859682858Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:29:43.859706639Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:29:43.859723891Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:29:43.859740443Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Math","disabled_field":false}
+{"time":"2026-02-11T18:29:43.859755773Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Math","priority":0}
+{"time":"2026-02-11T18:29:43.859934384Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":3}
+{"time":"2026-02-11T18:29:43.859967196Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:29:43.85998921Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:29:43.86004425Z","level":"INFO","msg":"Removing service","service":"User Service"}
+{"time":"2026-02-11T18:29:43.860160495Z","level":"INFO","msg":"Shutting down upstream","service":"User Service"}
+{"time":"2026-02-11T18:29:43.860240245Z","level":"INFO","msg":"Closing old entry","name":"UserService_24b0727b"}
+{"time":"2026-02-11T18:29:43.86034098Z","level":"INFO","msg":"Upstream shutdown complete","service":"User Service"}
+{"time":"2026-02-11T18:29:43.86041812Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.860438666Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.86045806Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.860532544Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.860569495Z","level":"INFO","msg":"Updating service","service":"Math"}
+{"time":"2026-02-11T18:29:43.860587392Z","level":"INFO","msg":"Shutting down upstream","service":"Math"}
+{"time":"2026-02-11T18:29:43.86060477Z","level":"INFO","msg":"Closing old entry","name":"Math"}
+{"time":"2026-02-11T18:29:43.860640623Z","level":"INFO","msg":"Upstream shutdown complete","service":"Math"}
+{"time":"2026-02-11T18:29:43.860665959Z","level":"INFO","msg":"Queued service for registration update","service":"Math"}
+{"time":"2026-02-11T18:29:43.860689869Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.860706229Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.860721296Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:29:43.860741162Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.860763137Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.860785535Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:29:43.860769842Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.860864753Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.86099557Z","level":"INFO","msg":"ReloadConfig completed","duration":3358858}
+{"time":"2026-02-11T18:29:43.861107381Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"Math"}
+{"time":"2026-02-11T18:29:43.861053676Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:29:43.861224375Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.861333939Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:29:43.861352034Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: Math\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\nError:   Get \"http://localhost:8080\": ssrf attempt blocked: host localhost resolved to loopback ip ::1\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T18:29:43.861372339Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:29:43.861394263Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"Math","address":"http://localhost:8080"}
+{"time":"2026-02-11T18:29:43.861460462Z","level":"INFO","msg":"Registered HTTP service","serviceID":"Math","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.861454203Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:29:43.861398218Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:29:43.861765257Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Math","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.875511707Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.888984234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Math"}
+{"time":"2026-02-11T18:29:43.889387724Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:29:43.889419638Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.890625172Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:29:43.890674125Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:29:43.890698226Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:29:43.890717374Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:29:43.890736433Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:29:43.890893003Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-11T18:29:43.890918464Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:29:43.89093642Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:29:43.890979583Z","level":"INFO","msg":"Removing service","service":"Math"}
+{"time":"2026-02-11T18:29:43.891000137Z","level":"INFO","msg":"Shutting down upstream","service":"Math"}
+{"time":"2026-02-11T18:29:43.891031718Z","level":"INFO","msg":"Closing old entry","name":"Math"}
+{"time":"2026-02-11T18:29:43.891067223Z","level":"INFO","msg":"Upstream shutdown complete","service":"Math"}
+{"time":"2026-02-11T18:29:43.891102335Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.891119333Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.891134414Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:29:43.891152534Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.891213414Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.89135888Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.891388595Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.891408122Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.891442393Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.891443777Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.891476025Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.891464579Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:29:43.89171493Z","level":"INFO","msg":"ReloadConfig completed","duration":2328762}
+{"time":"2026-02-11T18:29:43.891632892Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:29:43.892139139Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:29:43.892181589Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:29:43.892424262Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:29:43.89246868Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:29:43.906434205Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.917639975Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Echo Service"}
+{"time":"2026-02-11T18:29:43.917917147Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:29:43.920457621Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:29:43.920557363Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:29:43.9205871Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:29:43.920611704Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:29:43.920632733Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:29:43.920818819Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-11T18:29:43.920856107Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:29:43.920883505Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:29:43.922065718Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.922180991Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.922208288Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.922231161Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:29:43.922263212Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.922375181Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.922413468Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.922429658Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.922446525Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.922486095Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.922517336Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:29:43.922599075Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.922652353Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.922636214Z","level":"INFO","msg":"ReloadConfig completed","duration":4720390}
+{"time":"2026-02-11T18:29:43.922844993Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:29:43.923168299Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:29:43.92453207Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:29:43.924599741Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:29:43.924629186Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:29:43.937318342Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.947142375Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-11T18:29:43.949641913Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:29:43.951390112Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:29:43.952820798Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:29:43.952878364Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:29:43.95290271Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:29:43.952935989Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:29:43.952989952Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:29:43.953157159Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-11T18:29:43.953184408Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:29:43.953202836Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:29:43.953248203Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.953304732Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.953332197Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:29:43.953359531Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.953420475Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:29:43.953455762Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.953472763Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.953490512Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.953522494Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:29:43.953543346Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:29:43.953556226Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.9536446Z","level":"INFO","msg":"ReloadConfig completed","duration":4006413}
+{"time":"2026-02-11T18:29:43.953644803Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:29:43.953843679Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:29:43.953727257Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:29:43.954039261Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:29:43.954082208Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:29:43.95411656Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:29:43.966614855Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:29:43.980152849Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:30:16.44592427Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-11T18:30:45.374989752Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T18:30:45.378568656Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-11T18:30:45.381130796Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T18:30:45.381206923Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T18:30:45.381235708Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T18:30:45.381261391Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"vis-check","disabled_field":false}
+{"time":"2026-02-11T18:30:45.381280017Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"vis-check","priority":0}
+{"time":"2026-02-11T18:30:45.381299042Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Payment Gateway","disabled_field":false}
+{"time":"2026-02-11T18:30:45.381316881Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Payment Gateway","priority":0}
+{"time":"2026-02-11T18:30:45.381506133Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":3}
+{"time":"2026-02-11T18:30:45.381538893Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-11T18:30:45.381560963Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-11T18:30:45.381619844Z","level":"INFO","msg":"Adding new service","service":"Payment Gateway"}
+{"time":"2026-02-11T18:30:45.381690563Z","level":"INFO","msg":"Queued service for registration update","service":"Payment Gateway"}
+{"time":"2026-02-11T18:30:45.381726881Z","level":"INFO","msg":"Updating service","service":"vis-check"}
+{"time":"2026-02-11T18:30:45.381749339Z","level":"INFO","msg":"Shutting down upstream","service":"vis-check"}
+{"time":"2026-02-11T18:30:45.381776258Z","level":"INFO","msg":"Closing old entry","name":"vis-check"}
+{"time":"2026-02-11T18:30:45.381826092Z","level":"INFO","msg":"Upstream shutdown complete","service":"vis-check"}
+{"time":"2026-02-11T18:30:45.381859454Z","level":"INFO","msg":"Queued service for registration update","service":"vis-check"}
+{"time":"2026-02-11T18:30:45.381887478Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-11T18:30:45.38190459Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-11T18:30:45.381923657Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-11T18:30:45.381955571Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-11T18:30:45.381978296Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-11T18:30:45.381985207Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:30:45.38194329Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:30:45.382150807Z","level":"INFO","msg":"ReloadConfig completed","duration":3586596}
+{"time":"2026-02-11T18:30:45.382048842Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T18:30:45.383663491Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T18:30:45.382447Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T18:30:45.384678821Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T18:30:45.384729589Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T18:30:45.384761498Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T18:30:45.398414863Z","level":"INFO","msg":"Registered HTTP service","serviceID":"vis-check","toolsAdded":0}
+{"time":"2026-02-11T18:30:45.413891341Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"vis-check","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:30:45.424965703Z","level":"INFO","msg":"Registered HTTP service","serviceID":"PaymentGateway_8a1dc807","toolsAdded":0}
+{"time":"2026-02-11T18:30:45.454616002Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Payment Gateway","tools_count":0,"resources_count":0}
+{"time":"2026-02-11T18:31:09.682753646Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Payment Gateway"}

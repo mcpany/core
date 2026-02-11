@@ -249,9 +249,27 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
+            toolExportPolicy: s.tool_export_policy ? {
+                defaultAction: s.tool_export_policy.default_action,
+                rules: s.tool_export_policy.rules?.map((r: any) => ({
+                    nameRegex: r.name_regex,
+                    action: r.action
+                }))
+            } : undefined,
+            promptExportPolicy: s.prompt_export_policy ? {
+                defaultAction: s.prompt_export_policy.default_action,
+                rules: s.prompt_export_policy.rules?.map((r: any) => ({
+                    nameRegex: r.name_regex,
+                    action: r.action
+                }))
+            } : undefined,
+            resourceExportPolicy: s.resource_export_policy ? {
+                defaultAction: s.resource_export_policy.default_action,
+                rules: s.resource_export_policy.rules?.map((r: any) => ({
+                    nameRegex: r.name_regex,
+                    action: r.action
+                }))
+            } : undefined,
             callPolicies: s.call_policies?.map((p: any) => ({
                 defaultAction: p.default_action,
                 rules: p.rules?.map((r: any) => ({
@@ -301,9 +319,27 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
-                         toolExportPolicy: s.tool_export_policy,
-                         promptExportPolicy: s.prompt_export_policy,
-                         resourceExportPolicy: s.resource_export_policy,
+                         toolExportPolicy: s.tool_export_policy ? {
+                            defaultAction: s.tool_export_policy.default_action,
+                            rules: s.tool_export_policy.rules?.map((r: any) => ({
+                                nameRegex: r.name_regex,
+                                action: r.action
+                            }))
+                         } : undefined,
+                         promptExportPolicy: s.prompt_export_policy ? {
+                            defaultAction: s.prompt_export_policy.default_action,
+                            rules: s.prompt_export_policy.rules?.map((r: any) => ({
+                                nameRegex: r.name_regex,
+                                action: r.action
+                            }))
+                         } : undefined,
+                         resourceExportPolicy: s.resource_export_policy ? {
+                            defaultAction: s.resource_export_policy.default_action,
+                            rules: s.resource_export_policy.rules?.map((r: any) => ({
+                                nameRegex: r.name_regex,
+                                action: r.action
+                            }))
+                         } : undefined,
                          callPolicies: s.call_policies?.map((p: any) => ({
                             defaultAction: p.default_action,
                             rules: p.rules?.map((r: any) => ({
