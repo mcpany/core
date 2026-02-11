@@ -101,6 +101,10 @@ nodes:
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build ui image: %v", err)
 		}
+		// Build http-echo-server for dummy services
+		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-http-echo-docker"); err != nil {
+			t.Fatalf("Failed to build http-echo-server image: %v", err)
+		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
@@ -115,6 +119,10 @@ nodes:
 	}
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
+	}
+	// Load http-echo-server
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
+		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
 	// 6. Install Helm Chart
@@ -144,6 +152,21 @@ nodes:
 	}
 
 	t.Log("Deployment successful!")
+
+	// 6.5 Deploy http-echo-server (after namespace creation)
+	t.Log("Deploying http-echo-server as dummy service...")
+	// Run pod
+	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:latest", "--port=8080", "-n", namespace, "--labels=app=echo-server"); err != nil {
+		t.Fatalf("Failed to run echo-server pod: %v", err)
+	}
+	// Expose service
+	if err := runCommand(t, ctx, rootDir, "kubectl", "expose", "pod", "echo-server", "--port=80", "--target-port=8080", "--name=echo-service", "-n", namespace); err != nil {
+		t.Fatalf("Failed to expose echo-server service: %v", err)
+	}
+	// Wait for pod ready
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "echo-server", "-n", namespace, "--timeout=60s"); err != nil {
+		t.Fatalf("Failed to wait for echo-server pod: %v", err)
+	}
 
 	// 7. Verify Pods
 	t.Log("Verifying pods...")
@@ -177,7 +200,14 @@ nodes:
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+	// Inject DUMMY_SERVICE_URL pointing to the internal echo service
+	// Service DNS: echo-service.mcp-system.svc.cluster.local
+	dummyServiceURL := fmt.Sprintf("http://echo-service.%s.svc.cluster.local:80", namespace)
+	playwrightCmd.Env = append(os.Environ(),
+		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
+		"SKIP_WEBSERVER=true",
+		fmt.Sprintf("DUMMY_SERVICE_URL=%s", dummyServiceURL),
+	)
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 
