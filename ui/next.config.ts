@@ -4,7 +4,6 @@
  */
 
 import type {NextConfig} from 'next';
-import path from 'path';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -50,8 +49,6 @@ const nextConfig: NextConfig = {
     //   },
     // },
   },
-  // Only transpile packages that are strictly necessary and might be ESM-only or untranspiled
-  transpilePackages: ['@bufbuild/protobuf', '@improbable-eng/grpc-web'],
   async headers() {
     const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
@@ -117,28 +114,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
-  },
-  webpack: (config) => {
-    // Explicitly add alias for @proto to resolve generated source directory
-    const srcProto = path.join(__dirname, 'src/proto');
-    // Local dev fallback (if we run locally without Docker/src-gen)
-    const rootProto = path.join(__dirname, '../proto');
-
-    // In Docker, we generate to src/proto. Locally, we might use ../proto.
-    // Check if src/proto exists directly, which is more robust than checking for a subfolder
-    const fs = require('fs');
-    const protoPath = fs.existsSync(srcProto) ? srcProto : rootProto;
-
-    console.log(`[Next.js Config] Resolving @proto alias to: ${protoPath}`);
-
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@proto': protoPath,
-      '@google': path.join(protoPath, 'google'),
-    };
-
-    config.resolve.symlinks = false;
-    return config;
   },
 };
 
