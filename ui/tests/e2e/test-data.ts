@@ -19,12 +19,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment", call_id: "process_payment" }
+                    { name: "process_payment", description: "Process a payment", callId: "process_payment" }
                 ],
                 calls: {
                     "process_payment": {
                         method: "HTTP_METHOD_POST",
-                        endpoint_path: "/v1/charges"
+                        endpointPath: "/v1/charges"
                     }
                 }
             }
@@ -36,12 +36,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://localhost:50051", // Dummy address, visibility checks don't need health
                 tools: [
-                     { name: "get_user", description: "Get user details", call_id: "get_user" }
+                     { name: "get_user", description: "Get user details", callId: "get_user" }
                 ],
                 calls: {
                     "get_user": {
                         method: "HTTP_METHOD_GET",
-                        endpoint_path: "/users"
+                        endpointPath: "/users"
                     }
                 }
             }
@@ -54,12 +54,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://localhost:8080", // Dummy
                 tools: [
-                    { name: "calculator", description: "calc", call_id: "calculator" }
+                    { name: "calculator", description: "calc", callId: "calculator" }
                 ],
                 calls: {
                     "calculator": {
                         method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
+                        endpointPath: "/calc"
                     }
                 }
             }
@@ -75,7 +75,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                         name: "echo_tool",
                         description: "Echoes back input",
                         inputSchema: { type: "object" },
-                        call_id: "echo_call"
+                        callId: "echo_call"
                     }
                 ],
                 calls: {
