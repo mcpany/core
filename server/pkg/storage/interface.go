@@ -452,6 +452,55 @@ type Storage interface {
 	//   - error: An error if deletion fails.
 	DeleteCredential(ctx context.Context, id string) error
 
+	// ListRequestCollections retrieves all playground request collections.
+	//
+	// Summary: Lists all request collections.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//
+	// Returns:
+	//   - []*configv1.RequestCollection: A list of collections.
+	//   - error: An error if listing fails.
+	ListRequestCollections(ctx context.Context) ([]*configv1.RequestCollection, error)
+
+	// GetRequestCollection retrieves a request collection by ID.
+	//
+	// Summary: Retrieves a request collection by ID.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - id: string. The collection ID.
+	//
+	// Returns:
+	//   - *configv1.RequestCollection: The collection.
+	//   - error: An error if retrieval fails.
+	GetRequestCollection(ctx context.Context, id string) (*configv1.RequestCollection, error)
+
+	// SaveRequestCollection saves a request collection.
+	//
+	// Summary: Persists a request collection.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - collection: *configv1.RequestCollection. The collection to save.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	SaveRequestCollection(ctx context.Context, collection *configv1.RequestCollection) error
+
+	// DeleteRequestCollection deletes a request collection by ID.
+	//
+	// Summary: Deletes a request collection.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - id: string. The collection ID to delete.
+	//
+	// Returns:
+	//   - error: An error if deletion fails.
+	DeleteRequestCollection(ctx context.Context, id string) error
+
 	// Close closes the underlying storage connection.
 	//
 	// Summary: Closes the storage connection.

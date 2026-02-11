@@ -1,0 +1,32 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "PlaygroundProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// SavedRequest represents a saved tool execution request.
+message SavedRequest {
+  string id = 1;
+  string name = 2;
+  string tool_name = 3 [json_name = "tool_name"];
+  google.protobuf.Struct args = 4;
+  string created_at = 5 [json_name = "created_at"];
+}
+
+// RequestCollection represents a collection of saved requests.
+message RequestCollection {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated SavedRequest requests = 4;
+  string created_at = 5 [json_name = "created_at"];
+  string updated_at = 6 [json_name = "updated_at"];
+}

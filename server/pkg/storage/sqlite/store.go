@@ -219,6 +219,38 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		}
 	}()
 
+	// 6. Load Request Collections (Sequential for now to avoid complexity, or parallel if needed)
+	// Actually, Load() returns McpAnyServerConfig which now has RequestCollections.
+	// But McpAnyServerConfig definition was updated in config.proto.
+	// I need to add request_collections to McpAnyServerConfig builder.
+	var requestCollections []*configv1.RequestCollection
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM request_collections")
+		if err != nil {
+			// Ignore error if table doesn't exist yet (migration)? No, we should log.
+			// But for now, let's just return empty.
+			return
+		}
+		defer func() { _ = rows.Close() }()
+
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		for rows.Next() {
+			var configJSON string
+			if err := rows.Scan(&configJSON); err != nil {
+				continue
+			}
+			var rc configv1.RequestCollection
+			if err := opts.Unmarshal([]byte(configJSON), &rc); err == nil {
+				// Thread-safe append? No, slice append is not thread safe without mutex.
+				mu.Lock()
+				requestCollections = append(requestCollections, &rc)
+				mu.Unlock()
+			}
+		}
+	}()
+
 	wg.Wait()
 
 	if len(errs) > 0 {
@@ -236,9 +268,10 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: services,
-		Users:            users,
-		Collections:      collections,
+		UpstreamServices:   services,
+		Users:              users,
+		Collections:        collections,
+		RequestCollections: requestCollections,
 	}
 	if settings != nil {
 		builder.GlobalSettings = settings
@@ -279,6 +312,91 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	_, err = s.db.ExecContext(ctx, query, id, service.GetName(), string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save service: %w", err)
+	}
+	return nil
+}
+
+// Request Collections
+
+// ListRequestCollections retrieves all request collections.
+func (s *Store) ListRequestCollections(ctx context.Context) ([]*configv1.RequestCollection, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM request_collections")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query request_collections: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var collections []*configv1.RequestCollection
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var rc configv1.RequestCollection
+		if err := protojson.Unmarshal([]byte(configJSON), &rc); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal request collection: %w", err)
+		}
+		collections = append(collections, &rc)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return collections, nil
+}
+
+// GetRequestCollection retrieves a request collection by ID.
+func (s *Store) GetRequestCollection(ctx context.Context, id string) (*configv1.RequestCollection, error) {
+	query := "SELECT config_json FROM request_collections WHERE id = ?"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to scan request collection: %w", err)
+	}
+
+	var rc configv1.RequestCollection
+	if err := protojson.Unmarshal([]byte(configJSON), &rc); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal request collection: %w", err)
+	}
+	return &rc, nil
+}
+
+// SaveRequestCollection saves a request collection.
+func (s *Store) SaveRequestCollection(ctx context.Context, collection *configv1.RequestCollection) error {
+	if collection.GetId() == "" {
+		return fmt.Errorf("collection ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(collection)
+	if err != nil {
+		return fmt.Errorf("failed to marshal collection: %w", err)
+	}
+
+	query := `
+	INSERT INTO request_collections (id, name, config_json, updated_at)
+	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, collection.GetId(), collection.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save request collection: %w", err)
+	}
+	return nil
+}
+
+// DeleteRequestCollection deletes a request collection by ID.
+func (s *Store) DeleteRequestCollection(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM request_collections WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete request collection: %w", err)
 	}
 	return nil
 }

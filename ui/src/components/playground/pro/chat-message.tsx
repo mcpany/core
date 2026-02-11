@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 import dynamic from "next/dynamic";
+import { SaveRequestDialog } from "./save-request-dialog";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
@@ -155,22 +156,25 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             {formatTokenCount(estimateTokens(JSON.stringify(message.toolArgs || {})))} tokens
                          </span>
                          {onReplay && message.toolName && (
-                             <Tooltip>
-                                 <TooltipTrigger asChild>
-                                      <Button
-                                         variant="ghost"
-                                         size="icon"
-                                         className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                                         onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
-                                         aria-label="Load into console"
-                                      >
-                                          <RotateCcw className="h-3.5 w-3.5" />
-                                      </Button>
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                     <p>Load into console</p>
-                                 </TooltipContent>
-                             </Tooltip>
+                             <>
+                                 <Tooltip>
+                                     <TooltipTrigger asChild>
+                                          <Button
+                                             variant="ghost"
+                                             size="icon"
+                                             className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                             onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
+                                             aria-label="Load into console"
+                                          >
+                                              <RotateCcw className="h-3.5 w-3.5" />
+                                          </Button>
+                                     </TooltipTrigger>
+                                     <TooltipContent>
+                                         <p>Load into console</p>
+                                     </TooltipContent>
+                                 </Tooltip>
+                                 <SaveRequestDialog toolName={message.toolName} args={message.toolArgs || {}} />
+                             </>
                          )}
                     </CardHeader>
                     <CardContent className="p-0">

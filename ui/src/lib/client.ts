@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { RequestCollection, SavedRequest } from '@proto/config/v1/playground';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -36,7 +37,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, RequestCollection, SavedRequest };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -1270,6 +1271,46 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to save webhook URL');
         return res.json();
+    },
+
+    // Playground Library
+
+    /**
+     * Lists all request collections.
+     * @returns A promise that resolves to a list of collections.
+     */
+    listRequestCollections: async (): Promise<RequestCollection[]> => {
+        const res = await fetchWithAuth('/api/v1/library/collections');
+        if (!res.ok) throw new Error('Failed to list collections');
+        const data = await res.json();
+        return data.collections || [];
+    },
+
+    /**
+     * Saves a request collection.
+     * @param collection The collection to save.
+     * @returns A promise that resolves to the saved collection.
+     */
+    saveRequestCollection: async (collection: RequestCollection): Promise<RequestCollection> => {
+        const res = await fetchWithAuth('/api/v1/library/collections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) throw new Error('Failed to save collection');
+        return res.json();
+    },
+
+    /**
+     * Deletes a request collection.
+     * @param id The ID of the collection to delete.
+     * @returns A promise that resolves when the collection is deleted.
+     */
+    deleteRequestCollection: async (id: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/library/collections/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete collection');
     },
 
     // Stack Management (Collections)

@@ -11,6 +11,7 @@ import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/profile.proto";
 import "proto/config/v1/collection.proto";
+import "proto/config/v1/playground.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -34,6 +35,8 @@ message McpAnyServerConfig {
   repeated User users = 4 [json_name = "users"];
   // Configuration for how to merge lists when loading from multiple sources.
   MergeStrategyConfig merge_strategy = 5 [json_name = "merge_strategy"];
+  // A list of playground request collections.
+  repeated RequestCollection request_collections = 6 [json_name = "request_collections"];
 }
 
 // MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.

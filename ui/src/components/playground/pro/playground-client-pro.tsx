@@ -356,6 +356,7 @@ export function PlaygroundClientPro() {
              <ToolSidebar
                 tools={availableTools}
                 onSelectTool={setToolToConfigure}
+                onRunRequest={handleReplay}
              />
          </ResizablePanel>
 

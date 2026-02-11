@@ -1899,6 +1899,28 @@ func (a *Application) runServerMode(
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
+	// Library API Routes
+	mux.Handle("/api/v1/library/collections", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.handleListRequestCollections()(w, r)
+		case http.MethodPost:
+			a.handleSaveRequestCollection()(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+	mux.Handle("/api/v1/library/collections/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Handle specific collection operations (DELETE)
+		// Path: /api/v1/library/collections/{id}
+		switch r.Method {
+		case http.MethodDelete:
+			a.handleDeleteRequestCollection()(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
 	// Wait, we need to handle assets specifically.
