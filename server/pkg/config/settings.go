@@ -109,8 +109,8 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	// In test mode (env var or .test binary), use a temp file to avoid polluting the workspace
 	if os.Getenv("MCPANY_TEST_MODE") == "true" || strings.HasSuffix(os.Args[0], ".test") {
 		persistentLog = filepath.Join(os.TempDir(), "mcpany.log.json")
-	}
-	if s.logFile != "" && strings.ToLower(logFormat) == "json" {
+	} else if s.logFile != "" && strings.ToLower(logFormat) == "json" {
+		// Only override default if explicitly configured logFile is JSON
 		persistentLog = s.logFile
 	}
 	logging.Init(logLevel, logOutput, persistentLog, logFormat)
