@@ -67,6 +67,7 @@ func (m *Manager) RegisterProvider(p Provider) {
 //   - []*configv1.UpstreamServiceConfig: A slice of discovered service configurations.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
+	var resultMu sync.Mutex
 	log := logging.GetLogger()
 
 	m.mu.RLock()
@@ -86,8 +87,6 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 			services, err := p.Discover(ctx)
 
 			m.mu.Lock()
-			defer m.mu.Unlock()
-
 			status := &ProviderStatus{
 				Name:      p.Name(),
 				LastRunAt: time.Now(),
@@ -101,9 +100,14 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 				log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
 				status.Status = "OK"
 				status.DiscoveredCount = len(services)
+
+				// Fix race condition: Lock before appending to allServices
+				resultMu.Lock()
 				allServices = append(allServices, services...)
+				resultMu.Unlock()
 			}
 			m.statuses[p.Name()] = status
+			m.mu.Unlock()
 		}(p)
 	}
 
