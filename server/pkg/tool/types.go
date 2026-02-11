@@ -1898,8 +1898,19 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
+							// Sentinel Security Update: For git and tar, allow spaces in dynamic args (args parameter)
+							// because they handle arguments safely (exec.Command), unlike shells.
+							// We still enforce checks for template substitution to prevent config injection.
+							isFlexible := false
+							base := filepath.Base(t.service.GetCommand())
+							if base == "git" || base == "tar" {
+								isFlexible = true
+							}
+
+							if !isFlexible {
+								if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+									return nil, fmt.Errorf("args parameter: %w", err)
+								}
 							}
 						}
 						args = append(args, argStr)
@@ -2793,6 +2804,7 @@ func isShellCommand(cmd string) bool {
 		"less", "more", "man",
 		// Build tools and others that can execute commands
 		"find", "xargs", "tee",
+		"git", "tar", // Sentinel Security Update: Added git and tar to prevent argument injection
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
