@@ -46,7 +46,23 @@ func init() {
 			Name:        proto.String("Web Dev Assistant"),
 			Description: proto.String("GitHub, Browser, and Terminal tools for web development."),
 			Version:     proto.String("1.0.0"),
-			Services:    []*configv1.UpstreamServiceConfig{}, // Empty for now, matching mock
+			Services: []*configv1.UpstreamServiceConfig{
+				configv1.UpstreamServiceConfig_builder{
+					Id:            proto.String("github"),
+					Name:          proto.String("GitHub"),
+					Version:       proto.String("1.0.0"),
+					SanitizedName: proto.String("github"),
+					CommandLineService: configv1.CommandLineUpstreamService_builder{
+						Command: proto.String("npx -y @modelcontextprotocol/server-github"),
+						Env: map[string]*configv1.SecretValue{
+							"GITHUB_PERSONAL_ACCESS_TOKEN": configv1.SecretValue_builder{
+								PlainText: proto.String(""),
+							}.Build(),
+						},
+					}.Build(),
+					AutoDiscoverTool: proto.Bool(true),
+				}.Build(),
+			},
 		}.Build(),
 	}
 }
