@@ -39,6 +39,20 @@ func (m *MockStoreWithGet) GetService(ctx context.Context, name string) (*config
 	return nil, nil
 }
 
+// Request Collections
+func (m *MockStoreWithGet) ListRequestCollections(ctx context.Context) ([]*configv1.RequestCollection, error) {
+	return nil, nil
+}
+func (m *MockStoreWithGet) GetRequestCollection(ctx context.Context, id string) (*configv1.RequestCollection, error) {
+	return nil, nil
+}
+func (m *MockStoreWithGet) SaveRequestCollection(ctx context.Context, c *configv1.RequestCollection) error {
+	return nil
+}
+func (m *MockStoreWithGet) DeleteRequestCollection(ctx context.Context, id string) error {
+	return nil
+}
+
 func TestHandleServiceRestart_Success(t *testing.T) {
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()

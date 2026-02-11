@@ -32,6 +32,7 @@ type Store struct {
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
 	serviceTemplates   map[string]*configv1.ServiceTemplate
+	requestCollections map[string]*configv1.RequestCollection
 }
 
 // NewStore creates a new memory store.
@@ -47,6 +48,7 @@ func NewStore() *Store {
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
 		serviceTemplates:   make(map[string]*configv1.ServiceTemplate),
+		requestCollections: make(map[string]*configv1.RequestCollection),
 	}
 }
 
@@ -573,5 +575,65 @@ func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.credentials, id)
+	return nil
+}
+
+// Request Collections
+
+// ListRequestCollections lists all request collections.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListRequestCollections(_ context.Context) ([]*configv1.RequestCollection, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.RequestCollection, 0, len(s.requestCollections))
+	for _, c := range s.requestCollections {
+		list = append(list, proto.Clone(c).(*configv1.RequestCollection))
+	}
+	return list, nil
+}
+
+// GetRequestCollection retrieves a request collection by ID.
+//
+// _ is an unused parameter.
+// id is the unique identifier.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetRequestCollection(_ context.Context, id string) (*configv1.RequestCollection, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if c, ok := s.requestCollections[id]; ok {
+		return proto.Clone(c).(*configv1.RequestCollection), nil
+	}
+	return nil, nil
+}
+
+// SaveRequestCollection saves a request collection.
+//
+// _ is an unused parameter.
+// collection is the collection.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveRequestCollection(_ context.Context, collection *configv1.RequestCollection) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.requestCollections[collection.GetId()] = proto.Clone(collection).(*configv1.RequestCollection)
+	return nil
+}
+
+// DeleteRequestCollection deletes a request collection by ID.
+//
+// _ is an unused parameter.
+// id is the unique identifier.
+//
+// Returns an error if the operation fails.
+func (s *Store) DeleteRequestCollection(_ context.Context, id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.requestCollections, id)
 	return nil
 }

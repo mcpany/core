@@ -22,7 +22,7 @@ func (a *Application) handleListRequestCollections() http.HandlerFunc {
 			return
 		}
 
-		cols, err := a.Store.ListRequestCollections(r.Context())
+		cols, err := a.Storage.ListRequestCollections(r.Context())
 		if err != nil {
 			http.Error(w, "Failed to list collections", http.StatusInternalServerError)
 			return
@@ -85,7 +85,7 @@ func (a *Application) handleSaveRequestCollection() http.HandlerFunc {
 			return
 		}
 
-		if err := a.Store.SaveRequestCollection(r.Context(), &col); err != nil {
+		if err := a.Storage.SaveRequestCollection(r.Context(), &col); err != nil {
 			http.Error(w, "Failed to save collection", http.StatusInternalServerError)
 			return
 		}
@@ -115,7 +115,7 @@ func (a *Application) handleDeleteRequestCollection() http.HandlerFunc {
 			return
 		}
 
-		if err := a.Store.DeleteRequestCollection(r.Context(), id); err != nil {
+		if err := a.Storage.DeleteRequestCollection(r.Context(), id); err != nil {
 			http.Error(w, "Failed to delete collection", http.StatusInternalServerError)
 			return
 		}

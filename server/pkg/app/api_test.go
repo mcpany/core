@@ -1474,6 +1474,20 @@ func (s *MockServiceStore) DeleteServiceTemplate(ctx context.Context, id string)
 	return nil
 }
 
+// Request Collections
+func (s *MockServiceStore) ListRequestCollections(ctx context.Context) ([]*configv1.RequestCollection, error) {
+	return nil, nil
+}
+func (s *MockServiceStore) GetRequestCollection(ctx context.Context, id string) (*configv1.RequestCollection, error) {
+	return nil, nil
+}
+func (s *MockServiceStore) SaveRequestCollection(ctx context.Context, c *configv1.RequestCollection) error {
+	return nil
+}
+func (s *MockServiceStore) DeleteRequestCollection(ctx context.Context, id string) error {
+	return nil
+}
+
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
 }

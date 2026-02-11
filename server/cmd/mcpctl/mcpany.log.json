@@ -1,0 +1,66 @@
+{"time":"2026-02-11T10:06:13.255893022Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.256110719Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.256177043Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.273868823Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.279238386Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.279384628Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.285631592Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.28580649Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.285908894Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.289077726Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.289234204Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.289346886Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.292135478Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.292290763Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.29239234Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.29349458Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.293684139Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.293786883Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.29555275Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.295695031Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.295837734Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.299745426Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.29989698Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.299996342Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.303804859Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.303961101Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.304125905Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.30750975Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.307689417Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.307799375Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.313411583Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.313638182Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"http-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.313734772Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"http-service","priority":0}
+{"time":"2026-02-11T10:06:13.313851491Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"grpc-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.313929247Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"grpc-service","priority":0}
+{"time":"2026-02-11T10:06:13.314002993Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.441932866Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.442007995Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"http-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.4420312Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"http-service","priority":0}
+{"time":"2026-02-11T10:06:13.442050473Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"grpc-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.442065855Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"grpc-service","priority":0}
+{"time":"2026-02-11T10:06:13.4420833Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.443079687Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.443127854Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"http-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.443150196Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"http-service","priority":0}
+{"time":"2026-02-11T10:06:13.443168729Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"grpc-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.44319157Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"grpc-service","priority":0}
+{"time":"2026-02-11T10:06:13.443209236Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.444758844Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.444794803Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.44482329Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T10:06:13.444842541Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.445193996Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.445223357Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.445242363Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T10:06:13.445260033Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.445282089Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-11T10:06:13.452551858Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.452649066Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.452674452Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T10:06:13.452693541Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.453069472Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T10:06:13.453105819Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T10:06:13.453125279Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T10:06:13.453143991Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T10:06:13.453166423Z","level":"ERROR","msg":"Config validation error","component":"configLoader","service":"my-service","error":"invalid http address: ::invalid::\n\t-> Fix: Ensure the address is a valid URL (e.g., 'http://example.com')."}
