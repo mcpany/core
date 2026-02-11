@@ -19,6 +19,16 @@ import (
 // It establishes the connection between Cobra command flags and Viper's configuration management,
 // enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
 //
+// Binds the following flags:
+//   - mcp-listen-address: The bind address for the MCP server.
+//   - config-path: Paths to configuration files.
+//   - metrics-listen-address: Address for Prometheus metrics.
+//   - debug: Enable debug logging.
+//   - log-level: Set the logging level (debug, info, warn, error).
+//   - log-format: Set the logging format (text, json).
+//   - logfile: Path to a file for log output.
+//   - set: Overrides for configuration values.
+//
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to which the persistent flags will be attached.
 //
@@ -80,6 +90,14 @@ func BindRootFlags(cmd *cobra.Command) {
 //
 // It defines flags specific to the server operation, such as port configurations,
 // authentication keys, and runtime modes (e.g., stdio).
+//
+// Binds the following flags:
+//   - grpc-port: Port for the gRPC registration server.
+//   - stdio: Enable stdio mode for JSON-RPC.
+//   - shutdown-timeout: Timeout for graceful shutdown.
+//   - api-key: Master API key for the server.
+//   - profiles: Active profiles for the server.
+//   - db-path: Path to the SQLite database.
 //
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to which the server flags will be attached.
