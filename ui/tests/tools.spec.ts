@@ -4,13 +4,62 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedUser, cleanupUser } from './e2e/test-data';
+
+const UNIQUE_SERVICE_ID = "svc_tools_test";
+const UNIQUE_SERVICE_NAME = "Tools Test Service";
+const UNIQUE_PAYMENT_TOOL = "tools_test_payment";
+const UNIQUE_ECHO_SERVICE_ID = "svc_tools_echo";
+const UNIQUE_ECHO_SERVICE_NAME = "Tools Echo Service";
+const UNIQUE_ECHO_TOOL = "tools_test_echo";
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Seed unique services for this test to avoid collision with other parallel tests
+        // Seeding Payment Service
+        await request.post('/api/v1/services', {
+            data: {
+                id: UNIQUE_SERVICE_ID,
+                name: UNIQUE_SERVICE_NAME,
+                version: "v1.2.0",
+                http_service: {
+                    address: "https://stripe.com",
+                    tools: [
+                        { name: UNIQUE_PAYMENT_TOOL, description: "Process a payment" }
+                    ]
+                }
+            },
+            headers: { 'X-API-Key': 'test-token' }
+        });
+
+        // Seeding Echo Service
+        await request.post('/api/v1/services', {
+            data: {
+                id: UNIQUE_ECHO_SERVICE_ID,
+                name: UNIQUE_ECHO_SERVICE_NAME,
+                version: "v1.0",
+                command_line_service: {
+                    command: "/bin/echo",
+                    tools: [
+                        {
+                            name: UNIQUE_ECHO_TOOL,
+                            description: "Echoes back input",
+                            inputSchema: { type: "object" },
+                            call_id: "echo_call"
+                        }
+                    ],
+                    calls: {
+                        echo_call: {
+                            args: ["echoed_output"]
+                        }
+                    }
+                }
+            },
+            headers: { 'X-API-Key': 'test-token' }
+        });
+
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,7 +71,8 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await request.delete(`/api/v1/services/${UNIQUE_SERVICE_NAME}`, { headers: { 'X-API-Key': 'test-token' } });
+        await request.delete(`/api/v1/services/${UNIQUE_ECHO_SERVICE_NAME}`, { headers: { 'X-API-Key': 'test-token' } });
         await cleanupUser(request, "e2e-tools-admin");
     });
 
@@ -38,7 +88,7 @@ test.describe('Tool Exploration', () => {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(UNIQUE_PAYMENT_TOOL).first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
@@ -51,13 +101,13 @@ test.describe('Tool Exploration', () => {
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(UNIQUE_PAYMENT_TOOL).first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
         try {
-            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(new RegExp(UNIQUE_ECHO_TOOL)).first()).toBeVisible({ timeout: 20000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
@@ -71,7 +121,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(UNIQUE_PAYMENT_TOOL).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -79,10 +129,10 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(UNIQUE_PAYMENT_TOOL).first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: new RegExp(UNIQUE_ECHO_TOOL) });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
@@ -95,7 +145,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(UNIQUE_PAYMENT_TOOL).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -103,9 +153,9 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(UNIQUE_PAYMENT_TOOL).first()).toBeVisible({ timeout: 10000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: new RegExp(UNIQUE_ECHO_TOOL) });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
