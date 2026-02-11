@@ -31,6 +31,14 @@ const (
 	HeaderWebhookSignature = webhook.HeaderWebhookSignature
 )
 
+// main is the entry point for the Standard Webhook Sidecar.
+//
+// Summary: Starts the webhook sidecar server.
+//
+// Side Effects:
+//   - Parses flags and environment variables.
+//   - Starts an HTTP server on the configured port.
+//   - Handles signals for graceful shutdown.
 func main() {
 	var (
 		port   string

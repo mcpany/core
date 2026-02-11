@@ -85,6 +85,14 @@ Follow these steps to get up and running with MCP Any immediately.
     ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
     ```
 
+### CLI Tool (mcpctl)
+
+The project includes a CLI tool `mcpctl` for managing and inspecting the server.
+
+```bash
+./build/bin/mcpctl --help
+```
+
 ### Hello World
 
 Once the server is running, you can verify its health and connect a client.

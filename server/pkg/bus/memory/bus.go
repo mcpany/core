@@ -33,6 +33,9 @@ type DefaultBus[T any] struct {
 // default publish timeout.
 //
 // The type parameter T specifies the type of message that the bus will handle.
+//
+// Returns:
+//   - *DefaultBus[T]: A new instance of DefaultBus.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),

@@ -87,6 +87,12 @@ type StdioConnection struct {
 	Env     map[string]string `yaml:"env,omitempty"`
 }
 
+// newImportCmd creates the import command.
+//
+// Summary: Creates a command to import Claude Desktop configuration.
+//
+// Returns:
+//   - *cobra.Command: The configured import command.
 func newImportCmd() *cobra.Command {
 	var outputPath string
 

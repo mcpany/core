@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem defines the structure for an entry in the MCP service registry.
+ * It contains metadata and configuration schema for a connectable MCP server.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +16,10 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY contains the list of curated community MCP servers.
+ * It provides metadata for the Marketplace UI to display and configure these services.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
