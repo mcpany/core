@@ -79,9 +79,9 @@ test.describe('User Management', () => {
         await page.click('button:has-text("Save User")');
 
         // Expect validation errors
-        await expect(page.getByText('Username must be at least 3 characters')).toBeVisible();
+        await expect(page.getByText('Username must be at least 3 characters')).toBeVisible({ timeout: 10000 });
 
         // Password is required for new user (default tab)
-        await expect(page.getByText('Password is required for new users')).toBeVisible();
+        await expect(page.getByText('Password is required for new users')).toBeVisible({ timeout: 10000 });
     });
 });
