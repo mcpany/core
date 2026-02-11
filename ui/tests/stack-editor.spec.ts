@@ -35,7 +35,10 @@ test.describe('Stack Editor', () => {
 
     // Wait for initial load with increased timeout and handling for slow rendering
     // Sometimes the text might be inside a child element
-    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 45000 });
+    // Relaxed check: Look for the text anywhere in the visualizer first
+    await expect(visualizer).toContainText('weather-service', { timeout: 45000 });
+    // Then try specific node selection if possible, but the text check ensures graph rendered something
+    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' }).first()).toBeVisible({ timeout: 10000 });
 
     // Click on PostgreSQL template in the palette
     // Ensure palette is visible first
