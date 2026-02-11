@@ -18,7 +18,7 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 
 ## Usage
 
-1.  Navigate to the **Services** page.
+1.  Navigate to the **Upstream Services** page (`/upstream-services`).
 2.  Click the **Status Icon** (or the "Troubleshoot" button) next to any service.
 3.  Click **Start Diagnostics**.
 4.  Follow the on-screen progress and review the **Diagnostic Result** card for suggestions.
