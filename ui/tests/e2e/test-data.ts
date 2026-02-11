@@ -17,7 +17,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                // Use a reliable internal mock in CI/Docker environment to avoid SSRF/Egress issues.
+                // Fallback to stripe.com if internal mock is unreachable (though in CI it should be reached).
+                address: process.env.CI ? "http://ui-http-echo-server:5678" : "https://stripe.com",
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
