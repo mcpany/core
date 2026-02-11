@@ -226,8 +226,11 @@ func TestDockerTransport_Connect_Mocked(t *testing.T) {
 	jsonPayload := `{"jsonrpc": "2.0", "id": "1", "result": "hello"}`
 
 	// Create pipes to simulate hijacked connection
-	serverReader, clientWriter := io.Pipe()
-	clientReader, serverWriter := io.Pipe()
+	// containerOutput (stdout/stderr): Written by mock (server), Read by Transport (client)
+	containerOutputReader, containerOutputWriter := io.Pipe()
+
+	// containerInput (stdin): Written by Transport (client), Read by mock (server - ignored in this test)
+	containerInputReader, containerInputWriter := io.Pipe()
 
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
@@ -239,9 +242,15 @@ func TestDockerTransport_Connect_Mocked(t *testing.T) {
 				return container.CreateResponse{ID: "test-container"}, nil
 			},
 			ContainerAttachFunc: func(_ context.Context, _ string, _ container.AttachOptions) (types.HijackedResponse, error) {
+				// Conn writes to containerInputWriter (to Transport), Transport writes to containerInputWriter? No.
+				// Transport uses Conn as WriteCloser to write to container's stdin.
+				// So Conn should wrap containerInputWriter.
+				// Wait, Transport WRITES to Conn to send to stdin. So Conn must implement Write.
+				// Transport reads from Reader (stdout/stderr).
+
 				return types.HijackedResponse{
-					Conn:   &mockConn{Reader: serverReader, Writer: clientWriter},
-					Reader: bufio.NewReader(serverReader),
+					Conn:   &mockConn{Reader: containerInputReader, Writer: containerInputWriter},
+					Reader: bufio.NewReader(containerOutputReader),
 				}, nil
 			},
 			ContainerStartFunc: func(_ context.Context, _ string, _ container.StartOptions) error {
@@ -251,7 +260,8 @@ func TestDockerTransport_Connect_Mocked(t *testing.T) {
 					header := []byte{1, 0, 0, 0, 0, 0, 0, 0}
 					binary.BigEndian.PutUint32(header[4:], uint32(len(payload)))
 					fullMsg := append(header, payload...)
-					_, _ = serverWriter.Write(fullMsg)
+					// Write to containerOutputWriter so Transport can read it from containerOutputReader
+					_, _ = containerOutputWriter.Write(fullMsg)
 				}()
 				return nil
 			},
@@ -262,8 +272,8 @@ func TestDockerTransport_Connect_Mocked(t *testing.T) {
 				return nil
 			},
 			CloseFunc: func() error {
-				serverWriter.Close()
-				clientReader.Close()
+				_ = containerOutputWriter.Close()
+				_ = containerInputReader.Close()
 				return nil
 			},
 		}, nil
