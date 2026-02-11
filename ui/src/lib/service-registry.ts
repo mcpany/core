@@ -12,6 +12,10 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY is a hardcoded list of popular MCP services and their configurations.
+ * This is used to populate the Service Marketplace wizard.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

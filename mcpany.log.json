@@ -48,3 +48,53 @@
 {"time":"2026-02-11T03:26:30.120566351Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
 {"time":"2026-02-11T03:26:30.120679153Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
 {"time":"2026-02-11T03:26:30.122694302Z","level":"ERROR","msg":"Application failed","service":"mcpany","error":"failed to start a server: ❌ HTTP server failed to listen on 0.0.0.0:50050: listen tcp 0.0.0.0:50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
+{"time":"2026-02-11T05:16:30.901709596Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T05:16:30.904165091Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"wttr.in","disabled_field":false}
+{"time":"2026-02-11T05:16:30.904285539Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"wttr.in","priority":0}
+{"time":"2026-02-11T05:16:30.90438448Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T05:16:30.906139115Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"0.0.0.0:50050","registration-port":"","stdio":false,"config-path":["server/examples/popular_services/wttr.in/config.yaml"]}
+{"time":"2026-02-11T05:16:30.906495574Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["server/examples/popular_services/wttr.in/config.yaml"]}
+{"time":"2026-02-11T05:16:30.906724371Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T05:16:30.90690501Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T05:16:30.908063867Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T05:16:30.911936869Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T05:16:30.944163366Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["server/examples/popular_services/wttr.in/config.yaml"]}
+{"time":"2026-02-11T05:16:31.02509828Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T05:16:31.025204241Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T05:16:31.025231334Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T05:16:31.02525219Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"wttr.in","disabled_field":false}
+{"time":"2026-02-11T05:16:31.02526984Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"wttr.in","priority":0}
+{"time":"2026-02-11T05:16:31.02768832Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-11T05:16:31.029167596Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T05:16:31.029730312Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T05:16:31.032996546Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T05:16:31.035857682Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-11T05:16:31.035966973Z","level":"INFO","msg":"Queueing service for registration from config","service":"wttr.in"}
+{"time":"2026-02-11T05:16:31.036227536Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T05:16:31.036224804Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T05:16:31.036488643Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T05:16:31.03871962Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.038766909Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.038781138Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.038797804Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.03881154Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.039786948Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.039804436Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.039826742Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.039840219Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.039855158Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T05:16:31.041219671Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T05:16:31.040864494Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T05:16:31.042854099Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T05:16:31.045055946Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T05:16:31.04565579Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T05:16:31.046549818Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T05:16:31.047381055Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T05:16:31.048903275Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T05:16:31.053878111Z","level":"ERROR","msg":"Server startup failed, initiating shutdown...","error":"failed to start a server: ❌ HTTP server failed to listen on 0.0.0.0:50050: listen tcp 0.0.0.0:50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
+{"time":"2026-02-11T05:16:31.053986985Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T05:16:31.054050142Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T05:16:31.054970191Z","level":"INFO","msg":"Closing old entry","name":"wttrin_b658db5c"}
+{"time":"2026-02-11T05:16:31.057881355Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T05:16:31.057257416Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T05:16:31.058986912Z","level":"ERROR","msg":"Application failed","service":"mcpany","error":"failed to start a server: ❌ HTTP server failed to listen on 0.0.0.0:50050: listen tcp 0.0.0.0:50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
