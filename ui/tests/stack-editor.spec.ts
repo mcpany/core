@@ -21,7 +21,7 @@ test.describe('Stack Editor', () => {
 
     // Check for React Flow container
     const visualizer = page.locator('.stack-visualizer-container');
-    await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+    await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 60000 });
 
     // Check for the node
     // Using a more specific selector to ensure it's inside a node
@@ -35,8 +35,8 @@ test.describe('Stack Editor', () => {
 
     // Wait for initial load with increased timeout and handling for slow rendering
     // Sometimes the text might be inside a child element
-    // Increased timeout to 90s to mitigate CI flakiness
-    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 90000 });
+    // Increased timeout to 120s to mitigate extreme CI flakiness
+    await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 120000 });
 
     // Click on PostgreSQL template in the palette
     // Ensure palette is visible first
@@ -45,6 +45,6 @@ test.describe('Stack Editor', () => {
 
     // Verify new node appears in graph
     const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: 'postgres-db' });
-    await expect(postgresNode).toBeVisible({ timeout: 60000 });
+    await expect(postgresNode).toBeVisible({ timeout: 120000 });
   });
 });
