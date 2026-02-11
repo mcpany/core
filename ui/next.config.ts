@@ -117,7 +117,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Explicitly add alias for @proto to resolve external directory
     // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
     const localProto = path.join(__dirname, 'proto');
@@ -127,12 +127,20 @@ const nextConfig: NextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@proto': protoPath,
-      // Force resolution for these packages to avoid "Module not found" in Docker
-      'long': path.resolve(__dirname, 'node_modules/long'),
-      '@bufbuild/protobuf/wire': path.resolve(__dirname, 'node_modules/@bufbuild/protobuf/dist/esm/wire/index.js'),
-      'browser-headers': path.resolve(__dirname, 'node_modules/browser-headers'),
-      '@improbable-eng/grpc-web': path.resolve(__dirname, 'node_modules/@improbable-eng/grpc-web'),
+      '@google': path.join(protoPath, 'google'),
     };
+
+    // Force resolution for these packages using require.resolve() to handle module resolution correctly in Docker
+    // This bypasses potential issues with path.resolve() assumptions about node_modules structure
+    try {
+        config.resolve.alias['long'] = require.resolve('long');
+        config.resolve.alias['@bufbuild/protobuf/wire'] = require.resolve('@bufbuild/protobuf/wire');
+        config.resolve.alias['browser-headers'] = require.resolve('browser-headers');
+        config.resolve.alias['@improbable-eng/grpc-web'] = require.resolve('@improbable-eng/grpc-web');
+    } catch (e) {
+        console.error('Failed to resolve aliases via require.resolve:', e);
+        // Fallback or let webpack fail naturally if modules are missing
+    }
 
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path
     config.resolve.symlinks = false;
