@@ -24,18 +24,18 @@ func TestRedactDSN_EdgeCases(t *testing.T) {
 			expected: "postgres://user:[REDACTED]@host:5432/db",
 		},
 		{
-			name: "Malformed URL that url.Parse fails",
-			input: "not a url user:password@host",
+			name:     "Malformed URL that url.Parse fails",
+			input:    "not a url user:password@host",
 			expected: "not a url user:[REDACTED]@host",
 		},
 		{
-			name: "Invalid escape sequence with colon in password",
-			input: "postgres://user:pass:word%@host",
+			name:     "Invalid escape sequence with colon in password",
+			input:    "postgres://user:pass:word%@host",
 			expected: "postgres://user:[REDACTED]@host",
 		},
 		{
-			name: "Invalid escape sequence with at sign in password",
-			input: "postgres://user:pass@word%@host",
+			name:     "Invalid escape sequence with at sign in password",
+			input:    "postgres://user:pass@word%@host",
 			expected: "postgres://user:[REDACTED]@host",
 		},
 		{

@@ -51,8 +51,8 @@ func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, erro
 	}
 
 	return &PineconeClient{
-		config: config,
-		client: &http.Client{Timeout: 30 * time.Second},
+		config:  config,
+		client:  &http.Client{Timeout: 30 * time.Second},
 		baseURL: baseURL,
 	}, nil
 }
@@ -123,9 +123,9 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector":          vector,
-		"topK": topK,
+		"topK":            topK,
 		"includeMetadata": true,
-		"includeValues": false,
+		"includeValues":   false,
 	}
 	if filter != nil {
 		req["filter"] = filter

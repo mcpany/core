@@ -195,19 +195,19 @@ func TestStripSecretsFromCalls(t *testing.T) {
 
 func TestHydrateSecretValue_Internal(t *testing.T) {
 	secrets := map[string]*configv1.SecretValue{
-        "API_KEY": configv1.SecretValue_builder{
-            PlainText: proto.String("12345"),
-        }.Build(),
-    }
+		"API_KEY": configv1.SecretValue_builder{
+			PlainText: proto.String("12345"),
+		}.Build(),
+	}
 
 	// Test hydrateSecretValue with non-env var
-    plainSecret := configv1.SecretValue_builder{PlainText: proto.String("plain")}.Build()
-    hydrateSecretValue(plainSecret, secrets) // Should do nothing
+	plainSecret := configv1.SecretValue_builder{PlainText: proto.String("plain")}.Build()
+	hydrateSecretValue(plainSecret, secrets) // Should do nothing
 	assert.Equal(t, "plain", plainSecret.GetPlainText())
 
-    // Test hydrateSecretValue with missing secret key
-    missingSecret := configv1.SecretValue_builder{EnvironmentVariable: proto.String("MISSING")}.Build()
-    hydrateSecretValue(missingSecret, secrets) // Should do nothing
+	// Test hydrateSecretValue with missing secret key
+	missingSecret := configv1.SecretValue_builder{EnvironmentVariable: proto.String("MISSING")}.Build()
+	hydrateSecretValue(missingSecret, secrets) // Should do nothing
 	assert.Equal(t, "MISSING", missingSecret.GetEnvironmentVariable())
 }
 
@@ -577,13 +577,13 @@ func TestStripSecretsFromAllServices(t *testing.T) {
 func TestStripSecretsFromGrpcAndOpenapi(t *testing.T) {
 	// These currently don't do much, but we test for coverage
 	svcGrpc := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("grpc"),
+		Id:          proto.String("grpc"),
 		GrpcService: configv1.GrpcUpstreamService_builder{}.Build(),
 	}.Build()
 	StripSecretsFromService(svcGrpc)
 
 	svcOpenapi := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("openapi"),
+		Id:             proto.String("openapi"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{}.Build(),
 	}.Build()
 	StripSecretsFromService(svcOpenapi)

@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/config"
 	adminv1 "github.com/mcpany/core/proto/admin/v1"
 	pb "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/tests/framework"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"

@@ -41,7 +41,6 @@ func TestBusProvider(t *testing.T) {
 		assert.Same(t, bus1, bus3)
 	})
 
-
 	t.Run("Nats", func(t *testing.T) {
 		// NatsBus builder with empty URL triggers the embedded NATS server,
 		// so this test does not require an external NATS server.
@@ -167,7 +166,6 @@ func (m *MockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T
 func (m *MockBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	return func() {}
 }
-
 
 func TestIntegration(t *testing.T) {
 	messageBus := bus.MessageBus_builder{}.Build()

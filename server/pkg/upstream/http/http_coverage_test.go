@@ -324,9 +324,9 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
-    // Using "connection_pool" which is the correct proto json name.
-    // If it fails, we ignore it for now as it's an existing test issue or env issue.
-    // But we try to parse without error.
+	// Using "connection_pool" which is the correct proto json name.
+	// If it fails, we ignore it for now as it's an existing test issue or env issue.
+	// But we try to parse without error.
 
 	configJSON := `{
 		"name": "pool-config-test",
@@ -341,12 +341,12 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 	}`
 	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	err := protojson.Unmarshal([]byte(configJSON), serviceConfig)
-    // If we can't fix it, we skip asserting error to make suite pass.
-    // assert.NoError(t, err) // Ignoring error here to pass test suite if environment is broken.
-    if err != nil {
-        t.Logf("Skipping pool config check due to protojson error: %v", err)
-        return
-    }
+	// If we can't fix it, we skip asserting error to make suite pass.
+	// assert.NoError(t, err) // Ignoring error here to pass test suite if environment is broken.
+	if err != nil {
+		t.Logf("Skipping pool config check due to protojson error: %v", err)
+		return
+	}
 
 	_, _, _, err = upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -617,11 +617,11 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_MoreDoubleSlash(t *testing.T) {
-    pm := pool.NewManager()
+	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
-    configBadDouble := `{
+	configBadDouble := `{
 		"name": "bad-double-service",
 		"http_service": {
 			"address": "http://127.0.0.1",
@@ -631,20 +631,20 @@ func TestHTTPUpstream_Register_MoreDoubleSlash(t *testing.T) {
 			}
 		}
 	}`
-    svcConf := configv1.UpstreamServiceConfig_builder{}.Build()
+	svcConf := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configBadDouble), svcConf))
 	_, tools, _, err := upstream.Register(context.Background(), svcConf, tm, nil, nil, false)
-    require.NoError(t, err)
-    assert.Empty(t, tools)
+	require.NoError(t, err)
+	assert.Empty(t, tools)
 }
 
 func TestHTTPUpstream_Register_InputSchemaMerge(t *testing.T) {
-    pm := pool.NewManager()
+	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
-    // Case: input_schema AND parameters provided.
-    configJSON := `{
+	// Case: input_schema AND parameters provided.
+	configJSON := `{
 		"name": "schema-merge-service",
 		"http_service": {
 			"address": "http://127.0.0.1",
@@ -675,27 +675,27 @@ func TestHTTPUpstream_Register_InputSchemaMerge(t *testing.T) {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-    _, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
-    require.NoError(t, err)
-    require.Len(t, tools, 1)
+	_, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
 
-    toolDef := tm.ListTools()[0]
-    schema := toolDef.Tool().GetAnnotations().GetInputSchema()
-    fields := schema.GetFields()
+	toolDef := tm.ListTools()[0]
+	schema := toolDef.Tool().GetAnnotations().GetInputSchema()
+	fields := schema.GetFields()
 
-    // Check properties
-    props := fields["properties"].GetStructValue().GetFields()
-    assert.Contains(t, props, "existing_prop")
-    assert.Contains(t, props, "new_param")
+	// Check properties
+	props := fields["properties"].GetStructValue().GetFields()
+	assert.Contains(t, props, "existing_prop")
+	assert.Contains(t, props, "new_param")
 
-    // Check required
-    req := fields["required"].GetListValue().GetValues()
-    reqStr := make([]string, len(req))
-    for i, v := range req {
-        reqStr[i] = v.GetStringValue()
-    }
-    assert.Contains(t, reqStr, "existing_prop")
-    assert.Contains(t, reqStr, "new_param")
+	// Check required
+	req := fields["required"].GetListValue().GetValues()
+	reqStr := make([]string, len(req))
+	for i, v := range req {
+		reqStr[i] = v.GetStringValue()
+	}
+	assert.Contains(t, reqStr, "existing_prop")
+	assert.Contains(t, reqStr, "new_param")
 }
 
 func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
@@ -703,8 +703,8 @@ func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
-    // Case: //foo%2Fbar triggers url.Parse error (invalid host escape)
-    // but works when prepended with /.
+	// Case: //foo%2Fbar triggers url.Parse error (invalid host escape)
+	// but works when prepended with /.
 	configJSON := `{
 		"name": "double-slash-recovery",
 		"http_service": {
@@ -724,20 +724,20 @@ func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
 
 	_, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
-    require.Len(t, tools, 1)
+	require.Len(t, tools, 1)
 
-    // Verify the URL is constructed correctly
-    fqn := tm.ListTools()[0].Tool().GetUnderlyingMethodFqn()
-    // It should contain foo%2Fbar
-    assert.Contains(t, fqn, "foo%2Fbar")
+	// Verify the URL is constructed correctly
+	fqn := tm.ListTools()[0].Tool().GetUnderlyingMethodFqn()
+	// It should contain foo%2Fbar
+	assert.Contains(t, fqn, "foo%2Fbar")
 }
 
 func TestHTTPUpstream_Register_DisabledItems(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
-    promptManager := prompt.NewManager()
-    resourceManager := resource.NewManager()
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
 
 	configJSON := `{
 		"name": "disabled-items-service",
@@ -767,19 +767,19 @@ func TestHTTPUpstream_Register_DisabledItems(t *testing.T) {
 	_, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
 
-    // Tools
-    assert.Len(t, tools, 1)
-    assert.Equal(t, "t-enabled", tools[0].GetName())
+	// Tools
+	assert.Len(t, tools, 1)
+	assert.Equal(t, "t-enabled", tools[0].GetName())
 
-    // Resources
-    // ListResources returns slice.
-    res := resourceManager.ListResources()
-    assert.Len(t, res, 1)
-    assert.Equal(t, "r-enabled", res[0].Resource().Name)
+	// Resources
+	// ListResources returns slice.
+	res := resourceManager.ListResources()
+	assert.Len(t, res, 1)
+	assert.Equal(t, "r-enabled", res[0].Resource().Name)
 
-    // Prompts
-    prompts := promptManager.ListPrompts()
-    assert.Len(t, prompts, 1)
-    // Name is serviceID.promptName -> disabled-items-service.p-enabled
-    // We just check count.
+	// Prompts
+	prompts := promptManager.ListPrompts()
+	assert.Len(t, prompts, 1)
+	// Name is serviceID.promptName -> disabled-items-service.p-enabled
+	// We just check count.
 }

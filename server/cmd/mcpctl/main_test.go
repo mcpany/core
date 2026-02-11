@@ -155,15 +155,15 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		assert.Contains(t, b.String(), "Failed to decode doctor report")
 	})
 
-    // 4. Doctor returns degraded status
+	// 4. Doctor returns degraded status
 	t.Run("Doctor Degraded", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
 			} else {
-                w.Header().Set("Content-Type", "application/json")
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-                w.Write([]byte(`{"status":"degraded","checks":{"db":{"status":"failed","message":"connection lost"}}}`))
+				w.Write([]byte(`{"status":"degraded","checks":{"db":{"status":"failed","message":"connection lost"}}}`))
 			}
 		}))
 		defer ts.Close()
@@ -176,6 +176,6 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "DEGRADED")
 		assert.Contains(t, b.String(), "db: FAIL")
-        assert.Contains(t, b.String(), "connection lost")
+		assert.Contains(t, b.String(), "connection lost")
 	})
 }

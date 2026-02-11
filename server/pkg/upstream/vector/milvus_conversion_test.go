@@ -40,9 +40,9 @@ func TestConvertVectorsToColumns_Types(t *testing.T) {
 			"id":     int64(2),
 			"values": []interface{}{0.3, 0.4},
 			"metadata": map[string]interface{}{
-				"meta_int":    20,   // int -> int64 conversion
-				"meta_str":    123,  // int -> string conversion
-				"meta_float":  1.5,  // float64 -> float32 conversion
+				"meta_int":    20,           // int -> int64 conversion
+				"meta_str":    123,          // int -> string conversion
+				"meta_float":  1.5,          // float64 -> float32 conversion
 				"meta_double": float32(2.5), // float32 -> float64 conversion
 				"meta_bool":   false,
 			},

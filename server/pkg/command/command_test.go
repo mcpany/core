@@ -228,7 +228,6 @@ func TestDockerExecutor(t *testing.T) {
 		assert.Equal(t, 0, exitCode)
 	})
 
-
 	t.Run("WithVolumeMount", func(t *testing.T) {
 		// Create a dummy file to mount
 		tmpfile, err := os.CreateTemp(".", "test-volume-mount")
@@ -870,7 +869,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "hello", string(stdoutBytes))
 
-        stdin.Close()
+		stdin.Close()
 
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 0, exitCode)

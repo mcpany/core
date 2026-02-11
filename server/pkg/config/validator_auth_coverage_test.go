@@ -204,7 +204,7 @@ func TestValidateOAuth2Auth_Coverage(t *testing.T) {
 			}.Build(),
 			expectErr: "oauth2 client_secret is missing or empty",
 		},
-        {
+		{
 			name: "invalid_client_id_secret_validation",
 			oauth: configv1.OAuth2Auth_builder{
 				TokenUrl: proto.String("https://example.com/token"),

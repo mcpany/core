@@ -19,7 +19,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		cmd := "sh"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}") // Unquoted
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "foo; rm -rf /"}`),
 		}
 
@@ -33,7 +33,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		cmd := "sh"
 		tool := createTestCommandToolWithTemplate(cmd, "\"{{input}}\"")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "` + "`whoami`" + `"}`),
 		}
 
@@ -47,7 +47,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		cmd := "ls"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "-la"}`),
 		}
 
@@ -61,7 +61,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		cmd := "cat"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "../../etc/passwd"}`),
 		}
 
@@ -70,12 +70,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Contains(t, err.Error(), "path traversal attempt detected")
 	})
 
-    // Case 5: Absolute path
+	// Case 5: Absolute path
 	t.Run("absolute_path", func(t *testing.T) {
 		cmd := "cat"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "/etc/passwd"}`),
 		}
 
@@ -89,7 +89,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		cmd := "python-3.14" // Should be treated as python
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "print('hello'); import os; os.system('rm -rf /')"}`),
 		}
 
@@ -104,7 +104,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		tool := createTestCommandToolWithTemplate(cmd, "print('Prefix: {{input}}')")
 		// This input is safe in python string but blocked by strict check currently
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "foo; bar"}`),
 		}
 
@@ -131,7 +131,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 				// We pass ";" which is blocked in strict mode.
 				tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 				req := &ExecutionRequest{
-					ToolName: "test",
+					ToolName:   "test",
 					ToolInputs: []byte(`{"input": "safe; unsafe"}`),
 				}
 
@@ -161,7 +161,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "& calc"}`),
 		}
 

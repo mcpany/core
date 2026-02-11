@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_InvalidQueryOverride(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "endpoint with invalid query param should override base param",

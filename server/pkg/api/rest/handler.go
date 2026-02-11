@@ -24,7 +24,8 @@ import (
 //   - r: *http.Request. The HTTP request containing the configuration in the body.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Throws/Errors:
 //   - 405 Method Not Allowed: If method is not POST.

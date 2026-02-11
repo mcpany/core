@@ -9,10 +9,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
-	"sync"
 	"net/url"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/alexliesenfeld/health"

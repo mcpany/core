@@ -4,13 +4,13 @@
 package mcpserver_test
 
 import (
-	"testing"
-	"log/slog"
 	"bytes"
+	"log/slog"
 	"strings"
+	"testing"
 
-	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

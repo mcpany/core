@@ -106,7 +106,9 @@ func TestMilvusClient_Query_Errors(t *testing.T) {
 	t.Run("Search_Fail", func(t *testing.T) {
 		mock := &mockMilvusClient{}
 		c := &MilvusClient{config: config, client: mock}
-		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error { return nil }
+		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error {
+			return nil
+		}
 		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
 			return &entity.Collection{
 				Schema: &entity.Schema{
@@ -127,7 +129,9 @@ func TestMilvusClient_Query_Errors(t *testing.T) {
 	t.Run("No_Vector_Field", func(t *testing.T) {
 		mock := &mockMilvusClient{}
 		c := &MilvusClient{config: config, client: mock}
-		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error { return nil }
+		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error {
+			return nil
+		}
 		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
 			return &entity.Collection{
 				Schema: &entity.Schema{
@@ -167,13 +171,13 @@ func TestMilvusClient_Upsert(t *testing.T) {
 	mock.upsertFunc = func(ctx context.Context, collectionName string, partitionName string, columns ...entity.Column) (entity.Column, error) {
 		assert.Equal(t, "test_coll", collectionName)
 		assert.Len(t, columns, 2) // id and embedding
-		return nil, nil // Return is ignored by milvus.go logic which just checks error
+		return nil, nil           // Return is ignored by milvus.go logic which just checks error
 	}
 
 	ctx := context.Background()
 	vectors := []map[string]interface{}{
 		{
-			"id": int64(1),
+			"id":     int64(1),
 			"values": []interface{}{0.1, 0.2},
 		},
 	}

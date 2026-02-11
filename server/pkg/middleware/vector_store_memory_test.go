@@ -125,7 +125,7 @@ func TestVectorMath(t *testing.T) {
 	// Edge cases
 	assert.Equal(t, float32(0.0), cosineSimilarityOptimized([]float32{}, []float32{}, 0, 0))
 	assert.Equal(t, float32(0.0), cosineSimilarityOptimized(v1, []float32{1.0}, norm1, 1.0)) // Length mismatch
-	assert.Equal(t, float32(0.0), cosineSimilarityOptimized(v1, v2, 0, norm2)) // Zero norm
+	assert.Equal(t, float32(0.0), cosineSimilarityOptimized(v1, v2, 0, norm2))               // Zero norm
 }
 
 func TestSimpleVectorStore_Concurrency(t *testing.T) {

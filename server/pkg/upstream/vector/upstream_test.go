@@ -226,7 +226,7 @@ func TestRegister(t *testing.T) {
 
 	// Test failure with unsupported type (using default factory)
 	cfgWithService := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(name),
+		Name:          proto.String(name),
 		VectorService: configv1.VectorUpstreamService_builder{}.Build(),
 	}.Build()
 	_, _, _, err = u.Register(context.Background(), cfgWithService, &MockToolManager{}, nil, nil, false)

@@ -36,18 +36,21 @@ func (m *mockSecurityToolManager) IsServiceAllowed(serviceID, profileID string) 
 }
 
 // Stubs for other methods
-func (m *mockSecurityToolManager) AddTool(_ tool.Tool) error { return nil }
-func (m *mockSecurityToolManager) ListTools() []tool.Tool    { return nil }
+func (m *mockSecurityToolManager) AddTool(_ tool.Tool) error             { return nil }
+func (m *mockSecurityToolManager) ListTools() []tool.Tool                { return nil }
 func (m *mockSecurityToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockSecurityToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
-func (m *mockSecurityToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
-func (m *mockSecurityToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return nil, nil }
+func (m *mockSecurityToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
+func (m *mockSecurityToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+	return nil, false
+}
+func (m *mockSecurityToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
 func (m *mockSecurityToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *mockSecurityToolManager) ClearToolsForService(_ string) {}
-
+func (m *mockSecurityToolManager) ClearToolsForService(_ string)            {}
 
 type mockSecurityPrompt struct {
-	p *mcp.Prompt
+	p         *mcp.Prompt
 	serviceID string
 }
 
@@ -64,7 +67,7 @@ func (m *mockSecurityPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.Get
 }
 
 type mockSecurityResource struct {
-	r *mcp.Resource
+	r         *mcp.Resource
 	serviceID string
 }
 
@@ -80,7 +83,7 @@ func (m *mockSecurityResource) Read(_ context.Context) (*mcp.ReadResourceResult,
 	return &mcp.ReadResourceResult{
 		Contents: []*mcp.ResourceContents{
 			{
-				URI: m.r.URI,
+				URI:  m.r.URI,
 				Text: "secret data",
 			},
 		},
@@ -90,7 +93,6 @@ func (m *mockSecurityResource) Read(_ context.Context) (*mcp.ReadResourceResult,
 func (m *mockSecurityResource) Subscribe(_ context.Context) error {
 	return nil
 }
-
 
 func TestAuthorizationBypass(t *testing.T) {
 	poolManager := pool.NewManager()
@@ -112,13 +114,13 @@ func TestAuthorizationBypass(t *testing.T) {
 
 	// Add restricted prompt
 	pm.AddPrompt(&mockSecurityPrompt{
-		p: &mcp.Prompt{Name: "restricted-prompt"},
+		p:         &mcp.Prompt{Name: "restricted-prompt"},
 		serviceID: "restricted-service",
 	})
 
 	// Add restricted resource
 	rm.AddResource(&mockSecurityResource{
-		r: &mcp.Resource{URI: "restricted://resource"},
+		r:         &mcp.Resource{URI: "restricted://resource"},
 		serviceID: "restricted-service",
 	})
 

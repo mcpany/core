@@ -50,7 +50,7 @@ func (n *nilResource) Resource() *mcp.Resource {
 	return nil
 }
 
-func (n *nilResource) Service() string { return "nil-service" }
+func (n *nilResource) Service() string                                           { return "nil-service" }
 func (n *nilResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) { return nil, nil }
 func (n *nilResource) Subscribe(ctx context.Context) error                       { return nil }
 

@@ -716,8 +716,8 @@ func TestFieldsToProperties_MapRecursionLimit(t *testing.T) {
 					kind: protoreflect.StringKind,
 				},
 				&mockFieldDescriptor{
-					name: "value",
-					kind: protoreflect.MessageKind,
+					name:    "value",
+					kind:    protoreflect.MessageKind,
 					message: recursiveMsg,
 				},
 			},

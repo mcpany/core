@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the

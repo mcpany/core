@@ -70,7 +70,7 @@ func (m *mockResourceManager) AddResource(r resource.Resource) {
 }
 
 func (m *mockResourceManager) RemoveResource(_ string) {}
-func (m *mockResourceManager) OnListChanged(f func())    {}
+func (m *mockResourceManager) OnListChanged(f func())  {}
 func (m *mockResourceManager) ClearResourcesForService(_ string) {
 }
 
@@ -116,10 +116,9 @@ func (m *mockPromptManager) UpdatePrompt(p prompt.Prompt) {
 	m.prompts = append(m.prompts, p)
 }
 
-func (m *mockPromptManager) RemovePrompt(_ string) {}
+func (m *mockPromptManager) RemovePrompt(_ string)                   {}
 func (m *mockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
-func (m *mockPromptManager) ClearPromptsForService(_ string) {}
-
+func (m *mockPromptManager) ClearPromptsForService(_ string)         {}
 
 // reuse smartToolManager concept for GetServiceInfo
 type serviceInfoProviderToolManager struct {
@@ -139,10 +138,10 @@ func (m *serviceInfoProviderToolManager) ListTools() []tool.Tool                
 func (m *serviceInfoProviderToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *serviceInfoProviderToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *serviceInfoProviderToolManager) SetMCPServer(_ tool.MCPServerProvider)    {}
-func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error                { return nil }
-func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)            {}
+func (m *serviceInfoProviderToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                {}
+func (m *serviceInfoProviderToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
+func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error                               { return nil }
+func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)                           {}
 func (m *serviceInfoProviderToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *serviceInfoProviderToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
@@ -233,7 +232,6 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	_, ok = res.(*mcp.CallToolResult)
 	require.True(t, ok)
 }
-
 
 func TestPromptListFilteringMiddleware(t *testing.T) {
 	// Setup dependencies

@@ -65,18 +65,18 @@ func TestCoverageEnhancement_DynamicResourceErrors(t *testing.T) {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-    // Make AddTool fail so op1 is not registered
-    mockTm.addError = assert.AnError
+	// Make AddTool fail so op1 is not registered
+	mockTm.addError = assert.AnError
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
-    // Verify resources were NOT registered
-    _, ok := rm.GetResource("http://res1")
-    assert.False(t, ok, "Resource with invalid call ID should not be registered")
+	// Verify resources were NOT registered
+	_, ok := rm.GetResource("http://res1")
+	assert.False(t, ok, "Resource with invalid call ID should not be registered")
 
-    _, ok = rm.GetResource("http://res2")
-    assert.False(t, ok, "Resource with missing tool should not be registered")
+	_, ok = rm.GetResource("http://res2")
+	assert.False(t, ok, "Resource with missing tool should not be registered")
 }
 
 func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
@@ -84,7 +84,7 @@ func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // \u007f is DEL, which url.Parse should reject as it's a control character.
+	// \u007f is DEL, which url.Parse should reject as it's a control character.
 	configJSON := `{
 		"name": "invalid-path-service",
 		"http_service": {
@@ -108,8 +108,8 @@ func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    // Expect tool to NOT be registered because url.Parse fails
-    assert.Empty(t, discoveredTools)
+	// Expect tool to NOT be registered because url.Parse fails
+	assert.Empty(t, discoveredTools)
 }
 
 func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
@@ -117,7 +117,7 @@ func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // %GG is invalid percent encoding
+	// %GG is invalid percent encoding
 	configJSON := `{
 		"name": "invalid-query-service",
 		"http_service": {
@@ -140,16 +140,16 @@ func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    // The tool should be registered, but the invalid part in query should be handled (preserved)
-    assert.NotEmpty(t, discoveredTools)
+	// The tool should be registered, but the invalid part in query should be handled (preserved)
+	assert.NotEmpty(t, discoveredTools)
 
-    tools := mockTm.ListTools()
-    require.Len(t, tools, 1)
-    tTool := tools[0]
+	tools := mockTm.ListTools()
+	require.Len(t, tools, 1)
+	tTool := tools[0]
 
-    fqn := tTool.Tool().GetUnderlyingMethodFqn()
-    // It should preserve invalid query part
-    assert.Contains(t, fqn, "%GG")
+	fqn := tTool.Tool().GetUnderlyingMethodFqn()
+	// It should preserve invalid query part
+	assert.Contains(t, fqn, "%GG")
 }
 
 func TestCoverageEnhancement_MTLSError(t *testing.T) {
@@ -184,29 +184,29 @@ func TestCoverageEnhancement_MTLSError(t *testing.T) {
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
-    // NewHTTPPool should fail due to missing certs
+	// NewHTTPPool should fail due to missing certs
 	require.Error(t, err)
-    assert.Contains(t, err.Error(), "failed to create HTTP pool")
+	assert.Contains(t, err.Error(), "failed to create HTTP pool")
 }
 
 func TestCoverageEnhancement_URLConstruction(t *testing.T) {
-    // Tests for specific URL construction edge cases including double slash
+	// Tests for specific URL construction edge cases including double slash
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    testCases := []struct {
-        endpointPath string
-        expectedPathSuffix string // suffix of the URL
-    }{
-        {"//foo", "/foo"}, // //foo -> host=foo path="" -> path=//foo (relative) -> appended to base
-        {"//", "/"},       // // -> host="" path="" -> path=// -> / (relative)
-        {"///foo", "///foo"},
-        {"/foo%2Fbar", "/foo%2Fbar"}, // RawPath preservation
-    }
+	testCases := []struct {
+		endpointPath       string
+		expectedPathSuffix string // suffix of the URL
+	}{
+		{"//foo", "/foo"}, // //foo -> host=foo path="" -> path=//foo (relative) -> appended to base
+		{"//", "/"},       // // -> host="" path="" -> path=// -> / (relative)
+		{"///foo", "///foo"},
+		{"/foo%2Fbar", "/foo%2Fbar"}, // RawPath preservation
+	}
 
-    for _, tc := range testCases {
-        configJSON := `{
+	for _, tc := range testCases {
+		configJSON := `{
             "name": "url-edge-service",
             "http_service": {
                 "address": "http://127.0.0.1/base",
@@ -222,29 +222,29 @@ func TestCoverageEnhancement_URLConstruction(t *testing.T) {
                 }
             }
         }`
-        serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
-        require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-        // Clear previous tools
-        mockTm.addedTools = nil
+		// Clear previous tools
+		mockTm.addedTools = nil
 
-        _, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
-        require.NoError(t, err)
-        require.Len(t, discoveredTools, 1)
+		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+		require.NoError(t, err)
+		require.Len(t, discoveredTools, 1)
 
-        tools := mockTm.ListTools()
-        require.Len(t, tools, 1)
-        fqn := tools[0].Tool().GetUnderlyingMethodFqn()
+		tools := mockTm.ListTools()
+		require.Len(t, tools, 1)
+		fqn := tools[0].Tool().GetUnderlyingMethodFqn()
 
-        assert.Contains(t, fqn, tc.expectedPathSuffix)
-    }
+		assert.Contains(t, fqn, tc.expectedPathSuffix)
+	}
 }
 
 func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
-    rm := resource.NewManager()
+	rm := resource.NewManager()
 
 	configJSON := `{
 		"name": "export-policy-service",
@@ -272,9 +272,9 @@ func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
-    // Should only have public-tool
-    require.Len(t, discoveredTools, 1)
-    assert.Equal(t, "public-tool", discoveredTools[0].GetName())
+	// Should only have public-tool
+	require.Len(t, discoveredTools, 1)
+	assert.Equal(t, "public-tool", discoveredTools[0].GetName())
 }
 
 func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
@@ -302,24 +302,24 @@ func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
             }
         ]
 	}`
-    // "[" is invalid regex.
+	// "[" is invalid regex.
 
 	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
-    // Register should fail because CompileCallPolicies fails
+	// Register should fail because CompileCallPolicies fails
 	require.Nil(t, discoveredTools)
-    assert.NoError(t, err) // It doesn't return error, just logs it and returns nil tools.
+	assert.NoError(t, err) // It doesn't return error, just logs it and returns nil tools.
 }
 
 func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
-    rm := resource.NewManager()
+	rm := resource.NewManager()
 
-    // Tool without name (gets auto-generated), but we reference it in resource.
+	// Tool without name (gets auto-generated), but we reference it in resource.
 	configJSON := `{
 		"name": "empty-tool-name-service",
 		"http_service": {
@@ -347,16 +347,16 @@ func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
-    // Resource should NOT be registered
-    _, ok := rm.GetResource("http://res1")
-    assert.False(t, ok, "Resource with unnamed tool should not be registered (due to sanitization failure)")
+	// Resource should NOT be registered
+	_, ok := rm.GetResource("http://res1")
+	assert.False(t, ok, "Resource with unnamed tool should not be registered (due to sanitization failure)")
 }
 
 func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
-    rm := resource.NewManager()
+	rm := resource.NewManager()
 
 	configJSON := `{
 		"name": "no-call-resource-service",
@@ -378,7 +378,7 @@ func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
             ]
 		}
 	}`
-    // dynamic is present but empty. GetHttpCall() returns nil.
+	// dynamic is present but empty. GetHttpCall() returns nil.
 
 	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
@@ -386,9 +386,9 @@ func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
-    // Resource should NOT be registered
-    _, ok := rm.GetResource("http://res1")
-    assert.False(t, ok)
+	// Resource should NOT be registered
+	_, ok := rm.GetResource("http://res1")
+	assert.False(t, ok)
 }
 
 func TestCoverageEnhancement_QueryFlags(t *testing.T) {
@@ -396,8 +396,8 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // Case 1: Base ?f, Endpoint ?f -> ?f (flag preserved)
-    // Case 2: Base ?f, Endpoint ?f= -> ?f (flag preserved due to restore logic)
+	// Case 1: Base ?f, Endpoint ?f -> ?f (flag preserved)
+	// Case 2: Base ?f, Endpoint ?f= -> ?f (flag preserved due to restore logic)
 
 	configJSON := `{
 		"name": "query-flag-service",
@@ -427,23 +427,23 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    tools := mockTm.ListTools()
-    require.Len(t, tools, 2)
+	tools := mockTm.ListTools()
+	require.Len(t, tools, 2)
 
-    // Check order/mapping
-    for _, tool := range tools {
-        fqn := tool.Tool().GetUnderlyingMethodFqn()
-        name := tool.Tool().GetName() // "op1" or "op2"
+	// Check order/mapping
+	for _, tool := range tools {
+		fqn := tool.Tool().GetUnderlyingMethodFqn()
+		name := tool.Tool().GetName() // "op1" or "op2"
 
-        if name == "op1" {
-            // op1 uses endpoint "?f", should be a flag
-            assert.Contains(t, fqn, "?f", "Tool %s URL %s should contain flag ?f", name, fqn)
-            assert.NotContains(t, fqn, "?f=", "Tool %s URL %s should NOT contain ?f=", name, fqn)
-        } else {
-            // op2 uses endpoint "?f=", should have equals
-            assert.Contains(t, fqn, "?f=", "Tool %s URL %s should contain ?f=", name, fqn)
-        }
-    }
+		if name == "op1" {
+			// op1 uses endpoint "?f", should be a flag
+			assert.Contains(t, fqn, "?f", "Tool %s URL %s should contain flag ?f", name, fqn)
+			assert.NotContains(t, fqn, "?f=", "Tool %s URL %s should NOT contain ?f=", name, fqn)
+		} else {
+			// op2 uses endpoint "?f=", should have equals
+			assert.Contains(t, fqn, "?f=", "Tool %s URL %s should contain ?f=", name, fqn)
+		}
+	}
 }
 
 func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
@@ -451,9 +451,9 @@ func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // Input Schema required: ["foo"]
-    // Parameters required: ["foo"]
-    // They overlap. Code path: check existing, find it, break.
+	// Input Schema required: ["foo"]
+	// Parameters required: ["foo"]
+	// They overlap. Code path: check existing, find it, break.
 
 	configJSON := `{
 		"name": "overlap-service",
@@ -490,13 +490,13 @@ func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    tools := mockTm.ListTools()
-    require.Len(t, tools, 1)
+	tools := mockTm.ListTools()
+	require.Len(t, tools, 1)
 
-    schema := tools[0].Tool().GetAnnotations().GetInputSchema()
-    reqVal := schema.Fields["required"].GetListValue()
-    require.Len(t, reqVal.Values, 1)
-    assert.Equal(t, "foo", reqVal.Values[0].GetStringValue())
+	schema := tools[0].Tool().GetAnnotations().GetInputSchema()
+	reqVal := schema.Fields["required"].GetListValue()
+	require.Len(t, reqVal.Values, 1)
+	assert.Equal(t, "foo", reqVal.Values[0].GetStringValue())
 }
 
 func TestCoverageEnhancement_EmptyAddress(t *testing.T) {
@@ -521,7 +521,7 @@ func TestCoverageEnhancement_EmptyAddress(t *testing.T) {
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.Error(t, err)
-    assert.Contains(t, err.Error(), "address is required")
+	assert.Contains(t, err.Error(), "address is required")
 }
 
 func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
@@ -529,8 +529,8 @@ func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // input_schema.properties is NOT a struct (object). e.g. a number.
-    // "input_schema": { "properties": 123 }
+	// input_schema.properties is NOT a struct (object). e.g. a number.
+	// "input_schema": { "properties": 123 }
 
 	configJSON := `{
 		"name": "invalid-props-service",
@@ -566,70 +566,70 @@ func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    tools := mockTm.ListTools()
-    require.Len(t, tools, 1)
+	tools := mockTm.ListTools()
+	require.Len(t, tools, 1)
 
-    schema := tools[0].Tool().GetAnnotations().GetInputSchema()
-    // It should have overwritten properties with new struct containing foo
-    propsVal := schema.Fields["properties"].GetStructValue()
-    require.NotNil(t, propsVal)
-    _, ok := propsVal.Fields["foo"]
-    assert.True(t, ok)
+	schema := tools[0].Tool().GetAnnotations().GetInputSchema()
+	// It should have overwritten properties with new struct containing foo
+	propsVal := schema.Fields["properties"].GetStructValue()
+	require.NotNil(t, propsVal)
+	_, ok := propsVal.Fields["foo"]
+	assert.True(t, ok)
 }
 
 func generateCertFiles(t *testing.T, dir string) (string, string, string) {
-    // Generate CA
-    caKey, err := rsa.GenerateKey(rand.Reader, 2048)
-    require.NoError(t, err)
+	// Generate CA
+	caKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
 
-    caTmpl := x509.Certificate{
-        SerialNumber: big.NewInt(1),
-        Subject:      pkix.Name{CommonName: "Test CA"},
-        NotBefore:    time.Now(),
-        NotAfter:     time.Now().Add(time.Hour),
-        KeyUsage:     x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature,
-        IsCA:         true,
-        BasicConstraintsValid: true,
-    }
+	caTmpl := x509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "Test CA"},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(time.Hour),
+		KeyUsage:              x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature,
+		IsCA:                  true,
+		BasicConstraintsValid: true,
+	}
 
-    caDer, err := x509.CreateCertificate(rand.Reader, &caTmpl, &caTmpl, &caKey.PublicKey, caKey)
-    require.NoError(t, err)
+	caDer, err := x509.CreateCertificate(rand.Reader, &caTmpl, &caTmpl, &caKey.PublicKey, caKey)
+	require.NoError(t, err)
 
-    caPath := filepath.Join(dir, "ca.pem")
-    caFile, err := os.Create(caPath)
-    require.NoError(t, err)
-    pem.Encode(caFile, &pem.Block{Type: "CERTIFICATE", Bytes: caDer})
-    caFile.Close()
+	caPath := filepath.Join(dir, "ca.pem")
+	caFile, err := os.Create(caPath)
+	require.NoError(t, err)
+	pem.Encode(caFile, &pem.Block{Type: "CERTIFICATE", Bytes: caDer})
+	caFile.Close()
 
-    // Generate Client Cert
-    clientKey, err := rsa.GenerateKey(rand.Reader, 2048)
-    require.NoError(t, err)
+	// Generate Client Cert
+	clientKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
 
-    clientTmpl := x509.Certificate{
-        SerialNumber: big.NewInt(2),
-        Subject:      pkix.Name{CommonName: "Test Client"},
-        NotBefore:    time.Now(),
-        NotAfter:     time.Now().Add(time.Hour),
-        KeyUsage:     x509.KeyUsageDigitalSignature,
-        ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
-    }
+	clientTmpl := x509.Certificate{
+		SerialNumber: big.NewInt(2),
+		Subject:      pkix.Name{CommonName: "Test Client"},
+		NotBefore:    time.Now(),
+		NotAfter:     time.Now().Add(time.Hour),
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
+	}
 
-    clientDer, err := x509.CreateCertificate(rand.Reader, &clientTmpl, &caTmpl, &clientKey.PublicKey, caKey)
-    require.NoError(t, err)
+	clientDer, err := x509.CreateCertificate(rand.Reader, &clientTmpl, &caTmpl, &clientKey.PublicKey, caKey)
+	require.NoError(t, err)
 
-    certPath := filepath.Join(dir, "client.pem")
-    certFile, err := os.Create(certPath)
-    require.NoError(t, err)
-    pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: clientDer})
-    certFile.Close()
+	certPath := filepath.Join(dir, "client.pem")
+	certFile, err := os.Create(certPath)
+	require.NoError(t, err)
+	pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: clientDer})
+	certFile.Close()
 
-    keyPath := filepath.Join(dir, "client.key")
-    keyFile, err := os.Create(keyPath)
-    require.NoError(t, err)
-    pem.Encode(keyFile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(clientKey)})
-    keyFile.Close()
+	keyPath := filepath.Join(dir, "client.key")
+	keyFile, err := os.Create(keyPath)
+	require.NoError(t, err)
+	pem.Encode(keyFile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(clientKey)})
+	keyFile.Close()
 
-    return caPath, certPath, keyPath
+	return caPath, certPath, keyPath
 }
 
 func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
@@ -637,8 +637,8 @@ func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    tmpDir := t.TempDir()
-    caPath, certPath, keyPath := generateCertFiles(t, tmpDir)
+	tmpDir := t.TempDir()
+	caPath, certPath, keyPath := generateCertFiles(t, tmpDir)
 
 	configJSON := `{
 		"name": "mtls-success-service",
@@ -675,8 +675,8 @@ func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // 1. Auto-discover: Tool not defined -> Generated
-    // 2. Auto-discover: Tool defined -> Skipped (existing)
+	// 1. Auto-discover: Tool not defined -> Generated
+	// 2. Auto-discover: Tool defined -> Skipped (existing)
 
 	configJSON := `{
 		"name": "autodisc-service",
@@ -704,17 +704,17 @@ func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    tools := mockTm.ListTools()
-    // Explicit tool + Implicit tool = 2
-    require.Len(t, tools, 2)
+	tools := mockTm.ListTools()
+	// Explicit tool + Implicit tool = 2
+	require.Len(t, tools, 2)
 
-    names := make(map[string]bool)
-    for _, t := range tools {
-        names[t.Tool().GetName()] = true
-    }
+	names := make(map[string]bool)
+	for _, t := range tools {
+		names[t.Tool().GetName()] = true
+	}
 
-    assert.True(t, names["explicit-tool"], "Explicit tool should be present")
-    assert.True(t, names["implicit-call"], "Implicit tool should be present (named after call ID)")
+	assert.True(t, names["explicit-tool"], "Explicit tool should be present")
+	assert.True(t, names["implicit-call"], "Implicit tool should be present (named after call ID)")
 }
 
 func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
@@ -722,7 +722,7 @@ func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
 
-    // Input schema present but empty fields. Should fall back to generating from parameters.
+	// Input schema present but empty fields. Should fall back to generating from parameters.
 
 	configJSON := `{
 		"name": "empty-schema-service",
@@ -754,13 +754,13 @@ func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
-    tools := mockTm.ListTools()
-    require.Len(t, tools, 1)
+	tools := mockTm.ListTools()
+	require.Len(t, tools, 1)
 
-    schema := tools[0].Tool().GetAnnotations().GetInputSchema()
-    // Check if properties were populated
-    propsVal := schema.Fields["properties"].GetStructValue()
-    require.NotNil(t, propsVal)
-    _, ok := propsVal.Fields["foo"]
-    assert.True(t, ok, "foo should be present in properties")
+	schema := tools[0].Tool().GetAnnotations().GetInputSchema()
+	// Check if properties were populated
+	propsVal := schema.Fields["properties"].GetStructValue()
+	require.NotNil(t, propsVal)
+	_, ok := propsVal.Fields["foo"]
+	assert.True(t, ok, "foo should be present in properties")
 }

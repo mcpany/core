@@ -83,7 +83,7 @@ func TestSkipString(t *testing.T) {
 		{
 			name:     "string not at start",
 			input:    `key: "value"`,
-			start:    5, // "value" starts at index 5
+			start:    5,  // "value" starts at index 5
 			expected: 12, // 5 + 7 = 12
 		},
 		{

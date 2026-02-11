@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_QueryMergeBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "base url with flag query param should not gain equals sign when merged with endpoint query",
@@ -35,7 +35,7 @@ func TestHTTPUpstream_URLConstruction_QueryMergeBug(t *testing.T) {
 			endpointPath: "/v1/test?foo=bar",
 			// "a%20b" decodes to "a b".
 			// We now preserve the original encoding from the base URL if possible.
-			expectedFqn:  "GET http://example.com/api/v1/test?a%20b&foo=bar",
+			expectedFqn: "GET http://example.com/api/v1/test?a%20b&foo=bar",
 		},
 		{
 			name:         "base url with valid then invalid query param should preserve order",

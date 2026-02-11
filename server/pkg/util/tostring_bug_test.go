@@ -22,20 +22,20 @@ func TestToString_Float64_LargeValue(t *testing.T) {
 }
 
 func TestToString_Float64_Boundary(t *testing.T) {
-    // MaxInt64 is 9223372036854775807
-    var val float64 = float64(math.MaxInt64)
+	// MaxInt64 is 9223372036854775807
+	var val float64 = float64(math.MaxInt64)
 
-    // Check behavior near boundary. Since math.MaxInt64 is exactly representable in float64
-    // (after conversion which might lose some low-bit precision if it wasn't a power of 2,
-    // but float64(int64(9223372036854775807)) is 9.223372036854776e+18 which is exactly representable)
-    // Actually MaxInt64 is NOT exactly representable in float64. 2^63-1.
-    // float64 has 53 bits.
+	// Check behavior near boundary. Since math.MaxInt64 is exactly representable in float64
+	// (after conversion which might lose some low-bit precision if it wasn't a power of 2,
+	// but float64(int64(9223372036854775807)) is 9.223372036854776e+18 which is exactly representable)
+	// Actually MaxInt64 is NOT exactly representable in float64. 2^63-1.
+	// float64 has 53 bits.
 
-    actual := ToString(val)
-    // It should be either a decimal string representation of the casted value or scientific notation.
-    // Given our updated logic, float64(math.MaxInt64) == 9223372036854775808 (2^63)
-    // which exceeds math.MaxInt64, so it should use 'g' and return "9.223372036854776e+18"
-    assert.Contains(t, actual, "e+")
+	actual := ToString(val)
+	// It should be either a decimal string representation of the casted value or scientific notation.
+	// Given our updated logic, float64(math.MaxInt64) == 9223372036854775808 (2^63)
+	// which exceeds math.MaxInt64, so it should use 'g' and return "9.223372036854776e+18"
+	assert.Contains(t, actual, "e+")
 }
 
 func TestToString_Float32_LargeInteger(t *testing.T) {
@@ -57,17 +57,17 @@ func TestToString_Float32_LargeInteger(t *testing.T) {
 	actual = ToString(val)
 	assert.Equal(t, expected, actual)
 
-    // Test a negative large integer
-    val = -3.0e9
-    expected = "-3000000000"
-    actual = ToString(val)
-    assert.Equal(t, expected, actual)
+	// Test a negative large integer
+	val = -3.0e9
+	expected = "-3000000000"
+	actual = ToString(val)
+	assert.Equal(t, expected, actual)
 }
 
 func TestToString_Float32_Fractional(t *testing.T) {
-    // Should still use normal formatting for non-integers
-    var val float32 = 3.5
-    expected := "3.5"
-    actual := ToString(val)
-    assert.Equal(t, expected, actual)
+	// Should still use normal formatting for non-integers
+	var val float32 = 3.5
+	expected := "3.5"
+	actual := ToString(val)
+	assert.Equal(t, expected, actual)
 }

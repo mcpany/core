@@ -26,32 +26,32 @@ func TestRedactDSN_Bug_RedisNoUser(t *testing.T) {
 }
 
 func TestRedactDSN_Bug_UserPasswordNoHost(t *testing.T) {
-    // Scenario: User:Password but no host.
-    // postgres://user:mysecretpassword
-    // url.Parse fails.
-    // Regex fails (no @).
+	// Scenario: User:Password but no host.
+	// postgres://user:mysecretpassword
+	// url.Parse fails.
+	// Regex fails (no @).
 
-    dsn := "postgres://user:mysecretpassword"
-    redacted := RedactDSN(dsn)
+	dsn := "postgres://user:mysecretpassword"
+	redacted := RedactDSN(dsn)
 
-    expected := "postgres://user:[REDACTED]"
+	expected := "postgres://user:[REDACTED]"
 
-    if redacted != expected {
-        t.Errorf("Failed to redact password without host. Got: %s, Expected: %s", redacted, expected)
-    }
+	if redacted != expected {
+		t.Errorf("Failed to redact password without host. Got: %s, Expected: %s", redacted, expected)
+	}
 }
 
 func TestRedactDSN_Regression_HostPort(t *testing.T) {
-    // Scenario: Standard URL with host:port.
-    // http://localhost:8080
-    // Should NOT be redacted as http://localhost:[REDACTED].
+	// Scenario: Standard URL with host:port.
+	// http://localhost:8080
+	// Should NOT be redacted as http://localhost:[REDACTED].
 
-    dsn := "http://localhost:8080"
-    redacted := RedactDSN(dsn)
+	dsn := "http://localhost:8080"
+	redacted := RedactDSN(dsn)
 
-    expected := "http://localhost:8080"
+	expected := "http://localhost:8080"
 
-    if redacted != expected {
-        t.Errorf("Regression! Valid host:port was redacted. Got: %s, Expected: %s", redacted, expected)
-    }
+	if redacted != expected {
+		t.Errorf("Regression! Valid host:port was redacted. Got: %s, Expected: %s", redacted, expected)
+	}
 }

@@ -15,11 +15,11 @@ func TestIsNAT64(t *testing.T) {
 	}{
 		{"64:ff9b::192.0.2.1", true}, // Well-known prefix
 		{"64:ff9b::127.0.0.1", true},
-		{"64:ff9b::1", true},         // Technically valid in prefix
+		{"64:ff9b::1", true}, // Technically valid in prefix
 		{"::1", false},
 		{"2001:db8::1", false},
 		{"192.0.2.1", false},
-		{"64:ff9b::1:2:3", false},    // 1:2:3 implies bits in 80-96 range are non-zero
+		{"64:ff9b::1:2:3", false}, // 1:2:3 implies bits in 80-96 range are non-zero
 		{"65:ff9b::1", false},
 		{"64:ff9c::1", false},
 	}
@@ -64,7 +64,7 @@ func TestIsNAT64LinkLocal(t *testing.T) {
 		want bool
 	}{
 		{"64:ff9b::169.254.1.1", true},
-		{"64:ff9b::a9fe:0101", true},   // hex for 169.254.1.1
+		{"64:ff9b::a9fe:0101", true}, // hex for 169.254.1.1
 		{"64:ff9b::169.255.1.1", false},
 		{"64:ff9b::127.0.0.1", false},
 		{"2001:db8::169.254.1.1", false},
@@ -255,7 +255,7 @@ func TestIsPrivateIP(t *testing.T) {
 
 		// Link-Local IPv6
 		{"fe80::1", true},
-		{"feb0::1", true}, // fe80::/10 includes up to febf
+		{"feb0::1", true},  // fe80::/10 includes up to febf
 		{"fec0::1", false}, // Site local (deprecated) not explicitly checked, falls through
 
 		// IPv4 Compatible Loopback

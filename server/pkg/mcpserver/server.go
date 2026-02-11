@@ -540,7 +540,8 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //   - info: *tool.ServiceInfo. The service information to add.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -737,7 +738,8 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //   - mcpServer: tool.MCPServerProvider. The MCP server provider to set.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -775,7 +777,8 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //   - serviceKey: string. The identifier of the service whose tools should be cleared.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -786,7 +789,8 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //   - f: func(context.Context) error. The function to execute on reload.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }

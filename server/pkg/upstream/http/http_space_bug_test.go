@@ -21,9 +21,9 @@ func TestHTTPUpstream_URLConstruction_SpaceBug(t *testing.T) {
 	// do NOT cause tool initialization failure due to strings.Fields splitting.
 
 	tc := struct {
-		name          string
-		address       string
-		endpointPath  string
+		name         string
+		address      string
+		endpointPath string
 	}{
 		name:         "endpoint with space and invalid encoding in query param",
 		address:      "http://example.com/api",
@@ -75,7 +75,6 @@ func TestHTTPUpstream_URLConstruction_SpaceBug(t *testing.T) {
 		// Or we can check internal state if possible.
 		// HTTPTool struct has initError field but it's private.
 		// But Execute() returns initError first thing.
-
 
 		// Mock execution request
 		req := &tool.ExecutionRequest{

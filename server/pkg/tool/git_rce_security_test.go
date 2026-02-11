@@ -56,23 +56,23 @@ func TestLocalCommandTool_Git_RCE_Repro(t *testing.T) {
 	result, err := localTool.Execute(context.Background(), req)
 
 	var output string
-    if err != nil {
-        output = err.Error()
-    }
+	if err != nil {
+		output = err.Error()
+	}
 
-    if result != nil {
-        resultMap, ok := result.(map[string]interface{})
-        if ok {
-            if combined, ok := resultMap["combined_output"].(string); ok {
-                output += combined
-            }
-        }
-    }
+	if result != nil {
+		resultMap, ok := result.(map[string]interface{})
+		if ok {
+			if combined, ok := resultMap["combined_output"].(string); ok {
+				output += combined
+			}
+		}
+	}
 
 	if strings.Contains(output, "PWNED") {
 		t.Errorf("VULNERABILITY CONFIRMED: RCE via GIT_SSH_COMMAND. Output: %s", output)
 	} else {
 		// Log success but don't clutter output
-        // t.Logf("Vulnerability not triggered (Safe). Output: %s", output)
+		// t.Logf("Vulnerability not triggered (Safe). Output: %s", output)
 	}
 }

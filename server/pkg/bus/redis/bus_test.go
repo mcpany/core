@@ -452,10 +452,6 @@ func TestBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	wg.Wait()
 }
 
-
-
-
-
 func TestBus_Subscribe_NilHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -740,8 +736,6 @@ func TestBus_UnsubscribeFromHandler(t *testing.T) {
 		return true
 	}, 5*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
 }
-
-
 
 func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
 	client := setupRedisIntegrationTest(t)

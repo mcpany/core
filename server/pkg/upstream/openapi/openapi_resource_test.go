@@ -175,7 +175,7 @@ func TestRegisterDynamicResources(t *testing.T) {
 
 		resources := []*configv1.ResourceDefinition{
 			configv1.ResourceDefinition_builder{
-				Name: proto.String("myResource"),
+				Name:    proto.String("myResource"),
 				Dynamic: configv1.DynamicResource_builder{
 					// Missing CallDefinition
 				}.Build(),

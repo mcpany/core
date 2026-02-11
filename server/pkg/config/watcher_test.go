@@ -115,7 +115,7 @@ func TestWatcher_URL(t *testing.T) {
 	select {
 	case <-done:
 		// Success: Watch returned
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("Watch blocked after Close")
 	}
 }

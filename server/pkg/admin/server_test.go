@@ -421,7 +421,7 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 	svcDisc.SetName("discovered-service")
 
 	provider := &MockDiscoveryProvider{
-		name: "test-provider",
+		name:     "test-provider",
 		services: []*configv1.UpstreamServiceConfig{svcDisc},
 	}
 	dm.RegisterProvider(provider)
@@ -449,8 +449,8 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 
 // MockAuditStore is a manual mock for audit.Store
 type MockAuditStore struct {
-	entries []audit.Entry
-	readErr error
+	entries  []audit.Entry
+	readErr  error
 	writeErr error
 	closeErr error
 }
@@ -494,10 +494,10 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	mockStore := &MockAuditStore{
 		entries: []audit.Entry{
 			{
-				Timestamp: now,
-				ToolName: "test-tool",
-				UserID: "user1",
-				Duration: "100ms",
+				Timestamp:  now,
+				ToolName:   "test-tool",
+				UserID:     "user1",
+				Duration:   "100ms",
 				DurationMs: 100,
 			},
 		},

@@ -36,7 +36,7 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
-	cmd.Dir = t.TempDir() // Isolate working directory
+	cmd.Dir = t.TempDir()                                                                                                                           // Isolate working directory
 	cmd.Env = append(os.Environ(),
 		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"MCPANY_ENABLE_FILE_CONFIG=true",
@@ -47,7 +47,6 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	stdout, err := cmd.StdoutPipe()
 	require.NoError(t, err)
 	cmd.Stderr = os.Stderr // Pipe stderr to test output for debugging
-
 
 	err = cmd.Start()
 	require.NoError(t, err)
@@ -370,9 +369,9 @@ func TestCallPolicyExecution(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.True(t, result.IsError)
-    // Check if content contains the error message
-    // content is usually a list of text/image
-    contentBytes, _ := json.Marshal(result.Content)
+	// Check if content contains the error message
+	// content is usually a list of text/image
+	contentBytes, _ := json.Marshal(result.Content)
 	assert.Contains(t, string(contentBytes), "unknown tool")
 }
 

@@ -57,7 +57,6 @@ func TestConfigLoading(t *testing.T) {
 			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "../build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
 
-
 			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile)
 			defer mcpAny.CleanupFunc()
 

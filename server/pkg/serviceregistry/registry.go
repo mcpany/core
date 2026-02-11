@@ -428,7 +428,8 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 //   - interval: time.Duration. The frequency of health checks.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)

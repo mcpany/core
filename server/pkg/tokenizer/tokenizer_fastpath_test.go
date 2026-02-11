@@ -105,7 +105,9 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 			}
 
 			primCount := int(wt.Factor)
-			if primCount < 1 { primCount = 1 }
+			if primCount < 1 {
+				primCount = 1
+			}
 
 			var want int
 			switch v := tt.input.(type) {
@@ -113,23 +115,33 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 				want = primCount
 			case []int:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []int64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []float64:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []bool:
 				want = int(float64(len(v)) * wt.Factor)
-				if want < 1 && len(v) > 0 { want = 1 }
+				if want < 1 && len(v) > 0 {
+					want = 1
+				}
 			case []string:
 				var words int
 				for _, x := range v {
 					words += countWords(x)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 { want = 1 }
+				if want < 1 && words > 0 {
+					want = 1
+				}
 			case map[string]string:
 				var words int
 				for k, v := range v {
@@ -137,7 +149,9 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 					words += countWords(v)
 				}
 				want = int(float64(words) * wt.Factor)
-				if want < 1 && words > 0 { want = 1 }
+				if want < 1 && words > 0 {
+					want = 1
+				}
 			}
 
 			if got != want {

@@ -29,7 +29,7 @@ func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
 
 	// Use config-based tool definition (not reflection auto-discovery)
 	grpcService := configv1.GrpcUpstreamService_builder{
-		Address:      proto.String(addr),
+		Address:       proto.String(addr),
 		UseReflection: proto.Bool(true), // Reflection used to fetch descriptors, but we define tools explicitly
 		Tools: []*configv1.ToolDefinition{
 			configv1.ToolDefinition_builder{

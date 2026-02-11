@@ -80,9 +80,9 @@ func TestExpandDetailed(t *testing.T) {
 			expected: "pre-start-mid-end-post",
 		},
 		{
-			name:     "Missing variable with no default",
-			input:    "Hello ${MISSING}",
-			env:      map[string]string{},
+			name:      "Missing variable with no default",
+			input:     "Hello ${MISSING}",
+			env:       map[string]string{},
 			expectErr: true,
 		},
 		{
@@ -115,18 +115,18 @@ func TestExpandDetailed(t *testing.T) {
 			env:      map[string]string{},
 			expected: "Email: user@example.com", // @ is not valid variable start
 		},
-        {
-            name: "Variable with empty default",
-            input: "Value: ${VAR:}",
-            env: map[string]string{},
-            expected: "Value: ",
-        },
-        {
-            name: "Variable set to empty string with default",
-            input: "Value: ${VAR:default}",
-            env: map[string]string{"VAR": ""},
-            expected: "Value: default", // My implementation prefers default if empty? Original behavior check needed.
-        },
+		{
+			name:     "Variable with empty default",
+			input:    "Value: ${VAR:}",
+			env:      map[string]string{},
+			expected: "Value: ",
+		},
+		{
+			name:     "Variable set to empty string with default",
+			input:    "Value: ${VAR:default}",
+			env:      map[string]string{"VAR": ""},
+			expected: "Value: default", // My implementation prefers default if empty? Original behavior check needed.
+		},
 	}
 
 	for _, tc := range tests {
@@ -143,12 +143,12 @@ func TestExpandDetailed(t *testing.T) {
 			if tc.expectErr {
 				os.Unsetenv("MISSING")
 			}
-            if tc.name == "Variable with empty default" {
-                os.Unsetenv("VAR")
-            }
+			if tc.name == "Variable with empty default" {
+				os.Unsetenv("VAR")
+			}
 
-            // Special handling for "Variable set to empty string with default"
-            // We set it in the loop above.
+			// Special handling for "Variable set to empty string with default"
+			// We set it in the loop above.
 
 			expanded, err := expand([]byte(tc.input))
 			if tc.expectErr {

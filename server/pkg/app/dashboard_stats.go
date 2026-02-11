@@ -433,7 +433,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 
 // ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                 `json:"services"`
+	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
@@ -527,7 +527,7 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
+				Latency: "10ms",  // TODO: Get real latency from metrics
 				Uptime:  "99.9%", // TODO: Calculate real uptime
 				Message: msg,
 			})

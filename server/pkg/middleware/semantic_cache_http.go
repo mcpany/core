@@ -66,8 +66,6 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 	}, nil
 }
 
-
-
 // Embed generates an embedding for the given text.
 //
 // Summary: Generates an embedding using the HTTP API.

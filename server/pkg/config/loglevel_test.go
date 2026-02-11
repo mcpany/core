@@ -6,16 +6,16 @@ package config
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLogLevel_CaseSensitivity(t *testing.T) {
 	// Note: We use the global settings instance here as the Settings struct
-    // is designed as a singleton. In a real scenario, we should ensure tests
-    // run sequentially or mock the settings if possible to avoid side effects.
-    // However, for this specific test, we are modifying and checking the
-    // logLevel field which is sufficient for verifying the parsing logic.
+	// is designed as a singleton. In a real scenario, we should ensure tests
+	// run sequentially or mock the settings if possible to avoid side effects.
+	// However, for this specific test, we are modifying and checking the
+	// logLevel field which is sufficient for verifying the parsing logic.
 	s := GlobalSettings()
 
 	tests := []struct {
@@ -48,7 +48,7 @@ func TestLogLevel_CaseSensitivity(t *testing.T) {
 			input:    "error",
 			expected: configv1.GlobalSettings_LOG_LEVEL_ERROR,
 		},
-        {
+		{
 			name:     "Lower case warn",
 			input:    "warn",
 			expected: configv1.GlobalSettings_LOG_LEVEL_WARN,

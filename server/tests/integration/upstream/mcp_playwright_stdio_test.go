@@ -38,8 +38,6 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			}
 			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/tmp", "mcr.microsoft.com/playwright:v1.58.0-jammy", setupCommands, env, args...)
 
-
-
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)

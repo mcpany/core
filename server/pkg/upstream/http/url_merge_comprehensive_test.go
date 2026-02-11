@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_Comprehensive(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		// Query Parameter Merging
 		{
@@ -37,7 +37,7 @@ func TestHTTPUpstream_URLConstruction_Comprehensive(t *testing.T) {
 			expectedFqn:  "GET http://example.com/api/v1/test?common=endpoint",
 		},
 		{
-			name:         "Merge: Endpoint adds value to Base param (same key)",
+			name: "Merge: Endpoint adds value to Base param (same key)",
 			// Current implementation seems to override if key matches.
 			// Let's verify if it appends or overrides. Based on code reading:
 			// if parts, ok := endPartsByKey[bp.key]; ok { if !keysOverridden[bp.key] { finalParts = append(finalParts, parts...) ... } }

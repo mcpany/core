@@ -111,10 +111,10 @@ func (s *OAuthServer) handleToken(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"iss": s.BaseURL,
-		"sub": "test-user",
-		"aud": "mcp-any-client",
-		"exp": time.Now().Add(time.Hour).Unix(),
+		"iss":   s.BaseURL,
+		"sub":   "test-user",
+		"aud":   "mcp-any-client",
+		"exp":   time.Now().Add(time.Hour).Unix(),
 		"scope": "read write",
 	})
 

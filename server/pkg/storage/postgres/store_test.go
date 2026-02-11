@@ -16,8 +16,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-
-
 func TestPostgresStore(t *testing.T) {
 	// Create a new mock database
 	db, mock, err := sqlmock.New()

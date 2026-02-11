@@ -24,9 +24,9 @@ func TestToString_Cycle(t *testing.T) {
 	if s == "" {
 		t.Error("ToString returned empty string for cycle")
 	}
-    if len(s) == 0 {
-        t.Error("Result should not be empty")
-    }
+	if len(s) == 0 {
+		t.Error("Result should not be empty")
+	}
 }
 
 func TestToString_DepthLimit(t *testing.T) {
@@ -63,5 +63,5 @@ func TestToString_StructCycle(t *testing.T) {
 	if len(s) == 0 {
 		t.Error("Empty result")
 	}
-    t.Logf("Result: %s", s)
+	t.Logf("Result: %s", s)
 }
