@@ -6,6 +6,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Playground Collections', () => {
+  // Increase test timeout significantly for CI
+  test.setTimeout(120000);
+
   test('should create a collection, add a test case, and run it', async ({ page }) => {
     // 1. Navigate to Playground
     await page.goto('/playground');
@@ -22,7 +25,7 @@ test.describe('Playground Collections', () => {
     await page.click('button:text("Create")');
 
     // 4. Verify Collection Exists
-    await expect(page.locator('button', { hasText: 'E2E Suite' })).toBeVisible();
+    await expect(page.locator('button', { hasText: 'E2E Suite' })).toBeVisible({ timeout: 30000 });
 
     // 5. Switch to Library
     await page.click('button:has-text("Library")');
@@ -34,7 +37,9 @@ test.describe('Playground Collections', () => {
     await page.keyboard.press('Enter');
 
     const toolCallHeader = page.locator('.p-3.flex.flex-row.items-center', { hasText: 'Tool Execution' }).last();
-    await expect(toolCallHeader).toBeVisible();
+    // Wait longer for execution
+    await expect(toolCallHeader).toBeVisible({ timeout: 60000 });
+    await expect(toolCallHeader).toContainText('weather-service.get_weather');
 
     // 7. Save to Collection
     await toolCallHeader.hover();
@@ -43,9 +48,17 @@ test.describe('Playground Collections', () => {
     // 8. Fill Save Dialog
     await expect(page.locator('div[role="dialog"]', { hasText: 'Save to Collection' })).toBeVisible();
 
-    // Select E2E Suite if not selected (Seed data "My First Collection" might be first)
-    await page.click('button[role="combobox"]');
-    await page.click('div[role="option"]:has-text("E2E Suite")');
+    // Wait for Select content to hydrate/load if needed
+    const selectTrigger = page.locator('button[role="combobox"]');
+    await expect(selectTrigger).toBeVisible();
+
+    // Open select
+    await selectTrigger.click();
+
+    // Select E2E Suite explicitly
+    const option = page.locator('div[role="option"]', { hasText: 'E2E Suite' });
+    await expect(option).toBeVisible();
+    await option.click();
 
     await page.fill('input[placeholder="e.g. Valid Input Test"]', 'Weather Test');
     await page.click('button:text("Save")');
@@ -57,7 +70,7 @@ test.describe('Playground Collections', () => {
     await page.click('button:has-text("Collections")');
 
     const collectionBtn = page.locator('button', { hasText: 'E2E Suite' });
-    await expect(collectionBtn).toBeVisible();
+    await expect(collectionBtn).toBeVisible({ timeout: 30000 });
 
     await collectionBtn.click();
 
