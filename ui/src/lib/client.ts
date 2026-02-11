@@ -1045,6 +1045,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the dashboard health status.
+     * @returns A promise that resolves to the health response.
+     */
+    getDashboardHealth: async () => {
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch dashboard health');
+        return res.json();
+    },
+
+    /**
      * Gets the dashboard traffic history.
      * @param serviceId Optional service ID to filter by.
      * @param timeRange Optional time range to filter by (e.g. "1h", "24h").

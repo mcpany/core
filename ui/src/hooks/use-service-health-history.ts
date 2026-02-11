@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 
 /**
  * ServiceStatus represents the possible health states of a service.
@@ -64,14 +65,11 @@ export function useServiceHealthHistory() {
   useEffect(() => {
     async function fetchHealth() {
       try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data: HealthResponse = await res.json();
+        const data: any = await apiClient.getDashboardHealth();
 
-          // Backend returns history keyed by ID
-          setServices(data.services || []);
-          setHistory(data.history || {});
-        }
+        // Backend returns history keyed by ID
+        setServices(data.services || []);
+        setHistory(data.history || {});
       } catch (error) {
         console.warn("Failed to fetch health data", error);
       } finally {
