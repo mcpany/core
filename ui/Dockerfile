@@ -26,12 +26,10 @@ RUN ln -s /app/node_modules /proto/node_modules
 
 # -----------------------------------------------------------------------------
 # Generate TypeScript Protobuf files inside Docker
-# This ensures that generated files are present even if excluded from build context
-# by .gitignore or .dockerignore rules in the CI environment.
 # -----------------------------------------------------------------------------
-RUN apt-get update && apt-get install -y protobuf-compiler curl unzip
+RUN apt-get update && apt-get install -y protobuf-compiler curl unzip findutils
 
-# Download googleapis (needed for google/api/annotations.proto used in admin.proto)
+# Download googleapis
 WORKDIR /tmp
 RUN curl -sSL https://github.com/googleapis/googleapis/archive/master.zip -o googleapis.zip && \
     unzip -q googleapis.zip && \
@@ -39,10 +37,9 @@ RUN curl -sSL https://github.com/googleapis/googleapis/archive/master.zip -o goo
 
 WORKDIR /app
 
-# Run protoc for all .proto files found in /proto
-# We include /googleapis and /usr/include (standard protos) in import path.
-# We output to / (root) because imports are relative to root (e.g. "proto/config/v1/auth.proto").
-# If a file is /proto/config/v1/auth.proto, outputting to / results in /proto/config/v1/auth.ts.
+# 1. Generate Repo Protos (e.g. proto/config/v1/auth.proto)
+# Input: /proto/...
+# Output: /proto/... (via --ts_proto_out=/)
 RUN find /proto -name "*.proto" -exec protoc \
     --proto_path=/ \
     --proto_path=/googleapis \
@@ -51,6 +48,35 @@ RUN find /proto -name "*.proto" -exec protoc \
     --ts_proto_out=/ \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
+
+# 2. Generate Standard Protos (e.g. google/protobuf/struct.proto)
+# Input: /usr/include/google/protobuf/...
+# Output: /proto/google/protobuf/... (via --ts_proto_out=/proto)
+# This ensures that imports like "google/protobuf/struct" in repo protos resolve to files in /proto/google/protobuf
+RUN find /usr/include/google/protobuf -name "*.proto" -exec protoc \
+    --proto_path=/usr/include \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
+# 3. Generate Google APIs (e.g. google/api/annotations.proto)
+# Input: /googleapis/google/api/...
+# Output: /proto/google/api/... (via --ts_proto_out=/proto)
+RUN find /googleapis/google/api -name "*.proto" -exec protoc \
+    --proto_path=/googleapis \
+    --proto_path=/usr/include \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
+# Debug: Verify files exist
+RUN echo "Checking for generated files..." && \
+    ls -l /proto/config/v1/auth.ts || echo "auth.ts MISSING" && \
+    ls -l /proto/google/protobuf/struct.ts || echo "struct.ts MISSING" && \
+    ls -l /proto/google/api/annotations.ts || echo "annotations.ts MISSING"
+
 # -----------------------------------------------------------------------------
 
 # Next.js collects completely anonymous telemetry data about general usage.
