@@ -47,15 +47,16 @@ export default function WebhooksPage() {
             const settings = await apiClient.getGlobalSettings();
             setFullSettings(settings);
 
+            // Handle both camelCase (if mapped) and snake_case (raw backend)
             if (settings.alerts) {
                 setAlertsEnabled(settings.alerts.enabled || false);
-                setAlertsUrl(settings.alerts.webhookUrl || "");
+                setAlertsUrl(settings.alerts.webhookUrl || settings.alerts.webhook_url || "");
             }
 
             if (settings.audit) {
                 setAuditEnabled(settings.audit.enabled || false);
-                setAuditUrl(settings.audit.webhookUrl || "");
-                setAuditStorageType(settings.audit.storageType || 0);
+                setAuditUrl(settings.audit.webhookUrl || settings.audit.webhook_url || "");
+                setAuditStorageType(settings.audit.storageType ?? settings.audit.storage_type ?? 0);
             }
         } catch (e) {
             console.error("Failed to load settings", e);
@@ -69,13 +70,21 @@ export default function WebhooksPage() {
         setSaving(true);
         try {
             // Construct payload merging with existing settings
+            // We ensure we send snake_case as expected by standard protobuf JSON mapping if raw,
+            // or camelCase if the client lib handles it. Sending both or camelCase that maps to snake_case is safer if using protojson.
+            // However, looking at client.ts `saveGlobalSettings`, it sends raw JSON.
+            // To be safe, we will assume standard snake_case for the wire if we are unsure,
+            // but the `config.proto` has `json_name` which dictates the expected key.
+            // `webhook_url` and `storage_type` are the keys in proto.
+
             const payload = { ...fullSettings };
 
             // Update Alerts
             payload.alerts = {
                 ...payload.alerts,
                 enabled: alertsEnabled,
-                webhookUrl: alertsUrl
+                webhook_url: alertsUrl, // Explicitly set snake_case
+                webhookUrl: alertsUrl // Set camelCase too just in case intermediate layers use it
             };
 
             // Update Audit
@@ -88,7 +97,9 @@ export default function WebhooksPage() {
             payload.audit = {
                 ...payload.audit,
                 enabled: auditEnabled,
+                webhook_url: auditUrl, // Explicitly set snake_case
                 webhookUrl: auditUrl,
+                storage_type: newStorageType, // Explicitly set snake_case
                 storageType: newStorageType
             };
 
