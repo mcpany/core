@@ -5,8 +5,9 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig, ToolDefinition, PromptDefinition, ResourceDefinition } from "@/lib/types";
@@ -30,6 +31,10 @@ import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
 import { PolicyEditor } from "@/components/safety/policy-editor";
 import { CallPolicy } from "@proto/config/v1/upstream_service";
 
+// ⚡ Bolt Optimization: Lazy load TableVirtuoso to avoid SSR issues.
+// Randomized Selection from Top 5 High-Impact Targets
+const TableVirtuoso = dynamic(() => import('react-virtuoso').then(m => m.TableVirtuoso), { ssr: false });
+
 /**
  * DefinitionsTable component.
  * @param props - The component props.
@@ -52,6 +57,53 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
         </CardContent>
       </Card>
     )
+  }
+
+  // ⚡ BOLT: Virtualize large tables to improve render performance and reduce main thread blocking.
+  // Randomized Selection from Top 5 High-Impact Targets
+  if (data.length > 50) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">{icon}{title}</CardTitle>
+          </CardHeader>
+          {/* We use a fixed height container or rely on useWindowScroll.
+              For ServiceDetail, useWindowScroll provides better UX as it scrolls the page. */}
+          <CardContent className="p-0">
+             <TableVirtuoso
+                useWindowScroll
+                data={data}
+                initialItemCount={50}
+                components={{
+                    Table: ({ style, ...props }) => <Table {...props} style={{ ...style, width: '100%' }} />,
+                    TableHead: TableHeader,
+                    TableRow: TableRow,
+                    TableBody: TableBody, // TableBody forwards ref
+                }}
+                fixedHeaderContent={() => (
+                    <TableRow className="bg-background hover:bg-background">
+                      <TableHead>Name</TableHead>
+                      <TableHead>Description</TableHead>
+                      { 'source' in data[0] && <TableHead>Source</TableHead>}
+                      { 'type' in data[0] && <TableHead>Type</TableHead>}
+                    </TableRow>
+                )}
+                itemContent={(index, item) => (
+                    <>
+                        <TableCell className="font-medium">
+                        <Link href={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
+                            {item.name}
+                        </Link>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{item.description}</TableCell>
+                        { 'source' in item && item.source && <TableCell><Badge variant={item.source === 'configured' ? "outline" : "secondary"}>{item.source}</Badge></TableCell>}
+                        { 'type' in item && item.type && <TableCell><Badge variant="outline">{item.type}</Badge></TableCell>}
+                    </>
+                )}
+             />
+          </CardContent>
+        </Card>
+      );
   }
 
   return (
