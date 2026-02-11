@@ -18,6 +18,9 @@ func TestStore_SSRF_Protection(t *testing.T) {
 	// This test confirms that the SSRF protection blocks access to 127.0.0.1.
 	// It relies on the default configuration of the secure http client.
 
+	// Ensure dangerous mode is OFF
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")
