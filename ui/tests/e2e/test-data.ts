@@ -28,7 +28,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: "http://example.com:50051", // Dummy address to avoid SSRF blocking on localhost
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -40,7 +40,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://example.com:8080", // Dummy address to avoid SSRF blocking on localhost
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
