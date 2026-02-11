@@ -2,6 +2,7 @@
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
 ## 1. Elevator Pitch
 
@@ -12,6 +13,14 @@
 **Why does it exist?**
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
+
+**Key Features:**
+
+*   **Universal Protocol Support:** Connects to gRPC, REST (OpenAPI), GraphQL, and CLI tools.
+*   **Zero-Code Integration:** Define tools using declarative YAML/JSON configuration.
+*   **Enterprise Security:** Built-in Policy Engine, DLP (Data Loss Prevention), Authentication, and Audit Logging.
+*   **Hot-Reloading:** Update configurations dynamically without restarting the server.
+*   **Observability:** Integrated Prometheus metrics and structured logging.
 
 ## 2. Architecture
 
@@ -24,7 +33,7 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
 1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
 2.  **Service Registry**: A dynamic module that loads tool definitions from configuration files (local or remote/DB), supporting hot-reloading.
 3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP, and audit logging.
 
 ```mermaid
 graph TD

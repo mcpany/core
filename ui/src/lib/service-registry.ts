@@ -3,6 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem represents a single item in the service registry.
+ *
+ * It defines the metadata and configuration schema for a connectable service.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +17,11 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY contains the list of known and supported upstream services.
+ *
+ * This registry is used to populate the UI for adding new services.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

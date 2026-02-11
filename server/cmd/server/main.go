@@ -612,6 +612,10 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 // main is the entry point for the MCP Any server application.
 //
 // Summary: Entry point for the application.
+//
+// Side Effects:
+//   - Executes the root command.
+//   - Exits the process with status code 1 on error.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)

@@ -39,8 +39,7 @@ type MCPServerConfig struct {
 
 // McpAnyConfig represents the target configuration structure for MCP Any.
 //
-// Summary:
-//   Configuration for the MCP Any server.
+// Summary: Configuration for the MCP Any server.
 //
 // Fields:
 //   - UpstreamServices: []UpstreamService. A list of upstream services to configure.
@@ -50,8 +49,7 @@ type McpAnyConfig struct {
 
 // UpstreamService represents a single upstream service configuration.
 //
-// Summary:
-//   Configuration for a single upstream service.
+// Summary: Configuration for a single upstream service.
 //
 // Fields:
 //   - Name: string. The name of the service.
@@ -63,8 +61,7 @@ type UpstreamService struct {
 
 // McpService defines the configuration for an MCP-based service.
 //
-// Summary:
-//   Configuration for a service using the Model Context Protocol (MCP).
+// Summary: Configuration for a service using the Model Context Protocol (MCP).
 //
 // Fields:
 //   - StdioConnection: *StdioConnection. Parameters for connecting via standard I/O (optional).
@@ -74,8 +71,7 @@ type McpService struct {
 
 // StdioConnection defines the parameters for connecting to an MCP server via standard I/O.
 //
-// Summary:
-//   Parameters for connecting to an MCP server using standard input/output streams.
+// Summary: Parameters for connecting to an MCP server using standard input/output streams.
 //
 // Fields:
 //   - Command: string. The command to execute.
@@ -87,6 +83,14 @@ type StdioConnection struct {
 	Env     map[string]string `yaml:"env,omitempty"`
 }
 
+// newImportCmd creates the import command.
+//
+// Summary: Creates the command for importing configurations.
+//
+// It parses a Claude Desktop configuration file and converts it into an MCP Any configuration file.
+//
+// Returns:
+//   - *cobra.Command: The configured import command.
 func newImportCmd() *cobra.Command {
 	var outputPath string
 

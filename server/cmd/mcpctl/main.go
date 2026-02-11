@@ -23,6 +23,8 @@ var (
 
 // main is the entry point for the mcpctl CLI.
 //
+// Summary: Entry point for the mcpctl CLI.
+//
 // It executes the root command and exits with a non-zero status code on error.
 //
 // Side Effects:
@@ -35,6 +37,8 @@ func main() {
 }
 
 // newRootCmd creates the root Cobra command for the CLI.
+//
+// Summary: Creates the root command hierarchy.
 //
 // It configures the main entry point and registers all subcommands (validate, doctor, tool, version).
 //
