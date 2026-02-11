@@ -14,8 +14,8 @@ services:
       ]
     environment:
       - MCPANY_API_KEY=test-token
-      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
-      - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
+      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
+      - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
       - MCPANY_ADMIN_PASSWORD=password
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
@@ -32,12 +32,13 @@ services:
   ui-tests:
     image: mcpany-ui-e2e:latest
     ipc: host
+    network_mode: service:server
     user: "${TEST_UID}:${TEST_GID}"
     environment:
       - MCPANY_LOG_LEVEL=info
-      - BACKEND_URL=http://server:50050
+      - BACKEND_URL=http://localhost:50050
       - BASE_URL=http://localhost:9002
-      - NEXT_PUBLIC_API_URL=http://server:50050
+      - NEXT_PUBLIC_API_URL=http://localhost:50050
       - MCPANY_API_KEY=test-token
       - NEXT_PUBLIC_MCPANY_API_KEY=test-token
       - CI=true
@@ -62,8 +63,6 @@ services:
         condition: service_healthy
       ui-http-echo-server:
         condition: service_started
-    networks:
-      default:
 
   ui-http-echo-server:
     image: mcpany/http-echo-server:latest

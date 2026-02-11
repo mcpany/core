@@ -17,6 +17,7 @@ RUN go mod download
 
 # Copy the go source
 WORKDIR /workspace
+COPY proto proto
 COPY server server
 COPY k8s/operator k8s/operator
 
