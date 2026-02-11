@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, Check, CheckCircle2, Copy, Link as LinkIcon, Plus, Server, Terminal, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,9 +18,20 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface WelcomeWizardProps {
+    /**
+     * Callback when the wizard is completed.
+     */
     onComplete: () => void;
 }
 
+/**
+ * WelcomeWizard component.
+ * Displays a multi-step onboarding wizard for new users.
+ * Uses CSS animations instead of framer-motion to avoid extra dependencies.
+ *
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
     const [step, setStep] = useState<"intro" | "register" | "connect">("intro");
     const { toast } = useToast();
@@ -36,7 +47,7 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
             {step === "intro" && (
                 <div
                     key="intro"
-                    className="text-center space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700"
+                    className="text-center space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-forwards"
                 >
                     <div className="flex justify-center mb-6">
                         <div className="bg-primary/10 p-4 rounded-full">
@@ -65,7 +76,7 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
             {step === "register" && (
                 <div
                     key="register"
-                    className="w-full max-w-lg animate-in fade-in slide-in-from-right-8 duration-500"
+                    className="w-full max-w-lg animate-in fade-in slide-in-from-right-4 duration-500 fill-mode-forwards"
                 >
                     <Card className="border-2 border-primary/20 shadow-2xl">
                         <CardHeader>
@@ -116,7 +127,7 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
             {step === "connect" && (
                 <div
                     key="connect"
-                    className="w-full max-w-2xl animate-in fade-in slide-in-from-right-8 duration-500"
+                    className="w-full max-w-2xl animate-in fade-in slide-in-from-right-4 duration-500 fill-mode-forwards"
                 >
                     <Card className="border-2 border-primary/20 shadow-2xl">
                         <CardHeader>
@@ -141,9 +152,17 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
     );
 }
 
+/**
+ * FeatureCard component.
+ * Displays a feature highlight in the wizard.
+ *
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function FeatureCard({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
     return (
-        <div className="p-4 rounded-lg bg-muted/50 border flex flex-col gap-2">
+        <div className="p-4 rounded-lg bg-muted/50 border flex flex-col gap-2 hover:bg-muted/70 transition-colors">
             <Icon className="h-6 w-6 text-primary" />
             <h3 className="font-semibold">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
@@ -151,23 +170,31 @@ function FeatureCard({ icon: Icon, title, description }: { icon: any, title: str
     );
 }
 
+/**
+ * ClientConnectTabs component.
+ * Displays connection instructions for different clients.
+ *
+ * @returns The rendered component.
+ */
 function ClientConnectTabs() {
     const [origin, setOrigin] = useState("");
     const { toast } = useToast();
 
     // Use window location on mount
-    useState(() => {
+    useEffect(() => {
         if (typeof window !== "undefined") {
             setOrigin(window.location.origin);
         }
-    });
+    }, []);
 
     const displayUrl = origin || "http://localhost:50050";
     const sseUrl = `${displayUrl}/sse`;
 
     const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        toast({ title: "Copied", description: "Config copied to clipboard" });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => {});
+            toast({ title: "Copied", description: "Config copied to clipboard" });
+        }
     };
 
     const claudeConfig = {

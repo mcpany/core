@@ -84,7 +84,8 @@ test.describe('Onboarding Flow', () => {
 
     // Validate
     await page.getByRole('button', { name: 'Test Connection' }).click();
-    await expect(page.getByText('Validation Successful')).toBeVisible();
+    // Expect specific success message, scoping to dialog if possible or just first/exact
+    await expect(page.getByText('Validation Successful').first()).toBeVisible();
 
     // Save
     await page.getByRole('button', { name: 'Register Service' }).click();
