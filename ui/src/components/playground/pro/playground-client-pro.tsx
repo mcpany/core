@@ -39,6 +39,10 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 
 import { useSearchParams } from "next/navigation";
 
+/**
+ * Represents a user session in the playground.
+ * Each session has a unique ID, a display name, a message history, and a timestamp.
+ */
 export interface Session {
     id: string;
     name: string;
@@ -281,8 +285,9 @@ export function PlaygroundClientPro() {
           }
       }
 
+      const toolCallId = Date.now().toString() + "-tool";
       updateCurrentSessionMessages(prev => [...prev, {
-          id: Date.now().toString() + "-tool",
+          id: toolCallId,
           type: "tool-call",
           toolName: toolName,
           toolArgs: toolArgs,
@@ -297,8 +302,11 @@ export function PlaygroundClientPro() {
 
           updateCurrentSessionMessages(prev => {
               let previousResult: unknown | undefined;
+
+              // Find previous execution for diffing (exclude current one by ID)
               const reversedMessages = [...prev].reverse();
               const previousCall = reversedMessages.find(m =>
+                  m.id !== toolCallId &&
                   m.type === "tool-call" &&
                   m.toolName === toolName &&
                   JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
