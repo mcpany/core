@@ -13,6 +13,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Skill, SkillService } from '@/lib/skill-service';
 import { toast } from 'sonner';
 import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
+import { apiClient, ToolDefinition } from '@/lib/client';
+import { ToolMultiSelect } from './tool-multi-select';
 
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
@@ -36,11 +38,16 @@ export default function SkillWizard() {
     assets: [],
   });
   const [files, setFiles] = useState<File[]>([]);
+  const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
 
   useEffect(() => {
     if (isEdit && name) {
       loadSkill(name);
     }
+    // Load available tools
+    apiClient.listTools()
+      .then(data => setAvailableTools(data.tools || []))
+      .catch(err => console.warn("Failed to load tools for wizard", err));
   }, [name]);
 
   const loadSkill = async (skillName: string) => {
@@ -160,12 +167,11 @@ export default function SkillWizard() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="tools">Allowed Tools (comma separated)</Label>
-                <Input
-                    id="tools"
-                    value={skill.allowedTools?.join(', ') || ''}
-                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                    placeholder="tool1, tool2"
+                <Label htmlFor="tools">Allowed Tools</Label>
+                <ToolMultiSelect
+                    availableTools={availableTools}
+                    selected={skill.allowedTools || []}
+                    onChange={(selected) => handleChange('allowedTools', selected)}
                 />
               </div>
             </div>
