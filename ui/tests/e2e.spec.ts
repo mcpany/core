@@ -49,11 +49,11 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=process_payment')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible();
+    // Use echo_tool which is backed by /bin/echo and always healthy
+    await expect(page.locator('text=echo_tool')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
@@ -71,16 +71,17 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Webhooks page displays configuration', async ({ page }) => {
-    await page.goto('/settings/webhooks');
+  test('Webhooks page displays configuration', async ({ page }) => {
+    await page.goto('/webhooks');
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
+    await expect(page.getByLabel('Payload URL')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
@@ -93,7 +94,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
     const userService = page.locator('.group', { hasText: 'User Service' });
     await expect(userService).toBeVisible();
