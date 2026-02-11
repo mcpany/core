@@ -1460,6 +1460,30 @@ export const apiClient = {
     // OAuth
 
     /**
+     * Initiates an OAuth flow.
+     * @param serviceID The ID of the service for which to initiate OAuth.
+     * @param redirectURL The URL to redirect to after OAuth completes.
+     * @param credentialID Optional credential ID to associate with the token.
+     * @returns A promise that resolves to the initiation response.
+     */
+    initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
+        const payload: any = { redirect_url: redirectURL };
+        if (serviceID) payload.service_id = serviceID;
+        if (credentialID) payload.credential_id = credentialID;
+
+        const res = await fetchWithAuth('/auth/oauth/initiate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to initiate OAuth: ${res.status} ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
      * Handles the OAuth callback.
      * @param serviceID The ID of the service (optional).
      * @param code The OAuth authorization code.
