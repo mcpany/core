@@ -1,179 +1,194 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/client";
+import { AuditConfig_StorageType } from "@proto/config/v1/config";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Webhook, Plus, Play, Trash2 } from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter
-} from "@/components/ui/dialog"
-
-interface WebhookConfig {
-    id: string;
-    url: string;
-    events: string[];
-    active: boolean;
-    lastTriggered?: string;
-    status?: "success" | "failure" | "pending";
-}
-
-const INITIAL_WEBHOOKS: WebhookConfig[] = [
-    { id: "wh-1", url: "https://api.example.com/events", events: ["service.registered", "tool.invoked"], active: true, lastTriggered: "2 mins ago", status: "success" },
-    { id: "wh-2", url: "https://hooks.slack.com/...", events: ["error.occurred"], active: true, lastTriggered: "1 day ago", status: "success" },
-];
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, Save } from "lucide-react";
 
 /**
  * WebhooksPage component.
+ * Allows configuration of system-wide webhooks for alerts and audit logging.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [newUrl, setNewUrl] = useState("");
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    const toggleWebhook = (id: string) => {
-        setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: !w.active } : w));
-    };
+    // Local state for form
+    const [alertsEnabled, setAlertsEnabled] = useState(false);
+    const [alertsUrl, setAlertsUrl] = useState("");
 
-    const deleteWebhook = (id: string) => {
-        setWebhooks(webhooks.filter(w => w.id !== id));
-    };
+    const [auditEnabled, setAuditEnabled] = useState(false);
+    const [auditUrl, setAuditUrl] = useState("");
+    const [auditStorageType, setAuditStorageType] = useState<AuditConfig_StorageType>(0);
 
-    const addWebhook = () => {
-        if (!newUrl) return;
-        setWebhooks([...webhooks, {
-            id: `wh-${Date.now()}`,
-            url: newUrl,
-            events: ["all"],
-            active: true
-        }]);
-        setNewUrl("");
-        setIsDialogOpen(false);
+    // Full settings object to preserve other fields when saving
+    const [fullSettings, setFullSettings] = useState<any>(null);
+
+    useEffect(() => {
+        loadSettings();
+    }, []);
+
+    async function loadSettings() {
+        setLoading(true);
+        try {
+            const settings = await apiClient.getGlobalSettings();
+            setFullSettings(settings);
+
+            if (settings.alerts) {
+                setAlertsEnabled(settings.alerts.enabled || false);
+                setAlertsUrl(settings.alerts.webhookUrl || "");
+            }
+
+            if (settings.audit) {
+                setAuditEnabled(settings.audit.enabled || false);
+                setAuditUrl(settings.audit.webhookUrl || "");
+                setAuditStorageType(settings.audit.storageType || 0);
+            }
+        } catch (e) {
+            console.error("Failed to load settings", e);
+            toast({ variant: "destructive", description: "Failed to load system settings" });
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const testWebhook = (id: string) => {
-        // Simulate test
-        alert(`Testing webhook ${id}...`);
+    async function handleSave() {
+        setSaving(true);
+        try {
+            // Construct payload merging with existing settings
+            const payload = { ...fullSettings };
+
+            // Update Alerts
+            payload.alerts = {
+                ...payload.alerts,
+                enabled: alertsEnabled,
+                webhookUrl: alertsUrl
+            };
+
+            // Update Audit
+            // If enabling webhook, force storage type to WEBHOOK
+            let newStorageType = auditStorageType;
+            if (auditEnabled) {
+                newStorageType = AuditConfig_StorageType.STORAGE_TYPE_WEBHOOK;
+            }
+
+            payload.audit = {
+                ...payload.audit,
+                enabled: auditEnabled,
+                webhookUrl: auditUrl,
+                storageType: newStorageType
+            };
+
+            await apiClient.saveGlobalSettings(payload);
+
+            // Reload to confirm sync
+            await loadSettings();
+
+            toast({ title: "Settings Saved", description: "System webhooks configuration updated." });
+        } catch (e) {
+            console.error("Failed to save settings", e);
+            toast({ variant: "destructive", description: "Failed to save settings" });
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    if (loading && !fullSettings) {
+        return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 
     return (
-        <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex-1 space-y-6 p-8 pt-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Webhooks</h1>
-                    <p className="text-muted-foreground">Configure outbound webhooks for system events.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">System Webhooks</h1>
+                    <p className="text-muted-foreground">Configure outbound notifications for system events.</p>
                 </div>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> New Webhook
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add Webhook</DialogTitle>
-                            <DialogDescription>
-                                Enter the URL where events should be sent.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="url" className="text-right">
-                                    Payload URL
-                                </Label>
-                                <Input
-                                    id="url"
-                                    value={newUrl}
-                                    onChange={(e) => setNewUrl(e.target.value)}
-                                    placeholder="https://..."
-                                    className="col-span-3"
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button onClick={addWebhook}>Add Webhook</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <Button onClick={handleSave} disabled={saving}>
+                    {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Save Changes
+                </Button>
             </div>
 
-            <Card className="backdrop-blur-sm bg-background/50">
-                <CardHeader>
-                    <CardTitle>Configured Webhooks</CardTitle>
-                </CardHeader>
-                <CardContent>
-                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>URL</TableHead>
-                                <TableHead>Events</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Last Triggered</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {webhooks.map((hook) => (
-                                <TableRow key={hook.id}>
-                                    <TableCell className="font-mono text-xs">{hook.url}</TableCell>
-                                    <TableCell>
-                                        <div className="flex gap-1 flex-wrap">
-                                            {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={hook.active}
-                                                onCheckedChange={() => toggleWebhook(hook.id)}
-                                            />
-                                            <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
-                                                {hook.active ? "Active" : "Inactive"}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground text-xs">
-                                        {hook.lastTriggered || "Never"}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => testWebhook(hook.id)} title="Test Delivery">
-                                                <Play className="h-4 w-4" />
-                                            </Button>
-                                             <Button variant="ghost" size="icon" onClick={() => deleteWebhook(hook.id)} className="text-red-500 hover:text-red-600">
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {webhooks.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
-                                        No webhooks configured.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>System Alerts</CardTitle>
+                        <CardDescription>
+                            Receive notifications when system health status changes (e.g. Healthy to Degraded).
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="alerts-toggle" className="flex flex-col gap-1">
+                                <span>Enable Alerts</span>
+                                <span className="font-normal text-xs text-muted-foreground">Send POST request on status change</span>
+                            </Label>
+                            <Switch
+                                id="alerts-toggle"
+                                checked={alertsEnabled}
+                                onCheckedChange={setAlertsEnabled}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="alerts-url">Webhook URL</Label>
+                            <Input
+                                id="alerts-url"
+                                placeholder="https://..."
+                                value={alertsUrl}
+                                onChange={(e) => setAlertsUrl(e.target.value)}
+                                disabled={!alertsEnabled}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Audit Logging</CardTitle>
+                        <CardDescription>
+                            Stream all audit logs (tool executions, config changes) to an external endpoint.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="audit-toggle" className="flex flex-col gap-1">
+                                <span>Enable Audit Stream</span>
+                                <span className="font-normal text-xs text-muted-foreground">Send POST request for every audit event</span>
+                            </Label>
+                            <Switch
+                                id="audit-toggle"
+                                data-testid="audit-switch"
+                                checked={auditEnabled}
+                                onCheckedChange={setAuditEnabled}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="audit-url">Webhook URL</Label>
+                            <Input
+                                id="audit-url"
+                                placeholder="https://audit-logs.example.com/..."
+                                value={auditUrl}
+                                onChange={(e) => setAuditUrl(e.target.value)}
+                                disabled={!auditEnabled}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }

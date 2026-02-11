@@ -89,3 +89,15 @@ export type GetServiceResponse = any;
  * GetServiceStatusResponse type definition.
  */
 export type GetServiceStatusResponse = any;
+
+/** StorageType defines where audit logs are stored. */
+export enum AuditConfig_StorageType {
+  STORAGE_TYPE_UNSPECIFIED = 0,
+  STORAGE_TYPE_FILE = 1,
+  STORAGE_TYPE_SQLITE = 2,
+  STORAGE_TYPE_POSTGRES = 3,
+  STORAGE_TYPE_WEBHOOK = 4,
+  STORAGE_TYPE_SPLUNK = 5,
+  STORAGE_TYPE_DATADOG = 6,
+  UNRECOGNIZED = -1,
+}
