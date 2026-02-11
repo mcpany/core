@@ -26,7 +26,8 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 type Redactor struct {
-	customPatterns []*regexp.Regexp
+	customPatterns  []*regexp.Regexp
+	combinedPattern *regexp.Regexp
 }
 
 // NewRedactor creates a new Redactor from the given DLP config.
@@ -42,16 +43,32 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 
 	// Separate custom patterns from default ones for optimized processing
 	var customPatterns []*regexp.Regexp
+	var validPatternStrings []string
+
 	for _, p := range config.GetCustomPatterns() {
 		if r, err := regexp.Compile(p); err == nil {
 			customPatterns = append(customPatterns, r)
+			// Wrap in non-capturing group to ensure precedence safety when combined
+			validPatternStrings = append(validPatternStrings, "(?:"+p+")")
 		} else if log != nil {
 			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
+	var combinedPattern *regexp.Regexp
+	if len(validPatternStrings) > 0 {
+		combined, err := regexp.Compile(strings.Join(validPatternStrings, "|"))
+		if err == nil {
+			combinedPattern = combined
+		} else if log != nil {
+			// Should not happen as individual patterns are valid
+			log.Warn("Failed to compile combined DLP pattern", "error", err)
+		}
+	}
+
 	return &Redactor{
-		customPatterns: customPatterns,
+		customPatterns:  customPatterns,
+		combinedPattern: combinedPattern,
 	}
 }
 
@@ -169,9 +186,15 @@ func (r *Redactor) RedactString(s string) string {
 		res = ssnRegex.ReplaceAllString(res, redactedStr)
 	}
 
-	// Always run custom patterns as we don't know their characteristics
-	for _, p := range r.customPatterns {
-		res = p.ReplaceAllString(res, redactedStr)
+	// ⚡ BOLT: Combined multiple custom regex patterns into a single pass for O(N) performance.
+	// Randomized Selection from Top 5 High-Impact Targets
+	if r.combinedPattern != nil {
+		res = r.combinedPattern.ReplaceAllString(res, redactedStr)
+	} else {
+		// Fallback in case combined pattern failed to compile
+		for _, p := range r.customPatterns {
+			res = p.ReplaceAllString(res, redactedStr)
+		}
 	}
 	return res
 }
