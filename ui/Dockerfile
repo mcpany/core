@@ -88,6 +88,11 @@ RUN echo "Checking for generated files..." && \
     ls -l /app/proto/google/protobuf/struct.ts || (echo "struct.ts MISSING" && exit 1) && \
     ls -l /app/proto/google/api/annotations.ts || (echo "annotations.ts MISSING" && exit 1)
 
+# Debug: verify node_modules existence for problematic packages
+RUN echo "Checking node_modules..." && \
+    ls -ld node_modules/long || echo "long MISSING" && \
+    ls -ld node_modules/@bufbuild/protobuf/dist/esm/wire/index.js || echo "protobuf wire MISSING"
+
 # -----------------------------------------------------------------------------
 
 # Next.js collects completely anonymous telemetry data about general usage.
