@@ -158,6 +158,11 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
+// isTrue is a helper function to check if an environment variable is "true" (case-insensitive).
+func isTrue(val string) bool {
+	return strings.ToLower(strings.TrimSpace(val)) == TrueStr
+}
+
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.
@@ -172,10 +177,10 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
@@ -234,17 +239,17 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")) {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
 	// ⚡ BOLT: Allow loopback in CI environments to fix E2E tests.
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr || os.Getenv("CI") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) || isTrue(os.Getenv("CI")) {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 
