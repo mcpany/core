@@ -32,7 +32,10 @@ type transportError struct {
 
 // Error returns the error message.
 //
-// Returns the result.
+// Summary: Returns the error message.
+//
+// Returns:
+//   - string: The error message.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -54,10 +57,14 @@ type BundleDockerTransport struct {
 
 // Connect establishes a connection to the service within the Docker container.
 //
-// ctx is the context for the request.
+// Summary: Connects to the dockerized service.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the connection.
+//
+// Returns:
+//   - mcp.Connection: The connection.
+//   - error: An error if connection fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -170,10 +177,14 @@ type bundleDockerConn struct {
 
 // Read reads a JSON-RPC message from the connection.
 //
-// _ is an unused parameter.
+// Summary: Reads a message from the connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused context.
+//
+// Returns:
+//   - jsonrpc.Message: The message.
+//   - error: An error if reading fails.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -304,10 +315,14 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 
 // Write writes a JSON-RPC message to the connection.
 //
-// _ is an unused parameter.
-// msg is the msg.
+// Summary: Writes a message to the connection.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused context.
+//   - msg: jsonrpc.Message. The message to write.
+//
+// Returns:
+//   - error: An error if writing fails.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -429,14 +444,20 @@ func fixIDExtracted(val interface{}) interface{} {
 
 // Close closes the connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the connection.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns the session ID of the connection.
 //
-// Returns the result.
+// Summary: Returns the session ID.
+//
+// Returns:
+//   - string: The session ID.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
@@ -449,10 +470,14 @@ type bundleSlogWriter struct {
 
 // Write writes the log message to the logger.
 //
-// p is the p.
+// Summary: Writes the log message.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - p: []byte. The log message bytes.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: An error if writing fails.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

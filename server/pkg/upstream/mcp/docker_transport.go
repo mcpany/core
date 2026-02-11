@@ -53,10 +53,14 @@ type DockerTransport struct {
 
 // Connect establishes a connection to the service within the Docker container.
 //
-// ctx is the context for the request.
+// Summary: Connects to the dockerized service.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the connection.
+//
+// Returns:
+//   - mcp.Connection: The connection.
+//   - error: An error if connection fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -198,10 +202,14 @@ type dockerConn struct {
 
 // Read decodes a single JSON-RPC message from the container's output stream.
 //
-// _ is an unused parameter.
+// Summary: Reads a message from the container.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused context.
+//
+// Returns:
+//   - jsonrpc.Message: The decoded message.
+//   - error: An error if reading fails.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -283,10 +291,14 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
 //
-// _ is an unused parameter.
-// msg is the msg.
+// Summary: Writes a message to the container.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ : context.Context. Unused context.
+//   - msg: jsonrpc.Message. The message to write.
+//
+// Returns:
+//   - error: An error if writing fails.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -328,14 +340,20 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the connection.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns a static identifier for the Docker transport session.
 //
-// Returns the result.
+// Summary: Returns the session ID.
+//
+// Returns:
+//   - string: The session ID.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -350,7 +368,10 @@ type dockerReadWriteCloser struct {
 
 // Close closes the underlying connection and removes the associated Docker container.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the connection and cleans up the container.
+//
+// Returns:
+//   - error: An error if closing fails.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -381,6 +402,15 @@ type slogWriter struct {
 
 // Write takes a byte slice, scans it for lines, and logs each line
 // individually using the configured slog.Logger and level.
+//
+// Summary: Writes logs to the logger.
+//
+// Parameters:
+//   - p: []byte. The bytes to write.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: An error if writing fails.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
@@ -398,10 +428,14 @@ type tailBuffer struct {
 
 // Write writes data to the buffer, maintaining the size limit.
 //
-// p is the p.
+// Summary: Writes data to the buffer.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - p: []byte. The bytes to write.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: An error if writing fails.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -416,7 +450,10 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 
 // String returns the buffered data as a string.
 //
-// Returns the result.
+// Summary: Returns the buffered data.
+//
+// Returns:
+//   - string: The buffered data.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

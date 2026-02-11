@@ -3,6 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem defines the structure for a service available in the registry.
+ *
+ * Summary: Definition of a service registry item.
+ *
+ * Fields:
+ *   - id: string. The unique identifier of the service.
+ *   - name: string. The display name of the service.
+ *   - repo: string. The repository URL or identifier.
+ *   - command: string. The command to install/run the service.
+ *   - description: string. A brief description of the service.
+ *   - configurationSchema: Record<string, any>. The JSON schema for the service configuration.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +25,11 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY contains the list of all available services in the registry.
+ *
+ * Summary: The static registry of known MCP services.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

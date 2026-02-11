@@ -26,7 +26,8 @@ type Provider interface {
 }
 
 // OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+//
+// Summary: Provider implementation for discovering local Ollama services.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client

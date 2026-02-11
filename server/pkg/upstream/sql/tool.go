@@ -36,13 +36,17 @@ type Tool struct {
 
 // NewTool creates a new SQL Tool.
 //
-// t is the t.
-// db is the db.
-// callDef is the callDef.
-// policies is the policies.
-// callID is the callID.
+// Summary: Creates a new SQL Tool instance.
 //
-// Returns the result.
+// Parameters:
+//   - t: *v1.Tool. The protobuf tool definition.
+//   - db: *sql.DB. The database connection.
+//   - callDef: *configv1.SqlCallDefinition. The SQL call definition.
+//   - policies: []*configv1.CallPolicy. The list of security policies.
+//   - callID: string. The unique call identifier.
+//
+// Returns:
+//   - *Tool: The initialized SQL Tool.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -60,14 +64,16 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -81,7 +87,8 @@ func (t *Tool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, or nil if none.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -91,11 +98,15 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 
 // Execute runs the SQL query with the provided inputs.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Executes the SQL query.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *tool.ExecutionRequest. The execution request with inputs.
+//
+// Returns:
+//   - any: The query results (list of maps).
+//   - error: An error if the query fails or is blocked.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

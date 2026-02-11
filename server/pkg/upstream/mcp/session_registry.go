@@ -19,7 +19,10 @@ type SessionRegistry struct {
 
 // NewSessionRegistry creates a new SessionRegistry.
 //
-// Returns the result.
+// Summary: Creates a new SessionRegistry.
+//
+// Returns:
+//   - *SessionRegistry: The new registry.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),
@@ -28,8 +31,11 @@ func NewSessionRegistry() *SessionRegistry {
 
 // Register registers a mapping between an upstream session and a downstream session.
 //
-// upstreamSession is the upstreamSession.
-// downstreamSession is the downstreamSession.
+// Summary: Registers a session mapping.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session. The upstream session.
+//   - downstreamSession: tool.Session. The downstream session.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -38,7 +44,10 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 
 // Unregister removes the mapping for an upstream session.
 //
-// upstreamSession is the upstreamSession.
+// Summary: Unregisters a session mapping.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session. The upstream session to remove.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -47,10 +56,14 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 
 // Get retrieves the downstream session associated with an upstream session.
 //
-// upstreamSession is the upstreamSession.
+// Summary: Retrieves the downstream session.
 //
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - upstreamSession: mcp.Session. The upstream session.
+//
+// Returns:
+//   - tool.Session: The downstream session.
+//   - bool: True if found, false otherwise.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
