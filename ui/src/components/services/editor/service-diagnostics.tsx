@@ -65,9 +65,46 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
         newResults.push(configCheck);
         setResults([...newResults]);
 
+        // 1.5 Localhost Check (Smart Heuristic)
+        const localhostCheck: DiagnosticResult = { name: "Localhost Configuration", status: "running" };
+        const address = service.httpService?.address || service.openapiService?.address || service.openapiService?.specUrl;
+        if (address && (address.includes("localhost") || address.includes("127.0.0.1"))) {
+            localhostCheck.status = "warning";
+            localhostCheck.message = "You are using 'localhost' or '127.0.0.1'.";
+            localhostCheck.details = "If you are running MCP Any in a Docker container, 'localhost' refers to the container itself, not your host machine.\n\nUse 'host.docker.internal' to reach services on your host machine.";
+            newResults.push(localhostCheck);
+            setResults([...newResults]);
+        }
+
+        // 2. Browser Connectivity (Only for HTTP-based services)
+        if (address && (address.startsWith("http://") || address.startsWith("https://"))) {
+            const browserCheck: DiagnosticResult = { name: "Browser Connectivity", status: "running" };
+            setResults([...newResults, browserCheck]);
+
+            try {
+                // Try to fetch only headers to minimize data transfer
+                const res = await fetch(address, { method: "HEAD", mode: "no-cors" });
+                // If we get here (even with opaque response type for no-cors), it means we reached the server.
+                // However, without CORS, we can't be sure of status code.
+                // If res.type is 'opaque', it means we reached it but can't read it.
+                // If we can read it, great.
+
+                browserCheck.status = "success";
+                browserCheck.message = "Service is reachable from browser.";
+                // Note: with no-cors, we can't see status code, but lack of network error means DNS/TCP worked.
+            } catch (e: any) {
+                browserCheck.status = "error";
+                browserCheck.message = "Failed to reach service from browser.";
+                browserCheck.details = `${e.message}\n\nThis check runs from your browser. Common causes:\n1. Service is down.\n2. Service is on a private network not accessible to your browser.\n3. CORS policy prevents access (check console).`;
+            }
+             newResults.push(browserCheck);
+             setResults([...newResults]);
+        }
+
+
         // Only proceed if saved (has ID/Name)
         if (service.name && service.id) {
-            // 2. Runtime Status
+            // 3. Runtime Status
             const statusCheck: DiagnosticResult = { name: "Runtime Status", status: "running" };
             setResults([...newResults, statusCheck]);
 
@@ -95,7 +132,7 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
             newResults.push(statusCheck);
             setResults([...newResults]);
 
-            // 3. Tool Discovery
+            // 4. Tool Discovery
             const toolCheck: DiagnosticResult = { name: "Tool Discovery", status: "running" };
             setResults([...newResults, toolCheck]);
 
