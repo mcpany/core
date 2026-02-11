@@ -120,10 +120,24 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
 
     // Explicitly add alias for @proto to resolve external directory
-    // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
-    const localProto = path.join(__dirname, 'proto');
-    const rootProto = path.join(__dirname, '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+    // In Docker, we copy proto to /proto. Locally, it maps to ../proto.
+    // Dockerfile copies proto/ to /proto/ (root level in container context)
+    // But wait, the WORKDIR is /app.
+    // Dockerfile says: COPY proto/ /proto/
+    // So in Docker, it is at /proto.
+
+    // Check if /proto exists (Docker environment)
+    const dockerProto = '/proto';
+    // Check local relative paths
+    const localProto = path.join(__dirname, 'proto'); // If copied to ./proto
+    const rootProto = path.join(__dirname, '../proto'); // If symlinked or dev
+
+    let protoPath = rootProto;
+    if (fs.existsSync(dockerProto)) {
+        protoPath = dockerProto;
+    } else if (fs.existsSync(localProto)) {
+        protoPath = localProto;
+    }
 
     config.resolve.alias = {
       ...config.resolve.alias,
