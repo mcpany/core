@@ -148,6 +148,50 @@ func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
 
+// IsSensitivePath checks if a path points to a known sensitive file or directory.
+//
+// Summary: Checks for sensitive file access.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the path is sensitive.
+var IsSensitivePath = func(path string) error {
+	base := filepath.Base(path)
+
+	// Block .env files (including .env.local, .env.production, etc.)
+	if strings.HasPrefix(base, ".env") {
+		return fmt.Errorf("access to .env files is restricted")
+	}
+
+	// Block sensitive directories and files
+	sensitiveNames := map[string]bool{
+		".git":        true,
+		".ssh":        true,
+		".aws":        true,
+		".kube":       true,
+		".config":     true,
+		"config.yaml": true,
+		"config.json": true,
+		"mcpany.db":   true,
+	}
+
+	if sensitiveNames[base] {
+		return fmt.Errorf("access to sensitive file/directory %q is restricted", base)
+	}
+
+	// Check path components for sensitive directories
+	parts := strings.Split(path, string(os.PathSeparator))
+	for _, part := range parts {
+		if part == ".git" || part == ".ssh" || part == ".aws" || part == ".kube" {
+			return fmt.Errorf("access to sensitive directory %q is restricted", part)
+		}
+	}
+
+	return nil
+}
+
 // IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
 // and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
@@ -202,6 +246,11 @@ var IsAllowedPath = func(path string) error {
 		} else {
 			return fmt.Errorf("failed to resolve symlinks for %q: %w", path, err)
 		}
+	}
+
+	// Sentinel Security Update: Block access to sensitive files
+	if err := IsSensitivePath(realPath); err != nil {
+		return err
 	}
 
 	// Helper to check if child is inside parent

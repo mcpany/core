@@ -2747,7 +2747,10 @@ func cleanPathPreserveDoubleSlash(p string) string {
 }
 
 func checkForLocalFileAccess(val string) error {
-	if filepath.IsAbs(val) {
+	// Normalize path to ensure consistent separator usage and resolve '.'/'..'
+	cleanVal := filepath.Clean(val)
+
+	if filepath.IsAbs(cleanVal) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
 	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
@@ -2755,6 +2758,12 @@ func checkForLocalFileAccess(val string) error {
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
+
+	// Sentinel Security Update: Block access to sensitive files in CWD
+	if err := validation.IsSensitivePath(cleanVal); err != nil {
+		return err
+	}
+
 	return nil
 }
 
