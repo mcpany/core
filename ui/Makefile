@@ -92,14 +92,8 @@ build-test-docker:
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 docker-build-ui:
-	@echo "Checking for auth.ts on host..."
-	@ls -l ../proto/config/v1/auth.ts || echo "auth.ts NOT FOUND on host"
 	@echo "Building UI Docker image (mcpany/ui:latest)..."
-	@echo "Hack: Temporarily renaming .gitignore to force inclusion of untracked files"
-	@mv ../.gitignore ../.gitignore.bak
-	@$(DOCKER_BUILD_CMD) -t mcpany/ui:latest -f Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .. || (mv ../.gitignore.bak ../.gitignore && exit 1)
-	@echo "Reverting .gitignore..."
-	@mv ../.gitignore.bak ../.gitignore
+	@$(DOCKER_BUILD_CMD) -t mcpany/ui:latest -f Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 # Build the UI production build
 build:

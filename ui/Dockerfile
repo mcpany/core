@@ -24,8 +24,34 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
-# DEBUG: List proto files to verify they are present in Docker context
-RUN echo "Checking /proto directory..." && ls -la /proto && ls -R /proto/config || echo "Proto config not found"
+# -----------------------------------------------------------------------------
+# Generate TypeScript Protobuf files inside Docker
+# This ensures that generated files are present even if excluded from build context
+# by .gitignore or .dockerignore rules in the CI environment.
+# -----------------------------------------------------------------------------
+RUN apt-get update && apt-get install -y protobuf-compiler curl unzip
+
+# Download googleapis (needed for google/api/annotations.proto used in admin.proto)
+WORKDIR /tmp
+RUN curl -sSL https://github.com/googleapis/googleapis/archive/master.zip -o googleapis.zip && \
+    unzip -q googleapis.zip && \
+    mv googleapis-master /googleapis
+
+WORKDIR /app
+
+# Run protoc for all .proto files found in /proto
+# We include /googleapis and /usr/include (standard protos) in import path.
+# We output to / (root) because imports are relative to root (e.g. "proto/config/v1/auth.proto").
+# If a file is /proto/config/v1/auth.proto, outputting to / results in /proto/config/v1/auth.ts.
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/ \
+    --proto_path=/googleapis \
+    --proto_path=/usr/include \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/ \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+# -----------------------------------------------------------------------------
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
