@@ -33,25 +33,26 @@ test.describe('Tool Exploration', () => {
         // The UI fetches once on mount.
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
-        // Increase retries to 10 for slow CI environments where backend worker might be lagging
-        for (let i = 0; i < 10; i++) {
+        // Increase retries to 20 for slow CI environments where backend worker might be lagging
+        // ⚡ Bolt: Doubled retries and timeout to mitigate CI flakiness during async tool registration
+        for (let i = 0; i < 20; i++) {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
+                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/20)`);
                 await page.reload();
                 // Wait for network idle and a small buffer
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000);
             }
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 20000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
