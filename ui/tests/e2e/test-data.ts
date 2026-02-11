@@ -17,7 +17,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                // Use localhost instead of stripe.com to avoid external network dependency/blocking in CI.
+                // Connection refused is expected and acceptable, tools should still register.
+                address: "http://127.0.0.1:12345",
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -122,13 +124,28 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/Payment Gateway Updated', { headers: HEADERS }); // Added cleanup for renamed service
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        // Fetch all services first to ensure complete cleanup
+        const response = await context.get('/api/v1/services', { headers: HEADERS });
+        if (response.ok()) {
+            const data = await response.json();
+            const services = data.services || [];
+            for (const svc of services) {
+                // Delete by name (as ID might not be in the list view response depending on API)
+                // Assuming 'name' is the key or we can use ID if available.
+                // The API usually takes Name or ID in the path. Using Name is safer if ID is hidden.
+                const key = svc.name || svc.id;
+                if (key) {
+                    await context.delete(`/api/v1/services/${key}`, { headers: HEADERS });
+                }
+            }
+        }
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
+        // Fallback to known names if list fails
+        const names = ['Payment Gateway', 'Payment Gateway Updated', 'User Service', 'Math', 'Echo Service'];
+        for (const name of names) {
+             await context.delete(`/api/v1/services/${name}`, { headers: HEADERS }).catch(() => {});
+        }
     }
 };
 
