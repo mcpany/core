@@ -107,7 +107,36 @@ Ask your agent:
 
 The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
-## 4. Development
+## 4. CLI Tool (mcpctl)
+
+MCP Any comes with a companion CLI tool, `mcpctl`, for managing and validating configurations.
+
+### Installation
+The `mcpctl` binary is built alongside the server.
+```bash
+make build
+# Binary is at build/bin/mcpctl
+```
+
+### Usage
+```bash
+./build/bin/mcpctl --help
+```
+
+*   **Validate:** Check your configuration file for errors.
+    ```bash
+    ./build/bin/mcpctl validate --config-path my-config.yaml
+    ```
+*   **Doctor:** Detailed health check of the environment and running server.
+    ```bash
+    ./build/bin/mcpctl doctor
+    ```
+*   **Import:** Import existing Claude Desktop configurations.
+    ```bash
+    ./build/bin/mcpctl import ~/Library/Application\ Support/Claude/claude_desktop_config.json
+    ```
+
+## 5. Development
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
@@ -139,7 +168,7 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
-## 5. Configuration
+## 6. Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
 

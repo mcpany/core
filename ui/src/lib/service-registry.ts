@@ -3,15 +3,31 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents a single item in the service registry.
+ * Defines the metadata and configuration schema for an MCP server.
+ */
 export interface ServiceRegistryItem {
+  /** The unique identifier for the service (e.g., "postgres"). */
   id: string;
+  /** The human-readable display name of the service. */
   name: string;
-  repo: string; // Used for matching against community URLs
+  /** The repository URL, used for matching community URLs. */
+  repo: string;
+  /** The default command to install and run the service. */
   command: string;
+  /** A brief description of the service's capabilities. */
   description: string;
+  /** The JSON schema defining the required configuration for the service. */
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * A curated list of popular MCP servers and their configurations.
+ *
+ * This registry is used to populate the "Marketplace" UI, allowing users to
+ * easily discover, configure, and deploy these services.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

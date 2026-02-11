@@ -14,8 +14,13 @@ import (
 )
 
 // main is the entry point for the connector runtime.
+//
 // This runtime is designed to host MCP connectors (stdin/stdout tools)
 // as a sidecar process, managing their lifecycle and configuration.
+//
+// Side Effects:
+//   - Starts the connector runtime.
+//   - Exits with status 1 on error.
 func main() {
 	if err := run(os.Args, make(chan os.Signal, 1)); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -23,6 +28,16 @@ func main() {
 	}
 }
 
+// run executes the connector runtime logic.
+//
+// It parses flags, initializes the runtime, and waits for termination signals.
+//
+// Parameters:
+//   - args: []string. Command-line arguments.
+//   - stop: chan os.Signal. Channel to receive OS signals.
+//
+// Returns:
+//   - error: An error if startup fails or arguments are invalid.
 func run(args []string, stop chan os.Signal) error {
 	fs := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	connectorName := fs.String("name", "", "Name of the connector to run")
