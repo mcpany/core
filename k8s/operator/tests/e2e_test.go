@@ -105,6 +105,10 @@ nodes:
 		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-http-echo-docker"); err != nil {
 			t.Fatalf("Failed to build http-echo-server image: %v", err)
 		}
+		// Tag it as :local to avoid ImagePullPolicy: Always (default for latest)
+		if err := runCommand(t, ctx, rootDir, "docker", "tag", "mcpany/http-echo-server:latest", "mcpany/http-echo-server:local"); err != nil {
+			t.Fatalf("Failed to tag http-echo-server image: %v", err)
+		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
@@ -120,8 +124,8 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
 	}
-	// Load http-echo-server
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
+	// Load http-echo-server (:local tag)
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:local", "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
@@ -155,8 +159,8 @@ nodes:
 
 	// 6.5 Deploy http-echo-server (after namespace creation)
 	t.Log("Deploying http-echo-server as dummy service...")
-	// Run pod
-	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:latest", "--port=8080", "-n", namespace, "--labels=app=echo-server"); err != nil {
+	// Run pod using :local tag to ensure it uses the loaded image (IfNotPresent)
+	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:local", "--port=8080", "-n", namespace, "--labels=app=echo-server"); err != nil {
 		t.Fatalf("Failed to run echo-server pod: %v", err)
 	}
 	// Expose service

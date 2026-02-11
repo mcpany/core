@@ -75,6 +75,8 @@ audit: build-test-docker build-server-docker
 	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci: clean-test-results
+	# Ensure http-echo-server image is available locally for docker compose
+	$(MAKE) -C ../server build-http-echo-docker
 	mkdir -p test-results .audit ../build/playwright-report
 	chmod -R 777 test-results .audit ../build/playwright-report || true
 	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" docker compose -f ./docker-compose.test.yml up --build --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
