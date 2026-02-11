@@ -100,12 +100,43 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 
 // processLoop handles asynchronous activity recording to avoid locking the request path.
 func (m *Manager) processLoop() {
+	// ⚡ BOLT: Run periodic cleanup every 5 minutes to prevent memory leaks.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+
 	for {
 		select {
 		case <-m.shutdownCh:
 			return
 		case event := <-m.activityCh:
 			m.handleActivity(event)
+		case <-ticker.C:
+			m.cleanup()
+		}
+	}
+}
+
+// cleanup removes inactive sessions and old traffic history.
+func (m *Manager) cleanup() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	now := time.Now()
+
+	// Cleanup sessions inactive for > 1 hour
+	sessionCutoff := now.Add(-1 * time.Hour)
+	for id, s := range m.sessions {
+		if s.LastActive.Before(sessionCutoff) {
+			delete(m.sessions, id)
+		}
+	}
+
+	// Cleanup traffic history older than 24 hours
+	trafficCutoff := now.Add(-24 * time.Hour).Unix()
+	for t := range m.trafficHistory {
+		if t < trafficCutoff {
+			delete(m.trafficHistory, t)
 		}
 	}
 }
@@ -185,16 +216,6 @@ func (m *Manager) handleActivity(event activityEvent) {
 		sStats.Latency += latency.Milliseconds()
 		if isError {
 			sStats.Errors++
-		}
-	}
-
-	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
-	if session.RequestCount%100 == 0 {
-		cutoff := time.Now().Add(-24 * time.Hour).Unix()
-		for t := range m.trafficHistory {
-			if t < cutoff {
-				delete(m.trafficHistory, t)
-			}
 		}
 	}
 }
