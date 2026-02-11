@@ -178,6 +178,11 @@ func NewSafeHTTPClient() *http.Client {
 	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
 		dialer.AllowPrivate = true
 	}
+	// Allow strict override for testing/dev environments
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
 
 	return &http.Client{
