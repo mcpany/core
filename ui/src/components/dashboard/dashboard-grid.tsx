@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
+import { OnboardingWizard } from "@/components/dashboard/onboarding-wizard";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -66,6 +68,7 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [hasServices, setHasServices] = useState<boolean | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -112,7 +115,22 @@ export function DashboardGrid() {
         } else {
             setWidgets(DEFAULT_LAYOUT);
         }
+
+        checkServices();
     }, []);
+
+    const checkServices = async () => {
+        try {
+            const list = await apiClient.listServices();
+            setHasServices(list.length > 0);
+        } catch (e) {
+            console.warn("Failed to check services count", e);
+            // Assume true to avoid showing wizard on error? Or false?
+            // Let's assume false if we really want to guide them, but network error might mean wizard fails too.
+            // Let's assume true to fallback to normal empty state if backend is down.
+            setHasServices(true);
+        }
+    };
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
@@ -190,7 +208,13 @@ export function DashboardGrid() {
         saveWidgets([newWidget, ...widgets]);
     };
 
-    if (!isMounted) return null;
+    const handleWizardComplete = useCallback(() => {
+        setHasServices(true);
+        // Refresh/Re-check?
+        checkServices();
+    }, []);
+
+    if (!isMounted || hasServices === null) return null;
 
     const renderWidget = (widget: WidgetInstance) => {
         const def = getWidgetDefinition(widget.type);
@@ -214,138 +238,148 @@ export function DashboardGrid() {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-end gap-2">
-                <AddWidgetSheet onAdd={addWidget} />
+            {/*
+               Only show toolbar if we are NOT showing the wizard.
+               If we are showing the wizard, the toolbar is distracting.
+               However, user might want to add widgets manually even if no services?
+               Let's keep it but maybe simplified? No, keep it.
+               BUT, if hasServices === false AND visibleWidgets.length === 0, we show wizard.
+            */}
+            {(hasServices !== false || visibleWidgets.length > 0) && (
+                <div className="flex justify-end gap-2">
+                    <AddWidgetSheet onAdd={addWidget} />
 
-                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
-                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
-                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
-                    Let's keep the popover for recovering hidden widgets.
-                */}
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-8 border-dashed">
-                            <Settings2 className="mr-2 h-4 w-4" />
-                            Layout
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56" align="end">
-                        <div className="space-y-2">
-                            <h4 className="font-medium leading-none mb-2">Visible Widgets</h4>
-                            {widgets.map((widget) => (
-                                <div key={widget.instanceId} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={`show-${widget.instanceId}`}
-                                        checked={!widget.hidden}
-                                        onCheckedChange={() => toggleWidgetVisibility(widget.instanceId)}
-                                    />
-                                    <Label htmlFor={`show-${widget.instanceId}`} className="text-sm font-normal cursor-pointer w-full truncate">
-                                        {widget.title}
-                                    </Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 border-dashed">
+                                <Settings2 className="mr-2 h-4 w-4" />
+                                Layout
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56" align="end">
+                            <div className="space-y-2">
+                                <h4 className="font-medium leading-none mb-2">Visible Widgets</h4>
+                                {widgets.map((widget) => (
+                                    <div key={widget.instanceId} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`show-${widget.instanceId}`}
+                                            checked={!widget.hidden}
+                                            onCheckedChange={() => toggleWidgetVisibility(widget.instanceId)}
+                                        />
+                                        <Label htmlFor={`show-${widget.instanceId}`} className="text-sm font-normal cursor-pointer w-full truncate">
+                                            {widget.title}
+                                        </Label>
+                                    </div>
+                                ))}
+                                {widgets.length === 0 && <p className="text-xs text-muted-foreground">No widgets added.</p>}
+                                <div className="pt-2">
+                                    <Button variant="ghost" size="sm" className="w-full text-xs text-destructive" onClick={() => saveWidgets([])}>
+                                        Clear All
+                                    </Button>
                                 </div>
-                            ))}
-                             {widgets.length === 0 && <p className="text-xs text-muted-foreground">No widgets added.</p>}
-                             <div className="pt-2">
-                                <Button variant="ghost" size="sm" className="w-full text-xs text-destructive" onClick={() => saveWidgets([])}>
-                                    Clear All
-                                </Button>
-                             </div>
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+            )}
 
-            <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="dashboard-widgets" direction="horizontal">
-                    {(provided) => (
-                        <div
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                            className="grid grid-cols-12 gap-4"
-                        >
-                            {visibleWidgets.map((widget, index) => (
-                                <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            className={cn(
-                                                "relative group/widget rounded-lg transition-all duration-200",
-                                                getColSpan(widget.size),
-                                                snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
-                                            )}
-                                        >
-                                            <div className="absolute top-2 right-2 flex items-center space-x-1 opacity-0 group-hover/widget:opacity-100 transition-opacity z-20">
-                                                 <div
-                                                    {...provided.dragHandleProps}
-                                                    className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-grab active:cursor-grabbing border border-transparent hover:border-border"
+            {hasServices === false ? (
+                <OnboardingWizard onComplete={handleWizardComplete} />
+            ) : (
+                <>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="dashboard-widgets" direction="horizontal">
+                            {(provided) => (
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    className="grid grid-cols-12 gap-4"
+                                >
+                                    {visibleWidgets.map((widget, index) => (
+                                        <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    className={cn(
+                                                        "relative group/widget rounded-lg transition-all duration-200",
+                                                        getColSpan(widget.size),
+                                                        snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
+                                                    )}
                                                 >
-                                                    <GripVertical className="h-4 w-4 text-muted-foreground" />
-                                                </div>
-
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <div className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-pointer border border-transparent hover:border-border">
-                                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                                    <div className="absolute top-2 right-2 flex items-center space-x-1 opacity-0 group-hover/widget:opacity-100 transition-opacity z-20">
+                                                        <div
+                                                            {...provided.dragHandleProps}
+                                                            className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-grab active:cursor-grabbing border border-transparent hover:border-border"
+                                                        >
+                                                            <GripVertical className="h-4 w-4 text-muted-foreground" />
                                                         </div>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel>Widget Options</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuSub>
-                                                            <DropdownMenuSubTrigger>
-                                                                <Maximize className="mr-2 h-4 w-4" />
-                                                                <span>Size</span>
-                                                            </DropdownMenuSubTrigger>
-                                                            <DropdownMenuSubContent>
-                                                                <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
-                                                                    <DropdownMenuRadioItem value="full">
-                                                                        <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
-                                                                    </DropdownMenuRadioItem>
-                                                                    <DropdownMenuRadioItem value="two-thirds">
-                                                                        <Columns className="mr-2 h-4 w-4" /> 2/3 Width
-                                                                    </DropdownMenuRadioItem>
-                                                                    <DropdownMenuRadioItem value="half">
-                                                                        <Columns className="mr-2 h-4 w-4" /> 1/2 Width
-                                                                    </DropdownMenuRadioItem>
-                                                                    <DropdownMenuRadioItem value="third">
-                                                                        <Columns className="mr-2 h-4 w-4" /> 1/3 Width
-                                                                    </DropdownMenuRadioItem>
-                                                                </DropdownMenuRadioGroup>
-                                                            </DropdownMenuSubContent>
-                                                        </DropdownMenuSub>
-                                                        <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
-                                                            <EyeOff className="mr-2 h-4 w-4" />
-                                                            Hide Widget
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Remove
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
 
-                                            {renderWidget(widget)}
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <div className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-pointer border border-transparent hover:border-border">
+                                                                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                                                </div>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuLabel>Widget Options</DropdownMenuLabel>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuSub>
+                                                                    <DropdownMenuSubTrigger>
+                                                                        <Maximize className="mr-2 h-4 w-4" />
+                                                                        <span>Size</span>
+                                                                    </DropdownMenuSubTrigger>
+                                                                    <DropdownMenuSubContent>
+                                                                        <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
+                                                                            <DropdownMenuRadioItem value="full">
+                                                                                <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
+                                                                            </DropdownMenuRadioItem>
+                                                                            <DropdownMenuRadioItem value="two-thirds">
+                                                                                <Columns className="mr-2 h-4 w-4" /> 2/3 Width
+                                                                            </DropdownMenuRadioItem>
+                                                                            <DropdownMenuRadioItem value="half">
+                                                                                <Columns className="mr-2 h-4 w-4" /> 1/2 Width
+                                                                            </DropdownMenuRadioItem>
+                                                                            <DropdownMenuRadioItem value="third">
+                                                                                <Columns className="mr-2 h-4 w-4" /> 1/3 Width
+                                                                            </DropdownMenuRadioItem>
+                                                                        </DropdownMenuRadioGroup>
+                                                                    </DropdownMenuSubContent>
+                                                                </DropdownMenuSub>
+                                                                <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
+                                                                    <EyeOff className="mr-2 h-4 w-4" />
+                                                                    Hide Widget
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
+                                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                                    Remove
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+
+                                                    {renderWidget(widget)}
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+
+                    {/* Empty State / Onboarding - Only if services exist but widgets are empty */}
+                    {visibleWidgets.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
+                            <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
+                            <h3 className="text-lg font-medium">Your dashboard is empty</h3>
+                            <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
+                            <AddWidgetSheet onAdd={addWidget} />
                         </div>
                     )}
-                </Droppable>
-            </DragDropContext>
-
-            {/* Empty State / Onboarding */}
-            {visibleWidgets.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
-                    <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium">Your dashboard is empty</h3>
-                    <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
-                    <AddWidgetSheet onAdd={addWidget} />
-                </div>
+                </>
             )}
         </div>
     );
