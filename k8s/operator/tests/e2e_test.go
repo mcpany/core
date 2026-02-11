@@ -165,7 +165,7 @@ nodes:
 	// Run Playwright tests
 	// We assume 'npx' is available and we are in the root or can find ui dir
 	uiDir := filepath.Join(rootDir, "ui")
-	workers := "4"
+	workers := "1" // Force sequential execution to avoid race conditions on shared backend
 	if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
 		workers = w
 	}
