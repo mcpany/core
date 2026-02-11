@@ -25,7 +25,7 @@ COPY proto/ /proto/
 RUN ln -s /app/node_modules /proto/node_modules
 
 # -----------------------------------------------------------------------------
-# Generate TypeScript Protobuf files inside Docker
+# Generate TypeScript Protobuf files inside Docker (Local Mode)
 # -----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y protobuf-compiler curl unzip findutils
 
@@ -35,53 +35,57 @@ RUN curl -sSL https://github.com/googleapis/googleapis/archive/master.zip -o goo
     unzip -q googleapis.zip && \
     mv googleapis-master /googleapis
 
-# Change to root to simplify relative path handling for protoc
-WORKDIR /
-
-# Verify sources exist (fail if not)
-RUN echo "Checking for source .proto files..." && \
-    ls -l /proto/config/v1/auth.proto || (echo "Source auth.proto MISSING!" && exit 1)
+# Create local proto directory in app
+RUN mkdir -p /app/proto
 
 # 1. Generate Repo Protos
-# Use relative paths from root (e.g. proto/config/v1/auth.proto)
-# Output to . (root), so proto/config/v1/auth.ts lands in /proto/config/v1/
-RUN find proto -name "*.proto" -exec protoc \
+# Input: /proto/... (relative to /proto)
+# Output: /app/proto/...
+WORKDIR /proto
+RUN find . -name "*.proto" -exec protoc \
     --proto_path=. \
-    --proto_path=googleapis \
-    --proto_path=usr/include \
+    --proto_path=/googleapis \
+    --proto_path=/usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=. \
+    --ts_proto_out=/app/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
 # 2. Generate Standard Protos (google/protobuf/*.proto)
-# Output to proto/ (so they land in /proto/google/protobuf/...)
-RUN find usr/include/google/protobuf -name "*.proto" -exec protoc \
-    --proto_path=usr/include \
+# Output: /app/proto/google/protobuf/...
+WORKDIR /usr/include
+RUN find google/protobuf -name "*.proto" -exec protoc \
+    --proto_path=. \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=proto \
+    --ts_proto_out=/app/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
 # 3. Generate Google APIs (google/api/*.proto)
-# Output to proto/ (so they land in /proto/google/api/...)
-RUN find googleapis/google/api -name "*.proto" -exec protoc \
-    --proto_path=googleapis \
-    --proto_path=usr/include \
+# Output: /app/proto/google/api/...
+WORKDIR /googleapis
+RUN find google/api -name "*.proto" -exec protoc \
+    --proto_path=. \
+    --proto_path=/usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=proto \
+    --ts_proto_out=/app/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
+WORKDIR /app
+
+# Patch tsconfig.json to look for protos in ./proto instead of ../proto
+# This ensures that TypeScript compilation finds the locally generated files
+RUN sed -i 's|\.\./proto|./proto|g' tsconfig.json
+
 # Verify generation (fail if missing)
+# Note: we check /app/proto now
 RUN echo "Checking for generated files..." && \
-    ls -l /proto/config/v1/auth.ts || (echo "auth.ts MISSING" && exit 1) && \
-    ls -l /proto/google/protobuf/struct.ts || (echo "struct.ts MISSING" && exit 1) && \
-    ls -l /proto/google/api/annotations.ts || (echo "annotations.ts MISSING" && exit 1)
+    ls -l /app/proto/config/v1/auth.ts || (echo "auth.ts MISSING" && exit 1) && \
+    ls -l /app/proto/google/protobuf/struct.ts || (echo "struct.ts MISSING" && exit 1) && \
+    ls -l /app/proto/google/api/annotations.ts || (echo "annotations.ts MISSING" && exit 1)
 
 # -----------------------------------------------------------------------------
-# Restore WORKDIR for build
-WORKDIR /app
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
