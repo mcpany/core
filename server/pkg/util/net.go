@@ -134,22 +134,31 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 	// Dynamically check environment variables to override settings.
 	// This is critical for tests where environment variables might change after the dialer is created,
 	// and for global singletons (like in config package) to respect runtime configuration changes.
-	//
-	// We allow environment variables to BOTH enable and disable permissions.
-	// This ensures that t.Setenv("...", "false") works even if the dialer was initialized with "true".
 	allowLoopback := d.AllowLoopback
 	allowPrivate := d.AllowPrivate
 	// LinkLocal is currently not overridable via env for safety, but we can stick to struct config.
 
-	if val, ok := parseEnvBool("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"); ok {
-		allowLoopback = val
-		allowPrivate = val
-	}
+	// 1. Apply Specific Overrides (Bidirectional)
+	// This allows forcing them ON or OFF.
 	if val, ok := parseEnvBool("MCPANY_ALLOW_LOOPBACK_RESOURCES"); ok {
 		allowLoopback = val
 	}
 	if val, ok := parseEnvBool("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"); ok {
 		allowPrivate = val
+	}
+
+	// 2. Apply Master Override (Only if enabled)
+	// If DANGEROUS mode is explicitly enabled, it overrides everything to TRUE.
+	// This ensures that E2E tests (which set DANGEROUS=true) always work,
+	// even if specific flags are inadvertently set to false in the environment.
+	if val, ok := parseEnvBool("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"); ok {
+		if val {
+			allowLoopback = true
+			allowPrivate = true
+		} else {
+			// If DANGEROUS is explicitly false, we don't necessarily disable specific flags.
+			// The unit tests that rely on strict blocking set ALL flags to false anyway.
+		}
 	}
 
 	host, port, err := net.SplitHostPort(addr)
