@@ -37,7 +37,24 @@ const (
 var (
 	globalAlertConfig   *configv1.AlertConfig
 	globalAlertConfigMu sync.RWMutex
+
+	latencyStore = make(map[string]time.Duration)
+	latencyMu    sync.RWMutex
 )
+
+// UpdateLatency updates the latest latency for a service.
+func UpdateLatency(serviceName string, d time.Duration) {
+	latencyMu.Lock()
+	defer latencyMu.Unlock()
+	latencyStore[serviceName] = d
+}
+
+// GetLatestLatency returns the latest latency for a service.
+func GetLatestLatency(serviceName string) time.Duration {
+	latencyMu.RLock()
+	defer latencyMu.RUnlock()
+	return latencyStore[serviceName]
+}
 
 // SetGlobalAlertConfig sets the global alert configuration.
 //
@@ -130,11 +147,12 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	check.Check = func(ctx context.Context) error {
 		start := time.Now()
 		err := originalCheck(ctx)
-		duration := time.Since(start).Seconds()
-		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration), []metrics.Label{
+		duration := time.Since(start)
+		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration.Seconds()), []metrics.Label{
 			{Name: "service", Value: serviceName},
 			{Name: "status", Value: lo.Ternary(err == nil, "success", "failure")},
 		})
+		UpdateLatency(serviceName, duration)
 		return err
 	}
 
