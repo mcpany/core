@@ -106,8 +106,8 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	// Always maintain a persistent JSON log for hydration
 	// Use configured logfile if it is JSON, otherwise use default
 	persistentLog := "mcpany.log.json"
-	// In test mode or if configured, use a temp file to avoid polluting the workspace
-	if os.Getenv("MCPANY_TEST_MODE") == "true" {
+	// In test mode (env var or .test binary), use a temp file to avoid polluting the workspace
+	if os.Getenv("MCPANY_TEST_MODE") == "true" || strings.HasSuffix(os.Args[0], ".test") {
 		persistentLog = filepath.Join(os.TempDir(), "mcpany.log.json")
 	}
 	if s.logFile != "" && strings.ToLower(logFormat) == "json" {

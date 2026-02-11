@@ -80,6 +80,16 @@ func TestWatcher_URL(t *testing.T) {
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	t.Setenv("MCPANY_TEST_MODE", "true")
 
+	// Use a dynamic port to avoid conflicts
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	port := ln.Addr().(*net.TCPAddr).Port
+	ln.Close() // Close it, we just wanted a free port (or we could keep it open if we wanted to simulate a server)
+	// Actually, Watch expects to fetch. If port is closed, it errors but shouldn't block.
+	// That's what we want to test (non-blocking).
+
 	w, err := NewWatcher()
 	if err != nil {
 		t.Fatal(err)
@@ -89,7 +99,8 @@ func TestWatcher_URL(t *testing.T) {
 	done := make(chan bool)
 	go func() {
 		// Use local address to avoid external network dependency
-		_ = w.Watch([]string{"http://127.0.0.1:54321/config"}, func() {})
+		url := fmt.Sprintf("http://127.0.0.1:%d/config", port)
+		_ = w.Watch([]string{url}, func() {})
 		close(done)
 	}()
 
