@@ -84,7 +84,9 @@ export function useNetworkTopology() {
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
-    const lastStructureHash = useRef<string>('');
+    const lastNodeIds = useRef<string[]>([]);
+    const lastEdgeIds = useRef<string[]>([]);
+    const forceLayoutNext = useRef(false);
 
     // Keep refs in sync with state
     useEffect(() => { nodesRef.current = nodes; }, [nodes]);
@@ -169,16 +171,38 @@ export function useNetworkTopology() {
                 addNode(graph.core);
             }
 
-            // ⚡ Bolt Optimization: Skip expensive dagre layout if topology structure hasn't changed.
-            // We compute a simple hash of node IDs and edge IDs to detect structural changes.
-            // If structure is same, we reuse positions from previous state, preserving user drags/layout,
-            // and only update node data (metrics, status, etc).
+            // ⚡ BOLT: Optimized structure change detection to avoid expensive string join/hash.
+            // Randomized Selection from Top 5 High-Impact Targets
 
-            const nodeIds = newNodes.map(n => n.id).sort().join(',');
-            const edgeIds = newEdges.map(e => e.id).sort().join(',');
-            const currentStructureHash = `${nodeIds}|${edgeIds}`;
+            // Sort new elements by ID to ensure consistent comparison and stable layout
+            newNodes.sort((a, b) => a.id.localeCompare(b.id));
+            newEdges.sort((a, b) => a.id.localeCompare(b.id));
 
-            if (currentStructureHash === lastStructureHash.current && nodesRef.current.length > 0) {
+            let structureChanged = forceLayoutNext.current;
+            forceLayoutNext.current = false;
+
+            if (!structureChanged) {
+                if (newNodes.length !== lastNodeIds.current.length || newEdges.length !== lastEdgeIds.current.length) {
+                    structureChanged = true;
+                } else {
+                    for (let i = 0; i < newNodes.length; i++) {
+                        if (newNodes[i].id !== lastNodeIds.current[i]) {
+                            structureChanged = true;
+                            break;
+                        }
+                    }
+                    if (!structureChanged) {
+                        for (let i = 0; i < newEdges.length; i++) {
+                            if (newEdges[i].id !== lastEdgeIds.current[i]) {
+                                structureChanged = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!structureChanged && nodesRef.current.length > 0) {
                 // Structure match! Reuse positions.
                 const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
 
@@ -205,7 +229,10 @@ export function useNetworkTopology() {
                 const layouted = getLayoutedElements(newNodes, newEdges);
                 setNodes(layouted.nodes);
                 setEdges(layouted.edges);
-                lastStructureHash.current = currentStructureHash;
+
+                // Update cache
+                lastNodeIds.current = newNodes.map(n => n.id);
+                lastEdgeIds.current = newEdges.map(e => e.id);
             }
 
         } catch (error) {
@@ -230,7 +257,7 @@ export function useNetworkTopology() {
     }, [refreshContextTopology]);
 
     const autoLayout = useCallback(() => {
-         lastStructureHash.current = ''; // Force layout recalculation
+         forceLayoutNext.current = true; // Force layout recalculation
          if (latestTopology) {
              processGraph(latestTopology);
          }
