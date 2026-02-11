@@ -12,6 +12,12 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of available MCP services for the marketplace.
+ *
+ * This constant defines the curated list of services that can be easily installed
+ * via the marketplace UI. It maps repository sources to configuration schemas.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

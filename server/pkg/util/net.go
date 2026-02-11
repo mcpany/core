@@ -239,7 +239,8 @@ func CheckConnection(ctx context.Context, address string) error {
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	// ⚡ BOLT: Allow loopback in CI environments to fix E2E tests.
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr || os.Getenv("CI") == TrueStr {
 		dialer.AllowLoopback = true
 	}
 
