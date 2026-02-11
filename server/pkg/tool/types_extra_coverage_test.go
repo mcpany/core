@@ -44,11 +44,13 @@ func TestContextHelpers_Extra(t *testing.T) {
 }
 
 func TestCheckForLocalFileAccess(t *testing.T) {
-	assert.Error(t, checkForLocalFileAccess("/absolute"))
-	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("file:foo"))
-	assert.NoError(t, checkForLocalFileAccess("relative"))
+	assert.Error(t, checkForDangerousLocation("/absolute"))
+	assert.Error(t, checkForDangerousLocation("file:///etc/passwd"))
+	assert.Error(t, checkForDangerousLocation("FILE:///etc/passwd"))
+	assert.Error(t, checkForDangerousLocation("file:foo"))
+	assert.Error(t, checkForDangerousLocation("ext::sh -c touch /tmp/pwned"))
+	assert.Error(t, checkForDangerousLocation("EXT::sh -c touch /tmp/pwned"))
+	assert.NoError(t, checkForDangerousLocation("relative"))
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {
