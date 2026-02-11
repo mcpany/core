@@ -44,7 +44,7 @@ services:
       - MCPANY_API_KEY=test-token
       - NEXT_PUBLIC_MCPANY_API_KEY=test-token
       - CI=true
-      - DUMMY_SERVICE_URL=http://ui-http-echo-server:5678
+      - DUMMY_SERVICE_URL=http://ui-http-echo-server:8080
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
     command: >
@@ -72,11 +72,9 @@ services:
   ui-http-echo-server:
     image: mcpany/http-echo-server:latest
     ports:
-      - "5678:5678"
-    command:
-      - "--port=5678"
+      - "8080:8080"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5678/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
       interval: 2s
       timeout: 2s
       retries: 5

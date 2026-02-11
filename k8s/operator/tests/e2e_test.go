@@ -159,9 +159,30 @@ nodes:
 
 	// 6.5 Deploy http-echo-server (after namespace creation)
 	t.Log("Deploying http-echo-server as dummy service...")
-	// Run pod using :local tag and ImagePullPolicy:Never to ensure it uses the loaded image
-	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:local", "--overrides", `{"spec": {"containers": [{"name": "echo-server", "image": "mcpany/http-echo-server:local", "imagePullPolicy": "Never"}]}}`, "--port=8080", "-n", namespace, "--labels=app=echo-server"); err != nil {
-		t.Fatalf("Failed to run echo-server pod: %v", err)
+	// Use explicit Pod YAML to guarantee ImagePullPolicy: Never
+	podYAML := fmt.Sprintf(`
+apiVersion: v1
+kind: Pod
+metadata:
+  name: echo-server
+  namespace: %s
+  labels:
+    app: echo-server
+spec:
+  containers:
+  - name: echo-server
+    image: mcpany/http-echo-server:local
+    imagePullPolicy: Never
+    ports:
+    - containerPort: 8080
+`, namespace)
+	tmpPod := filepath.Join(t.TempDir(), "echo-server-pod.yaml")
+	if err := os.WriteFile(tmpPod, []byte(podYAML), 0644); err != nil {
+		t.Fatalf("Failed to write echo-server pod yaml: %v", err)
+	}
+
+	if err := runCommand(t, ctx, rootDir, "kubectl", "apply", "-f", tmpPod); err != nil {
+		t.Fatalf("Failed to apply echo-server pod: %v", err)
 	}
 	// Expose service
 	if err := runCommand(t, ctx, rootDir, "kubectl", "expose", "pod", "echo-server", "--port=80", "--target-port=8080", "--name=echo-service", "-n", namespace); err != nil {
