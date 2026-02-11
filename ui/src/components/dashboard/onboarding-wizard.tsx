@@ -196,13 +196,13 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             </div>
 
             {error && (
-                <div className="mt-6">
+                <div className="mt-6 space-y-2">
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
                     </Alert>
-                    <div className="mt-2 text-center">
+                    <div className="text-center">
                          <Button variant="outline" size="sm" onClick={() => { setError(null); setStep("welcome"); }}>Try Again</Button>
                     </div>
                 </div>

@@ -1,0 +1,540 @@
+{"time":"2026-02-11T04:25:09.706804328Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T04:25:09.707821979Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T04:25:09.708228424Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T04:25:09.709457611Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T04:25:09.710353732Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T04:25:09.710363523Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T04:25:09.734239422Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T04:25:09.73966139Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:25:09.741024485Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:25:09.74269504Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T04:25:09.744038478Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T04:25:09.744296531Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744350367Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744365004Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744378348Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744391265Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.74440378Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744415867Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744428109Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744440152Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744452881Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:25:09.744768809Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T04:25:09.745108102Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T04:25:09.745813466Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T04:25:09.751509227Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:26:15.144667684Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:26:17.511599388Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:17.518328937Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:26:17.574039643Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:17.625537238Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:26:19.025176633Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:26:19.027605943Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"3e12bbc9-e0ac-42d5-8c76-d98cec6b89f8","serviceName":"weather"}
+{"time":"2026-02-11T04:26:19.154613463Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:26:19.259397479Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:26:22.486056307Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:22.486266725Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:27.480316462Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:27.480384971Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:32.5252756Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:32.525589942Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:37.515900263Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:37.51625819Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:42.489222257Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:42.489362103Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:47.482511611Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:47.487174376Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:52.486714369Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:26:52.486830355Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:57.483790146Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:26:57.488852829Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:27:02.484260014Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:27:02.484311518Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:27:07.482446059Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:27:07.486840698Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:27:12.484035226Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:27:12.484054818Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:27:17.487795286Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:27:17.487908166Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:27:59.77902862Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:28:02.013483413Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:02.013906321Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:02.013980137Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:28:02.029419666Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:28:03.273433585Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:28:03.274166482Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"dc846636-1dc8-40b6-8292-054d87795835","serviceName":"weather"}
+{"time":"2026-02-11T04:28:03.595442178Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:28:03.716185953Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:28:06.984963569Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:06.990493709Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:11.983644674Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:11.988400922Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:16.993866942Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:16.993938335Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:21.987361202Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:21.992451466Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:26.99336241Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:26.993612052Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:31.992864543Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:32.000614638Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:37.008096208Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:37.008224837Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:42.009362031Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:42.00950186Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:47.016448034Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:47.01670191Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:52.011297777Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:52.01164701Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:28:56.98846311Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:28:56.99377783Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:29:01.996269816Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:29:01.996268302Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:29:06.990155849Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:29:06.990282877Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:29:11.983592814Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:29:11.989377584Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:29:16.983816912Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:29:16.992657879Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:20.057890485Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:30:22.512307806Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:30:22.512596102Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:22.512967646Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:22.532091816Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:30:23.959427932Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:30:23.959778168Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"cd52fa5b-6113-4990-8ef8-834e3191096c","serviceName":"weather"}
+{"time":"2026-02-11T04:30:24.183519337Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:30:24.247372712Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:30:27.476567676Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:27.482271426Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:32.473911581Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:32.478881394Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:37.478301942Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:37.483849639Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:42.472771572Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:42.477162762Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:47.491207718Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:47.491386822Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:52.478788234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:52.483477096Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:30:57.513455993Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:30:57.513683736Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:02.477367253Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:02.481588876Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:07.484432755Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:07.484587658Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:12.476670271Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:12.481258058Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:17.480522054Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:17.480524321Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:22.479451323Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:22.479531813Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:27.481544105Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:27.481713408Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:32.474047627Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:32.478532204Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:31:37.474753677Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:31:37.479174902Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:32:11.144409599Z","level":"INFO","msg":"Received interrupt signal, shutting down...","service":"mcpany"}
+{"time":"2026-02-11T04:32:11.144672487Z","level":"INFO","msg":"Attempting to gracefully shut down server...","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:32:11.144706407Z","level":"INFO","msg":"Received shutdown signal, shutting down gracefully..."}
+{"time":"2026-02-11T04:32:11.144776268Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:32:11.144898168Z","level":"INFO","msg":"Server shut down.","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:32:11.144909291Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T04:32:11.144994066Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T04:32:11.14464629Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:32:11.146006316Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T04:32:13.212883423Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T04:32:13.213119119Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T04:32:13.213193659Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T04:32:13.213235187Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T04:32:13.213259621Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T04:32:13.213962793Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T04:32:13.218589397Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T04:32:13.21952616Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:32:13.219630094Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:32:13.21978045Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T04:32:13.220218038Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T04:32:13.220269467Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220305611Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220319595Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220331996Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220351689Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220364477Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.2203761Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220389008Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220401162Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220413273Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:32:13.220534445Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T04:32:13.220662418Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T04:32:13.220974386Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T04:32:13.221729938Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:32:51.760663376Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:32:54.113368031Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:32:54.113654824Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:32:54.122175368Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:32:54.142630562Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:32:55.265655777Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:32:55.266187647Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"7f1b3e13-08d2-4ee3-9b04-b0cdfd361120","serviceName":"weather"}
+{"time":"2026-02-11T04:32:55.565204936Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:32:55.840982381Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:32:59.101877112Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:32:59.107572841Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:04.122379135Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:04.122425259Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:09.098445583Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:09.103525474Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:14.103829265Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:14.108322461Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:19.115750825Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:19.115928921Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:24.104369432Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:24.108772923Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:29.106859642Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:29.106930404Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:34.106715796Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:34.112031917Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:39.107276818Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:39.107393467Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:44.103331668Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:44.10838732Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:49.106144357Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:49.106226593Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:54.102908666Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:54.107598213Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:33:59.108715021Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:33:59.108905225Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:34:04.09812597Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:34:04.102948319Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:34:09.100025411Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:34:09.104671489Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:16.079478033Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:35:18.276402345Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:35:18.276675128Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:18.299634988Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:18.311884952Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:35:19.58104088Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:35:19.581524304Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"14b0b4e2-fc8b-443f-830a-05fa6a33ae0d","serviceName":"weather"}
+{"time":"2026-02-11T04:35:19.897441954Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:35:19.995190447Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:35:23.270169316Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:23.275412211Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:28.263674026Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:28.269534497Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:33.265749466Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:33.271489524Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:38.262868255Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:38.267805558Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:43.278982143Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:43.27920412Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:48.268995346Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:48.273408731Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:53.271509106Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:53.271578124Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:35:58.268668052Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:35:58.273549308Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:03.271332007Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:03.271414922Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:08.267382032Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:08.271821149Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:13.270594266Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:13.270761197Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:18.269287996Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:18.269364976Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:23.26974978Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:23.275171674Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:28.266924516Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:28.272491434Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:36:33.266747201Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:36:33.27576006Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:37:12.57950596Z","level":"INFO","msg":"Received interrupt signal, shutting down...","service":"mcpany"}
+{"time":"2026-02-11T04:37:12.579920225Z","level":"INFO","msg":"Received shutdown signal, shutting down gracefully..."}
+{"time":"2026-02-11T04:37:12.579925313Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:37:12.580029669Z","level":"INFO","msg":"Attempting to gracefully shut down server...","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:37:12.580038068Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T04:37:12.580086094Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:37:12.580262145Z","level":"INFO","msg":"Server shut down.","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:37:12.580326974Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T04:37:12.581592647Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T04:37:14.690046492Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T04:37:14.690425251Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T04:37:14.690585203Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T04:37:14.69067086Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T04:37:14.690708444Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T04:37:14.692120588Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T04:37:14.700655356Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T04:37:14.702311211Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:37:14.702440219Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:37:14.702590177Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T04:37:14.703052989Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T04:37:14.703265707Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703342363Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703410047Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.70351855Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703590215Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703605177Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703620906Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703676924Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703754966Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703829835Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:37:14.703975948Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T04:37:14.704273981Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T04:37:14.705050833Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T04:37:14.706397539Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:37:57.145233882Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:37:59.650447246Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:37:59.650560182Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:37:59.650871458Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:37:59.685674519Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:38:00.94335771Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:38:00.94461152Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"5c99378b-4562-47e9-bbf9-06535ca736dd","serviceName":"weather"}
+{"time":"2026-02-11T04:38:01.323458509Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:38:01.375037147Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:38:04.625946951Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:04.632165368Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:09.622811914Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:09.626951845Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:14.622225075Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:14.626807829Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:19.675435998Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:19.675825277Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:24.637919118Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:24.638100734Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:29.630192667Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:29.635518914Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:34.643348708Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:34.643349909Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:39.639239589Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:39.639344109Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:44.630035061Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:44.634673164Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:49.625338456Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:49.633143455Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:54.630974234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:54.642059634Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:38:59.629377701Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:38:59.629607352Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:39:04.633555484Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:39:04.633709315Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:39:09.625393908Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:39:09.630738597Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:39:14.624631269Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:39:14.629672219Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:39:49.646782767Z","level":"INFO","msg":"Received interrupt signal, shutting down...","service":"mcpany"}
+{"time":"2026-02-11T04:39:49.64734014Z","level":"INFO","msg":"Received shutdown signal, shutting down gracefully..."}
+{"time":"2026-02-11T04:39:49.647337777Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:39:49.647419566Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T04:39:49.647432162Z","level":"INFO","msg":"Attempting to gracefully shut down server...","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:39:49.647650705Z","level":"INFO","msg":"Server shut down.","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:39:49.647474705Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:39:49.647713565Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T04:39:49.649085887Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T04:39:51.748850125Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T04:39:51.749109283Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T04:39:51.749207525Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T04:39:51.749269547Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T04:39:51.749298351Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T04:39:51.750625732Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T04:39:51.757523835Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T04:39:51.758775429Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:39:51.75886111Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:39:51.759180147Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T04:39:51.759636047Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T04:39:51.759713394Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759754452Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759777205Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759789755Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759802345Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759814317Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759826043Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759841761Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759854045Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.759866096Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:39:51.75995624Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T04:39:51.760078108Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T04:39:51.760431599Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T04:39:51.761438264Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:40:33.191640314Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:40:35.466688219Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:40:35.46714541Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:40:35.485801701Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:40:35.49482976Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:40:36.695353353Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:40:36.696084678Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"08e70d10-3b48-47eb-96d4-eb716bec80ca","serviceName":"weather"}
+{"time":"2026-02-11T04:40:37.007315779Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:40:37.104885382Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:40:40.472653257Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:40:40.472966377Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:40:45.452996093Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:40:45.457652794Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:40:50.456633497Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:40:50.462294006Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:40:55.451830065Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:40:55.456228586Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:00.464988392Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:00.465139784Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:05.459506159Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:05.466928687Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:10.4584099Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:10.463606898Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:15.460170351Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:15.46026441Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:20.456266085Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:20.460618806Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:25.499753384Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:25.500064782Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:30.455627297Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:30.46033673Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:35.459882413Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:35.460196726Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:40.457430036Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:40.462075902Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:45.461470624Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:45.465778053Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:41:50.457946786Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:41:50.464992112Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:42:43.090874375Z","level":"INFO","msg":"Received interrupt signal, shutting down...","service":"mcpany"}
+{"time":"2026-02-11T04:42:43.091287256Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:42:43.091363536Z","level":"INFO","msg":"Received shutdown signal, shutting down gracefully..."}
+{"time":"2026-02-11T04:42:43.091456403Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:42:43.091470319Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T04:42:43.091510282Z","level":"INFO","msg":"Attempting to gracefully shut down server...","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:42:43.091672676Z","level":"INFO","msg":"Server shut down.","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:42:43.091720419Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T04:42:43.092531354Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T04:42:45.20494174Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T04:42:45.205190295Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T04:42:45.205279601Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T04:42:45.20538682Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T04:42:45.205437709Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T04:42:45.206584338Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T04:42:45.212671543Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T04:42:45.213655207Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:42:45.214053035Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:42:45.214259395Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T04:42:45.214598533Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T04:42:45.214652161Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214690308Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.2147055Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214719521Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214740171Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214754025Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214766868Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214780553Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214803939Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.214816627Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:42:45.21488766Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T04:42:45.214993613Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T04:42:45.215518977Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T04:42:45.221792342Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:43:30.377076009Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:43:34.932034801Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:43:34.933987528Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:43:34.976837334Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:43:35.016377185Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:43:37.179839113Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:43:37.18043532Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"10932c65-507f-4297-ba28-d801ffc17017","serviceName":"weather"}
+{"time":"2026-02-11T04:43:37.554982927Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:43:37.634752646Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:43:39.818191115Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:43:39.829219329Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:43:44.819364629Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:43:44.831963993Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:43:49.814167556Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:43:49.832559906Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:43:54.814884958Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:43:54.82970952Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:43:59.82256345Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:43:59.830404835Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:04.828840731Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:04.839059232Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:09.825618727Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:09.836138647Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:14.822720947Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:14.832771321Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:19.823428152Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:19.8339183Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:24.816412985Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:24.831945222Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:29.821602756Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:29.833798468Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:34.825026244Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:34.834606625Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:39.829115354Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:39.841942262Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:44.832306814Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:44.840265689Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:44:49.821833052Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:44:49.83033985Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:45:32.089770597Z","level":"INFO","msg":"Received interrupt signal, shutting down...","service":"mcpany"}
+{"time":"2026-02-11T04:45:32.090120573Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:45:32.09015121Z","level":"INFO","msg":"Received shutdown signal, shutting down gracefully..."}
+{"time":"2026-02-11T04:45:32.090198138Z","level":"INFO","msg":"Attempting to gracefully shut down server...","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:45:32.090240794Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T04:45:32.090320609Z","level":"INFO","msg":"Server shut down.","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:45:32.090431279Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T04:45:32.0903018Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:45:32.091219526Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T04:45:34.172405525Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T04:45:34.172594089Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T04:45:34.172713592Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T04:45:34.172768113Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T04:45:34.172794049Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T04:45:34.184424665Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T04:45:34.18502521Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T04:45:34.185607437Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T04:45:34.185737537Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T04:45:34.185877867Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T04:45:34.186182129Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T04:45:34.186232165Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186274779Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186297639Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186310943Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186331408Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186343988Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186356167Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.18637017Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186383549Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186396285Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T04:45:34.186478282Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T04:45:34.186571968Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-11T04:45:34.186929294Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T04:45:34.188131796Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-11T04:46:17.56354952Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:46:20.001432519Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:20.001533919Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:46:20.020498841Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:20.051381186Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:46:21.307416228Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/mcpany.api.v1.RegistrationService/GetService"}
+{"time":"2026-02-11T04:46:21.30807176Z","level":"INFO","msg":"Received service get request","component":"ServiceRegistrationWorker","correlationID":"305f9c7a-63d5-4c46-98ef-91c5c35cb28b","serviceName":"weather"}
+{"time":"2026-02-11T04:46:21.371350907Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/weather"}
+{"time":"2026-02-11T04:46:21.623284087Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-11T04:46:24.999403198Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:24.999631234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:29.984014963Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:29.98895553Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:35.000346784Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:35.000722233Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:39.991025034Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:39.998343306Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:44.996307647Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:44.996429072Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:49.993049992Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:49.993164626Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:54.992376064Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:54.997250523Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:46:59.991741317Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:46:59.991805158Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:04.989700772Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:04.994332002Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:09.99256832Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:09.99263509Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:14.989254276Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:14.994839111Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:19.991182195Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:19.99120125Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:24.990175191Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:24.994903744Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:29.992278936Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:29.996943566Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-11T04:47:34.994368825Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-11T04:47:34.994458029Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
