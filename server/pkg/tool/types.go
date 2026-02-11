@@ -1849,8 +1849,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
 
-	// Determine execution environment early for validation
-	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
+	// Sentinel Security Update: Enforce strict local file access checks for LocalCommandTool.
+	// Even if ContainerEnvironment is present in the config, LocalCommandTool executes on the host.
+	// Therefore, we must treat it as a non-docker environment to prevent LFI/Arbitrary File Read.
+	const isDocker = false
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
