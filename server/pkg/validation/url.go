@@ -37,6 +37,19 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 //
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {
+	return validateURL(urlStr, false)
+}
+
+// IsSafeCommandURL is similar to IsSafeURL but allows more schemes (e.g. git, ssh, ftp)
+// while still enforcing IP validation (blocking internal IPs/loopback) and blocking
+// known dangerous schemes (gopher, expect, etc).
+//
+// This is suitable for validating URLs passed to command-line tools like curl/wget/git.
+var IsSafeCommandURL = func(urlStr string) error {
+	return validateURL(urlStr, true)
+}
+
+func validateURL(urlStr string, allowCommandSchemes bool) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
 		return nil
@@ -51,8 +64,17 @@ var IsSafeURL = func(urlStr string) error {
 	}
 
 	// 1. Check Scheme
-	if u.Scheme != "http" && u.Scheme != "https" {
-		return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
+	if allowCommandSchemes {
+		// Block specifically dangerous schemes
+		switch u.Scheme {
+		case "file", "gopher", "dict", "expect", "php", "vbscript", "javascript", "data":
+			return fmt.Errorf("unsafe scheme: %s", u.Scheme)
+		}
+		// Allow others, but enforce IP check below
+	} else {
+		if u.Scheme != "http" && u.Scheme != "https" {
+			return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
+		}
 	}
 
 	// 2. Resolve Host
