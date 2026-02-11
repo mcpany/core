@@ -60,6 +60,51 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
+// IsSensitivePath checks if a given path corresponds to a sensitive file or directory.
+//
+// Summary: Checks for sensitive paths.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the path is sensitive.
+func IsSensitivePath(path string) error {
+	base := filepath.Base(path)
+	// Normalize to lowercase for case-insensitive checks (on Windows mainly, but good practice for security)
+	baseLower := strings.ToLower(base)
+
+	// Block specific sensitive files
+	if strings.HasPrefix(baseLower, ".env") {
+		return fmt.Errorf("access to environment file %q is blocked", base)
+	}
+	if baseLower == ".git" || strings.HasPrefix(baseLower, ".git") {
+		return fmt.Errorf("access to git directory %q is blocked", base)
+	}
+	if baseLower == ".ssh" {
+		return fmt.Errorf("access to ssh directory %q is blocked", base)
+	}
+	if baseLower == ".aws" {
+		return fmt.Errorf("access to aws credentials %q is blocked", base)
+	}
+	if baseLower == ".kube" {
+		return fmt.Errorf("access to kube config %q is blocked", base)
+	}
+	if strings.HasSuffix(baseLower, "_history") {
+		return fmt.Errorf("access to shell history %q is blocked", base)
+	}
+	if baseLower == "id_rsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" || baseLower == "id_dsa" {
+		return fmt.Errorf("access to private key %q is blocked", base)
+	}
+
+	// Block configuration files that might contain secrets
+	if baseLower == "config.yaml" || baseLower == "config.yml" || baseLower == "config.json" {
+		return fmt.Errorf("access to configuration file %q is blocked", base)
+	}
+
+	return nil
+}
+
 // IsSecurePath checks if a given file path is secure and does not contain any
 // path traversal sequences ("../" or "..\\"). This function is crucial for
 // preventing directory traversal attacks, where a malicious actor could
@@ -156,6 +201,11 @@ func SetAllowedPaths(paths []string) {
 var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
+		return err
+	}
+
+	// Sentinel Security Update: Block access to sensitive files
+	if err := IsSensitivePath(path); err != nil {
 		return err
 	}
 
