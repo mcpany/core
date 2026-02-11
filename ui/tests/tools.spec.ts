@@ -33,17 +33,18 @@ test.describe('Tool Exploration', () => {
         // The UI fetches once on mount.
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
-        // Increase retries to 20 for slow CI environments where backend worker might be lagging
-        // ⚡ Bolt: Doubled retries and timeout to mitigate CI flakiness during async tool registration
-        for (let i = 0; i < 20; i++) {
+        // Increase retries to 15 for slow CI environments where backend worker might be lagging
+        // ⚡ Bolt: Optimized retries to stay within test timeout limits.
+        // 15 attempts * (~2s reload + 1s wait + 2s check) ≈ 75s max loop time.
+        for (let i = 0; i < 15; i++) {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
-                // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+                // Use a short timeout per attempt since we are reloading repeatedly
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 2000 });
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/20)`);
+                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
                 await page.reload();
                 // Wait for DOM content loaded and a small buffer to avoid networkidle flakes and long timeouts
                 await page.waitForLoadState('domcontentloaded');
