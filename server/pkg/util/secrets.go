@@ -338,6 +338,10 @@ var safeSecretClient = &http.Client{
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			dialer := NewSafeDialer()
+			if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+				dialer.AllowLoopback = true
+				dialer.AllowPrivate = true
+			}
 			if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") == TrueStr {
 				dialer.AllowLoopback = true
 			}
