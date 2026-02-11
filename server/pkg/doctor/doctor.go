@@ -26,6 +26,7 @@ import (
 // Status represents the status of a check.
 //
 // It is an enumerated string type used to indicate the outcome of a health or connectivity check.
+// Summary: Represents the status of a check.
 type Status string
 
 const (
@@ -42,6 +43,7 @@ const (
 // CheckResult represents the result of a single service check.
 //
 // It aggregates the status, any message, and potential error encountered during the check.
+// Summary: Represents the result of a single service check.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -67,6 +69,7 @@ type CheckResult struct {
 //
 // Side Effects:
 //   - Performs network I/O to connect to upstream services.
+// Summary: Performs connectivity and health checks on the provided configuration.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -105,6 +108,7 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Side Effects:
 //   - Performs network I/O to connect to the upstream service.
+// Summary: Performs a connectivity check for a single service.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

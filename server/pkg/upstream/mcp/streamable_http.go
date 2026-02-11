@@ -40,9 +40,7 @@ var (
 	connectForTesting       func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)
 )
 
-// ClientSession defines an interface that abstracts the capabilities of an
-// mcp.ClientSession. This is used primarily for testing, allowing mock sessions
-// to be injected.
+// Summary: Defines an interface that abstracts the capabilities of an.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -98,28 +96,22 @@ type ClientSession interface {
 	Close() error
 }
 
-// SetNewClientImplForTesting provides a hook for injecting a mock MCP client
-// implementation during tests. This should only be used for testing purposes.
+// Summary: Provides a hook for injecting a mock MCP client.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
 
-// SetNewClientForTesting provides a hook for injecting a mock mcp.Client
-// during tests. This should only be used for testing purposes.
+// Summary: Provides a hook for injecting a mock mcp.Client.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
 
-// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect
-// function during tests. This should only be used for testing purposes.
+// Summary: Provides a hook for injecting a mock mcp.Client.Connect.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
 
-// Upstream implements the upstream.Upstream interface for services that are
-// themselves MCP-compliant. It connects to the downstream MCP service, discovers
-// its tools, prompts, and resources, and registers them with the current server,
-// effectively acting as a proxy or aggregator.
+// Summary: Implements the upstream.Upstream interface for services that are.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -132,6 +124,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -147,8 +141,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown cleans up any temporary resources associated with the upstream, such
-// as extracted bundle directories.
+// Summary: Cleans up any temporary resources associated with the upstream, such.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.RLock()
 	serviceID := u.serviceID
@@ -179,6 +172,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // globalSettings is the globalSettings.
 //
 // Returns the result.
+// Summary: Creates a new instance of Upstream.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -198,6 +192,7 @@ type mcpPrompt struct {
 // Prompt returns the underlying *mcp.Prompt definition.
 //
 // Returns the result.
+// Summary: Returns the underlying *mcp.Prompt definition.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
@@ -205,12 +200,12 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 // Service returns the ID of the service that this prompt belongs to.
 //
 // Returns the result.
+// Summary: Returns the ID of the service that this prompt belongs to.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
 
-// Get executes the prompt by establishing a session with the downstream MCP
-// service and calling its GetPrompt method.
+// Summary: Executes the prompt by establishing a session with the downstream MCP.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -252,6 +247,7 @@ type mcpResource struct {
 // Resource returns the underlying *mcp.Resource definition.
 //
 // Returns the result.
+// Summary: Returns the underlying *mcp.Resource definition.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
@@ -259,12 +255,12 @@ func (r *mcpResource) Resource() *mcp.Resource {
 // Service returns the ID of the service that this resource belongs to.
 //
 // Returns the result.
+// Summary: Returns the ID of the service that this resource belongs to.
 func (r *mcpResource) Service() string {
 	return r.service
 }
 
-// Read retrieves the content of the resource by establishing a session with the
-// downstream MCP service and calling its ReadResource method.
+// Summary: Retrieves the content of the resource by establishing a session with the.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -277,16 +273,12 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 	return result, err
 }
 
-// Subscribe is not yet implemented for MCP resources. It returns an error
-// indicating that this functionality is not available.
+// Summary: Is not yet implemented for MCP resources. It returns an error.
 func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
 
-// Register handles the registration of another MCP service as an upstream. It
-// determines the connection type (stdio or HTTP), connects to the downstream
-// service, lists its available tools, prompts, and resources, and registers
-// them with the appropriate managers.
+// Summary: Handles the registration of another MCP service as an upstream. It.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -446,8 +438,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	return f(cs)
 }
 
-// CallTool executes a tool on the downstream MCP service by establishing a
-// session and forwarding the tool call.
+// Summary: Executes a tool on the downstream MCP service by establishing a.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -1091,8 +1082,7 @@ type authenticatedRoundTripper struct {
 	base          http.RoundTripper
 }
 
-// RoundTrip applies the configured authenticator to the request and then passes
-// it to the base RoundTripper.
+// Summary: Applies the configured authenticator to the request and then passes.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {
@@ -1107,6 +1097,8 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 }
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
+//
+// Summary: Implements the mcp.Transport interface for HTTP connections.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string
@@ -1120,6 +1112,7 @@ type StreamableHTTP struct {
 //
 // Returns the response.
 // Returns an error if the operation fails.
+// Summary: Executes an HTTP request and returns the response.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

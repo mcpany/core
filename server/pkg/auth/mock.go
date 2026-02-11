@@ -6,6 +6,8 @@ package auth
 import "net/http"
 
 // MockUpstreamAuthenticator is a mock implementation of UpstreamAuthenticator for testing.
+//
+// Summary: Is a mock implementation of UpstreamAuthenticator for testing.
 type MockUpstreamAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
@@ -15,6 +17,7 @@ type MockUpstreamAuthenticator struct {
 // req is the request object.
 //
 // Returns an error if the operation fails.
+// Summary: Executes the mock mock authentication function.
 func (m *MockUpstreamAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

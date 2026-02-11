@@ -23,8 +23,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
 )
 
-// Factory defines the interface for a factory that creates upstream service
-// instances.
+// Summary: Defines the interface for a factory that creates upstream service.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -37,6 +36,8 @@ type Factory interface {
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
 // It creates different types of upstream services based on the service
 // configuration.
+//
+// Summary: Is a concrete implementation of the Factory interface.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
@@ -45,12 +46,16 @@ type UpstreamServiceFactory struct {
 // NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
 //
 // Parameters:
-//   poolManager: The connection pool manager used by upstreams that require
-//   connection pooling (e.g., gRPC, HTTP, WebSocket).
-//   globalSettings: The global configuration settings.
+//
+//	poolManager: The connection pool manager used by upstreams that require
+//	connection pooling (e.g., gRPC, HTTP, WebSocket).
+//	globalSettings: The global configuration settings.
 //
 // Returns:
-//   Factory: A new Factory instance.
+//
+//	Factory: A new Factory instance.
+//
+// Summary: Creates a new UpstreamServiceFactory.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -58,15 +63,7 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 	}
 }
 
-// NewUpstream creates and returns an appropriate upstream.Upstream implementation
-// based on the type of service specified in the configuration.
-//
-// Parameters:
-//   config: The configuration for the upstream service.
-//
-// Returns:
-//   upstream.Upstream: A new upstream service instance.
-//   error: An error if the service type is unknown.
+// Summary: Creates and returns an appropriate upstream.Upstream implementation.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

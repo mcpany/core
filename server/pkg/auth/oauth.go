@@ -12,25 +12,13 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 )
 
-// OAuth2Authenticator implements the Authenticator interface for OAuth2-based
-// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
-// Tokens) presented in the HTTP Authorization header.
+// Summary: Implements the Authenticator interface for OAuth2-based.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
-//
-// Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
-//
-// Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
+// Summary: Creates a new OAuth2Authenticator with the provided.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -70,6 +58,8 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // Returns:
 //   - The context with the user's identity (email) on success.
 //   - An error if authentication fails.
+//
+// Summary: Validates the JWT from the Authorization header of the request.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

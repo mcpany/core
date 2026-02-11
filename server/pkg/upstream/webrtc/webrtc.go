@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"sync"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -31,8 +31,7 @@ import (
 
 type sanitizer func(string) (string, error)
 
-// Upstream implements the upstream.Upstream interface for services that
-// communicate over WebRTC data channels.
+// Summary: Implements the upstream.Upstream interface for services that.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -41,6 +40,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -56,8 +57,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown is a no-op for the WebRTC upstream, as connections are transient
-// and not managed by a persistent pool.
+// Summary: Is a no-op for the WebRTC upstream, as connections are transient.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -73,6 +73,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+// Summary: Creates a new instance of WebrtcUpstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -80,8 +81,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Register processes the configuration for a WebRTC service, creating and
-// registering tools for each call definition specified in the configuration.
+// Summary: Processes the configuration for a WebRTC service, creating and.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

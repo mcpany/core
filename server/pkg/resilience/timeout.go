@@ -10,6 +10,8 @@ import (
 )
 
 // Timeout implements a timeout policy for operations.
+//
+// Summary: Implements a timeout policy for operations.
 type Timeout struct {
 	duration *durationpb.Duration
 }
@@ -19,6 +21,7 @@ type Timeout struct {
 // duration is the duration.
 //
 // Returns the result.
+// Summary: Creates a new Timeout instance with the given duration.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,
@@ -31,6 +34,7 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 // work is the work.
 //
 // Returns an error if the operation fails.
+// Summary: Runs the provided work function with a timeout.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())
 	defer cancel()

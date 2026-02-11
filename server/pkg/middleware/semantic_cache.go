@@ -9,6 +9,8 @@ import (
 )
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
+//
+// Summary: Defines the interface for fetching text embeddings.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	// It returns the embedding as a slice of float32 and any error encountered.
@@ -16,6 +18,8 @@ type EmbeddingProvider interface {
 }
 
 // VectorStore defines the interface for storing and searching vectors.
+//
+// Summary: Defines the interface for storing and searching vectors.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -45,6 +49,8 @@ type VectorStore interface {
 }
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
+//
+// Summary: Implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore
@@ -58,6 +64,7 @@ type SemanticCache struct {
 // threshold is the threshold.
 //
 // Returns the result.
+// Summary: Creates a new SemanticCache.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -74,6 +81,8 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 
 // Get attempts to find a semantically similar cached result.
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
+//
+// Summary: Attempts to find a semantically similar cached result.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
@@ -96,6 +105,7 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 // ttl is the ttl.
 //
 // Returns an error if the operation fails.
+// Summary: Adds a result to the cache using the provided embedding.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

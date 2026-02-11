@@ -19,10 +19,14 @@ import (
 )
 
 // KindPostCall identifies a post-call webhook.
+//
+// Summary: Identifies a post-call webhook.
 const KindPostCall = "PostCall"
 
 // MarkdownHandler is a webhook handler that converts HTML content to Markdown.
 // It processes incoming CloudEvents containing HTML and returns the converted Markdown.
+//
+// Summary: Is a webhook handler that converts HTML content to Markdown.
 type MarkdownHandler struct{}
 
 // Handle processes the markdown conversion request.
@@ -32,6 +36,7 @@ type MarkdownHandler struct{}
 //
 //	w: The HTTP response writer.
 //	r: The HTTP request.
+// Summary: Processes the markdown conversion request.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -87,6 +92,8 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // TruncateHandler is a webhook handler that truncates long strings to a specified length.
 // It processes incoming CloudEvents and truncates strings in "inputs" or "result" fields.
 // The maximum characters can be specified via the "max_chars" query parameter (default 100).
+//
+// Summary: Is a webhook handler that truncates long strings to a specified length.
 type TruncateHandler struct{}
 
 // Handle processes the text truncation request.
@@ -95,6 +102,7 @@ type TruncateHandler struct{}
 //
 //	w: The HTTP response writer.
 //	r: The HTTP request.
+// Summary: Processes the text truncation request.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -156,6 +164,8 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // PaginateHandler is a webhook handler that splits long strings into pages.
 // It processes incoming CloudEvents and paginates strings in "inputs" or "result" fields.
 // The page size can be specified via the "page_size" query parameter (default 1000).
+//
+// Summary: Is a webhook handler that splits long strings into pages.
 type PaginateHandler struct{}
 
 // Handle processes the pagination request.
@@ -164,6 +174,7 @@ type PaginateHandler struct{}
 //
 //	w: The HTTP response writer.
 //	r: The HTTP request.
+// Summary: Processes the pagination request.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

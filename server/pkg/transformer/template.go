@@ -12,8 +12,7 @@ import (
 	"github.com/valyala/fasttemplate"
 )
 
-// TextTemplate provides a simple wrapper around Go's standard text/template
-// for rendering strings with dynamic data.
+// Summary: Provides a simple wrapper around Go's standard text/template.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -26,6 +25,7 @@ type TextTemplate struct {
 //
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
+// Summary: Parses a template string and creates a new TextTemplate.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -50,12 +50,7 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	}, nil
 }
 
-// Render executes the template with the provided parameters and returns the
-// resulting string.
-//
-// params is a map of key-value pairs that will be available within the
-// template.
-// It returns the rendered string or an error if the template execution fails.
+// Summary: Executes the template with the provided parameters and returns the.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

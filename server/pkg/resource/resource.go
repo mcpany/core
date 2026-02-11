@@ -12,12 +12,15 @@ import (
 )
 
 // ErrResourceNotFound is returned when a requested resource cannot be found.
+//
+// Summary: Is returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
 //
 // A resource represents a data source (e.g., a file, a database record) that can be
 // read by an MCP client.
+// Summary: Defines the interface for a resource that can be managed by the Manager.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -55,6 +58,7 @@ type Resource interface {
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
 // as managing callbacks for list changes.
+// Summary: Defines the interface for managing a collection of resources.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -101,6 +105,7 @@ type ManagerInterface interface {
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
 // and efficient listing via caching.
+// Summary: Is a thread-safe implementation of the ManagerInterface.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -112,6 +117,8 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Summary: Creates and returns a new, empty Manager.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -126,6 +133,8 @@ func NewManager() *Manager {
 // Returns:
 //   - Resource: The resource instance.
 //   - bool: True if found, false otherwise.
+//
+// Summary: Retrieves a resource from the manager by its URI.
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -142,6 +151,8 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
+//
+// Summary: Adds a new resource to the manager.
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
@@ -164,6 +175,8 @@ func (rm *Manager) AddResource(resource Resource) {
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
+//
+// Summary: Removes a resource from the manager by its URI.
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
@@ -186,6 +199,8 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
+//
+// Summary: Returns a slice containing all the resources currently registered in the manager.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -223,11 +238,7 @@ func (rm *Manager) ListResources() []Resource {
 	return result
 }
 
-// OnListChanged sets a callback function that will be invoked whenever the list
-// of resources is modified.
-//
-// Parameters:
-//   - f: func(). The callback function.
+// Summary: Sets a callback function that will be invoked whenever the list.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -242,6 +253,8 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns:
 //   - error: An error if resource not found or subscription fails.
+//
+// Summary: Finds a resource by its URI and calls its Subscribe method.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {
@@ -259,6 +272,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //   - Removes matching resources from storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback.
+//
+// Summary: Removes all resources associated with a given service ID.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

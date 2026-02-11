@@ -21,9 +21,13 @@ import (
 )
 
 // ClientFactory is a function that creates a VectorClient.
+//
+// Summary: Is a function that creates a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
+//
+// Summary: Implements the upstream.Upstream interface for vector database services.
 type Upstream struct {
 	clientFactory ClientFactory
 }
@@ -31,6 +35,7 @@ type Upstream struct {
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns the result.
+// Summary: Creates a new instance of VectorUpstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -52,6 +57,7 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+// Summary: Implements the upstream.Upstream interface.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -69,6 +75,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Processes the configuration for a vector service.
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -169,6 +176,8 @@ type vectorCallable struct {
 // Call executes the vector tool with the given arguments.
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
+//
+// Summary: Executes the vector tool with the given arguments.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -182,6 +191,8 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
+//
+// Summary: Interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

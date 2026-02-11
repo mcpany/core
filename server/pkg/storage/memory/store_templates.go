@@ -14,6 +14,7 @@ import (
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: _ is an unused parameter.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -31,6 +32,7 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a service template by ID.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -46,6 +48,7 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 // template is the template.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a service template.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -54,6 +57,8 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
+//
+// Summary: Deletes a service template by ID.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

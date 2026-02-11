@@ -9,10 +9,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
-	"sync"
 	"net/url"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/alexliesenfeld/health"
@@ -53,9 +53,7 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 	}
 }
 
-// Upstream implements the upstream.Upstream interface for services that are
-// exposed via standard HTTP endpoints. It handles the registration of tools
-// defined in the service configuration.
+// Summary: Implements the upstream.Upstream interface for services that are.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -65,6 +63,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -84,8 +84,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return util.CheckConnection(ctx, address)
 }
 
-// Shutdown gracefully terminates the HTTP upstream service by shutting down the
-// associated connection pool.
+// Summary: Gracefully terminates the HTTP upstream service by shutting down the.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -107,15 +106,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - An implementation of the upstream.Upstream interface.
+//
+// Summary: Creates a new instance of Upstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
 	}
 }
 
-// Register processes the configuration for an HTTP service, creates a connection
-// pool for it, and then creates and registers tools for each call definition
-// specified in the configuration.
+// Summary: Processes the configuration for an HTTP service, creates a connection.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

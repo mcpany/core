@@ -26,9 +26,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed as command-line tools. It discovers and registers tools based on
-// a list of commands defined in the service configuration.
+// Summary: Implements the upstream.Upstream interface for services that.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -39,6 +37,7 @@ type Upstream struct {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+// Summary: Implements the upstream.Upstream interface.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -52,12 +51,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of CommandUpstream.
 //
 // Returns the result.
+// Summary: Creates a new instance of CommandUpstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Register processes the configuration for a command-line service, creates a
-// new tool for each defined command, and registers them with the tool manager.
+// Summary: Processes the configuration for a command-line service, creates a.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

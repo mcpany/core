@@ -14,6 +14,8 @@ import (
 )
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
+//
+// Summary: Provides global rate limiting for HTTP endpoints.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -22,10 +24,14 @@ type HTTPRateLimitMiddleware struct {
 }
 
 // HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
+//
+// Summary: Defines a functional option for HTTPRateLimitMiddleware.
 type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
 // WithTrustProxy enables trusting the X-Forwarded-For header.
 // This should only be used when the server is behind a trusted reverse proxy.
+//
+// Summary: Enables trusting the X-Forwarded-For header.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -41,6 +47,7 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 //
 // Returns:
 //   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
+// Summary: Creates a new HTTPRateLimitMiddleware.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -70,6 +77,7 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //
 // Returns:
 //   - http.Handler: An http.Handler that enforces rate limiting.
+// Summary: Wraps an http.Handler with rate limiting.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

@@ -17,6 +17,8 @@ import (
 )
 
 // S3Provider provides access to files in an S3 bucket.
+//
+// Summary: Provides access to files in an S3 bucket.
 type S3Provider struct {
 	fs afero.Fs
 }
@@ -27,6 +29,7 @@ type S3Provider struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Creates a new S3Provider from the given configuration.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("s3 config is nil")
@@ -67,6 +70,7 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 // GetFs returns the underlying filesystem.
 //
 // Returns the result.
+// Summary: Returns the underlying filesystem.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -77,6 +81,7 @@ func (p *S3Provider) GetFs() afero.Fs {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Resolves the virtual path to a real path in the bucket.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
@@ -96,6 +101,7 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 // Close closes the provider.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the provider.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,
 	// but satisfy the interface.

@@ -12,9 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// GrpcClient defines a standard interface for a gRPC client, abstracting the
-// underlying implementation. It provides methods for both unary and streaming
-// RPCs and is compatible with the standard `*grpc.ClientConn`.
+// Summary: Defines a standard interface for a gRPC client, abstracting the.
 type GrpcClient interface {
 	// Invoke performs a unary RPC and blocks until the response is received.
 	//
@@ -36,9 +34,7 @@ type GrpcClient interface {
 	NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)
 }
 
-// HTTPClient defines a standard interface for an HTTP client, abstracting the
-// underlying implementation. This interface is compatible with the standard
-// `*http.Client`.
+// Summary: Defines a standard interface for an HTTP client, abstracting the.
 type HTTPClient interface {
 	// Do sends an HTTP request and returns an HTTP response.
 	//
@@ -47,8 +43,7 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-// MCPClient defines the interface for a client that interacts with an MCP
-// service. It provides a standard method for executing tools.
+// Summary: Defines the interface for a client that interacts with an MCP.
 type MCPClient interface {
 	// CallTool executes a tool on the MCP service, sending the tool name and
 	// inputs and returning the result.

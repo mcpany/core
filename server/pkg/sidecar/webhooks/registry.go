@@ -10,6 +10,8 @@ import (
 
 // Handler defines the interface for handling webhook requests.
 // Implementations of this interface process incoming webhook events.
+//
+// Summary: Defines the interface for handling webhook requests.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
@@ -21,6 +23,8 @@ type Handler interface {
 
 // Registry manages the registration and retrieval of system webhooks.
 // It provides a thread-safe mechanism to store and lookup handlers by name.
+//
+// Summary: Manages the registration and retrieval of system webhooks.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler
@@ -30,6 +34,7 @@ type Registry struct {
 //
 // Returns:
 //   A pointer to a new, empty Registry.
+// Summary: Creates and initializes a new Registry instance.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
@@ -42,6 +47,7 @@ func NewRegistry() *Registry {
 // Parameters:
 //   name: The name/path to register the handler under.
 //   handler: The Handler instance to register.
+// Summary: Registers a handler with a specific name.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -56,6 +62,7 @@ func (r *Registry) Register(name string, handler Handler) {
 // Returns:
 //   Handler: The registered handler, if found.
 //   bool: True if the handler exists, false otherwise.
+// Summary: Retrieves a handler by its name.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

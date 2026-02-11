@@ -14,6 +14,8 @@ import (
 )
 
 // LocalProvider provides access to the local filesystem.
+//
+// Summary: Provides access to the local filesystem.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
@@ -31,6 +33,7 @@ type LocalProvider struct {
 // symlinkMode is the symlinkMode.
 //
 // Returns the result.
+// Summary: Creates a new LocalProvider from the given configuration.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
@@ -44,6 +47,7 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 // GetFs returns the underlying filesystem.
 //
 // Returns the result.
+// Summary: Returns the underlying filesystem.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -54,6 +58,7 @@ func (p *LocalProvider) GetFs() afero.Fs {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Resolves the virtual path to a real path in the local filesystem.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -300,6 +305,7 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 // Close closes the provider.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the provider.
 func (p *LocalProvider) Close() error {
 	return nil
 }

@@ -10,9 +10,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Message defines the interface that all messages exchanged on the event bus must
-// implement. It provides a standard way to manage correlation IDs for tracking
-// requests and their corresponding responses.
+// Summary: Defines the interface that all messages exchanged on the event bus must.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
@@ -24,29 +22,22 @@ type Message interface {
 	SetCorrelationID(id string)
 }
 
-// BaseMessage provides a default implementation of the Message interface. It
-// includes a correlation ID field (`CID`) and can be embedded in other message
-// structs to provide a common mechanism for message tracking.
+// Summary: Provides a default implementation of the Message interface. It.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
 
-// CorrelationID returns the correlation ID of the message. This ID is used to
-// associate requests with their corresponding responses in asynchronous
-// workflows.
+// Summary: Returns the correlation ID of the message. This ID is used to.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
 
-// SetCorrelationID sets the correlation ID for the message. This is typically
-// called by the message publisher to assign a unique ID to a request.
+// Summary: Sets the correlation ID for the message. This is typically.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }
 
-// ServiceRegistrationRequest is a message sent to the bus to request the
-// registration of a new upstream service. It contains the service's
-// configuration and the context for the request.
+// Summary: Is a message sent to the bus to request the.
 type ServiceRegistrationRequest struct {
 	BaseMessage
 	Context context.Context
@@ -65,9 +56,7 @@ type ServiceRegistrationResult struct {
 	Error               error
 }
 
-// ToolExecutionRequest is a message sent to the bus to request the execution of
-// a specific tool on an upstream service. It includes the name of the tool and
-// its inputs in raw JSON format.
+// Summary: Is a message sent to the bus to request the execution of.
 type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
@@ -75,23 +64,19 @@ type ToolExecutionRequest struct {
 	ToolInputs json.RawMessage
 }
 
-// ToolExecutionResult is a message published in response to a
-// ToolExecutionRequest. It contains the result of the tool execution, in raw
-// JSON format, or an error if the execution failed.
+// Summary: Is a message published in response to a.
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
 	Error  error
 }
 
-// ServiceListRequest is a message sent to the bus to request a list of all
-// registered services.
+// Summary: Is a message sent to the bus to request a list of all.
 type ServiceListRequest struct {
 	BaseMessage
 }
 
-// ServiceListResult is a message published in response to a
-// ServiceListRequest. It contains a list of all registered services.
+// Summary: Is a message published in response to a.
 type ServiceListResult struct {
 	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
@@ -99,12 +84,16 @@ type ServiceListResult struct {
 }
 
 // ServiceGetRequest is a message sent to the bus to request a specific service.
+//
+// Summary: Is a message sent to the bus to request a specific service.
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
 }
 
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
+//
+// Summary: Is a message published in response to a ServiceGetRequest.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

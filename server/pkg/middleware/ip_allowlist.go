@@ -14,6 +14,8 @@ import (
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
 // It is thread-safe and supports dynamic updates.
+//
+// Summary: Restricts access to allowed IP addresses.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
@@ -25,6 +27,7 @@ type IPAllowlistMiddleware struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Creates a new IPAllowlistMiddleware.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -38,6 +41,7 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 // allowedCIDRs is the allowedCIDRs.
 //
 // Returns an error if the operation fails.
+// Summary: Updates the allowlist with new CIDRs/IPs.
 func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {
@@ -70,6 +74,8 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 
 // Allow checks if the given remote address is allowed.
 // remoteAddr should be in the form "IP" or "IP:Port".
+//
+// Summary: Checks if the given remote address is allowed.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	m.mu.RLock()
 	nets := m.allowedIPNets
@@ -109,6 +115,7 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 // next is the next.
 //
 // Returns the result.
+// Summary: Returns an HTTP handler that enforces the allowlist.
 func (m *IPAllowlistMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.Allow(r.RemoteAddr) {

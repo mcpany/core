@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -30,9 +30,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed via a WebSocket connection. It manages a connection pool and
-// registers tools based on the service configuration.
+// Summary: Implements the upstream.Upstream interface for services that.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -41,6 +39,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -56,14 +56,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown gracefully terminates the WebSocket upstream service by shutting down
-// the associated connection pool.
-//
-// Parameters:
-//   - ctx: The context for the shutdown operation.
-//
-// Returns:
-//   - error: An error if the shutdown operation fails, or nil on success.
+// Summary: Gracefully terminates the WebSocket upstream service by shutting down.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -85,29 +78,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
+//
+// Summary: Creates a new instance of WebsocketUpstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
 	}
 }
 
-// Register processes the configuration for a WebSocket service. It creates a
-// connection pool and registers tools for each call definition specified in the
-// configuration.
-//
-// Parameters:
-//   - ctx: The context for the registration process.
-//   - serviceConfig: The configuration for the upstream service.
-//   - toolManager: The manager where discovered tools will be registered.
-//   - promptManager: The manager where discovered prompts will be registered.
-//   - resourceManager: The manager where discovered resources will be registered.
-//   - isReload: Indicates whether this is an initial registration or a reload.
-//
-// Returns:
-//   - string: A unique service key.
-//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
-//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
-//   - error: An error if registration fails.
+// Summary: Processes the configuration for a WebSocket service. It creates a.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

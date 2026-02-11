@@ -6,8 +6,8 @@ package http //nolint:revive,nolintlint // Package name 'http' is intentional fo
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"crypto/x509"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -29,6 +29,7 @@ type httpPool struct {
 // Close closes the connection pool and the idle connections.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the connection pool and the idle connections.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -37,16 +38,7 @@ func (p *httpPool) Close() error {
 	return nil
 }
 
-// NewHTTPPool creates a new connection pool for HTTP clients. It is defined as
-// a variable to allow for easy mocking in tests.
-//
-// minSize is the initial number of clients to create.
-// maxSize is the maximum number of clients the pool can hold.
-// idleTimeout is the duration after which an idle client may be closed (not
-// currently implemented).
-// healthCheck is the configuration for the health check.
-// It returns a new HTTP client pool or an error if the pool cannot be
-// created.
+// Summary: Creates a new connection pool for HTTP clients. It is defined as.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

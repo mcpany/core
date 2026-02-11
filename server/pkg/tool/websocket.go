@@ -21,9 +21,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
-// connection. It handles sending and receiving messages over a persistent
-// WebSocket connection managed by a connection pool.
+// Summary: Implements the Tool interface for a tool exposed via a WebSocket.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -45,6 +43,7 @@ type WebsocketTool struct {
 // authenticator handles adding authentication credentials to the connection request.
 // callDefinition contains the configuration for the WebSocket call, such as
 // parameter mappings and transformers.
+// Summary: Creates a new WebsocketTool.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -67,6 +66,7 @@ func NewWebsocketTool(
 // Tool returns the protobuf definition of the WebSocket tool.
 //
 // Returns the result.
+// Summary: Returns the protobuf definition of the WebSocket tool.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -74,6 +74,7 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 // MCPTool returns the MCP tool definition.
 //
 // Returns the result.
+// Summary: Returns the MCP tool definition.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -88,13 +89,12 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
 // Returns the result.
+// Summary: Returns the cache configuration for the WebSocket tool.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebSocket tool. It retrieves a connection
-// from the pool, sends the tool inputs as a message, and waits for a single
-// response message, which it then processes and returns.
+// Summary: Handles the execution of the WebSocket tool. It retrieves a connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

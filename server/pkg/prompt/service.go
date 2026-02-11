@@ -11,9 +11,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
+// Summary: Handles the business logic for the prompts feature. It provides.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
@@ -44,7 +42,8 @@ func NewService(promptManager ManagerInterface) *Service {
 //   - mcpServer: *mcp.Server. The MCP server instance.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))

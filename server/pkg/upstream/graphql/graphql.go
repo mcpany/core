@@ -89,11 +89,14 @@ const introspectionQuery = `
 `
 
 // Upstream implements the upstream.Upstream interface for GraphQL services.
+//
+// Summary: Implements the upstream.Upstream interface for GraphQL services.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Returns the result.
+// Summary: Creates a new GraphQL upstream.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -103,6 +106,7 @@ func NewGraphQLUpstream() upstream.Upstream {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+// Summary: Shuts down the upstream.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -165,6 +169,8 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 }
 
 // Callable implements the Callable interface for GraphQL queries.
+//
+// Summary: Implements the Callable interface for GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -179,6 +185,7 @@ type Callable struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Executes the GraphQL query.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -214,6 +221,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Inspects the GraphQL upstream service and registers its capabilities.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

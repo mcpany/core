@@ -25,10 +25,7 @@ var (
 	jqCache       sync.Map // map[string]*gojq.Query
 )
 
-// TextParser provides functionality to parse various text formats (JSON, XML,
-// plain text) and extract data into a structured map. It uses a configuration
-// map to define the extraction rules for each format, such as JSONPath for
-// JSON, XPath for XML, and regex for plain text.
+// Summary: Provides functionality to parse various text formats (JSON, XML,.
 type TextParser struct {
 	transformer *Transformer
 }
@@ -41,6 +38,7 @@ var (
 // NewTextParser returns a shared instance of TextParser.
 //
 // Returns the result.
+// Summary: Returns a shared instance of TextParser.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -50,26 +48,12 @@ func NewTextParser() *TextParser {
 	return defaultTextParser
 }
 
-// Transform takes a map of data and a Go template string and returns a byte
-// slice containing the transformed output.
-//
-// templateStr is the Go template to be executed.
-// data is the map containing the data to be used in the template.
-// It returns the transformed data as a byte slice or an error if the
-// transformation fails.
+// Summary: Takes a map of data and a Go template string and returns a byte.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
 
-// Parse extracts data from an input byte slice based on the specified input
-// type and configuration.
-//
-// inputType specifies the format of the input data ("json", "xml", "text", or "jq").
-// input is the raw byte slice containing the data to be parsed.
-// config is a map where keys are the desired output keys and values are the
-// extraction rules (JSONPath, XPath, or regex) for the corresponding data.
-// jqQuery is the JQ query string (only used when inputType is "jq").
-// It returns the extracted data (as a map or any for JQ) or an error if parsing fails.
+// Summary: Extracts data from an input byte slice based on the specified input.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

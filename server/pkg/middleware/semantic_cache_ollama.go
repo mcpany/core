@@ -14,6 +14,8 @@ import (
 )
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+//
+// Summary: Implements EmbeddingProvider for Ollama.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -26,6 +28,7 @@ type OllamaEmbeddingProvider struct {
 // model is the model.
 //
 // Returns the result.
+// Summary: Creates a new OllamaEmbeddingProvider.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -56,6 +59,7 @@ type ollamaEmbeddingResponse struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Generates an embedding for the given text using Ollama.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

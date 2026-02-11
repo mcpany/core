@@ -61,6 +61,8 @@ var byteBufferPool = sync.Pool{
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
 // It checks the Accept-Encoding header and only compresses if the client supports gzip.
 // It also checks the Content-Type to ensure we only compress compressible types.
+//
+// Summary: Returns a middleware that compresses HTTP responses using Gzip.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -108,6 +110,8 @@ type gzipResponseWriter struct {
 
 // Write writes the data to the connection as part of an HTTP reply.
 // It buffers data until the threshold is reached or the response is closed.
+//
+// Summary: Writes the data to the connection as part of an HTTP reply.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -139,6 +143,8 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 }
 
 // WriteHeader captures the status code.
+//
+// Summary: Captures the status code.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return
@@ -209,6 +215,8 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 
 // Close closes the gzip writer and returns it to the pool.
 // It ensures that any buffered data is flushed to the underlying writer.
+//
+// Summary: Closes the gzip writer and returns it to the pool.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
 		_ = w.writer.Close()

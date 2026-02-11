@@ -14,8 +14,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteVectorStore implements VectorStore using SQLite for persistence
-// and an in-memory cache for fast search.
+// Summary: Implements VectorStore using SQLite for persistence.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
@@ -23,6 +22,8 @@ type SQLiteVectorStore struct {
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
 // It loads existing entries from the database into memory.
+//
+// Summary: Creates a new SQLiteVectorStore.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -164,6 +165,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 // ttl is the ttl.
 //
 // Returns an error if the operation fails.
+// Summary: Adds a new entry to both memory and DB.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -213,6 +215,7 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 // Returns the result.
 // Returns the result.
 // Returns true if successful.
+// Summary: Searches in memory.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
@@ -221,6 +224,7 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 //
 // ctx is the context for the request.
 // key is the key.
+// Summary: Removes expired entries from both memory and DB.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -231,6 +235,7 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 // Close closes the database connection.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the database connection.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

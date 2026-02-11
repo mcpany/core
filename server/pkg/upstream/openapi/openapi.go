@@ -31,9 +31,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIUpstream implements the upstream.Upstream interface for services that
-// are defined by an OpenAPI specification. It parses the spec, discovers the
-// available operations, and registers them as tools.
+// Summary: Implements the upstream.Upstream interface for services that.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -41,8 +39,7 @@ type OpenAPIUpstream struct { //nolint:revive
 	serviceID    string
 }
 
-// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
-// services, this typically means closing any persistent connections.
+// Summary: Gracefully terminates the OpenAPI upstream service. For HTTP-based.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -54,8 +51,7 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
-// cache for storing parsed OpenAPI documents to avoid redundant parsing.
+// Summary: Creates a new instance of OpenAPIUpstream. It initializes a.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -68,9 +64,7 @@ func NewOpenAPIUpstream() upstream.Upstream {
 	}
 }
 
-// Register processes an OpenAPI service configuration. It parses the OpenAPI
-// specification, extracts the operations, converts them into tools, and
-// registers them with the tool manager.
+// Summary: Processes an OpenAPI service configuration. It parses the OpenAPI.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -251,8 +245,7 @@ type httpClientImpl struct {
 	client *http.Client
 }
 
-// Do sends an HTTP request and returns an HTTP response, fulfilling the
-// client.HTTPClient interface.
+// Summary: Sends an HTTP request and returns an HTTP response, fulfilling the.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

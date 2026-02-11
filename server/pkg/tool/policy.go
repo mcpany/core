@@ -7,19 +7,11 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
-// based on the provided ExportPolicy.
-//
-// Parameters:
-//   - name: string. The name of the item.
-//   - policy: *configv1.ExportPolicy. The export policy to evaluate.
-//
-// Returns:
-//   - bool: True if the item should be exported, false otherwise.
+// Summary: Determines whether a named item (tool, prompt, or resource) should be exported.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -63,6 +55,8 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+//
+// Summary: Checks if a call should be allowed based on the policies.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -139,6 +133,8 @@ type CompiledCallPolicy struct {
 // Returns:
 //   - []*CompiledCallPolicy: The compiled policies.
 //   - error: An error if compilation fails (e.g., invalid regex).
+//
+// Summary: Compiles a list of call policies into an efficient runtime format.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -162,6 +158,8 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 // Returns:
 //   - *CompiledCallPolicy: The compiled policy.
 //   - error: An error if compilation fails.
+//
+// Summary: Compiles a single call policy.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -213,6 +211,8 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+//
+// Summary: Checks if a call should be allowed based on the compiled policies.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

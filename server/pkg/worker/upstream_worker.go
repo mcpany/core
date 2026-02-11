@@ -15,10 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// UpstreamWorker is a background worker that handles tool execution requests. It
-// listens for ToolExecutionRequest messages on the event bus, uses the
-// tool manager to execute the requested tool, and then publishes the outcome as
-// a ToolExecutionResult message.
+// Summary: Is a background worker that handles tool execution requests. It.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -33,6 +30,8 @@ type UpstreamWorker struct {
 //
 // Returns:
 //   - *UpstreamWorker: A new upstream worker.
+//
+// Summary: Creates a new UpstreamWorker.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -40,12 +39,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
-//
-// Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+// Summary: Launches the worker in a new goroutine. It subscribes to tool execution.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -98,6 +92,8 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 }
 
 // Stop waits for the worker to stop.
+//
+// Summary: Waits for the worker to stop.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

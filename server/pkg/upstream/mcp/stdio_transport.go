@@ -17,8 +17,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StdioTransport implements mcp.Transport for a local command,
-// capturing stderr to provide better error messages on failure.
+// Summary: Implements mcp.Transport for a local command,.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -29,6 +28,7 @@ type StdioTransport struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Starts the command and returns a connection.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -97,6 +97,7 @@ type stdioConn struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Reads a JSON-RPC message from the standard output of the command.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -189,6 +190,7 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+// Summary: Writes a JSON-RPC message to the standard input of the command.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -231,6 +233,7 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Close terminates the command and closes the streams.
 //
 // Returns an error if the operation fails.
+// Summary: Terminates the command and closes the streams.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -249,6 +252,7 @@ func (c *stdioConn) Close() error {
 // SessionID returns a static session ID for the stdio connection.
 //
 // Returns the result.
+// Summary: Returns a static session ID for the stdio connection.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

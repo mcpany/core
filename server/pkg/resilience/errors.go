@@ -4,6 +4,8 @@
 package resilience
 
 // PermanentError is an error that should not be retried.
+//
+// Summary: Is an error that should not be retried.
 type PermanentError struct {
 	Err error
 }
@@ -11,6 +13,7 @@ type PermanentError struct {
 // Error returns the error message.
 //
 // Returns the result.
+// Summary: Returns the error message.
 func (e *PermanentError) Error() string {
 	if e.Err == nil {
 		return "permanent error"
@@ -21,6 +24,7 @@ func (e *PermanentError) Error() string {
 // Unwrap returns the wrapped error.
 //
 // Returns an error if the operation fails.
+// Summary: Returns the wrapped error.
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

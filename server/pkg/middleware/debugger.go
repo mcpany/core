@@ -17,6 +17,8 @@ import (
 )
 
 // DebugEntry represents a captured HTTP request/response.
+//
+// Summary: Represents a captured HTTP request/response.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -34,6 +36,8 @@ type DebugEntry struct {
 }
 
 // Debugger monitors and records traffic for inspection.
+//
+// Summary: Monitors and records traffic for inspection.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -48,6 +52,7 @@ type Debugger struct {
 // size is the size.
 //
 // Returns the result.
+// Summary: Creates a new Debugger middleware.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -72,6 +77,8 @@ func (d *Debugger) process() {
 }
 
 // Close stops the background processor.
+//
+// Summary: Stops the background processor.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -92,6 +99,7 @@ type bodyLogWriter struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Writes the data to the connection and captures it for the log.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -115,6 +123,7 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // WriteHeader sends an HTTP response header with the provided status code.
 //
 // statusCode is the HTTP status code to send.
+// Summary: Sends an HTTP response header with the provided status code.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -135,6 +144,7 @@ type readCloserWrapper struct {
 // next is the next.
 //
 // Returns the result.
+// Summary: Returns the http handler.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -252,6 +262,7 @@ func isTextContent(contentType string) bool {
 // Entries returns the last captured entries.
 //
 // Returns the result.
+// Summary: Returns the last captured entries.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -268,6 +279,7 @@ func (d *Debugger) Entries() []DebugEntry {
 // APIHandler returns a http.HandlerFunc to view entries.
 //
 // Returns the result.
+// Summary: Returns a http.HandlerFunc to view entries.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

@@ -18,6 +18,8 @@ import (
 )
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
+//
+// Summary: Writes audit logs to a SQLite database.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -29,6 +31,7 @@ type SQLiteAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Creates a new SQLiteAuditStore.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -135,6 +138,7 @@ func ensureColumn(db *sql.DB, colName string) error {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
+// Summary: Writes an audit entry to the database.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -190,6 +194,8 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
+//
+// Summary: Reads audit entries from the database based on the filter.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -262,6 +268,8 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Verify checks the integrity of the audit logs.
 // It returns true if the chain is valid, false otherwise.
 // If an error occurs during reading, it returns false and the error.
+//
+// Summary: Checks the integrity of the audit logs.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -312,6 +320,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 // Close closes the database connection.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the database connection.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

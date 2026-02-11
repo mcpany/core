@@ -14,16 +14,16 @@ import (
 	"strings"
 	"sync"
 
+	"al.essio.dev/pkg/shellescape"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
-	"al.essio.dev/pkg/shellescape"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
@@ -45,8 +45,7 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 	return client.NewClientWithOpts(ops...)
 }
 
-// DockerTransport implements the mcp.Transport interface to connect to a service
-// running inside a Docker container. It manages the container lifecycle.
+// Summary: Implements the mcp.Transport interface to connect to a service.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
@@ -57,6 +56,7 @@ type DockerTransport struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Establishes a connection to the service within the Docker container.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -202,6 +202,7 @@ type dockerConn struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Decodes a single JSON-RPC message from the container's output stream.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -287,6 +288,7 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+// Summary: Encodes and sends a JSON-RPC message to the container's input stream.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -329,6 +331,7 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
 // Returns an error if the operation fails.
+// Summary: Terminates the connection by closing the underlying ReadWriteCloser.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -336,6 +339,7 @@ func (c *dockerConn) Close() error {
 // SessionID returns a static identifier for the Docker transport session.
 //
 // Returns the result.
+// Summary: Returns a static identifier for the Docker transport session.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -351,6 +355,7 @@ type dockerReadWriteCloser struct {
 // Close closes the underlying connection and removes the associated Docker container.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the underlying connection and removes the associated Docker container.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -379,8 +384,7 @@ type slogWriter struct {
 	level slog.Level
 }
 
-// Write takes a byte slice, scans it for lines, and logs each line
-// individually using the configured slog.Logger and level.
+// Summary: Takes a byte slice, scans it for lines, and logs each line.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
@@ -402,6 +406,7 @@ type tailBuffer struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Writes data to the buffer, maintaining the size limit.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -417,6 +422,7 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 // String returns the buffered data as a string.
 //
 // Returns the result.
+// Summary: Returns the buffered data as a string.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

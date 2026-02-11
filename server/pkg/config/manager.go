@@ -25,6 +25,8 @@ import (
 )
 
 // MergeStrategyReplace indicates that the new configuration list should replace the existing one.
+//
+// Summary: Indicates that the new configuration list should replace the existing one.
 const MergeStrategyReplace = "replace"
 
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.

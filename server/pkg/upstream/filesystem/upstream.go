@@ -30,6 +30,8 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
+//
+// Summary: Implements the upstream.Upstream interface for filesystem services.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -39,6 +41,7 @@ type Upstream struct {
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Returns the result.
+// Summary: Creates a new instance of FilesystemUpstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -50,6 +53,7 @@ func NewUpstream() upstream.Upstream {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+// Summary: Implements the upstream.Upstream interface.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -76,6 +80,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Processes the configuration for a filesystem service.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -193,6 +198,8 @@ type fsCallable struct {
 
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
+//
+// Summary: Executes the filesystem tool with the provided request arguments.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

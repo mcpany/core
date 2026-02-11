@@ -17,6 +17,7 @@ import (
 // next is the next.
 //
 // Returns the result.
+// Summary: Returns a middleware function to track session activity.
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

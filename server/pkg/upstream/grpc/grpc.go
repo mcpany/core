@@ -39,6 +39,8 @@ import (
 // Upstream implements the upstream.Upstream interface for gRPC services.
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
+//
+// Summary: Implements the upstream.Upstream interface for gRPC services.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
@@ -49,6 +51,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -68,6 +72,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
+// Summary: Creates a new instance of Upstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -80,8 +85,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Shutdown gracefully terminates the gRPC upstream service by shutting down the
-// associated connection pool.
+// Summary: Gracefully terminates the gRPC upstream service by shutting down the.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -97,10 +101,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// Register handles the registration of a gRPC upstream service. It establishes a
-// connection pool, uses gRPC reflection to discover the service's protobuf
-// definitions, and then creates and registers tools based on the discovered
-// methods and any MCP annotations.
+// Summary: Handles the registration of a gRPC upstream service. It establishes a.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -229,7 +230,6 @@ func (u *Upstream) Register(
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which
 // contain tool definitions extracted from protobuf options. For each tool, it
 // constructs a GRPCTool and registers it with the tool manager.
-//
 func (u *Upstream) createAndRegisterGRPCTools(
 	_ context.Context,
 	serviceID string,

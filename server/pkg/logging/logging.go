@@ -21,9 +21,7 @@ var (
 	defaultLogger atomic.Pointer[slog.Logger]
 )
 
-// ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
-// mechanism. This allows the global logger to be re-initialized in different
-// test cases. This function should not be used in production code.
+// Summary: Is for use in tests to reset the `sync.Once`.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -45,7 +43,8 @@ func ForTestsOnlyResetLogger() {
 //   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
 //
 // Returns:
-//   None.
+//
+//	None.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -128,7 +127,7 @@ func GetLogger() *slog.Logger {
 	defer mu.Unlock()
 	once.Do(func() {
 		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-			Level:     slog.LevelInfo,
+			Level: slog.LevelInfo,
 			// ⚡ BOLT: Defaults to INFO, so AddSource is false by default.
 			AddSource: false,
 		})))

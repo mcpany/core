@@ -154,6 +154,8 @@ type Storage interface {
 	//
 	// Returns:
 	//   - error: An error if saving fails.
+	SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
+
 	// ListServiceTemplates lists all service templates.
 	//
 	// Summary: Lists all service templates.
@@ -178,8 +180,6 @@ type Storage interface {
 	//   - *configv1.ServiceTemplate: The service template.
 	//   - error: An error if retrieval fails.
 	GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error)
-
-	SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
 
 	// DeleteServiceTemplate deletes a service template by ID.
 	//

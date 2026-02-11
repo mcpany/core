@@ -14,12 +14,16 @@ import (
 )
 
 // Retry implements a retry policy for failed operations.
+//
+// Summary: Implements a retry policy for failed operations.
 type Retry struct {
 	config *configv1.RetryConfig
 }
 
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
+//
+// Summary: Creates a new Retry instance with the given configuration.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}
@@ -35,8 +39,7 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 	}
 }
 
-// Execute runs the provided work function, retrying it if it fails according
-// to the configured policy.
+// Summary: Runs the provided work function, retrying it if it fails according.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

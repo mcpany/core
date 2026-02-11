@@ -18,10 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistrationWorker is a background worker responsible for handling
-// service registration requests. It listens for ServiceRegistrationRequest
-// messages on the event bus, processes them using the service registry, and
-// publishes the results as ServiceRegistrationResult messages.
+// Summary: Is a background worker responsible for handling.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -37,6 +34,8 @@ type ServiceRegistrationWorker struct {
 //
 // Returns:
 //   - *ServiceRegistrationWorker: A new service registration worker.
+//
+// Summary: Creates a new ServiceRegistrationWorker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -49,16 +48,13 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 //
 // Parameters:
 //   - d: The duration to wait before retrying.
+//
+// Summary: Sets the retry delay for failed registrations.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
 
-// Start launches the worker in a new goroutine. It subscribes to service
-// registration requests on the event bus and will continue to process them
-// until the provided context is canceled.
-//
-// Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+// Summary: Launches the worker in a new goroutine. It subscribes to service.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -275,6 +271,8 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 }
 
 // Stop waits for the worker to stop.
+//
+// Summary: Waits for the worker to stop.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

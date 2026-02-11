@@ -21,6 +21,8 @@ type tokenKey struct {
 }
 
 // Store implements storage.Storage in memory.
+//
+// Summary: Implements storage.Storage in memory.
 type Store struct {
 	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig
@@ -37,6 +39,7 @@ type Store struct {
 // NewStore creates a new memory store.
 //
 // Returns the result.
+// Summary: Creates a new memory store.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),
@@ -56,6 +59,7 @@ func NewStore() *Store {
 // token is the token.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a user token.
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -75,6 +79,7 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a user token by user ID and service ID.
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -95,6 +100,7 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 // serviceID is the serviceID.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes a user token.
 func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -118,6 +124,7 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves the full server configuration.
 func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -165,6 +172,7 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 // service is the service instance.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a single upstream service configuration.
 func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamServiceConfig) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -179,6 +187,7 @@ func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamService
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a single upstream service configuration by name.
 func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -194,6 +203,7 @@ func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamSe
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Lists all upstream service configurations.
 func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -210,6 +220,7 @@ func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConf
 // name is the name of the resource.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes an upstream service configuration by name.
 func (s *Store) DeleteService(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -220,12 +231,15 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 // Close closes the underlying storage connection.
 //
 // Returns an error if the operation fails.
+// Summary: Closes the underlying storage connection.
 func (s *Store) Close() error {
 	return nil
 }
 
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 // Memory store always has data available.
+//
+// Summary: Returns true if the store has configuration sources (e.g., file paths) configured.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
@@ -236,6 +250,7 @@ func (s *Store) HasConfigSources() bool {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves the global configuration.
 func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -251,6 +266,7 @@ func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, 
 // settings is the settings.
 //
 // Returns an error if the operation fails.
+// Summary: Saves the global configuration.
 func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalSettings) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -264,6 +280,7 @@ func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalS
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves all secrets.
 func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -281,6 +298,7 @@ func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a secret by ID.
 func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -296,6 +314,7 @@ func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error
 // secret is the secret.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a secret.
 func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -309,6 +328,7 @@ func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 // id is the unique identifier.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes a secret by ID.
 func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -322,6 +342,7 @@ func (s *Store) DeleteSecret(_ context.Context, id string) error {
 // user is the user.
 //
 // Returns an error if the operation fails.
+// Summary: Creates a new user.
 func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -342,6 +363,7 @@ func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a user by ID.
 func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -357,6 +379,7 @@ func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves all users.
 func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -373,6 +396,7 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 // user is the user.
 //
 // Returns an error if the operation fails.
+// Summary: Updates an existing user.
 func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -389,6 +413,7 @@ func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 // id is the unique identifier.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes a user by ID.
 func (s *Store) DeleteUser(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -404,6 +429,7 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves all profile definitions.
 func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -421,6 +447,7 @@ func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, 
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a profile definition by name.
 func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -436,6 +463,7 @@ func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDef
 // profile is the profile.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a profile definition.
 func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefinition) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -449,6 +477,7 @@ func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefiniti
 // name is the name of the resource.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes a profile definition by name.
 func (s *Store) DeleteProfile(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -464,6 +493,7 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves all service collections.
 func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -481,6 +511,7 @@ func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collectio
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a service collection by name.
 func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -496,6 +527,7 @@ func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.
 // collection is the collection.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a service collection.
 func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Collection) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -509,6 +541,7 @@ func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Co
 // name is the name of the resource.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes a service collection by name.
 func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -524,6 +557,7 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves all credentials.
 func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -541,6 +575,7 @@ func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, erro
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Retrieves a credential by ID.
 func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -556,6 +591,7 @@ func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credentia
 // cred is the cred.
 //
 // Returns an error if the operation fails.
+// Summary: Saves a credential.
 func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -569,6 +605,7 @@ func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) err
 // id is the unique identifier.
 //
 // Returns an error if the operation fails.
+// Summary: Deletes a credential by ID.
 func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

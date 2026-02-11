@@ -56,6 +56,7 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 //
 // Returns the result.
 // Returns an error if the operation fails.
+// Summary: Compiles a raw JSON schema map into a jsonschema.Schema object.
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"
