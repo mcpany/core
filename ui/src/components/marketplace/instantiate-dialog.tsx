@@ -43,7 +43,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
     // Schema state
     const [parsedSchema, setParsedSchema] = useState<any>(null);
-    const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
+    const [schemaValues, setSchemaValues] = useState<Record<string, any>>({});
     const [isSchemaValid, setIsSchemaValid] = useState(true);
 
     // Helper to determine if we should show CLI options
@@ -126,23 +126,30 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         }
     }, [open, templateConfig]);
 
-    const checkSchemaValidity = (values: Record<string, string>, schema: any) => {
+    const checkSchemaValidity = (values: Record<string, any>, schema: any) => {
         if (!schema || !schema.required) {
             setIsSchemaValid(true);
             return;
         }
-        const missing = schema.required.some((field: string) => !values[field]);
+        const missing = schema.required.some((field: string) => {
+             const val = values[field];
+             return val === undefined || val === null || val === "";
+        });
         setIsSchemaValid(!missing);
     };
 
-    const handleSchemaChange = (newValues: Record<string, string>) => {
+    const handleSchemaChange = (newValues: Record<string, any>) => {
         setSchemaValues(newValues);
         // Sync to envVars for compatibility with handleInstantiate logic
         const newEnv: Record<string, SecretValue> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
 
         // Update with new values
         Object.entries(newValues).forEach(([k, v]) => {
-            newEnv[k] = { plainText: v, validationRegex: "" };
+            if (typeof v === 'object') {
+                 newEnv[k] = { plainText: JSON.stringify(v), validationRegex: "" };
+            } else {
+                 newEnv[k] = { plainText: String(v), validationRegex: "" };
+            }
         });
 
         setEnvVars(newEnv);
