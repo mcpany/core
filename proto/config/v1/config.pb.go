@@ -186,6 +186,9 @@ type McpAnyServerConfig struct {
 	xxx_hidden_Collections      *[]*Collection            `protobuf:"bytes,3,rep,name=collections"`
 	xxx_hidden_Users            *[]*User                  `protobuf:"bytes,4,rep,name=users"`
 	xxx_hidden_MergeStrategy    *MergeStrategyConfig      `protobuf:"bytes,5,opt,name=merge_strategy"`
+	xxx_hidden_Secrets          *[]*Secret                `protobuf:"bytes,6,rep,name=secrets"`
+	xxx_hidden_Credentials      *[]*Credential            `protobuf:"bytes,7,rep,name=credentials"`
+	xxx_hidden_ServiceTemplates *[]*ServiceTemplate       `protobuf:"bytes,8,rep,name=service_templates"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -256,6 +259,33 @@ func (x *McpAnyServerConfig) GetMergeStrategy() *MergeStrategyConfig {
 	return nil
 }
 
+func (x *McpAnyServerConfig) GetSecrets() []*Secret {
+	if x != nil {
+		if x.xxx_hidden_Secrets != nil {
+			return *x.xxx_hidden_Secrets
+		}
+	}
+	return nil
+}
+
+func (x *McpAnyServerConfig) GetCredentials() []*Credential {
+	if x != nil {
+		if x.xxx_hidden_Credentials != nil {
+			return *x.xxx_hidden_Credentials
+		}
+	}
+	return nil
+}
+
+func (x *McpAnyServerConfig) GetServiceTemplates() []*ServiceTemplate {
+	if x != nil {
+		if x.xxx_hidden_ServiceTemplates != nil {
+			return *x.xxx_hidden_ServiceTemplates
+		}
+	}
+	return nil
+}
+
 func (x *McpAnyServerConfig) SetGlobalSettings(v *GlobalSettings) {
 	x.xxx_hidden_GlobalSettings = v
 }
@@ -274,6 +304,18 @@ func (x *McpAnyServerConfig) SetUsers(v []*User) {
 
 func (x *McpAnyServerConfig) SetMergeStrategy(v *MergeStrategyConfig) {
 	x.xxx_hidden_MergeStrategy = v
+}
+
+func (x *McpAnyServerConfig) SetSecrets(v []*Secret) {
+	x.xxx_hidden_Secrets = &v
+}
+
+func (x *McpAnyServerConfig) SetCredentials(v []*Credential) {
+	x.xxx_hidden_Credentials = &v
+}
+
+func (x *McpAnyServerConfig) SetServiceTemplates(v []*ServiceTemplate) {
+	x.xxx_hidden_ServiceTemplates = &v
 }
 
 func (x *McpAnyServerConfig) HasGlobalSettings() bool {
@@ -311,6 +353,12 @@ type McpAnyServerConfig_builder struct {
 	Users []*User
 	// Configuration for how to merge lists when loading from multiple sources.
 	MergeStrategy *MergeStrategyConfig
+	// A list of secrets.
+	Secrets []*Secret
+	// A list of credentials.
+	Credentials []*Credential
+	// A list of service templates.
+	ServiceTemplates []*ServiceTemplate
 }
 
 func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
@@ -322,6 +370,9 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	x.xxx_hidden_Collections = &b.Collections
 	x.xxx_hidden_Users = &b.Users
 	x.xxx_hidden_MergeStrategy = b.MergeStrategy
+	x.xxx_hidden_Secrets = &b.Secrets
+	x.xxx_hidden_Credentials = &b.Credentials
+	x.xxx_hidden_ServiceTemplates = &b.ServiceTemplates
 	return m0
 }
 
@@ -3816,13 +3867,16 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a\x1aproto/config/v1/user.proto\"\xf4\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a&proto/config/v1/service_template.proto\x1a\x1aproto/config/v1/user.proto\"\xb9\x04\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12>\n" +
 	"\vcollections\x18\x03 \x03(\v2\x1c.mcpany.config.v1.CollectionR\vcollections\x12,\n" +
 	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\x12M\n" +
-	"\x0emerge_strategy\x18\x05 \x01(\v2%.mcpany.config.v1.MergeStrategyConfigR\x0emerge_strategy\"o\n" +
+	"\x0emerge_strategy\x18\x05 \x01(\v2%.mcpany.config.v1.MergeStrategyConfigR\x0emerge_strategy\x122\n" +
+	"\asecrets\x18\x06 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\x12>\n" +
+	"\vcredentials\x18\a \x03(\v2\x1c.mcpany.config.v1.CredentialR\vcredentials\x12O\n" +
+	"\x11service_templates\x18\b \x03(\v2!.mcpany.config.v1.ServiceTemplateR\x11service_templates\"o\n" +
 	"\x13MergeStrategyConfig\x124\n" +
 	"\x15upstream_service_list\x18\x01 \x01(\tR\x15upstream_service_list\x12\"\n" +
 	"\fprofile_list\x18\x02 \x01(\tR\fprofile_list\"\xac\x01\n" +
@@ -4008,10 +4062,12 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*UpstreamServiceConfig)(nil),  // 26: mcpany.config.v1.UpstreamServiceConfig
 	(*Collection)(nil),             // 27: mcpany.config.v1.Collection
 	(*User)(nil),                   // 28: mcpany.config.v1.User
-	(*bus.MessageBus)(nil),         // 29: bus.MessageBus
-	(*RateLimitConfig)(nil),        // 30: mcpany.config.v1.RateLimitConfig
-	(*SecretValue)(nil),            // 31: mcpany.config.v1.SecretValue
-	(*ProfileServiceConfig)(nil),   // 32: mcpany.config.v1.ProfileServiceConfig
+	(*Credential)(nil),             // 29: mcpany.config.v1.Credential
+	(*ServiceTemplate)(nil),        // 30: mcpany.config.v1.ServiceTemplate
+	(*bus.MessageBus)(nil),         // 31: bus.MessageBus
+	(*RateLimitConfig)(nil),        // 32: mcpany.config.v1.RateLimitConfig
+	(*SecretValue)(nil),            // 33: mcpany.config.v1.SecretValue
+	(*ProfileServiceConfig)(nil),   // 34: mcpany.config.v1.ProfileServiceConfig
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
@@ -4019,38 +4075,41 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	27, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
 	28, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
 	4,  // 4: mcpany.config.v1.McpAnyServerConfig.merge_strategy:type_name -> mcpany.config.v1.MergeStrategyConfig
-	5,  // 5: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
-	0,  // 6: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	1,  // 7: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	29, // 8: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	16, // 9: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	15, // 10: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
-	14, // 11: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
-	13, // 12: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	30, // 13: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
-	12, // 14: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
-	19, // 15: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	21, // 16: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	10, // 17: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
-	11, // 18: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
-	9,  // 19: mcpany.config.v1.GlobalSettings.alerts:type_name -> mcpany.config.v1.AlertConfig
-	8,  // 20: mcpany.config.v1.GlobalSettings.smart_recovery:type_name -> mcpany.config.v1.SmartRecoveryConfig
-	31, // 21: mcpany.config.v1.SmartRecoveryConfig.api_key:type_name -> mcpany.config.v1.SecretValue
-	2,  // 22: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	22, // 23: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	17, // 24: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	18, // 25: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	20, // 26: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	23, // 27: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	24, // 28: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
-	25, // 29: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	32, // 30: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
-	31, // 31: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
-	32, // [32:32] is the sub-list for method output_type
-	32, // [32:32] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	5,  // 5: mcpany.config.v1.McpAnyServerConfig.secrets:type_name -> mcpany.config.v1.Secret
+	29, // 6: mcpany.config.v1.McpAnyServerConfig.credentials:type_name -> mcpany.config.v1.Credential
+	30, // 7: mcpany.config.v1.McpAnyServerConfig.service_templates:type_name -> mcpany.config.v1.ServiceTemplate
+	5,  // 8: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
+	0,  // 9: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	1,  // 10: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
+	31, // 11: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	16, // 12: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	15, // 13: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
+	14, // 14: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
+	13, // 15: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
+	32, // 16: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	12, // 17: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
+	19, // 18: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	21, // 19: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	10, // 20: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
+	11, // 21: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
+	9,  // 22: mcpany.config.v1.GlobalSettings.alerts:type_name -> mcpany.config.v1.AlertConfig
+	8,  // 23: mcpany.config.v1.GlobalSettings.smart_recovery:type_name -> mcpany.config.v1.SmartRecoveryConfig
+	33, // 24: mcpany.config.v1.SmartRecoveryConfig.api_key:type_name -> mcpany.config.v1.SecretValue
+	2,  // 25: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	22, // 26: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	17, // 27: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	18, // 28: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	20, // 29: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	23, // 30: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	24, // 31: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
+	25, // 32: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	34, // 33: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
+	33, // 34: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
+	35, // [35:35] is the sub-list for method output_type
+	35, // [35:35] is the sub-list for method input_type
+	35, // [35:35] is the sub-list for extension type_name
+	35, // [35:35] is the sub-list for extension extendee
+	0,  // [0:35] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -4062,6 +4121,7 @@ func file_proto_config_v1_config_proto_init() {
 	file_proto_config_v1_auth_proto_init()
 	file_proto_config_v1_profile_proto_init()
 	file_proto_config_v1_collection_proto_init()
+	file_proto_config_v1_service_template_proto_init()
 	file_proto_config_v1_user_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

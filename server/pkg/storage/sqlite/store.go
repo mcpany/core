@@ -40,6 +40,26 @@ func (s *Store) HasConfigSources() bool {
 	return true
 }
 
+// loadEntity helper function to load entities from a table.
+func (s *Store) loadEntity(ctx context.Context, query string, unmarshal func([]byte) error) error {
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return err
+		}
+		if err := unmarshal([]byte(configJSON)); err != nil {
+			return err
+		}
+	}
+	return rows.Err()
+}
+
 // Load implements config.Store interface.
 //
 // ctx is the context for the request.
@@ -50,54 +70,40 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	var (
 		services    []*configv1.UpstreamServiceConfig
 		users       []*configv1.User
-		settings    *configv1.GlobalSettings
-		collections []*configv1.Collection
-		profiles    []*configv1.ProfileDefinition
+		settings         *configv1.GlobalSettings
+		collections      []*configv1.Collection
+		profiles         []*configv1.ProfileDefinition
+		secrets          []*configv1.Secret
+		credentials      []*configv1.Credential
+		serviceTemplates []*configv1.ServiceTemplate
 
 		wg   sync.WaitGroup
 		mu   sync.Mutex
 		errs []error
 	)
 
-	// ⚡ BOLT: Parallelized data loading (5 concurrent queries) to reduce latency.
+	// ⚡ BOLT: Parallelized data loading (8 concurrent queries) to reduce latency.
 	// Randomized Selection from Top 5 High-Impact Targets
 
-	wg.Add(5)
+	wg.Add(8)
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
 	// 1. Load services
 	go func() {
 		defer wg.Done()
-		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
+		err := s.loadEntity(ctx, "SELECT config_json FROM upstream_services", func(data []byte) error {
+			var service configv1.UpstreamServiceConfig
+			if err := opts.Unmarshal(data, &service); err != nil {
+				return err
+			}
+			mu.Lock()
+			services = append(services, &service)
+			mu.Unlock()
+			return nil
+		})
 		if err != nil {
 			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to query upstream_services: %w", err))
-			mu.Unlock()
-			return
-		}
-		defer func() { _ = rows.Close() }()
-
-		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-		for rows.Next() {
-			var configJSON string
-			if err := rows.Scan(&configJSON); err != nil {
-				mu.Lock()
-				errs = append(errs, fmt.Errorf("failed to scan config_json: %w", err))
-				mu.Unlock()
-				return
-			}
-
-			var service configv1.UpstreamServiceConfig
-			if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
-				mu.Lock()
-				errs = append(errs, fmt.Errorf("failed to unmarshal service config: %w", err))
-				mu.Unlock()
-				return
-			}
-			services = append(services, &service)
-		}
-		if err := rows.Err(); err != nil {
-			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to iterate rows: %w", err))
+			errs = append(errs, fmt.Errorf("failed to load services: %w", err))
 			mu.Unlock()
 		}
 	}()
@@ -105,37 +111,19 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	// 2. Load users
 	go func() {
 		defer wg.Done()
-		userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+		err := s.loadEntity(ctx, "SELECT config_json FROM users", func(data []byte) error {
+			var user configv1.User
+			if err := opts.Unmarshal(data, &user); err != nil {
+				return err
+			}
+			mu.Lock()
+			users = append(users, &user)
+			mu.Unlock()
+			return nil
+		})
 		if err != nil {
 			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to query users: %w", err))
-			mu.Unlock()
-			return
-		}
-		defer func() { _ = userRows.Close() }()
-
-		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-		for userRows.Next() {
-			var configJSON string
-			if err := userRows.Scan(&configJSON); err != nil {
-				mu.Lock()
-				errs = append(errs, fmt.Errorf("failed to scan user config_json: %w", err))
-				mu.Unlock()
-				return
-			}
-
-			var user configv1.User
-			if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
-				mu.Lock()
-				errs = append(errs, fmt.Errorf("failed to unmarshal user config: %w", err))
-				mu.Unlock()
-				return
-			}
-			users = append(users, &user)
-		}
-		if err := userRows.Err(); err != nil {
-			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to iterate user rows: %w", err))
+			errs = append(errs, fmt.Errorf("failed to load users: %w", err))
 			mu.Unlock()
 		}
 	}()
@@ -147,9 +135,10 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		var settingsJSON string
 		if err := settingsRow.Scan(&settingsJSON); err == nil {
 			var s configv1.GlobalSettings
-			opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 			if err := opts.Unmarshal([]byte(settingsJSON), &s); err == nil {
+				mu.Lock()
 				settings = &s
+				mu.Unlock()
 			}
 		}
 	}()
@@ -157,66 +146,89 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	// 4. Load Collections
 	go func() {
 		defer wg.Done()
-		collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
-		if err != nil {
-			// Ignore error as in original code
-			return
-		}
-		defer func() { _ = collectionRows.Close() }()
-
-		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-		for collectionRows.Next() {
-			var configJSON string
-			if err := collectionRows.Scan(&configJSON); err != nil {
-				continue
-			}
+		_ = s.loadEntity(ctx, "SELECT config_json FROM service_collections", func(data []byte) error {
 			var c configv1.Collection
-			if err := opts.Unmarshal([]byte(configJSON), &c); err == nil {
+			if err := opts.Unmarshal(data, &c); err == nil {
+				mu.Lock()
 				collections = append(collections, &c)
+				mu.Unlock()
 			}
-		}
-		if err := collectionRows.Err(); err != nil {
-			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to iterate collection rows: %w", err))
-			mu.Unlock()
-		}
+			return nil
+		})
 	}()
 
 	// 5. Load Profiles
 	go func() {
 		defer wg.Done()
-		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
+		err := s.loadEntity(ctx, "SELECT config_json FROM profile_definitions", func(data []byte) error {
+			var p configv1.ProfileDefinition
+			if err := opts.Unmarshal(data, &p); err != nil {
+				return err
+			}
+			mu.Lock()
+			profiles = append(profiles, &p)
+			mu.Unlock()
+			return nil
+		})
 		if err != nil {
 			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to query profile_definitions: %w", err))
+			errs = append(errs, fmt.Errorf("failed to load profiles: %w", err))
 			mu.Unlock()
-			return
 		}
-		defer func() { _ = rows.Close() }()
+	}()
 
-		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-		for rows.Next() {
-			var configJSON string
-			if err := rows.Scan(&configJSON); err != nil {
-				mu.Lock()
-				errs = append(errs, fmt.Errorf("failed to scan profile config_json: %w", err))
-				mu.Unlock()
-				return
+	// 6. Load Secrets
+	go func() {
+		defer wg.Done()
+		err := s.loadEntity(ctx, "SELECT config_json FROM secrets", func(data []byte) error {
+			var s configv1.Secret
+			if err := opts.Unmarshal(data, &s); err != nil {
+				return err
 			}
-			var p configv1.ProfileDefinition
-			if err := opts.Unmarshal([]byte(configJSON), &p); err != nil {
-				mu.Lock()
-				errs = append(errs, fmt.Errorf("failed to unmarshal profile config: %w", err))
-				mu.Unlock()
-				return
-			}
-			profiles = append(profiles, &p)
-		}
-		if err := rows.Err(); err != nil {
 			mu.Lock()
-			errs = append(errs, fmt.Errorf("failed to iterate profile rows: %w", err))
+			secrets = append(secrets, &s)
+			mu.Unlock()
+			return nil
+		})
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to load secrets: %w", err))
 			mu.Unlock()
 		}
+	}()
+
+	// 7. Load Credentials
+	go func() {
+		defer wg.Done()
+		err := s.loadEntity(ctx, "SELECT config_json FROM credentials", func(data []byte) error {
+			var c configv1.Credential
+			if err := opts.Unmarshal(data, &c); err != nil {
+				return err
+			}
+			mu.Lock()
+			credentials = append(credentials, &c)
+			mu.Unlock()
+			return nil
+		})
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to load credentials: %w", err))
+			mu.Unlock()
+		}
+	}()
+
+	// 8. Load Service Templates
+	go func() {
+		defer wg.Done()
+		_ = s.loadEntity(ctx, "SELECT config_json FROM service_templates", func(data []byte) error {
+			var t configv1.ServiceTemplate
+			if err := opts.Unmarshal(data, &t); err == nil {
+				mu.Lock()
+				serviceTemplates = append(serviceTemplates, &t)
+				mu.Unlock()
+			}
+			return nil
+		})
 	}()
 
 	wg.Wait()
@@ -239,6 +251,9 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		UpstreamServices: services,
 		Users:            users,
 		Collections:      collections,
+		Secrets:          secrets,
+		Credentials:      credentials,
+		ServiceTemplates: serviceTemplates,
 	}
 	if settings != nil {
 		builder.GlobalSettings = settings

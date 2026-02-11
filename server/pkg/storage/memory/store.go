@@ -150,10 +150,41 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 		gs.SetProfileDefinitions(current)
 	}
 
-	// 4. Build final ServerConfig
+	// 4. Collect other entities
+	users := make([]*configv1.User, 0, len(s.users))
+	for _, u := range s.users {
+		users = append(users, proto.Clone(u).(*configv1.User))
+	}
+
+	collections := make([]*configv1.Collection, 0, len(s.serviceCollections))
+	for _, c := range s.serviceCollections {
+		collections = append(collections, proto.Clone(c).(*configv1.Collection))
+	}
+
+	secrets := make([]*configv1.Secret, 0, len(s.secrets))
+	for _, sec := range s.secrets {
+		secrets = append(secrets, proto.Clone(sec).(*configv1.Secret))
+	}
+
+	credentials := make([]*configv1.Credential, 0, len(s.credentials))
+	for _, c := range s.credentials {
+		credentials = append(credentials, proto.Clone(c).(*configv1.Credential))
+	}
+
+	serviceTemplates := make([]*configv1.ServiceTemplate, 0, len(s.serviceTemplates))
+	for _, t := range s.serviceTemplates {
+		serviceTemplates = append(serviceTemplates, proto.Clone(t).(*configv1.ServiceTemplate))
+	}
+
+	// 5. Build final ServerConfig
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: upstreamServices,
 		GlobalSettings:   gs,
+		Users:            users,
+		Collections:      collections,
+		Secrets:          secrets,
+		Credentials:      credentials,
+		ServiceTemplates: serviceTemplates,
 	}.Build()
 
 	return cfg, nil

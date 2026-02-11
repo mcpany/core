@@ -11,6 +11,7 @@ import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/profile.proto";
 import "proto/config/v1/collection.proto";
+import "proto/config/v1/service_template.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -34,6 +35,12 @@ message McpAnyServerConfig {
   repeated User users = 4 [json_name = "users"];
   // Configuration for how to merge lists when loading from multiple sources.
   MergeStrategyConfig merge_strategy = 5 [json_name = "merge_strategy"];
+  // A list of secrets.
+  repeated Secret secrets = 6 [json_name = "secrets"];
+  // A list of credentials.
+  repeated Credential credentials = 7 [json_name = "credentials"];
+  // A list of service templates.
+  repeated ServiceTemplate service_templates = 8 [json_name = "service_templates"];
 }
 
 // MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.

@@ -24,6 +24,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -425,4 +426,131 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 		}.Build())
 	}
 	return pb.ListAuditLogsResponse_builder{Entries: pbEntries}.Build(), nil
+}
+
+// CreateBackup creates a full system backup.
+func (s *Server) CreateBackup(ctx context.Context, _ *pb.CreateBackupRequest) (*pb.CreateBackupResponse, error) {
+	if s.storage == nil {
+		return nil, status.Error(codes.FailedPrecondition, "storage is not enabled")
+	}
+
+	cfg, err := s.storage.Load(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to load config: %v", err)
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	data, err := opts.Marshal(cfg)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to marshal backup: %v", err)
+	}
+
+	filename := fmt.Sprintf("mcpany-backup-%s.json", time.Now().Format("2006-01-02-150405"))
+
+	return pb.CreateBackupResponse_builder{
+		BackupData: data,
+		Filename:   proto.String(filename),
+	}.Build(), nil
+}
+
+// RestoreBackup restores the system from a backup.
+func (s *Server) RestoreBackup(ctx context.Context, req *pb.RestoreBackupRequest) (*pb.RestoreBackupResponse, error) {
+	if s.storage == nil {
+		return nil, status.Error(codes.FailedPrecondition, "storage is not enabled")
+	}
+
+	if len(req.GetBackupData()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "backup data is empty")
+	}
+
+	var cfg configv1.McpAnyServerConfig
+	if err := protojson.Unmarshal(req.GetBackupData(), &cfg); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "failed to unmarshal backup: %v", err)
+	}
+
+	// 1. Global Settings
+	if cfg.GetGlobalSettings() != nil {
+		if err := s.storage.SaveGlobalSettings(ctx, cfg.GetGlobalSettings()); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to restore global settings: %v", err)
+		}
+	}
+
+	// 2. Upstream Services
+	for _, svc := range cfg.GetUpstreamServices() {
+		if err := s.storage.SaveService(ctx, svc); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to restore service %s: %v", svc.GetName(), err)
+		}
+	}
+
+	// 3. Secrets
+	for _, secret := range cfg.GetSecrets() {
+		if err := s.storage.SaveSecret(ctx, secret); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to restore secret %s: %v", secret.GetName(), err)
+		}
+	}
+
+	// 4. Collections
+	for _, col := range cfg.GetCollections() {
+		if err := s.storage.SaveServiceCollection(ctx, col); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to restore collection %s: %v", col.GetName(), err)
+		}
+	}
+
+	// 5. Credentials
+	for _, cred := range cfg.GetCredentials() {
+		if err := s.storage.SaveCredential(ctx, cred); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to restore credential %s: %v", cred.GetName(), err)
+		}
+	}
+
+	// 6. Service Templates
+	for _, tmpl := range cfg.GetServiceTemplates() {
+		if err := s.storage.SaveServiceTemplate(ctx, tmpl); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to restore template %s: %v", tmpl.GetName(), err)
+		}
+	}
+
+	// 7. Users (Handle Upsert manually)
+	for _, u := range cfg.GetUsers() {
+		existing, err := s.storage.GetUser(ctx, u.GetId())
+		if err != nil && status.Code(err) != codes.NotFound && !strings.Contains(err.Error(), "not found") {
+			// Some storage impls might return error on not found, others nil.
+			// sqlite GetUser returns sql.ErrNoRows wrapped? No, `store.go` handles sql.ErrNoRows returning nil, nil.
+			// So if err != nil, it's a real error.
+			return nil, status.Errorf(codes.Internal, "failed to check user %s: %v", u.GetId(), err)
+		}
+
+		if existing != nil {
+			if err := s.storage.UpdateUser(ctx, u); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to update user %s: %v", u.GetId(), err)
+			}
+		} else {
+			if err := s.storage.CreateUser(ctx, u); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to create user %s: %v", u.GetId(), err)
+			}
+		}
+	}
+
+	// 8. Profiles
+	// Profiles are inside GlobalSettings in McpAnyServerConfig struct in proto?
+	// No, McpAnyServerConfig has `GlobalSettings`. GlobalSettings has `profile_definitions`.
+	// But `storage.Load` merges profiles into GlobalSettings.
+	// So `cfg.GlobalSettings.ProfileDefinitions` should contain them.
+	// However, `storage.SaveGlobalSettings` might NOT save profiles if they are stored in a separate table.
+	// `sqlite.SaveGlobalSettings` saves to `global_settings` table.
+	// `sqlite.Load` loads from `profile_definitions` table and merges.
+	// So `SaveGlobalSettings` likely does NOT update `profile_definitions` table.
+	// I need to save profiles manually.
+	if cfg.GetGlobalSettings() != nil {
+		for _, p := range cfg.GetGlobalSettings().GetProfileDefinitions() {
+			if err := s.storage.SaveProfile(ctx, p); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to restore profile %s: %v", p.GetName(), err)
+			}
+		}
+	}
+
+	return pb.RestoreBackupResponse_builder{
+		Success: proto.Bool(true),
+		Message: proto.String("Restore completed successfully"),
+	}.Build(), nil
 }

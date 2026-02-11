@@ -1731,5 +1731,64 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    // Backup & Restore
+
+    /**
+     * Creates a system backup.
+     * @returns A promise that resolves to the backup data (Blob) and filename.
+     */
+    createBackup: async () => {
+        const res = await fetchWithAuth('/api/v1/admin/backup');
+        if (!res.ok) throw new Error('Failed to create backup');
+        const data = await res.json();
+        // Decode base64 to Blob if backend sends bytes as base64 JSON string
+        // Protobuf "bytes" field is encoded as base64 in JSON.
+        // The response structure is { backupData: "base64...", filename: "..." }
+        // Wait, if I used `bytes backup_data`, Go JSON marshaller encodes it as base64 string.
+        // So I need to decode it.
+        const binaryString = atob(data.backupData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: "application/json" });
+        return { blob, filename: data.filename };
+    },
+
+    /**
+     * Restores the system from a backup.
+     * @param file The backup file (Blob).
+     * @returns A promise that resolves to the restore result.
+     */
+    restoreBackup: async (file: File) => {
+        // We need to read the file as base64 to send it in the JSON payload
+        const reader = new FileReader();
+        const base64Promise = new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+                const result = reader.result as string;
+                // reader.readAsDataURL returns "data:application/json;base64,....."
+                // We need just the base64 part.
+                const base64 = result.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        const backupData = await base64Promise;
+
+        const res = await fetchWithAuth('/api/v1/admin/restore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ backup_data: backupData })
+        });
+
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to restore backup: ${res.status} ${txt}`);
+        }
+        return res.json();
     }
 };

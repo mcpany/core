@@ -65,6 +65,46 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
+
+  // CreateBackup creates a full system backup.
+  rpc CreateBackup(CreateBackupRequest) returns (CreateBackupResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/backup"
+    };
+  }
+
+  // RestoreBackup restores the system from a backup.
+  rpc RestoreBackup(RestoreBackupRequest) returns (RestoreBackupResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/restore"
+      body: "*"
+    };
+  }
+}
+
+// CreateBackupRequest represents a request to create a backup.
+message CreateBackupRequest {}
+
+// CreateBackupResponse contains the backup data.
+message CreateBackupResponse {
+  // The backup data (JSON).
+  bytes backup_data = 1;
+  // The suggested filename for the backup.
+  string filename = 2;
+}
+
+// RestoreBackupRequest represents a request to restore from a backup.
+message RestoreBackupRequest {
+  // The backup data (JSON) to restore.
+  bytes backup_data = 1;
+}
+
+// RestoreBackupResponse represents the result of the restore operation.
+message RestoreBackupResponse {
+  // Whether the restore was successful.
+  bool success = 1;
+  // A message describing the result.
+  string message = 2;
 }
 
 // ClearCacheRequest represents a request to clear the server cache.
