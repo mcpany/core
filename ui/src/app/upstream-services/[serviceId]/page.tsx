@@ -10,13 +10,14 @@ import { useParams, useRouter } from "next/navigation";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Trash2, Activity, Wrench, FileText, Terminal, Settings, Eye } from "lucide-react";
+import { Loader2, ArrowLeft, Trash2, Activity, Wrench, FileText, Terminal, Settings, Eye, FileCode } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ServiceOverview } from "@/components/services/service-overview";
 import { ServiceTools } from "@/components/services/service-tools";
 import { ServiceResources } from "@/components/services/service-resources";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
+import { ServiceConfigViewer } from "@/components/services/service-config-viewer";
 import { LogStream } from "@/components/logs/log-stream";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 
@@ -159,6 +160,9 @@ export default function UpstreamServiceDetailPage() {
                         <TabsTrigger value="overview" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
                             <Activity className="mr-2 h-4 w-4" /> Overview
                         </TabsTrigger>
+                        <TabsTrigger value="configuration" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                            <FileCode className="mr-2 h-4 w-4" /> Configuration
+                        </TabsTrigger>
                         <TabsTrigger value="tools" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
                             <Wrench className="mr-2 h-4 w-4" /> Tools <Badge variant="secondary" className="ml-2 text-[10px] h-4 px-1">{tools.length}</Badge>
                         </TabsTrigger>
@@ -172,7 +176,7 @@ export default function UpstreamServiceDetailPage() {
                             <Eye className="mr-2 h-4 w-4" /> Inspector
                         </TabsTrigger>
                          <TabsTrigger value="settings" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
-                            <Settings className="mr-2 h-4 w-4" /> Settings
+                            <Settings className="mr-2 h-4 w-4" /> Edit
                         </TabsTrigger>
                     </TabsList>
                 </div>
@@ -180,6 +184,10 @@ export default function UpstreamServiceDetailPage() {
                 <div className="flex-1 overflow-hidden bg-muted/5">
                     <TabsContent value="overview" className="h-full p-6 overflow-y-auto m-0">
                         <ServiceOverview service={service} status={status} trafficData={trafficData} />
+                    </TabsContent>
+
+                    <TabsContent value="configuration" className="h-full p-6 overflow-y-auto m-0">
+                        <ServiceConfigViewer service={service} />
                     </TabsContent>
 
                     <TabsContent value="tools" className="h-full p-6 overflow-y-auto m-0">
