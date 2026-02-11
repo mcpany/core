@@ -36,6 +36,7 @@ import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { SaveToCollectionDialog } from "@/components/playground/save-to-collection-dialog";
 
 import { useSearchParams } from "next/navigation";
 
@@ -51,17 +52,6 @@ export function PlaygroundClientPro() {
   // Initialize with welcome message if empty and only after local storage is loaded
   useEffect(() => {
     if (isInitialized) {
-        // We only add welcome message if the array is empty AND
-        // we check if the key was missing from localStorage (implies first visit).
-        // However, useLocalStorage handles default value if key is missing.
-        // If the user explicitly clears the chat, we set it to empty array.
-        // So `messages` being empty array means either:
-        // 1. First visit (default value used)
-        // 2. User cleared chat
-
-        // To strictly follow "persistence", if the user cleared it, it should stay cleared.
-        // But for UX, if I open the page and it's empty, a welcome message is nice.
-        // Let's rely on checking if localStorage has the key to distinguish first visit.
         const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
 
         if (!hasKey && messages.length === 0) {
@@ -75,7 +65,7 @@ export function PlaygroundClientPro() {
             ]);
         }
     }
-  }, [isInitialized]); // Only run when initialization status changes
+  }, [isInitialized]);
 
   // Revive dates from stored messages (JSON strings)
   const displayMessages = useMemo(() => {
@@ -115,6 +105,10 @@ export function PlaygroundClientPro() {
   // Autocomplete state
   const [filteredSuggestions, setFilteredSuggestions] = useState<ToolDefinition[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Save to Collection State
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [saveTarget, setSaveTarget] = useState<{toolName: string, args: Record<string, unknown>}>({ toolName: "", args: {} });
 
   useEffect(() => {
     apiClient.listTools()
@@ -181,6 +175,18 @@ export function PlaygroundClientPro() {
       const command = `${toolName} ${JSON.stringify(args)}`;
       setInput(command);
       inputRef.current?.focus();
+  };
+
+  const handleRunTestCase = (toolName: string, args: Record<string, unknown>) => {
+      const command = `${toolName} ${JSON.stringify(args)}`;
+      setInput(command);
+      inputRef.current?.focus();
+      // Optional: processResponse(command); // To auto-run
+  };
+
+  const handleSaveToCollection = (toolName: string, args: Record<string, unknown>) => {
+      setSaveTarget({ toolName, args });
+      setIsSaveDialogOpen(true);
   };
 
   const processResponse = async (userInput: string) => {
@@ -356,6 +362,7 @@ export function PlaygroundClientPro() {
              <ToolSidebar
                 tools={availableTools}
                 onSelectTool={setToolToConfigure}
+                onRunTestCase={handleRunTestCase}
              />
          </ResizablePanel>
 
@@ -434,7 +441,13 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
+                                <ChatMessage
+                                    key={msg.id}
+                                    message={msg}
+                                    onReplay={handleReplay}
+                                    onRetry={handleReplay}
+                                    onSave={handleSaveToCollection}
+                                />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
@@ -538,6 +551,13 @@ export function PlaygroundClientPro() {
             </div>
         </DialogContent>
       </Dialog>
+
+      <SaveToCollectionDialog
+        open={isSaveDialogOpen}
+        onOpenChange={setIsSaveDialogOpen}
+        toolName={saveTarget.toolName}
+        toolArgs={saveTarget.args}
+      />
     </div>
   );
 }
