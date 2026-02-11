@@ -4,13 +4,18 @@
  */
 
 import React from "react";
-import { MetricsOverview } from "@/components/dashboard/metrics-overview";
-import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
-import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
-import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
+import dynamic from "next/dynamic";
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2 } from "lucide-react";
+import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
+import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
+
+// ⚡ Bolt Optimization: Lazy load heavy widget components to reduce initial bundle size.
+// Randomized Selection from Top 5 High-Impact Targets.
+const MetricsOverview = dynamic(() => import("@/components/dashboard/metrics-overview").then(mod => mod.MetricsOverview), { loading: () => <WidgetSkeleton /> });
+const ServiceHealthWidget = dynamic(() => import("@/components/dashboard/service-health-widget").then(mod => mod.ServiceHealthWidget), { loading: () => <WidgetSkeleton /> });
+const ToolFailureRateWidget = dynamic(() => import("@/components/dashboard/tool-failure-rate-widget").then(mod => mod.ToolFailureRateWidget), { loading: () => <WidgetSkeleton /> });
+const QuickActionsWidget = dynamic(() => import("@/components/dashboard/quick-actions-widget").then(mod => mod.QuickActionsWidget), { loading: () => <WidgetSkeleton /> });
+const NetworkGraphWidget = dynamic(() => import("@/components/dashboard/network-graph-widget").then(mod => mod.NetworkGraphWidget), { loading: () => <WidgetSkeleton /> });
 
 /**
  * Defines the possible sizes for a dashboard widget.

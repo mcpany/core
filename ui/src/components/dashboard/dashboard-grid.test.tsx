@@ -23,6 +23,12 @@ vi.mock("@/components/dashboard/lazy-charts", () => ({
 vi.mock("@/components/dashboard/tool-failure-rate-widget", () => ({
   ToolFailureRateWidget: () => <div data-testid="widget-failure-rate">Tool Failure Rate Widget</div>
 }));
+vi.mock("@/components/dashboard/network-graph-widget", () => ({
+  NetworkGraphWidget: () => <div data-testid="widget-network-graph">Network Graph Widget</div>
+}));
+vi.mock("@/components/dashboard/quick-actions-widget", () => ({
+  QuickActionsWidget: () => <div data-testid="widget-quick-actions">Quick Actions Widget</div>
+}));
 
 // Mock Drag and Drop
 vi.mock("@hello-pangea/dnd", () => ({
@@ -48,25 +54,17 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("DashboardGrid", () => {
     beforeEach(() => {
-        vi.useFakeTimers();
         localStorage.clear();
       });
 
-      afterEach(() => {
-        vi.useRealTimers();
-      });
-
-  it("renders all default widgets initially", () => {
+  it("renders all default widgets initially", async () => {
     render(<DashboardGrid />);
-    act(() => {
-        vi.runAllTimers();
-    });
-    expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
-    expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
-    expect(screen.getByTestId("widget-uptime")).toBeInTheDocument();
+    expect(await screen.findByTestId("widget-metrics")).toBeInTheDocument();
+    expect(await screen.findByTestId("widget-recent-activity")).toBeInTheDocument();
+    expect(await screen.findByTestId("widget-uptime")).toBeInTheDocument();
   });
 
-  it("loads layout from localStorage", () => {
+  it("loads layout from localStorage", async () => {
     // Note: The DashboardGrid expects instanceId, but handles legacy format where id=type
     const savedLayout = [
         { instanceId: "1", type: "metrics", title: "Metrics Overview", size: "full", hidden: true }, // Hidden
@@ -75,16 +73,13 @@ describe("DashboardGrid", () => {
     localStorage.setItem("dashboard-layout", JSON.stringify(savedLayout));
 
     render(<DashboardGrid />);
-    act(() => {
-        vi.runAllTimers();
-    });
 
     // Metrics should be hidden (not rendered in the grid list)
     expect(screen.queryByTestId("widget-metrics")).not.toBeInTheDocument();
-    expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
+    expect(await screen.findByTestId("widget-recent-activity")).toBeInTheDocument();
   });
 
-  it("migrates old layout schema", () => {
+  it("migrates old layout schema", async () => {
     // Old schema: type="wide" (mapped to full), missing hidden
     const oldLayout = [
         { id: "metrics", title: "Metrics Overview", type: "wide" }
@@ -92,15 +87,14 @@ describe("DashboardGrid", () => {
     localStorage.setItem("dashboard-layout", JSON.stringify(oldLayout));
 
     render(<DashboardGrid />);
-    act(() => {
-        vi.runAllTimers();
-    });
 
-    expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
+    expect(await screen.findByTestId("widget-metrics")).toBeInTheDocument();
     // Verify it updated localStorage with new schema
-    // Wait for debounce
-    act(() => {
-        vi.advanceTimersByTime(1000);
+    // Wait for debounce (using real timers, we can't control it precisely without fake timers,
+    // but we can check if it happens eventually using waitFor)
+    await waitFor(() => {
+        const updated = JSON.parse(localStorage.getItem("dashboard-layout") || "[]");
+        expect(updated.length).toBeGreaterThan(0);
     });
     const updated = JSON.parse(localStorage.getItem("dashboard-layout") || "[]");
     // Debug log
@@ -205,11 +199,8 @@ describe("DashboardGrid", () => {
 
   it("opens customization menu", async () => {
     render(<DashboardGrid />);
-    act(() => {
-        vi.runAllTimers();
-    });
 
-    const customizeBtn = screen.getByText("Layout");
+    const customizeBtn = await screen.findByText("Layout");
     fireEvent.click(customizeBtn);
 
     expect(screen.getByText("Visible Widgets")).toBeInTheDocument();
@@ -217,15 +208,10 @@ describe("DashboardGrid", () => {
   });
 
   it("toggles widget visibility via customization menu", async () => {
-    // Disable fake timers for this interaction-heavy test if possible,
-    // but they are set in beforeEach.
-    // We can switch to real timers temporarily?
-    vi.useRealTimers();
-
     render(<DashboardGrid />);
 
     // Initially visible
-    expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
+    expect(await screen.findByTestId("widget-metrics")).toBeInTheDocument();
 
     // Open menu
     fireEvent.click(screen.getByText("Layout"));
@@ -248,44 +234,45 @@ describe("DashboardGrid", () => {
   });
 
   it("debounces localStorage writes", async () => {
-    render(<DashboardGrid />);
+    vi.useFakeTimers();
+    try {
+        render(<DashboardGrid />);
 
-    // Initial load should trigger effect, but skipped by isFirstRun.
-    // However, if migration runs, setWidgets is called, which might trigger it?
-    // Actually, migration calls setWidgets, but widgets dependency changes, triggering effect.
-    // BUT we need to ensure we are testing the debounce specifically.
+        // Wait for initial render to settle
+        act(() => {
+            vi.runAllTimers();
+        });
 
-    act(() => {
-      vi.runAllTimers();
-    });
+        // Clear any previous writes
+        vi.spyOn(Storage.prototype, 'setItem');
+        vi.mocked(localStorage.setItem).mockClear();
 
-    // Clear any previous writes
-    vi.spyOn(Storage.prototype, 'setItem');
-    vi.mocked(localStorage.setItem).mockClear();
+        const addButton = screen.getByTestId('add-widget');
 
-    const addButton = screen.getByTestId('add-widget');
+        // Trigger update 1
+        act(() => {
+            addButton.click();
+        });
 
-    // Trigger update 1
-    act(() => {
-      addButton.click();
-    });
+        // localStorage should NOT be called yet
+        expect(localStorage.setItem).not.toHaveBeenCalled();
 
-    // localStorage should NOT be called yet
-    expect(localStorage.setItem).not.toHaveBeenCalled();
+        // Trigger update 2 immediately
+        act(() => {
+            addButton.click();
+        });
 
-    // Trigger update 2 immediately
-    act(() => {
-      addButton.click();
-    });
+        expect(localStorage.setItem).not.toHaveBeenCalled();
 
-    expect(localStorage.setItem).not.toHaveBeenCalled();
+        // Fast forward time
+        act(() => {
+            vi.advanceTimersByTime(500);
+        });
 
-    // Fast forward time
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
-
-    // Now it should be called ONCE (for the latest state)
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+        // Now it should be called ONCE (for the latest state)
+        expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+    } finally {
+        vi.useRealTimers();
+    }
   });
 });
