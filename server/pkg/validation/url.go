@@ -27,16 +27,12 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 	return net.DefaultResolver.LookupIP(ctx, network, host)
 }
 
-// IsSafeURL checks if the URL is safe to connect to.
-// It validates the scheme and resolves the host to ensure it doesn't point to
-// loopback, link-local, private, or multicast addresses.
+// IsSafeTarget checks if the URL target (host/IP) is safe to connect to.
+// It validates the host/IP against loopback/private/link-local restrictions.
+// It does NOT restrict the scheme.
 //
-// NOTE: This function performs DNS resolution to check the IP.
-// It is susceptible to DNS rebinding attacks if the check is separated from the connection.
-// For critical security, use a custom Dialer that validates the IP after resolution.
-//
-// IsSafeURL is a variable to allow mocking in tests.
-var IsSafeURL = func(urlStr string) error {
+// IsSafeTarget is a variable to allow mocking in tests.
+var IsSafeTarget = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
 		return nil
@@ -50,14 +46,14 @@ var IsSafeURL = func(urlStr string) error {
 		return fmt.Errorf("invalid URL: %w", err)
 	}
 
-	// 1. Check Scheme
-	if u.Scheme != "http" && u.Scheme != "https" {
-		return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
-	}
-
-	// 2. Resolve Host
+	// Resolve Host
 	host := u.Hostname()
 	if host == "" {
+		// If the URL has no host (e.g. mailto:foo@bar), skip IP check?
+		// For SSRF protection, we usually care about schemes with hosts.
+		// If scheme is generic, maybe skip?
+		// However, returning nil here might bypass checks for malformed URLs.
+		// Let's assume for now that if we are checking target safety, we expect a host.
 		return fmt.Errorf("URL is missing host")
 	}
 
@@ -88,6 +84,30 @@ var IsSafeURL = func(urlStr string) error {
 	}
 
 	return nil
+}
+
+// IsSafeURL checks if the URL is safe to connect to.
+// It validates the scheme and resolves the host to ensure it doesn't point to
+// loopback, link-local, private, or multicast addresses.
+//
+// NOTE: This function performs DNS resolution to check the IP.
+// It is susceptible to DNS rebinding attacks if the check is separated from the connection.
+// For critical security, use a custom Dialer that validates the IP after resolution.
+//
+// IsSafeURL is a variable to allow mocking in tests.
+var IsSafeURL = func(urlStr string) error {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return fmt.Errorf("invalid URL: %w", err)
+	}
+
+	// 1. Check Scheme
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
+	}
+
+	// 2. Check Target Safety (Host/IP)
+	return IsSafeTarget(urlStr)
 }
 
 func validateIP(ip net.IP, allowLoopback, allowPrivate bool) error {

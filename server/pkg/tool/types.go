@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -60,7 +61,10 @@ var (
 	metricHTTPRequestLatency = []string{"http", "request", "latency"}
 )
 
-var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
+var (
+	fastJSON   = jsoniter.ConfigCompatibleWithStandardLibrary
+	urlPattern = regexp.MustCompile(`[a-zA-Z][a-zA-Z0-9+.-]*://[^\s"';<>]+`)
+)
 
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
@@ -3313,5 +3317,24 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
+
+	// Sentinel Security Update: Check for SSRF in arguments
+	// If the argument contains a URL (scheme://...), extract and validate it.
+	// This protects against SSRF attacks via tools like git, curl, etc.
+	// We iterate over extracted URLs to handle cases like --url=http://... or embedded URLs.
+	if strings.Contains(val, "://") {
+		if err := checkURLsInString(val); err != nil {
+			return err
+		}
+	}
+	// Also check decoded value for SSRF (e.g. http%3A%2F%2F)
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if strings.Contains(decodedVal, "://") {
+			if err := checkURLsInString(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
+		}
+	}
+
 	return nil
 }
