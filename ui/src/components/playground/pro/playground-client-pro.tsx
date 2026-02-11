@@ -12,16 +12,9 @@ import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, Share2, Copy, Check, Info, Upload } from "lucide-react";
+import { Download, Share2, Check, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens, estimateMessageTokens } from "@/lib/tokens";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription
-} from "@/components/ui/dialog";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -31,13 +24,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-import { ToolForm } from "@/components/playground/tool-form";
 import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
 import { useSearchParams } from "next/navigation";
+import { ToolInspectorPanel } from "./tool-inspector-panel";
 
 /**
  * PlaygroundClientPro component.
@@ -53,15 +46,6 @@ export function PlaygroundClientPro() {
     if (isInitialized) {
         // We only add welcome message if the array is empty AND
         // we check if the key was missing from localStorage (implies first visit).
-        // However, useLocalStorage handles default value if key is missing.
-        // If the user explicitly clears the chat, we set it to empty array.
-        // So `messages` being empty array means either:
-        // 1. First visit (default value used)
-        // 2. User cleared chat
-
-        // To strictly follow "persistence", if the user cleared it, it should stay cleared.
-        // But for UX, if I open the page and it's empty, a welcome message is nice.
-        // Let's rely on checking if localStorage has the key to distinguish first visit.
         const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
 
         if (!hasKey && messages.length === 0) {
@@ -154,11 +138,28 @@ export function PlaygroundClientPro() {
     processResponse(input);
   };
 
-  const handleToolFormSubmit = (data: Record<string, unknown>) => {
+  const handleToolInsert = (data: Record<string, unknown>) => {
     if (!toolToConfigure) return;
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
     setInput(command);
+    inputRef.current?.focus();
+  };
+
+  const handleToolRun = (data: Record<string, unknown>) => {
+    if (!toolToConfigure) return;
+    const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
+
+    // Add User Message to simulate manual entry
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: command,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
+    processResponse(command);
   };
 
   const handleInputChange = (value: string) => {
@@ -361,7 +362,7 @@ export function PlaygroundClientPro() {
 
          <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
 
-         <ResizablePanel defaultSize={75}>
+         <ResizablePanel defaultSize={50} minSize={30}>
             <div className="flex flex-col h-full relative bg-muted/5">
                 {/* Header */}
                 <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
@@ -512,32 +513,21 @@ export function PlaygroundClientPro() {
                 </div>
             </div>
          </ResizablePanel>
-      </ResizablePanelGroup>
 
-      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
-        <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
-            <DialogHeader className="p-6 pb-2">
-                <DialogTitle className="flex items-center gap-2 text-xl">
-                    <div className="bg-primary/10 p-1.5 rounded-md">
-                        <Zap className="w-5 h-5 text-primary" />
-                    </div>
-                    {toolToConfigure?.name}
-                </DialogTitle>
-                <DialogDescription>
-                    Configure arguments for this tool execution.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="flex-1 overflow-hidden p-6 pt-2">
-                {toolToConfigure && (
-                    <ToolForm
+         {toolToConfigure && (
+            <>
+                <ResizableHandle withHandle={!isMobile} />
+                <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="hidden md:block">
+                    <ToolInspectorPanel
                         tool={toolToConfigure}
-                        onSubmit={handleToolFormSubmit}
-                        onCancel={() => setToolToConfigure(null)}
+                        onClose={() => setToolToConfigure(null)}
+                        onInsert={handleToolInsert}
+                        onRun={handleToolRun}
                     />
-                )}
-            </div>
-        </DialogContent>
-      </Dialog>
+                </ResizablePanel>
+            </>
+         )}
+      </ResizablePanelGroup>
     </div>
   );
 }

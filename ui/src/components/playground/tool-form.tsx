@@ -13,12 +13,14 @@ import { ToolPresets } from "./tool-presets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { JsonView } from "@/components/ui/json-view";
+import { Play, CornerDownRight } from "lucide-react";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
 
 interface ToolFormProps {
   tool: ToolDefinition;
   onSubmit: (data: Record<string, unknown>) => void;
+  onRun?: (data: Record<string, unknown>) => void;
   onCancel: () => void;
 }
 
@@ -27,7 +29,7 @@ interface ToolFormProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
+export function ToolForm({ tool, onSubmit, onRun, onCancel }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [jsonInput, setJsonInput] = useState<string>("{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -94,9 +96,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       return {};
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const validateAndSubmit = (action: 'submit' | 'run') => {
     let finalData = formData;
 
     if (mode === "json") {
@@ -116,7 +116,23 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
     }
 
     setErrors({});
-    onSubmit(finalData);
+    if (action === 'run' && onRun) {
+        onRun(finalData);
+    } else {
+        onSubmit(finalData);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Default submit behavior on Enter
+    // If run is available, treat as run? Or insert?
+    // Usually "Run" is the primary action in a workbench.
+    if (onRun) {
+        validateAndSubmit('run');
+    } else {
+        validateAndSubmit('submit');
+    }
   };
 
   const handleTabChange = (value: string) => {
@@ -197,10 +213,10 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   // actually including formData/jsonInput is enough.
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
+    <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-full">
       <Tabs value={mode} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-1 mb-2">
-            <TabsList className="grid w-[300px] grid-cols-3">
+        <div className="flex items-center justify-between px-1 mb-2 shrink-0">
+            <TabsList className="grid w-[240px] grid-cols-3">
                 <TabsTrigger value="form">Form</TabsTrigger>
                 <TabsTrigger value="json">JSON</TabsTrigger>
                 <TabsTrigger value="schema">Schema</TabsTrigger>
@@ -271,13 +287,32 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-end gap-2 pt-4 border-t mt-auto">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit">
-          Build Command
-        </Button>
+      <div className="flex justify-between gap-2 pt-4 border-t mt-auto shrink-0">
+        <div />
+        <div className="flex gap-2 w-full sm:w-auto">
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() => validateAndSubmit('submit')}
+                className="flex-1 sm:flex-none"
+                title="Paste command into console without running"
+            >
+              <CornerDownRight className="mr-2 h-4 w-4 text-muted-foreground" />
+              Insert
+            </Button>
+            {onRun ? (
+                <Button
+                    type="button"
+                    onClick={() => validateAndSubmit('run')}
+                    className="bg-primary hover:bg-primary/90 flex-1 sm:flex-none"
+                >
+                  <Play className="mr-2 h-4 w-4 fill-current" />
+                  Run
+                </Button>
+            ) : (
+                 <Button type="submit" className="flex-1 sm:flex-none">Build Command</Button>
+            )}
+        </div>
       </div>
     </form>
   );
