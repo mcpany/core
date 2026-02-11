@@ -77,6 +77,9 @@ func TestWatcher_AddError(t *testing.T) {
 }
 
 func TestWatcher_URL(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	t.Setenv("MCPANY_TEST_MODE", "true")
+
 	w, err := NewWatcher()
 	if err != nil {
 		t.Fatal(err)
@@ -85,7 +88,8 @@ func TestWatcher_URL(t *testing.T) {
 
 	done := make(chan bool)
 	go func() {
-		_ = w.Watch([]string{"http://example.com/config"}, func() {})
+		// Use local address to avoid external network dependency
+		_ = w.Watch([]string{"http://127.0.0.1:54321/config"}, func() {})
 		close(done)
 	}()
 
