@@ -7,7 +7,10 @@ import { request, APIRequestContext } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+const DUMMY_SERVICE_URL = process.env.DUMMY_SERVICE_URL || 'https://example.com';
 const HEADERS = { 'X-API-Key': API_KEY };
+
+console.log(`[TEST-DATA] Loaded. DUMMY_SERVICE_URL=${DUMMY_SERVICE_URL}`);
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
@@ -24,22 +27,22 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             }
         },
         {
-            id: "svc_02_debug",
-            name: "User Service Debug",
+            id: "svc_02_final",
+            name: "User Service Final",
             version: "v1.0",
             http_service: {
-                address: "https://example.com", // Dummy address
+                address: DUMMY_SERVICE_URL,
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
             }
         },
         {
-            id: "svc_03_debug",
-            name: "Math Debug",
+            id: "svc_03_final",
+            name: "Math Final",
             version: "v1.0",
             http_service: {
-                address: "https://example.com", // Dummy
+                address: DUMMY_SERVICE_URL,
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
@@ -124,14 +127,19 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service Fixed', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service Debug', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math Fixed', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math Debug', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        const toDelete = [
+            'Payment Gateway', 'Payment Gateway Updated',
+            'User Service', 'User Service Fixed', 'User Service Debug', 'User Service Final',
+            'Math', 'Math Fixed', 'Math Debug', 'Math Final',
+            'Echo Service'
+        ];
+        for (const name of toDelete) {
+            try {
+                await context.delete(`/api/v1/services/${name}`, { headers: HEADERS });
+            } catch {
+                // Ignore delete errors
+            }
+        }
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
