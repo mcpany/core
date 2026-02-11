@@ -19,8 +19,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "pay" }
+                ],
+                calls: {
+                    pay: {
+                        method: "POST",
+                        endpoint_path: "/v1/charges"
+                    }
+                }
             }
         },
         {
