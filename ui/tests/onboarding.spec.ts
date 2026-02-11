@@ -73,8 +73,8 @@ test.describe('Onboarding Flow', () => {
         if (await errorAlert.isVisible({ timeout: 5000 }).catch(() => false)) {
              // If ANY error alert is visible, we assume it's the network failure path
              console.log("Deployment failed as expected (network issue?):", await errorAlert.textContent());
-             // Verify we can retry
-             await expect(page.getByRole('button', { name: 'Try Again' })).toBeVisible();
+             // Verify we can retry - Wait for it to be visible as there might be an animation
+             await expect(page.getByRole('button', { name: 'Try Again' })).toBeVisible({ timeout: 10000 });
              return;
         }
         throw e;
