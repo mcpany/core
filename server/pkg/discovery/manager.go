@@ -71,6 +71,7 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	log := logging.GetLogger()
 
 	m.mu.RLock()
+	// Copy providers to a local slice to release the lock early
 	providers := make([]Provider, len(m.providers))
 	copy(providers, m.providers)
 	m.mu.RUnlock()
