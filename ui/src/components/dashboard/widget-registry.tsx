@@ -4,13 +4,37 @@
  */
 
 import React from "react";
-import { MetricsOverview } from "@/components/dashboard/metrics-overview";
-import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
+import dynamic from "next/dynamic";
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
-import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
-import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2 } from "lucide-react";
+import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
+
+// ⚡ Bolt Optimization: Lazy load heavy widgets to reduce initial bundle size.
+// Randomized Selection from Top 5 High-Impact Targets
+const MetricsOverview = dynamic(() => import("@/components/dashboard/metrics-overview").then(mod => mod.MetricsOverview), {
+  loading: () => <WidgetSkeleton />,
+  ssr: false
+});
+
+const NetworkGraphWidget = dynamic(() => import("@/components/dashboard/network-graph-widget").then(mod => mod.NetworkGraphWidget), {
+  loading: () => <WidgetSkeleton />,
+  ssr: false
+});
+
+const ServiceHealthWidget = dynamic(() => import("@/components/dashboard/service-health-widget").then(mod => mod.ServiceHealthWidget), {
+  loading: () => <WidgetSkeleton />,
+  ssr: false
+});
+
+const ToolFailureRateWidget = dynamic(() => import("@/components/dashboard/tool-failure-rate-widget").then(mod => mod.ToolFailureRateWidget), {
+  loading: () => <WidgetSkeleton />,
+  ssr: false
+});
+
+const QuickActionsWidget = dynamic(() => import("@/components/dashboard/quick-actions-widget").then(mod => mod.QuickActionsWidget), {
+  loading: () => <WidgetSkeleton />,
+  ssr: false
+});
 
 /**
  * Defines the possible sizes for a dashboard widget.
