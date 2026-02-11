@@ -1012,6 +1012,42 @@ export const apiClient = {
         return {};
     },
 
+    // Maintenance (Backup & Restore)
+
+    /**
+     * Creates a full system backup.
+     * @returns A promise that resolves to the backup configuration object.
+     */
+    createBackup: async () => {
+        const res = await fetchWithAuth('/api/v1/admin/backup');
+        if (!res.ok) throw new Error('Failed to create backup');
+        return res.json();
+    },
+
+    /**
+     * Restores the system from a backup.
+     * @param config The full configuration object to restore.
+     * @returns A promise that resolves with the restore summary.
+     */
+    restoreBackup: async (config: any) => {
+        // The config object should be wrapped in { config: ... } as per protobuf request message
+        // CreateBackupResponse has `config` field.
+        // RestoreBackupRequest has `config` field.
+        // If we pass the object returned by createBackup, it is { config: {...} }.
+        // If we pass just the inner config, we need to wrap it.
+        // Let's assume the user passes the full JSON file which matches CreateBackupResponse structure.
+        const res = await fetchWithAuth('/api/v1/admin/restore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to restore backup: ${txt}`);
+        }
+        return res.json();
+    },
+
     // Global Settings
 
     /**

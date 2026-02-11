@@ -27,6 +27,327 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// CreateBackupRequest represents a request to create a backup.
+type CreateBackupRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateBackupRequest) Reset() {
+	*x = CreateBackupRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateBackupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateBackupRequest) ProtoMessage() {}
+
+func (x *CreateBackupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type CreateBackupRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 CreateBackupRequest_builder) Build() *CreateBackupRequest {
+	m0 := &CreateBackupRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+// CreateBackupResponse contains the backup data.
+type CreateBackupResponse struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Config *v1.McpAnyServerConfig `protobuf:"bytes,1,opt,name=config"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *CreateBackupResponse) Reset() {
+	*x = CreateBackupResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateBackupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateBackupResponse) ProtoMessage() {}
+
+func (x *CreateBackupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *CreateBackupResponse) GetConfig() *v1.McpAnyServerConfig {
+	if x != nil {
+		return x.xxx_hidden_Config
+	}
+	return nil
+}
+
+func (x *CreateBackupResponse) SetConfig(v *v1.McpAnyServerConfig) {
+	x.xxx_hidden_Config = v
+}
+
+func (x *CreateBackupResponse) HasConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Config != nil
+}
+
+func (x *CreateBackupResponse) ClearConfig() {
+	x.xxx_hidden_Config = nil
+}
+
+type CreateBackupResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The full configuration.
+	Config *v1.McpAnyServerConfig
+}
+
+func (b0 CreateBackupResponse_builder) Build() *CreateBackupResponse {
+	m0 := &CreateBackupResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Config = b.Config
+	return m0
+}
+
+// RestoreBackupRequest represents a request to restore from a backup.
+type RestoreBackupRequest struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Config *v1.McpAnyServerConfig `protobuf:"bytes,1,opt,name=config"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *RestoreBackupRequest) Reset() {
+	*x = RestoreBackupRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreBackupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreBackupRequest) ProtoMessage() {}
+
+func (x *RestoreBackupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *RestoreBackupRequest) GetConfig() *v1.McpAnyServerConfig {
+	if x != nil {
+		return x.xxx_hidden_Config
+	}
+	return nil
+}
+
+func (x *RestoreBackupRequest) SetConfig(v *v1.McpAnyServerConfig) {
+	x.xxx_hidden_Config = v
+}
+
+func (x *RestoreBackupRequest) HasConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Config != nil
+}
+
+func (x *RestoreBackupRequest) ClearConfig() {
+	x.xxx_hidden_Config = nil
+}
+
+type RestoreBackupRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The full configuration to restore.
+	Config *v1.McpAnyServerConfig
+}
+
+func (b0 RestoreBackupRequest_builder) Build() *RestoreBackupRequest {
+	m0 := &RestoreBackupRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Config = b.Config
+	return m0
+}
+
+// RestoreBackupResponse represents the response after restoring.
+type RestoreBackupResponse struct {
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServicesRestored int32                  `protobuf:"varint,1,opt,name=services_restored,json=servicesRestored"`
+	xxx_hidden_UsersRestored    int32                  `protobuf:"varint,2,opt,name=users_restored,json=usersRestored"`
+	xxx_hidden_SecretsRestored  int32                  `protobuf:"varint,3,opt,name=secrets_restored,json=secretsRestored"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *RestoreBackupResponse) Reset() {
+	*x = RestoreBackupResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreBackupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreBackupResponse) ProtoMessage() {}
+
+func (x *RestoreBackupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *RestoreBackupResponse) GetServicesRestored() int32 {
+	if x != nil {
+		return x.xxx_hidden_ServicesRestored
+	}
+	return 0
+}
+
+func (x *RestoreBackupResponse) GetUsersRestored() int32 {
+	if x != nil {
+		return x.xxx_hidden_UsersRestored
+	}
+	return 0
+}
+
+func (x *RestoreBackupResponse) GetSecretsRestored() int32 {
+	if x != nil {
+		return x.xxx_hidden_SecretsRestored
+	}
+	return 0
+}
+
+func (x *RestoreBackupResponse) SetServicesRestored(v int32) {
+	x.xxx_hidden_ServicesRestored = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *RestoreBackupResponse) SetUsersRestored(v int32) {
+	x.xxx_hidden_UsersRestored = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *RestoreBackupResponse) SetSecretsRestored(v int32) {
+	x.xxx_hidden_SecretsRestored = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *RestoreBackupResponse) HasServicesRestored() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RestoreBackupResponse) HasUsersRestored() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *RestoreBackupResponse) HasSecretsRestored() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *RestoreBackupResponse) ClearServicesRestored() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServicesRestored = 0
+}
+
+func (x *RestoreBackupResponse) ClearUsersRestored() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_UsersRestored = 0
+}
+
+func (x *RestoreBackupResponse) ClearSecretsRestored() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_SecretsRestored = 0
+}
+
+type RestoreBackupResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Summary of restored items.
+	ServicesRestored *int32
+	UsersRestored    *int32
+	SecretsRestored  *int32
+}
+
+func (b0 RestoreBackupResponse_builder) Build() *RestoreBackupResponse {
+	m0 := &RestoreBackupResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ServicesRestored != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_ServicesRestored = *b.ServicesRestored
+	}
+	if b.UsersRestored != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_UsersRestored = *b.UsersRestored
+	}
+	if b.SecretsRestored != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_SecretsRestored = *b.SecretsRestored
+	}
+	return m0
+}
+
 // ClearCacheRequest represents a request to clear the server cache.
 type ClearCacheRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
@@ -36,7 +357,7 @@ type ClearCacheRequest struct {
 
 func (x *ClearCacheRequest) Reset() {
 	*x = ClearCacheRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[0]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -48,7 +369,7 @@ func (x *ClearCacheRequest) String() string {
 func (*ClearCacheRequest) ProtoMessage() {}
 
 func (x *ClearCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[0]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -80,7 +401,7 @@ type ClearCacheResponse struct {
 
 func (x *ClearCacheResponse) Reset() {
 	*x = ClearCacheResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[1]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -92,7 +413,7 @@ func (x *ClearCacheResponse) String() string {
 func (*ClearCacheResponse) ProtoMessage() {}
 
 func (x *ClearCacheResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[1]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -124,7 +445,7 @@ type ListServicesRequest struct {
 
 func (x *ListServicesRequest) Reset() {
 	*x = ListServicesRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[2]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -136,7 +457,7 @@ func (x *ListServicesRequest) String() string {
 func (*ListServicesRequest) ProtoMessage() {}
 
 func (x *ListServicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[2]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +491,7 @@ type ListServicesResponse struct {
 
 func (x *ListServicesResponse) Reset() {
 	*x = ListServicesResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[3]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -182,7 +503,7 @@ func (x *ListServicesResponse) String() string {
 func (*ListServicesResponse) ProtoMessage() {}
 
 func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[3]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -255,7 +576,7 @@ type ServiceState struct {
 
 func (x *ServiceState) Reset() {
 	*x = ServiceState{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -267,7 +588,7 @@ func (x *ServiceState) String() string {
 func (*ServiceState) ProtoMessage() {}
 
 func (x *ServiceState) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -393,7 +714,7 @@ type GetServiceRequest struct {
 
 func (x *GetServiceRequest) Reset() {
 	*x = GetServiceRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +726,7 @@ func (x *GetServiceRequest) String() string {
 func (*GetServiceRequest) ProtoMessage() {}
 
 func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -472,7 +793,7 @@ type GetServiceResponse struct {
 
 func (x *GetServiceResponse) Reset() {
 	*x = GetServiceResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -484,7 +805,7 @@ func (x *GetServiceResponse) String() string {
 func (*GetServiceResponse) ProtoMessage() {}
 
 func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -572,7 +893,7 @@ type ListToolsRequest struct {
 
 func (x *ListToolsRequest) Reset() {
 	*x = ListToolsRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -584,7 +905,7 @@ func (x *ListToolsRequest) String() string {
 func (*ListToolsRequest) ProtoMessage() {}
 
 func (x *ListToolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -617,7 +938,7 @@ type ListToolsResponse struct {
 
 func (x *ListToolsResponse) Reset() {
 	*x = ListToolsResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -629,7 +950,7 @@ func (x *ListToolsResponse) String() string {
 func (*ListToolsResponse) ProtoMessage() {}
 
 func (x *ListToolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +1001,7 @@ type GetToolRequest struct {
 
 func (x *GetToolRequest) Reset() {
 	*x = GetToolRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -692,7 +1013,7 @@ func (x *GetToolRequest) String() string {
 func (*GetToolRequest) ProtoMessage() {}
 
 func (x *GetToolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -758,7 +1079,7 @@ type GetToolResponse struct {
 
 func (x *GetToolResponse) Reset() {
 	*x = GetToolResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -770,7 +1091,7 @@ func (x *GetToolResponse) String() string {
 func (*GetToolResponse) ProtoMessage() {}
 
 func (x *GetToolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -828,7 +1149,7 @@ type CreateUserRequest struct {
 
 func (x *CreateUserRequest) Reset() {
 	*x = CreateUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -840,7 +1161,7 @@ func (x *CreateUserRequest) String() string {
 func (*CreateUserRequest) ProtoMessage() {}
 
 func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -898,7 +1219,7 @@ type CreateUserResponse struct {
 
 func (x *CreateUserResponse) Reset() {
 	*x = CreateUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -910,7 +1231,7 @@ func (x *CreateUserResponse) String() string {
 func (*CreateUserResponse) ProtoMessage() {}
 
 func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -970,7 +1291,7 @@ type GetUserRequest struct {
 
 func (x *GetUserRequest) Reset() {
 	*x = GetUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -982,7 +1303,7 @@ func (x *GetUserRequest) String() string {
 func (*GetUserRequest) ProtoMessage() {}
 
 func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1048,7 +1369,7 @@ type GetUserResponse struct {
 
 func (x *GetUserResponse) Reset() {
 	*x = GetUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1060,7 +1381,7 @@ func (x *GetUserResponse) String() string {
 func (*GetUserResponse) ProtoMessage() {}
 
 func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1117,7 +1438,7 @@ type ListUsersRequest struct {
 
 func (x *ListUsersRequest) Reset() {
 	*x = ListUsersRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1129,7 +1450,7 @@ func (x *ListUsersRequest) String() string {
 func (*ListUsersRequest) ProtoMessage() {}
 
 func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1162,7 +1483,7 @@ type ListUsersResponse struct {
 
 func (x *ListUsersResponse) Reset() {
 	*x = ListUsersResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1174,7 +1495,7 @@ func (x *ListUsersResponse) String() string {
 func (*ListUsersResponse) ProtoMessage() {}
 
 func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1544,7 @@ type UpdateUserRequest struct {
 
 func (x *UpdateUserRequest) Reset() {
 	*x = UpdateUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1235,7 +1556,7 @@ func (x *UpdateUserRequest) String() string {
 func (*UpdateUserRequest) ProtoMessage() {}
 
 func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1293,7 +1614,7 @@ type UpdateUserResponse struct {
 
 func (x *UpdateUserResponse) Reset() {
 	*x = UpdateUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1305,7 +1626,7 @@ func (x *UpdateUserResponse) String() string {
 func (*UpdateUserResponse) ProtoMessage() {}
 
 func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1365,7 +1686,7 @@ type DeleteUserRequest struct {
 
 func (x *DeleteUserRequest) Reset() {
 	*x = DeleteUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1377,7 +1698,7 @@ func (x *DeleteUserRequest) String() string {
 func (*DeleteUserRequest) ProtoMessage() {}
 
 func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1442,7 +1763,7 @@ type DeleteUserResponse struct {
 
 func (x *DeleteUserResponse) Reset() {
 	*x = DeleteUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[20]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1454,7 +1775,7 @@ func (x *DeleteUserResponse) String() string {
 func (*DeleteUserResponse) ProtoMessage() {}
 
 func (x *DeleteUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[20]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1486,7 +1807,7 @@ type GetDiscoveryStatusRequest struct {
 
 func (x *GetDiscoveryStatusRequest) Reset() {
 	*x = GetDiscoveryStatusRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[21]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1498,7 +1819,7 @@ func (x *GetDiscoveryStatusRequest) String() string {
 func (*GetDiscoveryStatusRequest) ProtoMessage() {}
 
 func (x *GetDiscoveryStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[21]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1531,7 +1852,7 @@ type GetDiscoveryStatusResponse struct {
 
 func (x *GetDiscoveryStatusResponse) Reset() {
 	*x = GetDiscoveryStatusResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[22]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1543,7 +1864,7 @@ func (x *GetDiscoveryStatusResponse) String() string {
 func (*GetDiscoveryStatusResponse) ProtoMessage() {}
 
 func (x *GetDiscoveryStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[22]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1598,7 +1919,7 @@ type DiscoveryProviderStatus struct {
 
 func (x *DiscoveryProviderStatus) Reset() {
 	*x = DiscoveryProviderStatus{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[23]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1610,7 +1931,7 @@ func (x *DiscoveryProviderStatus) String() string {
 func (*DiscoveryProviderStatus) ProtoMessage() {}
 
 func (x *DiscoveryProviderStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[23]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1813,7 +2134,7 @@ type ListAuditLogsRequest struct {
 
 func (x *ListAuditLogsRequest) Reset() {
 	*x = ListAuditLogsRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[24]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1825,7 +2146,7 @@ func (x *ListAuditLogsRequest) String() string {
 func (*ListAuditLogsRequest) ProtoMessage() {}
 
 func (x *ListAuditLogsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[24]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2083,7 +2404,7 @@ type ListAuditLogsResponse struct {
 
 func (x *ListAuditLogsResponse) Reset() {
 	*x = ListAuditLogsResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[25]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2095,7 +2416,7 @@ func (x *ListAuditLogsResponse) String() string {
 func (*ListAuditLogsResponse) ProtoMessage() {}
 
 func (x *ListAuditLogsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[25]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2154,7 +2475,7 @@ type AuditLogEntry struct {
 
 func (x *AuditLogEntry) Reset() {
 	*x = AuditLogEntry{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[26]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2166,7 +2487,7 @@ func (x *AuditLogEntry) String() string {
 func (*AuditLogEntry) ProtoMessage() {}
 
 func (x *AuditLogEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[26]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2487,7 +2808,16 @@ var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\x1a!google/protobuf/go_features.proto\"\x13\n" +
+	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a\x1cproto/config/v1/config.proto\x1a$proto/mcp_router/v1/mcp_router.proto\x1a!google/protobuf/go_features.proto\"\x15\n" +
+	"\x13CreateBackupRequest\"T\n" +
+	"\x14CreateBackupResponse\x12<\n" +
+	"\x06config\x18\x01 \x01(\v2$.mcpany.config.v1.McpAnyServerConfigR\x06config\"T\n" +
+	"\x14RestoreBackupRequest\x12<\n" +
+	"\x06config\x18\x01 \x01(\v2$.mcpany.config.v1.McpAnyServerConfigR\x06config\"\x96\x01\n" +
+	"\x15RestoreBackupResponse\x12+\n" +
+	"\x11services_restored\x18\x01 \x01(\x05R\x10servicesRestored\x12%\n" +
+	"\x0eusers_restored\x18\x02 \x01(\x05R\rusersRestored\x12)\n" +
+	"\x10secrets_restored\x18\x03 \x01(\x05R\x0fsecretsRestored\"\x13\n" +
 	"\x11ClearCacheRequest\"\x14\n" +
 	"\x12ClearCacheResponse\"\x15\n" +
 	"\x13ListServicesRequest\"\xa5\x01\n" +
@@ -2562,7 +2892,8 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x05error\x18\a \x01(\tR\x05error\x12\x1a\n" +
 	"\bduration\x18\b \x01(\tR\bduration\x12\x1f\n" +
 	"\vduration_ms\x18\t \x01(\x03R\n" +
-	"durationMs2\xcd\b\n" +
+	"durationMs2\xcb\n" +
+	"\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -2580,87 +2911,100 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
 	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\x12z\n" +
-	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB;B\n" +
+	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logs\x12y\n" +
+	"\fCreateBackup\x12$.mcpany.admin.v1.CreateBackupRequest\x1a%.mcpany.admin.v1.CreateBackupResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/v1/admin/backup\x12\x80\x01\n" +
+	"\rRestoreBackup\x12%.mcpany.admin.v1.RestoreBackupRequest\x1a&.mcpany.admin.v1.RestoreBackupResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/admin/restoreB;B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
-	(*ClearCacheRequest)(nil),          // 0: mcpany.admin.v1.ClearCacheRequest
-	(*ClearCacheResponse)(nil),         // 1: mcpany.admin.v1.ClearCacheResponse
-	(*ListServicesRequest)(nil),        // 2: mcpany.admin.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),       // 3: mcpany.admin.v1.ListServicesResponse
-	(*ServiceState)(nil),               // 4: mcpany.admin.v1.ServiceState
-	(*GetServiceRequest)(nil),          // 5: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),         // 6: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),           // 7: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),          // 8: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),             // 9: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),            // 10: mcpany.admin.v1.GetToolResponse
-	(*CreateUserRequest)(nil),          // 11: mcpany.admin.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),         // 12: mcpany.admin.v1.CreateUserResponse
-	(*GetUserRequest)(nil),             // 13: mcpany.admin.v1.GetUserRequest
-	(*GetUserResponse)(nil),            // 14: mcpany.admin.v1.GetUserResponse
-	(*ListUsersRequest)(nil),           // 15: mcpany.admin.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),          // 16: mcpany.admin.v1.ListUsersResponse
-	(*UpdateUserRequest)(nil),          // 17: mcpany.admin.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),         // 18: mcpany.admin.v1.UpdateUserResponse
-	(*DeleteUserRequest)(nil),          // 19: mcpany.admin.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),         // 20: mcpany.admin.v1.DeleteUserResponse
-	(*GetDiscoveryStatusRequest)(nil),  // 21: mcpany.admin.v1.GetDiscoveryStatusRequest
-	(*GetDiscoveryStatusResponse)(nil), // 22: mcpany.admin.v1.GetDiscoveryStatusResponse
-	(*DiscoveryProviderStatus)(nil),    // 23: mcpany.admin.v1.DiscoveryProviderStatus
-	(*ListAuditLogsRequest)(nil),       // 24: mcpany.admin.v1.ListAuditLogsRequest
-	(*ListAuditLogsResponse)(nil),      // 25: mcpany.admin.v1.ListAuditLogsResponse
-	(*AuditLogEntry)(nil),              // 26: mcpany.admin.v1.AuditLogEntry
-	(*v1.UpstreamServiceConfig)(nil),   // 27: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                   // 28: mcpany.mcp_router.v1.Tool
-	(*v1.User)(nil),                    // 29: mcpany.config.v1.User
+	(*CreateBackupRequest)(nil),        // 0: mcpany.admin.v1.CreateBackupRequest
+	(*CreateBackupResponse)(nil),       // 1: mcpany.admin.v1.CreateBackupResponse
+	(*RestoreBackupRequest)(nil),       // 2: mcpany.admin.v1.RestoreBackupRequest
+	(*RestoreBackupResponse)(nil),      // 3: mcpany.admin.v1.RestoreBackupResponse
+	(*ClearCacheRequest)(nil),          // 4: mcpany.admin.v1.ClearCacheRequest
+	(*ClearCacheResponse)(nil),         // 5: mcpany.admin.v1.ClearCacheResponse
+	(*ListServicesRequest)(nil),        // 6: mcpany.admin.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),       // 7: mcpany.admin.v1.ListServicesResponse
+	(*ServiceState)(nil),               // 8: mcpany.admin.v1.ServiceState
+	(*GetServiceRequest)(nil),          // 9: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),         // 10: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),           // 11: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),          // 12: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),             // 13: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),            // 14: mcpany.admin.v1.GetToolResponse
+	(*CreateUserRequest)(nil),          // 15: mcpany.admin.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),         // 16: mcpany.admin.v1.CreateUserResponse
+	(*GetUserRequest)(nil),             // 17: mcpany.admin.v1.GetUserRequest
+	(*GetUserResponse)(nil),            // 18: mcpany.admin.v1.GetUserResponse
+	(*ListUsersRequest)(nil),           // 19: mcpany.admin.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),          // 20: mcpany.admin.v1.ListUsersResponse
+	(*UpdateUserRequest)(nil),          // 21: mcpany.admin.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),         // 22: mcpany.admin.v1.UpdateUserResponse
+	(*DeleteUserRequest)(nil),          // 23: mcpany.admin.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),         // 24: mcpany.admin.v1.DeleteUserResponse
+	(*GetDiscoveryStatusRequest)(nil),  // 25: mcpany.admin.v1.GetDiscoveryStatusRequest
+	(*GetDiscoveryStatusResponse)(nil), // 26: mcpany.admin.v1.GetDiscoveryStatusResponse
+	(*DiscoveryProviderStatus)(nil),    // 27: mcpany.admin.v1.DiscoveryProviderStatus
+	(*ListAuditLogsRequest)(nil),       // 28: mcpany.admin.v1.ListAuditLogsRequest
+	(*ListAuditLogsResponse)(nil),      // 29: mcpany.admin.v1.ListAuditLogsResponse
+	(*AuditLogEntry)(nil),              // 30: mcpany.admin.v1.AuditLogEntry
+	(*v1.McpAnyServerConfig)(nil),      // 31: mcpany.config.v1.McpAnyServerConfig
+	(*v1.UpstreamServiceConfig)(nil),   // 32: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                   // 33: mcpany.mcp_router.v1.Tool
+	(*v1.User)(nil),                    // 34: mcpany.config.v1.User
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	27, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	4,  // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
-	27, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	27, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	4,  // 4: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
-	28, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	28, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	29, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
-	29, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
-	29, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
-	29, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
-	29, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
-	29, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
-	23, // 13: mcpany.admin.v1.GetDiscoveryStatusResponse.providers:type_name -> mcpany.admin.v1.DiscoveryProviderStatus
-	26, // 14: mcpany.admin.v1.ListAuditLogsResponse.entries:type_name -> mcpany.admin.v1.AuditLogEntry
-	0,  // 15: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 16: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	5,  // 17: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	7,  // 18: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	9,  // 19: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	11, // 20: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
-	13, // 21: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
-	15, // 22: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
-	17, // 23: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
-	19, // 24: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
-	21, // 25: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
-	24, // 26: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
-	1,  // 27: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 28: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	6,  // 29: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	8,  // 30: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	10, // 31: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	12, // 32: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
-	14, // 33: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
-	16, // 34: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
-	18, // 35: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
-	20, // 36: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
-	22, // 37: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
-	25, // 38: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
-	27, // [27:39] is the sub-list for method output_type
-	15, // [15:27] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	31, // 0: mcpany.admin.v1.CreateBackupResponse.config:type_name -> mcpany.config.v1.McpAnyServerConfig
+	31, // 1: mcpany.admin.v1.RestoreBackupRequest.config:type_name -> mcpany.config.v1.McpAnyServerConfig
+	32, // 2: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	8,  // 3: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
+	32, // 4: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	32, // 5: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	8,  // 6: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
+	33, // 7: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	33, // 8: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	34, // 9: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
+	34, // 10: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
+	34, // 11: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
+	34, // 12: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
+	34, // 13: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
+	34, // 14: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
+	27, // 15: mcpany.admin.v1.GetDiscoveryStatusResponse.providers:type_name -> mcpany.admin.v1.DiscoveryProviderStatus
+	30, // 16: mcpany.admin.v1.ListAuditLogsResponse.entries:type_name -> mcpany.admin.v1.AuditLogEntry
+	4,  // 17: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	6,  // 18: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	9,  // 19: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	11, // 20: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	13, // 21: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	15, // 22: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
+	17, // 23: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
+	19, // 24: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
+	21, // 25: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
+	23, // 26: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
+	25, // 27: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
+	28, // 28: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
+	0,  // 29: mcpany.admin.v1.AdminService.CreateBackup:input_type -> mcpany.admin.v1.CreateBackupRequest
+	2,  // 30: mcpany.admin.v1.AdminService.RestoreBackup:input_type -> mcpany.admin.v1.RestoreBackupRequest
+	5,  // 31: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	7,  // 32: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	10, // 33: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	12, // 34: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	14, // 35: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	16, // 36: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
+	18, // 37: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
+	20, // 38: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
+	22, // 39: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
+	24, // 40: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
+	26, // 41: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
+	29, // 42: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
+	1,  // 43: mcpany.admin.v1.AdminService.CreateBackup:output_type -> mcpany.admin.v1.CreateBackupResponse
+	3,  // 44: mcpany.admin.v1.AdminService.RestoreBackup:output_type -> mcpany.admin.v1.RestoreBackupResponse
+	31, // [31:45] is the sub-list for method output_type
+	17, // [17:31] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -2674,7 +3018,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

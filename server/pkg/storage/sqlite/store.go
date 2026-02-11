@@ -53,16 +53,18 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		settings    *configv1.GlobalSettings
 		collections []*configv1.Collection
 		profiles    []*configv1.ProfileDefinition
+		secrets     []*configv1.Secret
+		credentials []*configv1.Credential
 
 		wg   sync.WaitGroup
 		mu   sync.Mutex
 		errs []error
 	)
 
-	// ⚡ BOLT: Parallelized data loading (5 concurrent queries) to reduce latency.
+	// ⚡ BOLT: Parallelized data loading (7 concurrent queries) to reduce latency.
 	// Randomized Selection from Top 5 High-Impact Targets
 
-	wg.Add(5)
+	wg.Add(7)
 
 	// 1. Load services
 	go func() {
@@ -219,6 +221,80 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		}
 	}()
 
+	// 6. Load Secrets
+	go func() {
+		defer wg.Done()
+		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to query secrets: %w", err))
+			mu.Unlock()
+			return
+		}
+		defer func() { _ = rows.Close() }()
+
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		for rows.Next() {
+			var configJSON string
+			if err := rows.Scan(&configJSON); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to scan secret config_json: %w", err))
+				mu.Unlock()
+				return
+			}
+			var secret configv1.Secret
+			if err := opts.Unmarshal([]byte(configJSON), &secret); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to unmarshal secret config: %w", err))
+				mu.Unlock()
+				return
+			}
+			secrets = append(secrets, &secret)
+		}
+		if err := rows.Err(); err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to iterate secret rows: %w", err))
+			mu.Unlock()
+		}
+	}()
+
+	// 7. Load Credentials
+	go func() {
+		defer wg.Done()
+		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to query credentials: %w", err))
+			mu.Unlock()
+			return
+		}
+		defer func() { _ = rows.Close() }()
+
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		for rows.Next() {
+			var configJSON string
+			if err := rows.Scan(&configJSON); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to scan credential config_json: %w", err))
+				mu.Unlock()
+				return
+			}
+			var cred configv1.Credential
+			if err := opts.Unmarshal([]byte(configJSON), &cred); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to unmarshal credential config: %w", err))
+				mu.Unlock()
+				return
+			}
+			credentials = append(credentials, &cred)
+		}
+		if err := rows.Err(); err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to iterate credential rows: %w", err))
+			mu.Unlock()
+		}
+	}()
+
 	wg.Wait()
 
 	if len(errs) > 0 {
@@ -239,6 +315,8 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		UpstreamServices: services,
 		Users:            users,
 		Collections:      collections,
+		Secrets:          secrets,
+		Credentials:      credentials,
 	}
 	if settings != nil {
 		builder.GlobalSettings = settings

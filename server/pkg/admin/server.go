@@ -426,3 +426,76 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 	}
 	return pb.ListAuditLogsResponse_builder{Entries: pbEntries}.Build(), nil
 }
+
+// CreateBackup creates a full backup of the system configuration.
+func (s *Server) CreateBackup(ctx context.Context, _ *pb.CreateBackupRequest) (*pb.CreateBackupResponse, error) {
+	config, err := s.storage.Load(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to load configuration: %v", err)
+	}
+	return pb.CreateBackupResponse_builder{Config: config}.Build(), nil
+}
+
+// RestoreBackup restores the system configuration from a backup.
+func (s *Server) RestoreBackup(ctx context.Context, req *pb.RestoreBackupRequest) (*pb.RestoreBackupResponse, error) {
+	config := req.GetConfig()
+	if config == nil {
+		return nil, status.Error(codes.InvalidArgument, "config is required")
+	}
+
+	var servicesRestored, usersRestored, secretsRestored int32
+
+	if config.GetGlobalSettings() != nil {
+		if err := s.storage.SaveGlobalSettings(ctx, config.GetGlobalSettings()); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to save global settings: %v", err)
+		}
+		// Save profiles inside global settings (if any)
+		for _, p := range config.GetGlobalSettings().GetProfileDefinitions() {
+			if err := s.storage.SaveProfile(ctx, p); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to save profile %s: %v", p.GetName(), err)
+			}
+		}
+	}
+
+	for _, svc := range config.GetUpstreamServices() {
+		if err := s.storage.SaveService(ctx, svc); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to save service %s: %v", svc.GetName(), err)
+		}
+		servicesRestored++
+	}
+
+	for _, user := range config.GetUsers() {
+		// Try update first, then create
+		if err := s.storage.UpdateUser(ctx, user); err != nil {
+			if err := s.storage.CreateUser(ctx, user); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to save user %s: %v", user.GetId(), err)
+			}
+		}
+		usersRestored++
+	}
+
+	for _, secret := range config.GetSecrets() {
+		if err := s.storage.SaveSecret(ctx, secret); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to save secret %s: %v", secret.GetName(), err)
+		}
+		secretsRestored++
+	}
+
+	for _, col := range config.GetCollections() {
+		if err := s.storage.SaveServiceCollection(ctx, col); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to save collection %s: %v", col.GetName(), err)
+		}
+	}
+
+	for _, cred := range config.GetCredentials() {
+		if err := s.storage.SaveCredential(ctx, cred); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to save credential %s: %v", cred.GetName(), err)
+		}
+	}
+
+	return pb.RestoreBackupResponse_builder{
+		ServicesRestored: proto.Int32(servicesRestored),
+		UsersRestored:    proto.Int32(usersRestored),
+		SecretsRestored:  proto.Int32(secretsRestored),
+	}.Build(), nil
+}

@@ -8,6 +8,7 @@ package mcpany.admin.v1;
 import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/user.proto";
+import "proto/config/v1/config.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
 import "google/protobuf/go_features.proto";
 
@@ -65,6 +66,50 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
+
+  // ===================================================================
+  // Backup & Restore
+  // ===================================================================
+
+  // CreateBackup creates a full backup of the system configuration.
+  rpc CreateBackup(CreateBackupRequest) returns (CreateBackupResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/backup"
+    };
+  }
+
+  // RestoreBackup restores the system configuration from a backup.
+  rpc RestoreBackup(RestoreBackupRequest) returns (RestoreBackupResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/restore"
+      body: "*"
+    };
+  }
+}
+
+// CreateBackupRequest represents a request to create a backup.
+message CreateBackupRequest {
+  // Optional: Encrypt the backup with a password? Not for now.
+}
+
+// CreateBackupResponse contains the backup data.
+message CreateBackupResponse {
+  // The full configuration.
+  mcpany.config.v1.McpAnyServerConfig config = 1;
+}
+
+// RestoreBackupRequest represents a request to restore from a backup.
+message RestoreBackupRequest {
+  // The full configuration to restore.
+  mcpany.config.v1.McpAnyServerConfig config = 1;
+}
+
+// RestoreBackupResponse represents the response after restoring.
+message RestoreBackupResponse {
+  // Summary of restored items.
+  int32 services_restored = 1;
+  int32 users_restored = 2;
+  int32 secrets_restored = 3;
 }
 
 // ClearCacheRequest represents a request to clear the server cache.

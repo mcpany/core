@@ -8,6 +8,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
+import { BackupRestore } from "@/components/settings/backup-restore";
 
 /**
  * SettingsPage component.
@@ -24,12 +25,16 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="general">Global Config</TabsTrigger>
           <TabsTrigger value="auth">Authentication</TabsTrigger>
+          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
         <TabsContent value="auth">
             <AuthSettingsForm />
         </TabsContent>
         <TabsContent value="general">
              <GlobalSettingsForm />
+        </TabsContent>
+        <TabsContent value="maintenance">
+             <BackupRestore />
         </TabsContent>
       </Tabs>
     </div>

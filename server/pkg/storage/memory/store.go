@@ -151,9 +151,33 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	}
 
 	// 4. Build final ServerConfig
+	users := make([]*configv1.User, 0, len(s.users))
+	for _, u := range s.users {
+		users = append(users, proto.Clone(u).(*configv1.User))
+	}
+
+	collections := make([]*configv1.Collection, 0, len(s.serviceCollections))
+	for _, c := range s.serviceCollections {
+		collections = append(collections, proto.Clone(c).(*configv1.Collection))
+	}
+
+	secrets := make([]*configv1.Secret, 0, len(s.secrets))
+	for _, sec := range s.secrets {
+		secrets = append(secrets, proto.Clone(sec).(*configv1.Secret))
+	}
+
+	credentials := make([]*configv1.Credential, 0, len(s.credentials))
+	for _, c := range s.credentials {
+		credentials = append(credentials, proto.Clone(c).(*configv1.Credential))
+	}
+
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: upstreamServices,
 		GlobalSettings:   gs,
+		Users:            users,
+		Collections:      collections,
+		Secrets:          secrets,
+		Credentials:      credentials,
 	}.Build()
 
 	return cfg, nil
