@@ -3278,6 +3278,52 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
+var sensitiveFilePatterns = []string{
+	".env*",
+	".git*",
+	".ssh*",
+	"config.yaml",
+	"config.json",
+	"*.db",
+	"*.key",
+	"*.pem",
+	"*.crt",
+}
+
+func checkForSensitiveFileAccess(val string) error {
+	// Check the base name first
+	base := filepath.Base(val)
+	for _, pattern := range sensitiveFilePatterns {
+		matched, err := filepath.Match(pattern, base)
+		if err == nil && matched {
+			return fmt.Errorf("access to sensitive file %q is blocked", base)
+		}
+	}
+
+	// Also check directory components to prevent access to files inside sensitive directories
+	// e.g. .git/config, .ssh/id_rsa
+	dir := filepath.Dir(val)
+	cleanDir := filepath.Clean(dir)
+	if cleanDir == "." || cleanDir == string(os.PathSeparator) {
+		return nil
+	}
+
+	parts := strings.Split(cleanDir, string(os.PathSeparator))
+	for _, part := range parts {
+		if part == "." || part == "" {
+			continue
+		}
+		for _, pattern := range sensitiveFilePatterns {
+			matched, err := filepath.Match(pattern, part)
+			if err == nil && matched {
+				return fmt.Errorf("access to sensitive directory %q is blocked", part)
+			}
+		}
+	}
+
+	return nil
+}
+
 func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
@@ -3296,9 +3342,17 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		if err := checkForLocalFileAccess(val); err != nil {
 			return err
 		}
+		// Sentinel Security Update: Block access to sensitive files (e.g. .env, .git)
+		if err := checkForSensitiveFileAccess(val); err != nil {
+			return err
+		}
+
 		// Also check decoded value for local file access (e.g. %66ile://)
 		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
 			if err := checkForLocalFileAccess(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
+			if err := checkForSensitiveFileAccess(decodedVal); err != nil {
 				return fmt.Errorf("%w (decoded)", err)
 			}
 		}
