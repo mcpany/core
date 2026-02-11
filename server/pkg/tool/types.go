@@ -2755,7 +2755,70 @@ func checkForLocalFileAccess(val string) error {
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
+
+	// Sentinel Security Update: Block access to sensitive files and directories
+	if err := checkForSensitiveFile(val); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func checkForSensitiveFile(path string) error {
+	// Normalize path separators
+	path = filepath.ToSlash(path)
+	parts := strings.Split(path, "/")
+
+	for _, part := range parts {
+		if isSensitiveName(part) {
+			return fmt.Errorf("access to sensitive file or directory %q is blocked", part)
+		}
+	}
+	return nil
+}
+
+func isSensitiveName(name string) bool {
+	// Exact matches
+	sensitive := map[string]bool{
+		".env":            true,
+		".git":            true,
+		".svn":            true,
+		".hg":             true,
+		".bzr":            true,
+		".ssh":            true,
+		".aws":            true,
+		".kube":           true,
+		".docker":         true,
+		"id_rsa":          true,
+		"id_dsa":          true,
+		"id_ecdsa":        true,
+		"id_ed25519":      true,
+		"authorized_keys": true,
+		"known_hosts":     true,
+		"config.yaml":     true,
+		"config.json":     true,
+		"config.toml":     true,
+		".bashrc":         true,
+		".zshrc":          true,
+		".profile":        true,
+		".bash_history":   true,
+		".zsh_history":    true,
+		".history":        true,
+	}
+
+	if sensitive[name] {
+		return true
+	}
+
+	// Pattern matches
+	if strings.HasPrefix(name, ".env.") {
+		return true
+	}
+	if strings.HasSuffix(name, ".pem") || strings.HasSuffix(name, ".key") {
+		return true
+	}
+
+	return false
 }
 
 func checkForArgumentInjection(val string) error {
