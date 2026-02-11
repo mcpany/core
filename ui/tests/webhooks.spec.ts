@@ -47,7 +47,8 @@ test.describe('System Integrations', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Verify toast confirmation
-    await expect(page.getByText('Settings Saved')).toBeVisible();
+    // Use first() to avoid strict mode violation if multiple elements match
+    await expect(page.getByText('Settings Saved').first()).toBeVisible();
 
     // --- Verify Persistence ---
     await page.reload();

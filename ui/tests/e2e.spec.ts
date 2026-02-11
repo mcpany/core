@@ -72,8 +72,8 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test.skip('Webhooks page displays configuration', async ({ page }) => {
-    await page.goto('/settings/webhooks');
-    await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
+    await page.goto('/webhooks'); // Note: Path is /webhooks now, not /settings/webhooks
+    await expect(page.getByRole('heading', { name: 'System Integrations' })).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
