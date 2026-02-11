@@ -40,9 +40,9 @@ test: clean-test-results build-test-docker build-server-docker
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
 	if [ -z '$(ARGS)' ]; then \
-		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) MCPANY_ALLOW_LOOPBACK_RESOURCES=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) MCPANY_ALLOW_LOOPBACK_RESOURCES=true docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
 
@@ -77,7 +77,7 @@ audit: build-test-docker build-server-docker
 test-ci: clean-test-results
 	mkdir -p test-results .audit ../build/playwright-report
 	chmod -R 777 test-results .audit ../build/playwright-report || true
-	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
+	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" MCPANY_ALLOW_LOOPBACK_RESOURCES=true docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
 # Local test target (runs natively)
