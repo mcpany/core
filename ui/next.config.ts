@@ -4,8 +4,6 @@
  */
 
 import type {NextConfig} from 'next';
-import path from 'path';
-import fs from 'fs';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -116,29 +114,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
-  },
-  webpack: (config) => {
-
-    // Explicitly add alias for @proto to resolve external directory
-    // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
-    const localProto = path.join(__dirname, 'proto');
-    const rootProto = path.join(__dirname, '../proto');
-    // DEBUG: Log proto paths
-    console.log(`[DEBUG] __dirname: ${__dirname}`);
-    console.log(`[DEBUG] localProto: ${localProto}, exists: ${fs.existsSync(localProto)}`);
-    console.log(`[DEBUG] rootProto: ${rootProto}, exists: ${fs.existsSync(rootProto)}`);
-
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
-    console.log(`[DEBUG] Resolved @proto to: ${protoPath}`);
-
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@proto': protoPath,
-      '@google': path.join(protoPath, 'google'),
-    };
-    // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
-    config.resolve.symlinks = false;
-    return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
   // async rewrites() { ... }

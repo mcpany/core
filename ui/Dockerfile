@@ -78,6 +78,9 @@ WORKDIR /app
 # This ensures that TypeScript compilation finds the locally generated files
 RUN sed -i 's|\.\./proto|./proto|g' tsconfig.json
 
+# Verify tsconfig.json content
+RUN cat tsconfig.json
+
 # Verify generation (fail if missing)
 # Note: we check /app/proto now
 RUN echo "Checking for generated files..." && \
