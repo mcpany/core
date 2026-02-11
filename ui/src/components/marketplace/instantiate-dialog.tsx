@@ -43,7 +43,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
     // Schema state
     const [parsedSchema, setParsedSchema] = useState<any>(null);
-    const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
+    const [schemaValues, setSchemaValues] = useState<Record<string, any>>({});
     const [isSchemaValid, setIsSchemaValid] = useState(true);
 
     // Helper to determine if we should show CLI options
@@ -61,7 +61,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
                 // Initialize env vars
                 const newEnv: Record<string, SecretValue> = {};
-                const initialSchemaValues: Record<string, string> = {};
+                const initialSchemaValues: Record<string, any> = {};
 
                 if (templateConfig.commandLineService.env) {
                     Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {
@@ -99,8 +99,8 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     const valuesWithDefaults = { ...initialSchemaValues };
                     if (schema.properties) {
                         Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
-                            if (!valuesWithDefaults[k] && v.default) {
-                                valuesWithDefaults[k] = String(v.default);
+                            if (valuesWithDefaults[k] === undefined && v.default !== undefined) {
+                                valuesWithDefaults[k] = v.default;
                             }
                         });
                     }
@@ -108,7 +108,8 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     // Sync defaults to envVars immediately
                     const envWithDefaults = { ...newEnv };
                     Object.entries(valuesWithDefaults).forEach(([k, v]) => {
-                        envWithDefaults[k] = { plainText: v, validationRegex: "" };
+                        const stringVal = typeof v === 'object' ? JSON.stringify(v) : String(v);
+                        envWithDefaults[k] = { plainText: stringVal, validationRegex: "" };
                     });
                     setEnvVars(envWithDefaults);
                     checkSchemaValidity(valuesWithDefaults, schema);
@@ -126,23 +127,30 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         }
     }, [open, templateConfig]);
 
-    const checkSchemaValidity = (values: Record<string, string>, schema: any) => {
+    const checkSchemaValidity = (values: Record<string, any>, schema: any) => {
         if (!schema || !schema.required) {
             setIsSchemaValid(true);
             return;
         }
-        const missing = schema.required.some((field: string) => !values[field]);
+        const missing = schema.required.some((field: string) => {
+            const val = values[field];
+            if (val === undefined || val === null || val === "") return true;
+            if (Array.isArray(val) && val.length === 0) return false; // Empty array is valid if type matches? Usually required means "present"
+            // For now, strict check on undefined/null/empty string
+            return false;
+        });
         setIsSchemaValid(!missing);
     };
 
-    const handleSchemaChange = (newValues: Record<string, string>) => {
+    const handleSchemaChange = (newValues: Record<string, any>) => {
         setSchemaValues(newValues);
         // Sync to envVars for compatibility with handleInstantiate logic
         const newEnv: Record<string, SecretValue> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
 
         // Update with new values
         Object.entries(newValues).forEach(([k, v]) => {
-            newEnv[k] = { plainText: v, validationRegex: "" };
+            const stringVal = typeof v === 'object' ? JSON.stringify(v) : String(v);
+            newEnv[k] = { plainText: stringVal, validationRegex: "" };
         });
 
         setEnvVars(newEnv);
