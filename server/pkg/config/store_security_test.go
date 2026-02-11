@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,6 +21,20 @@ func TestStore_SSRF_Protection(t *testing.T) {
 	// It relies on the default configuration of the secure http client.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
+	// Save original global httpClient and restore after test
+	originalClient := httpClient
+	defer func() { httpClient = originalClient }()
+
+	// Re-initialize httpClient to pick up the environment variable changes
+	httpClient = func() *http.Client {
+		client := util.NewSafeHTTPClient()
+		client.Timeout = 5 * time.Second
+		client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+		return client
+	}()
 
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
