@@ -159,8 +159,8 @@ nodes:
 
 	// 6.5 Deploy http-echo-server (after namespace creation)
 	t.Log("Deploying http-echo-server as dummy service...")
-	// Run pod using :local tag to ensure it uses the loaded image (IfNotPresent)
-	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:local", "--port=8080", "-n", namespace, "--labels=app=echo-server"); err != nil {
+	// Run pod using :local tag and ImagePullPolicy:Never to ensure it uses the loaded image
+	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "echo-server", "--image=mcpany/http-echo-server:local", "--overrides", `{"spec": {"containers": [{"name": "echo-server", "image": "mcpany/http-echo-server:local", "imagePullPolicy": "Never"}]}}`, "--port=8080", "-n", namespace, "--labels=app=echo-server"); err != nil {
 		t.Fatalf("Failed to run echo-server pod: %v", err)
 	}
 	// Expose service
