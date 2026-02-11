@@ -16,6 +16,10 @@ import (
 )
 
 func TestServiceValidateSSRF(t *testing.T) {
+	// Ensure SSRF protection is active for this test
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
 	// Start a local server simulating an internal resource (loopback)
 	internalServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

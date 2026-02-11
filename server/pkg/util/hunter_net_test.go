@@ -51,6 +51,10 @@ func TestCheckConnection_Coverage(t *testing.T) {
 }
 
 func TestSafeDialer_Coverage(t *testing.T) {
+	// Ensure secure defaults even if CI env vars are set
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
