@@ -36,28 +36,6 @@ func (a *Application) handleListRequestCollections() http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		// We use json.NewEncoder for the wrapper, but cols contain proto messages which serialize differently.
-		// It's better to use protojson.Marshal for the whole thing if we define a wrapper proto,
-		// or just manually serialize the list.
-		// For simplicity/consistency with existing handlers (which often use json.NewEncoder for Go structs),
-		// we rely on the fact that generated Go protos have JSON tags.
-		// However, protojson is stricter/better for google.protobuf.Struct etc.
-		// Let's stick to json.NewEncoder as in other handlers unless we see issues.
-		// Actually, `configv1.RequestCollection` has `json_name` tags.
-		// But `google.protobuf.Struct` (args) needs special handling usually provided by protojson.
-		// If we use `json.Marshal`, `Struct` might fail or look weird.
-		// Let's use protojson manually.
-
-		// Wait, we can't easily marshal a struct wrapping proto messages using protojson unless the wrapper is also a proto.
-		// But other handlers seem to return `res.json()`.
-		// Let's check `api_services.go` (if it existed) or `handler.go`.
-		// `handler.go` used `json.NewEncoder`.
-		// Let's trust `json.NewEncoder` works for simple cases, but for `Struct`, we might need to be careful.
-		// The safest bet is defining a response proto, but that's overkill.
-		// Let's try `json.NewEncoder`. If args are garbled, we fix it.
-		// Actually, generated Go code for Struct is `map[string]interface{}` basically? No, it's `*structpb.Struct`.
-		// It implements `json.Marshaler`. So it should be fine.
-
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
@@ -94,7 +72,9 @@ func (a *Application) handleSaveRequestCollection() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		// Return the saved object
 		resp, _ := protojson.Marshal(&col)
-		w.Write(resp)
+		if _, err := w.Write(resp); err != nil {
+			// Failed to write response, cannot do much but log if we had a logger
+		}
 	}
 }
 

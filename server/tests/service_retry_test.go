@@ -265,6 +265,21 @@ func (m *MockStorage) SaveServiceTemplate(ctx context.Context, template *configv
 	return nil
 }
 func (m *MockStorage) DeleteServiceTemplate(ctx context.Context, id string) error { return nil }
+
+// Request Collection mocks
+func (m *MockStorage) ListRequestCollections(ctx context.Context) ([]*configv1.RequestCollection, error) {
+	return nil, nil
+}
+func (m *MockStorage) GetRequestCollection(ctx context.Context, id string) (*configv1.RequestCollection, error) {
+	return nil, nil
+}
+func (m *MockStorage) SaveRequestCollection(ctx context.Context, collection *configv1.RequestCollection) error {
+	return nil
+}
+func (m *MockStorage) DeleteRequestCollection(ctx context.Context, id string) error {
+	return nil
+}
+
 func (m *MockStorage) Close() error {
 	args := m.Called()
 	return args.Error(0)
