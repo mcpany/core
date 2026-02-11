@@ -434,13 +434,31 @@ export const apiClient = {
             }));
         }
         if (config.toolExportPolicy) {
-            payload.tool_export_policy = config.toolExportPolicy;
+            payload.tool_export_policy = {
+                default_action: config.toolExportPolicy.defaultAction,
+                rules: config.toolExportPolicy.rules?.map((r: any) => ({
+                    name_regex: r.nameRegex,
+                    action: r.action
+                }))
+            };
         }
         if (config.promptExportPolicy) {
-            payload.prompt_export_policy = config.promptExportPolicy;
+            payload.prompt_export_policy = {
+                default_action: config.promptExportPolicy.defaultAction,
+                rules: config.promptExportPolicy.rules?.map((r: any) => ({
+                    name_regex: r.nameRegex,
+                    action: r.action
+                }))
+            };
         }
         if (config.resourceExportPolicy) {
-            payload.resource_export_policy = config.resourceExportPolicy;
+            payload.resource_export_policy = {
+                default_action: config.resourceExportPolicy.defaultAction,
+                rules: config.resourceExportPolicy.rules?.map((r: any) => ({
+                    name_regex: r.nameRegex,
+                    action: r.action
+                }))
+            };
         }
 
         const response = await fetchWithAuth('/api/v1/services', {
@@ -520,13 +538,31 @@ export const apiClient = {
             }));
         }
         if (config.toolExportPolicy) {
-            payload.tool_export_policy = config.toolExportPolicy;
+            payload.tool_export_policy = {
+                default_action: config.toolExportPolicy.defaultAction,
+                rules: config.toolExportPolicy.rules?.map((r: any) => ({
+                    name_regex: r.nameRegex,
+                    action: r.action
+                }))
+            };
         }
         if (config.promptExportPolicy) {
-            payload.prompt_export_policy = config.promptExportPolicy;
+            payload.prompt_export_policy = {
+                default_action: config.promptExportPolicy.defaultAction,
+                rules: config.promptExportPolicy.rules?.map((r: any) => ({
+                    name_regex: r.nameRegex,
+                    action: r.action
+                }))
+            };
         }
         if (config.resourceExportPolicy) {
-            payload.resource_export_policy = config.resourceExportPolicy;
+            payload.resource_export_policy = {
+                default_action: config.resourceExportPolicy.defaultAction,
+                rules: config.resourceExportPolicy.rules?.map((r: any) => ({
+                    name_regex: r.nameRegex,
+                    action: r.action
+                }))
+            };
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {

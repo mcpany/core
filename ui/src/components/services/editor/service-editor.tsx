@@ -51,6 +51,58 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
     const [yamlError, setYamlError] = useState<string | null>(null);
     const { toast } = useToast();
 
+    const [availableTools, setAvailableTools] = useState<string[]>([]);
+    const [availablePrompts, setAvailablePrompts] = useState<string[]>([]);
+    const [availableResources, setAvailableResources] = useState<string[]>([]);
+
+    // Fetch available items for policy editor
+    useEffect(() => {
+        const fetchItems = async () => {
+            if (!service.name) return;
+            try {
+                // Fetch Tools
+                const toolsRes = await apiClient.listTools();
+                const tools = toolsRes.tools
+                    .filter((t: any) => t.serviceId === service.name || t.serviceId === service.id)
+                    .map((t: any) => t.name);
+
+                // Fallback to manual tools if no runtime tools found (e.g. service stopped or just created)
+                if (tools.length === 0) {
+                     const manualTools = service.httpService?.tools?.map(t => t.name)
+                        || service.grpcService?.tools?.map(t => t.name)
+                        || service.commandLineService?.tools?.map(t => t.name)
+                        || service.mcpService?.tools?.map(t => t.name)
+                        || service.openapiService?.tools?.map(t => t.name)
+                        || [];
+                     setAvailableTools(manualTools);
+                } else {
+                    setAvailableTools(tools);
+                }
+
+                // Fetch Prompts
+                const promptsRes = await apiClient.listPrompts();
+                const prompts = (promptsRes.prompts || [])
+                        .filter((p: any) => p.serviceId === service.name || p.serviceId === service.id)
+                        .map((p: any) => p.name);
+                setAvailablePrompts(prompts);
+
+                // Fetch Resources
+                const resourcesRes = await apiClient.listResources();
+                const resources = (resourcesRes.resources || [])
+                        .filter((r: any) => r.serviceId === service.name || r.serviceId === service.id)
+                        .map((r: any) => r.name);
+                setAvailableResources(resources);
+
+            } catch (e) {
+                console.warn("Failed to fetch available items for policy editor", e);
+            }
+        };
+
+        if (activeTab === 'policies') {
+            fetchItems();
+        }
+    }, [service.name, service.id, activeTab]);
+
     // Snapshot original configuration for diffing
     useEffect(() => {
         try {
@@ -418,18 +470,21 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     title="Tool Export Policy"
                                     description="Control which tools are exposed to the AI client."
                                     policy={service.toolExportPolicy}
+                                    knownItems={availableTools}
                                     onChange={(policy) => updateService({ toolExportPolicy: policy })}
                                 />
                                 <PolicyEditor
                                     title="Prompt Export Policy"
                                     description="Control which prompts are exposed to the AI client."
                                     policy={service.promptExportPolicy}
+                                    knownItems={availablePrompts}
                                     onChange={(policy) => updateService({ promptExportPolicy: policy })}
                                 />
                                 <PolicyEditor
                                     title="Resource Export Policy"
                                     description="Control which resources are exposed to the AI client."
                                     policy={service.resourceExportPolicy}
+                                    knownItems={availableResources}
                                     onChange={(policy) => updateService({ resourceExportPolicy: policy })}
                                 />
                             </div>
