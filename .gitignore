@@ -19,6 +19,8 @@ node_modules/
 
 # Log files
 *.log
+mcpany.log.json
+server/pkg/config/mcpany.log.json
 
 # Python cache
 __pycache__/
