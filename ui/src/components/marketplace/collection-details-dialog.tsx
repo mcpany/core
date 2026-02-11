@@ -77,14 +77,15 @@ export function CollectionDetailsDialog({
                                         {service.commandLineService
                                             ? `Command: ${service.commandLineService.command}`
                                             : service.httpService
-                                                ? `URL: ${service.httpService.url}`
+                                                ? `URL: ${service.httpService.address}`
                                                 : "Configuration Template"}
                                     </CardDescription>
+                                    {/* Tools display disabled due to type mismatch in current proto definitions
                                     {service.tools && service.tools.length > 0 && (
                                         <div className="mt-2 text-xs text-muted-foreground">
                                             Tools: {service.tools.map(t => t.name).join(", ")}
                                         </div>
-                                    )}
+                                    )} */}
                                 </CardContent>
                             </Card>
                         ))}
