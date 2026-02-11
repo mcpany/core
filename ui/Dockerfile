@@ -35,49 +35,53 @@ RUN curl -sSL https://github.com/googleapis/googleapis/archive/master.zip -o goo
     unzip -q googleapis.zip && \
     mv googleapis-master /googleapis
 
-WORKDIR /app
+# Change to root to simplify relative path handling for protoc
+WORKDIR /
 
-# 1. Generate Repo Protos (e.g. proto/config/v1/auth.proto)
-# Input: /proto/...
-# Output: /proto/... (via --ts_proto_out=/)
-RUN find /proto -name "*.proto" -exec protoc \
-    --proto_path=/ \
-    --proto_path=/googleapis \
-    --proto_path=/usr/include \
+# Verify sources exist (fail if not)
+RUN echo "Checking for source .proto files..." && \
+    ls -l /proto/config/v1/auth.proto || (echo "Source auth.proto MISSING!" && exit 1)
+
+# 1. Generate Repo Protos
+# Use relative paths from root (e.g. proto/config/v1/auth.proto)
+# Output to . (root), so proto/config/v1/auth.ts lands in /proto/config/v1/
+RUN find proto -name "*.proto" -exec protoc \
+    --proto_path=. \
+    --proto_path=googleapis \
+    --proto_path=usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/ \
+    --ts_proto_out=. \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
-# 2. Generate Standard Protos (e.g. google/protobuf/struct.proto)
-# Input: /usr/include/google/protobuf/...
-# Output: /proto/google/protobuf/... (via --ts_proto_out=/proto)
-# This ensures that imports like "google/protobuf/struct" in repo protos resolve to files in /proto/google/protobuf
-RUN find /usr/include/google/protobuf -name "*.proto" -exec protoc \
-    --proto_path=/usr/include \
+# 2. Generate Standard Protos (google/protobuf/*.proto)
+# Output to proto/ (so they land in /proto/google/protobuf/...)
+RUN find usr/include/google/protobuf -name "*.proto" -exec protoc \
+    --proto_path=usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/proto \
+    --ts_proto_out=proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
-# 3. Generate Google APIs (e.g. google/api/annotations.proto)
-# Input: /googleapis/google/api/...
-# Output: /proto/google/api/... (via --ts_proto_out=/proto)
-RUN find /googleapis/google/api -name "*.proto" -exec protoc \
-    --proto_path=/googleapis \
-    --proto_path=/usr/include \
+# 3. Generate Google APIs (google/api/*.proto)
+# Output to proto/ (so they land in /proto/google/api/...)
+RUN find googleapis/google/api -name "*.proto" -exec protoc \
+    --proto_path=googleapis \
+    --proto_path=usr/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/proto \
+    --ts_proto_out=proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
-# Debug: Verify files exist
+# Verify generation (fail if missing)
 RUN echo "Checking for generated files..." && \
-    ls -l /proto/config/v1/auth.ts || echo "auth.ts MISSING" && \
-    ls -l /proto/google/protobuf/struct.ts || echo "struct.ts MISSING" && \
-    ls -l /proto/google/api/annotations.ts || echo "annotations.ts MISSING"
+    ls -l /proto/config/v1/auth.ts || (echo "auth.ts MISSING" && exit 1) && \
+    ls -l /proto/google/protobuf/struct.ts || (echo "struct.ts MISSING" && exit 1) && \
+    ls -l /proto/google/api/annotations.ts || (echo "annotations.ts MISSING" && exit 1)
 
 # -----------------------------------------------------------------------------
+# Restore WORKDIR for build
+WORKDIR /app
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
