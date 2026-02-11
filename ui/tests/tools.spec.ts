@@ -10,7 +10,8 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     // Use a unique suffix to prevent collision with other tests running in parallel
-    const SUFFIX = " Tools Test";
+    // Using underscores instead of spaces to avoid potential URL encoding issues in IDs
+    const SUFFIX = "_Tools_Test";
 
     test.beforeEach(async ({ request, page }) => {
         await seedServices(request, SUFFIX);
