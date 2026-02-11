@@ -124,9 +124,15 @@ test.describe('User Guide Walkthrough', () => {
 
   test('Webhooks Management', async ({ page }) => {
     await page.goto('/webhooks');
-    await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
-    // Button is "New Webhook", not "Add Webhook"
-    await expect(page.getByRole('button', { name: 'New Webhook' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'System Webhooks' })).toBeVisible();
+
+    // Check for Health Alerts card
+    await expect(page.getByText('Health Alerts')).toBeVisible();
+    // Check for Audit Logging card
+    await expect(page.getByText('Audit Logging')).toBeVisible();
+
+    // Verify the Save button is present (instead of New Webhook)
+    await expect(page.getByRole('button', { name: 'Save Changes' })).toBeVisible();
   });
 
   test('Connection Diagnostic Tool', async ({ page }) => {
