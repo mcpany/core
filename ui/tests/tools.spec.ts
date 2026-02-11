@@ -27,8 +27,18 @@ test.describe('Tool Exploration', () => {
                 command_line_service: {
                     command: "/bin/echo",
                     tools: [
-                        { name: UNIQUE_PAYMENT_TOOL, description: "Process a payment" }
-                    ]
+                        {
+                            name: UNIQUE_PAYMENT_TOOL,
+                            description: "Process a payment",
+                            inputSchema: { type: "object" },
+                            call_id: "payment_call"
+                        }
+                    ],
+                    calls: {
+                        payment_call: {
+                            args: ["payment_processed"]
+                        }
+                    }
                 }
             },
             headers: { 'X-API-Key': 'test-token' }
