@@ -82,6 +82,8 @@ func TestResolveSecret_SSRF_Blocked(t *testing.T) {
 }
 
 func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+
 	// Attempt to access a private IP (e.g. 192.168.1.1)
 	// This should be blocked by our SSRF protection (if enhanced).
 

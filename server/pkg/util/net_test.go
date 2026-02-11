@@ -29,6 +29,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	t.Run("Default restricted", func(t *testing.T) {
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 		client := util.NewSafeHTTPClient()
 		assert.Equal(t, 10*time.Second, client.Timeout)
 
@@ -62,6 +63,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	t.Run("Allow loopback", func(t *testing.T) {
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 		client := util.NewSafeHTTPClient()
 
 		transport, ok := client.Transport.(*http.Transport)
@@ -79,6 +81,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	t.Run("Allow private", func(t *testing.T) {
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 		client := util.NewSafeHTTPClient()
 
 		transport, ok := client.Transport.(*http.Transport)
