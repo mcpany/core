@@ -4,14 +4,17 @@
 package mcp
 
 import (
+	"bufio"
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
-	"strings"
+	"net"
 	"testing"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -199,21 +202,74 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to start container")
 }
 
-func TestDockerTransport_Connect_Integration(t *testing.T) {
-	if !util.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping integration test.")
-	}
-	ctx := context.Background()
-	// We use "printf" and pass the JSON string as an argument.
-	// We DON'T quote it here manually because the transport should handle quoting now.
-	// If we quote it manually, it will be double quoted by shellescape.
-	// The original test had `Args: []string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`}` which included single quotes.
-	// The new transport will wrap this in single quotes: `' ... '` -> `'... '\'' ... '\'' ... '`
-	// So `printf` will see the single quotes as part of the string.
-	// But `printf %s` prints the string.
-	// If we want `printf` to print valid JSON, we should pass the JSON raw string, and let transport quote it.
+type mockConn struct {
+	io.Reader
+	io.Writer
+}
 
+func (m *mockConn) Close() error {
+	return nil
+}
+
+func (m *mockConn) CloseWrite() error {
+	return nil
+}
+
+func (m *mockConn) LocalAddr() net.Addr                { return nil }
+func (m *mockConn) RemoteAddr() net.Addr               { return nil }
+func (m *mockConn) SetDeadline(t time.Time) error      { return nil }
+func (m *mockConn) SetReadDeadline(t time.Time) error  { return nil }
+func (m *mockConn) SetWriteDeadline(t time.Time) error { return nil }
+
+func TestDockerTransport_Connect_Mocked(t *testing.T) {
+	ctx := context.Background()
 	jsonPayload := `{"jsonrpc": "2.0", "id": "1", "result": "hello"}`
+
+	// Create pipes to simulate hijacked connection
+	serverReader, clientWriter := io.Pipe()
+	clientReader, serverWriter := io.Pipe()
+
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
+			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
+				return io.NopCloser(bytes.NewReader([]byte{})), nil
+			},
+			ContainerCreateFunc: func(_ context.Context, _ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *v1.Platform, _ string) (container.CreateResponse, error) {
+				return container.CreateResponse{ID: "test-container"}, nil
+			},
+			ContainerAttachFunc: func(_ context.Context, _ string, _ container.AttachOptions) (types.HijackedResponse, error) {
+				return types.HijackedResponse{
+					Conn:   &mockConn{Reader: serverReader, Writer: clientWriter},
+					Reader: bufio.NewReader(serverReader),
+				}, nil
+			},
+			ContainerStartFunc: func(_ context.Context, _ string, _ container.StartOptions) error {
+				go func() {
+					time.Sleep(100 * time.Millisecond) // Simulate delay
+					payload := []byte(jsonPayload + "\n")
+					header := []byte{1, 0, 0, 0, 0, 0, 0, 0}
+					binary.BigEndian.PutUint32(header[4:], uint32(len(payload)))
+					fullMsg := append(header, payload...)
+					_, _ = serverWriter.Write(fullMsg)
+				}()
+				return nil
+			},
+			ContainerStopFunc: func(_ context.Context, _ string, _ container.StopOptions) error {
+				return nil
+			},
+			ContainerRemoveFunc: func(_ context.Context, _ string, _ container.RemoveOptions) error {
+				return nil
+			},
+			CloseFunc: func() error {
+				serverWriter.Close()
+				clientReader.Close()
+				return nil
+			},
+		}, nil
+	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
 	stdioConfig := configv1.McpStdioConnection_builder{
 		ContainerImage: proto.String("alpine:latest"),
 		Command:        proto.String("printf"),
@@ -222,15 +278,12 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	conn, err := transport.Connect(ctx)
-	if err != nil && (strings.Contains(err.Error(), "mount source: \"overlay\"") || strings.Contains(err.Error(), "invalid argument")) {
-		t.Skipf("Skipping test due to Docker overlayfs issue in CI environment: %v", err)
-	}
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
 	msg, err := conn.Read(ctx)
 	assert.NoError(t, err)
-	require.NotNil(t, msg) // Prevent panic
+	require.NotNil(t, msg)
 
 	resp, ok := msg.(*jsonrpc.Response)
 	assert.True(t, ok)
@@ -243,6 +296,7 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 
 func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
 	if !util.IsDockerSocketAccessible() {
+		// Mock this one too if possible, otherwise keep skip
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
 	ctx := context.Background()

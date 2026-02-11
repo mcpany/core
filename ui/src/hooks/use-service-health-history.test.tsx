@@ -45,6 +45,7 @@ describe("useServiceHealthHistory", () => {
         expect(Object.keys(result.current.history)).toHaveLength(2);
         expect(result.current.history["svc-1"]).toHaveLength(1);
         expect(result.current.history["svc-1"][0].status).toBe("healthy");
+        expect(global.fetch).toHaveBeenCalledWith("/api/v1/dashboard/health");
     });
 
     it("should handle fetch error gracefully", async () => {

@@ -185,14 +185,15 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     addLog("backend_health", "Querying backend service status...");
 
     try {
-        const res = await fetch("/api/dashboard/health", { cache: 'no-store' });
+        const res = await fetch("/api/v1/dashboard/health", { cache: 'no-store' });
         if (!res.ok) {
              throw new Error(`API Error: ${res.status} ${res.statusText}`);
         }
-        const data: ServiceHealth[] = await res.json();
+        const data = await res.json();
+        const services: ServiceHealth[] = data.services || [];
 
         // Find our service
-        const serviceStatus = data.find(s => s.id === service.id || s.name === service.name);
+        const serviceStatus = services.find(s => s.id === service.id || s.name === service.name);
 
         if (!serviceStatus) {
              addLog("backend_health", "Warning: Service not found in backend registry.");

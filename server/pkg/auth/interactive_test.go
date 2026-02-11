@@ -97,17 +97,6 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestResolveSecretValue(t *testing.T) {
-	t.Skip("resolveSecretValue was removed in favor of util.ResolveSecret")
-	t.Run("PlainText", func(t *testing.T) {
-		// Obsolete
-	})
-
-	t.Run("EnvironmentVariable", func(t *testing.T) {
-		// Now we can't test resolveSecretValue directly as it is removed.
-		// We should rely on integration tests or util tests for secret resolution.
-	})
-}
 
 func TestHandleOAuthCallback_Validation(t *testing.T) {
 	store := memory.NewStore()

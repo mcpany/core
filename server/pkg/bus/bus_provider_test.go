@@ -4,14 +4,12 @@
 package bus
 
 import (
-	"context"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/mcpany/core/proto/bus"
 	"github.com/nats-io/nats-server/v2/server"
-	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,16 +29,11 @@ func TestBusProvider_GetBus_InMemory(t *testing.T) {
 }
 
 func TestBusProvider_GetBus_Redis(t *testing.T) {
-	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
-	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		// t.Skip("Redis is not available")
-	}
+	mr, _ := setupRedis(t)
 
 	messageBus := &bus.MessageBus{}
 	redisBus := &bus.RedisBus{}
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(mr.Addr())
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
