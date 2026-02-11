@@ -57,6 +57,9 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	}))
 	defer ts.Close()
 
+	// Ensure dangerous setting is disabled for this test
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// By default, SafeDialer blocks loopback
 	client := NewSafeHTTPClient()
 	_, err := client.Get(ts.URL)
