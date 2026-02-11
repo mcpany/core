@@ -40,18 +40,19 @@ func CalculateUptime(serviceName string, window time.Duration) float64 {
 	var effectiveStart int64
 	var currentStatus string
 
-	if firstInWindowIdx == -1 {
+	switch firstInWindowIdx {
+	case -1:
 		// All points are before the window.
 		// The state at windowStart is the state of the last point.
 		lastPoint := points[len(points)-1]
 		effectiveStart = windowStart
 		currentStatus = lastPoint.Status
-	} else if firstInWindowIdx == 0 {
+	case 0:
 		// All points are inside the window.
 		// We can only calculate from the first known point.
 		effectiveStart = points[0].Timestamp
 		currentStatus = points[0].Status
-	} else {
+	default:
 		// Some points before, some inside.
 		// The state at windowStart is determined by the point just before firstInWindowIdx.
 		effectiveStart = windowStart
@@ -66,7 +67,7 @@ func CalculateUptime(serviceName string, window time.Duration) float64 {
 		return 0.0
 	}
 
-	var upTime int64 = 0
+	var upTime int64
 	cursor := effectiveStart
 
 	// Iterate through points strictly inside the window (from firstInWindowIdx onwards)
