@@ -12,8 +12,24 @@ const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DATE}`);
 
 test.describe('Service Config Diff', () => {
+    const uniqueServiceName = "Diff Test Service";
+
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Create a unique service for this test to avoid interference with other tests
+        const response = await request.post('/api/v1/services', {
+            data: {
+                id: "svc_diff_test",
+                name: uniqueServiceName,
+                version: "v1.0.0",
+                http_service: {
+                    address: "https://example.com", // Dummy address
+                    tools: []
+                }
+            },
+            headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+        });
+        expect(response.ok()).toBeTruthy();
+
         await seedUser(request, "diff-admin");
 
         // Login
@@ -25,13 +41,16 @@ test.describe('Service Config Diff', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        // Clean up both possible names
+        const headers = { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' };
+        await request.delete(`/api/v1/services/${uniqueServiceName}`, { headers });
+        await request.delete(`/api/v1/services/${uniqueServiceName} Updated`, { headers });
         await cleanupUser(request, "diff-admin");
     });
 
     test('Shows diff when editing service config', async ({ page }) => {
-        const serviceName = "Payment Gateway";
-        const newServiceName = "Payment Gateway Updated";
+        const serviceName = uniqueServiceName;
+        const newServiceName = `${uniqueServiceName} Updated`;
 
         // Go to Upstream Services page to find the service
         await page.goto('/upstream-services');
