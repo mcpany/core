@@ -16,8 +16,11 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            // ⚡ Bolt Fix: Use command_line_service to mock tools deterministically without network deps.
+            // Previous http_service pointing to stripe.com failed MCP handshake, resulting in 0 tools.
+            command_line_service: {
+                command: "echo",
+                args: ["payment_processed"],
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -27,8 +30,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+            // ⚡ Bolt Fix: Use mock command service to avoid "Connection Refused" on localhost
+            command_line_service: {
+                command: "echo",
+                args: ["user_data"],
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -39,8 +44,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            // ⚡ Bolt Fix: Use mock command service to avoid "Connection Refused" on localhost
+            command_line_service: {
+                command: "echo",
+                args: ["42"],
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
