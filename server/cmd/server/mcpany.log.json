@@ -1,0 +1,78 @@
+{"time":"2026-02-11T15:16:28.459933526Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"127.0.0.1:42459","registration-port":"37305","stdio":true,"config-path":["/tmp/TestRootCmd1996375720/001/config2642538059.yaml","/tmp/TestRootCmd1996375720/001"]}
+{"time":"2026-02-11T15:16:28.460662025Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["/tmp/TestRootCmd1996375720/001/config2642538059.yaml","/tmp/TestRootCmd1996375720/001"]}
+{"time":"2026-02-11T15:16:28.461167479Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T15:16:28.46146041Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T15:16:28.462223384Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T15:16:28.828987702Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"127.0.0.1:0","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-11T15:16:28.829496477Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-11T15:16:28.829846968Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-11T15:16:28.830063987Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-11T15:16:28.830203136Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-11T15:16:28.834794614Z","level":"INFO","msg":"Starting metrics server","service":"mcpany","address":"127.0.0.1:0"}
+{"time":"2026-02-11T15:16:28.83654799Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-11T15:16:28.877357073Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:28.877724486Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-11T15:16:28.877911029Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-11T15:16:28.898628222Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-11T15:16:28.906416258Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-11T15:16:28.906772606Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T15:16:28.908488731Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-11T15:16:28.909274141Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-11T15:16:28.909641388Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-11T15:16:28.909828064Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.909962164Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910060655Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910153962Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910250593Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910346004Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910495292Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910591044Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910741466Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.910832634Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-11T15:16:28.911149203Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-11T15:16:28.911793201Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-11T15:16:28.912594843Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-11T15:16:28.917311575Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-11T15:16:28.917757525Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-11T15:16:28.917603431Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-11T15:16:28.918048773Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-11T15:16:28.918106205Z","level":"INFO","msg":"No UI directory found (./ui/out, ./ui/dist, ./ui). UI will not be served."}
+{"time":"2026-02-11T15:16:28.924318919Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-11T15:16:28.930740151Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"127.0.0.1:46391"}
+{"time":"2026-02-11T15:16:29.048356Z","level":"INFO","msg":"Received interrupt signal, shutting down...","service":"mcpany"}
+{"time":"2026-02-11T15:16:29.048717972Z","level":"INFO","msg":"Received shutdown signal, shutting down gracefully..."}
+{"time":"2026-02-11T15:16:29.048880027Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-11T15:16:29.049022724Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-11T15:16:29.049177515Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-11T15:16:29.049298102Z","level":"INFO","msg":"Attempting to gracefully shut down server...","server":"MCP Any HTTP","port":"127.0.0.1:46391"}
+{"time":"2026-02-11T15:16:29.049841902Z","level":"INFO","msg":"Server shut down.","server":"MCP Any HTTP","port":"127.0.0.1:46391"}
+{"time":"2026-02-11T15:16:29.05002083Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-11T15:16:29.051346915Z","level":"INFO","msg":"Shutdown complete.","service":"mcpany"}
+{"time":"2026-02-11T15:16:30.073963808Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.074384416Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.292625436Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.292935702Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.309179135Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.309466798Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T15:16:30.309701122Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T15:16:30.30985366Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.311162686Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.311414225Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T15:16:30.31166163Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T15:16:30.311854046Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.313427745Z","level":"INFO","msg":"No configuration files found or all were empty, using default configuration.","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.313715335Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.313923264Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.322122516Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.322395796Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T15:16:30.322609678Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T15:16:30.322793029Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.329088479Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-11T15:16:30.32932011Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"my-service","disabled_field":false}
+{"time":"2026-02-11T15:16:30.329468089Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"my-service","priority":0}
+{"time":"2026-02-11T15:16:30.329674483Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-11T15:16:30.329819134Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-11T15:16:30.333449549Z","level":"WARN","msg":"⚠️  Upstream service appears unreachable. Running diagnostic...","service":"my-service"}
+{"time":"2026-02-11T15:16:30.335199461Z","level":"ERROR","msg":"\n------------------------------------------------------------\nFAILED TO CONNECT: my-service\n------------------------------------------------------------\nStatus:  ERROR\nDetails: Failed to connect: Get \"http://127.0.0.1:35627\": dial tcp 127.0.0.1:35627: connect: connection refused\nError:   Get \"http://127.0.0.1:35627\": dial tcp 127.0.0.1:35627: connect: connection refused\n------------------------------------------------------------\n"}
+{"time":"2026-02-11T15:16:30.335488995Z","level":"WARN","msg":"Tools will still be registered but will likely fail at runtime.","service":"my-service","address":"http://127.0.0.1:35627"}
+{"time":"2026-02-11T15:16:30.335886592Z","level":"INFO","msg":"Registered HTTP service","serviceID":"my-service","toolsAdded":1}

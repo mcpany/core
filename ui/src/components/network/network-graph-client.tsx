@@ -136,7 +136,9 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
   // Randomized Selection from Top 5 High-Impact Targets
   const selectedNode = useMemo(() => {
     if (!selectedNodeId) return null;
-    return nodes.find((n) => n.id === selectedNodeId) || null;
+    const node = nodes.find((n) => n.id === selectedNodeId);
+    if (!node) return null;
+    return node as Node<NodeData>;
   }, [nodes, selectedNodeId]);
   const [isControlsExpanded, setIsControlsExpanded] = useState(true);
 

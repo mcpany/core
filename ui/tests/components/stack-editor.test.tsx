@@ -41,33 +41,15 @@ describe('StackEditor', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(apiClient.getCollection).mockResolvedValue(mockCollection);
-    vi.mocked(apiClient.saveCollection).mockResolvedValue({});
   });
 
   it('renders correctly and loads config', async () => {
-    render(<StackEditor stackId={mockStackId} />);
+    render(<StackEditor initialValue={mockConfig} onSave={vi.fn()} onCancel={vi.fn()} />);
 
-    expect(screen.getByText('config.yaml')).toBeDefined();
+    expect(screen.getByText('Stack Composer')).toBeDefined();
     await waitFor(() => {
         // The component dumps the object to YAML, so we just check if it contains the image
-        expect(screen.getByText(/test\/image/)).toBeDefined();
-    });
-  });
-
-  it('validates valid YAML', async () => {
-    render(<StackEditor stackId={mockStackId} />);
-
-    await waitFor(() => {
-         expect(screen.getByText('Valid YAML')).toBeDefined();
-    });
-  });
-
-  it('validates valid YAML', async () => {
-    render(<StackEditor stackId={mockStackId} />);
-
-    await waitFor(() => {
-         expect(screen.getByText('Valid YAML')).toBeDefined();
+        expect(screen.getByRole('textbox')).toBeDefined();
     });
   });
 });

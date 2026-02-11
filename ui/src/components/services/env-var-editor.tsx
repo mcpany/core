@@ -36,10 +36,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
   const [envVars, setEnvVars] = useState<EnvVar[]>(() => {
       if (!initialEnv) return [];
       return Object.entries(initialEnv).map(([key, val]) => {
-          // explicit secretId check
-          if (val.secretId) {
-              return { key, value: val.secretId, isSecretRef: true, secretId: val.secretId };
-          }
+          // explicit secretId check removed as SecretValue does not have secretId property directly
           // Heuristic: if plainText starts with ${ and ends with }, treat as secret ref
           const plainText = val.plainText || "";
           const secretMatch = plainText.match(/^\$\{(.+)\}$/);
