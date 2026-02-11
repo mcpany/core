@@ -100,13 +100,40 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 
 // processLoop handles asynchronous activity recording to avoid locking the request path.
 func (m *Manager) processLoop() {
+	// ⚡ BOLT: Cleanup sessions every hour to prevent memory leaks.
+	// Randomized Selection from Top 5 High-Impact Targets
+	cleanupTicker := time.NewTicker(1 * time.Hour)
+	defer cleanupTicker.Stop()
+
 	for {
 		select {
 		case <-m.shutdownCh:
 			return
 		case event := <-m.activityCh:
 			m.handleActivity(event)
+		case <-cleanupTicker.C:
+			m.cleanupSessions()
 		}
+	}
+}
+
+// cleanupSessions removes sessions that have been inactive for more than 24 hours.
+// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets.
+// This prevents unbounded memory growth in long-running servers.
+func (m *Manager) cleanupSessions() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	cutoff := time.Now().Add(-24 * time.Hour)
+	initialCount := len(m.sessions)
+	for id, session := range m.sessions {
+		if session.LastActive.Before(cutoff) {
+			delete(m.sessions, id)
+		}
+	}
+
+	if removed := initialCount - len(m.sessions); removed > 0 {
+		logging.GetLogger().Info("Cleaned up expired topology sessions", "removed", removed, "remaining", len(m.sessions))
 	}
 }
 
