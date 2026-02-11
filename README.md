@@ -7,7 +7,7 @@
 
 **What is this project?**
 
-**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
+**MCP Any** is the universal adapter for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). It instantly turns your existing APIs—REST, gRPC, OpenAPI, or Command-line—into MCP-compliant tools that AI agents can use. It acts as a configuration-driven gateway, bridging the gap between your backend infrastructure and the AI ecosystem.
 
 **Why does it exist?**
 
@@ -110,6 +110,10 @@ The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 ## 4. Development
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
+
+### Our Philosophy
+**Code describes *How*, Documentation describes *Why*.**
+We enforce 100% documentation coverage for all public interfaces. Documentation must be lint-clean, idiomatic, and strictly accurate. We do not just add comments; we decrease the "Time-to-Understand" for every future developer.
 
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing.

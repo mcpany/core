@@ -20,6 +20,7 @@ import (
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
+	// Command is the command to run.
 	Command *exec.Cmd
 }
 

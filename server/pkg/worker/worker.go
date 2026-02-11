@@ -17,7 +17,9 @@ import (
 //
 // Summary: Configuration for worker pool.
 type Config struct {
-	MaxWorkers   int
+	// MaxWorkers is the maximum number of concurrent workers.
+	MaxWorkers int
+	// MaxQueueSize is the maximum number of jobs that can be queued.
 	MaxQueueSize int
 }
 

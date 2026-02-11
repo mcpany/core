@@ -28,17 +28,28 @@ type Provider interface {
 // OllamaProvider discovers local Ollama instances.
 // OllamaProvider is a provider that discovers local Ollama instances.
 type OllamaProvider struct {
-	Endpoint   string // e.g., "http://localhost:11434"
+	// Endpoint is the URL of the Ollama server (e.g., "http://localhost:11434").
+	Endpoint   string
 	client     *http.Client
 	clientOnce sync.Once
 }
 
 // Name returns the name of the provider.
+//
+// Returns:
+//   - string: The provider name ("ollama").
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the discovery request.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A list of discovered service configurations.
+//   - error: An error if discovery fails.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets
