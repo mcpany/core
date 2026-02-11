@@ -355,3 +355,43 @@ var FileExists = func(path string) error {
 	}
 	return nil
 }
+
+// IsSensitivePath checks if a given file path is sensitive and should not be accessed.
+//
+// Summary: Checks for sensitive file access.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the path is sensitive.
+var IsSensitivePath = func(path string) error {
+	cleanPath := filepath.Clean(path)
+	parts := strings.Split(cleanPath, string(os.PathSeparator))
+
+	for _, part := range parts {
+		base := strings.ToLower(part)
+
+		// Block hidden files that are typically sensitive
+		if strings.HasPrefix(base, ".env") {
+			return fmt.Errorf("sensitive file access detected: %s", part)
+		}
+		if strings.HasPrefix(base, ".git") {
+			return fmt.Errorf("sensitive file access detected: %s", part)
+		}
+		if strings.HasPrefix(base, ".ssh") {
+			return fmt.Errorf("sensitive file access detected: %s", part)
+		}
+		if strings.HasPrefix(base, ".aws") {
+			return fmt.Errorf("sensitive file access detected: %s", part)
+		}
+		if strings.HasPrefix(base, ".kube") {
+			return fmt.Errorf("sensitive file access detected: %s", part)
+		}
+		// Block history files (specifically hidden shell history files)
+		if strings.HasPrefix(base, ".") && strings.HasSuffix(base, "_history") {
+			return fmt.Errorf("sensitive file access detected: %s", part)
+		}
+	}
+	return nil
+}

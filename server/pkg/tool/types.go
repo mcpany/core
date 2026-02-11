@@ -2755,6 +2755,11 @@ func checkForLocalFileAccess(val string) error {
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
+
+	if err := validation.IsSensitivePath(val); err != nil {
+		return err
+	}
+
 	return nil
 }
 
