@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -178,4 +179,32 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		assert.Contains(t, b.String(), "db: FAIL")
         assert.Contains(t, b.String(), "connection lost")
 	})
+}
+
+func TestConfigDocCmd(t *testing.T) {
+	// Create a temp config file
+	configContent := `
+upstream_services:
+  - name: "test-fs"
+    filesystem_service:
+      os: {}
+      root_paths:
+        "/tmp": "/tmp"
+`
+	configFile, err := os.CreateTemp("", "config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(configFile.Name())
+	_, err = configFile.WriteString(configContent)
+	assert.NoError(t, err)
+	configFile.Close()
+
+	cmd := newRootCmd()
+	b := bytes.NewBufferString("")
+	cmd.SetOut(b)
+	cmd.SetArgs([]string{"config", "doc", "--config-path", configFile.Name()})
+
+	err = cmd.Execute()
+	assert.NoError(t, err)
+	assert.Contains(t, b.String(), "# Available Tools")
+	assert.Contains(t, b.String(), "list_directory")
 }

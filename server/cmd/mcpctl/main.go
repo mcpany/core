@@ -82,9 +82,42 @@ func newRootCmd() *cobra.Command {
 			return nil
 		},
 	}
+	configCmd := &cobra.Command{
+		Use:   "config",
+		Short: "Configuration management commands",
+	}
+
+	docCmd := &cobra.Command{
+		Use:   "doc",
+		Short: "Generate documentation for the configuration",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, osFs); err != nil {
+				return fmt.Errorf("configuration load failed: %w", err)
+			}
+
+			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			configs, err := config.LoadServices(context.Background(), store, "server")
+			if err != nil {
+				return fmt.Errorf("failed to load configurations from %v: %w", cfg.ConfigPaths(), err)
+			}
+
+			doc, err := config.GenerateDocumentation(context.Background(), configs)
+			if err != nil {
+				return fmt.Errorf("failed to generate documentation: %w", err)
+			}
+
+			fmt.Fprintln(cmd.OutOrStdout(), doc)
+			return nil
+		},
+	}
+	configCmd.AddCommand(docCmd)
+
 	// Bind flags like --config, etc.
 	config.BindRootFlags(rootCmd)
 	rootCmd.AddCommand(validateCmd)
+	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(newDoctorCmd())
 	rootCmd.AddCommand(newToolCmd())
 	rootCmd.AddCommand(newImportCmd())
