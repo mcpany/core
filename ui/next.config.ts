@@ -36,19 +36,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    // turbopack: {
-    //   resolveAlias: {
-    //     'canvas': './empty-module.ts',
-    //   },
-    //   rules: {
-    //     '*.node': {
-    //       loaders: ['node-loader'],
-    //       as: '*.js',
-    //     },
-    //   },
-    // },
-  },
   async headers() {
     const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
