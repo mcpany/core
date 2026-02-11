@@ -36,7 +36,7 @@ test.describe('Tool Exploration', () => {
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
-        for (let i = 0; i < 15; i++) { // Increased to 15 for safety
+        for (let i = 0; i < 15; i++) {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
@@ -46,9 +46,10 @@ test.describe('Tool Exploration', () => {
             } catch (e) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
                 await page.reload();
-                // Wait for network idle and a small buffer
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000); // Increased buffer
+                // Wait for DOM content loaded instead of networkidle which can be flaky with polling
+                await page.waitForLoadState('domcontentloaded');
+                // Explicit wait for table or list container if possible, or just a small sleep for hydration
+                await page.waitForTimeout(2000);
             }
         }
 
@@ -77,7 +78,7 @@ test.describe('Tool Exploration', () => {
                 break;
             } catch (e) {
                 await page.reload();
-                await page.waitForLoadState('networkidle');
+                await page.waitForLoadState('domcontentloaded');
                 await page.waitForTimeout(2000);
             }
         }
@@ -101,7 +102,7 @@ test.describe('Tool Exploration', () => {
                 break;
             } catch (e) {
                 await page.reload();
-                await page.waitForLoadState('networkidle');
+                await page.waitForLoadState('domcontentloaded');
                 await page.waitForTimeout(2000);
             }
         }

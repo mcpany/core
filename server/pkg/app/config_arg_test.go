@@ -28,6 +28,9 @@ upstream_services:
 
 	_, err = tmpFile.WriteString(configContent)
 	require.NoError(t, err)
+	// Ensure content is written to disk
+	err = tmpFile.Sync()
+	require.NoError(t, err)
 	tmpFile.Close()
 
 	// Ensure env var is NOT set, and restore it later to avoid side effects
