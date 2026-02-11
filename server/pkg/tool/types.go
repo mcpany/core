@@ -1863,7 +1863,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
+					// We also check for sensitive config injection tools (like git) here because
+					// injecting spaces into configuration flags (e.g. -c core.pager) is dangerous.
+					if isShellCommand(t.service.GetCommand()) || isConfigInjectionSensitive(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
@@ -2182,7 +2184,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
+					// We also check for sensitive config injection tools (like git) here because
+					// injecting spaces into configuration flags (e.g. -c core.pager) is dangerous.
+					if isShellCommand(t.service.GetCommand()) || isConfigInjectionSensitive(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
@@ -2767,6 +2771,24 @@ func checkForArgumentInjection(val string) error {
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
 	return nil
+}
+
+// isConfigInjectionSensitive returns true for tools that are not shells but have configuration options
+// or flags that can interpret arguments as commands (e.g. git -c core.pager=...).
+// For these tools, we enforce strict checks during configuration substitution to prevent
+// injection (like spaces allowing 'sh -c ...'), but we allow relaxed checks for dynamic arguments
+// (like filenames with spaces) because they are passed safely via exec.Command.
+func isConfigInjectionSensitive(cmd string) bool {
+	sensitive := []string{
+		"git", "tar", "find", "zip", "unzip", "rsync",
+	}
+	base := filepath.Base(cmd)
+	for _, s := range sensitive {
+		if base == s {
+			return true
+		}
+	}
+	return false
 }
 
 func isShellCommand(cmd string) bool {
