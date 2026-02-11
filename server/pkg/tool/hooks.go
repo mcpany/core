@@ -16,8 +16,8 @@ import (
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	cehttp "github.com/cloudevents/sdk-go/v2/protocol/http"
 	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
@@ -366,7 +366,7 @@ func (h *WebhookHook) ExecutePost(
 // WebhookStatus represents the status returned by the webhook.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
-	Code    int    `json:"code"`
+	Code int `json:"code"`
 	// Message is a descriptive message returned by the webhook.
 	Message string `json:"message"`
 }
@@ -388,11 +388,17 @@ func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 		payload := []byte{} // Signing requires payload, but request body might be stream.
 
 		if req.Body != nil {
-			var err error
-			payload, err = io.ReadAll(req.Body)
-			if err != nil {
+			// ⚡ BOLT: Optimize memory allocation by pre-allocating buffer if ContentLength is known.
+			// Randomized Selection from Top 5 High-Impact Targets
+			var buf bytes.Buffer
+			if req.ContentLength > 0 {
+				buf.Grow(int(req.ContentLength))
+			}
+
+			if _, err := buf.ReadFrom(req.Body); err != nil {
 				return nil, fmt.Errorf("failed to read request body for signing: %w", err)
 			}
+			payload = buf.Bytes()
 			req.Body = io.NopCloser(bytes.NewReader(payload))
 		}
 
