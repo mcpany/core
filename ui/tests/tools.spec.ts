@@ -6,11 +6,13 @@
 import { test, expect } from '@playwright/test';
 import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
+const SUFFIX = " (Tools)";
+
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        await seedServices(request, SUFFIX);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,7 +24,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupServices(request, SUFFIX);
         await cleanupUser(request, "e2e-tools-admin");
     });
 

@@ -11,9 +11,11 @@ const DATE = new Date().toISOString().split('T')[0];
 // Use test-results/artifacts which is writable in CI
 const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DATE}`);
 
+const SUFFIX = " (Diff)";
+
 test.describe('Service Config Diff', () => {
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        await seedServices(request, SUFFIX);
         await seedUser(request, "diff-admin");
 
         // Login
@@ -25,13 +27,13 @@ test.describe('Service Config Diff', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupServices(request, SUFFIX);
         await cleanupUser(request, "diff-admin");
     });
 
     test('Shows diff when editing service config', async ({ page }) => {
-        const serviceName = "Payment Gateway";
-        const newServiceName = "Payment Gateway Updated";
+        const serviceName = `Payment Gateway${SUFFIX}`;
+        const newServiceName = `Payment Gateway Updated${SUFFIX}`;
 
         // Go to Upstream Services page to find the service
         await page.goto('/upstream-services');
