@@ -84,16 +84,19 @@ var NewHTTPPool = func(
 
 	dialer := util.NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr {
+	allowDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	if allowDangerous == util.TrueStr || allowDangerous == "1" {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	if allowLoopback == util.TrueStr || allowLoopback == "1" {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	if allowPrivate == util.TrueStr || allowPrivate == "1" {
 		dialer.AllowPrivate = true
 	}
 

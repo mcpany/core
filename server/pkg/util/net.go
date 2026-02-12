@@ -199,6 +199,12 @@ func NewSafeHTTPClient() *http.Client {
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
 func CheckConnection(ctx context.Context, address string) error {
+	// DEBUG: Print environment variables to diagnose CI failures
+	val := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	if val != "" {
+		fmt.Printf("DEBUG: CheckConnection: MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=%q\n", val)
+	}
+
 	var target string
 	if strings.Contains(address, "://") {
 		u, err := url.Parse(address)
@@ -234,16 +240,20 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	// We check for "true" or "1" to be robust against Docker Compose boolean handling
+	allowDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	if allowDangerous == TrueStr || allowDangerous == "1" {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	if allowLoopback == TrueStr || allowLoopback == "1" {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	if allowPrivate == TrueStr || allowPrivate == "1" {
 		dialer.AllowPrivate = true
 	}
 
