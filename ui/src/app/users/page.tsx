@@ -14,6 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * UsersPage component.
+ * Displays the list of users and allows creating and managing them.
+ *
+ * @returns The rendered users page.
+ */
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);

@@ -60,6 +60,18 @@ const userSchema = z.object({
 
 type UserValues = z.infer<typeof userSchema>;
 
+/**
+ * UserSheet component.
+ * A side drawer form for creating or editing a user.
+ * Supports generating API keys and password validation.
+ *
+ * @param props - The component props.
+ * @param props.isOpen - Whether the sheet is open.
+ * @param props.onClose - Callback to close the sheet.
+ * @param props.user - The user to edit, or null for creating a new user.
+ * @param props.onSave - Callback to save the user data.
+ * @returns The rendered user sheet component.
+ */
 export function UserSheet({ isOpen, onClose, user, onSave }: UserSheetProps) {
     const [generatedKey, setGeneratedKey] = useState("");
     const [copied, setCopied] = useState(false);
