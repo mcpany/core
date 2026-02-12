@@ -42,6 +42,8 @@ interface RegisterServiceDialogProps {
   onSuccess?: () => void;
   trigger?: React.ReactNode;
   serviceToEdit?: UpstreamServiceConfig;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const detectSensitiveData = (text: string) => {
@@ -59,8 +61,12 @@ const detectSensitiveData = (text: string) => {
  *
  * @param serviceToEdit - The serviceToEdit.
  */
-export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
-  const [open, setOpen] = useState(false);
+export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit, open: controlledOpen, onOpenChange: setControlledOpen }: RegisterServiceDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? (setControlledOpen || (() => {})) : setInternalOpen;
+
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [view, setView] = useState<"templates" | "template-config" | "form">("templates");
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
