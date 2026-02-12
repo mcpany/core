@@ -128,6 +128,8 @@ const nextConfig: NextConfig = {
 
     // Check if /proto exists (Docker environment)
     const dockerProto = '/proto';
+    // Check if /app/proto exists (Docker environment alternative)
+    const appProto = path.join(process.cwd(), '../proto');
     // Check local relative paths
     const localProto = path.join(__dirname, 'proto'); // If copied to ./proto
     const rootProto = path.join(__dirname, '../proto'); // If symlinked or dev
@@ -135,12 +137,17 @@ const nextConfig: NextConfig = {
     let protoPath = rootProto;
     if (fs.existsSync(dockerProto)) {
         protoPath = dockerProto;
-        console.log('Resolving @proto to Docker path:', protoPath);
+    } else if (fs.existsSync(appProto)) {
+        protoPath = appProto;
     } else if (fs.existsSync(localProto)) {
         protoPath = localProto;
-        console.log('Resolving @proto to local path:', protoPath);
     } else {
-        console.log('Resolving @proto to root path (fallback):', protoPath);
+        // Fallback for Docker if existsSync fails for some reason (permissions?)
+        // The Dockerfile explicitly copies to /proto
+        if (process.env.NEXT_PUBLIC_API_URL?.includes('localhost:50050')) {
+             // Heuristic for Docker build
+             protoPath = '/proto';
+        }
     }
 
     config.resolve.alias = {
