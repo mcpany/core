@@ -2641,6 +2641,9 @@ var dangerousEnvVars = map[string]bool{
 
 	// Shell
 	"BASH_ENV": true, "ENV": true, "PS4": true, "SHELLOPTS": true, "PROMPT_COMMAND": true, "IFS": true,
+
+	// Generic Tools (Pagers/Editors that can execute commands)
+	"PAGER": true, "EDITOR": true, "VISUAL": true, "MANPAGER": true,
 }
 
 // isDangerousEnvVar checks if the environment variable name is potentially dangerous.
