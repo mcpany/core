@@ -45,11 +45,11 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe('ResourcePreviewModal', () => {
-  const mockResource: ResourceDefinition = {
+  const mockResource = {
     uri: 'file:///test.json',
     name: 'test.json',
     mimeType: 'application/json',
-  };
+  } as ResourceDefinition;
 
   const mockContent: ResourceContent = {
     uri: 'file:///test.json',

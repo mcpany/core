@@ -17,7 +17,7 @@ vi.mock("@/hooks/use-toast", () => ({
 }));
 
 // Mock ToolDefinition
-const mockTool: ToolDefinition = {
+const mockTool = {
   name: "test_tool",
   description: "A test tool",
   inputSchema: {
@@ -27,7 +27,7 @@ const mockTool: ToolDefinition = {
     },
     required: ["foo"]
   }
-};
+} as unknown as ToolDefinition;
 
 describe("ToolForm", () => {
   const handleSubmit = vi.fn();

@@ -37,7 +37,10 @@ describe('PlaygroundClient', () => {
   });
 
   afterEach(() => {
-    window.location = originalLocation;
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: originalLocation,
+    });
     vi.clearAllMocks();
   });
 

@@ -38,7 +38,6 @@ export function DiffViewer({ original, modified }: DiffViewerProps) {
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
                     fontSize: 12,
-                    tabSize: 2,
                     wordWrap: "on",
                     readOnly: true,
                     renderSideBySide: true

@@ -24,10 +24,11 @@ interface User {
   id: string;
   roles: string[];
   authentication?: {
-    basic_auth?: Record<string, never>;
+    basic_auth?: { password_hash?: string };
     api_key?: {
         param_name?: string;
         verification_value?: string;
+        in?: number;
     };
   };
 }
@@ -160,17 +161,10 @@ export default function UsersPage() {
             return;
         }
     } else {
-        if (!editingUser && !generatedKey) {
-             // If creating new user with API Key, must generate one
-             // If editing and switching to API Key, must generate one?
-             // If editing and already API Key, user might not want to regenerate.
-             // But if switching from Password to API Key, must generate.
-             const alreadyApiKey = editingUser?.authentication?.api_key;
-             if (!alreadyApiKey) {
-                 // Must generate
-                 alert("Please generate an API Key first.");
-                 return;
-             }
+        const alreadyApiKey = editingUser?.authentication?.api_key;
+        if (!generatedKey && !alreadyApiKey) {
+             alert("Please generate an API Key first.");
+             return;
         }
     }
 

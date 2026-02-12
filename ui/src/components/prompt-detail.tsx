@@ -43,7 +43,7 @@ export function PromptDetail({ serviceId, promptName }: { serviceId: string, pro
             return;
         }
         const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService || serviceDetails.mcpService;
-        const foundPrompt = serviceData?.prompts?.find(p => p.name === promptName);
+        const foundPrompt = serviceData?.prompts?.find((p: PromptDefinition) => p.name === promptName);
 
         if (foundPrompt) {
           setPrompt(foundPrompt);

@@ -508,7 +508,7 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                             )}
                         </div>
                         <div className="flex items-center gap-2">
-                            {message.previousResult && (
+                            {!!message.previousResult && (
                                 <Button
                                     variant="outline"
                                     size="sm"

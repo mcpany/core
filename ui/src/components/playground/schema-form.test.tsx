@@ -55,7 +55,7 @@ describe("SchemaForm", () => {
 
     if (!fileInput) throw new Error("File input not found");
 
-    await userEvent.upload(fileInput, file);
+    await userEvent.upload(fileInput as HTMLElement, file);
 
     // FileReader is async. FileInput handles it via onload.
     // We need to wait for onChange to be called.

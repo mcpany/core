@@ -125,10 +125,11 @@ export async function GET(request: Request) {
         // Link spans
         let rootSpan: Span | null = null;
 
-        spanMap.forEach(span => {
+        for (const span of spanMap.values()) {
             const entry = group.find(e => (e.span_id || e.id) === span.id);
             if (entry && entry.parent_id && spanMap.has(entry.parent_id)) {
                 const parent = spanMap.get(entry.parent_id)!;
+                if (!parent.children) parent.children = [];
                 parent.children.push(span);
             } else {
                 // Potential root
@@ -137,19 +138,21 @@ export async function GET(request: Request) {
                 } else {
                     // If multiple roots, attach to the first one found to avoid orphan spans
                     // Ideally we should have a virtual root, but for now this works visually
+                    if (!rootSpan.children) rootSpan.children = [];
                     rootSpan.children.push(span);
                 }
             }
-        });
+        }
 
         if (rootSpan) {
             // Calculate total duration (end of last span - start of root)
-            const rootStart = rootSpan.startTime;
-            let maxEnd = rootSpan.endTime;
+            const rootSpanTyped = rootSpan as Span;
+            const rootStart = rootSpanTyped.startTime;
+            let maxEnd = rootSpanTyped.endTime;
 
-            spanMap.forEach(s => {
+            for (const s of spanMap.values()) {
                 if (s.endTime > maxEnd) maxEnd = s.endTime;
-            });
+            }
 
             traces.push({
                 id: traceId,
