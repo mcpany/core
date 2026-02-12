@@ -489,48 +489,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		}
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		// We use a manual parsing strategy to preserve invalid percent encodings.
-		type queryPart struct {
-			raw        string
-			key        string
-			isInvalid  bool
-			keyDecoded bool
-		}
-
-		parseQueryManual := func(rawQuery string) []queryPart {
-			var parts []queryPart
-			if rawQuery == "" {
-				return parts
-			}
-			// We treat '&' as the only separator.
-			for _, p := range strings.Split(rawQuery, "&") {
-				if p == "" {
-					continue
-				}
-				qp := queryPart{raw: p}
-
-				var key, value string
-				if idx := strings.Index(p, "="); idx >= 0 {
-					key = p[:idx]
-					value = p[idx+1:]
-				} else {
-					key = p
-				}
-
-				decodedKey, errKey := url.QueryUnescape(key)
-				if errKey == nil {
-					qp.key = decodedKey
-					qp.keyDecoded = true
-				}
-
-				_, errVal := url.QueryUnescape(value)
-
-				if errKey != nil || errVal != nil {
-					qp.isInvalid = true
-				}
-				parts = append(parts, qp)
-			}
-			return parts
-		}
+		// Implementation moved to query_parser.go for optimization.
 
 		// Only attempt merge if there is something to merge from endpoint
 		if strings.Trim(endpointURL.RawQuery, "&") != "" {
