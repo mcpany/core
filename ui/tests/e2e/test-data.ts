@@ -160,7 +160,8 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
                 password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
             }
         },
-        roles: ["admin"]
+        roles: ["admin"],
+        profile_ids: ["default"]
     };
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
