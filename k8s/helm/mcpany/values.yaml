@@ -62,6 +62,12 @@ service:
 #   #    hosts:
 #   #      - chart-example.local
 
+# Environment variables to pass to the MCP Any server container
+# Useful for enabling loopback/private network access in restricted environments (e.g. e2e tests)
+env: {}
+  # MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
+  # MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: "true"
+
 # Configuration for mcpany. This will be mounted as a ConfigMap.
 # You can define your upstream services here.
 config: |
