@@ -128,6 +128,14 @@ func initSchema(db *sql.DB) error {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS metrics (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		service_id TEXT NOT NULL,
+		timestamp INTEGER NOT NULL,
+		status TEXT NOT NULL
+	);
+	CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

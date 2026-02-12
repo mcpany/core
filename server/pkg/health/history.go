@@ -22,10 +22,26 @@ type ServiceHealthHistory struct {
 var (
 	historyStore = make(map[string]*ServiceHealthHistory)
 	historyMu    sync.RWMutex
+	statusListener func(serviceName, status string)
 )
+
+// SetHealthStatusListener sets the listener for health status changes.
+func SetHealthStatusListener(l func(serviceName, status string)) {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+	statusListener = l
+}
 
 // AddHealthStatus adds a status point to the history.
 func AddHealthStatus(serviceName string, status string) {
+	historyMu.Lock()
+	l := statusListener
+	historyMu.Unlock()
+
+	if l != nil {
+		go l(serviceName, status)
+	}
+
 	historyMu.Lock()
 	defer historyMu.Unlock()
 

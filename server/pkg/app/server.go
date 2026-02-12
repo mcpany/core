@@ -553,6 +553,23 @@ func (a *Application) Run(opts RunOptions) error {
 	)
 	a.ServiceRegistry = serviceRegistry
 
+	// Set health status listener to persist history
+	health.SetHealthStatusListener(func(serviceName, status string) {
+		if a.Storage != nil {
+			metric := &storage.Metric{
+				ServiceID: serviceName,
+				Timestamp: time.Now().UnixMilli(),
+				Status:    status,
+			}
+			// Use a detached context with timeout to avoid blocking indefinitely
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := a.Storage.SaveMetric(ctx, metric); err != nil {
+				logging.GetLogger().Error("Failed to persist health metric", "service", serviceName, "error", err)
+			}
+		}
+	})
+
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)

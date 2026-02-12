@@ -8,8 +8,10 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -281,6 +283,53 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// SaveMetric saves a health metric.
+//
+// ctx is the context for the request.
+// metric is the metric.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveMetric(ctx context.Context, metric *storage.Metric) error {
+	query := `
+	INSERT INTO metrics (service_id, timestamp, status)
+	VALUES (?, ?, ?)
+	`
+	_, err := s.db.ExecContext(ctx, query, metric.ServiceID, metric.Timestamp, metric.Status)
+	if err != nil {
+		return fmt.Errorf("failed to save metric: %w", err)
+	}
+	return nil
+}
+
+// ListMetricHistory retrieves metric history.
+//
+// ctx is the context for the request.
+// since is the start time.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListMetricHistory(ctx context.Context, since time.Time) (map[string][]storage.Metric, error) {
+	query := "SELECT id, service_id, timestamp, status FROM metrics WHERE timestamp >= ? ORDER BY timestamp ASC"
+	rows, err := s.db.QueryContext(ctx, query, since.UnixMilli())
+	if err != nil {
+		return nil, fmt.Errorf("failed to query metrics: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	history := make(map[string][]storage.Metric)
+	for rows.Next() {
+		var m storage.Metric
+		if err := rows.Scan(&m.ID, &m.ServiceID, &m.Timestamp, &m.Status); err != nil {
+			return nil, fmt.Errorf("failed to scan metric: %w", err)
+		}
+		history[m.ServiceID] = append(history[m.ServiceID], m)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating metric rows: %w", err)
+	}
+	return history, nil
 }
 
 // GetService retrieves an upstream service configuration by name.

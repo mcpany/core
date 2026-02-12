@@ -477,7 +477,31 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			return
 		}
 
-		history := health.GetHealthHistory()
+		var history map[string][]health.HistoryPoint
+		if a.Storage != nil {
+			// Fetch last 1 hour of history
+			metrics, err := a.Storage.ListMetricHistory(r.Context(), time.Now().Add(-1*time.Hour))
+			if err != nil {
+				logging.GetLogger().Error("failed to fetch metric history from storage", "error", err)
+				// Fallback to in-memory
+				history = health.GetHealthHistory()
+			} else {
+				history = make(map[string][]health.HistoryPoint)
+				for svcName, ms := range metrics {
+					points := make([]health.HistoryPoint, len(ms))
+					for i, m := range ms {
+						points[i] = health.HistoryPoint{
+							Timestamp: m.Timestamp,
+							Status:    m.Status,
+						}
+					}
+					history[svcName] = points
+				}
+			}
+		} else {
+			history = health.GetHealthHistory()
+		}
+
 		var serviceHealths []ServiceHealth
 
 		const (

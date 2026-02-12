@@ -6,9 +6,18 @@ package storage
 
 import (
 	"context"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
+
+// Metric represents a health metric point.
+type Metric struct {
+	ID        int64  `json:"id"`
+	ServiceID string `json:"service_id"`
+	Timestamp int64  `json:"timestamp"` // Unix millis
+	Status    string `json:"status"`
+}
 
 // Storage defines the interface for persisting configuration.
 //
@@ -451,6 +460,31 @@ type Storage interface {
 	// Returns:
 	//   - error: An error if deletion fails.
 	DeleteCredential(ctx context.Context, id string) error
+
+	// SaveMetric saves a health metric.
+	//
+	// Summary: Persists a health metric.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - metric: *Metric. The metric to save.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	SaveMetric(ctx context.Context, metric *Metric) error
+
+	// ListMetricHistory retrieves metric history.
+	//
+	// Summary: Lists metric history.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - since: time.Time. The start time for the history.
+	//
+	// Returns:
+	//   - map[string][]Metric: A map of service ID to metrics.
+	//   - error: An error if retrieval fails.
+	ListMetricHistory(ctx context.Context, since time.Time) (map[string][]Metric, error)
 
 	// Close closes the underlying storage connection.
 	//
