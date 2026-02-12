@@ -9,10 +9,6 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
-// In Docker Compose, the echo server is reachable at 'ui-http-echo-server'.
-// In K8s E2E, we need to pass a different URL via env var, or fallback to a dummy that doesn't cause blocking.
-const ECHO_SERVER_URL = process.env.ECHO_SERVER_URL || 'http://ui-http-echo-server:5678';
-
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -31,11 +27,21 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: ECHO_SERVER_URL,
+            command_line_service: {
+                command: "/bin/echo",
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                    {
+                        name: "get_user",
+                        description: "Get user details",
+                        inputSchema: { type: "object" },
+                        call_id: "user_call"
+                    }
+                ],
+                calls: {
+                    user_call: {
+                        args: ["user_details"]
+                    }
+                }
             }
         },
         // Add a service with calculator for existing test compatibility if desired
@@ -43,11 +49,21 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: ECHO_SERVER_URL,
+            command_line_service: {
+                command: "/bin/echo",
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    {
+                        name: "calculator",
+                        description: "calc",
+                        inputSchema: { type: "object" },
+                        call_id: "calc_call"
+                    }
+                ],
+                calls: {
+                    calc_call: {
+                        args: ["42"]
+                    }
+                }
             }
         },
         {
