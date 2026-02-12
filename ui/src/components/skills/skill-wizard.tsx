@@ -13,6 +13,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Skill, SkillService } from '@/lib/skill-service';
 import { toast } from 'sonner';
 import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
+import { ToolSelector } from '@/components/skills/tool-selector';
+import { PromptEditor } from '@/components/skills/prompt-editor';
 
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
@@ -160,24 +162,21 @@ export default function SkillWizard() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="tools">Allowed Tools (comma separated)</Label>
-                <Input
-                    id="tools"
-                    value={skill.allowedTools?.join(', ') || ''}
-                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                    placeholder="tool1, tool2"
+                <Label>Allowed Tools</Label>
+                <ToolSelector
+                    selectedTools={skill.allowedTools || []}
+                    onChange={(tools) => handleChange('allowedTools', tools)}
                 />
               </div>
             </div>
           )}
 
           {currentStep === 1 && (
-            <div className="space-y-4 h-[400px] flex flex-col">
+            <div className="space-y-4 h-[500px] flex flex-col">
               <Label>Instructions (Markdown)</Label>
-              <Textarea
-                className="flex-1 font-mono text-sm leading-relaxed"
+              <PromptEditor
                 value={skill.instructions}
-                onChange={(e) => handleChange('instructions', e.target.value)}
+                onChange={(val) => handleChange('instructions', val)}
               />
             </div>
           )}
