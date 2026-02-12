@@ -60,6 +60,16 @@ interface UserSheetProps {
   onSave: (user: User) => Promise<void>;
 }
 
+/**
+ * UserSheet component.
+ * A slide-over form for creating and editing users.
+ * @param props - The component props.
+ * @param props.user - The user to edit, or null for creating a new user.
+ * @param props.isOpen - Whether the sheet is open.
+ * @param props.onOpenChange - Callback for changing the open state.
+ * @param props.onSave - Callback for saving the user.
+ * @returns The rendered component.
+ */
 export function UserSheet({ user, isOpen, onOpenChange, onSave }: UserSheetProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
