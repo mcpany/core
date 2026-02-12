@@ -106,7 +106,7 @@ nodes:
 			t.Fatalf("Failed to build http-echo-server image: %v", err)
 		}
 		// Tag it as :local to avoid ImagePullPolicy: Always (default for latest)
-		if err := runCommand(t, ctx, rootDir, "docker", "tag", "mcpany/http-echo-server:latest", "mcpany/http-echo-server:local"); err != nil {
+		if err := runCommand(t, ctx, rootDir, "docker", "tag", "mcpany/http-echo-server:latest", "http-echo-server:local"); err != nil {
 			t.Fatalf("Failed to tag http-echo-server image: %v", err)
 		}
 	} else {
@@ -125,7 +125,7 @@ nodes:
 		t.Fatalf("Failed to load ui image: %v", err)
 	}
 	// Load http-echo-server (:local tag)
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:local", "--name", clusterName); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "http-echo-server:local", "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
@@ -179,7 +179,7 @@ metadata:
 spec:
   containers:
   - name: echo-server
-    image: mcpany/http-echo-server:local
+    image: http-echo-server:local
     imagePullPolicy: Never
     ports:
     - containerPort: 8080
@@ -187,7 +187,7 @@ spec:
       httpGet:
         path: /health
         port: 8080
-      initialDelaySeconds: 5
+      initialDelaySeconds: 10
       periodSeconds: 5
 `, namespace)
 	tmpPod := filepath.Join(t.TempDir(), "echo-server-pod.yaml")
