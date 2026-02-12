@@ -42,6 +42,7 @@ export default function MarketplacePage() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+    const [popularServices, setPopularServices] = useState<UpstreamServiceConfig[]>([]);
 
   // Instantiate State
   const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
@@ -54,7 +55,7 @@ export default function MarketplacePage() {
   // Load Data
   const loadData = async () => {
     try {
-        const [cols, markets, templates, community] = await Promise.all([
+        const [cols, markets, templates, community, catalogServices] = await Promise.all([
             marketplaceService.fetchOfficialCollections(),
             marketplaceService.fetchPublicMarketplaces(),
             apiClient.listTemplates().catch(e => {
@@ -64,11 +65,19 @@ export default function MarketplacePage() {
             marketplaceService.fetchCommunityServers().catch(e => {
                 console.warn("Failed to fetch community servers", e);
                 return [];
+            }),
+            apiClient.listCatalog().catch(e => {
+                console.warn("Failed to list catalog", e);
+                return [];
             })
         ]);
         setCollections(cols);
         setPublicMarkets(markets);
         setCommunityServers(community);
+        // Use catalog services for "Popular" tab
+        // We need to map them to the UI format if needed, but UpstreamServiceConfig is compatible?
+        // POPULAR_SERVICES was UpstreamServiceConfig[].
+        setPopularServices(catalogServices);
 
         // Map backend templates to ServiceCollection format for consistent display
         const mappedTemplates = templates.map((t: UpstreamServiceConfig) => ({
@@ -259,11 +268,41 @@ export default function MarketplacePage() {
 
       <Tabs defaultValue="community" className="w-full">
           <TabsList>
+                  <TabsTrigger value="popular">Popular</TabsTrigger>
               <TabsTrigger value="community">Community</TabsTrigger>
               <TabsTrigger value="official">Official</TabsTrigger>
               <TabsTrigger value="public">Public</TabsTrigger>
               <TabsTrigger value="local">Local</TabsTrigger>
           </TabsList>
+
+              <TabsContent value="popular" className="mt-6">
+                  <section>
+                      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                          <Package className="h-5 w-5" />
+                          Popular Services
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {popularServices.map((service) => (
+                              <Card key={service.id || service.name} className="flex flex-col">
+                                  <CardHeader>
+                                      <CardTitle>{service.name}</CardTitle>
+                                      <CardDescription>{service.description || "No description"}</CardDescription>
+                                  </CardHeader>
+                                  <CardContent className="flex-1">
+                                      <code className="text-xs bg-muted p-1 rounded break-all">
+                                          {service.commandLineService?.command || "Remote Service"}
+                                      </code>
+                                  </CardContent>
+                                  <CardFooter>
+                                      <Button className="w-full" onClick={() => openInstantiate(service)}>
+                                          Configure
+                                      </Button>
+                                  </CardFooter>
+                              </Card>
+                          ))}
+                      </div>
+                  </section>
+              </TabsContent>
 
           <TabsContent value="official" className="mt-6">
               <section>

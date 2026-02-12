@@ -122,7 +122,7 @@ upstream_services:
 
 	// Note: We don't strictly *need* mcpServer for CallPolicy test as we use toolManager directly,
 	// but we initialize it to ensure full setup.
-	_, err = mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, true)
+	_, err = mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, true)
 	require.NoError(t, err)
 
 	// 4. Register Services

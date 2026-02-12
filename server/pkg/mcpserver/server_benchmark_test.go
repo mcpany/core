@@ -61,7 +61,7 @@ func BenchmarkCallTool_MapResult(b *testing.B) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(b, err)
 
 	tm := server.ToolManager().(*tool.Manager)
@@ -120,7 +120,7 @@ func BenchmarkCallTool_PlainMapResult(b *testing.B) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(b, err)
 
 	tm := server.ToolManager().(*tool.Manager)

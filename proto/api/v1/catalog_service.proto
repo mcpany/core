@@ -1,0 +1,32 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.api.v1;
+
+import "google/api/annotations.proto";
+import "proto/config/v1/upstream_service.proto";
+
+option go_package = "github.com/mcpany/core/proto/api/v1";
+option java_outer_classname = "CatalogServiceProto";
+
+// CatalogService provides access to the service catalog.
+service CatalogService {
+  // ListServices returns a list of available services in the catalog.
+  rpc ListServices(ListCatalogServicesRequest) returns (ListCatalogServicesResponse) {
+    option (google.api.http) = {
+      get: "/v1/catalog/services"
+    };
+  }
+}
+
+message ListCatalogServicesRequest {
+  // Optional: Filter by tags.
+  repeated string tags = 1;
+}
+
+message ListCatalogServicesResponse {
+  // The list of services.
+  repeated mcpany.config.v1.UpstreamServiceConfig services = 1;
+}

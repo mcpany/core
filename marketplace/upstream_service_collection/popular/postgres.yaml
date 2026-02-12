@@ -1,0 +1,33 @@
+# PostgreSQL Popular Service
+
+name: PostgreSQL
+version: "1.0.0"
+description: "Read-only access to PostgreSQL databases for querying and schema inspection."
+disable: false
+sanitized_name: "postgres"
+priority: 0
+load_balancing_strategy: 0
+read_only: false
+tags: ["database", "postgres", "sql"]
+
+command_line_service:
+  command: "npx -y @modelcontextprotocol/server-postgres"
+  working_directory: ""
+  env:
+    POSTGRES_URL: 
+      plainText: "postgresql://user:password@localhost:5432/db"
+  local: false
+
+configuration_schema: |
+  {
+    "type": "object",
+    "required": ["POSTGRES_URL"],
+    "properties": {
+      "POSTGRES_URL": {
+        "type": "string",
+        "title": "Connection URL",
+        "description": "postgresql://user:password@host:5432/db",
+        "format": "password"
+      }
+    }
+  }

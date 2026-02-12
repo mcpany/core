@@ -1,0 +1,63 @@
+# MySQL Popular Service
+
+name: MySQL
+version: "1.0.0"
+description: "Access MySQL databases to Inspect table schemas and execute SQL queries."
+disable: false
+sanitized_name: "mysql"
+priority: 0
+load_balancing_strategy: 0
+read_only: false
+tags: ["database", "mysql", "sql"]
+
+command_line_service:
+  command: "npx -y @benborla29/mcp-server-mysql"
+  working_directory: ""
+  env:
+    MYSQL_HOST: 
+      plainText: "localhost"
+    MYSQL_PORT: 
+      plainText: "3306"
+    MYSQL_USER: 
+      plainText: ""
+    MYSQL_PASSWORD: 
+      plainText: ""
+    MYSQL_DATABASE: 
+      plainText: ""
+  local: false
+
+configuration_schema: |
+  {
+    "type": "object",
+    "required": ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE"],
+    "properties": {
+      "MYSQL_HOST": {
+        "type": "string",
+        "title": "Host",
+        "description": "MySQL Host (e.g. localhost)",
+        "default": "localhost"
+      },
+      "MYSQL_PORT": {
+        "type": "string",
+        "title": "Port",
+        "description": "MySQL Port",
+        "default": "3306"
+      },
+      "MYSQL_USER": {
+        "type": "string",
+        "title": "User",
+        "description": "MySQL User"
+      },
+      "MYSQL_PASSWORD": {
+        "type": "string",
+        "title": "Password",
+        "description": "MySQL Password",
+        "format": "password"
+      },
+      "MYSQL_DATABASE": {
+        "type": "string",
+        "title": "Database",
+        "description": "MySQL Database Name"
+      }
+    }
+  }

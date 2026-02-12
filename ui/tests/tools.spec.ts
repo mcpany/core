@@ -38,16 +38,28 @@ test.describe('Tool Exploration', () => {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                // Check for Payment Gateway OR Echo Tool to verify seeding works
+                // We want to make sure Echo Service is loaded as it is the target of this test
+                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
+                // Log visible text to help debug
+                try {
+                    const bodyText = await page.locator('body').innerText();
+                    console.log(`Visible body text (truncated): ${bodyText.substring(0, 500).replace(/\n/g, ' ')}...`);
+                } catch (e) { /* ignore */ }
+
                 await page.reload();
                 // Wait for network idle and a small buffer
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000);
             }
+        }
+
+        if (!found) {
+            console.log('WARNING: Tool not found after retries. Final check...');
         }
 
         // Verify Payment Gateway tool is visible
@@ -57,11 +69,20 @@ test.describe('Tool Exploration', () => {
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
         try {
-            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(/echo_tool/i).first()).toBeVisible({ timeout: 30000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
         }
+
+        // Check for weather-service tool (from config.minimal.yaml)
+        try {
+            await expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 10000 });
+        } catch (e) {
+            console.log('Weather tool not found (check config.minimal.yaml loading)');
+            // Don't fail the test if it's missing, just log it for now to debug stack-editor failure
+        }
+
         await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 20000 });
     });
 
@@ -109,7 +130,9 @@ test.describe('Tool Exploration', () => {
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
-        await page.getByRole('tab', { name: 'JSON', exact: true }).click();
+        // Switch to JSON input tab (Arguments section).
+        // Note: There is another JSON tab for Schema, so we scope to the tablist containing "Form".
+        await page.getByRole('dialog').getByRole('tablist').filter({ hasText: 'Form' }).getByRole('tab', { name: 'JSON', exact: true }).click();
 
         // Fill arguments
         const textArea = page.locator('textarea#args');

@@ -43,7 +43,7 @@ func TestServer_CallTool_Blob_ByteSlice_Repro(t *testing.T) {
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.Manager)

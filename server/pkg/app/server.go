@@ -32,6 +32,7 @@ import (
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/catalog"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
@@ -233,6 +234,9 @@ type Application struct {
 	// DiscoveryManager manages auto-discovery providers
 	DiscoveryManager *discovery.Manager
 
+	// CatalogManager manages dynamic service catalog
+	CatalogManager *catalog.Manager
+
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
@@ -312,6 +316,7 @@ func NewApplication() *Application {
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 		AlertsManager:    alerts.NewManager(),
+		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
@@ -612,6 +617,7 @@ func (a *Application) Run(opts RunOptions) error {
 		a.ResourceManager,
 		authManager,
 		serviceRegistry,
+		a.CatalogManager,
 		busProvider,
 		config.GlobalSettings().IsDebug(),
 	)
@@ -1602,6 +1608,24 @@ func (a *Application) runServerMode(
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
 	// Topology API is now handled by apiHandler via api.go
+
+	// Catalog API
+	// Expose via REST for UI
+	mux.Handle("/api/v1/catalog/services", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		catalogServer := rest.NewCatalogServer(a.CatalogManager)
+		resp, err := catalogServer.ListServices(r.Context(), &v1.ListCatalogServicesRequest{})
+		if err != nil {
+			logging.GetLogger().Error("Failed to list catalog services", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(resp)
+	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler

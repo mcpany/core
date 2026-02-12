@@ -66,7 +66,7 @@ func TestListPrompts_NilCheck(t *testing.T) {
 	serviceRegistry := serviceregistry.New(f, toolManager, promptManager, resourceManager, authManager)
 
 	// Initialize server
-	s, err := NewServer(context.Background(), toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	s, err := NewServer(context.Background(), toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
 	// Add a prompt that returns valid first time, then nil
@@ -99,7 +99,7 @@ func TestListResources_NilCheck(t *testing.T) {
 	serviceRegistry := serviceregistry.New(f, toolManager, promptManager, resourceManager, authManager)
 
 	// Initialize server
-	s, err := NewServer(context.Background(), toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	s, err := NewServer(context.Background(), toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
 	// Add a resource that returns valid first time, then nil

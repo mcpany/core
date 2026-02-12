@@ -1,0 +1,33 @@
+# FileSystem Popular Service
+
+name: FileSystem
+version: "1.0.0"
+description: "Access local files and directories safely."
+disable: false
+sanitized_name: "filesystem"
+priority: 0
+load_balancing_strategy: 0
+read_only: false
+tags: ["filesystem", "local"]
+
+command_line_service:
+  command: "npx -y @modelcontextprotocol/server-filesystem"
+  working_directory: ""
+  env:
+    ALLOWED_DIRECTORIES: 
+      plainText: "/tmp"
+  local: false
+
+configuration_schema: |
+  {
+    "type": "object",
+    "required": ["ALLOWED_DIRECTORIES"],
+    "properties": {
+      "ALLOWED_DIRECTORIES": {
+        "type": "string",
+        "title": "Allowed Directories",
+        "description": "Comma-separated list of absolute paths to allow access to",
+        "default": "/tmp"
+      }
+    }
+  }

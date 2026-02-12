@@ -11,9 +11,12 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/catalog"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -63,6 +66,7 @@ type Server struct {
 	authManager     *auth.Manager
 	serviceRegistry *serviceregistry.ServiceRegistry
 	bus             *bus.Provider
+	catalogManager  *catalog.Manager
 	reloadFunc      func(context.Context) error
 	debug           bool
 }
@@ -96,6 +100,7 @@ func (s *Server) Server() *mcp.Server {
 //   - resourceManager: resource.ManagerInterface. Manages the lifecycle and access to resources.
 //   - authManager: *auth.Manager. Handles authentication for incoming requests.
 //   - serviceRegistry: *serviceregistry.ServiceRegistry. Keeps track of all registered upstream services.
+//   - catalogManager: *catalog.Manager. Manages the dynamic service catalog.
 //   - bus: *bus.Provider. The event bus used for asynchronous communication between components.
 //   - debug: bool. Whether to enable debug mode.
 //
@@ -109,6 +114,7 @@ func NewServer(
 	resourceManager resource.ManagerInterface,
 	authManager *auth.Manager,
 	serviceRegistry *serviceregistry.ServiceRegistry,
+	catalogManager *catalog.Manager,
 	bus *bus.Provider,
 	debug bool,
 ) (*Server, error) {
@@ -119,6 +125,7 @@ func NewServer(
 		resourceManager: resourceManager,
 		authManager:     authManager,
 		serviceRegistry: serviceRegistry,
+		catalogManager:  catalogManager,
 		bus:             bus,
 		debug:           debug,
 	}
@@ -160,6 +167,71 @@ func NewServer(
 				return s.ReadResource(ctx, r)
 			}
 			return nil, fmt.Errorf("invalid request type for %s", consts.MethodResourcesRead)
+		},
+	)
+
+	// Register Catalog Service
+	catalogServer := rest.NewCatalogServer(s.catalogManager)
+
+	// Register REST endpoint for Catalog
+	// For now we map it to MCP method "catalog/listServices" for internal use if needed,
+	// BUT also we need to expose it via HTTP if the frontend uses fetch.
+	// The `Server` struct has `ServeHTTP`.
+	// If we want to add a REST endpoint, we might need to add it to the router if the router supports it,
+	// OR handle it in `ServeHTTP` wrapper.
+	//
+	// ACTUALLY, `mcpserver` seems to be designed for MCP (JSON-RPC).
+	// The REST API might be separate or via Gateway?
+	//
+	// Let's check `server/pkg/api/server.go` if it exists, or `cmd/server/main.go` registers other handlers.
+	// `main.go` calls `app.Run`. `app.Run` creates `mcpserver`.
+	//
+	// If I look at `ui/src/lib/client.ts`, it calls `/api/v1/services`.
+	// I need to find where `/api/v1/services` is handled.
+	// `grep` failed? Maybe it's `v1/services`?
+	//
+	// I will just add the handler to `Server.ServeHTTP` in `mcpserver/server.go` if possible,
+	// OR if `Server` has a `mux`.
+	// `s.router` is `mcp.Router`.
+	//
+	// Wait, `server/pkg/mcpserver/server.go`:
+	// `func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request)`
+	// It checks `consts.ContentTypeJSONRPC`.
+	// If we want REST, we need to handle it there too or before.
+	//
+	// Let's look at `ServeHTTP` in `mcpserver/server.go`.
+	s.router.Register(
+		"catalog/listServices",
+		func(ctx context.Context, _ mcp.Request) (mcp.Result, error) {
+			// We can ignore the request params for now if ListServicesRequest has no mandatory fields
+			// or unmarshal them if needed.
+			// apiv1.ListServicesRequest has optional `tags`.
+
+			// For now, just call ListServices with empty request
+			res, err := catalogServer.ListServices(ctx, &apiv1.ListCatalogServicesRequest{})
+			if err != nil {
+				return nil, err
+			}
+
+			// Convert response to MCP result (or just return it, and let the server marshal it)
+			// The router expects mcp.Result.
+			// we can return a generic result or a specific one.
+			// Create a custom result type or just map[string]any
+
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{
+						Text: util.ToString(res),
+					},
+				},
+			}, nil
+			// Wait, the UI expects a list of services.
+			// If we return CallToolResult, it's for tools.
+			// This is a custom method. Standard MCP clients might not know how to handle it unless it's a tool/resource/prompt.
+			// But the UI IS a custom client.
+			// If we want to return JSON, we can return a custom struct that implements mcp.Result?
+			// mcp.Result is an interface `Result()`.
+			// Verify mcp.Result interface.
 		},
 	)
 

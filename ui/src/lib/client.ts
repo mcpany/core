@@ -33,6 +33,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * Optional description for the service (used in UI templates).
+     */
+    description?: string;
 }
 
 // Re-export generated types
@@ -262,6 +266,35 @@ export const apiClient = {
                     callIdRegex: r.call_id_regex
                 }))
             })),
+        }));
+    },
+
+    /**
+     * Lists services from the dynamic catalog.
+     *
+     * @returns A promise that resolves to a list of catalog services.
+     */
+    listCatalog: async () => {
+        const res = await fetchWithAuth('/api/v1/catalog/services');
+        if (!res.ok) throw new Error('Failed to fetch catalog');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.services || []);
+
+        return list.map((s: any) => ({
+            ...s,
+            connectionPool: s.connection_pool,
+            httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+            grpcService: s.grpc_service,
+            commandLineService: s.command_line_service,
+            mcpService: s.mcp_service,
+            upstreamAuth: s.upstream_auth,
+            preCallHooks: s.pre_call_hooks,
+            postCallHooks: s.post_call_hooks,
+            lastError: s.last_error,
+            toolCount: s.tool_count,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
