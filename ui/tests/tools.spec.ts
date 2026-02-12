@@ -18,7 +18,10 @@ test.describe('Tool Exploration', () => {
         await page.fill('input[name="username"]', 'e2e-tools-admin');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
-        await expect(page).toHaveURL('/', { timeout: 15000 });
+        // Wait for dashboard content to confirm successful login, not just URL change
+        // which might be flaky if redirects happen.
+        await expect(page.getByText('Dashboard')).toBeVisible({ timeout: 20000 });
+        await expect(page).toHaveURL('/');
     });
 
     test.afterEach(async ({ request }) => {
