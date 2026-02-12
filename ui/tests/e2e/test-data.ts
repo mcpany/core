@@ -66,6 +66,15 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     }
                 }
             }
+        },
+        {
+            id: "svc_diff",
+            name: "Diff Service",
+            version: "v1.0",
+            http_service: {
+                address: "https://example.com",
+                tools: []
+            }
         }
     ];
 
