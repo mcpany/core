@@ -77,7 +77,7 @@ test.describe('Services Feature', () => {
 
     const addressInput = page.getByPlaceholder('https://api.example.com');
     await expect(addressInput).toBeVisible();
-    await addressInput.fill('http://localhost:8080');
+    await addressInput.fill('http://ui-http-echo-server:5678');
 
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });

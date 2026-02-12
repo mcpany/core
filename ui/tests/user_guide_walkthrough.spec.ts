@@ -135,7 +135,7 @@ test.describe('User Guide Walkthrough', () => {
       const json = [{
         name: 'mock-service',
         id: 'mock-service-id',
-        http_service: { address: 'http://localhost:8080' },
+        http_service: { address: 'http://ui-http-echo-server:5678' },
         disable: false
       }];
       await route.fulfill({ json });
@@ -147,7 +147,7 @@ test.describe('User Guide Walkthrough', () => {
             service: {
                 name: 'mock-service',
                 id: 'mock-service-id',
-                http_service: { address: 'http://localhost:8080' },
+                http_service: { address: 'http://ui-http-echo-server:5678' },
                 disable: false,
                 version: '1.0.0'
             }
