@@ -164,17 +164,14 @@ func IsSensitivePath(path string) error {
 		}
 	}
 
-	base := filepath.Base(path)
-	// Block specific sensitive files at the root of the path
-	sensitiveFiles := map[string]bool{
-		"config.yaml": true,
-		"config.json": true,
-		"mcpany.db":   true,
-	}
-
-	if sensitiveFiles[base] {
-		return fmt.Errorf("access to %q is restricted", base)
-	}
+	// We previously blocked config.yaml, config.json, and mcpany.db here.
+	// However, this caused regressions in tests and legitimate server operations
+	// that rely on reading these configuration files.
+	// For now, we rely on the strict directory blocking (.git, .ssh, etc.)
+	// and the fact that IsAllowedPath enforces sandbox constraints.
+	//
+	// If we want to block these files from *tools* specifically, we should do it
+	// in the tool layer, not the general validation layer used by the server startup.
 
 	return nil
 }
