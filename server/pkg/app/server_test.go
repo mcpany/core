@@ -1499,6 +1499,8 @@ func TestRunStdioMode(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 
 	app := &Application{
