@@ -18,8 +18,9 @@ import (
 )
 
 func TestGitSpaceInjectionRepro(t *testing.T) {
-	// This test reproduces the issue where arguments with spaces are blocked for "git"
-	// even though git handles them safely.
+	// This test originally reproduced the issue where arguments with spaces were blocked for "git".
+	// Sentinel Security Update: We NOW enforce blocking spaces for git because allowing them enables RCE via configuration injection.
+	// See TestLocalCommandTool_Git_C_Injection_Repro for the attack vector.
 
 	// Setup a tool definition for "git"
 	callDef := (&configv1.CommandLineCallDefinition_builder{
@@ -59,14 +60,13 @@ func TestGitSpaceInjectionRepro(t *testing.T) {
 	require.NoError(t, err)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}
 
-	// This should succeed (return a result, not an error)
-	res, err := gitTool.Execute(context.Background(), req)
+	// This should FAIL now.
+	_, err = gitTool.Execute(context.Background(), req)
 
-	// We expect validation to pass, so err should be nil.
-	// The command execution itself might fail (exit code != 0), but that's returned in res.
-	assert.NoError(t, err, "Validation failed unexpectedly (shell injection error?)")
-
-	if resMap, ok := res.(map[string]interface{}); ok {
-		t.Logf("Execution result: %+v", resMap)
+	// We expect validation to fail.
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "shell injection detected")
+		assert.Contains(t, err.Error(), "dangerous character ' '")
 	}
 }

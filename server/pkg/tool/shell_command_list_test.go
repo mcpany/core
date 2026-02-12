@@ -21,7 +21,9 @@ func TestIsShellCommand_ExtendedList(t *testing.T) {
 		{"python3.10", true},
 
 		// New additions
-		{"tar", false},
+		{"tar", true}, // Sentinel Security Update: tar is now considered dangerous (checkpoint RCE)
+		{"git", true}, // Sentinel Security Update: git is now considered dangerous (config RCE)
+		{"openssl", true}, // Sentinel Security Update: openssl is dangerous (engine/file write)
 		{"find", true},
 		{"xargs", true},
 		{"make", true},
