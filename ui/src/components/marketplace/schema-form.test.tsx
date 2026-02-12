@@ -46,7 +46,29 @@ describe('SchemaForm', () => {
         const checkbox = screen.getByLabelText(/Enabled/);
         fireEvent.click(checkbox);
 
-        expect(onChange).toHaveBeenCalledWith({ enabled: 'true' });
+        expect(onChange).toHaveBeenCalledWith({ enabled: true });
+    });
+
+    it('handles nested objects', () => {
+        const nestedSchema = {
+            type: "object",
+            properties: {
+                server: {
+                    type: "object",
+                    title: "Server",
+                    properties: {
+                        host: { type: "string", title: "Host" }
+                    }
+                }
+            }
+        };
+        const onChange = vi.fn();
+        render(<SchemaForm schema={nestedSchema} value={{}} onChange={onChange} />);
+
+        const hostInput = screen.getByLabelText(/Host/);
+        fireEvent.change(hostInput, { target: { value: "localhost" } });
+
+        expect(onChange).toHaveBeenCalledWith({ server: { host: "localhost" } });
     });
 
     it('renders password field for sensitive keys', () => {
