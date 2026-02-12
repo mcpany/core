@@ -533,7 +533,7 @@ export function LogStream({ source }: { source?: string }) {
                 data={filteredLogs}
                 followOutput={isPaused ? false : 'auto'}
                 className="p-4 scroll-smooth"
-                itemContent={(_index, log) => (
+                itemContent={(_index, log: any) => (
                   <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
                 )}
              />

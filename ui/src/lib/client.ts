@@ -886,23 +886,6 @@ export const apiClient = {
      * @param redirectUrl The URL to redirect back to after auth.
      * @returns The authorization URL to redirect the user to.
      */
-    initiateOAuth: async (serviceId: string, credentialId: string, redirectUrl: string) => {
-        const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                service_id: serviceId,
-                credential_id: credentialId,
-                redirect_url: redirectUrl
-            })
-        });
-        if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(`Failed to initiate OAuth: ${txt}`);
-        }
-        return res.json(); // { authorization_url: "...", state: "..." }
-    },
-
     // Profiles
 
     /**
