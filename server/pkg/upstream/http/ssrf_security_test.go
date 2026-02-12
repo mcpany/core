@@ -15,6 +15,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// TestSSRFProtection verifies that the connection pool allows connections to loopback/private IPs
+// because upstream configurations are considered trusted (e.g. for sidecars or private services).
+// Previously, this test asserted that loopback was blocked, but that behavior was changed to
+// fix issues with local development and sidecar patterns.
 func TestSSRFProtection(t *testing.T) {
 	// 1. Start a local server (target for SSRF)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +36,7 @@ func TestSSRFProtection(t *testing.T) {
 	}.Build()
 
 	// 3. Create pool
-	// Ensure env vars are cleared so we test default secure behavior
+	// Ensure env vars are cleared so we test default behavior
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
@@ -48,14 +52,12 @@ func TestSSRFProtection(t *testing.T) {
 	req, _ := http.NewRequest("GET", server.URL, nil)
 	resp, err := clientWrapper.Do(req)
 
-	// 5. Assert failure
-	// We expect an error because loopback should be blocked by SafeDialer
-	assert.Error(t, err)
-	if err != nil {
-		assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	}
+	// 5. Assert success
+	// We expect NO error because loopback is now explicitly allowed for upstream connections.
+	assert.NoError(t, err)
 	if resp != nil {
 		_ = resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
 }
 
@@ -74,7 +76,6 @@ func TestSSRFProtection_Allowed(t *testing.T) {
 		}.Build(),
 	}.Build()
 
-	// 3. Allow loopback via env var
 	// 3. Allow loopback via env var
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 

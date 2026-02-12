@@ -224,7 +224,7 @@ func (u *Upstream) Register(
 		dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
 
 		// Parse address to host:port
-		target := addr
+		var target string
 		if strings.Contains(addr, "://") {
 			u, err := url.Parse(addr)
 			if err != nil {
