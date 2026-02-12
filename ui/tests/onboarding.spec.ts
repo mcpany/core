@@ -75,7 +75,8 @@ test.describe('Onboarding Flow', () => {
         await page.locator('button[role="combobox"]').click();
         await page.getByRole('option', { name: 'Command Line' }).click();
 
-        await page.getByLabel('Command').fill('echo');
+        // Use full path to echo to be safe in minimal containers
+        await page.getByLabel('Command').fill('/bin/echo');
 
         // Register Service
         await page.getByRole('button', { name: 'Register Service' }).click();
