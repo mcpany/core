@@ -71,7 +71,9 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	client = NewSafeHTTPClient()
 	resp, err := client.Get(ts.URL)
 	assert.NoError(t, err)
-	resp.Body.Close()
+	if resp != nil {
+		resp.Body.Close()
+	}
 
 	// Direct SafeDialContext usage
 	// Should fail for loopback if default

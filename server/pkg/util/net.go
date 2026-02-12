@@ -172,9 +172,12 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if val := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"); val == TrueStr {
+		fmt.Printf("DEBUG: NewSafeHTTPClient allowing dangerous local IPs due to env var (val=%q)\n", val)
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
+	} else {
+		fmt.Printf("DEBUG: NewSafeHTTPClient blocking local IPs (env=%q)\n", val)
 	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
