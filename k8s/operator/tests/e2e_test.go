@@ -101,6 +101,10 @@ nodes:
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build ui image: %v", err)
 		}
+		// Build mock server image
+		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-http-echo-docker"); err != nil {
+			t.Fatalf("Failed to build http-echo-server image: %v", err)
+		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
@@ -115,6 +119,75 @@ nodes:
 	}
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
+	}
+	// Load mock server image (assuming tag latest from makefile)
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
+		t.Fatalf("Failed to load http-echo-server image: %v", err)
+	}
+
+	// 5.5 Deploy Mock Server
+	t.Log("Deploying mock server (http-echo-server)...")
+	// Use kubectl to create deployment and service
+	// We expose port 5678 to match the Docker Compose setup
+	if err := runCommand(t, ctx, rootDir, "kubectl", "create", "deployment", "http-echo-server", "--image=mcpany/http-echo-server:latest", "--replicas=1", "-n", namespace); err != nil {
+		t.Fatalf("Failed to create http-echo-server deployment: %v", err)
+	}
+	// Pass arguments to the container via command since it's an entrypoint in dockerfile usually, but let's check
+	// The makefile says: command: --port=5678
+	// kubectl create deployment doesn't easily support args. Use patch or YAML?
+	// Let's use kubectl run for a simple pod or apply a raw yaml.
+	// Raw yaml is safer.
+	mockServiceYaml := `
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-echo-server
+  namespace: mcp-system
+  labels:
+    app: http-echo-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-echo-server
+  template:
+    metadata:
+      labels:
+        app: http-echo-server
+    spec:
+      containers:
+      - name: http-echo-server
+        image: mcpany/http-echo-server:latest
+        imagePullPolicy: Never
+        args: ["--port=5678"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-echo-server
+  namespace: mcp-system
+spec:
+  selector:
+    app: http-echo-server
+  ports:
+    - protocol: TCP
+      port: 5678
+      targetPort: 5678
+`
+	mockYamlPath := filepath.Join(t.TempDir(), "mock-service.yaml")
+	if err := os.WriteFile(mockYamlPath, []byte(mockServiceYaml), 0644); err != nil {
+		t.Fatalf("Failed to write mock service yaml: %v", err)
+	}
+	// Create namespace first if not exists (helm does it, but we do this before helm)
+	runCommand(t, ctx, rootDir, "kubectl", "create", "namespace", namespace)
+	if err := runCommand(t, ctx, rootDir, "kubectl", "apply", "-f", mockYamlPath); err != nil {
+		t.Fatalf("Failed to deploy mock service: %v", err)
+	}
+	// Wait for mock server
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app=http-echo-server", "-n", namespace, "--timeout=60s"); err != nil {
+		t.Fatalf("Failed to wait for mock server: %v", err)
 	}
 
 	// 6. Install Helm Chart
@@ -177,7 +250,15 @@ nodes:
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+	playwrightCmd.Env = append(os.Environ(),
+		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
+		"SKIP_WEBSERVER=true",
+		// Inject Mock Server Env Vars for test-data.ts
+		// The service name in K8s is http-echo-server.mcp-system.svc.cluster.local (or just http-echo-server if same namespace)
+		// But the server is in the same namespace, so http-echo-server works.
+		"MOCK_SERVER_HOST=http-echo-server",
+		"MOCK_SERVER_PORT=5678",
+	)
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 

@@ -18,11 +18,19 @@ const MOCK_PORT = process.env.MOCK_SERVER_PORT || '5678'; // Default to echo ser
 // But if we want to use the echo server in docker, we need its port 5678.
 // Let's keep logic simple: use env var if present, else original defaults.
 
+// Debug logging to help diagnose CI issues
+console.log(`[TEST-DATA] Environment: MOCK_SERVER_HOST=${process.env.MOCK_SERVER_HOST}, MOCK_SERVER_PORT=${process.env.MOCK_SERVER_PORT}`);
+
 const getServiceAddress = (defaultPort: string) => {
     if (process.env.MOCK_SERVER_HOST) {
-        return `http://${process.env.MOCK_SERVER_HOST}:${process.env.MOCK_SERVER_PORT || '5678'}`;
+        const port = process.env.MOCK_SERVER_PORT || '5678';
+        const addr = `http://${process.env.MOCK_SERVER_HOST}:${port}`;
+        console.log(`[TEST-DATA] Using dynamic mock address: ${addr}`);
+        return addr;
     }
-    return `http://localhost:${defaultPort}`;
+    const addr = `http://localhost:${defaultPort}`;
+    console.log(`[TEST-DATA] Using default mock address: ${addr}`);
+    return addr;
 };
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
