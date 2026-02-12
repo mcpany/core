@@ -30,16 +30,21 @@ Browse the sidebar to find the tool you wish to test.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
 
-### 3. Execute Tool
+### 3. Configure Tool
 
 Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
 
 1. Enter values (e.g., `/var/log` for path).
-2. Click **"Run Tool"**.
+2. Click **"Build Command"**. This will populate the console input with the properly formatted command.
 
 ![Form Filled](screenshots/playground_form_filled.png)
 
-### 4. View Results
+### 4. Execute Tool
+
+1. Review the command in the console input.
+2. Click the **Send** button (or press Enter) to execute.
+
+### 5. View Results
 
 The execution result is displayed in the chat stream.
 
@@ -51,7 +56,7 @@ The execution result is displayed in the chat stream.
 - **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
 
-### 5. Session History (Import/Export)
+### 6. Session History (Import/Export)
 
 You can manage your playground session history using the buttons in the top right corner.
 
