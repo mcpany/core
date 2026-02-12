@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -347,11 +346,11 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 
 	dialer := util.NewSafeDialer()
 	// Check environment variables to allow unsafe connections if configured (consistent with other components)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr || os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+	if util.IsEnvTrue("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") || util.IsEnvTrue("MCPANY_ALLOW_LOOPBACK_RESOURCES") {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+	if util.IsEnvTrue("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") {
 		dialer.AllowPrivate = true
 	}
 	dialer.Dialer = &net.Dialer{Timeout: timeout}
