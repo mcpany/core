@@ -70,12 +70,9 @@ export default function WebhooksPage() {
         setSaving(true);
         try {
             // Construct payload merging with existing settings
-            // We ensure we send snake_case as expected by standard protobuf JSON mapping if raw,
-            // or camelCase if the client lib handles it. Sending both or camelCase that maps to snake_case is safer if using protojson.
-            // However, looking at client.ts `saveGlobalSettings`, it sends raw JSON.
-            // To be safe, we will assume standard snake_case for the wire if we are unsure,
-            // but the `config.proto` has `json_name` which dictates the expected key.
-            // `webhook_url` and `storage_type` are the keys in proto.
+            // We ensure we send snake_case as expected by standard protobuf JSON mapping if raw.
+            // The backend uses protojson with strict unknown field rejection by default.
+            // Sending camelCase keys when the proto defines snake_case (via json_name) causes 400 Bad Request.
 
             const payload = { ...fullSettings };
 
@@ -83,9 +80,10 @@ export default function WebhooksPage() {
             payload.alerts = {
                 ...payload.alerts,
                 enabled: alertsEnabled,
-                webhook_url: alertsUrl, // Explicitly set snake_case
-                webhookUrl: alertsUrl // Set camelCase too just in case intermediate layers use it
+                webhook_url: alertsUrl
             };
+            // Remove camelCase variants if they exist from the spread
+            delete payload.alerts.webhookUrl;
 
             // Update Audit
             // If enabling webhook, force storage type to WEBHOOK
@@ -97,11 +95,12 @@ export default function WebhooksPage() {
             payload.audit = {
                 ...payload.audit,
                 enabled: auditEnabled,
-                webhook_url: auditUrl, // Explicitly set snake_case
-                webhookUrl: auditUrl,
-                storage_type: newStorageType, // Explicitly set snake_case
-                storageType: newStorageType
+                webhook_url: auditUrl,
+                storage_type: newStorageType
             };
+            // Remove camelCase variants
+            delete payload.audit.webhookUrl;
+            delete payload.audit.storageType;
 
             await apiClient.saveGlobalSettings(payload);
 
