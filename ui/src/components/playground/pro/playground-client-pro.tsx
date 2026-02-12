@@ -100,6 +100,7 @@ export function PlaygroundClientPro() {
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const [initialToolValues, setInitialToolValues] = useState<Record<string, unknown>>({});
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -173,14 +174,22 @@ export function PlaygroundClientPro() {
   };
 
   const selectSuggestion = (tool: ToolDefinition) => {
+      setInitialToolValues({});
       setToolToConfigure(tool);
       setShowSuggestions(false);
   };
 
   const handleReplay = (toolName: string, args: Record<string, unknown>) => {
-      const command = `${toolName} ${JSON.stringify(args)}`;
-      setInput(command);
-      inputRef.current?.focus();
+      const tool = availableTools.find(t => t.name === toolName);
+      if (tool) {
+          setInitialToolValues(args);
+          setToolToConfigure(tool);
+      } else {
+          // Fallback if tool definition not found (e.g. ad-hoc or removed)
+          const command = `${toolName} ${JSON.stringify(args)}`;
+          setInput(command);
+          inputRef.current?.focus();
+      }
   };
 
   const processResponse = async (userInput: string) => {
@@ -530,7 +539,9 @@ export function PlaygroundClientPro() {
             <div className="flex-1 overflow-hidden p-6 pt-2">
                 {toolToConfigure && (
                     <ToolForm
+                        key={`${toolToConfigure.name}-${JSON.stringify(initialToolValues)}`}
                         tool={toolToConfigure}
+                        initialValues={initialToolValues}
                         onSubmit={handleToolFormSubmit}
                         onCancel={() => setToolToConfigure(null)}
                     />

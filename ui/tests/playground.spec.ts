@@ -127,8 +127,67 @@ test.describe('Playground Tool Configuration', () => {
     // Click Retry
     await retryBtn.click();
 
-    // Verify input is populated
-    await expect(page.getByRole('textbox', { name: /enter command/i })).toHaveValue(/timeout_tool/);
+    // Verify Dialog opens
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'timeout_tool' })).toBeVisible();
+  });
+
+  test('should open form with pre-filled values on retry', async ({ page }) => {
+    // Mock the tools API response to ensure we have a tool with schema
+    // Note: We use mocking because backend currently drops input_schema for ad-hoc tools in config,
+    // making it impossible to test schema-dependent UI flows via seeding alone without complex setup.
+    await page.route('/api/v1/tools', async route => {
+      const json = {
+        tools: [
+          {
+            name: 'config_tool',
+            description: 'Tool with args',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                key: { type: 'string' },
+                value: { type: 'string' }
+              }
+            }
+          }
+        ]
+      };
+      await route.fulfill({ json });
+    });
+
+    // Mock execution
+    await page.route('/api/v1/execute', async route => {
+      await route.fulfill({
+        json: {
+          content: [{ type: 'text', text: 'Success' }],
+          isError: false
+        }
+      });
+    });
+
+    await page.goto('/playground');
+
+    // Manually add a message to the chat history to simulate a previous run
+    // Type command (using the tool name mocked above)
+    const input = page.getByRole('textbox', { name: /enter command/i });
+    await input.fill('config_tool {"key":"test_key","value":"test_value"}');
+    await page.getByLabel('Send').click();
+
+    // Wait for result
+    await expect(page.getByText('Success')).toBeVisible();
+
+    // Find the "Load into console" (RotateCcw) button on the tool call message
+    const replayBtn = page.getByLabel('Load into console').first();
+    await expect(replayBtn).toBeVisible();
+    await replayBtn.click();
+
+    // Verify Dialog opens
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'config_tool' })).toBeVisible();
+
+    // Verify Form is pre-filled
+    await expect(page.locator('input#key')).toHaveValue('test_key');
+    await expect(page.locator('input#value')).toHaveValue('test_value');
   });
 
 });
