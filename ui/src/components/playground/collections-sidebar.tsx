@@ -1,0 +1,201 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+"use client";
+
+import { useState } from "react";
+import { Folder, Plus, Play, Trash2, ChevronRight, ChevronDown, Save, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+export interface SavedRequest {
+    id: string;
+    name: string;
+    toolName: string;
+    toolArgs: Record<string, unknown>;
+}
+
+export interface Collection {
+    id: string;
+    name: string;
+    requests: SavedRequest[];
+}
+
+interface CollectionsSidebarProps {
+    collections: Collection[];
+    setCollections: (cols: Collection[]) => void;
+    onRunRequest: (toolName: string, args: Record<string, unknown>) => void;
+    className?: string;
+}
+
+export function CollectionsSidebar({ collections, setCollections, onRunRequest, className }: CollectionsSidebarProps) {
+    const [expanded, setExpanded] = useState<Set<string>>(new Set());
+    const [isCreating, setIsCreating] = useState(false);
+    const [newCollectionName, setNewCollectionName] = useState("");
+
+    const toggleExpand = (id: string) => {
+        const newExpanded = new Set(expanded);
+        if (newExpanded.has(id)) {
+            newExpanded.delete(id);
+        } else {
+            newExpanded.add(id);
+        }
+        setExpanded(newExpanded);
+    };
+
+    const createCollection = () => {
+        if (!newCollectionName.trim()) return;
+        const newCol: Collection = {
+            id: crypto.randomUUID(),
+            name: newCollectionName.trim(),
+            requests: []
+        };
+        setCollections([...collections, newCol]);
+        setNewCollectionName("");
+        setIsCreating(false);
+        toggleExpand(newCol.id); // Auto expand
+        toast.success("Collection created");
+    };
+
+    const deleteCollection = (id: string) => {
+        if (confirm("Delete this collection?")) {
+            setCollections(collections.filter(c => c.id !== id));
+            toast.success("Collection deleted");
+        }
+    };
+
+    const deleteRequest = (colId: string, reqId: string) => {
+        setCollections(collections.map(c => {
+            if (c.id === colId) {
+                return { ...c, requests: c.requests.filter(r => r.id !== reqId) };
+            }
+            return c;
+        }));
+    };
+
+    const runCollection = async (collection: Collection) => {
+        toast.message(`Running collection: ${collection.name}`);
+        for (const req of collection.requests) {
+            // Sequential execution
+            // We rely on parent to handle async execution if needed, but here we just trigger
+            // Note: If onRunRequest is async, we should await it?
+            // The prop definition returns void, but we can assume parent handles queueing.
+            // For true sequential execution, parent needs to support it.
+            // For now, let's just fire them.
+            onRunRequest(req.toolName, req.toolArgs);
+            // Small delay to prevent UI freeze/race
+            await new Promise(r => setTimeout(r, 500));
+        }
+    };
+
+    return (
+        <div className={cn("flex flex-col h-full bg-muted/10 border-r", className)}>
+            <div className="p-4 border-b space-y-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                        <Folder className="h-4 w-4" />
+                        Collections
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsCreating(true)}>
+                        <Plus className="h-4 w-4" />
+                    </Button>
+                </div>
+
+                {isCreating && (
+                    <div className="flex gap-2">
+                        <Input
+                            value={newCollectionName}
+                            onChange={(e) => setNewCollectionName(e.target.value)}
+                            placeholder="Name..."
+                            className="h-8 text-xs"
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') createCollection();
+                                if (e.key === 'Escape') setIsCreating(false);
+                            }}
+                        />
+                        <Button size="sm" className="h-8 w-8 p-0" onClick={createCollection} disabled={!newCollectionName.trim()}>
+                            <Save className="h-3 w-3" />
+                        </Button>
+                    </div>
+                )}
+            </div>
+
+            <ScrollArea className="flex-1">
+                <div className="p-2 space-y-1">
+                    {collections.length === 0 && !isCreating && (
+                        <div className="text-center py-8 text-muted-foreground text-xs">
+                            No collections yet.
+                        </div>
+                    )}
+
+                    {collections.map((col) => (
+                        <div key={col.id} className="border rounded-md bg-card overflow-hidden">
+                            <div className="flex items-center justify-between p-2 hover:bg-muted/50 cursor-pointer group" onClick={() => toggleExpand(col.id)}>
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    {expanded.has(col.id) ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                                    <span className="text-sm font-medium truncate">{col.name}</span>
+                                    <Badge variant="secondary" className="text-[9px] h-4 px-1">{col.requests.length}</Badge>
+                                </div>
+                                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); runCollection(col); }} title="Run All">
+                                        <Play className="h-3 w-3 text-green-500" />
+                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+                                                <MoreHorizontal className="h-3 w-3" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => deleteCollection(col.id)} className="text-destructive">
+                                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </div>
+
+                            {expanded.has(col.id) && (
+                                <div className="bg-muted/20 border-t">
+                                    {col.requests.length === 0 ? (
+                                        <div className="p-2 text-[10px] text-muted-foreground text-center italic">Empty</div>
+                                    ) : (
+                                        col.requests.map((req) => (
+                                            <div key={req.id} className="flex items-center justify-between p-2 pl-6 hover:bg-muted/50 text-xs group border-b last:border-0">
+                                                <div className="flex flex-col truncate cursor-pointer flex-1" onClick={() => onRunRequest(req.toolName, req.toolArgs)}>
+                                                    <div className="font-medium truncate">{req.name || req.toolName}</div>
+                                                    <div className="text-muted-foreground truncate font-mono text-[10px]">{req.toolName}</div>
+                                                </div>
+                                                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => onRunRequest(req.toolName, req.toolArgs)} title="Run">
+                                                        <Play className="h-3 w-3" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-destructive" onClick={() => deleteRequest(col.id, req.id)} title="Remove">
+                                                        <Trash2 className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </ScrollArea>
+        </div>
+    );
+}

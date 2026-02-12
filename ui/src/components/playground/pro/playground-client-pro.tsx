@@ -33,9 +33,11 @@ import { Label } from "@/components/ui/label";
 
 import { ToolForm } from "@/components/playground/tool-form";
 import { ToolSidebar } from "./tool-sidebar";
+import { CollectionsSidebar, Collection, SavedRequest } from "@/components/playground/collections-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { useSearchParams } from "next/navigation";
 
@@ -45,6 +47,7 @@ import { useSearchParams } from "next/navigation";
  */
 export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
+  const [collections, setCollections] = useLocalStorage<Collection[]>("mcpany-collections", []);
   const [input, setInput] = useState("");
   const searchParams = useSearchParams();
 
@@ -100,10 +103,17 @@ export function PlaygroundClientPro() {
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+
+  // Save Request State
+  const [requestToSave, setRequestToSave] = useState<{toolName: string, toolArgs: Record<string, unknown>} | null>(null);
+  const [saveCollectionId, setSaveCollectionId] = useState<string>("");
+  const [saveRequestName, setSaveRequestName] = useState<string>("");
+
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarTab, setSidebarTab] = useState<"library" | "collections">("library");
   const isMobile = useIsMobile();
   const [isDryRun, setIsDryRun] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -181,6 +191,44 @@ export function PlaygroundClientPro() {
       const command = `${toolName} ${JSON.stringify(args)}`;
       setInput(command);
       inputRef.current?.focus();
+  };
+
+  const handleRunRequest = async (toolName: string, args: Record<string, unknown>) => {
+      const command = `${toolName} ${JSON.stringify(args)}`;
+      setInput(command);
+      await processResponse(command);
+  };
+
+  const handleOpenSaveDialog = (toolName: string, args: Record<string, unknown>) => {
+      if (collections.length === 0) {
+          // Auto create a default collection if none exist
+          const newCol: Collection = { id: crypto.randomUUID(), name: "My Collection", requests: [] };
+          setCollections([newCol]);
+          setSaveCollectionId(newCol.id);
+      } else {
+          setSaveCollectionId(collections[0].id);
+      }
+      setSaveRequestName(`${toolName} test`);
+      setRequestToSave({ toolName, toolArgs: args });
+  };
+
+  const confirmSaveRequest = () => {
+      if (!requestToSave || !saveCollectionId) return;
+      const newReq: SavedRequest = {
+          id: crypto.randomUUID(),
+          name: saveRequestName,
+          toolName: requestToSave.toolName,
+          toolArgs: requestToSave.toolArgs
+      };
+
+      setCollections(collections.map(c => {
+          if (c.id === saveCollectionId) {
+              return { ...c, requests: [...c.requests, newReq] };
+          }
+          return c;
+      }));
+      setRequestToSave(null);
+      toast({ title: "Saved", description: "Request saved to collection." });
   };
 
   const processResponse = async (userInput: string) => {
@@ -353,10 +401,40 @@ export function PlaygroundClientPro() {
             onCollapse={() => setSidebarOpen(false)}
             onExpand={() => setSidebarOpen(true)}
          >
-             <ToolSidebar
-                tools={availableTools}
-                onSelectTool={setToolToConfigure}
-             />
+             <div className="flex flex-col h-full bg-muted/10 border-r">
+                <div className="flex items-center p-2 gap-1 border-b bg-background/50 backdrop-blur-sm">
+                     <Button
+                        variant={sidebarTab === "library" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="flex-1 h-7 text-xs"
+                        onClick={() => setSidebarTab("library")}
+                     >
+                        Library
+                     </Button>
+                     <Button
+                        variant={sidebarTab === "collections" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="flex-1 h-7 text-xs"
+                        onClick={() => setSidebarTab("collections")}
+                     >
+                        Collections
+                     </Button>
+                </div>
+                {sidebarTab === "library" ? (
+                     <ToolSidebar
+                        tools={availableTools}
+                        onSelectTool={setToolToConfigure}
+                        className="border-none bg-transparent"
+                     />
+                ) : (
+                     <CollectionsSidebar
+                        collections={collections}
+                        setCollections={setCollections}
+                        onRunRequest={handleRunRequest}
+                        className="border-none bg-transparent"
+                     />
+                )}
+            </div>
          </ResizablePanel>
 
          <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
@@ -434,7 +512,13 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
+                                <ChatMessage
+                                    key={msg.id}
+                                    message={msg}
+                                    onReplay={handleReplay}
+                                    onRetry={handleReplay}
+                                    onSave={handleOpenSaveDialog}
+                                />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
@@ -535,6 +619,44 @@ export function PlaygroundClientPro() {
                         onCancel={() => setToolToConfigure(null)}
                     />
                 )}
+            </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!requestToSave} onOpenChange={(open) => !open && setRequestToSave(null)}>
+        <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>Save Request</DialogTitle>
+                <DialogDescription>
+                    Save this tool execution to a collection for regression testing.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="req-name">Name</Label>
+                    <Input
+                        id="req-name"
+                        value={saveRequestName}
+                        onChange={(e) => setSaveRequestName(e.target.value)}
+                    />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="col-select">Collection</Label>
+                    <Select value={saveCollectionId} onValueChange={setSaveCollectionId}>
+                        <SelectTrigger id="col-select">
+                            <SelectValue placeholder="Select collection" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {collections.map((col) => (
+                                <SelectItem key={col.id} value={col.id}>{col.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setRequestToSave(null)}>Cancel</Button>
+                <Button onClick={confirmSaveRequest}>Save</Button>
             </div>
         </DialogContent>
       </Dialog>
