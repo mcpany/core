@@ -33,8 +33,8 @@ test.describe('Tool Exploration', () => {
         // The UI fetches once on mount.
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
-        // Increase retries to 20 for slow CI environments where backend worker might be lagging
-        const maxRetries = 20;
+        // Increase retries to 30 for slow CI environments where backend worker might be lagging
+        const maxRetries = 30;
         for (let i = 0; i < maxRetries; i++) {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
@@ -44,6 +44,9 @@ test.describe('Tool Exploration', () => {
                 break;
             } catch (e) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/${maxRetries})`);
+                if (i === maxRetries - 1) {
+                    console.log('Final attempt failed. Page content dump:', await page.content());
+                }
                 await page.reload();
                 // Wait for network idle and a small buffer
                 await page.waitForLoadState('networkidle');
@@ -70,7 +73,7 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        const maxRetries = 20;
+        const maxRetries = 30;
         for (let i = 0; i < maxRetries; i++) {
             try {
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
@@ -95,7 +98,7 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        const maxRetries = 20;
+        const maxRetries = 30;
         for (let i = 0; i < maxRetries; i++) {
             try {
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });

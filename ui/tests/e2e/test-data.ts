@@ -122,6 +122,13 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
+        // Try deleting by ID first, then fallback to name just in case
+        const ids = ["svc_01", "svc_02", "svc_03", "svc_echo"];
+        for (const id of ids) {
+             await context.delete(`/api/v1/services/${id}`, { headers: HEADERS });
+        }
+
+        // Also cleanup by name to be sure
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
