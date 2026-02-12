@@ -45,6 +45,9 @@ services:
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
     command: >
       sh -c "
+        echo '--- DEBUG: Checking mounted file content ---' &&
+        cat /work/ui/tests/tools.spec.ts | grep 'DEBUG' || echo 'DEBUG log missing' &&
+        echo '--------------------------------------------' &&
         mkdir -p test-results .audit playwright-report docs &&
         npx playwright test $${PLAYWRIGHT_ARGS}
       "

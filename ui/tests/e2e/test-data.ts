@@ -10,6 +10,7 @@ const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
+    console.log("DEBUG: seedServices called. Using command_line_service for mocks.");
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
         {
@@ -19,7 +20,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             // ⚡ Bolt Fix: Use command_line_service to mock tools deterministically without network deps.
             // Previous http_service pointing to stripe.com failed MCP handshake, resulting in 0 tools.
             command_line_service: {
-                command: "echo",
+                command: "/bin/echo",
                 args: ["payment_processed"],
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
@@ -32,7 +33,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             // ⚡ Bolt Fix: Use mock command service to avoid "Connection Refused" on localhost
             command_line_service: {
-                command: "echo",
+                command: "/bin/echo",
                 args: ["user_data"],
                 tools: [
                      { name: "get_user", description: "Get user details" }
@@ -46,7 +47,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             // ⚡ Bolt Fix: Use mock command service to avoid "Connection Refused" on localhost
             command_line_service: {
-                command: "echo",
+                command: "/bin/echo",
                 args: ["42"],
                 tools: [
                     { name: "calculator", description: "calc" }
