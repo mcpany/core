@@ -140,3 +140,7 @@ worker:
 
 webhook:
   replicaCount: 1
+
+# Environment variables for the server container
+env:
+  MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: "true"
