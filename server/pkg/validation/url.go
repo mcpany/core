@@ -8,11 +8,18 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"os"
+	"strings"
 	"time"
+	"os"
 )
 
-const trueVal = "true"
+// isEnvTrue checks if an environment variable is set to a truthy value.
+// It accepts "true", "TRUE", "True", "1".
+// We redefine it here to avoid a circular dependency with the util package.
+func isEnvTrue(key string) bool {
+	val := strings.ToLower(strings.TrimSpace(os.Getenv(key)))
+	return val == "true" || val == "1"
+}
 
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
@@ -38,12 +45,12 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
+	if isEnvTrue("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") {
 		return nil
 	}
 
-	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
-	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
+	allowLoopback := isEnvTrue("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	allowPrivate := isEnvTrue("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
 
 	u, err := url.Parse(urlStr)
 	if err != nil {

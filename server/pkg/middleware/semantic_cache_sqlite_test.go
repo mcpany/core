@@ -18,7 +18,17 @@ func TestSQLiteVectorStore(t *testing.T) {
 	tmpDir := t.TempDir()
 	dbPath := filepath.Join(tmpDir, "vectors.db")
 
-	store, err := NewSQLiteVectorStore(dbPath)
+	// ⚡ Bolt: Add retry logic for database locking in tests
+	// SQLite can be locked by antivirus or indexers on some CI environments
+	var store *SQLiteVectorStore
+	var err error
+	for i := 0; i < 5; i++ {
+		store, err = NewSQLiteVectorStore(dbPath)
+		if err == nil {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 	require.NoError(t, err)
 	defer store.Close()
 
@@ -41,7 +51,17 @@ func TestSQLiteVectorStore(t *testing.T) {
 	err = store.Close()
 	assert.NoError(t, err)
 
-	store2, err := NewSQLiteVectorStore(dbPath)
+	// Wait a bit before reopening to ensure lock release
+	time.Sleep(50 * time.Millisecond)
+
+	var store2 *SQLiteVectorStore
+	for i := 0; i < 5; i++ {
+		store2, err = NewSQLiteVectorStore(dbPath)
+		if err == nil {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 	require.NoError(t, err)
 	defer store2.Close()
 

@@ -53,7 +53,7 @@ func IsEnvVarAllowed(name string) bool {
 	}
 
 	// 3. Strict Mode Check
-	strictMode := os.Getenv("MCPANY_STRICT_ENV_MODE") == "true"
+	strictMode := IsEnvTrue("MCPANY_STRICT_ENV_MODE")
 	if strictMode {
 		slog.Warn("Blocked access to environment variable in strict mode", "name", name)
 		return false
