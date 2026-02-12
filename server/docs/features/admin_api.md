@@ -6,21 +6,23 @@ The Admin Management API provides a set of gRPC endpoints to inspect and manage 
 
 The Admin API is exposed as a gRPC service defined in `proto/admin/v1/admin.proto`.
 
-### Endpoints
+### Service Management
 
 #### `ListServices`
 
 Returns a list of all currently registered upstream services.
 
 - **Request**: `ListServicesRequest` (empty)
-- **Response**: `ListServicesResponse` containing a list of `UpstreamServiceConfig`.
+- **Response**: `ListServicesResponse` containing a list of `UpstreamServiceConfig` and `ServiceState`.
 
 #### `GetService`
 
 Returns the configuration for a specific service by its ID.
 
 - **Request**: `GetServiceRequest` containing `service_id`.
-- **Response**: `GetServiceResponse` containing `UpstreamServiceConfig`.
+- **Response**: `GetServiceResponse` containing `UpstreamServiceConfig` and `ServiceState`.
+
+### Tool Management
 
 #### `ListTools`
 
@@ -36,12 +38,69 @@ Returns the definition of a specific tool by its name.
 - **Request**: `GetToolRequest` containing `tool_name`.
 - **Response**: `GetToolResponse` containing `Tool`.
 
+### Cache Management
+
 #### `ClearCache`
 
 Clears the global cache (if caching is enabled).
 
 - **Request**: `ClearCacheRequest` (empty)
 - **Response**: `ClearCacheResponse` (empty)
+
+### User Management
+
+#### `ListUsers`
+
+Returns a list of all registered users.
+
+- **Request**: `ListUsersRequest` (empty)
+- **Response**: `ListUsersResponse` containing a list of `User`.
+
+#### `GetUser`
+
+Returns a specific user by ID.
+
+- **Request**: `GetUserRequest` containing `user_id`.
+- **Response**: `GetUserResponse` containing `User`.
+
+#### `CreateUser`
+
+Creates a new user.
+
+- **Request**: `CreateUserRequest` containing `User` definition.
+- **Response**: `CreateUserResponse` containing the created `User`.
+
+#### `UpdateUser`
+
+Updates an existing user.
+
+- **Request**: `UpdateUserRequest` containing `User` definition.
+- **Response**: `UpdateUserResponse` containing the updated `User`.
+
+#### `DeleteUser`
+
+Deletes a user by ID.
+
+- **Request**: `DeleteUserRequest` containing `user_id`.
+- **Response**: `DeleteUserResponse` (empty).
+
+### Discovery Management
+
+#### `GetDiscoveryStatus`
+
+Returns the status of auto-discovery providers.
+
+- **Request**: `GetDiscoveryStatusRequest` (empty)
+- **Response**: `GetDiscoveryStatusResponse` containing a list of `DiscoveryProviderStatus`.
+
+### Audit Logs
+
+#### `ListAuditLogs`
+
+Returns audit logs matching the filter.
+
+- **Request**: `ListAuditLogsRequest` containing optional filters (`start_time`, `end_time`, `tool_name`, `user_id`, `profile_id`, `limit`, `offset`).
+- **Response**: `ListAuditLogsResponse` containing a list of `AuditLogEntry`.
 
 ## Usage
 
@@ -57,4 +116,7 @@ grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListServices
 
 # List all tools
 grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListTools
+
+# List audit logs
+grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListAuditLogs
 ```
