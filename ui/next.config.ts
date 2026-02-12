@@ -134,19 +134,32 @@ const nextConfig: NextConfig = {
     const localProto = path.join(__dirname, 'proto'); // If copied to ./proto
     const rootProto = path.join(__dirname, '../proto'); // If symlinked or dev
 
+    console.log('Checking @proto paths:');
+    console.log(`- Docker Path (/proto): ${fs.existsSync(dockerProto)}`);
+    console.log(`- App Path (${appProto}): ${fs.existsSync(appProto)}`);
+    console.log(`- Local Path (${localProto}): ${fs.existsSync(localProto)}`);
+    console.log(`- Root Path (${rootProto}): ${fs.existsSync(rootProto)}`);
+    console.log(`- ENV NEXT_PUBLIC_API_URL: ${process.env.NEXT_PUBLIC_API_URL}`);
+
     let protoPath = rootProto;
     if (fs.existsSync(dockerProto)) {
         protoPath = dockerProto;
+        console.log('Resolved @proto to Docker path:', protoPath);
     } else if (fs.existsSync(appProto)) {
         protoPath = appProto;
+        console.log('Resolved @proto to App parent path:', protoPath);
     } else if (fs.existsSync(localProto)) {
         protoPath = localProto;
+        console.log('Resolved @proto to local path:', protoPath);
     } else {
         // Fallback for Docker if existsSync fails for some reason (permissions?)
         // The Dockerfile explicitly copies to /proto
         if (process.env.NEXT_PUBLIC_API_URL?.includes('localhost:50050')) {
              // Heuristic for Docker build
              protoPath = '/proto';
+             console.log('Resolved @proto to forced Docker path /proto (heuristic):', protoPath);
+        } else {
+             console.log('Resolved @proto to root path (fallback):', protoPath);
         }
     }
 
