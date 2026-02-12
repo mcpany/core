@@ -32,8 +32,8 @@ RUN ln -s /app/node_modules /proto/node_modules
 RUN which protoc && protoc --version
 
 # Run generation script with debug logging
-COPY scripts/gen-proto.sh /usr/local/bin/gen-proto.sh
-RUN chmod +x /usr/local/bin/gen-proto.sh && /usr/local/bin/gen-proto.sh
+# Script is available at /app/scripts/gen-proto.sh due to COPY ui/ .
+RUN chmod +x /app/scripts/gen-proto.sh && /app/scripts/gen-proto.sh
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry

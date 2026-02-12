@@ -1,4 +1,7 @@
 #!/bin/sh
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 set -e
 
 echo "=== Protobuf Generation Debug Start ==="
@@ -15,6 +18,9 @@ if [ ! -f "$PLUGIN" ]; then
 fi
 echo "Plugin found."
 
+# Ensure plugin is executable
+chmod +x "$PLUGIN"
+
 echo "Finding proto files in /proto..."
 FILES=$(find /proto -name "*.proto")
 if [ -z "$FILES" ]; then
@@ -25,6 +31,7 @@ fi
 # echo "Found files: $FILES"
 
 echo "Running protoc..."
+# shellcheck disable=SC2086
 protoc \
   --plugin=protoc-gen-ts_proto="$PLUGIN" \
   --ts_proto_out=/proto \
