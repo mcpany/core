@@ -16,8 +16,11 @@ export const seedServices = async (requestContext?: APIRequestContext, suffix: s
             id: "svc_01" + suffix,
             name: "Payment Gateway" + suffix,
             version: "v1.2.0",
-            http_service: {
-                address: "http://localhost:8080", // Use local dummy address to avoid external network issues in CI
+            // Use command_line_service instead of http_service to ensure registration succeeds
+            // even if network is flaky (http_service drops tools if unreachable).
+            command_line_service: {
+                command: "/bin/echo",
+                args: ["payment processed"],
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
