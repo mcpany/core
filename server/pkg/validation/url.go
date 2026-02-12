@@ -13,8 +13,6 @@ import (
 	"time"
 )
 
-const trueVal = "true"
-
 // isTrue checks if the given string represents a truthy value.
 // It accepts "true", "TRUE", "True", and "1".
 func isTrue(s string) bool {
