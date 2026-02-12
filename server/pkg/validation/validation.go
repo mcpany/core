@@ -134,6 +134,45 @@ var IsSecureRelativePath = func(path string) error {
 	return nil
 }
 
+// IsSensitivePath checks if a path points to a known sensitive file or directory.
+//
+// Summary: Checks for sensitive paths.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the path is sensitive.
+func IsSensitivePath(path string) error {
+	base := filepath.Base(path)
+
+	// Block .env files
+	if strings.HasPrefix(base, ".env") {
+		return fmt.Errorf("access to .env files is restricted")
+	}
+
+	// Block .git directory
+	if base == ".git" {
+		return fmt.Errorf("access to .git directory is restricted")
+	}
+
+	// Block .ssh, .aws, .kube directories
+	if base == ".ssh" || base == ".aws" || base == ".kube" {
+		return fmt.Errorf("access to sensitive directory %q is restricted", base)
+	}
+
+	// Block common config files
+	if (strings.HasPrefix(base, "config.") || strings.HasPrefix(base, "mcpany.")) && (strings.HasSuffix(base, ".yaml") || strings.HasSuffix(base, ".json")) {
+		return fmt.Errorf("access to configuration files is restricted")
+	}
+
+	if base == "mcpany.db" {
+		return fmt.Errorf("access to database file is restricted")
+	}
+
+	return nil
+}
+
 var (
 	allowedPaths []string
 )
@@ -202,6 +241,11 @@ var IsAllowedPath = func(path string) error {
 		} else {
 			return fmt.Errorf("failed to resolve symlinks for %q: %w", path, err)
 		}
+	}
+
+	// 3. Check for sensitive paths
+	if err := IsSensitivePath(realPath); err != nil {
+		return err
 	}
 
 	// Helper to check if child is inside parent
