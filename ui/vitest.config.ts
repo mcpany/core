@@ -25,6 +25,9 @@ export default defineConfig({
       '@proto/config/v1/resource': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
       '@proto/config/v1/prompt': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
       '@proto/admin/v1/admin': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/config/v1/config': path.resolve(__dirname, '../proto/config/v1/config.ts'),
+      '@bufbuild/protobuf/wire': path.resolve(__dirname, './node_modules/@bufbuild/protobuf/dist/esm/wire/index.js'),
+      'long': path.resolve(__dirname, './node_modules/long/index.js'),
     },
   },
 })
