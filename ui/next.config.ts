@@ -120,10 +120,11 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
 
     // Explicitly add alias for @proto to resolve external directory
-    // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
-    const localProto = path.join(__dirname, 'proto');
-    const rootProto = path.join(__dirname, '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+    // In Docker, we copy proto to /proto (at root). Locally, it maps to ../proto.
+    const rootProto = path.resolve(__dirname, '../proto');
+    const dockerProto = '/proto';
+    // Check if dockerProto exists (absolute path)
+    const protoPath = fs.existsSync(dockerProto) ? dockerProto : rootProto;
 
     config.resolve.alias = {
       ...config.resolve.alias,
