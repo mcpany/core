@@ -1,7 +1,8 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM mcr.microsoft.com/playwright:v1.58.0-jammy
+# Switch to node:20-bookworm to avoid layer corruption issues with mcr.microsoft.com/playwright
+FROM node:20-bookworm
 
 WORKDIR /work/ui
 
@@ -10,6 +11,10 @@ COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 
 # Install dependencies
 RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
+
+# Install Playwright browsers and system dependencies
+# This ensures we have a working environment compatible with the installed playwright version
+RUN npx playwright install --with-deps
 
 # Copy the rest of the UI code
 COPY ui/ .
@@ -26,6 +31,7 @@ RUN find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmo
 RUN chmod -R 777 /work/proto
 
 # Clean up any copied .next directory to avoid permission issues, then create fresh
+# Explicitly remove previous .next if it exists
 RUN rm -rf .next &&     touch next-env.d.ts &&     mkdir -p .next node_modules/.cache test-results playwright-report &&     chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
 
 # Default command (can be overridden)
