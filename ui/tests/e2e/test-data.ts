@@ -17,7 +17,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: "http://localhost:50052", // Dummy address to ensure no network issues
                 tools: [
                     { name: "process_payment", description: "Process a payment", call_id: "process_payment" }
                 ],
@@ -134,8 +134,11 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const now = new Date();
     const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
+        { timestamp: now.toISOString(), requests: 100, errors: 2 },
+        { timestamp: new Date(now.getTime() - 5 * 60000).toISOString(), requests: 120, errors: 5 }, // 5 mins ago
+        { timestamp: new Date(now.getTime() - 10 * 60000).toISOString(), requests: 90, errors: 1 }  // 10 mins ago
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
