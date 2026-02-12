@@ -5,7 +5,7 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare, Bookmark } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -61,6 +61,7 @@ interface ChatMessageProps {
     message: Message;
     onReplay?: (toolName: string, args: Record<string, unknown>) => void;
     onRetry?: (toolName: string, args: Record<string, unknown>) => void;
+    onSave?: (toolName: string, args: Record<string, unknown>) => void;
 }
 
 function analyzeError(error: string): string | null {
@@ -154,6 +155,24 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                          <span className="text-[10px] text-muted-foreground mr-2" title="Estimated token usage for arguments">
                             {formatTokenCount(estimateTokens(JSON.stringify(message.toolArgs || {})))} tokens
                          </span>
+                         {onSave && message.toolName && (
+                             <Tooltip>
+                                 <TooltipTrigger asChild>
+                                      <Button
+                                         variant="ghost"
+                                         size="icon"
+                                         className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                         onClick={() => onSave(message.toolName!, message.toolArgs || {})}
+                                         aria-label="Save to Workflow"
+                                      >
+                                          <Bookmark className="h-3.5 w-3.5" />
+                                      </Button>
+                                 </TooltipTrigger>
+                                 <TooltipContent>
+                                     <p>Save to Workflow</p>
+                                 </TooltipContent>
+                             </Tooltip>
+                         )}
                          {onReplay && message.toolName && (
                              <Tooltip>
                                  <TooltipTrigger asChild>

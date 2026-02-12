@@ -30,12 +30,16 @@ import {
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { ToolForm } from "@/components/playground/tool-form";
 import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { WorkflowList } from "@/components/playground/workflows/workflow-list";
+import { SaveWorkflowDialog } from "@/components/playground/workflows/save-workflow-dialog";
+import { Workflow } from "@/types/workflow";
 
 import { useSearchParams } from "next/navigation";
 
@@ -51,17 +55,6 @@ export function PlaygroundClientPro() {
   // Initialize with welcome message if empty and only after local storage is loaded
   useEffect(() => {
     if (isInitialized) {
-        // We only add welcome message if the array is empty AND
-        // we check if the key was missing from localStorage (implies first visit).
-        // However, useLocalStorage handles default value if key is missing.
-        // If the user explicitly clears the chat, we set it to empty array.
-        // So `messages` being empty array means either:
-        // 1. First visit (default value used)
-        // 2. User cleared chat
-
-        // To strictly follow "persistence", if the user cleared it, it should stay cleared.
-        // But for UX, if I open the page and it's empty, a welcome message is nice.
-        // Let's rely on checking if localStorage has the key to distinguish first visit.
         const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
 
         if (!hasKey && messages.length === 0) {
@@ -108,6 +101,11 @@ export function PlaygroundClientPro() {
   const [isDryRun, setIsDryRun] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+
+  // Workflow State
+  const [workflows, setWorkflows] = useLocalStorage<Workflow[]>("mcpany-workflows", []);
+  const [isSaveWorkflowOpen, setIsSaveWorkflowOpen] = useState(false);
+  const [pendingWorkflowRequest, setPendingWorkflowRequest] = useState<{toolName: string, args: Record<string, unknown>} | null>(null);
 
   const currentTokens = useMemo(() => estimateTokens(input), [input]);
   const historyTokens = useMemo(() => estimateMessageTokens(displayMessages), [displayMessages]);
@@ -181,6 +179,38 @@ export function PlaygroundClientPro() {
       const command = `${toolName} ${JSON.stringify(args)}`;
       setInput(command);
       inputRef.current?.focus();
+  };
+
+  const onSaveToWorkflow = (toolName: string, args: Record<string, unknown>) => {
+      setPendingWorkflowRequest({ toolName, args });
+      setIsSaveWorkflowOpen(true);
+  };
+
+  const handleSaveWorkflowConfirm = (workflowId: string | null, newName: string) => {
+      if (!pendingWorkflowRequest) return;
+
+      const newStep = {
+          id: crypto.randomUUID(),
+          name: pendingWorkflowRequest.toolName,
+          toolName: pendingWorkflowRequest.toolName,
+          arguments: pendingWorkflowRequest.args
+      };
+
+      if (workflowId) {
+          setWorkflows(prev => prev.map(w => w.id === workflowId ? { ...w, steps: [...w.steps, newStep] } : w));
+          toast({ title: "Added to Workflow" });
+      } else {
+          const newWorkflow: Workflow = {
+              id: crypto.randomUUID(),
+              name: newName,
+              steps: [newStep],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+          };
+          setWorkflows(prev => [...prev, newWorkflow]);
+          toast({ title: "Workflow Created" });
+      }
+      setPendingWorkflowRequest(null);
   };
 
   const processResponse = async (userInput: string) => {
@@ -353,10 +383,23 @@ export function PlaygroundClientPro() {
             onCollapse={() => setSidebarOpen(false)}
             onExpand={() => setSidebarOpen(true)}
          >
-             <ToolSidebar
-                tools={availableTools}
-                onSelectTool={setToolToConfigure}
-             />
+             <Tabs defaultValue="tools" className="flex flex-col h-full">
+                 <div className="border-b px-2">
+                     <TabsList className="w-full">
+                         <TabsTrigger value="tools" className="flex-1">Tools</TabsTrigger>
+                         <TabsTrigger value="workflows" className="flex-1">Workflows</TabsTrigger>
+                     </TabsList>
+                 </div>
+                 <TabsContent value="tools" className="flex-1 overflow-hidden m-0">
+                     <ToolSidebar
+                        tools={availableTools}
+                        onSelectTool={setToolToConfigure}
+                     />
+                 </TabsContent>
+                 <TabsContent value="workflows" className="flex-1 overflow-hidden m-0">
+                     <WorkflowList workflows={workflows} setWorkflows={setWorkflows} />
+                 </TabsContent>
+             </Tabs>
          </ResizablePanel>
 
          <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
@@ -434,7 +477,13 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
+                                <ChatMessage
+                                    key={msg.id}
+                                    message={msg}
+                                    onReplay={handleReplay}
+                                    onRetry={handleReplay}
+                                    onSave={onSaveToWorkflow} // Pass prop here
+                                />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
@@ -538,6 +587,13 @@ export function PlaygroundClientPro() {
             </div>
         </DialogContent>
       </Dialog>
+
+      <SaveWorkflowDialog
+        open={isSaveWorkflowOpen}
+        onOpenChange={setIsSaveWorkflowOpen}
+        existingWorkflows={workflows}
+        onSave={handleSaveWorkflowConfirm}
+      />
     </div>
   );
 }
