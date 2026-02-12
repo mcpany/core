@@ -28,9 +28,13 @@ COPY proto/ /proto/
 RUN ln -s /app/node_modules /proto/node_modules
 
 # Generate Protobuf types (since they are gitignored and not committed)
+# Verify protoc installation
+RUN which protoc && protoc --version
+
 # Use a simplified command to find all proto files and run protoc using ts-proto plugin
 # Note: we assume ts-proto is in node_modules/.bin/protoc-gen-ts_proto
-RUN find /proto -name "*.proto" -print0 | xargs -0 protoc \
+# Using absolute path /usr/bin/protoc to be safe
+RUN find /proto -name "*.proto" -print0 | xargs -0 /usr/bin/protoc \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/proto \
     --ts_proto_opt=esModuleInterop=true \
