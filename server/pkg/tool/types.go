@@ -1862,6 +1862,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+
+					// Sentinel Security Update: Check for dangerous Git protocols
+					if isGitCommand(t.service.GetCommand()) {
+						if err := checkForGitInjection(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
@@ -1896,6 +1904,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
+
+						// Sentinel Security Update: Check for dangerous Git protocols
+						if isGitCommand(t.service.GetCommand()) {
+							if err := checkForGitInjection(argStr); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+
 						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
 							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
@@ -3274,6 +3290,23 @@ func checkEnvInjection(val string) error {
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\" // Space removed
 	if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
+	}
+	return nil
+}
+
+func isGitCommand(cmd string) bool {
+	base := strings.ToLower(filepath.Base(cmd))
+	return base == "git" || base == "git.exe"
+}
+
+func checkForGitInjection(val string) error {
+	val = strings.TrimSpace(val)
+	valLower := strings.ToLower(val)
+	if strings.HasPrefix(valLower, "ext::") {
+		return fmt.Errorf("git injection detected: ext:: protocol is not allowed")
+	}
+	if strings.HasPrefix(valLower, "dev::") {
+		return fmt.Errorf("git injection detected: dev:: protocol is not allowed")
 	}
 	return nil
 }
