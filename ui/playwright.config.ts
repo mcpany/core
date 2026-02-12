@@ -10,6 +10,13 @@ import os from 'os';
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
+// In CI (Docker Compose), the backend is at 'http://server:50050'.
+// Locally, it defaults to 'http://localhost:50050'.
+const BACKEND_URL = process.env.BACKEND_URL || (process.env.CI ? 'http://server:50050' : 'http://localhost:50050');
+
+console.log(`[Playwright] Config - BASE_URL: ${BASE_URL}`);
+console.log(`[Playwright] Config - BACKEND_URL: ${BACKEND_URL}`);
+
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
@@ -46,11 +53,11 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
+        command: `BACKEND_URL=${BACKEND_URL} npx next dev -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: false,
         env: {
-          BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
+          BACKEND_URL: BACKEND_URL,
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
         },
       },
