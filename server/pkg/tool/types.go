@@ -1869,6 +1869,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
+
+					// Sentinel Security Update: Post-substitution check for dangerous commands (Git/Tar RCE)
+					if err := checkDangerousCommandUsage(t.service.GetCommand(), args[i]); err != nil {
+						return nil, fmt.Errorf("dangerous argument detected: %w", err)
+					}
 				}
 			}
 		}
@@ -2621,6 +2626,73 @@ func checkForPathTraversal(val string) error {
 		}
 		i++
 	}
+	return nil
+}
+
+func checkDangerousCommandUsage(command, arg string) error {
+	base := filepath.Base(command)
+	// Check for Git RCE via configuration injection
+	if base == "git" {
+		lowerArg := strings.ToLower(arg)
+
+		// Dangerous configuration keys that can execute commands
+		dangerousKeys := []string{
+			"core.pager", "core.editor", "core.sshcommand",
+			"proxy.command", "diff.external", "credential.helper",
+			"git-p4.editor", "mergetool", "difftool",
+			"man.viewer", "pager.",
+		}
+
+		for _, key := range dangerousKeys {
+			if strings.Contains(lowerArg, key) {
+				// Check for assignment pattern: key=value
+				// We check for '=' to ensure we are targeting the assignment
+				if strings.Contains(lowerArg, "=") {
+					// If the argument assigns a value to a dangerous key,
+					// we strictly forbid any whitespace in that argument to prevent
+					// shell command injection (e.g. "sh -c id", "sh\t-c...").
+					if strings.ContainsAny(arg, " \t\n\v\f\r") {
+						return fmt.Errorf("suspicious git config '%s' with whitespace (potential RCE)", key)
+					}
+
+					// Also block known dangerous commands even without whitespace (e.g. core.pager=sh)
+					parts := strings.SplitN(lowerArg, "=", 2)
+					if len(parts) == 2 {
+						val := strings.TrimSpace(parts[1])
+						// Block usage of shells/interpreters as config values
+						blocklist := []string{"sh", "bash", "zsh", "dash", "python", "perl", "ruby", "vim", "vi", "emacs", "nano"}
+						for _, b := range blocklist {
+							if val == b || strings.HasSuffix(val, "/"+b) || strings.HasSuffix(val, "\\"+b) {
+								return fmt.Errorf("suspicious git config value '%s' (potential RCE)", val)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Dangerous flags that execute commands
+		dangerousFlags := []string{
+			"--upload-pack", "--receive-pack", "--exec",
+		}
+		for _, flag := range dangerousFlags {
+			if strings.Contains(lowerArg, flag) {
+				if strings.ContainsAny(arg, " \t\n\v\f\r") {
+					return fmt.Errorf("suspicious git flag '%s' with whitespace (potential RCE)", flag)
+				}
+			}
+		}
+	}
+
+	// Check for Tar RCE via checkpoint action
+	if base == "tar" {
+		if strings.Contains(arg, "--checkpoint-action") || strings.Contains(arg, "--to-command") {
+			if strings.ContainsAny(arg, " \t\n\v\f\r") {
+				return fmt.Errorf("suspicious tar flag with whitespace (potential RCE)")
+			}
+		}
+	}
+
 	return nil
 }
 
