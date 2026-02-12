@@ -1898,8 +1898,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
+							// Sentinel Security Update: For 'git' and 'tar', arguments are usually filenames which may contain spaces.
+							// We allow them in the 'args' parameter because these tools generally treat arguments as literals
+							// (not code) unless they look like flags (which are blocked by checkForArgumentInjection).
+							// Dangerous config injection (e.g. -c core.pager=...) is handled by the template substitution check above
+							// because 'git' and 'tar' are in isShellCommand.
+							base := filepath.Base(t.service.GetCommand())
+							if base != "git" && base != "tar" {
+								if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+									return nil, fmt.Errorf("args parameter: %w", err)
+								}
 							}
 						}
 						args = append(args, argStr)
@@ -2797,6 +2805,8 @@ func isShellCommand(cmd string) bool {
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
+		// Sentinel Security Update: Add git and tar to dangerous tools list
+		"git", "tar",
 		// Additional interpreters and compilers that can execute code
 		"R", "Rscript", "julia", "groovy", "jshell",
 		"scala", "kotlin", "swift",
@@ -3167,6 +3177,7 @@ func isInterpreter(command string) bool {
 		"expect", "tclsh", "wish",
 		"groovy", "jshell", "scala", "kotlin", "swift",
 		"erl", "escript", "ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"sed", "jq",
 	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
