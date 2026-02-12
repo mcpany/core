@@ -169,3 +169,56 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         console.log(`Failed to cleanup user: ${e}`);
     }
 };
+
+export const seedToolsService = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const service = {
+        id: "svc_tools_01",
+        name: "Tools Gateway",
+        version: "v1.2.0",
+        http_service: {
+            address: "https://stripe.com",
+            tools: [
+                { name: "process_payment_tools", description: "Process a payment (tools test)" }
+            ]
+        }
+    };
+    const echoService = {
+        id: "svc_tools_echo",
+        name: "Tools Echo Service",
+        version: "v1.0",
+        command_line_service: {
+            command: "/bin/echo",
+            tools: [
+                {
+                    name: "echo_tool_test",
+                    description: "Echoes back input (tools test)",
+                    inputSchema: { type: "object" },
+                    call_id: "echo_call"
+                }
+            ],
+            calls: {
+                echo_call: {
+                    args: ["echoed_output"]
+                }
+            }
+        }
+    };
+
+    try {
+        await context.post('/api/v1/services', { data: service, headers: HEADERS });
+        await context.post('/api/v1/services', { data: echoService, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed tools services: ${e}`);
+    }
+};
+
+export const cleanupToolsService = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/services/Tools Gateway', { headers: HEADERS });
+        await context.delete('/api/v1/services/Tools Echo Service', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup tools services: ${e}`);
+    }
+};
