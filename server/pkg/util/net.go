@@ -96,15 +96,32 @@ type SafeDialer struct {
 // Summary: Initializes a SafeDialer with secure defaults.
 //
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
+// However, it respects the following environment variables to relax security for testing:
+//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Allows loopback and private IPs.
+//   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Allows loopback IPs.
+//   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Allows private IPs.
 //
 // Returns:
-//   - *SafeDialer: A new SafeDialer instance with restrictive defaults.
+//   - *SafeDialer: A new SafeDialer instance.
 func NewSafeDialer() *SafeDialer {
-	return &SafeDialer{
+	d := &SafeDialer{
 		AllowLoopback:  false,
 		AllowPrivate:   false,
 		AllowLinkLocal: false,
 	}
+
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		d.AllowLoopback = true
+		d.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		d.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		d.AllowPrivate = true
+	}
+
+	return d
 }
 
 // DialContext establishes a network connection to the given address while enforcing egress policies.
