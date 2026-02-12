@@ -6,6 +6,11 @@
 import { Workflow, WorkflowStep } from "@/types/workflow";
 import { apiClient } from "@/lib/client";
 
+/**
+ * Callback function type for updating workflow step status.
+ * @param stepId - The ID of the step being updated.
+ * @param updates - The partial updates to apply to the step.
+ */
 export type StepUpdateCallback = (stepId: string, updates: Partial<WorkflowStep>) => void;
 
 /**

@@ -20,6 +20,15 @@ interface SaveWorkflowDialogProps {
     onSave: (workflowId: string | null, newName: string) => void;
 }
 
+/**
+ * SaveWorkflowDialog component.
+ * @param props - The component props.
+ * @param props.open - The open state.
+ * @param props.onOpenChange - The onOpenChange handler.
+ * @param props.existingWorkflows - The existingWorkflows list.
+ * @param props.onSave - The onSave handler.
+ * @returns The rendered component.
+ */
 export function SaveWorkflowDialog({ open, onOpenChange, existingWorkflows, onSave }: SaveWorkflowDialogProps) {
     const [mode, setMode] = useState<"new" | "existing">("new");
     const [newName, setNewName] = useState("");

@@ -17,6 +17,15 @@ interface WorkflowItemProps {
     index: number;
 }
 
+/**
+ * WorkflowItem component.
+ * @param props - The component props.
+ * @param props.step - The workflow step.
+ * @param props.onRun - The onRun property.
+ * @param props.onDelete - The onDelete property.
+ * @param props.index - The index property.
+ * @returns The rendered component.
+ */
 export function WorkflowItem({ step, onRun, onDelete, index }: WorkflowItemProps) {
     return (
         <div className="group flex items-center gap-3 p-3 bg-muted/40 rounded-md border border-transparent hover:border-border transition-all">

@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents a single step in a workflow.
+ */
 export interface WorkflowStep {
     id: string;
     name: string;
@@ -13,6 +16,9 @@ export interface WorkflowStep {
     error?: string;
 }
 
+/**
+ * Represents a workflow containing multiple steps.
+ */
 export interface Workflow {
     id: string;
     name: string;

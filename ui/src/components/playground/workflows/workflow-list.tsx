@@ -20,6 +20,13 @@ interface WorkflowListProps {
     setWorkflows: (workflows: Workflow[]) => void;
 }
 
+/**
+ * WorkflowList component.
+ * @param props - The component props.
+ * @param props.workflows - The list of workflows.
+ * @param props.setWorkflows - Function to update the workflows.
+ * @returns The rendered component.
+ */
 export function WorkflowList({ workflows, setWorkflows }: WorkflowListProps) {
     const [runningId, setRunningId] = useState<string | null>(null);
     const [openIds, setOpenIds] = useState<Set<string>>(new Set());
