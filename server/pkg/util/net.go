@@ -167,6 +167,7 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Configuration is loaded from environment variables:
 //   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
+//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow all local IPs (loopback and private).
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
@@ -176,6 +177,10 @@ func NewSafeHTTPClient() *http.Client {
 		dialer.AllowLoopback = true
 	}
 	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		dialer.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
