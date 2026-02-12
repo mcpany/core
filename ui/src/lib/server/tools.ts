@@ -3,6 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Tool defines the interface for a server-side tool.
+ *
+ * @property name - The unique name of the tool.
+ * @property description - A human-readable description of the tool's purpose.
+ * @property schema - The JSON schema describing the tool's input parameters.
+ * @property execute - The function to execute the tool logic.
+ */
 export interface Tool {
   name: string;
   description: string;

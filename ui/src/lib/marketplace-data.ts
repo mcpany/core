@@ -3,9 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * EnvVarDefinition defines the schema for an environment variable required by a marketplace item.
+ *
+ * @property name - The name of the environment variable (e.g. API_KEY).
+ * @property description - A helpful description of what this variable is for.
+ * @property required - Whether this variable must be provided.
+ * @property type - The input type for the variable (text, password, path).
+ * @property addToArgs - If true, the value is appended to the command arguments.
+ */
+export interface EnvVarDefinition {
+  name: string;
+  description: string;
+  required: boolean;
+  type: "text" | "password" | "path";
+  addToArgs?: boolean;
+}
 
-
-
+/**
+ * MarketplaceItemConfig defines the execution configuration for a marketplace item.
+ *
+ * @property command - The command to execute (e.g. npx).
+ * @property args - The arguments to pass to the command.
+ * @property envVars - The list of environment variables required.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
@@ -13,19 +34,13 @@ export interface MarketplaceItemConfig {
 }
 
 /**
- * EnvVarDefinition type definition.
- */
-export interface EnvVarDefinition {
-  name: string;
-  description: string;
-  required: boolean;
-  type: "text" | "password" | "path";
-  // If true, this value is also appended to the command args
-  addToArgs?: boolean;
-}
-
-/**
- * MarketplaceItem type definition.
+ * MarketplaceItem represents a tool or service available in the marketplace.
+ *
+ * @property id - Unique identifier for the item.
+ * @property name - Display name of the item.
+ * @property description - Brief description of the item's functionality.
+ * @property icon - Name of the Lucide icon to display.
+ * @property config - The configuration required to run the item.
  */
 export interface MarketplaceItem {
   id: string;
@@ -36,7 +51,7 @@ export interface MarketplaceItem {
 }
 
 /**
- * The MARKETPLACE_ITEMS const.
+ * MARKETPLACE_ITEMS defines the curated list of available marketplace items.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {
