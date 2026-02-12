@@ -158,6 +158,12 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
+// isTrue checks if an environment variable string represents a truthy value.
+func isTrue(val string) bool {
+	v := strings.TrimSpace(strings.ToLower(val))
+	return v == "true" || v == "1" || v == "yes" || v == "on"
+}
+
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.
@@ -172,10 +178,10 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
@@ -234,16 +240,16 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")) {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 
