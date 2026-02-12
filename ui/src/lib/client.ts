@@ -232,7 +232,7 @@ export const apiClient = {
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
-        const res = await fetchWithAuth('/api/v1/services');
+        const res = await fetchWithAuth('/api/v1/services', { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed to fetch services');
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);

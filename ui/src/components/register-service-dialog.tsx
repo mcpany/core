@@ -42,6 +42,7 @@ interface RegisterServiceDialogProps {
   onSuccess?: () => void;
   trigger?: React.ReactNode;
   serviceToEdit?: UpstreamServiceConfig;
+  initialTemplateId?: string;
 }
 
 const detectSensitiveData = (text: string) => {
@@ -59,7 +60,7 @@ const detectSensitiveData = (text: string) => {
  *
  * @param serviceToEdit - The serviceToEdit.
  */
-export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
+export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit, initialTemplateId }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [view, setView] = useState<"templates" | "template-config" | "form">("templates");
@@ -139,6 +140,16 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
         loadCredentials();
     }
   }, [open]);
+
+  // Auto-select template if provided
+  useEffect(() => {
+      if (open && initialTemplateId && view === 'templates') {
+          const template = SERVICE_TEMPLATES.find(t => t.id === initialTemplateId);
+          if (template) {
+              handleTemplateSelect(template);
+          }
+      }
+  }, [open, initialTemplateId]);
 
   // Watch for sensitive data
   const watchedAddress = form.watch("address");
