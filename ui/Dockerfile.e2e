@@ -11,6 +11,10 @@ COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 # Install dependencies
 RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
 
+# Cache Buster: Force rebuild of source layer to ensure latest test code is included
+# This ensures that test-data.ts and service-diff-isolated.spec.ts are copied.
+RUN echo "Cache Buster: $(date +%s)"
+
 # Copy the rest of the UI code
 COPY ui/ .
 COPY proto/ /work/proto/
