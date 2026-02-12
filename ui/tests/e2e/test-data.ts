@@ -16,31 +16,39 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            // Use command_line_service instead of http_service to ensure reliability in CI
+            // and avoid network dependencies or protocol mismatches.
+            command_line_service: {
+                command: "/bin/echo",
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
-                ]
+                ],
+                calls: {
+                    process_payment: {
+                        args: ["payment_processed"]
+                    }
+                }
             }
         },
         {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+            // Switch to command_line_service to avoid "Connection Refused" errors in logs
+            command_line_service: {
+                command: "/bin/echo",
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            // Switch to command_line_service to avoid "Connection Refused" errors in logs
+            command_line_service: {
+                command: "/bin/echo",
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
