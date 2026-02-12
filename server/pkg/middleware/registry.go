@@ -35,20 +35,22 @@ var (
 	}
 )
 
-// Register registers a HTTP middleware factory.
+// Register registers a new HTTP middleware factory with the global registry.
 //
-// name is the name of the resource.
-// factory is the factory.
+// Parameters:
+//   - name: string. The unique name of the middleware (e.g., "cors", "logging").
+//   - factory: Factory. The function that creates the middleware instance.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registers an MCP middleware factory.
+// RegisterMCP registers a new MCP middleware factory with the global registry.
 //
-// name is the name of the resource.
-// factory is the factory.
+// Parameters:
+//   - name: string. The unique name of the middleware (e.g., "auth", "ratelimit").
+//   - factory: MCPFactory. The function that creates the middleware instance.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -121,20 +123,25 @@ type StandardMiddlewares struct {
 	Cleanup          func() error
 }
 
-// InitStandardMiddlewares registers standard middlewares.
+// InitStandardMiddlewares initializes and registers the set of core middlewares used by the server.
 //
-// authManager is the authManager.
-// toolManager is the toolManager.
-// auditConfig is the auditConfig.
-// cachingMiddleware is the cachingMiddleware.
-// globalRateLimitConfig is the globalRateLimitConfig.
-// dlpConfig is the dlpConfig.
-// contextOptimizerConfig is the contextOptimizerConfig.
-// debuggerConfig is the debuggerConfig.
-// smartRecoveryConfig is the smartRecoveryConfig.
+// It sets up Logging, Auth, Debug, CORS, Caching, RateLimit, CallPolicy, Audit, GlobalRateLimit,
+// DLP, ContextOptimizer, and SmartRecovery middlewares.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - authManager: *auth.Manager. The authentication manager.
+//   - toolManager: tool.ManagerInterface. The tool manager.
+//   - auditConfig: *configv1.AuditConfig. Configuration for audit logging.
+//   - cachingMiddleware: *CachingMiddleware. The caching middleware instance.
+//   - globalRateLimitConfig: *configv1.RateLimitConfig. Configuration for global rate limiting.
+//   - dlpConfig: *configv1.DLPConfig. Configuration for Data Loss Prevention.
+//   - contextOptimizerConfig: *configv1.ContextOptimizerConfig. Configuration for context optimization.
+//   - debuggerConfig: *configv1.DebuggerConfig. Configuration for the debugger.
+//   - smartRecoveryConfig: *configv1.SmartRecoveryConfig. Configuration for smart recovery.
+//
+// Returns:
+//   - *StandardMiddlewares: A struct containing references to the initialized middlewares.
+//   - error: An error if initialization of any middleware fails.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

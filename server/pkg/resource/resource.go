@@ -234,14 +234,17 @@ func (rm *Manager) OnListChanged(f func()) {
 	rm.onListChangedFunc = f
 }
 
-// Subscribe finds a resource by its URI and calls its Subscribe method.
+// Subscribe delegates the subscription request to the specific resource identified by the URI.
+//
+// It first retrieves the resource from the manager. If found, it invokes the resource's
+// Subscribe method. This allows clients to receive updates for dynamic resources.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the subscription.
 //   - uri: string. The URI of the resource.
 //
 // Returns:
-//   - error: An error if resource not found or subscription fails.
+//   - error: An error if the resource is not found or if the subscription operation fails.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {

@@ -77,7 +77,8 @@ func loadEnv(cmd *cobra.Command) error {
 
 // newRootCmd creates and configures the main command for the application.
 //
-// Summary: Creates the root command hierarchy.
+// It establishes the root command and registers all subcommands (run, version, update, health, doctor, config).
+// It also sets up persistent flags and environment variable loading.
 //
 // Returns:
 //   - *cobra.Command: The configured root command.
@@ -611,7 +612,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 // main is the entry point for the MCP Any server application.
 //
-// Summary: Entry point for the application.
+// It initializes the application, executes the root command, and handles
+// any errors that occur during execution by exiting with a non-zero status code.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)

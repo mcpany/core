@@ -23,6 +23,17 @@ func main() {
 	}
 }
 
+// run executes the connector runtime logic.
+//
+// It parses command-line arguments to determine the connector configuration,
+// starts the runtime, and waits for termination signals.
+//
+// Parameters:
+//   - args: []string. The command-line arguments (including the program name).
+//   - stop: chan os.Signal. A channel to receive OS signals for graceful shutdown.
+//
+// Returns:
+//   - error: An error if argument parsing fails or runtime execution encounters a fatal issue.
 func run(args []string, stop chan os.Signal) error {
 	fs := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	connectorName := fs.String("name", "", "Name of the connector to run")
