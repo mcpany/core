@@ -1239,6 +1239,9 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 }
 
 // WaitForStartup waits for the application to be fully initialized.
+//
+// Summary: Waits for application startup.
+//
 // It blocks until the startup process is complete or the context is canceled.
 //
 // Parameters:
@@ -1365,6 +1368,8 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 // HTTP GET request to its /healthz endpoint. This is useful for monitoring and
 // ensuring the server is operational.
 //
+// Summary: Performs a health check against the server.
+//
 // The function constructs the health check URL from the provided address and
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
@@ -1387,6 +1392,8 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // HealthCheckWithContext performs a health check against a running server by
 // sending an HTTP GET request to its /healthz endpoint. This is useful for
 // monitoring and ensuring the server is operational.
+//
+// Summary: Performs a health check with context.
 //
 // The function constructs the health check URL from the provided address and
 // sends an HTTP GET request. It expects a 200 OK status code for a successful

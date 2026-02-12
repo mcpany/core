@@ -43,6 +43,9 @@ var fastJSON = jsoniter.Config{
 }.Froze()
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+//
+// Summary: Testing hook for middleware inspection.
+//
 // It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
 //
 // Side Effects:
@@ -908,14 +911,21 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 
 // LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
 // its JSON content only when logged.
+//
+// Summary: Redacts JSON bytes lazily for logging.
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
+//
+// Summary: Returns the redacted value for logging.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
 // LazyLogResult wraps a tool execution result for efficient logging.
+//
+// Summary: Wrapper for efficient result logging.
+//
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 type LazyLogResult struct {
@@ -923,6 +933,8 @@ type LazyLogResult struct {
 }
 
 // LogValue implements slog.LogValuer.
+//
+// Summary: Returns the formatted result for logging.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")
