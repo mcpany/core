@@ -566,3 +566,49 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_Cleanup(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// Inject an expired session (active 2 hours ago)
+	m.mu.Lock()
+	m.sessions["expired"] = &SessionStats{
+		ID:           "expired",
+		LastActive:   time.Now().Add(-2 * time.Hour),
+		RequestCount: 1,
+	}
+	// Inject a valid session (active now)
+	m.sessions["valid"] = &SessionStats{
+		ID:           "valid",
+		LastActive:   time.Now(),
+		RequestCount: 1,
+	}
+	// Inject expired traffic history (older than 24h)
+	expiredTime := time.Now().Add(-25 * time.Hour).Unix()
+	m.trafficHistory[expiredTime] = &MinuteStats{Requests: 1}
+	// Inject valid traffic history
+	validTime := time.Now().Unix()
+	m.trafficHistory[validTime] = &MinuteStats{Requests: 1}
+	m.mu.Unlock()
+
+	// Trigger cleanup explicitly
+	m.cleanup()
+
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	// Verify sessions
+	_, expiredExists := m.sessions["expired"]
+	assert.False(t, expiredExists, "Expired session should be removed")
+	_, validExists := m.sessions["valid"]
+	assert.True(t, validExists, "Valid session should remain")
+
+	// Verify traffic history
+	_, expiredHistoryExists := m.trafficHistory[expiredTime]
+	assert.False(t, expiredHistoryExists, "Expired traffic history should be removed")
+	_, validHistoryExists := m.trafficHistory[validTime]
+	assert.True(t, validHistoryExists, "Valid traffic history should remain")
+}
