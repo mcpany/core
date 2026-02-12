@@ -86,7 +86,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.getByText('Network Graph').first()).toBeVisible();
     // Check for nodes
     await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    await expect(page.locator('text=Math')).toBeVisible();
+    await expect(page.locator('text=MathService')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });

@@ -37,7 +37,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
-            name: "Math",
+            name: "MathService",
             version: "v1.0",
             http_service: {
                 address: "http://ui-http-echo-server:5678", // Use echo server address reachable in Docker
@@ -124,7 +124,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     try {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete('/api/v1/services/MathService', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
