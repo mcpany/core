@@ -60,6 +60,89 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
+var (
+	sensitiveFiles = map[string]bool{
+		".env":            true,
+		".git":            true,
+		".hg":             true,
+		".svn":            true,
+		".ds_store":       true,
+		"config.yaml":     true,
+		"config.json":     true,
+		"config.yml":      true,
+		"mcpany.db":       true,
+		"id_rsa":          true,
+		"id_dsa":          true,
+		"id_ecdsa":        true,
+		"id_ed25519":      true,
+		"authorized_keys": true,
+		"known_hosts":     true,
+	}
+
+	sensitivePrefixes = []string{
+		".env.",
+		"id_rsa.",
+		"id_dsa.",
+		"id_ecdsa.",
+		"id_ed25519.",
+		"kubeconfig",
+	}
+
+	sensitiveSuffixes = []string{
+		".key",
+		".pem",
+		".p12",
+		".pfx",
+		".bak", // Backup files often contain old configs/secrets
+		".swp", // Vim swap files
+	}
+)
+
+// IsSensitivePath checks if a given file path refers to a sensitive file or directory
+// that should not be accessed by untrusted tools.
+// It checks each component of the path against a list of sensitive patterns.
+//
+// Summary: Checks if a path is sensitive.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the path is sensitive.
+func IsSensitivePath(path string) error {
+	// Clean the path to remove redundant separators and ./
+	// Note: We assume path traversal checks (..) have already been performed or will be performed.
+	cleanPath := filepath.Clean(path)
+
+	// Split path into components
+	parts := strings.Split(cleanPath, string(os.PathSeparator))
+
+	for _, part := range parts {
+		partLower := strings.ToLower(part)
+
+		// Exact matches
+		if sensitiveFiles[partLower] {
+			return fmt.Errorf("access to sensitive file or directory %q is restricted", part)
+		}
+
+		// Prefix matches
+		for _, p := range sensitivePrefixes {
+			if strings.HasPrefix(partLower, p) {
+				return fmt.Errorf("access to sensitive file %q is restricted", part)
+			}
+		}
+
+		// Suffix matches
+		for _, s := range sensitiveSuffixes {
+			if strings.HasSuffix(partLower, s) {
+				return fmt.Errorf("access to sensitive file type %q is restricted", s)
+			}
+		}
+	}
+
+	return nil
+}
+
 // IsSecurePath checks if a given file path is secure and does not contain any
 // path traversal sequences ("../" or "..\\"). This function is crucial for
 // preventing directory traversal attacks, where a malicious actor could
