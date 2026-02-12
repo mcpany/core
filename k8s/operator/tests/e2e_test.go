@@ -180,9 +180,15 @@ spec:
   containers:
   - name: echo-server
     image: mcpany/http-echo-server:local
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: Never
     ports:
     - containerPort: 8080
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 5
 `, namespace)
 	tmpPod := filepath.Join(t.TempDir(), "echo-server-pod.yaml")
 	if err := os.WriteFile(tmpPod, []byte(podYAML), 0644); err != nil {
