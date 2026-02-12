@@ -39,8 +39,8 @@ test.describe('Webhooks Configuration', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Verify Success Toast
-    await expect(page.getByText('Settings Saved')).toBeVisible();
-    await expect(page.getByText('System webhooks configuration updated.')).toBeVisible();
+    await expect(page.getByText('Settings Saved').first()).toBeVisible();
+    await expect(page.getByText('System webhooks configuration updated.').first()).toBeVisible();
 
     // Reload to verify persistence (This verifies backend integration)
     await page.reload();

@@ -440,9 +440,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       // Legacy alias
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_webhooks.png'), fullPage: true });
 
-      await page.getByText('New Webhook').click();
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhook_create_modal.png') });
+      // No modal in new design
+      // await page.getByText('New Webhook').click();
+      // await page.waitForTimeout(500);
+      // await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhook_create_modal.png') });
   });
 
   test('Network Graph Screenshots', async ({ page }) => {

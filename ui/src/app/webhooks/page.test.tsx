@@ -75,8 +75,8 @@ describe("WebhooksPage", () => {
       expect(apiClient.saveGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
         audit: expect.objectContaining({
           enabled: true,
-          webhookUrl: "https://audit.com",
-          storageType: AuditConfig_StorageType.STORAGE_TYPE_WEBHOOK,
+          webhook_url: "https://audit.com",
+          storage_type: AuditConfig_StorageType.STORAGE_TYPE_WEBHOOK,
         })
       }));
     });
