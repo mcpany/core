@@ -85,8 +85,9 @@ export const seedToolsTestServices = async (requestContext?: APIRequestContext) 
             id: "svc_tools_01",
             name: "Tools Payment Service",
             version: "v1.0.0",
-            http_service: {
-                address: "https://stripe.com",
+            command_line_service: {
+                command: "/bin/echo",
+                args: ["payment_processed"],
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
