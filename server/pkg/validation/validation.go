@@ -148,6 +148,37 @@ func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
 
+// IsSensitivePath checks if a path points to a known sensitive file or directory.
+// It blocks access to .env files, .git directory, and other sensitive configuration files.
+func IsSensitivePath(path string) error {
+	// Check all path components for sensitive directory names
+	// This prevents access to files inside sensitive directories (e.g., .git/config)
+	parts := strings.Split(path, string(os.PathSeparator))
+	for _, part := range parts {
+		if part == ".git" || part == ".ssh" || part == ".aws" || part == ".kube" {
+			return fmt.Errorf("access to sensitive directory %q is restricted", part)
+		}
+		// Block .env files in any directory (e.g., src/.env)
+		if strings.HasPrefix(part, ".env") {
+			return fmt.Errorf("access to .env files is restricted")
+		}
+	}
+
+	base := filepath.Base(path)
+	// Block specific sensitive files at the root of the path
+	sensitiveFiles := map[string]bool{
+		"config.yaml": true,
+		"config.json": true,
+		"mcpany.db":   true,
+	}
+
+	if sensitiveFiles[base] {
+		return fmt.Errorf("access to %q is restricted", base)
+	}
+
+	return nil
+}
+
 // IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
 // and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
@@ -204,6 +235,11 @@ var IsAllowedPath = func(path string) error {
 		}
 	}
 
+	// 3. Check for sensitive files
+	if err := IsSensitivePath(realPath); err != nil {
+		return err
+	}
+
 	// Helper to check if child is inside parent
 	isInside := func(parent, child string) bool {
 		// We use EvalSymlinks on parent too just in case CWD is symlinked
@@ -219,7 +255,7 @@ var IsAllowedPath = func(path string) error {
 		return !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."
 	}
 
-	// 3. Check if inside CWD
+	// 4. Check if inside CWD
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory: %w", err)
@@ -229,7 +265,7 @@ var IsAllowedPath = func(path string) error {
 		return nil
 	}
 
-	// 4. Check Allowed Paths
+	// 5. Check Allowed Paths
 	for _, allowedDir := range allowedPaths {
 		allowedDir = strings.TrimSpace(allowedDir)
 		if allowedDir == "" {

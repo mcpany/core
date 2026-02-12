@@ -2755,6 +2755,12 @@ func checkForLocalFileAccess(val string) error {
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
+
+	// Sentinel Security Update: Block access to sensitive files even if relative
+	if err := validation.IsSensitivePath(val); err != nil {
+		return fmt.Errorf("access to sensitive path denied: %w", err)
+	}
+
 	return nil
 }
 
