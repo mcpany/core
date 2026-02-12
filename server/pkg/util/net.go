@@ -236,18 +236,18 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Allow overriding safety checks via environment variables (consistent with validation package)
 	// We check for "true" explicitly but also handle case-insensitivity to be robust against env var variations.
 	dangerousAllow := strings.ToLower(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"))
-	if dangerousAllow == "true" || dangerousAllow == "1" {
+	if dangerousAllow == TrueStr || dangerousAllow == "1" {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
 	allowLoopback := strings.ToLower(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES"))
-	if allowLoopback == "true" || allowLoopback == "1" {
+	if allowLoopback == TrueStr || allowLoopback == "1" {
 		dialer.AllowLoopback = true
 	}
 
 	allowPrivate := strings.ToLower(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"))
-	if allowPrivate == "true" || allowPrivate == "1" {
+	if allowPrivate == TrueStr || allowPrivate == "1" {
 		dialer.AllowPrivate = true
 	}
 

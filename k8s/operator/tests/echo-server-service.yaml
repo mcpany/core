@@ -1,0 +1,15 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-http-echo-server
+  namespace: mcp-system
+spec:
+  selector:
+    app: ui-http-echo-server
+  ports:
+    - protocol: TCP
+      port: 5678
+      targetPort: 5678
