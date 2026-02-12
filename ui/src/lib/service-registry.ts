@@ -3,15 +3,31 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents an item in the service registry.
+ *
+ * Summary: Defines the structure for a service definition including its metadata, repository source, execution command, and configuration schema.
+ */
 export interface ServiceRegistryItem {
+  /** The unique identifier for the service. */
   id: string;
+  /** The display name of the service. */
   name: string;
+  /** The repository URL where the service source code is located. */
   repo: string; // Used for matching against community URLs
+  /** The command to execute or install the service. */
   command: string;
+  /** A brief description of the service's functionality. */
   description: string;
+  /** The JSON schema defining the configuration properties for the service. */
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * A registry of available services.
+ *
+ * Summary: Contains a predefined list of supported services (databases, cloud platforms, dev tools, etc.) with their default configurations.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

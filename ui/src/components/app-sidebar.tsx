@@ -189,9 +189,16 @@ const configItems = [
 
 /**
  * The main application sidebar.
- * Displays navigation links and user profile menu.
  *
- * @returns {JSX.Element} The rendered sidebar component.
+ * Summary: Renders the primary navigation sidebar for the application, including Platform, Development, and Configuration sections.
+ *
+ * Returns:
+ *   JSX.Element: The rendered sidebar component.
+ *
+ * Side Effects:
+ *   - Accesses the current URL path via `usePathname`.
+ *   - Accesses and potentially modifies user session state via `useUser`.
+ *   - Dynamically filters navigation items based on the user's role (admin vs. viewer).
  */
 export function AppSidebar() {
   const pathname = usePathname()

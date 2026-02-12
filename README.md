@@ -111,6 +111,15 @@ The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
+### Documentation Standard
+
+We enforce a **Gold Standard** for documentation. Every public function, method, class, and exported constant must have a docstring that includes:
+- **Summary:** A concise, one-line action statement.
+- **Parameters:** Name, Type, and a meaningful description.
+- **Returns:** Type and description of the output.
+- **Errors:** Explicitly list exceptions or error states.
+- **Side Effects:** Note modifications to global state, I/O, etc.
+
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing.
 ```bash

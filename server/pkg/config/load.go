@@ -16,16 +16,24 @@ import (
 
 // LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
 //
-// Summary: Loads and validates the server configuration.
+// Summary: Loads the full server configuration, performs validation, and resolves defaults.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store from which to load the configuration.
-//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+//   - ctx (context.Context): The context for the operation (used for timeout/cancellation).
+//   - store (Store): The configuration store implementation (e.g., file-based, Kubernetes).
+//   - binaryType (string): The type of binary running the code (e.g., "server", "worker"), used to determine validation rules.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: A validated configuration object.
-//   - error: An error if loading or validation fails.
+//   - *configv1.McpAnyServerConfig: A pointer to the validated and populated configuration object.
+//   - error: An error if loading, unmarshalling, or validation fails.
+//
+// Errors:
+//   - Returns a formatted error string if validation fails, detailing which services or settings are invalid.
+//   - Returns an ActionableError if a known fixable issue is encountered.
+//
+// Side Effects:
+//   - Logs informational messages about loaded services.
+//   - Logs error messages if validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -96,15 +104,23 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
-// Summary: Loads configuration with merging and defaults but without strict validation.
+// Summary: Loads raw configuration, merges services from different sources, and applies default values.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store.
+//   - ctx (context.Context): The context for the operation.
+//   - store (Store): The configuration store.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The resolved configuration.
-//   - error: An error if loading fails.
+//   - *configv1.McpAnyServerConfig: The resolved configuration object.
+//   - error: An error if the store fails to load or merge services.
+//
+// Errors:
+//   - Returns error if the store returns nil but has sources.
+//   - Returns error if `LoadAndMergeServices` fails.
+//
+// Side Effects:
+//   - Logs informational messages about default user creation.
+//   - Initializes a default configuration if no config is found.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

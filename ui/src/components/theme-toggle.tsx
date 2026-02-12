@@ -20,7 +20,14 @@ import {
 /**
  * A dropdown menu button to toggle between light, dark, and system themes.
  *
- * @returns {JSX.Element} The rendered theme toggle component.
+ * Summary: Provides a user interface for switching the application's color theme.
+ *
+ * Returns:
+ *   JSX.Element: The rendered theme toggle dropdown component.
+ *
+ * Side Effects:
+ *   - Modifies the application's theme context using `next-themes`.
+ *   - Persists the user's theme preference (typically in local storage).
  */
 export function ThemeToggle() {
   const { setTheme } = useTheme()
