@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"sync"
 	"net/url"
-	"sort"
 	"strings"
 	"time"
 
@@ -337,23 +336,12 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
 	calls := httpService.GetCalls()
-	callIDToDefinition := make(map[string]*configv1.ToolDefinition)
-	for _, d := range httpService.GetTools() {
-		callIDToDefinition[d.GetCallId()] = d
-	}
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
 	if err != nil {
 		log.Error("Failed to create authenticator, proceeding without authentication", "serviceID", serviceID, "error", err)
 		authenticator = nil
 	}
-
-	// Sort call IDs for deterministic ordering
-	sortedCallIDs := make([]string, 0, len(calls))
-	for callID := range calls {
-		sortedCallIDs = append(sortedCallIDs, callID)
-	}
-	sort.Strings(sortedCallIDs)
 
 	callPolicies := serviceConfig.GetCallPolicies()
 	compiledCallPolicies, err := tool.CompileCallPolicies(callPolicies)
@@ -369,17 +357,27 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		return nil
 	}
 
-	for _, callID := range sortedCallIDs {
-		httpDef := calls[callID]
-
-		definition, ok := callIDToDefinition[callID]
-		if !ok {
-			log.Error("Tool definition not found for call", "call_id", callID)
+	// Iterate over defined tools to preserve order and include ALL configured tools, even if they have missing calls
+	// (in which case we log an error but continue, instead of silently skipping them)
+	for _, definition := range httpService.GetTools() {
+		if definition.GetDisable() {
+			log.Info("Skipping disabled tool", "toolName", definition.GetName())
 			continue
 		}
 
-		if definition.GetDisable() {
-			log.Info("Skipping disabled tool", "toolName", definition.GetName())
+		callID := definition.GetCallId()
+		// If callID is empty and we have only one call, maybe we could default?
+		// For now, strict check.
+		if callID == "" {
+			// If name matches a call ID, use it? (Implicit binding)
+			if _, ok := calls[definition.GetName()]; ok {
+				callID = definition.GetName()
+			}
+		}
+
+		httpDef, ok := calls[callID]
+		if !ok {
+			log.Error("Tool definition matches no call", "toolName", definition.GetName(), "call_id", definition.GetCallId())
 			continue
 		}
 
