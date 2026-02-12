@@ -275,6 +275,12 @@ func init() {
 // It is used for consistent string comparisons and parsing of boolean-like strings.
 const TrueStr = "true"
 
+// IsTrue checks if the given string represents a truthy value.
+// It accepts "true", "TRUE", "True", and "1".
+func IsTrue(s string) bool {
+	return strings.EqualFold(s, "true") || s == "1"
+}
+
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Summary: Generates a random UUID.
@@ -415,7 +421,7 @@ func BytesToString(b []byte) string {
 //   - Reads environment variable USE_SUDO_FOR_DOCKER.
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
+	if IsTrue(os.Getenv("USE_SUDO_FOR_DOCKER")) {
 		return "sudo", []string{dockerCmd}
 	}
 	return dockerCmd, []string{}

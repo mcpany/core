@@ -9,10 +9,17 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
 const trueVal = "true"
+
+// isTrue checks if the given string represents a truthy value.
+// It accepts "true", "TRUE", "True", and "1".
+func isTrue(s string) bool {
+	return strings.EqualFold(s, "true") || s == "1"
+}
 
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
@@ -34,12 +41,12 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 // IsSafeTarget is a variable to allow mocking in tests.
 var IsSafeTarget = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
+	if isTrue(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")) {
 		return nil
 	}
 
-	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
-	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
+	allowLoopback := isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES"))
+	allowPrivate := isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"))
 
 	u, err := url.Parse(urlStr)
 	if err != nil {
