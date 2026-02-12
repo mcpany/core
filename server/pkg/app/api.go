@@ -705,6 +705,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			tools := a.ToolManager.ListTools()
+			logging.GetLogger().Debug("Handling tools list request", "count", len(tools))
 			var toolList []*mcp.Tool
 			for _, t := range tools {
 				toolList = append(toolList, t.MCPTool())
