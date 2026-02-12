@@ -93,6 +93,29 @@ func TestNewSafeHTTPClient(t *testing.T) {
 			assert.NotContains(t, err.Error(), "ssrf attempt blocked", "Should not block private when allowed")
 		}
 	})
+
+	t.Run("Allow dangerous local ips", func(t *testing.T) {
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+		client := util.NewSafeHTTPClient()
+
+		transport, ok := client.Transport.(*http.Transport)
+		require.True(t, ok)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+
+		// Loopback
+		_, err := transport.DialContext(ctx, "tcp", "127.0.0.1:12345")
+		if err != nil {
+			assert.NotContains(t, err.Error(), "ssrf attempt blocked", "Should not block loopback when dangerous allow is set")
+		}
+
+		// Private
+		_, err = transport.DialContext(ctx, "tcp", "192.168.1.1:12345")
+		if err != nil {
+			assert.NotContains(t, err.Error(), "ssrf attempt blocked", "Should not block private when dangerous allow is set")
+		}
+	})
 }
 
 func TestSafeDialContext(t *testing.T) {
