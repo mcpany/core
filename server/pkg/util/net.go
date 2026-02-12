@@ -188,7 +188,13 @@ func NewSafeHTTPClient() *http.Client {
 
 	// Clone DefaultTransport to preserve defaults (proxy, keep-alive, etc.)
 	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.DialContext = dialer.DialContext
+
+	// If dangerous mode is enabled, skip injecting SafeDialer entirely.
+	// This restores standard Go networking behavior (Happy Eyeballs, system resolution),
+	// preventing issues in CI environments where manual resolution loop might fail (e.g. IPv6 vs IPv4 mismatches).
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") != TrueStr {
+		transport.DialContext = dialer.DialContext
+	}
 
 	return &http.Client{
 		Timeout:   10 * time.Second,
