@@ -56,8 +56,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
-            command_line_service: {
-                command: "/bin/echo",
+            http_service: {
+                address: "http://localhost:50052",
                 tools: [
                     {
                         name: "echo_tool",
@@ -68,7 +68,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     echo_call: {
-                        args: ["echoed_output"]
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/echo"
                     }
                 }
             }
