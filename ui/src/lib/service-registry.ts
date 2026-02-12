@@ -12,6 +12,17 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * A curated registry of MCP servers that can be installed directly.
+ *
+ * Summary: Provides a list of popular MCP servers with their configuration schemas.
+ *
+ * Returns:
+ *   {ServiceRegistryItem[]} An array of service registry items.
+ *
+ * Side Effects:
+ *   None.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
