@@ -26,8 +26,30 @@ test.describe('Tool Exploration', () => {
         await cleanupUser(request, "e2e-tools-admin");
     });
 
-    test('should list available tools from real backend', async ({ page }) => {
+    test('should list available tools from real backend', async ({ page, request }) => {
         await page.goto('/tools');
+
+        // Poll API directly to wait for backend registration
+        // This ensures the backend has the tools before we expect the UI to show them
+        const maxApiRetries = 30;
+        let toolsAvailable = false;
+        for (let i = 0; i < maxApiRetries; i++) {
+            const response = await request.get('/api/v1/tools');
+            if (response.ok()) {
+                const tools = await response.json();
+                if (Array.isArray(tools) && tools.some((t: any) => t.name.includes('process_payment'))) {
+                    toolsAvailable = true;
+                    console.log('Backend reports tools are available.');
+                    break;
+                }
+            }
+            console.log(`Backend tools not ready yet, retrying API check... (Attempt ${i + 1}/${maxApiRetries})`);
+            await page.waitForTimeout(1000);
+        }
+
+        if (!toolsAvailable) {
+            console.log('WARNING: Backend did not report tools within timeout. UI test may fail.');
+        }
 
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
@@ -43,7 +65,7 @@ test.describe('Tool Exploration', () => {
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/${maxRetries})`);
+                console.log(`Tools not found yet in UI, reloading... (Attempt ${i + 1}/${maxRetries})`);
                 if (i === maxRetries - 1) {
                     console.log('Final attempt failed. Page content dump:', await page.content());
                 }
@@ -79,6 +101,7 @@ test.describe('Tool Exploration', () => {
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
+                console.log(`Tools not found yet in UI (inspect test), reloading... (Attempt ${i + 1}/${maxRetries})`);
                 await page.reload();
                 await page.waitForLoadState('networkidle');
                 await page.waitForTimeout(2000);
@@ -104,6 +127,7 @@ test.describe('Tool Exploration', () => {
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
+                console.log(`Tools not found yet in UI (execute test), reloading... (Attempt ${i + 1}/${maxRetries})`);
                 await page.reload();
                 await page.waitForLoadState('networkidle');
                 await page.waitForTimeout(2000);
