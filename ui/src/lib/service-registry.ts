@@ -12,6 +12,11 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY contains a curated list of popular MCP services.
+ * This registry is used to populate the "Popular Services" section in the UI,
+ * allowing users to easily configure and deploy common tools.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

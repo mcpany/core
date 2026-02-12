@@ -31,6 +31,15 @@ const (
 	HeaderWebhookSignature = webhook.HeaderWebhookSignature
 )
 
+// main is the entry point for the Standard Webhook Sidecar.
+//
+// It starts an HTTP server that acts as a sidecar for webhook processing.
+// It handles signature verification and standard webhook tasks like
+// markdown conversion, text truncation, and pagination.
+//
+// Side Effects:
+//   - Starts an HTTP server on the configured port.
+//   - Logs to stdout/stderr.
 func main() {
 	var (
 		port   string

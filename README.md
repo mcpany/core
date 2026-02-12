@@ -25,6 +25,7 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
 2.  **Service Registry**: A dynamic module that loads tool definitions from configuration files (local or remote/DB), supporting hot-reloading.
 3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+5.  **Sidecars**: specialized runtimes like `connector-runtime` for isolating tool execution and `webhooks` for processing async events.
 
 ```mermaid
 graph TD
@@ -155,10 +156,12 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_DEBUG` | Enable debug logging | `false` |
 | `MCPANY_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
 | `MCPANY_LOG_FORMAT` | Log format (text, json) | `text` |
+| `MCPANY_LOGFILE` | Path to a file to write logs to | `stdout` |
 | `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+| `MCPANY_SET` | Override config values (key=value) | `[]` |
 
 ### Required Secrets
 
