@@ -186,11 +186,13 @@ func NewSafeHTTPClient() *http.Client {
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
 
+	// Clone DefaultTransport to preserve defaults (proxy, keep-alive, etc.)
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.DialContext = dialer.DialContext
+
 	return &http.Client{
-		Timeout: 10 * time.Second,
-		Transport: &http.Transport{
-			DialContext: dialer.DialContext,
-		},
+		Timeout:   10 * time.Second,
+		Transport: transport,
 	}
 }
 
