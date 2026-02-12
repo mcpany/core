@@ -12,6 +12,9 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY is a list of curated MCP services available for quick installation.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
