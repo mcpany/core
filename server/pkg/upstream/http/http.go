@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net"
 	"net/http"
 	"sync"
 	"net/url"
@@ -214,7 +215,48 @@ func (u *Upstream) Register(
 
 	// Verify that the upstream is reachable.
 	// This is a startup check to warn the user if the service configuration is incorrect or the service is down.
-	if err := util.CheckConnection(ctx, address); err != nil {
+	// We use a custom check here because util.CheckConnection enforces strict SSRF rules by default,
+	// but upstream configurations are trusted and often need to access local services (sidecars).
+	checkConn := func(ctx context.Context, addr string) error {
+		dialer := util.NewSafeDialer()
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+		dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
+
+		// Parse address to host:port
+		target := addr
+		if strings.Contains(addr, "://") {
+			u, err := url.Parse(addr)
+			if err != nil {
+				return err
+			}
+			port := u.Port()
+			if port == "" {
+				if u.Scheme == "https" {
+					port = "443"
+				} else {
+					port = "80"
+				}
+			}
+			target = net.JoinHostPort(u.Hostname(), port)
+		} else {
+			host, port, err := net.SplitHostPort(addr)
+			if err != nil {
+				// Assume port 80 if split fails (likely just hostname)
+				host = addr
+				port = "80"
+			}
+			target = net.JoinHostPort(host, port)
+		}
+
+		conn, err := dialer.DialContext(ctx, "tcp", target)
+		if err != nil {
+			return err
+		}
+		return conn.Close()
+	}
+
+	if err := checkConn(ctx, address); err != nil {
 		// Track 1: Friction Fighter - Automated Diagnosis
 		// If basic connectivity fails, we run a full Doctor check to give actionable advice.
 		log.Warn("⚠️  Upstream service appears unreachable. Running diagnostic...", "service", serviceConfig.GetName())

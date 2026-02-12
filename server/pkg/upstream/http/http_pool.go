@@ -83,19 +83,10 @@ var NewHTTPPool = func(
 	}
 
 	dialer := util.NewSafeDialer()
-	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
-		dialer.AllowLoopback = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
-		dialer.AllowPrivate = true
-	}
+	// Upstream configurations are trusted (set by admin), so we allow loopback and private IPs.
+	// This is necessary for connecting to local services (e.g. sidecars) or private VPC services.
+	dialer.AllowLoopback = true
+	dialer.AllowPrivate = true
 
 	baseTransport := &http.Transport{
 		TLSClientConfig:     tlsConfig,
