@@ -35,7 +35,7 @@ if [ -z "$PKG_PATTERN" ]; then
 fi
 
 # Get list of packages, excluding unwanted ones
-PACKAGES=$(go list $PKG_PATTERN | \
+PACKAGES=$(go list "$PKG_PATTERN" | \
     grep -v /tests/public_api | \
     grep -v /pkg/command | \
     grep -v /build | \
