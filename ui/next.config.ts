@@ -121,8 +121,10 @@ const nextConfig: NextConfig = {
 
     // Explicitly add alias for @proto to resolve external directory
     // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
-    const localProto = path.join(__dirname, 'proto');
-    const rootProto = path.join(__dirname, '../proto');
+    // NOTE: __dirname in Next.js build might be .next/server...
+    // We use process.cwd() to be safe for project root.
+    const localProto = path.join(process.cwd(), 'proto');
+    const rootProto = path.join(process.cwd(), '../proto');
     const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
 
     config.resolve.alias = {
