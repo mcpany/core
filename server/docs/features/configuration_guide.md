@@ -10,14 +10,15 @@ The server is driven by a YAML configuration file. By default, it looks for `con
 1. Create `config.yaml`:
    ```yaml
    global_settings:
-     bind_address: ":50050"
+     mcp_listen_address: ":50050"
      log_level: "info"
 
    upstream_services:
      - name: "my-local-tool"
-       command_line_service:
-         command: "python3"
-         args: ["/path/to/script.py"]
+       mcp_service:
+         stdio_connection:
+           command: "python3"
+           args: ["/path/to/script.py"]
    ```
 2. Run the server:
    ```bash

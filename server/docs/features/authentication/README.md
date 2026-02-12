@@ -9,16 +9,56 @@ Incoming authentication is configured under `authentication`. Outgoing authentic
 
 ### Incoming Authentication
 
-To secure access to a specific service exposed by MCP Any:
+To secure access to a specific service exposed by MCP Any, you can use several authentication methods:
+
+#### 1. API Key
 
 ```yaml
 upstream_services:
-  - name: "secure-service"
+  - name: "secure-service-apikey"
     authentication:
       api_key:
         param_name: "X-Mcp-Api-Key"
         in: "HEADER"
         verification_value: "my-secret-key"
+```
+
+#### 2. Basic Authentication
+
+```yaml
+upstream_services:
+  - name: "secure-service-basic"
+    authentication:
+      basic_auth:
+        username: "admin"
+        password_hash: "$2a$12$..." # Bcrypt hash
+```
+
+#### 3. Trusted Header
+
+Useful when running behind a proxy like Nginx or Cloudflare Access.
+
+```yaml
+upstream_services:
+  - name: "secure-service-header"
+    authentication:
+      trusted_header:
+        header_name: "X-Forwarded-User"
+        # Optional: enforce a specific value
+        # header_value: "expected-secret"
+```
+
+#### 4. OIDC / OAuth2
+
+Validate JWT tokens from an identity provider (e.g., Google, Auth0).
+
+```yaml
+upstream_services:
+  - name: "secure-service-oidc"
+    authentication:
+      oidc:
+        issuer: "https://accounts.google.com"
+        audience: ["my-client-id"]
 ```
 
 ### Outgoing Authentication
