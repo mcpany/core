@@ -199,6 +199,15 @@ func NewSafeHTTPClient() *http.Client {
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
 func CheckConnection(ctx context.Context, address string) error {
+	// DEBUG: Trace SSRF env vars
+	if os.Getenv("MCPANY_DEBUG") == TrueStr || os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		fmt.Printf("DEBUG: CheckConnection %s. Env: DANGEROUS=%q, LOOPBACK=%q, PRIVATE=%q\n",
+			address,
+			os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"),
+			os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES"),
+			os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"))
+	}
+
 	var target string
 	if strings.Contains(address, "://") {
 		u, err := url.Parse(address)
