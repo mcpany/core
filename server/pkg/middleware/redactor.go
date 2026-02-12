@@ -26,7 +26,8 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 type Redactor struct {
-	customPatterns []*regexp.Regexp
+	customPatterns        []*regexp.Regexp
+	combinedCustomPattern *regexp.Regexp
 }
 
 // NewRedactor creates a new Redactor from the given DLP config.
@@ -42,16 +43,30 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 
 	// Separate custom patterns from default ones for optimized processing
 	var customPatterns []*regexp.Regexp
+	var validPatternStrings []string
+
 	for _, p := range config.GetCustomPatterns() {
 		if r, err := regexp.Compile(p); err == nil {
 			customPatterns = append(customPatterns, r)
+			validPatternStrings = append(validPatternStrings, "(?:"+p+")")
 		} else if log != nil {
 			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
+	var combinedCustomPattern *regexp.Regexp
+	if len(validPatternStrings) > 0 {
+		combined := strings.Join(validPatternStrings, "|")
+		if r, err := regexp.Compile(combined); err == nil {
+			combinedCustomPattern = r
+		} else if log != nil {
+			log.Warn("Failed to compile combined DLP pattern, falling back to individual", "error", err)
+		}
+	}
+
 	return &Redactor{
-		customPatterns: customPatterns,
+		customPatterns:        customPatterns,
+		combinedCustomPattern: combinedCustomPattern,
 	}
 }
 
@@ -170,8 +185,14 @@ func (r *Redactor) RedactString(s string) string {
 	}
 
 	// Always run custom patterns as we don't know their characteristics
-	for _, p := range r.customPatterns {
-		res = p.ReplaceAllString(res, redactedStr)
+	// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets
+	// Optimization: Use combined regex for single-pass replacement if available.
+	if r.combinedCustomPattern != nil {
+		res = r.combinedCustomPattern.ReplaceAllString(res, redactedStr)
+	} else {
+		for _, p := range r.customPatterns {
+			res = p.ReplaceAllString(res, redactedStr)
+		}
 	}
 	return res
 }
