@@ -26,6 +26,9 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 type Redactor struct {
+	// ⚡ Bolt Optimization: Use a single combined regex for all custom patterns.
+	customPattern *regexp.Regexp
+	// Fallback for when combined regex compilation fails or for testing/inspection.
 	customPatterns []*regexp.Regexp
 }
 
@@ -40,17 +43,36 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 		return nil
 	}
 
-	// Separate custom patterns from default ones for optimized processing
+	// ⚡ BOLT: Combine custom patterns into a single regex for O(1) matching pass instead of O(N).
+	// Randomized Selection from Top 5 High-Impact Targets
 	var customPatterns []*regexp.Regexp
+	var validPatterns []string
+
 	for _, p := range config.GetCustomPatterns() {
 		if r, err := regexp.Compile(p); err == nil {
 			customPatterns = append(customPatterns, r)
+			// Wrap in non-capturing group to ensure precedence and valid combination
+			validPatterns = append(validPatterns, "(?:"+p+")")
 		} else if log != nil {
 			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
+	var customPattern *regexp.Regexp
+	if len(validPatterns) > 0 {
+		combined := strings.Join(validPatterns, "|")
+		var err error
+		customPattern, err = regexp.Compile(combined)
+		if err != nil {
+			if log != nil {
+				log.Warn("Failed to compile combined DLP pattern, falling back to individual patterns", "error", err)
+			}
+			// Fallback: customPattern remains nil, code will use customPatterns
+		}
+	}
+
 	return &Redactor{
+		customPattern:  customPattern,
 		customPatterns: customPatterns,
 	}
 }
@@ -72,10 +94,10 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	// the expensive comment detection logic.
 	return util.WalkStandardJSONStrings(data, func(raw []byte) ([]byte, bool) {
 		// Optimization: Check for obviously safe strings before unmarshaling.
-		// If we have no custom patterns, we can skip unmarshaling if the raw bytes
+		// If we have no custom patterns (optimized or fallback), we can skip unmarshaling if the raw bytes
 		// (including quotes) don't contain indicators of PII: '@', digits, or escapes.
 		// This avoids expensive json.Unmarshal for the vast majority of safe strings.
-		if len(r.customPatterns) == 0 {
+		if r.customPattern == nil && len(r.customPatterns) == 0 {
 			hasIndicator := false
 			// Check for '@' and '\' first using optimized SIMD scan
 			if bytes.IndexByte(raw, '@') != -1 || bytes.IndexByte(raw, '\\') != -1 {
@@ -169,9 +191,14 @@ func (r *Redactor) RedactString(s string) string {
 		res = ssnRegex.ReplaceAllString(res, redactedStr)
 	}
 
-	// Always run custom patterns as we don't know their characteristics
-	for _, p := range r.customPatterns {
-		res = p.ReplaceAllString(res, redactedStr)
+	// ⚡ Bolt Optimization: Run the single combined regex for all custom patterns.
+	// If compilation failed (or not available), fallback to individual patterns.
+	if r.customPattern != nil {
+		res = r.customPattern.ReplaceAllString(res, redactedStr)
+	} else {
+		for _, p := range r.customPatterns {
+			res = p.ReplaceAllString(res, redactedStr)
+		}
 	}
 	return res
 }

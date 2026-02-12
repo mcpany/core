@@ -20,12 +20,14 @@ func TestNewRedactor(t *testing.T) {
 	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 	assert.NotNil(t, r)
+	assert.NotNil(t, r.customPattern)
 	assert.Len(t, r.customPatterns, 1)
 
 	// Test with invalid regex
 	cfg.SetCustomPatterns([]string{`[`})
 	r = NewRedactor(cfg, slog.Default())
 	assert.NotNil(t, r)
+	assert.Nil(t, r.customPattern)
 	assert.Len(t, r.customPatterns, 0)
 
 	// Test with nil config
