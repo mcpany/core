@@ -2750,10 +2750,25 @@ func checkForLocalFileAccess(val string) error {
 	if filepath.IsAbs(val) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
-	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
-	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
-		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+	return nil
+}
+
+func checkForDangerousSchemes(val string) error {
+	valLower := strings.ToLower(val)
+	schemes := []string{
+		"file:",
+		"ext::",
+		"gopher://",
+		"dict://",
+		"ftp://",
+		"expect://",
+		"php://",
+	}
+
+	for _, scheme := range schemes {
+		if strings.HasPrefix(valLower, scheme) {
+			return fmt.Errorf("dangerous scheme detected: %s", val)
+		}
 	}
 	return nil
 }
@@ -3281,6 +3296,17 @@ func checkEnvInjection(val string) error {
 func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
+
+	// Sentinel Security Update: Block dangerous schemes (e.g. ext::, gopher://)
+	if err := checkForDangerousSchemes(val); err != nil {
+		return err
+	}
+	// Also check decoded value just in case the input was already encoded
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForDangerousSchemes(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
 
 	if err := checkForPathTraversal(val); err != nil {
 		return err
