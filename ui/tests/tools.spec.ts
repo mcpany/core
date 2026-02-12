@@ -6,11 +6,13 @@
 import { test, expect } from '@playwright/test';
 import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
+const SUFFIX = "_tools_test";
+
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        await seedServices(request, SUFFIX);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -25,7 +27,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupServices(request, SUFFIX);
         await cleanupUser(request, "e2e-tools-admin");
     });
 
@@ -35,16 +37,14 @@ test.describe('Tool Exploration', () => {
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
-        let found = false;
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
-                found = true;
+                await expect(page.getByText(`process_payment${SUFFIX}`).first()).toBeVisible({ timeout: 5000 });
                 break;
-            } catch (e) {
+            } catch (_) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
                 await page.reload();
                 // Wait for network idle and a small buffer
@@ -54,13 +54,13 @@ test.describe('Tool Exploration', () => {
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(`process_payment${SUFFIX}`).first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
         try {
-            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(new RegExp(`echo_tool${SUFFIX}`)).first()).toBeVisible({ timeout: 20000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
@@ -74,18 +74,18 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(`process_payment${SUFFIX}`).first()).toBeVisible({ timeout: 5000 });
                 break;
-            } catch (e) {
+            } catch (_) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(`process_payment${SUFFIX}`).first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: new RegExp(`echo_tool${SUFFIX}`) });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
@@ -98,17 +98,17 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(`process_payment${SUFFIX}`).first()).toBeVisible({ timeout: 5000 });
                 break;
-            } catch (e) {
+            } catch (_) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(`process_payment${SUFFIX}`).first()).toBeVisible({ timeout: 10000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: new RegExp(`echo_tool${SUFFIX}`) });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
@@ -138,7 +138,7 @@ test.describe('Tool Exploration', () => {
         // But let's check for the successful outcome first.
         try {
             await expect(outputArea).toBeVisible({ timeout: 5000 });
-        } catch (e) {
+        } catch (_) {
             // If success not visible, check for error
             // Error usually shown in the same area but maybe red?
             // The ToolInspector code says: setOutput(`Error: ${e.message}`);
