@@ -33,6 +33,23 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
 
+	// Configure connection immediately to handle locking gracefully
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
+	}
+	if _, err := db.ExecContext(ctx, "PRAGMA journal_mode=WAL;"); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
+	}
+	if _, err := db.ExecContext(ctx, "PRAGMA synchronous=NORMAL;"); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
+	}
+
 	// Create table if not exists
 	schema := `
 	CREATE TABLE IF NOT EXISTS semantic_cache_entries (
@@ -50,23 +67,6 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if _, err := db.ExecContext(ctxSchema, schema); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to create semantic_cache_entries table: %w", err)
-	}
-
-	// Optimize SQLite performance
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if _, err := db.ExecContext(ctx, "PRAGMA journal_mode=WAL;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
-	}
-	if _, err := db.ExecContext(ctx, "PRAGMA synchronous=NORMAL;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
-	}
-	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
 	store := &SQLiteVectorStore{

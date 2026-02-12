@@ -12,6 +12,12 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of available upstream services for the marketplace.
+ *
+ * This constant defines the list of services that can be easily added via the UI.
+ * Each item contains metadata, default configuration, and repository information.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

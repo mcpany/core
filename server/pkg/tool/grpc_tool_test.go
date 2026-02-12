@@ -72,7 +72,12 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 		}
 	}
 	b, err := os.ReadFile(path)
-	require.NoError(t, err, "Failed to read protoset file at %s. Ensure 'make gen' has been run.", path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			t.Skipf("Skipping test: protoset file not found at %s. Ensure 'make gen' has been run.", path)
+		}
+		require.NoError(t, err, "Failed to read protoset file at %s", path)
+	}
 
 	fds := &descriptorpb.FileDescriptorSet{}
 	err = proto.Unmarshal(b, fds)
