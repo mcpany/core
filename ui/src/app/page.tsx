@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { DashboardContent } from "@/components/dashboard/dashboard-content";
 import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
@@ -27,7 +27,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="space-y-4">
-          <DashboardGrid />
+          <DashboardContent />
         </div>
       </div>
     </DashboardProvider>
