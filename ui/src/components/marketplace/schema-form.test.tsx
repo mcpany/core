@@ -46,7 +46,7 @@ describe('SchemaForm', () => {
         const checkbox = screen.getByLabelText(/Enabled/);
         fireEvent.click(checkbox);
 
-        expect(onChange).toHaveBeenCalledWith({ enabled: 'true' });
+        expect(onChange).toHaveBeenCalledWith({ enabled: true });
     });
 
     it('renders password field for sensitive keys', () => {

@@ -43,7 +43,8 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
     // Schema state
     const [parsedSchema, setParsedSchema] = useState<any>(null);
-    const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
+    // ⚡ BOLT: schemaValues can now hold complex objects (any), not just strings
+    const [schemaValues, setSchemaValues] = useState<any>({});
     const [isSchemaValid, setIsSchemaValid] = useState(true);
 
     // Helper to determine if we should show CLI options
@@ -61,7 +62,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
                 // Initialize env vars
                 const newEnv: Record<string, SecretValue> = {};
-                const initialSchemaValues: Record<string, string> = {};
+                const initialSchemaValues: Record<string, any> = {};
 
                 if (templateConfig.commandLineService.env) {
                     Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {
@@ -99,18 +100,14 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     const valuesWithDefaults = { ...initialSchemaValues };
                     if (schema.properties) {
                         Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
-                            if (!valuesWithDefaults[k] && v.default) {
-                                valuesWithDefaults[k] = String(v.default);
+                            if (valuesWithDefaults[k] === undefined && v.default !== undefined) {
+                                valuesWithDefaults[k] = v.default;
                             }
                         });
                     }
                     setSchemaValues(valuesWithDefaults);
                     // Sync defaults to envVars immediately
-                    const envWithDefaults = { ...newEnv };
-                    Object.entries(valuesWithDefaults).forEach(([k, v]) => {
-                        envWithDefaults[k] = { plainText: v, validationRegex: "" };
-                    });
-                    setEnvVars(envWithDefaults);
+                    updateEnvVarsFromSchema(valuesWithDefaults, newEnv); // Use helper to sync
                     checkSchemaValidity(valuesWithDefaults, schema);
 
                 } catch (e) {
@@ -126,26 +123,40 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         }
     }, [open, templateConfig]);
 
-    const checkSchemaValidity = (values: Record<string, string>, schema: any) => {
+    const checkSchemaValidity = (values: any, schema: any) => {
         if (!schema || !schema.required) {
             setIsSchemaValid(true);
             return;
         }
-        const missing = schema.required.some((field: string) => !values[field]);
+        // Basic check: required fields must be present (not undefined/null/empty string)
+        // For boolean/number/object/array, checking validity is more complex, but existence is a good start.
+        const missing = schema.required.some((field: string) => {
+            const val = values[field];
+            return val === undefined || val === null || val === "";
+        });
         setIsSchemaValid(!missing);
     };
 
-    const handleSchemaChange = (newValues: Record<string, string>) => {
-        setSchemaValues(newValues);
-        // Sync to envVars for compatibility with handleInstantiate logic
-        const newEnv: Record<string, SecretValue> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
+    const updateEnvVarsFromSchema = (values: any, currentEnv: Record<string, SecretValue>) => {
+        const newEnv: Record<string, SecretValue> = { ...currentEnv };
 
-        // Update with new values
-        Object.entries(newValues).forEach(([k, v]) => {
-            newEnv[k] = { plainText: v, validationRegex: "" };
-        });
+        if (values && typeof values === 'object' && !Array.isArray(values)) {
+             Object.entries(values).forEach(([k, v]) => {
+                 let strVal = "";
+                 if (typeof v === 'string') strVal = v;
+                 else if (typeof v === 'number' || typeof v === 'boolean') strVal = String(v);
+                 else if (typeof v === 'object') strVal = JSON.stringify(v);
+                 else if (v === undefined || v === null) strVal = "";
 
+                 newEnv[k] = { plainText: strVal, validationRegex: "" };
+             });
+        }
         setEnvVars(newEnv);
+    };
+
+    const handleSchemaChange = (newValues: any) => {
+        setSchemaValues(newValues);
+        updateEnvVarsFromSchema(newValues, envVars);
         checkSchemaValidity(newValues, parsedSchema);
     };
 
