@@ -2750,10 +2750,34 @@ func checkForLocalFileAccess(val string) error {
 	if filepath.IsAbs(val) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
-	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
-	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
-		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+	// Note: "file:" scheme is now handled by checkForDangerousSchemes globally
+	return nil
+}
+
+func checkForDangerousSchemes(val string) error {
+	valLower := strings.ToLower(val)
+
+	// Schemes that allow RCE or SSRF
+	// "file:" is blocked globally (even in Docker) because it is rarely a safe default for external input
+	// and can lead to LFI.
+	dangerousSchemes := []string{
+		"file:",
+		"ext::", // Git RCE
+		"gopher://",
+		"dict://",
+		"php://",
+		"expect://",
+		"phar://",
+		"jar://",
+		"ldap://",
+		"rmi://",
+		"ssh://-", // Block SSH argument injection via hostname (e.g. ssh://-oProxyCommand=...)
+	}
+
+	for _, scheme := range dangerousSchemes {
+		if strings.HasPrefix(valLower, scheme) {
+			return fmt.Errorf("dangerous scheme detected: %s (execution blocked for security)", scheme)
+		}
 	}
 	return nil
 }
@@ -3288,6 +3312,17 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Also check decoded value just in case the input was already encoded
 	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
 		if err := checkForPathTraversal(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
+	// Always check for dangerous schemes (RCE/SSRF vectors)
+	if err := checkForDangerousSchemes(val); err != nil {
+		return err
+	}
+	// Also check decoded value for dangerous schemes
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForDangerousSchemes(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}

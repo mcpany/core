@@ -7,6 +7,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -44,11 +45,22 @@ func TestContextHelpers_Extra(t *testing.T) {
 }
 
 func TestCheckForLocalFileAccess(t *testing.T) {
-	assert.Error(t, checkForLocalFileAccess("/absolute"))
-	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
-	assert.Error(t, checkForLocalFileAccess("file:foo"))
+	absPath, _ := filepath.Abs("absolute")
+	assert.Error(t, checkForLocalFileAccess(absPath))
+	// file: scheme is now handled by checkForDangerousSchemes
+	assert.NoError(t, checkForLocalFileAccess("file:///etc/passwd"))
 	assert.NoError(t, checkForLocalFileAccess("relative"))
+}
+
+func TestCheckForDangerousSchemes(t *testing.T) {
+	assert.Error(t, checkForDangerousSchemes("file:///etc/passwd"))
+	assert.Error(t, checkForDangerousSchemes("FILE:///etc/passwd"))
+	assert.Error(t, checkForDangerousSchemes("file:foo"))
+	assert.Error(t, checkForDangerousSchemes("ext::sh"))
+	assert.Error(t, checkForDangerousSchemes("gopher://127.0.0.1:6379/_"))
+	assert.NoError(t, checkForDangerousSchemes("http://example.com"))
+	assert.NoError(t, checkForDangerousSchemes("https://example.com"))
+	assert.NoError(t, checkForDangerousSchemes("relative/path"))
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {
