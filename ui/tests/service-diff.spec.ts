@@ -13,6 +13,8 @@ const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DA
 
 test.describe('Service Config Diff', () => {
     test.beforeEach(async ({ request, page }) => {
+        // Ensure clean state before seeding
+        await cleanupServices(request);
         await seedServices(request);
         await seedUser(request, "diff-admin");
 

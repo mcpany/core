@@ -10,6 +10,8 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
+        // Ensure clean state before seeding to avoid conflict with other tests (e.g. service-diff renaming)
+        await cleanupServices(request);
         await seedServices(request);
         await seedUser(request, "e2e-tools-admin");
 
