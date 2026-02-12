@@ -40,7 +40,7 @@ test.describe('Tool Exploration', () => {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a short timeout per attempt since we are reloading repeatedly
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 2000 });
+                await expect(page.getByText(/process_payment/i).first()).toBeVisible({ timeout: 2000 });
                 found = true;
                 break;
             } catch (e) {
@@ -56,13 +56,13 @@ test.describe('Tool Exploration', () => {
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 20000 });
+        await expect(page.getByText(/process_payment/i).first()).toBeVisible({ timeout: 20000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
         try {
-            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(/echo_tool/i).first()).toBeVisible({ timeout: 20000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
@@ -74,20 +74,21 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(/process_payment/i).first()).toBeVisible({ timeout: 2000 });
                 break;
             } catch (e) {
                 await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForLoadState('domcontentloaded');
+                await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible({ timeout: 5000 });
+                await page.waitForTimeout(2000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(/process_payment/i).first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/i });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
@@ -98,19 +99,20 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(/process_payment/i).first()).toBeVisible({ timeout: 2000 });
                 break;
             } catch (e) {
                 await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForLoadState('domcontentloaded');
+                await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible({ timeout: 5000 });
+                await page.waitForTimeout(2000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(/process_payment/i).first()).toBeVisible({ timeout: 10000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/i });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
