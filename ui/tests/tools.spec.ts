@@ -7,10 +7,10 @@ import { test, expect } from '@playwright/test';
 import { seedUser, cleanupUser } from './e2e/test-data';
 
 const UNIQUE_SERVICE_ID = "svc_tools_test";
-const UNIQUE_SERVICE_NAME = "Tools Test Service";
+const UNIQUE_SERVICE_NAME = "ToolsTestService";
 const UNIQUE_PAYMENT_TOOL = "tools_test_payment";
 const UNIQUE_ECHO_SERVICE_ID = "svc_tools_echo";
-const UNIQUE_ECHO_SERVICE_NAME = "Tools Echo Service";
+const UNIQUE_ECHO_SERVICE_NAME = "ToolsEchoService";
 const UNIQUE_ECHO_TOOL = "tools_test_echo";
 
 test.describe('Tool Exploration', () => {
@@ -30,7 +30,7 @@ test.describe('Tool Exploration', () => {
                         {
                             name: UNIQUE_PAYMENT_TOOL,
                             description: "Process a payment",
-                            inputSchema: { type: "object" },
+                            inputSchema: { type: "object", properties: {} },
                             call_id: "payment_call"
                         }
                     ],
