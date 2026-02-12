@@ -123,9 +123,17 @@ const nextConfig: NextConfig = {
     // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
     // NOTE: __dirname in Next.js build might be .next/server...
     // We use process.cwd() to be safe for project root.
+    // In Docker, cwd is /app. proto is copied to /app/proto.
+    // Locally, cwd is /.../ui. proto is at /.../proto (sibling).
     const localProto = path.join(process.cwd(), 'proto');
     const rootProto = path.join(process.cwd(), '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+
+    // Check local first (Docker scenario: /app/proto)
+    let protoPath = localProto;
+    if (!fs.existsSync(localProto)) {
+       // Check sibling (Local scenario: ../proto)
+       protoPath = rootProto;
+    }
 
     config.resolve.alias = {
       ...config.resolve.alias,
