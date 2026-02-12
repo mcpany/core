@@ -189,6 +189,9 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: Checks connectivity to a target address.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
@@ -198,6 +201,14 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
+//
+// Errors:
+//   - Returns an error if the address is invalid.
+//   - Returns an error if the connection is blocked by SSRF policy.
+//   - Returns an error if the connection times out or is refused.
+//
+// Side Effects:
+//   - Attempts to establish a TCP connection to the target address.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -258,6 +269,9 @@ func CheckConnection(ctx context.Context, address string) error {
 }
 
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
+// Summary: Listens on an address with retry logic.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //
@@ -269,6 +283,13 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
+//
+// Errors:
+//   - Returns an error if the address is invalid.
+//   - Returns an error if the port is in use after all retries.
+//
+// Side Effects:
+//   - Opens a network listener on the specified address.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error
