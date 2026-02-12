@@ -46,9 +46,12 @@ test.describe('Tool Exploration', () => {
             } catch (e) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
                 await page.reload();
-                // Wait for DOM content loaded and a small buffer to avoid networkidle flakes and long timeouts
+                // Wait for DOM content loaded and a stable element to ensure React has mounted
                 await page.waitForLoadState('domcontentloaded');
-                await page.waitForTimeout(1000);
+                // Ensure the main content area is visible before waiting for data
+                await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible({ timeout: 5000 });
+                // Give a bit more time for the fetch to complete and render rows
+                await page.waitForTimeout(2000);
             }
         }
 
