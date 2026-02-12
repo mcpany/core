@@ -31,6 +31,7 @@ services:
           - mcpany-server
 
   ui-tests:
+    # Force rebuild of ui-tests
     image: mcpany-ui-e2e:latest
     ipc: host
     user: "${TEST_UID}:${TEST_GID}"

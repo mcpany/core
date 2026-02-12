@@ -30,6 +30,7 @@ func init() {
 }
 
 func TestOperatorE2E(t *testing.T) {
+	// Force cache invalidation
 	if os.Getenv("E2E") != "true" {
 		t.Skip("Skipping E2E test. Set E2E=true to run.")
 	}
