@@ -2963,6 +2963,9 @@ func checkInterpreterFunctionCalls(val string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"getattr", "setattr", "delattr",
+		"send", "public_send", "__send__",
+		"call_user_func", "call_user_func_array",
 	}
 
 	for _, kw := range dangerousKeywords {
@@ -2972,7 +2975,9 @@ func checkInterpreterFunctionCalls(val string) error {
 		if strings.Contains(cleanVal, kw+"(") ||
 			strings.Contains(cleanVal, kw+"'") ||
 			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
+			strings.Contains(cleanVal, kw+"`") ||
+			strings.Contains(cleanVal, kw+"%") ||
+			strings.Contains(cleanVal, kw+"{") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
 		}
 	}
