@@ -158,6 +158,9 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_LOGFILE` | Path to a file to write logs to | Stdout |
 | `MCPANY_SET` | Override config values (key=value) | `[]` |
 | `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow connections to loopback/private IPs (unsafe) | `false` |
+| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow connections to loopback IPs | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow connections to private network IPs | `false` |
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
