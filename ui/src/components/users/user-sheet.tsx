@@ -71,6 +71,17 @@ interface UserSheetProps {
   onSave: () => void;
 }
 
+/**
+ * UserSheet component for creating and editing users.
+ * Provides a form to manage user details and authentication methods.
+ *
+ * @param props - The component props.
+ * @param props.isOpen - Whether the sheet is open.
+ * @param props.onOpenChange - Callback when the sheet open state changes.
+ * @param props.user - The user to edit, or null for creating a new user.
+ * @param props.onSave - Callback when the user is successfully saved.
+ * @returns The rendered component.
+ */
 export function UserSheet({ isOpen, onOpenChange, user, onSave }: UserSheetProps) {
   const { toast } = useToast();
   const [generatedKey, setGeneratedKey] = useState("");
@@ -155,29 +166,57 @@ export function UserSheet({ isOpen, onOpenChange, user, onSave }: UserSheetProps
 
         if (data.authType === "password") {
             if (data.password) {
+                // Use snake_case for the key as expected by backend JSON unmarshaling (json_name)
+                // BUT SecretValue fields (plainText) are usually camelCase in protojson by default unless overridden.
                 authConfig = {
-                    basicAuth: {
+                    basic_auth: {
                         username: data.id,
                         password: { plainText: data.password }
                     }
                 };
             } else if (user?.authentication?.basicAuth) {
                  // Keep existing
-                 authConfig = user.authentication;
+                 // We need to convert the existing camelCase object (User) back to snake_case if we send it back?
+                 // Or does updateUser handle it?
+                 // apiClient.updateUser takes ANY and stringifies it.
+                 // If we send back `basicAuth`, the backend might ignore it if it strictly wants `basic_auth`.
+                 // However, we are likely editing roles here, so we might want to preserve auth.
+                 // But we can't easily retrieve the password.
+                 // If we send `authentication: undefined`, does it keep existing? Usually PUT replaces.
+                 // But typically we don't send back the full auth object if not changing it, OR we send the structure.
+                 // For now, let's assume we re-send the structure if we have it, mapping it.
+                 // But `user.authentication` is complex.
+                 // If we are keeping existing password, maybe we just send the hash?
+                 // `BasicAuth` has `password_hash`.
+                 // `user.authentication.basicAuth` likely has `passwordHash`.
+                 if (user.authentication.basicAuth) {
+                     authConfig = {
+                         basic_auth: {
+                             username: user.id,
+                             password_hash: user.authentication.basicAuth.passwordHash
+                         }
+                     };
+                 }
             }
         } else {
             // API Key
             if (generatedKey) {
                 authConfig = {
-                    apiKey: {
-                        paramName: "X-API-Key",
+                    api_key: {
+                        param_name: "X-API-Key",
                         in: 0, // HEADER
-                        verificationValue: generatedKey
+                        verification_value: generatedKey
                     }
                 };
             } else if (user?.authentication?.apiKey) {
                  // Keep existing
-                 authConfig = user.authentication;
+                 authConfig = {
+                     api_key: {
+                         param_name: user.authentication.apiKey.paramName,
+                         in: user.authentication.apiKey.in,
+                         verification_value: user.authentication.apiKey.verificationValue
+                     }
+                 };
             } else {
                  // Switching to API Key but didn't generate one
                  toast({ variant: "destructive", title: "Error", description: "Please generate an API Key." });

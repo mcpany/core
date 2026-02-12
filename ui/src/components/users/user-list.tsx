@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -32,6 +37,17 @@ interface UserListProps {
   onDelete: (id: string) => void;
 }
 
+/**
+ * UserList component for displaying a list of users.
+ * Supports filtering, editing, and deleting users.
+ *
+ * @param props - The component props.
+ * @param props.users - The list of users to display.
+ * @param props.isLoading - Whether the data is loading.
+ * @param props.onEdit - Callback when editing a user.
+ * @param props.onDelete - Callback when deleting a user.
+ * @returns The rendered component.
+ */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");

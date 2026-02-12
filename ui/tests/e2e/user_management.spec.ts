@@ -52,6 +52,9 @@ test.describe('User Management', () => {
         // Save
         await page.click('button:has-text("Save User")');
 
+        // Wait for success toast
+        await expect(page.locator('text=User Created')).toBeVisible();
+
         // Verify user created in list
         // UserList uses a table. Look for the row.
         await expect(page.locator('tr:has-text("test-api-user")')).toBeVisible();
