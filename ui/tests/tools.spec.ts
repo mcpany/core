@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedToolsTestServices, cleanupToolsTestServices, seedUser, cleanupUser } from './e2e/test-data';
 
 const SUFFIX = "_tools_test";
 
@@ -12,7 +12,8 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request, SUFFIX);
+        // Use the specialized seeding function to avoid side effects
+        await seedToolsTestServices(request, SUFFIX);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -27,7 +28,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request, SUFFIX);
+        await cleanupToolsTestServices(request, SUFFIX);
         await cleanupUser(request, "e2e-tools-admin");
     });
 

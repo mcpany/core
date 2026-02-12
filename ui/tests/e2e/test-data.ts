@@ -78,6 +78,67 @@ export const seedServices = async (requestContext?: APIRequestContext, suffix: s
     }
 };
 
+export const seedToolsTestServices = async (requestContext?: APIRequestContext, suffix: string = "") => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const services = [
+        {
+            id: `svc_01${suffix}`,
+            name: `Payment Gateway${suffix}`,
+            version: "v1.2.0",
+            http_service: {
+                address: "http://example.com", // Changed to example.com for reliability
+                tools: [
+                    { name: `process_payment${suffix}`, description: "Process a payment" }
+                ]
+            }
+        },
+        {
+            id: `svc_echo${suffix}`,
+            name: `Echo Service${suffix}`,
+            version: "v1.0",
+            command_line_service: {
+                command: "/bin/echo",
+                tools: [
+                    {
+                        name: `echo_tool${suffix}`,
+                        description: "Echoes back input",
+                        inputSchema: { type: "object" },
+                        call_id: `echo_call${suffix}`
+                    }
+                ],
+                calls: {
+                    [`echo_call${suffix}`]: {
+                        args: ["echoed_output"]
+                    }
+                }
+            }
+        }
+    ];
+
+    for (const svc of services) {
+        try {
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) {
+                console.error(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
+                throw new Error(`Failed to seed service ${svc.name}`);
+            }
+        } catch (e) {
+            console.error(`Failed to seed service ${svc.name}: ${e}`);
+            throw e;
+        }
+    }
+};
+
+export const cleanupToolsTestServices = async (requestContext?: APIRequestContext, suffix: string = "") => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete(`/api/v1/services/Payment Gateway${suffix}`, { headers: HEADERS });
+        await context.delete(`/api/v1/services/Echo Service${suffix}`, { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup services: ${e}`);
+    }
+};
+
 export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const collection = {
