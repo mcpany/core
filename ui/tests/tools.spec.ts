@@ -9,8 +9,11 @@ import { seedToolsTestServices, cleanupToolsTestServices, seedUser, cleanupUser 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
+    let suffix: string;
+
     test.beforeEach(async ({ request, page }) => {
-        await seedToolsTestServices(request);
+        const data = await seedToolsTestServices(request);
+        suffix = data.suffix;
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,12 +25,15 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupToolsTestServices(request);
+        await cleanupToolsTestServices(request, suffix);
         await cleanupUser(request, "e2e-tools-admin");
     });
 
     test('should list available tools from real backend', async ({ page }) => {
         await page.goto('/tools');
+
+        const paymentToolName = `process_payment_tool_${suffix}`;
+        const echoToolRegex = new RegExp(`echo_tool_unique_${suffix}`);
 
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
@@ -38,7 +44,7 @@ test.describe('Tool Exploration', () => {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment_tool').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(paymentToolName).first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
@@ -51,13 +57,13 @@ test.describe('Tool Exploration', () => {
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment_tool').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(paymentToolName).first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
         // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
         try {
-            await expect(page.getByText(/echo_tool_unique/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(echoToolRegex).first()).toBeVisible({ timeout: 20000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
@@ -68,10 +74,13 @@ test.describe('Tool Exploration', () => {
     test('should allow inspecting a tool', async ({ page }) => {
         await page.goto('/tools');
 
+        const paymentToolName = `process_payment_tool_${suffix}`;
+        const echoToolRegex = new RegExp(`echo_tool_unique_${suffix}`);
+
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment_tool').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(paymentToolName).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -79,10 +88,10 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment_tool').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(paymentToolName).first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool_unique/ });
+        const toolRow = page.locator('tr').filter({ hasText: echoToolRegex });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
@@ -92,10 +101,13 @@ test.describe('Tool Exploration', () => {
     test('should execute a tool and show results', async ({ page }) => {
         await page.goto('/tools');
 
+        const paymentToolName = `process_payment_tool_${suffix}`;
+        const echoToolRegex = new RegExp(`echo_tool_unique_${suffix}`);
+
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment_tool').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(paymentToolName).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -103,9 +115,9 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment_tool').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(paymentToolName).first()).toBeVisible({ timeout: 10000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool_unique/ });
+        const toolRow = page.locator('tr').filter({ hasText: echoToolRegex });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
