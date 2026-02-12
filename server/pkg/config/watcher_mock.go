@@ -11,12 +11,16 @@ type MockWatcher struct {
 
 // NewMockWatcher creates a new mock watcher.
 //
+// Summary: Creates a new mock watcher.
+//
 // Returns the result.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
 
 // Watch mocks the Watch method.
+//
+// Summary: Mocks the Watch method.
 //
 // paths is the paths.
 // reloadFunc is the reloadFunc.
@@ -30,6 +34,8 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close mocks the Close method.
+//
+// Summary: Mocks the Close method.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

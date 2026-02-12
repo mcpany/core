@@ -192,6 +192,8 @@ func NewSafeHTTPClient() *http.Client {
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
+// Summary: Verifies if a TCP connection can be established to the given address.
+//
 // Parameters:
 //   - ctx (context.Context): The context for the connection attempt.
 //   - address (string): The target address (URL or host:port).
@@ -260,6 +262,8 @@ func CheckConnection(ctx context.Context, address string) error {
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
+//
+// Summary: Attempts to listen on the given address with retries to handle transient port conflicts.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the listen operation.

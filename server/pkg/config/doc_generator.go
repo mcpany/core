@@ -25,6 +25,8 @@ import (
 // It iterates through the configured upstream services, registers their tools, and produces a
 // Markdown formatted string describing each tool and its input schema.
 //
+// Summary: Generates Markdown documentation for the tools defined in the configuration.
+//
 // Parameters:
 //   ctx: The context for the operation.
 //   cfg: The server configuration containing upstream service definitions.

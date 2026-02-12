@@ -33,6 +33,8 @@ type UpstreamAuthenticator interface {
 // basic authentication, as well as substitution of environment variables in the
 // authentication parameters.
 //
+// Summary: Creates an `UpstreamAuthenticator` based on the.
+//
 // If the `authConfig` is `nil`, no authenticator is created, and the function
 // returns `nil, nil`. If the configuration is invalid (e.g., missing required
 // fields), an error is returned.
@@ -134,6 +136,8 @@ type APIKeyAuth struct {
 
 // Authenticate adds the configured API key to the request's header, query, or cookie.
 //
+// Summary: Adds the configured API key to the request's header, query, or cookie.
+//
 // Parameters:
 //   - req: The HTTP request to be modified.
 //
@@ -174,6 +178,8 @@ type BearerTokenAuth struct {
 
 // Authenticate adds the bearer token to the request's "Authorization" header.
 //
+// Summary: Adds the bearer token to the request's "Authorization" header.
+//
 // Parameters:
 //   - req: The HTTP request to be modified.
 //
@@ -199,6 +205,8 @@ type BasicAuth struct {
 }
 
 // Authenticate sets the request's basic authentication credentials.
+//
+// Summary: Sets the request's basic authentication credentials.
 //
 // Parameters:
 //   - req: The HTTP request to be modified.
@@ -251,6 +259,8 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 }
 
 // Authenticate fetches a token and adds it to the request's "Authorization" header.
+//
+// Summary: Fetches a token and adds it to the request's "Authorization" header.
 //
 // Parameters:
 //   - req: The HTTP request to be modified.

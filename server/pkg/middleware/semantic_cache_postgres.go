@@ -21,6 +21,8 @@ type PostgresVectorStore struct {
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
 // It connects to the database and ensures the schema exists.
+//
+// Summary: Creates a new PostgresVectorStore.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -42,6 +44,8 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
 // It ensures the schema exists.
+//
+// Summary: Creates a new PostgresVectorStore using an existing database connection.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -85,6 +89,8 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 
 // Add adds a new entry to the vector store.
 //
+// Summary: Adds a new entry to the vector store.
+//
 // ctx is the context for the request.
 // key is the key.
 // vector is the vector.
@@ -120,6 +126,8 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 }
 
 // Search searches for the most similar entry in the vector store.
+//
+// Summary: Searches for the most similar entry in the vector store.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -172,6 +180,8 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 
 // Prune removes expired entries.
 //
+// Summary: Removes expired entries.
+//
 // ctx is the context for the request.
 // key is the key.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
@@ -187,6 +197,8 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 }
 
 // Close closes the database connection.
+//
+// Summary: Closes the database connection.
 //
 // Returns an error if the operation fails.
 func (s *PostgresVectorStore) Close() error {

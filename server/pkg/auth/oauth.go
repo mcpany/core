@@ -24,6 +24,8 @@ type OAuth2Authenticator struct {
 // configuration. It initializes the OIDC provider and creates a verifier for
 // validating ID tokens.
 //
+// Summary: Creates a new OAuth2Authenticator with the provided.
+//
 // Parameters:
 //   - ctx: The context for the OIDC provider initialization.
 //   - config: The OAuth2 configuration, including the issuer URL and client ID.
@@ -62,6 +64,8 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // Authenticate validates the JWT from the Authorization header of the request.
 // It checks for a "Bearer" token and verifies its signature, expiration, and
 // claims against the OIDC provider.
+//
+// Summary: Validates the JWT from the Authorization header of the request.
 //
 // Parameters:
 //   - ctx: The request context.

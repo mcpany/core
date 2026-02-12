@@ -30,6 +30,8 @@ const (
 
 // String returns the string representation of the severity.
 //
+// Summary: Returns the string representation of the severity.
+//
 // It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
 //
 // Returns:
@@ -63,6 +65,8 @@ type Result struct {
 
 // String returns the string representation of the result.
 //
+// Summary: Returns the string representation of the result.
+//
 // It formats the result into a human-readable string suitable for CLI output.
 //
 // Returns:
@@ -88,6 +92,8 @@ type Linter struct {
 
 // NewLinter creates a new Linter instance.
 //
+// Summary: Creates a new Linter instance.
+//
 // Parameters:
 //   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
 //
@@ -98,6 +104,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 }
 
 // Run executes all linting checks.
+//
+// Summary: Executes all linting checks.
 //
 // It aggregates results from multiple check categories including standard validation,
 // secret usage, shell injection risks, insecure HTTP, and cache settings.

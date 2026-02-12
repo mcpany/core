@@ -24,6 +24,8 @@ type LocalProvider struct {
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
+// Summary: Creates a new LocalProvider from the given configuration.
+//
 // _ is an unused parameter.
 // rootPaths is the rootPaths.
 // allowedPaths is the allowedPaths.
@@ -43,12 +45,16 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 
 // GetFs returns the underlying filesystem.
 //
+// Summary: Returns the underlying filesystem.
+//
 // Returns the result.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
+//
+// Summary: Resolves the virtual path to a real path in the local filesystem.
 //
 // virtualPath is the virtualPath.
 //
@@ -298,6 +304,8 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 }
 
 // Close closes the provider.
+//
+// Summary: Closes the provider.
 //
 // Returns an error if the operation fails.
 func (p *LocalProvider) Close() error {

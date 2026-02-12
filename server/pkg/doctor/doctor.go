@@ -55,6 +55,8 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
+// Summary: Performs connectivity and health checks on the provided configuration.
+//
 // It iterates through all upstream services defined in the configuration and executes
 // the appropriate check logic for each service type.
 //
@@ -92,6 +94,8 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 }
 
 // CheckService performs a connectivity check for a single service.
+//
+// Summary: Performs a connectivity check for a single service.
 //
 // It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
 // and handles upstream authentication checks if configured.

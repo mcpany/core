@@ -22,6 +22,8 @@ type SkillServiceServer struct {
 
 // NewSkillServiceServer creates a new SkillServiceServer.
 //
+// Summary: Creates a new SkillServiceServer.
+//
 // manager handles the resource management.
 //
 // Returns the result.
@@ -32,6 +34,8 @@ func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 }
 
 // ListSkills lists all available skills.
+//
+// Summary: Lists all available skills.
 //
 // _ is an unused parameter.
 // _ is an unused parameter.
@@ -55,6 +59,8 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 }
 
 // GetSkill retrieves a specific skill by name.
+//
+// Summary: Retrieves a specific skill by name.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -80,6 +86,8 @@ func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest
 
 // CreateSkill creates a new skill.
 //
+// Summary: Creates a new skill.
+//
 // _ is an unused parameter.
 // req is the request object.
 //
@@ -101,6 +109,8 @@ func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillR
 }
 
 // UpdateSkill updates an existing skill.
+//
+// Summary: Updates an existing skill.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -128,6 +138,8 @@ func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillR
 }
 
 // DeleteSkill deletes a skill.
+//
+// Summary: Deletes a skill.
 //
 // _ is an unused parameter.
 // req is the request object.

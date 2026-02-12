@@ -57,6 +57,8 @@ type Executor interface {
 
 // NewExecutor creates a new command executor.
 //
+// Summary: Creates a new command executor.
+//
 // containerEnv is the containerEnv.
 //
 // Returns the result.
@@ -69,6 +71,8 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 
 // NewLocalExecutor creates a new local command executor.
 //
+// Summary: Creates a new local command executor.
+//
 // Returns the result.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
@@ -77,6 +81,8 @@ func NewLocalExecutor() Executor {
 type localExecutor struct{}
 
 // Execute executes a command locally.
+//
+// Summary: Executes a command locally.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -134,6 +140,8 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 }
 
 // ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
+//
+// Summary: Executes a command locally with stdin/stdout/stderr pipes.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -214,6 +222,8 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // Execute executes a command inside a docker container.
+//
+// Summary: Executes a command inside a docker container.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -343,6 +353,8 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 }
 
 // ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
+//
+// Summary: Executes a command inside a docker container with stdin/stdout/stderr pipes.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -476,6 +488,8 @@ type closeWriter struct {
 
 // Write writes data to the connection.
 //
+// Summary: Writes data to the connection.
+//
 // p is the p.
 //
 // Returns the result.
@@ -485,6 +499,8 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 }
 
 // Close closes the write side of the connection.
+//
+// Summary: Closes the write side of the connection.
 //
 // Returns an error if the operation fails.
 func (c *closeWriter) Close() error {

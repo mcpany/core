@@ -12,6 +12,8 @@ import (
 
 // PrintResults prints the doctor check results in a structured table to the provided writer.
 //
+// Summary: Prints the doctor check results in a structured table to the provided writer.
+//
 // It formats the check results with status icons and alignment for readability.
 //
 // Parameters:

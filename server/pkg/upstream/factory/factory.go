@@ -44,6 +44,8 @@ type UpstreamServiceFactory struct {
 
 // NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
 //
+// Summary: Creates a new UpstreamServiceFactory.
+//
 // Parameters:
 //   poolManager: The connection pool manager used by upstreams that require
 //   connection pooling (e.g., gRPC, HTTP, WebSocket).
@@ -60,6 +62,8 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 
 // NewUpstream creates and returns an appropriate upstream.Upstream implementation
 // based on the type of service specified in the configuration.
+//
+// Summary: Creates and returns an appropriate upstream.Upstream implementation.
 //
 // Parameters:
 //   config: The configuration for the upstream service.

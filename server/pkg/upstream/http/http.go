@@ -65,6 +65,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -86,6 +88,8 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
+//
+// Summary: Gracefully terminates the HTTP upstream service by shutting down the.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -102,6 +106,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
+// Summary: Creates a new instance of Upstream.
+//
 // Parameters:
 //   - poolManager: The connection pool manager to be used for managing HTTP connections.
 //
@@ -116,6 +122,8 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
+//
+// Summary: Processes the configuration for an HTTP service, creates a connection.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

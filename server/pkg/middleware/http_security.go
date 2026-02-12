@@ -10,6 +10,8 @@ import (
 
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
 //
+// Summary: Adds security headers to HTTP responses.
+//
 // next is the next.
 //
 // Returns the result.

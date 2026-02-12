@@ -12,6 +12,8 @@ import (
 // visitor is called for every string value (not keys).
 // visitor receives:
 //
+// Summary: Visits every string value in the JSON input.
+//
 //	raw: the raw bytes of the string, including quotes.
 //
 // visitor returns:
@@ -113,6 +115,8 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 // It assumes the input is standard JSON (no comments) and skips comment detection logic
 // for significantly improved performance on mixed payloads.
 // visitor is called for every string value (not keys).
+//
+// Summary: Visits every string value in the JSON input.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0

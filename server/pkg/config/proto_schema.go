@@ -17,6 +17,8 @@ type schemaGenerator struct {
 
 // GenerateSchemaFromProto generates a jsonschema from a protobuf message using reflection.
 //
+// Summary: Generates a jsonschema from a protobuf message using reflection.
+//
 // Parameters:
 //   msg: The protobuf message to generate the schema from.
 //
@@ -30,6 +32,8 @@ func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, erro
 
 // GenerateSchemaMapFromProto generates a raw JSON schema map from a protobuf message using reflection.
 // This is useful if you want to export the schema as JSON.
+//
+// Summary: Generates a raw JSON schema map from a protobuf message using reflection.
 //
 // Parameters:
 //   msg: The protobuf message to generate the schema from.
@@ -51,6 +55,8 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 }
 
 // CompileSchema compiles a raw JSON schema map into a jsonschema.Schema object.
+//
+// Summary: Compiles a raw JSON schema map into a jsonschema.Schema object.
 //
 // schemaMap is the schemaMap.
 //

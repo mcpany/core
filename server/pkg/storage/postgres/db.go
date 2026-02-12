@@ -20,6 +20,8 @@ type DB struct {
 
 // NewDB opens a PostgreSQL database connection.
 //
+// Summary: Opens a PostgreSQL database connection.
+//
 // dsn is the dsn.
 //
 // Returns the result.
@@ -29,6 +31,8 @@ func NewDB(dsn string) (*DB, error) {
 }
 
 // NewDBWithDriver opens a database connection with the specified driver.
+//
+// Summary: Opens a database connection with the specified driver.
 //
 // driver is the driver.
 // dsn is the dsn.
@@ -62,6 +66,8 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 }
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
+//
+// Summary: Creates a new DB wrapper from an existing sql.DB connection.
 //
 // db is the db.
 //

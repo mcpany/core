@@ -24,6 +24,8 @@ type TextTemplate struct {
 
 // NewTemplate parses a template string and creates a new TextTemplate.
 //
+// Summary: Parses a template string and creates a new TextTemplate.
+//
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
@@ -52,6 +54,8 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 
 // Render executes the template with the provided parameters and returns the
 // resulting string.
+//
+// Summary: Executes the template with the provided parameters and returns the.
 //
 // params is a map of key-value pairs that will be available within the
 // template.

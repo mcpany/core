@@ -29,6 +29,8 @@ type JSONRPCResponse struct {
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
 // It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format.
 // Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+//
+// Summary: Ensures that errors are returned as valid JSON-RPC responses.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -84,12 +86,16 @@ type smartResponseWriter struct {
 
 // Header returns the header map that will be sent by WriteHeader.
 //
+// Summary: Returns the header map that will be sent by WriteHeader.
+//
 // Returns the result.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
 // WriteHeader sends an HTTP response header with the provided status code.
+//
+// Summary: Sends an HTTP response header with the provided status code.
 //
 // code is the code.
 func (w *smartResponseWriter) WriteHeader(code int) {
@@ -115,6 +121,8 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 }
 
 // Write writes the data to the connection as part of an HTTP reply.
+//
+// Summary: Writes the data to the connection as part of an HTTP reply.
 //
 // b is the b.
 //
@@ -157,6 +165,8 @@ func (w *smartResponseWriter) flushHeader() {
 }
 
 // Flush implements http.Flusher to support streaming.
+//
+// Summary: Implements http.Flusher to support streaming.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

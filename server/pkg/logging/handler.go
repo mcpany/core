@@ -36,6 +36,8 @@ type BroadcastHandler struct {
 
 // NewBroadcastHandler creates a new BroadcastHandler.
 //
+// Summary: Creates a new BroadcastHandler.
+//
 // broadcaster is the broadcaster.
 // level is the minimum log level to broadcast.
 //
@@ -49,6 +51,8 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastH
 
 // Enabled returns true if the level is greater than or equal to the handler's level.
 //
+// Summary: Returns true if the level is greater than or equal to the handler's level.
+//
 // _ is an unused parameter.
 // level is the log level.
 //
@@ -58,6 +62,8 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 }
 
 // Handle handles the log record by converting it to LogEntry and broadcasting it.
+//
+// Summary: Handles the log record by converting it to LogEntry and broadcasting it.
 //
 // _ is an unused parameter.
 // r is the r.
@@ -115,6 +121,8 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 
 // WithAttrs returns a new handler with the given attributes.
 //
+// Summary: Returns a new handler with the given attributes.
+//
 // attrs is the attrs.
 //
 // Returns the result.
@@ -130,6 +138,8 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new handler with the given group.
+//
+// Summary: Returns a new handler with the given group.
 //
 // name is the name of the resource.
 //
@@ -152,6 +162,8 @@ type TeeHandler struct {
 
 // NewTeeHandler creates a new TeeHandler.
 //
+// Summary: Creates a new TeeHandler.
+//
 // handlers is the handlers.
 //
 // Returns the result.
@@ -160,6 +172,8 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 }
 
 // Enabled returns true if any of the handlers are enabled.
+//
+// Summary: Returns true if any of the handlers are enabled.
 //
 // ctx is the context for the request.
 // level is the level.
@@ -175,6 +189,8 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 // Handle forwards the record to all enabled handlers.
+//
+// Summary: Forwards the record to all enabled handlers.
 //
 // ctx is the context for the request.
 // r is the r.
@@ -194,6 +210,8 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 
 // WithAttrs returns a new TeeHandler with the attributes applied to all handlers.
 //
+// Summary: Returns a new TeeHandler with the attributes applied to all handlers.
+//
 // attrs is the attrs.
 //
 // Returns the result.
@@ -206,6 +224,8 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new TeeHandler with the group applied to all handlers.
+//
+// Summary: Returns a new TeeHandler with the group applied to all handlers.
 //
 // name is the name of the resource.
 //

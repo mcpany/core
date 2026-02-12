@@ -36,6 +36,8 @@ const MaxRecursionDepth = 10
 // message into a `structpb.Struct` for use as the `properties` field in a tool
 // input schema.
 //
+// Summary: Converts the fields of a method's input.
+//
 // Parameters:
 //   - methodDesc: The method descriptor to convert.
 //
@@ -49,6 +51,8 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // MethodOutputDescriptorToProtoProperties converts the fields of a method's
 // output message into a `structpb.Struct` for use as the `properties` field in
 // a tool output schema.
+//
+// Summary: Converts the fields of a method's.
 //
 // Parameters:
 //   - methodDesc: The method descriptor to convert.

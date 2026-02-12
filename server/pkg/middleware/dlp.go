@@ -13,6 +13,8 @@ import (
 
 // DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
 //
+// Summary: Creates a middleware that redacts PII from request arguments and result content.
+//
 // config holds the configuration settings.
 // log is the log.
 //

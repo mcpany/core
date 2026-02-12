@@ -80,6 +80,8 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // NewProvider creates and returns a new Provider, which is used to manage
 // multiple topic-based bus instances.
 //
+// Summary: Creates and returns a new Provider, which is used to manage.
+//
 // Parameters:
 //   messageBus: The configuration for the message bus.
 //

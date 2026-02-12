@@ -22,6 +22,8 @@ type RedisStrategy struct {
 
 // NewRedisStrategy creates a new RedisStrategy.
 //
+// Summary: Creates a new RedisStrategy.
+//
 // Returns the result.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
@@ -33,6 +35,8 @@ type cachedRedisClient struct {
 }
 
 // Create creates a new RedisLimiter.
+//
+// Summary: Creates a new RedisLimiter.
 //
 // _ is an unused parameter.
 // serviceID is the serviceID.

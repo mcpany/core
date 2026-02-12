@@ -55,6 +55,8 @@ type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
 //
+// Summary: Creates a new MockRuntime.
+//
 // Returns:
 //   - *MockRuntime: A new mock runtime instance.
 func NewMockRuntime() *MockRuntime {
@@ -62,6 +64,8 @@ func NewMockRuntime() *MockRuntime {
 }
 
 // LoadPlugin loads a plugin.
+//
+// Summary: Loads a plugin.
 //
 // Parameters:
 //   - _ : The context (unused).
@@ -79,6 +83,8 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 
 // Close closes the runtime.
 //
+// Summary: Closes the runtime.
+//
 // Returns:
 //   - error: Always returns nil.
 func (m *MockRuntime) Close() error {
@@ -89,6 +95,8 @@ func (m *MockRuntime) Close() error {
 type MockPlugin struct{}
 
 // Execute executes a function.
+//
+// Summary: Executes a function.
 //
 // Parameters:
 //   - _ : The context (unused).
@@ -106,6 +114,8 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 }
 
 // Close closes the plugin.
+//
+// Summary: Closes the plugin.
 //
 // Returns:
 //   - error: Always returns nil.

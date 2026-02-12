@@ -14,6 +14,8 @@ const RedactedString = "REDACTED"
 
 // SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
 //
+// Summary: Creates a sanitized copy of the user object with sensitive data redacted.
+//
 // Parameters:
 //   - u: The user object to sanitize.
 //
@@ -34,6 +36,8 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 }
 
 // SanitizeCredential creates a sanitized copy of the credential object with sensitive data redacted.
+//
+// Summary: Creates a sanitized copy of the credential object with sensitive data redacted.
 //
 // Parameters:
 //   - c: The credential object to sanitize.
@@ -59,6 +63,8 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 
 // SanitizeAuthentication sanitizes the authentication object.
 // It modifies the object in place (assumes it's already a clone).
+//
+// Summary: Sanitizes the authentication object.
 //
 // Parameters:
 //   - a: The authentication object to sanitize.
@@ -107,6 +113,8 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 
 // SanitizeUserToken sanitizes the user token.
 //
+// Summary: Sanitizes the user token.
+//
 // Parameters:
 //   - t: The user token to sanitize.
 //
@@ -126,6 +134,8 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 }
 
 // SanitizeSecretValue sanitizes a SecretValue.
+//
+// Summary: Sanitizes a SecretValue.
 //
 // Parameters:
 //   - s: The secret value to sanitize.

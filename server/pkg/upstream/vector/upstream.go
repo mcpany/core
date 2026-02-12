@@ -30,6 +30,8 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of VectorUpstream.
 //
+// Summary: Creates a new instance of VectorUpstream.
+//
 // Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
@@ -49,6 +51,8 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 
 // Shutdown implements the upstream.Upstream interface.
 //
+// Summary: Implements the upstream.Upstream interface.
+//
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
@@ -57,6 +61,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a vector service.
+//
+// Summary: Processes the configuration for a vector service.
 //
 // _ is an unused parameter.
 // serviceConfig is the serviceConfig.
@@ -169,6 +175,8 @@ type vectorCallable struct {
 // Call executes the vector tool with the given arguments.
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
+//
+// Summary: Executes the vector tool with the given arguments.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }

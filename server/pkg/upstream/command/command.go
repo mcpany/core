@@ -36,6 +36,8 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
+// Summary: Implements the upstream.Upstream interface.
+//
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
@@ -51,6 +53,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
+// Summary: Creates a new instance of CommandUpstream.
+//
 // Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
@@ -58,6 +62,8 @@ func NewUpstream() upstream.Upstream {
 
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
+//
+// Summary: Processes the configuration for a command-line service, creates a.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -58,6 +58,8 @@ type GitHub struct {
 // NewGitHub creates a new GitHub client by parsing a GitHub URL. It supports
 // standard GitHub URLs for repositories, trees, and blobs.
 //
+// Summary: Creates a new GitHub client by parsing a GitHub URL. It supports.
+//
 // Parameters:
 //   - ctx: The context for the client creation.
 //   - rawURL: The GitHub URL to parse.
@@ -110,6 +112,8 @@ func isGitHubURL(rawURL string) bool {
 
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
 //
+// Summary: Constructs the raw content URL for the configured GitHub path.
+//
 // Returns:
 //   string: The raw content URL string.
 func (g *GitHub) ToRawContentURL() string {
@@ -134,6 +138,8 @@ type Content struct {
 
 // List fetches the contents of the configured GitHub path. It handles authentication
 // if provided and returns a list of Content objects.
+//
+// Summary: Fetches the contents of the configured GitHub path. It handles authentication.
 //
 // Parameters:
 //   - ctx: The context for the request.

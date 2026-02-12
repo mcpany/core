@@ -21,6 +21,8 @@ type IPAllowlistMiddleware struct {
 
 // NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
 //
+// Summary: Creates a new IPAllowlistMiddleware.
+//
 // allowedCIDRs is the allowedCIDRs.
 //
 // Returns the result.
@@ -34,6 +36,8 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 }
 
 // Update updates the allowlist with new CIDRs/IPs.
+//
+// Summary: Updates the allowlist with new CIDRs/IPs.
 //
 // allowedCIDRs is the allowedCIDRs.
 //
@@ -70,6 +74,8 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 
 // Allow checks if the given remote address is allowed.
 // remoteAddr should be in the form "IP" or "IP:Port".
+//
+// Summary: Checks if the given remote address is allowed.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	m.mu.RLock()
 	nets := m.allowedIPNets
@@ -105,6 +111,8 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 }
 
 // Handler returns an HTTP handler that enforces the allowlist.
+//
+// Summary: Returns an HTTP handler that enforces the allowlist.
 //
 // next is the next.
 //

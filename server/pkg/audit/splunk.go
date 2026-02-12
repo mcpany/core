@@ -33,6 +33,8 @@ type SplunkAuditStore struct {
 }
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
+//
+// Summary: Creates a new SplunkAuditStore.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -93,6 +95,8 @@ func (e *SplunkAuditStore) worker() {
 }
 
 // Write implements the Store interface.
+//
+// Summary: Implements the Store interface.
 func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -150,11 +154,15 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 
 
 // Read implements the Store interface.
+//
+// Summary: Implements the Store interface.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
 // Close closes the queue and waits for workers to finish.
+//
+// Summary: Closes the queue and waits for workers to finish.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

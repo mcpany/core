@@ -19,6 +19,8 @@ import (
 
 // UnaryClientInterceptor returns a new unary client interceptor that retries calls.
 //
+// Summary: Returns a new unary client interceptor that retries calls.
+//
 // retryConfig is the retryConfig.
 //
 // Returns the result.

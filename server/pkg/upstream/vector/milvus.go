@@ -22,6 +22,8 @@ type MilvusClient struct {
 
 // NewMilvusClient creates a new Milvus client.
 //
+// Summary: Creates a new Milvus client.
+//
 // config holds the configuration settings.
 //
 // Returns the result.
@@ -67,6 +69,8 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 }
 
 // Query searches for similar vectors.
+//
+// Summary: Searches for similar vectors.
 //
 // ctx is the context for the request.
 // vector is the vector.
@@ -188,6 +192,8 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 }
 
 // Upsert inserts or updates vectors.
+//
+// Summary: Inserts or updates vectors.
 //
 // ctx is the context for the request.
 // vectors is the vectors.
@@ -400,6 +406,8 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 
 // Delete removes vectors.
 //
+// Summary: Removes vectors.
+//
 // ctx is the context for the request.
 // ids is the ids.
 // namespace is the namespace.
@@ -466,6 +474,8 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 }
 
 // DescribeIndexStats returns statistics about the index.
+//
+// Summary: Returns statistics about the index.
 //
 // ctx is the context for the request.
 // _ is an unused parameter.

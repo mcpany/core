@@ -38,6 +38,8 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
+// Summary: Creates a new instance of FilesystemUpstream.
+//
 // Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
@@ -46,6 +48,8 @@ func NewUpstream() upstream.Upstream {
 }
 
 // Shutdown implements the upstream.Upstream interface.
+//
+// Summary: Implements the upstream.Upstream interface.
 //
 // _ is an unused parameter.
 //
@@ -64,6 +68,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
+//
+// Summary: Processes the configuration for a filesystem service.
 //
 // ctx is the context for the request.
 // serviceConfig is the serviceConfig.
@@ -193,6 +199,8 @@ type fsCallable struct {
 
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
+//
+// Summary: Executes the filesystem tool with the provided request arguments.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

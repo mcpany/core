@@ -30,12 +30,16 @@ type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer creates a new SimpleTokenizer.
 //
+// Summary: Creates a new SimpleTokenizer.
+//
 // Returns the result.
 func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
 
 // CountTokens counts tokens in text using the simple heuristic.
+//
+// Summary: Counts tokens in text using the simple heuristic.
 //
 // text is the text.
 //
@@ -60,12 +64,16 @@ type WordTokenizer struct {
 
 // NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3.
 //
+// Summary: Creates a new WordTokenizer with a default factor of 1.3.
+//
 // Returns the result.
 func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
 
 // CountTokens counts tokens in text using the word-based heuristic.
+//
+// Summary: Counts tokens in text using the word-based heuristic.
 //
 // text is the text.
 //
@@ -151,6 +159,8 @@ func countWords(text string) int {
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
 //
+// Summary: Recursively counts tokens in arbitrary structures.
+//
 // t is the t.
 // v is the v.
 //
@@ -191,6 +201,8 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 type rawWordCounter struct{}
 
 // CountTokens counts the number of words in the text.
+//
+// Summary: Counts the number of words in the text.
 //
 // Parameters:
 //   - text: The input text.

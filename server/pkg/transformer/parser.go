@@ -40,6 +40,8 @@ var (
 
 // NewTextParser returns a shared instance of TextParser.
 //
+// Summary: Returns a shared instance of TextParser.
+//
 // Returns the result.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
@@ -53,6 +55,8 @@ func NewTextParser() *TextParser {
 // Transform takes a map of data and a Go template string and returns a byte
 // slice containing the transformed output.
 //
+// Summary: Takes a map of data and a Go template string and returns a byte.
+//
 // templateStr is the Go template to be executed.
 // data is the map containing the data to be used in the template.
 // It returns the transformed data as a byte slice or an error if the
@@ -63,6 +67,8 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 
 // Parse extracts data from an input byte slice based on the specified input
 // type and configuration.
+//
+// Summary: Extracts data from an input byte slice based on the specified input.
 //
 // inputType specifies the format of the input data ("json", "xml", "text", or "jq").
 // input is the raw byte slice containing the data to be parsed.

@@ -18,6 +18,8 @@ type SSOConfig struct {
 
 // SSOMiddleware creates a new SSO middleware.
 //
+// Summary: Creates a new SSO middleware.
+//
 // config holds the configuration settings.
 //
 // Returns the result.

@@ -41,6 +41,8 @@ var (
 
 // SetGlobalAlertConfig sets the global alert configuration.
 //
+// Summary: Sets the global alert configuration.
+//
 // It updates the thread-safe global configuration used for sending alerts on health status changes.
 //
 // Parameters:
@@ -73,6 +75,8 @@ type HTTPServiceWithHealthCheck interface {
 }
 
 // NewChecker creates a new health checker for the given upstream service.
+//
+// Summary: Creates a new health checker for the given upstream service.
 //
 // It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
 // health check strategy wrapped with latency metrics and status change listeners.

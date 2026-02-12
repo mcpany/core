@@ -39,6 +39,8 @@ type WebsocketTool struct {
 
 // NewWebsocketTool creates a new WebsocketTool.
 //
+// Summary: Creates a new WebsocketTool.
+//
 // tool is the protobuf definition of the tool.
 // poolManager is used to get a WebSocket client from the connection pool.
 // serviceID identifies the specific WebSocket service connection pool.
@@ -66,12 +68,16 @@ func NewWebsocketTool(
 
 // Tool returns the protobuf definition of the WebSocket tool.
 //
+// Summary: Returns the protobuf definition of the WebSocket tool.
+//
 // Returns the result.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Summary: Returns the MCP tool definition.
 //
 // Returns the result.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
@@ -87,6 +93,8 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
+// Summary: Returns the cache configuration for the WebSocket tool.
+//
 // Returns the result.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
@@ -95,6 +103,8 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the WebSocket tool. It retrieves a connection
 // from the pool, sends the tool inputs as a message, and waits for a single
 // response message, which it then processes and returns.
+//
+// Summary: Handles the execution of the WebSocket tool. It retrieves a connection.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

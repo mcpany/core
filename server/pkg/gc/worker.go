@@ -29,6 +29,8 @@ type Worker struct {
 
 // New creates a new GC Worker.
 //
+// Summary: Creates a new GC Worker.
+//
 // config holds the configuration settings.
 //
 // Returns the result.
@@ -46,6 +48,8 @@ func New(config Config) *Worker {
 
 // Start runs the GC worker in the background.
 // It returns immediately and runs cleanup periodically until the context is canceled.
+//
+// Summary: Runs the GC worker in the background.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

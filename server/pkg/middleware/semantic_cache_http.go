@@ -27,6 +27,8 @@ type HTTPEmbeddingProvider struct {
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
+// Summary: Creates a new HTTPEmbeddingProvider.
+//
 // url is the url.
 // headers is the headers.
 // bodyTemplateStr is the bodyTemplateStr.
@@ -56,6 +58,8 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 
 // Embed generates an embedding for the given text.
+//
+// Summary: Generates an embedding for the given text.
 //
 // ctx is the context for the request.
 // text is the text.

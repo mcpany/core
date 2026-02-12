@@ -49,6 +49,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: Performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -66,6 +68,8 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
+// Summary: Creates a new instance of Upstream.
+//
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
@@ -82,6 +86,8 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
+//
+// Summary: Gracefully terminates the gRPC upstream service by shutting down the.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -101,6 +107,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // connection pool, uses gRPC reflection to discover the service's protobuf
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
+//
+// Summary: Handles the registration of a gRPC upstream service. It establishes a.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

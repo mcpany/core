@@ -19,6 +19,8 @@ type LocalLimiter struct {
 
 // Allow checks if the request is allowed (cost 1).
 //
+// Summary: Checks if the request is allowed (cost 1).
+//
 // _ is an unused parameter.
 //
 // Returns true if successful.
@@ -28,6 +30,8 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 }
 
 // AllowN checks if the request is allowed with a specific cost.
+//
+// Summary: Checks if the request is allowed with a specific cost.
 //
 // _ is an unused parameter.
 // n is the n.
@@ -39,6 +43,8 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 }
 
 // Update updates the limiter configuration.
+//
+// Summary: Updates the limiter configuration.
 //
 // rps is the rps.
 // burst is the burst.
@@ -57,12 +63,16 @@ type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
 //
+// Summary: Creates a new LocalStrategy.
+//
 // Returns the result.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
 
 // Create creates a new LocalLimiter.
+//
+// Summary: Creates a new LocalLimiter.
 //
 // _ is an unused parameter.
 // _ is an unused parameter.

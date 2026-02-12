@@ -25,6 +25,8 @@ type SQLiteAuditStore struct {
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
 //
+// Summary: Creates a new SQLiteAuditStore.
+//
 // path is the path.
 //
 // Returns the result.
@@ -131,6 +133,8 @@ func ensureColumn(db *sql.DB, colName string) error {
 
 // Write writes an audit entry to the database.
 //
+// Summary: Writes an audit entry to the database.
+//
 // ctx is the context for the request.
 // entry is the entry.
 //
@@ -190,6 +194,8 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
+//
+// Summary: Reads audit entries from the database based on the filter.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -262,6 +268,8 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Verify checks the integrity of the audit logs.
 // It returns true if the chain is valid, false otherwise.
 // If an error occurs during reading, it returns false and the error.
+//
+// Summary: Checks the integrity of the audit logs.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -310,6 +318,8 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
+//
+// Summary: Closes the database connection.
 //
 // Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Close() error {

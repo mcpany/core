@@ -29,6 +29,8 @@ type MockManagerInterfaceMockRecorder struct {
 
 // NewMockManagerInterface creates a new mock instance.
 //
+// Summary: Creates a new mock instance.
+//
 // ctrl is the ctrl.
 //
 // Returns the result.
@@ -40,12 +42,16 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 //
+// Summary: Returns an object that allows the caller to indicate expected use.
+//
 // Returns the result.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
 // AddPrompt mocks base method.
+//
+// Summary: Mocks base method.
 //
 // prompt is the prompt.
 func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
@@ -54,6 +60,8 @@ func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
 }
 
 // AddPrompt indicates an expected call of AddPrompt.
+//
+// Summary: Indicates an expected call of AddPrompt.
 //
 // prompt is the prompt.
 //
@@ -64,12 +72,16 @@ func (mr *MockManagerInterfaceMockRecorder) AddPrompt(prompt any) *gomock.Call {
 }
 
 // Clear mocks base method.
+//
+// Summary: Mocks base method.
 func (m *MockManagerInterface) Clear() {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Clear")
 }
 
 // Clear indicates an expected call of Clear.
+//
+// Summary: Indicates an expected call of Clear.
 //
 // Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
@@ -79,6 +91,8 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 
 // ClearPromptsForService mocks base method.
 //
+// Summary: Mocks base method.
+//
 // serviceID is the serviceID.
 func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 	m.ctrl.T.Helper()
@@ -86,6 +100,8 @@ func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 }
 
 // ClearPromptsForService indicates an expected call of ClearPromptsForService.
+//
+// Summary: Indicates an expected call of ClearPromptsForService.
 //
 // serviceID is the serviceID.
 //
@@ -96,6 +112,8 @@ func (mr *MockManagerInterfaceMockRecorder) ClearPromptsForService(serviceID any
 }
 
 // GetPrompt mocks base method.
+//
+// Summary: Mocks base method.
 //
 // name is the name of the resource.
 //
@@ -111,6 +129,8 @@ func (m *MockManagerInterface) GetPrompt(name string) (Prompt, bool) {
 
 // GetPrompt indicates an expected call of GetPrompt.
 //
+// Summary: Indicates an expected call of GetPrompt.
+//
 // name is the name of the resource.
 //
 // Returns the result.
@@ -120,6 +140,8 @@ func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 }
 
 // ListPrompts mocks base method.
+//
+// Summary: Mocks base method.
 //
 // Returns the result.
 func (m *MockManagerInterface) ListPrompts() []Prompt {
@@ -131,6 +153,8 @@ func (m *MockManagerInterface) ListPrompts() []Prompt {
 
 // ListPrompts indicates an expected call of ListPrompts.
 //
+// Summary: Indicates an expected call of ListPrompts.
+//
 // Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
@@ -139,6 +163,8 @@ func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 
 // SetMCPServer mocks base method.
 //
+// Summary: Mocks base method.
+//
 // mcpServer is the mcpServer.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
@@ -146,6 +172,8 @@ func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 }
 
 // SetMCPServer indicates an expected call of SetMCPServer.
+//
+// Summary: Indicates an expected call of SetMCPServer.
 //
 // mcpServer is the mcpServer.
 //
@@ -157,6 +185,8 @@ func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.
 
 // UpdatePrompt mocks base method.
 //
+// Summary: Mocks base method.
+//
 // prompt is the prompt.
 func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
@@ -164,6 +194,8 @@ func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 }
 
 // UpdatePrompt indicates an expected call of UpdatePrompt.
+//
+// Summary: Indicates an expected call of UpdatePrompt.
 //
 // prompt is the prompt.
 //

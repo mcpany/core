@@ -38,6 +38,8 @@ type Doctor struct {
 
 // NewDoctor creates a new Doctor.
 //
+// Summary: Creates a new Doctor.
+//
 // Returns the result.
 func NewDoctor() *Doctor {
 	return &Doctor{
@@ -48,6 +50,8 @@ func NewDoctor() *Doctor {
 
 // AddCheck adds a named health check.
 //
+// Summary: Adds a named health check.
+//
 // name is the name of the resource.
 // check is the check.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
@@ -57,6 +61,8 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 }
 
 // Handler returns the http handler.
+//
+// Summary: Returns the http handler.
 //
 // Returns the result.
 func (d *Doctor) Handler() http.HandlerFunc {

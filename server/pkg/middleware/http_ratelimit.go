@@ -26,6 +26,8 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
 // WithTrustProxy enables trusting the X-Forwarded-For header.
 // This should only be used when the server is behind a trusted reverse proxy.
+//
+// Summary: Enables trusting the X-Forwarded-For header.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -33,6 +35,8 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 }
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
+//
+// Summary: Creates a new HTTPRateLimitMiddleware.
 //
 // Parameters:
 //   - rps: Requests per second allowed per IP.
@@ -64,6 +68,8 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 }
 
 // Handler wraps an http.Handler with rate limiting.
+//
+// Summary: Wraps an http.Handler with rate limiting.
 //
 // Parameters:
 //   - next: The next http.Handler in the chain.

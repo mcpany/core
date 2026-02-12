@@ -37,6 +37,8 @@ type sessionContextKey struct{}
 
 // NewContextWithSession creates a new context with the given Session.
 //
+// Summary: Creates a new context with the given Session.
+//
 // ctx is the context for the request.
 // s is the s.
 //
@@ -46,6 +48,8 @@ func NewContextWithSession(ctx context.Context, s Session) context.Context {
 }
 
 // GetSession retrieves the Session from the context.
+//
+// Summary: Retrieves the Session from the context.
 //
 // ctx is the context for the request.
 //
@@ -58,12 +62,16 @@ func GetSession(ctx context.Context) (Session, bool) {
 
 // NewContextWithSampler creates a new context with the given Sampler.
 //
+// Summary: Creates a new context with the given Sampler.
+//
 // Deprecated: Use NewContextWithSession instead.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
 
 // GetSampler retrieves the Sampler from the context.
+//
+// Summary: Retrieves the Sampler from the context.
 //
 // Deprecated: Use GetSession instead.
 func GetSampler(ctx context.Context) (Sampler, bool) {

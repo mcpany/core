@@ -21,6 +21,8 @@ type HTTPCORSMiddleware struct {
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 // If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
 // To allow all, pass []string{"*"}.
+//
+// Summary: Creates a new HTTPCORSMiddleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -28,6 +30,8 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 }
 
 // Update updates the allowed origins.
+//
+// Summary: Updates the allowed origins.
 //
 // allowedOrigins is the allowedOrigins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
@@ -52,6 +56,8 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 }
 
 // Handler wraps an http.Handler with CORS logic.
+//
+// Summary: Wraps an http.Handler with CORS logic.
 //
 // next is the next.
 //

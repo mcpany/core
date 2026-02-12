@@ -28,6 +28,8 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
+// Summary: Creates a new Updater.
+//
 // Parameters:
 //   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
 //   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
@@ -52,6 +54,8 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 }
 
 // CheckForUpdate checks for a new release on GitHub.
+//
+// Summary: Checks for a new release on GitHub.
 //
 // It compares the provided current version tag with the latest release tag on the repository.
 //
@@ -79,6 +83,8 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 }
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+//
+// Summary: Downloads the new release, verifies its checksum, and replaces the current executable.
 //
 // It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
 //

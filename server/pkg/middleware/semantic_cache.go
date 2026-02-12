@@ -53,6 +53,8 @@ type SemanticCache struct {
 
 // NewSemanticCache creates a new SemanticCache.
 //
+// Summary: Creates a new SemanticCache.
+//
 // provider is the provider.
 // store is the store.
 // threshold is the threshold.
@@ -74,6 +76,8 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 
 // Get attempts to find a semantically similar cached result.
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
+//
+// Summary: Attempts to find a semantically similar cached result.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
@@ -88,6 +92,8 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 }
 
 // Set adds a result to the cache using the provided embedding.
+//
+// Summary: Adds a result to the cache using the provided embedding.
 //
 // ctx is the context for the request.
 // key is the key.

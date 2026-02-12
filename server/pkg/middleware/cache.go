@@ -49,6 +49,8 @@ type CachingMiddleware struct {
 
 // NewCachingMiddleware creates a new CachingMiddleware.
 //
+// Summary: Creates a new CachingMiddleware.
+//
 // toolManager is the toolManager.
 //
 // Returns the result.
@@ -112,12 +114,16 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 
 // SetProviderFactory allows overriding the default provider factory for testing.
 //
+// Summary: Allows overriding the default provider factory for testing.
+//
 // factory is the factory.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
 // Execute executes the caching middleware.
+//
+// Summary: Executes the caching middleware.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -418,6 +424,8 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 }
 
 // Clear clears the cache.
+//
+// Summary: Clears the cache.
 //
 // ctx is the context for the request.
 //

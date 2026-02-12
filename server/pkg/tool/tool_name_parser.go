@@ -15,6 +15,8 @@ import (
 // "<namespace>/-/--<tool_name>". If the separator is not found, the entire
 // input is treated as the tool name with an empty namespace.
 //
+// Summary: Deconstructs a fully qualified tool name into its namespace.
+//
 // toolName is the fully qualified tool name to parse.
 // It returns the namespace, the bare tool name, and an error if the tool name
 // is invalid (e.g., empty).
@@ -35,6 +37,8 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 
 // GetFullyQualifiedToolName constructs a fully qualified tool name from a
 // service ID and a method name, using the standard separator.
+//
+// Summary: Constructs a fully qualified tool name from a.
 //
 // serviceID is the unique identifier of the service.
 // methodName is the name of the tool/method within the service.

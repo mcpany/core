@@ -28,6 +28,8 @@ type Registry struct {
 
 // NewRegistry creates and initializes a new Registry instance.
 //
+// Summary: Creates and initializes a new Registry instance.
+//
 // Returns:
 //   A pointer to a new, empty Registry.
 func NewRegistry() *Registry {
@@ -39,6 +41,8 @@ func NewRegistry() *Registry {
 // Register registers a handler with a specific name.
 // If a handler with the same name already exists, it will be overwritten.
 //
+// Summary: Registers a handler with a specific name.
+//
 // Parameters:
 //   name: The name/path to register the handler under.
 //   handler: The Handler instance to register.
@@ -49,6 +53,8 @@ func (r *Registry) Register(name string, handler Handler) {
 }
 
 // Get retrieves a handler by its name.
+//
+// Summary: Retrieves a handler by its name.
 //
 // Parameters:
 //   name: The name of the handler to retrieve.

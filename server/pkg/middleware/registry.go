@@ -37,6 +37,8 @@ var (
 
 // Register registers a HTTP middleware factory.
 //
+// Summary: Registers a HTTP middleware factory.
+//
 // name is the name of the resource.
 // factory is the factory.
 func Register(name string, factory Factory) {
@@ -47,6 +49,8 @@ func Register(name string, factory Factory) {
 
 // RegisterMCP registers an MCP middleware factory.
 //
+// Summary: Registers an MCP middleware factory.
+//
 // name is the name of the resource.
 // factory is the factory.
 func RegisterMCP(name string, factory MCPFactory) {
@@ -56,6 +60,8 @@ func RegisterMCP(name string, factory MCPFactory) {
 }
 
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+//
+// Summary: Returns a sorted list of HTTP middlewares based on configuration.
 //
 // configs is the configs.
 //
@@ -84,6 +90,8 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 }
 
 // GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+//
+// Summary: Returns a sorted list of MCP middlewares based on configuration.
 //
 // configs is the configs.
 //
@@ -122,6 +130,8 @@ type StandardMiddlewares struct {
 }
 
 // InitStandardMiddlewares registers standard middlewares.
+//
+// Summary: Registers standard middlewares.
 //
 // authManager is the authManager.
 // toolManager is the toolManager.

@@ -83,6 +83,8 @@ type ToolMetricsMiddleware struct {
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
+// Summary: Creates a new ToolMetricsMiddleware.
+//
 // Parameters:
 //   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
 //     If nil, a simple default tokenizer is used.
@@ -108,6 +110,8 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 }
 
 // Execute executes the tool metrics middleware.
+//
+// Summary: Executes the tool metrics middleware.
 //
 // ctx is the context for the request.
 // req is the request object.

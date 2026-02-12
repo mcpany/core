@@ -36,6 +36,8 @@ type Tool struct {
 
 // NewTool creates a new SQL Tool.
 //
+// Summary: Creates a new SQL Tool.
+//
 // t is the t.
 // db is the db.
 // callDef is the callDef.
@@ -60,12 +62,16 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 
 // Tool returns the protobuf definition of the tool.
 //
+// Summary: Returns the protobuf definition of the tool.
+//
 // Returns the result.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Summary: Returns the MCP tool definition.
 //
 // Returns the result.
 func (t *Tool) MCPTool() *mcp.Tool {
@@ -81,6 +87,8 @@ func (t *Tool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the tool.
 //
+// Summary: Returns the cache configuration for the tool.
+//
 // Returns the result.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
@@ -90,6 +98,8 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 // Execute runs the SQL query with the provided inputs.
+//
+// Summary: Runs the SQL query with the provided inputs.
 //
 // ctx is the context for the request.
 // req is the request object.

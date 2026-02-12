@@ -18,6 +18,8 @@ type RBACMiddleware struct {
 
 // NewRBACMiddleware creates a new RBACMiddleware.
 //
+// Summary: Creates a new RBACMiddleware.
+//
 // Returns the result.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
@@ -27,6 +29,8 @@ func NewRBACMiddleware() *RBACMiddleware {
 
 // RequireRole returns an HTTP middleware that requires the user to have the specified role.
 // It assumes that the user roles are already populated in the request context (e.g., by an authentication middleware).
+//
+// Summary: Returns an HTTP middleware that requires the user to have the specified role.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +54,8 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 }
 
 // RequireAnyRole returns an HTTP middleware that requires the user to have at least one of the specified roles.
+//
+// Summary: Returns an HTTP middleware that requires the user to have at least one of the specified roles.
 //
 // roles is the roles.
 //
@@ -79,6 +85,8 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 }
 
 // EnforcePolicy allows passing a custom policy function.
+//
+// Summary: Allows passing a custom policy function.
 //
 // _ is an unused parameter.
 //

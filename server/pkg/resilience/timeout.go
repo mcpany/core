@@ -16,6 +16,8 @@ type Timeout struct {
 
 // NewTimeout creates a new Timeout instance with the given duration.
 //
+// Summary: Creates a new Timeout instance with the given duration.
+//
 // duration is the duration.
 //
 // Returns the result.
@@ -26,6 +28,8 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 }
 
 // Execute runs the provided work function with a timeout.
+//
+// Summary: Runs the provided work function with a timeout.
 //
 // ctx is the context for the request.
 // work is the work.

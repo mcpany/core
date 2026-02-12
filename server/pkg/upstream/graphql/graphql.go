@@ -93,12 +93,16 @@ type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
+// Summary: Creates a new GraphQL upstream.
+//
 // Returns the result.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
+//
+// Summary: Shuts down the upstream.
 //
 // _ is an unused parameter.
 //
@@ -174,6 +178,8 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
+// Summary: Executes the GraphQL query.
+//
 // ctx is the context for the request.
 // req is the request object.
 //
@@ -202,6 +208,8 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 }
 
 // Register inspects the GraphQL upstream service and registers its capabilities.
+//
+// Summary: Inspects the GraphQL upstream service and registers its capabilities.
 //
 // ctx is the context for the request.
 // serviceConfig is the serviceConfig.

@@ -29,6 +29,8 @@ type MockManagerInterfaceMockRecorder struct {
 
 // NewMockManagerInterface creates a new mock instance.
 //
+// Summary: Creates a new mock instance.
+//
 // ctrl is the ctrl.
 //
 // Returns the result.
@@ -40,12 +42,16 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 //
+// Summary: Returns an object that allows the caller to indicate expected use.
+//
 // Returns the result.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
 // AddResource mocks base method.
+//
+// Summary: Mocks base method.
 //
 // resource is the resource.
 func (m *MockManagerInterface) AddResource(resource Resource) {
@@ -54,6 +60,8 @@ func (m *MockManagerInterface) AddResource(resource Resource) {
 }
 
 // AddResource indicates an expected call of AddResource.
+//
+// Summary: Indicates an expected call of AddResource.
 //
 // resource is the resource.
 //
@@ -64,12 +72,16 @@ func (mr *MockManagerInterfaceMockRecorder) AddResource(resource any) *gomock.Ca
 }
 
 // Clear mocks base method.
+//
+// Summary: Mocks base method.
 func (m *MockManagerInterface) Clear() {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Clear")
 }
 
 // Clear indicates an expected call of Clear.
+//
+// Summary: Indicates an expected call of Clear.
 //
 // Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
@@ -79,6 +91,8 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 
 // ClearResourcesForService mocks base method.
 //
+// Summary: Mocks base method.
+//
 // serviceID is the serviceID.
 func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 	m.ctrl.T.Helper()
@@ -86,6 +100,8 @@ func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 }
 
 // ClearResourcesForService indicates an expected call of ClearResourcesForService.
+//
+// Summary: Indicates an expected call of ClearResourcesForService.
 //
 // serviceID is the serviceID.
 //
@@ -96,6 +112,8 @@ func (mr *MockManagerInterfaceMockRecorder) ClearResourcesForService(serviceID a
 }
 
 // GetResource mocks base method.
+//
+// Summary: Mocks base method.
 //
 // uri is the uri.
 //
@@ -111,6 +129,8 @@ func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 
 // GetResource indicates an expected call of GetResource.
 //
+// Summary: Indicates an expected call of GetResource.
+//
 // uri is the uri.
 //
 // Returns the result.
@@ -120,6 +140,8 @@ func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 }
 
 // ListResources mocks base method.
+//
+// Summary: Mocks base method.
 //
 // Returns the result.
 func (m *MockManagerInterface) ListResources() []Resource {
@@ -131,6 +153,8 @@ func (m *MockManagerInterface) ListResources() []Resource {
 
 // ListResources indicates an expected call of ListResources.
 //
+// Summary: Indicates an expected call of ListResources.
+//
 // Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
@@ -139,6 +163,8 @@ func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 
 // OnListChanged mocks base method.
 //
+// Summary: Mocks base method.
+//
 // arg0 is the arg0.
 func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 	m.ctrl.T.Helper()
@@ -146,6 +172,8 @@ func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 }
 
 // OnListChanged indicates an expected call of OnListChanged.
+//
+// Summary: Indicates an expected call of OnListChanged.
 //
 // arg0 is the arg0.
 //
@@ -157,6 +185,8 @@ func (mr *MockManagerInterfaceMockRecorder) OnListChanged(arg0 any) *gomock.Call
 
 // RemoveResource mocks base method.
 //
+// Summary: Mocks base method.
+//
 // uri is the uri.
 func (m *MockManagerInterface) RemoveResource(uri string) {
 	m.ctrl.T.Helper()
@@ -164,6 +194,8 @@ func (m *MockManagerInterface) RemoveResource(uri string) {
 }
 
 // RemoveResource indicates an expected call of RemoveResource.
+//
+// Summary: Indicates an expected call of RemoveResource.
 //
 // uri is the uri.
 //

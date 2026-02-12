@@ -16,6 +16,8 @@ type Provider struct {
 
 // NewProvider creates a new Provider.
 //
+// Summary: Creates a new Provider.
+//
 // Returns the result.
 func NewProvider() *Provider {
 	return &Provider{}
@@ -23,6 +25,8 @@ func NewProvider() *Provider {
 
 // BrowsePage simulates browsing a page
 // In a real implementation, this would use chromedp or playwright-go.
+//
+// Summary: Simulates browsing a page.
 func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -32,6 +36,8 @@ func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 }
 
 // ToolDefinition returns the MCP tool definition.
+//
+// Summary: Returns the MCP tool definition.
 //
 // Returns the result.
 func (b *Provider) ToolDefinition() map[string]interface{} {

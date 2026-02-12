@@ -14,6 +14,8 @@ import (
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
 // based on the provided ExportPolicy.
 //
+// Summary: Determines whether a named item (tool, prompt, or resource) should be exported.
+//
 // Parameters:
 //   - name: string. The name of the item.
 //   - policy: *configv1.ExportPolicy. The export policy to evaluate.
@@ -53,6 +55,8 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
+//
+// Summary: Checks if a call should be allowed based on the policies.
 //
 // Parameters:
 //   - policies: []*configv1.CallPolicy. The list of policies to evaluate.
@@ -133,6 +137,8 @@ type CompiledCallPolicy struct {
 
 // CompileCallPolicies compiles a list of call policies into an efficient runtime format.
 //
+// Summary: Compiles a list of call policies into an efficient runtime format.
+//
 // Parameters:
 //   - policies: []*configv1.CallPolicy. The list of policies to compile.
 //
@@ -155,6 +161,8 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 }
 
 // NewCompiledCallPolicy compiles a single call policy.
+//
+// Summary: Compiles a single call policy.
 //
 // Parameters:
 //   - policy: *configv1.CallPolicy. The policy to compile.
@@ -203,6 +211,8 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 }
 
 // EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
+//
+// Summary: Checks if a call should be allowed based on the compiled policies.
 //
 // Parameters:
 //   - policies: []*CompiledCallPolicy. The list of compiled policies to evaluate.

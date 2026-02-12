@@ -24,6 +24,8 @@ type Transformer struct {
 
 // NewTransformer creates and returns a new instance of Transformer.
 //
+// Summary: Creates and returns a new instance of Transformer.
+//
 // Returns the result.
 func NewTransformer() *Transformer {
 	return &Transformer{
@@ -37,6 +39,8 @@ func NewTransformer() *Transformer {
 
 // Transform takes a map of data and a Go template string and returns a byte
 // slice containing the transformed output.
+//
+// Summary: Takes a map of data and a Go template string and returns a byte.
 //
 // templateStr is the Go template to be executed.
 // data is the data to be used in the template.

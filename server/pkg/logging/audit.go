@@ -22,6 +22,8 @@ type AuditHandler struct {
 }
 
 // NewAuditHandler creates a new AuditHandler.
+//
+// Summary: Creates a new AuditHandler.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,
@@ -67,11 +69,15 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 }
 
 // Enabled reports whether the handler handles records at the given level.
+//
+// Summary: Reports whether the handler handles records at the given level.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
 
 // Handle handles the Record.
+//
+// Summary: Handles the Record.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -83,6 +89,8 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new generic Handler with the given attributes.
+//
+// Summary: Returns a new generic Handler with the given attributes.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -92,6 +100,8 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new generic Handler with the given group.
+//
+// Summary: Returns a new generic Handler with the given group.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithGroup(name),
@@ -101,6 +111,8 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 }
 
 // Export sends the log record to the configued sinks.
+//
+// Summary: Sends the log record to the configued sinks.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil

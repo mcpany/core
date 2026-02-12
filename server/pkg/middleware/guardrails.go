@@ -19,6 +19,8 @@ type GuardrailsConfig struct {
 
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
+// Summary: Creates a new Guardrails middleware.
+//
 // config holds the configuration settings.
 //
 // Returns the result.

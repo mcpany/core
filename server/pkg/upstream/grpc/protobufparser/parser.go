@@ -63,12 +63,16 @@ type McpField struct {
 
 // GetName returns the name of the McpField.
 //
+// Summary: Returns the name of the McpField.
+//
 // Returns the result.
 func (f *McpField) GetName() string {
 	return f.Name
 }
 
 // GetDescription returns the description of the McpField.
+//
+// Summary: Returns the description of the McpField.
 //
 // Returns the result.
 func (f *McpField) GetDescription() string {
@@ -77,12 +81,16 @@ func (f *McpField) GetDescription() string {
 
 // GetType returns the type of the McpField.
 //
+// Summary: Returns the type of the McpField.
+//
 // Returns the result.
 func (f *McpField) GetType() string {
 	return f.Type
 }
 
 // GetIsRepeated returns true if the McpField is a repeated field.
+//
+// Summary: Returns true if the McpField is a repeated field.
 //
 // Returns the result.
 func (f *McpField) GetIsRepeated() bool {
@@ -93,6 +101,8 @@ func (f *McpField) GetIsRepeated() bool {
 // ProtoDefinition and a ProtoCollection. It writes the proto files to a
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
 // then returns the parsed FileDescriptorSet.
+//
+// Summary: Parses a set of protobuf definitions from a slice of.
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
@@ -328,6 +338,8 @@ type McpResource struct {
 // enabled, discovers its entire set of protobuf definitions, including all
 // dependencies, and returns them as a complete FileDescriptorSet.
 //
+// Summary: Connects to a gRPC service that has server reflection.
+//
 // ctx is the context for the reflection process, including timeouts.
 // target is the address of the gRPC service to connect to.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
@@ -515,6 +527,8 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // ExtractMcpDefinitions iterates through a FileDescriptorSet, parsing any MCP
 // (Model Context Protocol) options found in service methods and messages. It
 // extracts definitions for tools, prompts, and resources.
+//
+// Summary: Iterates through a FileDescriptorSet, parsing any MCP.
 //
 // fds is the FileDescriptorSet to be parsed.
 // It returns a ParsedMcpAnnotations struct containing the extracted information

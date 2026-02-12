@@ -23,6 +23,8 @@ type FileAuditStore struct {
 
 // NewFileAuditStore creates a new FileAuditStore.
 //
+// Summary: Creates a new FileAuditStore.
+//
 // path is the path.
 //
 // Returns the result.
@@ -47,6 +49,8 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 
 // Write writes an audit entry to the file.
 //
+// Summary: Writes an audit entry to the file.
+//
 // _ is an unused parameter.
 // entry is the entry.
 //
@@ -66,11 +70,15 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Implements the Store interface.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
 // Close closes the file.
+//
+// Summary: Closes the file.
 //
 // Returns an error if the operation fails.
 func (s *FileAuditStore) Close() error {

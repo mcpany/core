@@ -21,6 +21,8 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 // configures the pool with a factory function that establishes new WebSocket
 // connections to the specified address.
 //
+// Summary: Creates a new connection pool for WebSocket clients. It.
+//
 // Parameters:
 //   - maxSize: The maximum number of connections the pool can hold.
 //   - idleTimeout: The duration after which an idle connection may be closed.

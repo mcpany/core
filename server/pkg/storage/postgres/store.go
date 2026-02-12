@@ -19,6 +19,8 @@ type Store struct {
 
 // NewStore creates a new PostgreSQL store.
 //
+// Summary: Creates a new PostgreSQL store.
+//
 // db is the db.
 //
 // Returns the result.
@@ -28,6 +30,8 @@ func NewStore(db *DB) *Store {
 
 // Close closes the underlying database connection.
 //
+// Summary: Closes the underlying database connection.
+//
 // Returns an error if the operation fails.
 func (s *Store) Close() error {
 	return s.db.Close()
@@ -35,11 +39,15 @@ func (s *Store) Close() error {
 
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 // For DB stores, we assume they always have a source (the DB itself).
+//
+// Summary: Returns true if the store has configuration sources (e.g., file paths) configured.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
 
 // Load implements config.Store interface.
+//
+// Summary: Implements config.Store interface.
 //
 // ctx is the context for the request.
 //
@@ -144,6 +152,8 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 // SaveService saves an upstream service configuration.
 //
+// Summary: Saves an upstream service configuration.
+//
 // ctx is the context for the request.
 // service is the service instance.
 //
@@ -180,6 +190,8 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 
 // GetService retrieves an upstream service configuration by name.
 //
+// Summary: Retrieves an upstream service configuration by name.
+//
 // ctx is the context for the request.
 // name is the name of the resource.
 //
@@ -205,6 +217,8 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 }
 
 // ListServices lists all upstream service configurations.
+//
+// Summary: Lists all upstream service configurations.
 //
 // ctx is the context for the request.
 //
@@ -241,6 +255,8 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 
 // DeleteService deletes an upstream service configuration by name.
 //
+// Summary: Deletes an upstream service configuration by name.
+//
 // ctx is the context for the request.
 // name is the name of the resource.
 //
@@ -254,6 +270,8 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 }
 
 // GetGlobalSettings retrieves the global configuration.
+//
+// Summary: Retrieves the global configuration.
 //
 // ctx is the context for the request.
 //
@@ -279,6 +297,8 @@ func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings
 }
 
 // SaveGlobalSettings saves the global configuration.
+//
+// Summary: Saves the global configuration.
 //
 // ctx is the context for the request.
 // settings is the settings.
@@ -309,6 +329,8 @@ func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.Globa
 
 // CreateUser creates a new user.
 //
+// Summary: Creates a new user.
+//
 // ctx is the context for the request.
 // user is the user.
 //
@@ -337,6 +359,8 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 
 // GetUser retrieves a user by ID.
 //
+// Summary: Retrieves a user by ID.
+//
 // ctx is the context for the request.
 // id is the unique identifier.
 //
@@ -362,6 +386,8 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 }
 
 // ListUsers retrieves all users.
+//
+// Summary: Retrieves all users.
 //
 // ctx is the context for the request.
 //
@@ -400,6 +426,8 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 
 // UpdateUser updates an existing user.
 //
+// Summary: Updates an existing user.
+//
 // ctx is the context for the request.
 // user is the user.
 //
@@ -436,6 +464,8 @@ func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 
 // DeleteUser deletes a user by ID.
 //
+// Summary: Deletes a user by ID.
+//
 // ctx is the context for the request.
 // id is the unique identifier.
 //
@@ -451,6 +481,8 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 // Secrets
 
 // ListSecrets retrieves all secrets.
+//
+// Summary: Retrieves all secrets.
 //
 // ctx is the context for the request.
 //
@@ -484,6 +516,8 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 
 // GetSecret retrieves a secret by ID.
 //
+// Summary: Retrieves a secret by ID.
+//
 // ctx is the context for the request.
 // id is the unique identifier.
 //
@@ -509,6 +543,8 @@ func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, err
 }
 
 // SaveSecret saves a secret.
+//
+// Summary: Saves a secret.
 //
 // ctx is the context for the request.
 // secret is the secret.
@@ -543,6 +579,8 @@ func (s *Store) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
 
 // DeleteSecret deletes a secret by ID.
 //
+// Summary: Deletes a secret by ID.
+//
 // ctx is the context for the request.
 // id is the unique identifier.
 //
@@ -558,6 +596,8 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 // Profiles
 
 // ListProfiles retrieves all profile definitions.
+//
+// Summary: Retrieves all profile definitions.
 //
 // ctx is the context for the request.
 //
@@ -591,6 +631,8 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 
 // GetProfile retrieves a profile definition by name.
 //
+// Summary: Retrieves a profile definition by name.
+//
 // ctx is the context for the request.
 // name is the name of the resource.
 //
@@ -616,6 +658,8 @@ func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileD
 }
 
 // SaveProfile saves a profile definition.
+//
+// Summary: Saves a profile definition.
 //
 // ctx is the context for the request.
 // profile is the profile.
@@ -650,6 +694,8 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 
 // DeleteProfile deletes a profile definition by name.
 //
+// Summary: Deletes a profile definition by name.
+//
 // ctx is the context for the request.
 // name is the name of the resource.
 //
@@ -665,6 +711,8 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 // Service Collections
 
 // ListServiceCollections retrieves all service collections.
+//
+// Summary: Retrieves all service collections.
 //
 // ctx is the context for the request.
 //
@@ -698,6 +746,8 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 
 // GetServiceCollection retrieves a service collection by name.
 //
+// Summary: Retrieves a service collection by name.
+//
 // ctx is the context for the request.
 // name is the name of the resource.
 //
@@ -723,6 +773,8 @@ func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv
 }
 
 // SaveServiceCollection saves a service collection.
+//
+// Summary: Saves a service collection.
 //
 // ctx is the context for the request.
 // collection is the collection.
@@ -757,6 +809,8 @@ func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.
 
 // DeleteServiceCollection deletes a service collection by name.
 //
+// Summary: Deletes a service collection by name.
+//
 // ctx is the context for the request.
 // name is the name of the resource.
 //
@@ -772,6 +826,8 @@ func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error 
 // Tokens
 
 // SaveToken saves a user token.
+//
+// Summary: Saves a user token.
 //
 // ctx is the context for the request.
 // token is the token.
@@ -804,6 +860,8 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 
 // GetToken retrieves a user token by user ID and service ID.
 //
+// Summary: Retrieves a user token by user ID and service ID.
+//
 // ctx is the context for the request.
 // userID is the userID.
 // serviceID is the serviceID.
@@ -830,6 +888,8 @@ func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*config
 }
 
 // DeleteToken deletes a user token.
+//
+// Summary: Deletes a user token.
 //
 // ctx is the context for the request.
 // userID is the userID.

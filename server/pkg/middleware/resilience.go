@@ -19,6 +19,8 @@ type ResilienceMiddleware struct {
 
 // NewResilienceMiddleware creates a new ResilienceMiddleware.
 //
+// Summary: Creates a new ResilienceMiddleware.
+//
 // toolManager is the toolManager.
 //
 // Returns the result.
@@ -29,6 +31,8 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 }
 
 // Execute executes the resilience middleware.
+//
+// Summary: Executes the resilience middleware.
 //
 // ctx is the context for the request.
 // req is the request object.

@@ -36,6 +36,8 @@ type PolicyHook struct {
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
 //
+// Summary: Creates a new PolicyHook with the given call policy.
+//
 // policy is the policy.
 //
 // Returns the result.
@@ -75,6 +77,8 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 }
 
 // ExecutePre executes the policy check before a tool is called.
+//
+// Summary: Executes the policy check before a tool is called.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -143,6 +147,8 @@ type WebhookClient struct {
 
 // NewWebhookClient creates a new WebhookClient.
 //
+// Summary: Creates a new WebhookClient.
+//
 // config holds the configuration settings.
 //
 // Returns the result.
@@ -178,6 +184,8 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 }
 
 // Call sends a cloud event to the webhook and returns the response event.
+//
+// Summary: Sends a cloud event to the webhook and returns the response event.
 //
 // ctx is the context for the request.
 // eventType is the eventType.
@@ -229,6 +237,8 @@ type WebhookHook struct {
 
 // NewWebhookHook creates a new WebhookHook.
 //
+// Summary: Creates a new WebhookHook.
+//
 // config holds the configuration settings.
 //
 // Returns the result.
@@ -239,6 +249,8 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 }
 
 // ExecutePre executes the webhook notification before a tool is called.
+//
+// Summary: Executes the webhook notification before a tool is called.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -307,6 +319,8 @@ func (h *WebhookHook) ExecutePre(
 }
 
 // ExecutePost executes the webhook notification after a tool is called.
+//
+// Summary: Executes the webhook notification after a tool is called.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -378,6 +392,8 @@ type SigningRoundTripper struct {
 }
 
 // RoundTrip executes the HTTP request with a signature.
+//
+// Summary: Executes the HTTP request with a signature.
 //
 // req is the request object.
 //

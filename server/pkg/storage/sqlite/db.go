@@ -21,6 +21,8 @@ type DB struct {
 
 // NewDB opens or creates a SQLite database at the specified path.
 //
+// Summary: Opens or creates a SQLite database at the specified path.
+//
 // path is the path.
 //
 // Returns the result.

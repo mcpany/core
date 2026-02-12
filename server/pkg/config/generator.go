@@ -21,6 +21,8 @@ type Generator struct {
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
+// Summary: Creates a new Generator instance that reads from standard input.
+//
 // Returns:
 //   - A pointer to a new Generator initialized with os.Stdin.
 func NewGenerator() *Generator {
@@ -32,6 +34,8 @@ func NewGenerator() *Generator {
 // Generate prompts the user for service details and returns the generated
 // configuration as a byte slice. It supports multiple service types including
 // HTTP, gRPC, OpenAPI, and GraphQL.
+//
+// Summary: Prompts the user for service details and returns the generated.
 //
 // Returns:
 //   - A byte slice containing the generated YAML configuration.

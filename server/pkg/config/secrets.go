@@ -11,11 +11,15 @@ import (
 
 // StripSecretsFromService removes sensitive information from the service configuration.
 // It specifically targets plain text secrets in UpstreamAuth and other locations.
+//
+// Summary: Removes sensitive information from the service configuration.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	util.StripSecretsFromService(svc)
 }
 
 // StripSecretsFromProfile removes sensitive information from the profile definition.
+//
+// Summary: Removes sensitive information from the profile definition.
 //
 // profile is the profile.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
@@ -24,6 +28,8 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 
 // StripSecretsFromCollection removes sensitive information from the service collection.
 //
+// Summary: Removes sensitive information from the service collection.
+//
 // collection is the collection.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	util.StripSecretsFromCollection(collection)
@@ -31,12 +37,16 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 
 // StripSecretsFromAuth removes sensitive values from the authentication config.
 //
+// Summary: Removes sensitive values from the authentication config.
+//
 // auth is the auth.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	util.StripSecretsFromAuth(auth)
 }
 
 // HydrateSecretsInService populates the service configuration with resolved secret values.
+//
+// Summary: Populates the service configuration with resolved secret values.
 //
 // svc is the svc.
 // secrets is the secrets.

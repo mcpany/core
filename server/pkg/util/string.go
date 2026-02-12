@@ -9,6 +9,8 @@ import "unicode/utf8"
 // It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
 // required to change one string into the other.
 //
+// Summary: Calculates the Levenshtein distance between two strings.
+//
 // Parameters:
 //   - s1: string. The first string.
 //   - s2: string. The second string.
@@ -24,6 +26,8 @@ func LevenshteinDistance(s1, s2 string) int {
 
 // LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
 // If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+//
+// Summary: Calculates the Levenshtein distance with an upper limit.
 //
 // Parameters:
 //   - s1: string. The first string.

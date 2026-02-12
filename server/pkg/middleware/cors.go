@@ -15,6 +15,8 @@ import (
 // responses, allowing web browsers to securely make cross-origin requests to
 // the MCP server.
 //
+// Summary: Creates an MCP middleware for handling Cross-Origin Resource.
+//
 // NOTE: This middleware is currently a placeholder for MCP-level (JSON-RPC)
 // interception and does not handle HTTP CORS headers.
 // HTTP CORS is handled by the dedicated HTTP middleware in cors_http.go.

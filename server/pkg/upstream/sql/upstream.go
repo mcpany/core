@@ -30,12 +30,16 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
+// Summary: Creates a new SQL upstream.
+//
 // Returns the result.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
+//
+// Summary: Closes the database connection.
 //
 // _ is an unused parameter.
 //
@@ -54,6 +58,8 @@ func ptr(s string) *string {
 }
 
 // Register discovers and registers tools from the SQL configuration.
+//
+// Summary: Discovers and registers tools from the SQL configuration.
 //
 // ctx is the context for the request.
 // serviceConfig is the serviceConfig.

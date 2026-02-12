@@ -110,6 +110,8 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
+// Summary: Creates and returns a new, empty Manager.
+//
 // Returns:
 //   - *Manager: A new Manager instance.
 func NewManager() *Manager {
@@ -119,6 +121,8 @@ func NewManager() *Manager {
 }
 
 // GetResource retrieves a resource from the manager by its URI.
+//
+// Summary: Retrieves a resource from the manager by its URI.
 //
 // Parameters:
 //   - uri: string. The URI of the resource.
@@ -134,6 +138,8 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 }
 
 // AddResource adds a new resource to the manager.
+//
+// Summary: Adds a new resource to the manager.
 //
 // Parameters:
 //   - resource: Resource. The resource to add.
@@ -156,6 +162,8 @@ func (rm *Manager) AddResource(resource Resource) {
 }
 
 // RemoveResource removes a resource from the manager by its URI.
+//
+// Summary: Removes a resource from the manager by its URI.
 //
 // Parameters:
 //   - uri: string. The URI of the resource.
@@ -180,6 +188,8 @@ func (rm *Manager) RemoveResource(uri string) {
 }
 
 // ListResources returns a slice containing all the resources currently registered in the manager.
+//
+// Summary: Returns a slice containing all the resources currently registered in the manager.
 //
 // It uses a read-through cache (double-checked locking) to minimize allocation overhead
 // for frequent calls.
@@ -226,6 +236,8 @@ func (rm *Manager) ListResources() []Resource {
 // OnListChanged sets a callback function that will be invoked whenever the list
 // of resources is modified.
 //
+// Summary: Sets a callback function that will be invoked whenever the list.
+//
 // Parameters:
 //   - f: func(). The callback function.
 func (rm *Manager) OnListChanged(f func()) {
@@ -235,6 +247,8 @@ func (rm *Manager) OnListChanged(f func()) {
 }
 
 // Subscribe finds a resource by its URI and calls its Subscribe method.
+//
+// Summary: Finds a resource by its URI and calls its Subscribe method.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the subscription.
@@ -251,6 +265,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 }
 
 // ClearResourcesForService removes all resources associated with a given service ID.
+//
+// Summary: Removes all resources associated with a given service ID.
 //
 // Parameters:
 //   - serviceID: string. The service ID.

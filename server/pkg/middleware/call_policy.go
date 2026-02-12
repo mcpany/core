@@ -20,6 +20,8 @@ type CallPolicyMiddleware struct {
 
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
+// Summary: Creates a new CallPolicyMiddleware.
+//
 // toolManager is the toolManager.
 //
 // Returns the result.
@@ -30,6 +32,8 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 }
 
 // Execute enforces call policies before proceeding to the next handler.
+//
+// Summary: Enforces call policies before proceeding to the next handler.
 //
 // ctx is the context for the request.
 // req is the request object.

@@ -22,6 +22,8 @@ type OllamaEmbeddingProvider struct {
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
+// Summary: Creates a new OllamaEmbeddingProvider.
+//
 // baseURL is the baseURL.
 // model is the model.
 //
@@ -50,6 +52,8 @@ type ollamaEmbeddingResponse struct {
 }
 
 // Embed generates an embedding for the given text using Ollama.
+//
+// Summary: Generates an embedding for the given text using Ollama.
 //
 // ctx is the context for the request.
 // text is the text.

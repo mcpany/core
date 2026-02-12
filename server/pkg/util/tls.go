@@ -18,6 +18,8 @@ import (
 // TLS settings. It supports setting a custom CA certificate, a client
 // certificate and key, the server name for SNI, and skipping verification.
 //
+// Summary: Creates a new *http.Client configured with the specified.
+//
 // It also configures the client with a SafeDialer to prevent SSRF attacks against
 // cloud metadata services (LinkLocal addresses) and optionally private networks.
 //

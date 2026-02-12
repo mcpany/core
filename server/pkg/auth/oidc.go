@@ -32,6 +32,8 @@ type OIDCProvider struct {
 
 // NewOIDCProvider creates a new OIDCProvider.
 //
+// Summary: Creates a new OIDCProvider.
+//
 // ctx is the context for the request.
 // config holds the configuration settings.
 //
@@ -63,6 +65,8 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 
 // HandleLogin initiates the OIDC login flow.
 //
+// Summary: Initiates the OIDC login flow.
+//
 // w is the HTTP response writer.
 // r is the HTTP request.
 func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -88,6 +92,8 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleCallback handles the OIDC provider callback.
+//
+// Summary: Handles the OIDC provider callback.
 //
 // w is the HTTP response writer.
 // r is the HTTP request.

@@ -112,6 +112,8 @@ type ServiceRegistry struct {
 
 // New creates and initializes a new ServiceRegistry.
 //
+// Summary: Creates and initializes a new ServiceRegistry.
+//
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.
 //   - toolManager: tool.ManagerInterface. The manager for tools.

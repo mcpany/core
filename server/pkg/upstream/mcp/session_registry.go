@@ -19,6 +19,8 @@ type SessionRegistry struct {
 
 // NewSessionRegistry creates a new SessionRegistry.
 //
+// Summary: Creates a new SessionRegistry.
+//
 // Returns the result.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
@@ -27,6 +29,8 @@ func NewSessionRegistry() *SessionRegistry {
 }
 
 // Register registers a mapping between an upstream session and a downstream session.
+//
+// Summary: Registers a mapping between an upstream session and a downstream session.
 //
 // upstreamSession is the upstreamSession.
 // downstreamSession is the downstreamSession.
@@ -38,6 +42,8 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 
 // Unregister removes the mapping for an upstream session.
 //
+// Summary: Removes the mapping for an upstream session.
+//
 // upstreamSession is the upstreamSession.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
@@ -46,6 +52,8 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 }
 
 // Get retrieves the downstream session associated with an upstream session.
+//
+// Summary: Retrieves the downstream session associated with an upstream session.
 //
 // upstreamSession is the upstreamSession.
 //

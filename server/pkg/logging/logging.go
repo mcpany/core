@@ -24,6 +24,8 @@ var (
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
 // test cases. This function should not be used in production code.
+//
+// Summary: Is for use in tests to reset the `sync.Once`.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
