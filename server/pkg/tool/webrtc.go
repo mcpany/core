@@ -75,12 +75,18 @@ type WebrtcTool struct {
 
 // NewWebrtcTool creates a new WebrtcTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a client from the connection pool.
-// serviceID identifies the specific service connection pool.
-// authenticator handles adding authentication credentials to the signaling request.
-// callDefinition contains the configuration for the WebRTC call, such as
-// parameter mappings and transformers.
+// Summary: Initializes a new WebRTC tool.
+//
+// Parameters:
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The connection pool manager.
+//   - serviceID: string. The identifier for the service.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.WebrtcCallDefinition. The configuration for the WebRTC call.
+//
+// Returns:
+//   - *WebrtcTool: The initialized WebrtcTool.
+//   - error: An error if pool creation fails.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -136,14 +142,20 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 
 // Tool returns the protobuf definition of the WebRTC tool.
 //
-// Returns the result.
+// Summary: Retrieves the protobuf definition.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: Retrieves the MCP-compliant tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -157,7 +169,10 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the WebRTC tool.
 //
-// Returns the result.
+// Summary: Retrieves the cache configuration.
+//
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, or nil.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }

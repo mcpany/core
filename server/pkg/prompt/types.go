@@ -56,6 +56,8 @@ type MCPServerProvider interface {
 }
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
+//
+// Summary: Represents a prompt defined by a template.
 type TemplatedPrompt struct {
 	definition *configv1.PromptDefinition
 	serviceID  string

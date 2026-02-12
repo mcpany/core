@@ -99,8 +99,7 @@ type ManagerInterface interface {
 
 // Manager is a thread-safe implementation of the ManagerInterface.
 //
-// It manages the lifecycle and retrieval of resources, providing thread-safe access
-// and efficient listing via caching.
+// Summary: Manages the lifecycle and retrieval of resources.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource

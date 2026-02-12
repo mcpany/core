@@ -39,12 +39,17 @@ type WebsocketTool struct {
 
 // NewWebsocketTool creates a new WebsocketTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a WebSocket client from the connection pool.
-// serviceID identifies the specific WebSocket service connection pool.
-// authenticator handles adding authentication credentials to the connection request.
-// callDefinition contains the configuration for the WebSocket call, such as
-// parameter mappings and transformers.
+// Summary: Initializes a new WebSocket tool.
+//
+// Parameters:
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The connection pool manager.
+//   - serviceID: string. The identifier for the service.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.WebsocketCallDefinition. The configuration for the WebSocket call.
+//
+// Returns:
+//   - *WebsocketTool: The initialized WebsocketTool.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -66,14 +71,20 @@ func NewWebsocketTool(
 
 // Tool returns the protobuf definition of the WebSocket tool.
 //
-// Returns the result.
+// Summary: Retrieves the protobuf definition.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: Retrieves the MCP-compliant tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -87,7 +98,10 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
-// Returns the result.
+// Summary: Retrieves the cache configuration.
+//
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, or nil.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }

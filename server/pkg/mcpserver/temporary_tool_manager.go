@@ -8,14 +8,19 @@ import (
 )
 
 // TemporaryToolManager is a tool manager that stores service info temporarily.
-// It is intended for use in ValidateService where we need to store service info
-// for the duration of the validation request but discard it afterwards.
+//
+// Summary: Stores service info temporarily for validation requests.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	serviceInfo map[string]*tool.ServiceInfo
 }
 
 // NewTemporaryToolManager creates a new TemporaryToolManager.
+//
+// Summary: Initializes a new TemporaryToolManager.
+//
+// Returns:
+//   - *TemporaryToolManager: The initialized manager.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),
@@ -23,6 +28,12 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 }
 
 // AddServiceInfo implements tool.ManagerInterface.
+//
+// Summary: Adds service information to the temporary storage.
+//
+// Parameters:
+//   - serviceID: string. The service identifier.
+//   - info: *tool.ServiceInfo. The service information.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	if m.serviceInfo == nil {
 		m.serviceInfo = make(map[string]*tool.ServiceInfo)
@@ -31,6 +42,15 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 }
 
 // GetServiceInfo implements tool.ManagerInterface.
+//
+// Summary: Retrieves service information from temporary storage.
+//
+// Parameters:
+//   - serviceID: string. The service identifier.
+//
+// Returns:
+//   - *tool.ServiceInfo: The service information if found.
+//   - bool: True if found, false otherwise.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	if m.serviceInfo == nil {
 		return nil, false
@@ -40,6 +60,14 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 }
 
 // GetToolCountForService implements tool.ManagerInterface.
+//
+// Summary: Returns the tool count for a service (Always 0).
+//
+// Parameters:
+//   - _: string. Unused.
+//
+// Returns:
+//   - int: Always 0.
 func (m *TemporaryToolManager) GetToolCountForService(_ string) int {
 	return 0
 }

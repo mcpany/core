@@ -59,7 +59,7 @@ type ManagerInterface interface {
 
 // Manager is a thread-safe manager for registering and retrieving prompts.
 //
-// It supports concurrent access and uses caching for efficient list operations.
+// Summary: Manages the lifecycle and retrieval of prompts.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider

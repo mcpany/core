@@ -3,15 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Defines the structure of a service registry item.
+ */
 export interface ServiceRegistryItem {
+  /** Unique identifier for the service */
   id: string;
+  /** Display name of the service */
   name: string;
+  /** GitHub repository path for matching community URLs */
   repo: string; // Used for matching against community URLs
+  /** Command to run the service (e.g., npx ...) */
   command: string;
+  /** Short description of what the service does */
   description: string;
+  /** JSON schema for configuring the service */
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of available services for easy configuration.
+ * Contains metadata and configuration schemas for popular MCP servers.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
