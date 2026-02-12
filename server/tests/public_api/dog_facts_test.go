@@ -23,7 +23,7 @@ import (
 
 func TestUpstreamService_DogFacts(t *testing.T) {
 	// t.SkipNow()
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Dog Facts Server...")

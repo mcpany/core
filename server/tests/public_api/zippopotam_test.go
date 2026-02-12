@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_Zippopotam(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Zippopotam Server...")

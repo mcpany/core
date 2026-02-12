@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Public Holidays API with Transformation...")
@@ -146,7 +146,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 }
 
 func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Public Holidays API with Transformation for CA 2025...")
