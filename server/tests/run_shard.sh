@@ -23,13 +23,15 @@ if [ -z "$SHARD_INDEX" ] || [ -z "$SHARD_TOTAL" ]; then
 fi
 
 # Determine package pattern based on current directory
-PKG_PATTERN="./..."
-if [ -d "server" ] && [ -f "go.mod" ]; then
-    # We are in project root
-    PKG_PATTERN="./server/..."
-elif [ -f "go.mod" ] && [ -d "cmd" ] && [ -d "pkg" ]; then
-    # We are likely in server directory
+if [ -z "$PKG_PATTERN" ]; then
     PKG_PATTERN="./..."
+    if [ -d "server" ] && [ -f "go.mod" ]; then
+        # We are in project root
+        PKG_PATTERN="./server/..."
+    elif [ -f "go.mod" ] && [ -d "cmd" ] && [ -d "pkg" ]; then
+        # We are likely in server directory
+        PKG_PATTERN="./..."
+    fi
 fi
 
 # Get list of packages, excluding unwanted ones
