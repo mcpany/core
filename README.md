@@ -3,7 +3,7 @@
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-## 1. Elevator Pitch
+## Elevator Pitch
 
 **What is this project?**
 
@@ -13,7 +13,7 @@
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
-## 2. Architecture
+## Architecture
 
 **High-Level Overview**
 
@@ -50,7 +50,7 @@ graph TD
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
 
-## 3. Getting Started
+## Getting Started
 
 Follow these steps to get up and running with MCP Any immediately.
 
@@ -107,7 +107,7 @@ Ask your agent:
 
 The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
-## 4. Development
+## Development
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
@@ -139,7 +139,7 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
-## 5. Configuration
+## Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
 

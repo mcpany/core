@@ -43,7 +43,13 @@ var fastJSON = jsoniter.Config{
 }.Froze()
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+//
+// Summary: Hook for inspecting middleware chains in tests.
+//
 // It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
+//
+// Parameters:
+//   - name: string. The name of the middleware being added.
 //
 // Side Effects:
 //   - When set, this function is called synchronously during Server() access.

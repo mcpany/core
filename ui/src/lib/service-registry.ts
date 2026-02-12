@@ -12,6 +12,11 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Global registry of predefined upstream services.
+ *
+ * Summary: Contains metadata and configuration schemas for known MCP services.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
