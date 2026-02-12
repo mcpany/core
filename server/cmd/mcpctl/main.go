@@ -85,6 +85,7 @@ func newRootCmd() *cobra.Command {
 	// Bind flags like --config, etc.
 	config.BindRootFlags(rootCmd)
 	rootCmd.AddCommand(validateCmd)
+	rootCmd.AddCommand(newConfigCmd())
 	rootCmd.AddCommand(newDoctorCmd())
 	rootCmd.AddCommand(newToolCmd())
 	rootCmd.AddCommand(newImportCmd())
