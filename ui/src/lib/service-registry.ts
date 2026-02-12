@@ -12,6 +12,10 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of available MCP services for the marketplace.
+ * Contains metadata and configuration schemas for known services.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
