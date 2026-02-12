@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,9 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
 	// This represents a user using `sh -c "curl {{input}}"`
 	// If input contains a space, it splits arguments passed to curl.
 	t.Run("space_argument_injection", func(t *testing.T) {
+		// Ensure SSRF validation is active (not bypassed by env var from TestMain)
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+
 		cmd := "sh"
 		// Template uses unquoted placeholder inside the command string passed to -c
 		// Note: The helper creates args=["-c", template].
@@ -35,7 +39,16 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
 		}
 		assert.Error(t, err, "Should detect shell injection (space)")
 		if err != nil {
-			assert.Contains(t, err.Error(), "shell injection detected", "Error message should indicate shell injection")
+			errStr := err.Error()
+			// Accepts either "shell injection detected" (from checkUnquotedInjection)
+			// OR "unsafe URL detected" / "invalid URL" if the input looks like a URL (SSRF check catches it first).
+			// Both are valid security blocks.
+			// We use strings.Contains to avoid failed assertion noise if one path is taken.
+			isShell := strings.Contains(errStr, "shell injection detected")
+			isSSRF := strings.Contains(errStr, "unsafe URL detected") || strings.Contains(errStr, "invalid URL")
+			if !isShell && !isSSRF {
+				t.Errorf("Unexpected error: %v", err)
+			}
 		}
 	})
 

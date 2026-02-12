@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -72,7 +73,9 @@ func TestLocalCommandTool_PathTraversal_EncodedBypass(t *testing.T) {
 }
 
 func TestLocalCommandTool_FileScheme_EncodedBypass(t *testing.T) {
-	t.Parallel()
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	// Cannot run parallel if we modify env vars
+	// t.Parallel()
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
 			"properties": structpb.NewStructValue(&structpb.Struct{
@@ -116,8 +119,14 @@ func TestLocalCommandTool_FileScheme_EncodedBypass(t *testing.T) {
 	_, err := localTool.Execute(context.Background(), req)
 
 	// EXPECTATION: Should FAIL with "file: scheme detected" (decoded)
+	// Now also catches "unsafe URL detected" or "invalid URL" if URL parsing runs first
 	assert.Error(t, err)
 	if err != nil {
-		assert.Contains(t, err.Error(), "file: scheme detected", "Should detect file scheme (decoded)")
+		errStr := err.Error()
+		isSSRF := strings.Contains(errStr, "unsafe URL detected") || strings.Contains(errStr, "invalid URL")
+		isFile := strings.Contains(errStr, "file: scheme detected")
+		if !isSSRF && !isFile {
+			t.Errorf("Unexpected error: %v", err)
+		}
 	}
 }

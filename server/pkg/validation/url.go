@@ -71,10 +71,8 @@ func validateURL(urlStr string, allowCommandSchemes bool) error {
 			return fmt.Errorf("unsafe scheme: %s", u.Scheme)
 		}
 		// Allow others, but enforce IP check below
-	} else {
-		if u.Scheme != "http" && u.Scheme != "https" {
-			return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
-		}
+	} else if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
 	}
 
 	// 2. Resolve Host

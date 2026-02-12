@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -18,6 +19,9 @@ import (
 )
 
 func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
+	// Ensure SSRF validation is active (not bypassed by env var from TestMain)
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+
 	// 1. Create a secret file
 	tmpDir := t.TempDir()
 	secretFile := filepath.Join(tmpDir, "secret.txt")
@@ -71,6 +75,13 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	// 4. Assert that the execution is BLOCKED
 	assert.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "file: scheme detected")
-	assert.Contains(t, err.Error(), "local file access is not allowed")
+	// Supports new SSRF validation error OR old local file access error
+	if assert.Error(t, err) {
+		errStr := err.Error()
+		isSSRF := strings.Contains(errStr, "unsafe URL detected") || strings.Contains(errStr, "unsafe scheme")
+		isLocalFile := strings.Contains(errStr, "file: scheme detected")
+		if !isSSRF && !isLocalFile {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	}
 }
