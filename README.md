@@ -13,6 +13,14 @@
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
+**Key Features:**
+
+*   **Universal Adapter:** Connects to gRPC, REST, OpenAPI, and CLI tools out of the box.
+*   **Configuration over Code:** Define tools and capabilities in simple YAML/JSON files.
+*   **Single Binary:** Run one server instance to manage hundreds of tools.
+*   **Enterprise Security:** Built-in authentication, rate limiting, and Data Loss Prevention (DLP).
+*   **Observability:** Integrated logging, metrics (Prometheus), and audit trails.
+
 ## 2. Architecture
 
 **High-Level Overview**
@@ -47,7 +55,7 @@ graph TD
 **Design Patterns:**
 
 *   **Adapter Pattern**: Seamlessly translates MCP requests to various upstream protocols.
-*   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON.
+*   **Configuration as Code**: Services and capabilities are defined declaratively.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
 
 ## 3. Getting Started
