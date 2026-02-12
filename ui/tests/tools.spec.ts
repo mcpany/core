@@ -10,6 +10,7 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
+        console.log("DEBUG: Running modified tools.spec.ts with updated seedServices");
         await seedServices(request);
         await seedUser(request, "e2e-tools-admin");
 
