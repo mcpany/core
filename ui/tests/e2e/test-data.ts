@@ -78,6 +78,62 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedToolsTestServices = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const services = [
+        {
+            id: "svc_tool_01",
+            name: "Payment Gateway Tools",
+            version: "v1.2.0",
+            http_service: {
+                address: "https://stripe.com",
+                tools: [
+                    { name: "process_payment_tool", description: "Process a payment" }
+                ]
+            }
+        },
+        {
+            id: "svc_tool_echo",
+            name: "Echo Service Tools",
+            version: "v1.0",
+            command_line_service: {
+                command: "/bin/echo",
+                tools: [
+                    {
+                        name: "echo_tool_unique",
+                        description: "Echoes back input",
+                        inputSchema: { type: "object" },
+                        call_id: "echo_call"
+                    }
+                ],
+                calls: {
+                    echo_call: {
+                        args: ["echoed_output"]
+                    }
+                }
+            }
+        }
+    ];
+
+    for (const svc of services) {
+        try {
+            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed tools test service ${svc.name}: ${e}`);
+        }
+    }
+};
+
+export const cleanupToolsTestServices = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/services/Payment Gateway Tools', { headers: HEADERS });
+        await context.delete('/api/v1/services/Echo Service Tools', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup tools test services: ${e}`);
+    }
+};
+
 export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const collection = {
