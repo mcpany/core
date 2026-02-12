@@ -1398,19 +1398,28 @@ export const apiClient = {
      * @returns A promise that resolves to a list of users.
      */
     listUsers: async () => {
-        // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
-        // We do have @proto/admin/v1/admin
-        // Let's rely on fetch for now if we expose REST, OR we can try to use standard gRPC-Web if we set it up.
-        // For simplicity in this UI iteration (which seems to use fetchWithAuth mostly),
-        // we might assume there is a REST gateway or we use a custom endpoint.
-        // Wait, server/pkg/admin/server.go implements providing gRPC.
-        // Does it expose REST?
-        // The previous task walkthrough mentions "Admin Service RPCs".
-        // And `server/pkg/app/server.go` likely mounts gRPC-Gateway?
-        // Let's try fetch first.
         const res = await fetchWithAuth('/api/v1/users');
         if (!res.ok) throw new Error('Failed to list users');
-        return res.json();
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.users || []);
+
+        // Map snake_case to camelCase
+        return list.map((u: any) => ({
+            ...u,
+            profileIds: u.profile_ids || u.profileIds,
+            authentication: u.authentication ? {
+                apiKey: u.authentication.api_key ? {
+                    paramName: u.authentication.api_key.param_name,
+                    in: u.authentication.api_key.in,
+                    verificationValue: u.authentication.api_key.verification_value
+                } : undefined,
+                basicAuth: u.authentication.basic_auth ? {
+                    username: u.authentication.basic_auth.username,
+                    passwordHash: u.authentication.basic_auth.password_hash
+                } : undefined,
+                // Add other auth methods as needed
+            } : undefined
+        }));
     },
 
     /**

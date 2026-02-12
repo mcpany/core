@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from '../e2e/test-data';
+import { seedUser, cleanupUser } from './test-data';
 
 test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
@@ -25,21 +25,23 @@ test.describe('User Management', () => {
         await page.goto('/users');
         await page.click('button:has-text("Add User")');
 
-        // Expect Tabs for Authentication Method
-        await expect(page.locator('button[role="tab"]:has-text("API Key")')).toBeVisible();
-
-        // Click API Key tab
-        await page.click('button[role="tab"]:has-text("API Key")');
-
-        // Expect Generate Button
-        await expect(page.locator('button:has-text("Generate")')).toBeVisible();
+        // Verify Sheet opens
+        await expect(page.locator('h2:has-text("Add User")')).toBeVisible();
 
         // Fill username
         await page.fill('input[name="id"]', 'test-api-user');
-        await page.fill('input[name="role"]', 'viewer');
 
-        // Click Generate
-        await page.click('button:has-text("Generate")');
+        // Select Role (Viewer by default, but let's test selecting it)
+        // Click the select trigger
+        await page.click('button[role="combobox"]');
+        // Select the Viewer option to close the dropdown
+        await page.click('div[role="option"]:has-text("Viewer")');
+
+        // Select Auth Method API Key
+        await page.click('button[role="tab"]:has-text("API Key")');
+
+        // Click Generate Key
+        await page.click('button:has-text("Generate Key")');
 
         // Expect key to be displayed
         const keyInput = page.locator('input[readonly]');
@@ -47,14 +49,22 @@ test.describe('User Management', () => {
         const key = await keyInput.inputValue();
         expect(key).toContain('mcp_sk_');
 
+        // Verify Warning Alert
+        await expect(page.locator('text=Save this key now!')).toBeVisible();
+
         // Save
-        await page.click('button:has-text("Save changes")');
+        await page.click('button:has-text("Save User")');
 
-        // Verify user created
-        await expect(page.locator('text=test-api-user')).toBeVisible();
-        await expect(page.locator('tr:has-text("test-api-user") >> text=API Key')).toBeVisible();
+        // Expect success toast
+        await expect(page.locator("text=User Created").first()).toBeVisible();
 
-        // Screenshot
+        // Verify user created in list
+        // Use a more specific locator to avoid matching the toast message
+        const row = page.locator('tr', { hasText: 'test-api-user' });
+        await expect(row).toBeVisible();
 
+        // Verify Auth Method badge/text
+        await expect(row).toContainText('API Key');
+        await expect(row).toContainText('Service Account'); // Subtext
     });
 });
