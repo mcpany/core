@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.skip('Agent Skills', () => {
+test.describe('Agent Skills', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/skills');
     // Ensure we are on the list page
