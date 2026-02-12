@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -74,8 +75,11 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	// Should fail for loopback if default
 	dialer := NewSafeDialer()
 	// Split ts.URL (http://127.0.0.1:port)
-	u, _ :=  ts.Listener.Addr().(*net.TCPAddr)
-	addr := u.String()
+	// Use net.SplitHostPort on ts.URL to get the address safely
+	// ts.URL format is http://ip:port
+	u, err := url.Parse(ts.URL)
+	require.NoError(t, err)
+	addr := u.Host
 
 	_, err = dialer.DialContext(context.Background(), "tcp", addr)
 	assert.Error(t, err)
