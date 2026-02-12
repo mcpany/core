@@ -1,0 +1,94 @@
+{"time":"2026-02-12T18:01:06.144626651Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:06.147747873Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-12T18:01:06.148026605Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-12T18:01:06.150644223Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":["server/config.minimal.yaml"]}
+{"time":"2026-02-12T18:01:06.151412127Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["server/config.minimal.yaml"]}
+{"time":"2026-02-12T18:01:06.152923899Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-12T18:01:06.153434143Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-12T18:01:06.153541252Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-12T18:01:06.160172244Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-12T18:01:06.193794857Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["server/config.minimal.yaml"]}
+{"time":"2026-02-12T18:01:06.46611667Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:06.46629179Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-12T18:01:06.466323384Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:06.466341984Z","level":"WARN","msg":"Duplicate service name found, skipping","component":"UpstreamServiceManager","service_name":"weather-service"}
+{"time":"2026-02-12T18:01:06.467870267Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-12T18:01:06.473025909Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-12T18:01:06.474110859Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-12T18:01:06.477156868Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-12T18:01:06.479456614Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-12T18:01:06.480412924Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-12T18:01:06.481204717Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":2,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]},{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-12T18:01:06.481623692Z","level":"WARN","msg":"Auth middleware is disabled by config! Enforcing private-IP-only access for safety."}
+{"time":"2026-02-12T18:01:06.481751512Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-12T18:01:06.482895197Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-12T18:01:06.486825944Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-12T18:01:06.48277574Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-12T18:01:06.488471012Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-12T18:01:06.488803598Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-12T18:01:06.491356664Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-12T18:01:06.496692128Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-12T18:01:28.540339643Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:28.540621258Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-12T18:01:28.540665541Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-12T18:01:28.540853405Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":["server/config.minimal.yaml"]}
+{"time":"2026-02-12T18:01:28.540989834Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["server/config.minimal.yaml"]}
+{"time":"2026-02-12T18:01:28.54111969Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-12T18:01:28.541206057Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-12T18:01:28.541234891Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-12T18:01:28.544715674Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-12T18:01:28.545521264Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["server/config.minimal.yaml"]}
+{"time":"2026-02-12T18:01:28.721648814Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:28.72175587Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-12T18:01:28.721781598Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:28.721800649Z","level":"WARN","msg":"Duplicate service name found, skipping","component":"UpstreamServiceManager","service_name":"weather-service"}
+{"time":"2026-02-12T18:01:28.722138719Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-12T18:01:28.726104995Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-12T18:01:28.726284602Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-12T18:01:28.72708145Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-12T18:01:28.728314587Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-12T18:01:28.729486471Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-12T18:01:28.729632707Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":2,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]},{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-12T18:01:28.729804383Z","level":"WARN","msg":"Auth middleware is disabled by config! Enforcing private-IP-only access for safety."}
+{"time":"2026-02-12T18:01:28.729855763Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-12T18:01:28.730089632Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-12T18:01:28.730532523Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-12T18:01:28.730554047Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-12T18:01:28.73060412Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-12T18:01:28.730633678Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-12T18:01:28.732544609Z","level":"ERROR","msg":"Server startup failed, initiating shutdown...","error":"failed to start a server: ❌ HTTP server failed to listen on :50050: listen tcp :50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
+{"time":"2026-02-12T18:01:28.732635112Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-12T18:01:28.732669552Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-12T18:01:28.732871682Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-12T18:01:28.73338025Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-12T18:01:28.733409551Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-12T18:01:28.734407631Z","level":"ERROR","msg":"Application failed","service":"mcpany","error":"failed to start a server: ❌ HTTP server failed to listen on :50050: listen tcp :50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
+{"time":"2026-02-12T18:01:29.966492014Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-12T18:01:29.976302808Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-12T18:01:29.978878025Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-12T18:01:29.979014156Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-12T18:01:29.979051243Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-12T18:01:29.979073109Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Payment Gateway","disabled_field":false}
+{"time":"2026-02-12T18:01:29.979096156Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Payment Gateway","priority":0}
+{"time":"2026-02-12T18:01:29.979254636Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-12T18:01:29.97928584Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-12T18:01:29.979307707Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-12T18:01:29.979430691Z","level":"INFO","msg":"Adding new service","service":"Payment Gateway"}
+{"time":"2026-02-12T18:01:29.979499545Z","level":"INFO","msg":"Queued service for registration update","service":"Payment Gateway"}
+{"time":"2026-02-12T18:01:29.979575682Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-12T18:01:29.979641558Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-12T18:01:29.979684509Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-12T18:01:29.979739819Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-12T18:01:29.979905212Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-12T18:01:29.979969353Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-12T18:01:29.980100344Z","level":"INFO","msg":"ReloadConfig completed","duration":3897863}
+{"time":"2026-02-12T18:01:29.980118949Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-12T18:01:29.980334912Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-12T18:01:29.981855966Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-12T18:01:29.981901711Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-12T18:01:29.982018871Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-12T18:01:29.982070611Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-12T18:01:29.998984519Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-12T18:01:30.031523381Z","level":"INFO","msg":"Registered HTTP service","serviceID":"PaymentGateway_8a1dc807","toolsAdded":0}
+{"time":"2026-02-12T18:01:30.062407052Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Payment Gateway","tools_count":0,"resources_count":0}
+{"time":"2026-02-12T18:01:30.104720601Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}

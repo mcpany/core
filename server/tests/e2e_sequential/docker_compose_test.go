@@ -560,15 +560,38 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	})
 
 	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
-	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
+	// We need to be careful with YAML indentation.
+	// We assume the original file has "environment:" and we append items.
+	// But if "environment:" is followed by a list, we should insert correctly.
+	// However, simple replacement is risky.
+	// Let's assume standard indentation (4 or 6 spaces).
+	// But wait, the error "yaml: line 22: did not find expected key" suggests we broke the structure.
+	// If we replace "environment:" with "environment:\n - ...", we might be breaking an existing list or mapping.
+	// If the original was:
+	// environment:
+	//   - FOO=bar
+	// And we change it to:
+	// environment:
+	//       - NEW=val
+	//   - FOO=bar
+	// It works IF indentation matches.
 
-	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
-	// We assume typical docker-compose indentation of services/environment.
-	// This is a simple injection that works for standard file structures.
-	// A more robust way would be to unmarshal/marshal YAML.
-	if !strings.Contains(s, "MCPANY_ENABLE_FILE_CONFIG") {
-		s = strings.Replace(s, "environment:", "environment:\n      MCPANY_ENABLE_FILE_CONFIG: \"true\"", -1)
-	}
+	// A safer approach for this specific test file structure:
+	// We know the structure of server/examples/docker-compose-demo/docker-compose.yml
+	// It likely has "environment:" followed by list items.
+
+	// Let's simplify and just append to the FIRST "environment:" occurrence which should be the server.
+	// We use the same indentation as we guess it has (usually 4 or 6 spaces).
+	// We try to match the existing style.
+
+	// Actually, let's just avoid messing with "environment:" replacement if possible and rely on env_file if present?
+	// No, we need to inject dynamic config.
+
+	// Let's use a more targeted replacement.
+	// We replace "environment:" with "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true\n      - MCPANY_ENABLE_FILE_CONFIG=true"
+	// and assume it merges with existing list if any.
+
+	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true\n      - MCPANY_ENABLE_FILE_CONFIG=true", 1)
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")
