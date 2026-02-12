@@ -761,25 +761,22 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 	return mergedConfig, nil
 }
 
-// httpClient is a safe http client for loading configurations.
-// It uses SafeDialer to prevent SSRF by blocking access to private and link-local IPs.
-// It also disables redirects.
-var httpClient = func() *http.Client {
-	client := util.NewSafeHTTPClient()
-	client.Timeout = 5 * time.Second
-	client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
-		return http.ErrUseLastResponse
-	}
-	return client
-}()
-
 func readURL(ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request for url %s: %w", url, err)
 	}
 
-	resp, err := httpClient.Do(req)
+	// Create a safe http client for loading configurations.
+	// We create a new client each time to ensure it respects the current environment variables.
+	// It uses SafeDialer to prevent SSRF by blocking access to private and link-local IPs.
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 5 * time.Second
+	client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config from url %s: %w", url, err)
 	}
