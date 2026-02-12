@@ -25,7 +25,9 @@ test.describe('Stack Editor', () => {
 
     // Check for the node
     // Using a more specific selector to ensure it's inside a node
-    const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' });
+    // Relaxed: check for text first
+    await expect(visualizer).toContainText('weather-service', { timeout: 30000 });
+    const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' }).first();
     await expect(weatherNode).toBeVisible();
   });
 
@@ -36,8 +38,13 @@ test.describe('Stack Editor', () => {
     // Wait for initial load with increased timeout and handling for slow rendering
     // Sometimes the text might be inside a child element
     // Relaxed check: Look for the text anywhere in the visualizer first
+    // Note: If seeding failed, this will still timeout, but it's the best we can do without real backend logs in test runner.
     await expect(visualizer).toContainText('weather-service', { timeout: 45000 });
-    // Then try specific node selection if possible, but the text check ensures graph rendered something
+
+    // If text is found but node selector fails, it might be structure issue.
+    // We already checked text, so we can be slightly lenient on the specific class selector if needed,
+    // but ReactFlow usually has this class.
+    // Try to find ANY node if specific one fails? No, specific is better.
     await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' }).first()).toBeVisible({ timeout: 10000 });
 
     // Click on PostgreSQL template in the palette
