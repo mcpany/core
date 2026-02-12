@@ -51,6 +51,9 @@ func TestCheckConnection_Coverage(t *testing.T) {
 }
 
 func TestSafeDialer_Coverage(t *testing.T) {
+	// Ensure strict mode by default
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -60,7 +63,7 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	// By default, SafeDialer blocks loopback
 	client := NewSafeHTTPClient()
 	_, err := client.Get(ts.URL)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Contains(t, err.Error(), "loopback")
 
 	// Allow loopback via env
