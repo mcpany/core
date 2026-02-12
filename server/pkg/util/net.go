@@ -13,7 +13,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 )
@@ -172,14 +171,21 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+
+	// Parse env vars robustly to handle potential quoting issues in Docker Compose
+	allowLoopback := parseBoolEnv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	allowPrivate := parseBoolEnv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	dangerousMode := parseBoolEnv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+
+	if allowLoopback {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if allowPrivate {
 		dialer.AllowPrivate = true
 	}
+
 	// Allow strict override for testing/dev environments
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if dangerousMode {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
@@ -238,17 +244,23 @@ func CheckConnection(ctx context.Context, address string) error {
 
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
+
+	// Parse env vars robustly
+	allowLoopback := parseBoolEnv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	allowPrivate := parseBoolEnv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	dangerousMode := parseBoolEnv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if dangerousMode {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if allowLoopback {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if allowPrivate {
 		dialer.AllowPrivate = true
 	}
 

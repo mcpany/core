@@ -55,6 +55,9 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
+	if ts == nil {
+		t.Fatal("httptest.NewServer returned nil")
+	}
 	defer ts.Close()
 
 	// By default, SafeDialer blocks loopback

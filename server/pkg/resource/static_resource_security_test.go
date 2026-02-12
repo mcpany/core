@@ -17,6 +17,7 @@ import (
 func TestStaticResource_SSRFProtection(t *testing.T) {
 	// Ensure loopback is BLOCKED (default behavior)
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
 	// Ensure dangerous mode is OFF, as it overrides the above
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
