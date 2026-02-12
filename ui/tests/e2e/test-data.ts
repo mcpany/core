@@ -130,10 +130,24 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
+        // List all services first to be robust against renames
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const services = await res.json();
+            for (const svc of services) {
+                // Only cleanup services we likely created (or all of them to be safe)
+                // We'll delete anything matching our test pattern or just everything
+                if (svc.name === "Payment Gateway" || svc.name === "User Service" || svc.name === "Math" || svc.name === "Echo Service" || svc.name === "Payment Gateway Updated") {
+                    await context.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS });
+                }
+            }
+        }
+        // Fallback explicit deletes just in case
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        await context.delete('/api/v1/services/Payment Gateway Updated', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
