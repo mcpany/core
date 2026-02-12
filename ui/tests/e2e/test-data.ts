@@ -56,7 +56,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     {
                         name: "echo_tool",
                         description: "Echoes back input",
-                        inputSchema: { type: "object" },
+                        input_schema: { type: "object" },
                         call_id: "echo_call"
                     }
                 ],
@@ -71,7 +71,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) {
+                console.log(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
+            }
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
         }
@@ -122,10 +125,14 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const services = Array.isArray(data) ? data : (data.services || []);
+            for (const svc of services) {
+                await context.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS });
+            }
+        }
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }

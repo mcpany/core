@@ -51,7 +51,7 @@ export function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
     "img-src 'self' data: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net. Restricted http/https wildcards for security.
+    "connect-src 'self' https://cdn.jsdelivr.net https://raw.githubusercontent.com", // Added cdn.jsdelivr.net and raw.githubusercontent.com
     "worker-src 'self' blob:", // Added for Monaco Editor workers
     "frame-ancestors 'none'",
     "object-src 'none'",

@@ -10,6 +10,13 @@ import os from 'os';
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
+// Determine Backend URL
+// In CI (Docker Compose), the server is available at http://server:50050
+// Locally, it's at http://127.0.0.1:50050 (default) or whatever BACKEND_URL is set to.
+const isCI = !!process.env.CI;
+const defaultBackendUrl = isCI ? 'http://server:50050' : 'http://127.0.0.1:50050';
+const BACKEND_URL = process.env.BACKEND_URL || defaultBackendUrl;
+
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
@@ -46,12 +53,12 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-        // Use 127.0.0.1 to avoid IPv6 issues in CI
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://127.0.0.1:50050'} npx next dev -p ${PORT}`,
+        // Pass BACKEND_URL explicitly to Next.js dev server
+        command: `BACKEND_URL=${BACKEND_URL} npx next dev -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: false,
         env: {
-          BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:50050',
+          BACKEND_URL: BACKEND_URL,
           MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
         },
       },

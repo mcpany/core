@@ -64,3 +64,4 @@ client_info.json
 oauth_env.sh
 AUDIT_REPORT.md
 package.json
+*.log.json

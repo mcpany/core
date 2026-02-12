@@ -395,7 +395,6 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env,
                 env: config.commandLineService.env
             };
         }

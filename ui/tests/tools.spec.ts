@@ -36,9 +36,9 @@ test.describe('Tool Exploration', () => {
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
-                // Check for Payment Gateway first (svc_01) to verify generic seeding works
+                // Check for Echo Service tool (svc_echo) which is a local CLI and more robust than external HTTP services
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
@@ -50,8 +50,8 @@ test.describe('Tool Exploration', () => {
             }
         }
 
-        // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        // Verify Echo Service tool is visible
+        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
@@ -71,7 +71,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -79,7 +79,7 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
@@ -95,7 +95,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -103,13 +103,15 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 10000 });
 
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
-        // Switch to JSON input tab
-        await page.getByRole('tab', { name: 'JSON', exact: true }).click();
+        // Switch to JSON input tab. Note: There are two JSON tabs (Schema & Arguments).
+        // We need the one associated with Arguments.
+        const argsSection = page.locator('div.grid.gap-2').filter({ hasText: 'Arguments' });
+        await argsSection.getByRole('tab', { name: 'JSON', exact: true }).click();
 
         // Fill arguments
         const textArea = page.locator('textarea#args');
