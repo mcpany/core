@@ -566,3 +566,48 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_Cleanup(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// 1. Add an old session (2 hours ago)
+	m.mu.Lock()
+	m.sessions["old-session"] = &SessionStats{
+		ID:         "old-session",
+		LastActive: time.Now().Add(-2 * time.Hour),
+	}
+	m.mu.Unlock()
+
+	// 2. Add a recent session (10 minutes ago)
+	m.RecordActivity("recent-session", nil, 10*time.Millisecond, false, "")
+	// Wait for async processing
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["recent-session"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
+
+	// 3. Add old traffic history (25 hours ago)
+	m.mu.Lock()
+	oldTime := time.Now().Add(-25 * time.Hour).Truncate(time.Minute).Unix()
+	m.trafficHistory[oldTime] = &MinuteStats{Requests: 100}
+	m.mu.Unlock()
+
+	// 4. Run cleanup
+	m.cleanup()
+
+	// 5. Verify old session is gone, recent one remains
+	m.mu.RLock()
+	_, oldExists := m.sessions["old-session"]
+	_, recentExists := m.sessions["recent-session"]
+	_, oldTrafficExists := m.trafficHistory[oldTime]
+	m.mu.RUnlock()
+
+	assert.False(t, oldExists, "Old session should be removed")
+	assert.True(t, recentExists, "Recent session should remain")
+	assert.False(t, oldTrafficExists, "Old traffic history should be removed")
+}

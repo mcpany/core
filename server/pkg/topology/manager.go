@@ -32,8 +32,9 @@ type Manager struct {
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	toolManager     tool.ManagerInterface
 
-	activityCh chan activityEvent
-	shutdownCh chan struct{}
+	activityCh    chan activityEvent
+	shutdownCh    chan struct{}
+	cleanupTicker *time.Ticker
 }
 
 // SessionStats contains statistics about a topology session.
@@ -93,9 +94,32 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 		toolManager:     tm,
 		activityCh:      make(chan activityEvent, 1000), // Buffer of 1000 to handle bursts
 		shutdownCh:      make(chan struct{}),
+		cleanupTicker:   time.NewTicker(5 * time.Minute),
 	}
 	go m.processLoop()
 	return m
+}
+
+// Randomized Selection from Top 5 High-Impact Targets.
+func (m *Manager) cleanup() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// Cleanup old sessions (older than 1h)
+	sessionCutoff := time.Now().Add(-1 * time.Hour)
+	for id, s := range m.sessions {
+		if s.LastActive.Before(sessionCutoff) {
+			delete(m.sessions, id)
+		}
+	}
+
+	// Cleanup old traffic history (older than 24h)
+	trafficCutoff := time.Now().Add(-24 * time.Hour).Unix()
+	for t := range m.trafficHistory {
+		if t < trafficCutoff {
+			delete(m.trafficHistory, t)
+		}
+	}
 }
 
 // processLoop handles asynchronous activity recording to avoid locking the request path.
@@ -104,6 +128,8 @@ func (m *Manager) processLoop() {
 		select {
 		case <-m.shutdownCh:
 			return
+		case <-m.cleanupTicker.C:
+			m.cleanup()
 		case event := <-m.activityCh:
 			m.handleActivity(event)
 		}
@@ -187,16 +213,6 @@ func (m *Manager) handleActivity(event activityEvent) {
 			sStats.Errors++
 		}
 	}
-
-	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
-	if session.RequestCount%100 == 0 {
-		cutoff := time.Now().Add(-24 * time.Hour).Unix()
-		for t := range m.trafficHistory {
-			if t < cutoff {
-				delete(m.trafficHistory, t)
-			}
-		}
-	}
 }
 
 // RecordActivity updates the session activity.
@@ -230,6 +246,9 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 
 // Close stops the background worker.
 func (m *Manager) Close() {
+	if m.cleanupTicker != nil {
+		m.cleanupTicker.Stop()
+	}
 	close(m.shutdownCh)
 }
 
