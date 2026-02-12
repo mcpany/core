@@ -9,10 +9,9 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
-
-const trueVal = "true"
 
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
@@ -51,7 +50,10 @@ var IsSafeCommandURL = func(urlStr string) error {
 
 func validateURL(urlStr string, allowCommandSchemes bool) error {
 	// Bypass if explicitly allowed (for testing/development)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
+	// We handle various truthy formats to be robust against YAML/Helm quoting issues
+	envVal := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	cleanVal := strings.Trim(strings.ToLower(envVal), "\"' ")
+	if cleanVal == "true" || cleanVal == "1" || cleanVal == "yes" || cleanVal == "on" {
 		return nil
 	}
 
@@ -103,7 +105,9 @@ func validateURL(urlStr string, allowCommandSchemes bool) error {
 	// Check all resolved IPs
 	for _, ip := range ips {
 		if err := validateIP(ip, allowLoopback, allowPrivate); err != nil {
-			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
+			// Debug log for CI troubleshooting (temporary)
+			// fmt.Printf("SSRF Blocked: URL=%q, Host=%q, IP=%s, EnvVar=%q, CleanVar=%q\n", urlStr, host, ip.String(), envVal, cleanVal)
+			return fmt.Errorf("ssrf attempt blocked: host %s resolved to loopback/private ip %s", host, ip.String())
 		}
 	}
 
