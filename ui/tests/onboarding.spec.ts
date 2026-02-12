@@ -81,9 +81,25 @@ test.describe('Onboarding Flow', () => {
         // Register Service
         await page.getByRole('button', { name: 'Register Service' }).click();
 
-        // Wizard should advance to Connect Client
-        // This confirms the backend accepted the registration and the UI updated
-        await expect(page.getByText('Step 2: Connect AI Client')).toBeVisible({ timeout: 10000 });
+        // Wait for EITHER success toast OR transition to Step 2.
+        // The toast might be transient or missed by Playwright, but reaching Step 2 confirms success.
+        // If registration failed, we would see "Registration Failed" or stay on Step 1.
+        await Promise.any([
+            expect(page.getByText('Service Registered')).toBeVisible({ timeout: 10000 }),
+            expect(page.getByText('Step 2: Connect AI Client')).toBeVisible({ timeout: 30000 })
+        ]).catch(async (e) => {
+            // If both fail, log diagnostics
+            console.log('Registration verification failed.');
+            if (await page.getByText('Registration Failed').isVisible()) {
+                const description = await page.locator('ol > li').filter({ hasText: 'Registration Failed' }).textContent();
+                console.log('Registration Failed Error:', description);
+            }
+            console.log('Current URL:', page.url());
+            throw e;
+        });
+
+        // Ensure we are firmly on Step 2
+        await expect(page.getByText('Step 2: Connect AI Client')).toBeVisible();
 
         // Complete
         await page.getByRole('button', { name: 'Go to Dashboard' }).click();

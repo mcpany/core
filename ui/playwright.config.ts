@@ -11,10 +11,9 @@ const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
 // Determine Backend URL
-// In CI (Docker Compose), the server is available at http://server:50050
-// Locally, it's at http://127.0.0.1:50050 (default) or whatever BACKEND_URL is set to.
-const isCI = !!process.env.CI;
-const defaultBackendUrl = isCI ? 'http://server:50050' : 'http://127.0.0.1:50050';
+// Default to 127.0.0.1 to avoid IPv6 loopback issues on some CI environments.
+// Docker Compose tests will explicitly set BACKEND_URL to http://server:50050 via env vars.
+const defaultBackendUrl = 'http://127.0.0.1:50050';
 const BACKEND_URL = process.env.BACKEND_URL || defaultBackendUrl;
 
 export default defineConfig({
