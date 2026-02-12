@@ -21,10 +21,10 @@ test.describe('Stacks Management', () => {
     await page.waitForSelector('.monaco-editor');
 
     const stackName = `e2e-stack-${Date.now()}`;
-    const yamlContent = `name: ${stackName}
+    const yamlContent = `name: "${stackName}"
 version: 1.0.0
 services:
-- name: s1
+- name: "${stackName}-s1"
   command_line_service: { command: ls }`;
 
     await page.click('.monaco-editor');
