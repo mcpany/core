@@ -141,7 +141,7 @@ make gen
 
 ## 5. Configuration
 
-MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
+MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments. For deep dives into the configuration schema and secret management, refer to the `server/pkg/config` package documentation.
 
 ### Environment Variables
 

@@ -124,23 +124,23 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions configuration for starting the MCP Any application.
-//
-// Summary: Options for configuring the application runtime.
+// RunOptions defines configuration parameters for starting the MCP Any application.
+// It encapsulates all necessary settings to bootstrap the server, including filesystem access,
+// networking ports, configuration sources, and security credentials.
 //
 // Fields:
-//   - Ctx: context.Context. The context for the application.
-//   - Fs: afero.Fs. The filesystem interface.
-//   - Stdio: bool. Whether to run in stdio mode (for CLI/one-off usage).
-//   - JSONRPCPort: string. The port for the JSON-RPC/HTTP server.
-//   - GRPCPort: string. The port for the gRPC registration server.
-//   - ConfigPaths: []string. Paths to configuration files.
-//   - APIKey: string. The master API key for the server.
-//   - ShutdownTimeout: time.Duration. The timeout for graceful shutdown.
-//   - TLSCert: string. Path to the TLS certificate file.
-//   - TLSKey: string. Path to the TLS private key file.
-//   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
-//   - DBPath: string. Path to the SQLite database file.
+//   - Ctx: context.Context. The root context for the application lifecycle.
+//   - Fs: afero.Fs. The abstract filesystem interface for file operations.
+//   - Stdio: bool. If true, enables standard I/O mode for single-client usage (e.g., CLI).
+//   - JSONRPCPort: string. The TCP port for the primary JSON-RPC/HTTP server.
+//   - GRPCPort: string. The TCP port for the gRPC registration server (optional).
+//   - ConfigPaths: []string. A list of file paths or directories to load configuration from.
+//   - APIKey: string. The master API key for securing the server (if applicable).
+//   - ShutdownTimeout: time.Duration. The maximum duration to wait for graceful shutdown.
+//   - TLSCert: string. Path to the TLS certificate file for HTTPS.
+//   - TLSKey: string. Path to the TLS private key file for HTTPS.
+//   - TLSClientCA: string. Path to the TLS client CA certificate file for mutual TLS (mTLS).
+//   - DBPath: string. Path to the SQLite database file for persistent storage.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -185,29 +185,30 @@ type Runner interface {
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and logic for the MCP Any server.
+// Application is the central struct that orchestrates the MCP Any server.
+// It holds references to all core managers, services, and configuration state.
 //
 // Summary: The main application container.
 //
 // Fields:
-//   - PromptManager: prompt.ManagerInterface. Manages AI prompts.
-//   - ToolManager: tool.ManagerInterface. Manages tools and execution.
-//   - ResourceManager: resource.ManagerInterface. Manages resources (files, data).
-//   - ServiceRegistry: serviceregistry.ServiceRegistryInterface. Manages upstream service connections.
-//   - TopologyManager: *topology.Manager. Manages the topology of the server.
-//   - UpstreamFactory: factory.Factory. Creates upstream service clients.
-//   - Storage: storage.Storage. Persistent storage interface.
-//   - TemplateManager: *TemplateManager. Manages templates.
-//   - SkillManager: *skill.Manager. Manages agent skills.
-//   - AlertsManager: *alerts.Manager. Manages system alerts.
-//   - DiscoveryManager: *discovery.Manager. Manages auto-discovery of services.
-//   - SettingsManager: *GlobalSettingsManager. Manages dynamic global settings.
-//   - ProfileManager: *profile.Manager. Manages user profiles.
-//   - AuthManager: *auth.Manager. Manages authentication and authorization.
-//   - RegistrationRetryDelay: time.Duration. Delay between service registration retries.
-//   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
-//   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
-//   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
+//   - PromptManager: prompt.ManagerInterface. Manages the lifecycle and execution of AI prompts.
+//   - ToolManager: tool.ManagerInterface. Manages the lifecycle and execution of tools.
+//   - ResourceManager: resource.ManagerInterface. Manages access to static and dynamic resources.
+//   - ServiceRegistry: serviceregistry.ServiceRegistryInterface. Manages upstream service connections and discovery.
+//   - TopologyManager: *topology.Manager. Manages the network topology and routing logic.
+//   - UpstreamFactory: factory.Factory. Creates clients for communicating with upstream services.
+//   - Storage: storage.Storage. Provides persistent storage for application data.
+//   - TemplateManager: *TemplateManager. Manages templates used for prompts and transformations.
+//   - SkillManager: *skill.Manager. Manages high-level agent skills.
+//   - AlertsManager: *alerts.Manager. Manages system alerts and notifications.
+//   - DiscoveryManager: *discovery.Manager. Manages auto-discovery of local and remote services.
+//   - SettingsManager: *GlobalSettingsManager. Manages dynamic global settings (thread-safe).
+//   - ProfileManager: *profile.Manager. Manages user profiles and access controls.
+//   - AuthManager: *auth.Manager. Manages authentication strategies and user identities.
+//   - RegistrationRetryDelay: time.Duration. The delay between retries for failed service registrations.
+//   - MetricsGatherer: prometheus.Gatherer. The interface for gathering Prometheus metrics.
+//   - BoundHTTPPort: atomic.Int32. The actual TCP port the HTTP server is listening on (useful if 0 was requested).
+//   - BoundGRPCPort: atomic.Int32. The actual TCP port the gRPC server is listening on.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -299,12 +300,14 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication creates a new Application with default dependencies.
+// NewApplication creates a new Application instance with default dependencies.
+// It initializes the core managers (Prompt, Tool, Alerts, Resource) and sets up
+// the message bus and upstream factory.
 //
 // Summary: Initializes a new Application instance.
 //
 // Returns:
-//   - *Application: The initialized application.
+//   - *Application: A pointer to the initialized Application struct.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -323,20 +326,24 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components.
+// Run starts the MCP Any server and all its sub-components based on the provided options.
+// It initializes the database, loads configuration, sets up middleware, starts background workers,
+// and launches the HTTP and gRPC servers.
 //
-// Summary: Executes the application.
+// Summary: Executes the application lifecycle.
 //
 // Parameters:
-//   - opts: RunOptions. The runtime options.
+//   - opts: RunOptions. The runtime configuration options.
 //
 // Returns:
-//   - error: An error if execution fails.
+//   - error: An error if the application fails to start or encounters a fatal error during execution.
 //
 // Side Effects:
-//   - Starts HTTP and gRPC servers.
-//   - Initializes background workers.
-//   - Loads configuration.
+//   - Initializes the filesystem and database.
+//   - Loads and watches configuration files.
+//   - Starts HTTP and gRPC listeners.
+//   - Starts background workers for service registration and GC.
+//   - Logs application status and errors.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
