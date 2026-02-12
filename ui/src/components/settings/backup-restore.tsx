@@ -22,6 +22,10 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+/**
+ * BackupRestore component provides UI for downloading a system snapshot
+ * and restoring from a backup file.
+ */
 export function BackupRestore() {
     const { toast } = useToast();
     const [isBackingUp, setIsBackingUp] = useState(false);
