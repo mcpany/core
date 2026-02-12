@@ -23,6 +23,8 @@ COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
+# Symlink proto to /app/proto so it appears as a local directory
+RUN ln -s /proto /app/proto
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
