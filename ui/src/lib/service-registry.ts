@@ -12,6 +12,9 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY is a list of known community services that can be installed via the marketplace.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
