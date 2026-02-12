@@ -248,8 +248,11 @@ func TestLocalCommandTool_DockerEnv(t *testing.T) {
         ToolInputs: []byte(`{"path": "/etc/passwd"}`),
         DryRun: true,
     }
+    // Sentinel Security Update: LocalCommandTool now ALWAYS enforces local checks regardless of config.
+    // So this should fail with "absolute path detected".
     _, err := cmdTool.Execute(ctx, req)
-    assert.NoError(t, err)
+    require.Error(t, err)
+    assert.Contains(t, err.Error(), "absolute path detected")
 }
 
 func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpCallDefinition) *HTTPTool {
