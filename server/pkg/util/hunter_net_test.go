@@ -74,8 +74,8 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	// Should fail for loopback if default
 	dialer := NewSafeDialer()
 	// Split ts.URL (http://127.0.0.1:port)
-	u, _ :=  ts.Listener.Addr().(*net.TCPAddr)
-	addr := u.String()
+	// Use ts.Listener.Addr().String() directly which handles any Addr type safely
+	addr := ts.Listener.Addr().String()
 
 	_, err = dialer.DialContext(context.Background(), "tcp", addr)
 	assert.Error(t, err)
