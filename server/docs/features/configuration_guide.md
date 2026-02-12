@@ -16,8 +16,7 @@ The server is driven by a YAML configuration file. By default, it looks for `con
    upstream_services:
      - name: "my-local-tool"
        command_line_service:
-         command: "python3"
-         args: ["/path/to/script.py"]
+         command: "python3 /path/to/script.py"
    ```
 2. Run the server:
    ```bash
