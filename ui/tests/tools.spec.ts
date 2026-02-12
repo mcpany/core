@@ -10,7 +10,25 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Create a dedicated service for tool testing to ensure stability
+        // This avoids dependencies on seeded services that might be modified by parallel tests
+        const response = await request.post('/api/v1/services', {
+            data: {
+                id: "svc_tools_test",
+                name: "Tools Test Service",
+                version: "v1.0.0",
+                http_service: {
+                    address: "https://example.com", // Dummy address, tools will register but might fail execution (which is fine for listing test)
+                    tools: [
+                        { name: "tools_test_tool", description: "A unique tool for E2E testing" }
+                    ]
+                }
+            },
+            headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+        });
+        expect(response.ok()).toBeTruthy();
+
+        await seedServices(request); // Still seed generic ones for other tests in this file if needed
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,6 +40,8 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
+        const headers = { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' };
+        await request.delete('/api/v1/services/Tools Test Service', { headers });
         await cleanupServices(request);
         await cleanupUser(request, "e2e-tools-admin");
     });
@@ -31,14 +51,12 @@ test.describe('Tool Exploration', () => {
 
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
-        // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
-                // Check for Payment Gateway first (svc_01) to verify generic seeding works
-                // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                // Check for our dedicated test tool
+                await expect(page.getByText('tools_test_tool').first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
@@ -50,8 +68,8 @@ test.describe('Tool Exploration', () => {
             }
         }
 
-        // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        // Verify dedicated tool is visible
+        await expect(page.getByText('tools_test_tool').first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
