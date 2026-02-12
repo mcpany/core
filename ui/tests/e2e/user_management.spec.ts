@@ -36,7 +36,12 @@ test.describe('User Management', () => {
 
         // Fill username
         await page.fill('input[name="id"]', 'test-api-user');
-        await page.fill('input[name="role"]', 'viewer');
+
+        // Select Role (Viewer) using Shadcn Select
+        // The trigger doesn't have a reliable name, but it's the only combobox in the dialog for now,
+        // or we can find it by the placeholder text "Select a role" if visible, or nearby label.
+        await page.click('button[role="combobox"]'); // Shadcn select trigger
+        await page.click('div[role="option"]:has-text("Viewer")'); // Select Viewer option
 
         // Click Generate
         await page.click('button:has-text("Generate")');
