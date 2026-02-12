@@ -8,6 +8,7 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"log/slog"
 	"math"
 	"math/big"
 	"net"
@@ -158,8 +159,9 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
-// isTrue checks if an environment variable string represents a truthy value.
-func isTrue(val string) bool {
+// IsTrue checks if an environment variable string represents a truthy value.
+// It handles "true", "1", "yes", "on" (case-insensitive).
+func IsTrue(val string) bool {
 	v := strings.TrimSpace(strings.ToLower(val))
 	return v == "true" || v == "1" || v == "yes" || v == "on"
 }
@@ -178,10 +180,10 @@ func isTrue(val string) bool {
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
+	if IsTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
 		dialer.AllowLoopback = true
 	}
-	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
+	if IsTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
@@ -240,17 +242,26 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if isTrue(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")) {
+
+	valDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	if IsTrue(valDangerous) {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if isTrue(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")) {
+	valLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	if IsTrue(valLoopback) {
 		dialer.AllowLoopback = true
 	}
 
-	if isTrue(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")) {
+	valPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	if IsTrue(valPrivate) {
 		dialer.AllowPrivate = true
+	} else {
+		// Log the value for debugging CI failures if private access is not enabled but might be expected
+		if valPrivate != "" {
+			slog.Debug("CheckConnection: MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES is set but evaluated to false", "value", valPrivate)
+		}
 	}
 
 	dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
