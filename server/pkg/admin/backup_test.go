@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestServer_BackupRestore(t *testing.T) {
@@ -27,23 +28,26 @@ func TestServer_BackupRestore(t *testing.T) {
 	ctx := context.Background()
 
 	// 1. Populate Store
-	user := &configv1.User{}
-	user.SetId("user1")
-	user.SetRoles([]string{"admin"})
+	user := configv1.User_builder{
+		Id:    proto.String("user1"),
+		Roles: []string{"admin"},
+	}.Build()
 	require.NoError(t, store.CreateUser(ctx, user))
 
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetId("svc1")
-	svc.SetName("svc1")
-	cmdSvc := &configv1.CommandLineUpstreamService{}
-	cmdSvc.SetCommand("echo")
-	svc.SetCommandLineService(cmdSvc)
+	svc := configv1.UpstreamServiceConfig_builder{
+		Id:   proto.String("svc1"),
+		Name: proto.String("svc1"),
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("echo"),
+		}.Build(),
+	}.Build()
 	require.NoError(t, store.SaveService(ctx, svc))
 
-	secret := &configv1.Secret{}
-	secret.SetId("sec1")
-	secret.SetName("api-key")
-	secret.SetValue("123")
+	secret := configv1.Secret_builder{
+		Id:    proto.String("sec1"),
+		Name:  proto.String("api-key"),
+		Value: proto.String("123"),
+	}.Build()
 	require.NoError(t, store.SaveSecret(ctx, secret))
 
 	// 2. Create Backup
@@ -60,8 +64,9 @@ func TestServer_BackupRestore(t *testing.T) {
 	s2 := NewServer(nil, tm, sr, store2, nil, nil)
 
 	// 4. Restore Backup
-	restoreReq := &pb.RestoreBackupRequest{}
-	restoreReq.SetConfig(backupResp.GetConfig())
+	restoreReq := pb.RestoreBackupRequest_builder{
+		Config: backupResp.GetConfig(),
+	}.Build()
 	restoreResp, err := s2.RestoreBackup(ctx, restoreReq)
 	require.NoError(t, err)
 	assert.Equal(t, int32(1), restoreResp.GetUsersRestored())
