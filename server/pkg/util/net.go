@@ -245,25 +245,29 @@ func CheckConnection(ctx context.Context, address string) error {
 		target = net.JoinHostPort(host, port)
 	}
 
-	// Use SafeDialer to prevent SSRF during connectivity checks
-	dialer := NewSafeDialer()
-	// Allow overriding safety checks via environment variables (consistent with validation package)
+	var conn net.Conn
+	var err error
+
+	// If dangerous mode is enabled, skip SafeDialer to restore standard resolution behavior.
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
+		dialer := &net.Dialer{Timeout: 5 * time.Second}
+		conn, err = dialer.DialContext(ctx, "tcp", target)
+	} else {
+		// Use SafeDialer to prevent SSRF during connectivity checks
+		dialer := NewSafeDialer()
+
+		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+			dialer.AllowLoopback = true
+		}
+
+		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+			dialer.AllowPrivate = true
+		}
+
+		dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
+		conn, err = dialer.DialContext(ctx, "tcp", target)
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
-
-	dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
-
-	conn, err := dialer.DialContext(ctx, "tcp", target)
 	if err != nil {
 		return fmt.Errorf("failed to connect to address %s: %w", target, err)
 	}
