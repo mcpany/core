@@ -10,7 +10,8 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Use a unique suffix to avoid collision with other tests running in parallel
+        await seedServices(request, " Tools");
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,7 +23,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupServices(request, " Tools");
         await cleanupUser(request, "e2e-tools-admin");
     });
 
