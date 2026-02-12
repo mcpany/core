@@ -12,6 +12,10 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of available community and built-in services.
+ * This list is used to populate the marketplace and service creation wizards.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
