@@ -6,15 +6,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
-interface Webhook {
-    id: string;
-    url: string;
-    events: string[];
-}
+import { apiClient } from "@/lib/client";
 
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,13 +19,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+    const [webhookUrl, setWebhookUrl] = useState<string>("");
 
     useEffect(() => {
         async function fetchWebhooks() {
-            const res = await fetch("/api/settings/webhooks");
-            if (res.ok) {
-                setWebhooks(await res.json());
+            try {
+                const data = await apiClient.getWebhookURL();
+                setWebhookUrl(data.url);
+            } catch (e) {
+                console.error("Failed to fetch webhook URL:", e);
             }
         }
         fetchWebhooks();
@@ -64,26 +61,33 @@ export default function WebhooksPage() {
                             <h3 className="text-lg font-medium">Webhooks</h3>
                             <p className="text-sm text-muted-foreground">Manage your webhook subscriptions.</p>
                          </div>
-                        <Button>Add Webhook</Button>
+                        {/* Note: Backend currently supports single global webhook. */}
+                        <Button variant="outline" disabled>Global Webhook</Button>
                     </div>
                     <Card className="backdrop-blur-sm bg-background/50">
                         <CardContent className="p-0">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>ID</TableHead>
+                                        <TableHead>Type</TableHead>
                                         <TableHead>URL</TableHead>
                                         <TableHead>Events</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {webhooks.map((hook) => (
-                                        <TableRow key={hook.id}>
-                                            <TableCell>{hook.id}</TableCell>
-                                            <TableCell>{hook.url}</TableCell>
-                                            <TableCell>{hook.events.join(", ")}</TableCell>
+                                    {webhookUrl ? (
+                                        <TableRow>
+                                            <TableCell>Global</TableCell>
+                                            <TableCell>{webhookUrl}</TableCell>
+                                            <TableCell>All (Alerts)</TableCell>
                                         </TableRow>
-                                    ))}
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={3} className="text-center h-24 text-muted-foreground">
+                                                No global webhook configured.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </TableBody>
                             </Table>
                         </CardContent>

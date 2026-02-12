@@ -19,8 +19,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "pay" }
+                ],
+                calls: {
+                    pay: {
+                        method: "POST",
+                        endpoint_path: "/v1/charges"
+                    }
+                }
             }
         },
         {
@@ -28,22 +34,33 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: "http://localhost:50051",
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                     { name: "get_user", description: "Get user details", call_id: "get" }
+                ],
+                calls: {
+                    get: {
+                        method: "GET",
+                        endpoint_path: "/users/{id}"
+                    }
+                }
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://localhost:8080",
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    { name: "calculator", description: "calc", call_id: "calc" }
+                ],
+                calls: {
+                    calc: {
+                        method: "POST",
+                        endpoint_path: "/calc"
+                    }
+                }
             }
         },
         {
@@ -71,7 +88,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) {
+                console.log(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
+            }
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
         }
@@ -167,5 +187,103 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup user: ${e}`);
+    }
+};
+
+export const seedTemplates = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const templates = [
+        {
+            id: "google-calendar",
+            name: "Google Calendar",
+            description: "Manage events and calendars.",
+            icon: "calendar",
+            tags: ["google", "productivity"],
+            serviceConfig: {
+                name: "google_calendar",
+                upstreamAuth: {
+                    oauth2: {
+                        tokenUrl: "https://oauth2.googleapis.com/token",
+                        clientId: { plainText: "" },
+                        clientSecret: { plainText: "" },
+                        scopes: "https://www.googleapis.com/auth/calendar"
+                    }
+                },
+                openapiService: {
+                    specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
+                }
+            }
+        },
+        {
+            id: "github",
+            name: "GitHub",
+            description: "Interact with repositories, issues, and PRs.",
+            icon: "github",
+            tags: ["dev", "git"],
+            serviceConfig: {
+                name: "github",
+                upstreamAuth: {
+                    bearerToken: { token: { plainText: "" } }
+                },
+                openapiService: {
+                    address: "https://api.github.com",
+                    specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
+                }
+            }
+        },
+        {
+            id: "linear",
+            name: "Linear",
+            description: "Issue tracking and project management.",
+            icon: "linear",
+            tags: ["dev", "pm"],
+            serviceConfig: {
+                name: "linear",
+                upstreamAuth: {
+                    apiKey: { plainText: "" }
+                },
+                openapiService: {
+                    specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
+                }
+            }
+        }
+    ];
+
+    for (const tmpl of templates) {
+        try {
+            const res = await context.post('/api/v1/templates', { data: tmpl, headers: HEADERS });
+            if (!res.ok()) {
+                console.log(`Failed to seed template ${tmpl.name}: ${res.status()} ${await res.text()}`);
+            }
+        } catch (e) {
+            console.log(`Failed to seed template ${tmpl.name}: ${e}`);
+        }
+    }
+};
+
+export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const ids = ["google-calendar", "github", "linear"];
+    for (const id of ids) {
+        try {
+            await context.delete(`/api/v1/templates/${id}`, { headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to cleanup template ${id}: ${e}`);
+        }
+    }
+};
+
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        const res = await context.post('/api/v1/alerts/webhook', {
+            data: { url: "https://example.com/webhook" },
+            headers: HEADERS
+        });
+        if (!res.ok()) {
+            console.log(`Failed to seed webhook: ${res.status()} ${await res.text()}`);
+        }
+    } catch (e) {
+        console.log(`Failed to seed webhook: ${e}`);
     }
 };

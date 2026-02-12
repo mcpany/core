@@ -4,12 +4,25 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './test-data';
 
-test.skip('Agent Skills', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('Agent Skills', () => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin");
+    await page.goto('/login');
+    await page.waitForLoadState('networkidle');
+    await page.fill('input[name="username"]', 'e2e-admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL('/', { timeout: 15000 });
+
     await page.goto('/skills');
     // Ensure we are on the list page
     await expect(page).toHaveURL(/\/skills\/?$/);
+  });
+
+  test.afterEach(async ({ request }) => {
+      await cleanupUser(request, "e2e-admin");
   });
 
   test('should create and list a new skill', async ({ page }) => {
