@@ -1152,31 +1152,39 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 
 // redactURL removes sensitive query parameters from the URL for logging.
 func (t *HTTPTool) redactURL(u *url.URL) string {
-	// Check if we have any secret parameters mapped
-	hasSecretParams := false
-	for _, param := range t.parameters {
-		if param.GetSecret() != nil {
-			hasSecretParams = true
-			break
-		}
-	}
+	// Create a copy of query params to modify
+	q := u.Query()
+	redacted := false
 
-	if !hasSecretParams {
-		return u.String()
-	}
-
-	// Create a copy of the URL to avoid modifying the original
-	redactedURL := *u
-	q := redactedURL.Query()
-
+	// 1. Redact configured secrets
 	for _, param := range t.parameters {
 		if param.GetSecret() != nil {
 			name := param.GetSchema().GetName()
 			if q.Has(name) {
 				q.Set(name, redactedPlaceholder)
+				redacted = true
 			}
 		}
 	}
+
+	// 2. Sentinel Security Update: Redact heuristic secrets
+	// This catches parameters that are sensitive (e.g. "api_key") but were not explicitly configured as secrets.
+	for key := range q {
+		if util.IsSensitiveKey(key) {
+			// Avoid double redaction check if possible, though Set is idempotent
+			if q.Get(key) != redactedPlaceholder {
+				q.Set(key, redactedPlaceholder)
+				redacted = true
+			}
+		}
+	}
+
+	if !redacted {
+		return u.String()
+	}
+
+	// Create a copy of the URL to avoid modifying the original
+	redactedURL := *u
 	redactedURL.RawQuery = q.Encode()
 	return redactedURL.String()
 }
