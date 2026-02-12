@@ -46,7 +46,7 @@ describe('SchemaForm', () => {
         const checkbox = screen.getByLabelText(/Enabled/);
         fireEvent.click(checkbox);
 
-        expect(onChange).toHaveBeenCalledWith({ enabled: 'true' });
+        expect(onChange).toHaveBeenCalledWith({ enabled: true });
     });
 
     it('renders password field for sensitive keys', () => {
@@ -61,11 +61,56 @@ describe('SchemaForm', () => {
         const onChange = vi.fn();
         render(<SchemaForm schema={mockSchema} value={{}} onChange={onChange} />);
 
-        // The asterisk is in a span, getting by label text might include it or not depending on impl
-        // Label text is "Name *" usually in standard screen readers if aria-hidden is not used
-        // But our component: <Label> {title} {isRequired && span} </Label>
-        // testing-library handles this well usually.
         const label = screen.getByText(/Name/);
         expect(label).toContainHTML('<span class="text-destructive">*</span>');
+    });
+
+    describe("Nested Objects and Arrays", () => {
+        const complexSchema = {
+            type: "object",
+            properties: {
+                server: {
+                    type: "object",
+                    title: "Server Details",
+                    properties: {
+                        host: { type: "string", title: "Host" },
+                        port: { type: "integer", title: "Port" }
+                    }
+                },
+                features: {
+                    type: "array",
+                    title: "Features",
+                    items: { type: "string", title: "Feature" }
+                }
+            }
+        };
+
+        it("renders nested object fields", () => {
+            const onChange = vi.fn();
+            render(<SchemaForm schema={complexSchema} value={{}} onChange={onChange} />);
+
+            expect(screen.getByText("Server Details")).toBeInTheDocument();
+            expect(screen.getByLabelText("Host")).toBeInTheDocument();
+            expect(screen.getByLabelText("Port")).toBeInTheDocument();
+        });
+
+        it("renders array controls", () => {
+            const onChange = vi.fn();
+            render(<SchemaForm schema={complexSchema} value={{}} onChange={onChange} />);
+
+            expect(screen.getByText("Add Feature")).toBeInTheDocument();
+        });
+
+        it("updates nested value", () => {
+            const onChange = vi.fn();
+            render(<SchemaForm schema={complexSchema} value={{}} onChange={onChange} />);
+
+            const hostInput = screen.getByLabelText("Host");
+            fireEvent.change(hostInput, { target: { value: "example.com" } });
+
+            expect(onChange).toHaveBeenCalledWith({
+                server: { host: "example.com" }
+            });
+        });
     });
 });

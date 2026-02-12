@@ -201,6 +201,41 @@ func init() {
 }`,
 			"npx -y @modelcontextprotocol/server-cloudflare",
 		),
+		mkTemplate(
+			"complex-demo",
+			"Complex Demo",
+			`{
+  "type": "object",
+  "title": "Complex Configuration",
+  "properties": {
+    "server": {
+      "type": "object",
+      "title": "Server Details",
+      "properties": {
+        "host": { "type": "string", "default": "localhost" },
+        "port": { "type": "integer", "default": 8080 }
+      }
+    },
+    "features": {
+      "type": "array",
+      "title": "Enabled Features",
+      "items": { "type": "string" }
+    },
+    "users": {
+        "type": "array",
+        "title": "Users",
+        "items": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "role": { "type": "string", "enum": ["admin", "user"] }
+            }
+        }
+    }
+  }
+}`,
+			"echo 'Complex Demo'",
+		),
 	}
 }
 
