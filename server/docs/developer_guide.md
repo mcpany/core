@@ -125,10 +125,10 @@ upstream_services:
 
 ## Generating Documentation
 
-You can automatically generate Markdown documentation for your `mcpany` configuration using the `mcpany` CLI.
+You can automatically generate Markdown documentation for your `mcpany` configuration using the `mcpctl` CLI.
 
 ```bash
-mcpany config doc --config-path ./config.yaml
+mcpctl config doc --config-path ./config.yaml
 ```
 
 This command will output a Markdown formatted list of all available tools, their descriptions, and input schemas, which is useful for sharing with consumers of your MCP server.

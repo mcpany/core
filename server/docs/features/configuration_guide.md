@@ -10,7 +10,7 @@ The server is driven by a YAML configuration file. By default, it looks for `con
 1. Create `config.yaml`:
    ```yaml
    global_settings:
-     bind_address: ":50050"
+     mcp_listen_address: ":50050"
      log_level: "info"
 
    upstream_services:
@@ -21,7 +21,7 @@ The server is driven by a YAML configuration file. By default, it looks for `con
    ```
 2. Run the server:
    ```bash
-   ./mcp-server run
+   ./server run
    ```
 
 ## Pain Point: "How do I keep secrets safe?"

@@ -4,7 +4,7 @@ The Filesystem Provider allows the MCP Any server to expose a local or remote fi
 
 ## Configuration
 
-The filesystem provider is configured as an `upstream_service` with the `filesystem` block.
+The filesystem provider is configured as an `upstream_service` with the `filesystem_service` block.
 
 ### Fields
 
@@ -15,14 +15,14 @@ The filesystem provider is configured as an `upstream_service` with the `filesys
 
 ### Supported Backends
 
-The `filesystem` block supports multiple backend types. You must specify exactly one.
+The `filesystem_service` block supports multiple backend types. You must specify exactly one.
 
 #### 1. Local Filesystem (OS)
 
 ```yaml
 upstream_services:
   - name: "local-fs"
-    filesystem:
+    filesystem_service:
       root_paths:
         "/workspace": "/home/user/projects/myproject"
       read_only: false
@@ -34,7 +34,7 @@ upstream_services:
 ```yaml
 upstream_services:
   - name: "s3-fs"
-    filesystem:
+    filesystem_service:
       root_paths:
         "/data": "/" # Map root of bucket to /data
       s3:
@@ -49,7 +49,7 @@ upstream_services:
 ```yaml
 upstream_services:
   - name: "gcs-fs"
-    filesystem:
+    filesystem_service:
       gcs:
         bucket: "my-gcs-bucket"
 ```
@@ -59,7 +59,7 @@ upstream_services:
 ```yaml
 upstream_services:
   - name: "sftp-fs"
-    filesystem:
+    filesystem_service:
       sftp:
         address: "sftp.example.com:22"
         username: "user"
@@ -72,7 +72,7 @@ upstream_services:
 ```yaml
 upstream_services:
   - name: "zip-fs"
-    filesystem:
+    filesystem_service:
       zip:
         path: "/path/to/archive.zip"
 ```
@@ -82,7 +82,7 @@ upstream_services:
 ```yaml
 upstream_services:
   - name: "tmpfs-fs"
-    filesystem:
+    filesystem_service:
       tmpfs:
         size_mb: 100
 ```
@@ -112,7 +112,7 @@ When a filesystem service is configured, it automatically registers the followin
 ```yaml
 upstream_services:
   - name: "project-files"
-    filesystem:
+    filesystem_service:
       root_paths:
         "/src": "./src"
       read_only: false
