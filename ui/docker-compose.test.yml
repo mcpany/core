@@ -31,7 +31,6 @@ services:
           - mcpany-server
 
   ui-tests:
-    # Force rebuild of ui-tests
     image: mcpany-ui-e2e:latest
     ipc: host
     user: "${TEST_UID}:${TEST_GID}"
@@ -45,8 +44,10 @@ services:
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
+      - MOCK_SERVER_HOST=ui-http-echo-server
     command: >
       sh -c "
+        echo 'DEBUG: Env Vars' && env &&
         mkdir -p test-results .audit playwright-report docs &&
         npx playwright test $${PLAYWRIGHT_ARGS}
       "

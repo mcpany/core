@@ -30,7 +30,6 @@ func init() {
 }
 
 func TestOperatorE2E(t *testing.T) {
-	// Force cache invalidation
 	if os.Getenv("E2E") != "true" {
 		t.Skip("Skipping E2E test. Set E2E=true to run.")
 	}
@@ -130,14 +129,9 @@ nodes:
 	t.Log("Deploying mock server (http-echo-server)...")
 	// Use kubectl to create deployment and service
 	// We expose port 5678 to match the Docker Compose setup
-	if err := runCommand(t, ctx, rootDir, "kubectl", "create", "deployment", "http-echo-server", "--image=mcpany/http-echo-server:latest", "--replicas=1", "-n", namespace); err != nil {
-		t.Fatalf("Failed to create http-echo-server deployment: %v", err)
-	}
-	// Pass arguments to the container via command since it's an entrypoint in dockerfile usually, but let's check
-	// The makefile says: command: --port=5678
-	// kubectl create deployment doesn't easily support args. Use patch or YAML?
-	// Let's use kubectl run for a simple pod or apply a raw yaml.
-	// Raw yaml is safer.
+	// Create namespace first if not exists (helm does it, but we do this before helm)
+	runCommand(t, ctx, rootDir, "kubectl", "create", "namespace", namespace)
+
 	mockServiceYaml := `
 apiVersion: apps/v1
 kind: Deployment
@@ -181,8 +175,7 @@ spec:
 	if err := os.WriteFile(mockYamlPath, []byte(mockServiceYaml), 0644); err != nil {
 		t.Fatalf("Failed to write mock service yaml: %v", err)
 	}
-	// Create namespace first if not exists (helm does it, but we do this before helm)
-	runCommand(t, ctx, rootDir, "kubectl", "create", "namespace", namespace)
+
 	if err := runCommand(t, ctx, rootDir, "kubectl", "apply", "-f", mockYamlPath); err != nil {
 		t.Fatalf("Failed to deploy mock service: %v", err)
 	}
@@ -255,8 +248,11 @@ spec:
 		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
 		"SKIP_WEBSERVER=true",
 		// Inject Mock Server Env Vars for test-data.ts
-		// The service name in K8s is http-echo-server.mcp-system.svc.cluster.local (or just http-echo-server if same namespace)
-		// But the server is in the same namespace, so http-echo-server works.
+		// The service name in K8s is http-echo-server (in same namespace as mcpany server)
+		// Wait, seedServices sends request to Server.
+		// Server (in K8s) resolves http-echo-server.
+		// Playwright (on host) sends "http://http-echo-server:5678" as string in payload.
+		// So we just need MOCK_SERVER_HOST=http-echo-server on the host.
 		"MOCK_SERVER_HOST=http-echo-server",
 		"MOCK_SERVER_PORT=5678",
 	)

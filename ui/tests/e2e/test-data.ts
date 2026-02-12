@@ -14,12 +14,11 @@ const HEADERS = { 'X-API-Key': API_KEY };
 // In local dev, it defaults to 'localhost'.
 const MOCK_HOST = process.env.MOCK_SERVER_HOST || 'localhost';
 const MOCK_PORT = process.env.MOCK_SERVER_PORT || '5678'; // Default to echo server port if running locally? or 8080?
-// Actually local default was 8080/50051 in original file.
-// But if we want to use the echo server in docker, we need its port 5678.
-// Let's keep logic simple: use env var if present, else original defaults.
 
 // Debug logging to help diagnose CI issues
 console.log(`[TEST-DATA] Environment: MOCK_SERVER_HOST=${process.env.MOCK_SERVER_HOST}, MOCK_SERVER_PORT=${process.env.MOCK_SERVER_PORT}`);
+// Force logging to stderr to bypass any potential stdout swallowing
+console.error(`[TEST-DATA-STDERR] Environment: MOCK_SERVER_HOST=${process.env.MOCK_SERVER_HOST}`);
 
 const getServiceAddress = (defaultPort: string) => {
     if (process.env.MOCK_SERVER_HOST) {
