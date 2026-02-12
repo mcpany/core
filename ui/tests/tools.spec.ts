@@ -4,13 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedToolsTestServices, cleanupToolsTestServices, seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        await seedToolsTestServices(request);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,7 +22,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupToolsTestServices(request);
         await cleanupUser(request, "e2e-tools-admin");
     });
 
@@ -36,7 +36,7 @@ test.describe('Tool Exploration', () => {
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
-                // Check for Payment Gateway first (svc_01) to verify generic seeding works
+                // Check for Payment Gateway first to verify generic seeding works
                 // Use a slightly longer timeout per attempt
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
                 found = true;
