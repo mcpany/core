@@ -135,8 +135,12 @@ const nextConfig: NextConfig = {
     let protoPath = rootProto;
     if (fs.existsSync(dockerProto)) {
         protoPath = dockerProto;
+        console.log('Resolving @proto to Docker path:', protoPath);
     } else if (fs.existsSync(localProto)) {
         protoPath = localProto;
+        console.log('Resolving @proto to local path:', protoPath);
+    } else {
+        console.log('Resolving @proto to root path (fallback):', protoPath);
     }
 
     config.resolve.alias = {
