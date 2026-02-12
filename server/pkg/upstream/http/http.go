@@ -9,9 +9,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
-	"sync"
 	"net/url"
+	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/alexliesenfeld/health"
@@ -299,7 +300,14 @@ func (u *Upstream) Register(
 
 	// Auto-discovery of tools from calls
 	if serviceConfig.GetAutoDiscoverTool() {
-		for callID := range httpService.GetCalls() {
+		calls := httpService.GetCalls()
+		callIDs := make([]string, 0, len(calls))
+		for callID := range calls {
+			callIDs = append(callIDs, callID)
+		}
+		sort.Strings(callIDs)
+
+		for _, callID := range callIDs {
 			// Check if a tool already exists for this call
 			exists := false
 			for _, t := range httpService.GetTools() {

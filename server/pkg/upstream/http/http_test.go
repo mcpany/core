@@ -248,8 +248,9 @@ func TestDeterminismInToolNaming(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 2)
-	assert.Equal(t, "op_call1", discoveredTools[0].GetName())
-	assert.Equal(t, "op_call2", discoveredTools[1].GetName())
+	// Expect order to match configuration (tools list order)
+	assert.Equal(t, "op_call2", discoveredTools[0].GetName())
+	assert.Equal(t, "op_call1", discoveredTools[1].GetName())
 }
 
 func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
