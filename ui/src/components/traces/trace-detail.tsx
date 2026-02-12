@@ -163,7 +163,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
-         router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
+         router.push(`/playground?tool=${toolName}&args=${encodedArgs}&traceId=${trace.id}`);
     };
 
     const handleExportJSON = () => {

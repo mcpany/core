@@ -6,9 +6,10 @@
 "use client";
 
 import { apiClient, ToolDefinition } from "@/lib/client";
+import { Trace } from "@/types/trace";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
+import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap, Bug, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,6 +47,7 @@ import { useSearchParams } from "next/navigation";
 export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");
+  const [referenceTrace, setReferenceTrace] = useState<Trace | null>(null);
   const searchParams = useSearchParams();
 
   // Initialize with welcome message if empty and only after local storage is loaded
@@ -88,12 +90,48 @@ export function PlaygroundClientPro() {
   useEffect(() => {
     const tool = searchParams.get('tool');
     const args = searchParams.get('args');
+    const traceId = searchParams.get('traceId');
+
+    // Always try to set input from URL params first as fallback
     if (tool) {
         let command = tool;
         if (args) {
              command += ` ${args}`;
         }
         setInput(command);
+    }
+
+    if (traceId) {
+        setIsLoading(true);
+        apiClient.getTrace(traceId)
+            .then(trace => {
+                if (trace) {
+                    setReferenceTrace(trace);
+                    if (trace.rootSpan.input) {
+                        const command = `${trace.rootSpan.name} ${JSON.stringify(trace.rootSpan.input)}`;
+                        setInput(command);
+                    }
+                    toast({
+                        title: "Debug Session Started",
+                        description: `Loaded trace ${traceId.substring(0, 8)}... for debugging.`,
+                    });
+                } else {
+                    toast({
+                        title: "Trace Not Found",
+                        description: "Could not load the requested trace. Using parameters from URL.",
+                        variant: "destructive"
+                    });
+                }
+            })
+            .catch(err => {
+                console.error("Failed to load trace", err);
+                toast({
+                    title: "Error",
+                    description: "Failed to load trace details.",
+                    variant: "destructive"
+                });
+            })
+            .finally(() => setIsLoading(false));
     }
   }, [searchParams]);
 
@@ -223,19 +261,26 @@ export function PlaygroundClientPro() {
 
           // Find previous execution for diffing
           let previousResult: unknown | undefined;
-          const reversedMessages = [...messages].reverse();
-          const previousCall = reversedMessages.find(m =>
-              m.type === "tool-call" &&
-              m.toolName === toolName &&
-              JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
-          );
 
-          if (previousCall) {
-              const callIndex = messages.findIndex(m => m.id === previousCall.id);
-              if (callIndex !== -1 && callIndex + 1 < messages.length) {
-                  const resultMsg = messages[callIndex + 1];
-                  if (resultMsg.type === "tool-result") {
-                      previousResult = resultMsg.toolResult;
+          // If debugging a trace, use its output as the baseline for diffing
+          if (referenceTrace && referenceTrace.rootSpan.name === toolName) {
+              previousResult = referenceTrace.rootSpan.output;
+          } else {
+              // Otherwise try to find previous execution in history
+              const reversedMessages = [...messages].reverse();
+              const previousCall = reversedMessages.find(m =>
+                  m.type === "tool-call" &&
+                  m.toolName === toolName &&
+                  JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
+              );
+
+              if (previousCall) {
+                  const callIndex = messages.findIndex(m => m.id === previousCall.id);
+                  if (callIndex !== -1 && callIndex + 1 < messages.length) {
+                      const resultMsg = messages[callIndex + 1];
+                      if (resultMsg.type === "tool-result") {
+                          previousResult = resultMsg.toolResult;
+                      }
                   }
               }
           }
@@ -364,7 +409,28 @@ export function PlaygroundClientPro() {
          <ResizablePanel defaultSize={75}>
             <div className="flex flex-col h-full relative bg-muted/5">
                 {/* Header */}
-                <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+                <div className="min-h-14 border-b flex flex-col justify-center bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+                    {referenceTrace && (
+                        <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-1 flex items-center justify-between text-xs text-amber-500">
+                            <div className="flex items-center gap-2">
+                                <Bug className="h-3 w-3" />
+                                <span className="font-medium">Debugging Trace: {referenceTrace.id}</span>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5 hover:bg-amber-500/20 text-amber-500"
+                                onClick={() => {
+                                    setReferenceTrace(null);
+                                    setInput("");
+                                }}
+                                title="Exit Debug Mode"
+                            >
+                                <X className="h-3 w-3" />
+                            </Button>
+                        </div>
+                    )}
+                    <div className="flex items-center justify-between px-4 py-2 h-full">
                      <div className="flex items-center gap-2">
                         {!sidebarOpen && (
                              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="h-8 w-8">
@@ -427,6 +493,7 @@ export function PlaygroundClientPro() {
                               Clear
                           </Button>
                      </div>
+                    </div>
                 </div>
 
                 {/* Chat Area */}

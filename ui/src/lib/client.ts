@@ -1219,6 +1219,18 @@ export const apiClient = {
     },
 
     /**
+     * Gets a single trace by ID.
+     * @param id The ID of the trace.
+     * @returns A promise that resolves to the trace.
+     */
+    getTrace: async (id: string): Promise<any | null> => {
+        // Fallback: fetch list and filter client-side since backend listing endpoint
+        // returns recent traces and we want to avoid backend changes for this MVP.
+        const traces = await apiClient.getTraces({ limit: 100 });
+        return traces.find((t: any) => t.id === id) || null;
+    },
+
+    /**
      * Seeds the dashboard traffic history (Debug/Test only).
      * @param points The traffic points to seed.
      */
