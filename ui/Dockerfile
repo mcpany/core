@@ -31,16 +31,16 @@ RUN ln -s /app/node_modules /proto/node_modules
 # Verify protoc installation
 RUN which protoc && protoc --version
 
-# Use a simplified command to find all proto files and run protoc using ts-proto plugin
-# Note: we assume ts-proto is in node_modules/.bin/protoc-gen-ts_proto
-# Using absolute path /usr/bin/protoc to be safe
-RUN find /proto -name "*.proto" -print0 | xargs -0 /usr/bin/protoc \
+# Generate Protobuf types (since they are gitignored and not committed)
+# Use shell expansion to find files, avoiding xargs issues
+RUN /usr/bin/protoc \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/proto \
     --ts_proto_opt=esModuleInterop=true \
     --ts_proto_opt=outputServices=grpc-js \
     --ts_proto_opt=env=browser \
-    --proto_path=/proto
+    --proto_path=/proto \
+    $(find /proto -name "*.proto")
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
