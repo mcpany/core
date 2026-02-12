@@ -25,36 +25,39 @@ test.describe('User Management', () => {
         await page.goto('/users');
         await page.click('button:has-text("Add User")');
 
-        // Expect Tabs for Authentication Method
-        await expect(page.locator('button[role="tab"]:has-text("API Key")')).toBeVisible();
-
-        // Click API Key tab
-        await page.click('button[role="tab"]:has-text("API Key")');
-
-        // Expect Generate Button
-        await expect(page.locator('button:has-text("Generate")')).toBeVisible();
+        // Wait for sheet to open
+        await expect(page.locator('h2:has-text("Add New User")')).toBeVisible();
 
         // Fill username
         await page.fill('input[name="id"]', 'test-api-user');
-        await page.fill('input[name="role"]', 'viewer');
 
-        // Click Generate
-        await page.click('button:has-text("Generate")');
+        // Select Role (Shadcn Select)
+        await page.click('button[role="combobox"]'); // Click the trigger
+        await page.click('div[role="option"]:has-text("Viewer")'); // Select Viewer
 
-        // Expect key to be displayed
-        const keyInput = page.locator('input[readonly]');
-        await expect(keyInput).toBeVisible();
-        const key = await keyInput.inputValue();
+        // Select API Key Auth Method (Tabs)
+        await page.click('button[role="tab"]:has-text("API Key")');
+
+        // Generate Key
+        await page.click('button:has-text("Generate Key")');
+
+        // Verify Key is shown
+        // Look for the code block-like element or the Copy button appearing
+        await expect(page.locator('button:has-text("Copy Key")')).toBeVisible();
+        const keyDisplay = page.locator('p.font-mono');
+        await expect(keyDisplay).toBeVisible();
+        const key = await keyDisplay.textContent();
         expect(key).toContain('mcp_sk_');
 
         // Save
-        await page.click('button:has-text("Save changes")');
+        await page.click('button:has-text("Save User")');
 
-        // Verify user created
-        await expect(page.locator('text=test-api-user')).toBeVisible();
+        // Verify user created in list
+        // UserList uses a table. Look for the row.
+        await expect(page.locator('tr:has-text("test-api-user")')).toBeVisible();
+        // Verify Auth Method Badge/Icon
         await expect(page.locator('tr:has-text("test-api-user") >> text=API Key')).toBeVisible();
-
-        // Screenshot
-
+        // Verify Role Badge
+        await expect(page.locator('tr:has-text("test-api-user") >> text=viewer')).toBeVisible();
     });
 });
