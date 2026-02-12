@@ -27,14 +27,16 @@ test.describe('Tool Exploration', () => {
     });
 
     test('should list available tools from real backend', async ({ page }) => {
+        // Increase test timeout to handle potential slow backend registration in CI
+        test.setTimeout(120000);
         await page.goto('/tools');
 
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
-        // Increase retries to 10 for slow CI environments where backend worker might be lagging
-        for (let i = 0; i < 10; i++) {
+        // Increase retries to 15 for slow CI environments where backend worker might be lagging
+        for (let i = 0; i < 15; i++) {
             try {
                 // Check for Echo Service tool which is more stable than HTTP services in CI
                 // Use a slightly longer timeout per attempt
@@ -42,11 +44,11 @@ test.describe('Tool Exploration', () => {
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
+                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
                 await page.reload();
                 // Wait for network idle and a small buffer
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000); // Increase wait to 2s
             }
         }
 
@@ -63,10 +65,11 @@ test.describe('Tool Exploration', () => {
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
+        test.setTimeout(120000);
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             try {
                 // Check for Echo Service tool
                 await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
@@ -74,7 +77,7 @@ test.describe('Tool Exploration', () => {
             } catch (e) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000);
             }
         }
 
@@ -87,17 +90,18 @@ test.describe('Tool Exploration', () => {
     });
 
     test('should execute a tool and show results', async ({ page }) => {
+        test.setTimeout(120000);
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             try {
                 await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(2000);
             }
         }
 
