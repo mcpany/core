@@ -92,7 +92,7 @@ function analyzeError(error: string): string | null {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
+export function ChatMessage({ message, onReplay, onRetry, onSave }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
     const { theme } = useTheme();
@@ -174,22 +174,15 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                              </Tooltip>
                          )}
                          {onSave && message.toolName && (
-                             <Tooltip>
-                                 <TooltipTrigger asChild>
-                                      <Button
-                                         variant="ghost"
-                                         size="icon"
-                                         className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                                         onClick={() => onSave(message.toolName!, message.toolArgs || {})}
-                                         aria-label="Save to collection"
-                                      >
-                                          <Save className="h-3.5 w-3.5" />
-                                      </Button>
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                     <p>Save to collection</p>
-                                 </TooltipContent>
-                             </Tooltip>
+                              <Button
+                                 variant="ghost"
+                                 size="icon"
+                                 className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                 onClick={() => onSave(message.toolName!, message.toolArgs || {})}
+                                 aria-label="Save to collection"
+                              >
+                                  <Save className="h-3.5 w-3.5" />
+                              </Button>
                          )}
                     </CardHeader>
                     <CardContent className="p-0">

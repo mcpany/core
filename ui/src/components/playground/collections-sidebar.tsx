@@ -20,26 +20,53 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+/**
+ * SavedRequest represents a saved tool execution request.
+ */
 export interface SavedRequest {
+    /** Unique identifier for the saved request */
     id: string;
+    /** Display name of the request */
     name: string;
+    /** The tool name (e.g. "get_weather") */
     toolName: string;
+    /** The arguments used for the tool */
     toolArgs: Record<string, unknown>;
 }
 
+/**
+ * Collection represents a group of saved requests.
+ */
 export interface Collection {
+    /** Unique identifier for the collection */
     id: string;
+    /** Display name of the collection */
     name: string;
+    /** List of requests in this collection */
     requests: SavedRequest[];
 }
 
 interface CollectionsSidebarProps {
+    /** List of collections */
     collections: Collection[];
+    /** Function to update collections */
     setCollections: (cols: Collection[]) => void;
+    /** Callback to run a request */
     onRunRequest: (toolName: string, args: Record<string, unknown>) => void;
+    /** Optional className */
     className?: string;
 }
 
+/**
+ * CollectionsSidebar allows users to manage and run saved request collections.
+ *
+ * @param props - The component props.
+ * @param props.collections - The list of collections.
+ * @param props.setCollections - Function to update collections.
+ * @param props.onRunRequest - Callback when a request is executed.
+ * @param props.className - Optional class name.
+ * @returns The rendered sidebar component.
+ */
 export function CollectionsSidebar({ collections, setCollections, onRunRequest, className }: CollectionsSidebarProps) {
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
     const [isCreating, setIsCreating] = useState(false);

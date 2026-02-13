@@ -147,6 +147,7 @@ export function PlaygroundClientPro() {
   }, [displayMessages]);
 
   const handleSend = async () => {
+    console.log("DEBUG: handleSend called", input);
     if (!input.trim()) return;
 
     const userMsg: Message = {
