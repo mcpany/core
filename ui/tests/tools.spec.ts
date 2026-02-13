@@ -10,6 +10,9 @@ test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
+        // Cleanup potentially stale services from previous runs first
+        await cleanupServices(request);
+
         await seedServices(request);
         await seedUser(request, "e2e-tools-admin");
 

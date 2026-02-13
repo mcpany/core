@@ -126,6 +126,9 @@ test.describe('User Guide Walkthrough', () => {
     await page.goto('/webhooks');
     await expect(page.getByRole('heading', { name: 'System Integrations' })).toBeVisible();
     // Verify "System Alerts" and "Audit Stream" cards are present
+    // Use more specific locator to avoid matching description text or other elements
+    // The CardTitle component renders as a div with specific classes, not necessarily an h3
+    // We can target by class or just stricter text matching on the title component.
     await expect(page.getByText('System Alerts', { exact: true })).toBeVisible();
     await expect(page.getByText('Audit Stream', { exact: true })).toBeVisible();
   });
