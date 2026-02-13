@@ -37,6 +37,10 @@ test.describe('Tool Exploration', () => {
         // Increase retries to 20 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 20; i++) {
             try {
+                // Try searching for the tool first to handle virtualization or long lists
+                await page.getByPlaceholder('Search tools...').fill('process_payment');
+                await page.waitForTimeout(500); // Allow filtering to apply
+
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
                 // Use a slightly longer timeout per attempt
                 await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
