@@ -16,13 +16,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            command_line_service: {
+                command: "/bin/echo",
+                local: true,
                 tools: [
                     { name: "process_payment", description: "Process a payment", call_id: "pay", profiles: [{ id: "default" }] }
                 ],
                 calls: {
-                    pay: { method: "HTTP_METHOD_POST", endpoint_path: "/v1/charges" }
+                    pay: { args: ["payment_processed"] }
                 }
             }
         },
@@ -30,13 +31,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+            command_line_service: {
+                command: "/bin/echo",
+                local: true,
                 tools: [
                      { name: "get_user", description: "Get user details", call_id: "get" }
                 ],
                 calls: {
-                    get: { method: "HTTP_METHOD_GET", endpoint_path: "/users/1" }
+                    get: { args: ["user_details"] }
                 }
             }
         },
@@ -45,13 +47,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            command_line_service: {
+                command: "/bin/echo",
+                local: true,
                 tools: [
                     { name: "calculator", description: "calc", call_id: "do_calc" }
                 ],
                 calls: {
-                    do_calc: { method: "HTTP_METHOD_POST", endpoint_path: "/calc" }
+                    do_calc: { args: ["42"] }
                 }
             }
         },
