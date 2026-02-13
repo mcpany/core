@@ -53,7 +53,8 @@ test.describe('User Management', () => {
         await page.click('button:has-text("Save User")');
 
         // Wait for success toast
-        await expect(page.locator('text=User Created')).toBeVisible();
+        // Use exact text match for the toast title to avoid strict mode violations
+        await expect(page.getByText('User Created', { exact: true })).toBeVisible();
 
         // Verify user created in list
         // UserList uses a table. Look for the row.
