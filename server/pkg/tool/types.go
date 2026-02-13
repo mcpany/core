@@ -2984,8 +2984,25 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
 	}
+	if err := checkTarInjection(val, base); err != nil {
+		return err
+	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
 		return err
+	}
+	return nil
+}
+
+func checkTarInjection(val, base string) error {
+	isTar := strings.HasPrefix(base, "tar") || strings.HasPrefix(base, "gtar") || strings.HasPrefix(base, "bsdtar")
+	if isTar {
+		valLower := strings.ToLower(val)
+		if strings.HasPrefix(valLower, "exec=") {
+			return fmt.Errorf("tar injection detected: value starts with 'exec=' (potential --checkpoint-action abuse)")
+		}
+		if strings.HasPrefix(valLower, "to-command=") || strings.HasPrefix(valLower, "command=") {
+			return fmt.Errorf("tar injection detected: value starts with 'to-command=' or 'command='")
+		}
 	}
 	return nil
 }
@@ -3227,6 +3244,7 @@ func isInterpreter(command string) bool {
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
+		"tar", "gtar", "bsdtar",
 	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
