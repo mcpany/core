@@ -17,6 +17,8 @@ import (
 func TestStaticResource_SSRFProtection(t *testing.T) {
 	// Ensure loopback is BLOCKED (default behavior)
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+	// Ensure dangerous mode is OFF so loopback is strictly blocked
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -32,7 +34,8 @@ func TestStaticResource_SSRFProtection(t *testing.T) {
 	r := NewStaticResource(def, "test-service")
 
 	_, err := r.Read(context.Background())
-	assert.Error(t, err)
-	// The error message comes from SafeDialer in util/net.go
-	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	if assert.Error(t, err) {
+		// The error message comes from SafeDialer in util/net.go
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	}
 }

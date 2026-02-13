@@ -446,6 +446,8 @@ func TestAuthTestEndpoint_SSRF(t *testing.T) {
 	// Ensure env vars are unset for this test to enforce strict SSRF protection
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
+	// Ensure dangerous mode is OFF so loopback is strictly blocked
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
 	app := setupTestApp()
 
