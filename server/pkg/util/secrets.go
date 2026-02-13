@@ -27,6 +27,19 @@ import (
 
 const maxSecretRecursionDepth = 10
 
+// SecretProvider is a function that looks up a secret by key.
+type SecretProvider func(ctx context.Context, key string) (string, error)
+
+type secretProviderKeyType struct{}
+
+// SecretProviderKey is the context key for the SecretProvider.
+var SecretProviderKey = secretProviderKeyType{}
+
+// WithSecretProvider returns a new context with the SecretProvider.
+func WithSecretProvider(ctx context.Context, provider SecretProvider) context.Context {
+	return context.WithValue(ctx, SecretProviderKey, provider)
+}
+
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
 // remote URLs, Vault, and AWS Secrets Manager.
@@ -74,7 +87,17 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 
 	switch secret.WhichValue() {
 	case configv1.SecretValue_PlainText_case:
-		return strings.TrimSpace(secret.GetPlainText()), nil
+		val := strings.TrimSpace(secret.GetPlainText())
+		// Check for ${KEY} interpolation
+		if strings.HasPrefix(val, "${") && strings.HasSuffix(val, "}") && len(val) > 3 {
+			key := val[2 : len(val)-1]
+			if provider, ok := ctx.Value(SecretProviderKey).(SecretProvider); ok {
+				if resolved, err := provider(ctx, key); err == nil {
+					return resolved, nil
+				}
+			}
+		}
+		return val, nil
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if !IsEnvVarAllowed(envVar) {

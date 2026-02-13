@@ -840,6 +840,27 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	// Inject SecretProvider into context for runtime secret resolution from DB.
+	// This enables usage of ${SECRET_NAME} in configuration.
+	opts.Ctx = util.WithSecretProvider(opts.Ctx, func(ctx context.Context, key string) (string, error) {
+		// Try looking up by ID first (fastest)
+		if secret, err := a.Storage.GetSecret(ctx, key); err == nil && secret != nil {
+			return secret.GetValue(), nil
+		}
+
+		// Fallback: Lookup by Key/Name
+		secrets, err := a.Storage.ListSecrets(ctx)
+		if err != nil {
+			return "", err
+		}
+		for _, s := range secrets {
+			if s.GetKey() == key || s.GetName() == key {
+				return s.GetValue(), nil
+			}
+		}
+		return "", fmt.Errorf("secret not found: %s", key)
+	})
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {
