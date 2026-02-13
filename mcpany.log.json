@@ -1,0 +1,2 @@
+{"time":"2026-02-13T01:19:01.234461213Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":["empty_config.yaml"]}
+{"time":"2026-02-13T01:19:01.235973313Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["empty_config.yaml"]}

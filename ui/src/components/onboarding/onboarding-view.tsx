@@ -15,6 +15,14 @@ interface OnboardingViewProps {
     onServiceRegistered: () => void;
 }
 
+/**
+ * OnboardingView component.
+ * Displays a welcome screen with quick start options for new users.
+ *
+ * @param props - The component props.
+ * @param props.onServiceRegistered - Callback function to trigger when a service is successfully registered.
+ * @returns The rendered OnboardingView component.
+ */
 export function OnboardingView({ onServiceRegistered }: OnboardingViewProps) {
     return (
         <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-8 bg-gradient-to-b from-background to-muted/20 animate-in fade-in duration-700">
