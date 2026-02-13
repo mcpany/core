@@ -121,14 +121,21 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/Payment Gateway Updated', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup services: ${e}`);
+    const servicesToDelete = [
+        'Payment Gateway',
+        'Payment Gateway Updated',
+        'User Service',
+        'Math',
+        'Echo Service',
+        'weather-service'
+    ];
+
+    for (const svc of servicesToDelete) {
+        try {
+            await context.delete(`/api/v1/services/${encodeURIComponent(svc)}`, { headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to cleanup service ${svc}: ${e}`);
+        }
     }
 };
 
