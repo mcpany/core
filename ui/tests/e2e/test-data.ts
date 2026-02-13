@@ -14,7 +14,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     const services = [
         {
             id: "svc_01",
-            name: "Payment Gateway",
+            name: "PaymentGateway",
             version: "v1.2.0",
             http_service: {
                 address: "https://stripe.com",
@@ -32,7 +32,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         },
         {
             id: "svc_02",
-            name: "User Service",
+            name: "UserService",
             version: "v1.0",
             http_service: {
                 address: "http://localhost:50051", // Dummy address, visibility checks don't need health
@@ -69,7 +69,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         },
         {
             id: "svc_echo",
-            name: "Echo Service",
+            name: "EchoService",
             version: "v1.0",
             command_line_service: {
                 command: "/bin/echo",
