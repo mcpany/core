@@ -191,8 +191,16 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	client := util.NewSafeHTTPClient()
-	client.Timeout = 5 * time.Second
+	// Allow checking local/private endpoints for diagnostic purposes as config is trusted
+	dialer := util.NewSafeDialer()
+	dialer.AllowLoopback = true
+	dialer.AllowPrivate = true
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		Transport: &http.Transport{
+			DialContext: dialer.DialContext,
+		},
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -285,9 +293,16 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 		}
 	}
 
-	client := util.NewSafeHTTPClient()
-	if transport, ok := client.Transport.(*http.Transport); ok {
-		transport.TLSHandshakeTimeout = 5 * time.Second
+	// Allow checking local/private endpoints for diagnostic purposes as config is trusted
+	dialer := util.NewSafeDialer()
+	dialer.AllowLoopback = true
+	dialer.AllowPrivate = true
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		Transport: &http.Transport{
+			DialContext:         dialer.DialContext,
+			TLSHandshakeTimeout: 5 * time.Second,
+		},
 	}
 
 	resp, err := client.Do(req)
