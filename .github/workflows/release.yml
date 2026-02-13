@@ -18,7 +18,7 @@ env:
 
 jobs:
   setup:
-    runs-on: github-action-runner-github-action-runner
+    runs-on: oci-runner # ubuntu-slim
     timeout-minutes: 30
     outputs:
       version: ${{ steps.vars.outputs.version }}
