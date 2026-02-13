@@ -49,6 +49,9 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	var validPatterns []string
 
 	for _, p := range config.GetCustomPatterns() {
+		if p == "" {
+			continue // Skip empty patterns to avoid matching everything
+		}
 		if r, err := regexp.Compile(p); err == nil {
 			customPatterns = append(customPatterns, r)
 			// Wrap in non-capturing group to ensure precedence and valid combination
