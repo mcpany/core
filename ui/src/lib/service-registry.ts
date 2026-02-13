@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem represents a service definition in the marketplace.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +15,9 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY contains the list of built-in services available in the marketplace.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
