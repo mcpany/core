@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolDefinition } from "@proto/config/v1/tool";
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType, ParameterLocation } from "@proto/config/v1/call";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -161,48 +161,85 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                         >
                             <Trash2 className="h-4 w-4" />
                         </Button>
-                        <CardContent className="p-4 grid grid-cols-12 gap-4">
-                            <div className="col-span-3 space-y-2">
-                                <Label htmlFor={`param-name-${index}`}>Name</Label>
-                                <Input
-                                    id={`param-name-${index}`}
-                                    value={param.schema?.name}
-                                    onChange={(e) => updateParameterSchema(index, { name: e.target.value })}
-                                    placeholder="userId"
-                                />
+                        <CardContent className="p-4 space-y-4">
+                            <div className="grid grid-cols-12 gap-4">
+                                <div className="col-span-3 space-y-2">
+                                    <Label htmlFor={`param-name-${index}`}>Input Name</Label>
+                                    <Input
+                                        id={`param-name-${index}`}
+                                        value={param.schema?.name}
+                                        onChange={(e) => updateParameterSchema(index, { name: e.target.value })}
+                                        placeholder="userId"
+                                    />
+                                </div>
+                                <div className="col-span-3 space-y-2">
+                                    <Label htmlFor={`param-type-${index}`}>Type</Label>
+                                    <Select
+                                        value={param.schema?.type.toString()}
+                                        onValueChange={(val) => updateParameterSchema(index, { type: parseInt(val) })}
+                                    >
+                                        <SelectTrigger id={`param-type-${index}`}>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={ParameterType.STRING.toString()}>String</SelectItem>
+                                            <SelectItem value={ParameterType.NUMBER.toString()}>Number</SelectItem>
+                                            <SelectItem value={ParameterType.INTEGER.toString()}>Integer</SelectItem>
+                                            <SelectItem value={ParameterType.BOOLEAN.toString()}>Boolean</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="col-span-4 space-y-2">
+                                    <Label htmlFor={`param-loc-${index}`}>Location</Label>
+                                    <Select
+                                        value={param.location?.toString() || ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}
+                                        onValueChange={(val) => updateParameter(index, { location: parseInt(val) })}
+                                    >
+                                        <SelectTrigger id={`param-loc-${index}`}>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}>Auto (Path/Body)</SelectItem>
+                                            <SelectItem value={ParameterLocation.QUERY.toString()}>Query Param</SelectItem>
+                                            <SelectItem value={ParameterLocation.HEADER.toString()}>Header</SelectItem>
+                                            <SelectItem value={ParameterLocation.COOKIE.toString()}>Cookie</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="col-span-2 flex items-center justify-center pt-8 space-x-2">
+                                    <Switch
+                                        checked={param.schema?.isRequired}
+                                        onCheckedChange={(checked) => updateParameterSchema(index, { isRequired: checked })}
+                                    />
+                                    <Label className="text-xs">Required</Label>
+                                </div>
                             </div>
-                            <div className="col-span-3 space-y-2">
-                                <Label htmlFor={`param-type-${index}`}>Type</Label>
-                                <Select
-                                    value={param.schema?.type.toString()}
-                                    onValueChange={(val) => updateParameterSchema(index, { type: parseInt(val) })}
-                                >
-                                    <SelectTrigger id={`param-type-${index}`}>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={ParameterType.STRING.toString()}>String</SelectItem>
-                                        <SelectItem value={ParameterType.NUMBER.toString()}>Number</SelectItem>
-                                        <SelectItem value={ParameterType.INTEGER.toString()}>Integer</SelectItem>
-                                        <SelectItem value={ParameterType.BOOLEAN.toString()}>Boolean</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="col-span-4 space-y-2">
-                                <Label htmlFor={`param-desc-${index}`}>Description</Label>
-                                <Input
-                                    id={`param-desc-${index}`}
-                                    value={param.schema?.description}
-                                    onChange={(e) => updateParameterSchema(index, { description: e.target.value })}
-                                    placeholder="The ID of the user"
-                                />
-                            </div>
-                            <div className="col-span-2 flex items-center justify-center pt-8 space-x-2">
-                                <Switch
-                                    checked={param.schema?.isRequired}
-                                    onCheckedChange={(checked) => updateParameterSchema(index, { isRequired: checked })}
-                                />
-                                <Label className="text-xs">Required</Label>
+
+                            {/* Extended Options Row */}
+                            <div className="grid grid-cols-12 gap-4 pt-2">
+                                <div className="col-span-6 space-y-2">
+                                    <Label htmlFor={`param-desc-${index}`}>Description</Label>
+                                    <Input
+                                        id={`param-desc-${index}`}
+                                        value={param.schema?.description}
+                                        onChange={(e) => updateParameterSchema(index, { description: e.target.value })}
+                                        placeholder="The ID of the user"
+                                    />
+                                </div>
+                                {(param.location === ParameterLocation.HEADER ||
+                                  param.location === ParameterLocation.COOKIE ||
+                                  param.location === ParameterLocation.QUERY) && (
+                                    <div className="col-span-6 space-y-2">
+                                        <Label htmlFor={`param-target-${index}`}>HTTP Name (Optional)</Label>
+                                        <Input
+                                            id={`param-target-${index}`}
+                                            value={param.targetName}
+                                            onChange={(e) => updateParameter(index, { targetName: e.target.value })}
+                                            placeholder={param.schema?.name || "X-Header-Name"}
+                                        />
+                                        <p className="text-[10px] text-muted-foreground">Overrides the parameter name sent in the HTTP request.</p>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>

@@ -42,6 +42,13 @@ interface UserListProps {
     onDelete: (id: string) => void;
 }
 
+/**
+ * UserList component.
+ * Displays a table of users with actions to edit or delete.
+ *
+ * @param props - The component props.
+ * @returns The rendered user list component.
+ */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();
