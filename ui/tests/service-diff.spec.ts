@@ -3,19 +3,61 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, APIRequestContext } from '@playwright/test';
 import path from 'path';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 // Use test-results/artifacts which is writable in CI
 const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DATE}`);
 
+const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
+const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+const HEADERS = { 'X-API-Key': API_KEY };
+
+const DIFF_SVC_ID = "svc_diff_payment";
+const DIFF_SVC_NAME = "Diff Payment Gateway";
+
+const seedDiffService = async (requestContext: APIRequestContext) => {
+    // Delete if exists (defensive)
+    try {
+        await requestContext.delete(`/api/v1/services/${DIFF_SVC_NAME}`, { headers: HEADERS });
+    } catch (e) {}
+    try {
+        await requestContext.delete(`/api/v1/services/${DIFF_SVC_NAME} Updated`, { headers: HEADERS });
+    } catch (e) {}
+
+    const service = {
+        id: DIFF_SVC_ID,
+        name: DIFF_SVC_NAME,
+        version: "v1.2.0",
+        http_service: {
+            address: "https://stripe.com",
+            tools: [
+                { name: "process_payment_diff", description: "Process a payment diff" }
+            ]
+        }
+    };
+
+    try {
+        await requestContext.post('/api/v1/services', { data: service, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed diff service: ${e}`);
+    }
+};
+
+const cleanupDiffService = async (requestContext: APIRequestContext) => {
+    try {
+        await requestContext.delete(`/api/v1/services/${DIFF_SVC_NAME}`, { headers: HEADERS });
+        await requestContext.delete(`/api/v1/services/${DIFF_SVC_NAME} Updated`, { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup diff service: ${e}`);
+    }
+};
+
 test.describe('Service Config Diff', () => {
     test.beforeEach(async ({ request, page }) => {
-        // Ensure clean state before seeding
-        await cleanupServices(request);
-        await seedServices(request);
+        await seedDiffService(request);
         await seedUser(request, "diff-admin");
 
         // Login
@@ -27,13 +69,13 @@ test.describe('Service Config Diff', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupDiffService(request);
         await cleanupUser(request, "diff-admin");
     });
 
     test('Shows diff when editing service config', async ({ page }) => {
-        const serviceName = "Payment Gateway";
-        const newServiceName = "Payment Gateway Updated";
+        const serviceName = DIFF_SVC_NAME;
+        const newServiceName = `${DIFF_SVC_NAME} Updated`;
 
         // Go to Upstream Services page to find the service
         await page.goto('/upstream-services');
