@@ -177,7 +177,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
     });
 
-    await page.goto('/');
+    await page.goto('/', { timeout: 60000 });
     // Wait for the widget to appear (use static title as fallback if data fails)
     await expect(page.getByText('System Health')).toBeVisible();
     // Try to wait for data, but don't block if missing (e.g. backend down in test)
@@ -201,7 +201,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/upstream-services');
+    await page.goto('/upstream-services', { timeout: 60000 });
     await expect(page.getByText('Primary DB')).toBeVisible();
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
@@ -262,7 +262,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       });
     });
 
-    await page.goto('/playground');
+    await page.goto('/playground', { timeout: 60000 });
     await page.waitForTimeout(1000);
 
     // 1. Run the tool first time
@@ -293,7 +293,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Playground Screenshots', async ({ page }) => {
-    await page.goto('/playground');
+    await page.goto('/playground', { timeout: 60000 });
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_blank.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground.png'), fullPage: true });
@@ -331,7 +331,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Stack Composer Screenshots', async ({ page }) => {
-    await page.goto('/stacks');
+    await page.goto('/stacks', { timeout: 60000 });
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stack_composer_overview.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stacks.png'), fullPage: true });
@@ -402,7 +402,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
     });
 
-    await page.goto('/traces');
+    await page.goto('/traces', { timeout: 60000 });
     await expect(page.getByText('filesystem.read').first()).toBeVisible();
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_list.png'), fullPage: true });
@@ -426,14 +426,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Middleware Screenshots', async ({ page }) => {
-      await page.goto('/middleware');
+      await page.goto('/middleware', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'middleware_pipeline.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'middleware.png'), fullPage: true });
   });
 
   test('Webhooks Screenshots', async ({ page }) => {
-      await page.goto('/webhooks');
+      await page.goto('/webhooks', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhooks_list.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhooks.png'), fullPage: true });
@@ -463,7 +463,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
           });
       });
 
-      await page.goto('/network');
+      await page.goto('/network', { timeout: 60000 });
       await page.waitForTimeout(2000); // Graph rendering
 
       // Wait for graph canvas or nodes
@@ -478,14 +478,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Logs Screenshots', async ({ page }) => {
-      await page.goto('/logs');
+      await page.goto('/logs', { timeout: 60000 });
       await page.waitForTimeout(1000);
        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_stream.png'), fullPage: true });
        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs.png'), fullPage: true });
   });
 
    test('Marketplace Screenshots', async ({ page }) => {
-       await page.goto('/marketplace');
+       await page.goto('/marketplace', { timeout: 60000 });
        await page.waitForTimeout(1000);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'marketplace_grid.png'), fullPage: true });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'marketplace.png'), fullPage: true });
@@ -499,7 +499,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
               json: { secrets: [{name: 'API_KEY', value: '*****'}] }
           });
       });
-      await page.goto('/secrets');
+      await page.goto('/secrets', { timeout: 60000 });
       await expect(page.getByText('API_KEY')).toBeVisible();
       await page.waitForTimeout(1000);
       await expect(page.getByText('Loading secrets...')).not.toBeVisible();
@@ -515,7 +515,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Auth Screenshots', async ({ page }) => {
-      await page.goto('/login');
+      await page.goto('/login', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_login.png'), fullPage: true });
       // Legacy aliases (placeholder to ensure update)
@@ -524,21 +524,21 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_guide_step3_basic.png'), fullPage: true });
 
       // Mock Users
-      await page.goto('/users');
+      await page.goto('/users', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'auth_users_list.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'users.png'), fullPage: true });
   });
 
   test('Prompts Screenshots', async ({ page }) => {
-      await page.goto('/prompts');
+      await page.goto('/prompts', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'prompts_list.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'prompts.png'), fullPage: true });
   });
 
   test('Search Screenshots', async ({ page }) => {
-       await page.goto('/');
+       await page.goto('/', { timeout: 60000 });
        await page.waitForTimeout(1000);
        await page.keyboard.press('Control+k');
        await page.waitForTimeout(500);
@@ -546,7 +546,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Resources Screenshots', async ({ page }) => {
-      await page.goto('/resources');
+      await page.goto('/resources', { timeout: 60000 });
 
       await page.waitForTimeout(2000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_list.png'), fullPage: true });
@@ -572,31 +572,31 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Alerts Screenshots', async ({ page }) => {
-      await page.goto('/alerts');
+      await page.goto('/alerts', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'alerts_list.png'), fullPage: true });
   });
 
   test('Mobile Screenshots', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 });
-      await page.goto('/');
+      await page.goto('/', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'mobile_dashboard.png'), fullPage: true });
   });
 
   test('Skills Screenshots', async ({ page }) => {
-      await page.goto('/skills');
+      await page.goto('/skills', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'skills_list.png'), fullPage: true });
 
       // Create/Edit View
-      await page.goto('/skills/create');
+      await page.goto('/skills/create', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'skills_create.png'), fullPage: true });
   });
 
   test('Profiles Screenshots', async ({ page }) => {
-      await page.goto('/profiles');
+      await page.goto('/profiles', { timeout: 60000 });
       await expect(page.getByRole('button', { name: 'Create Profile' })).toBeVisible();
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_page.png'), fullPage: true });
@@ -617,7 +617,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Settings Screenshots', async ({ page }) => {
-      await page.goto('/settings');
+      await page.goto('/settings', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings.png'), fullPage: true });
 
@@ -633,7 +633,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Credentials Screenshots', async ({ page }) => {
-      await page.goto('/credentials');
+      await page.goto('/credentials', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials_list.png'), fullPage: true });
@@ -660,13 +660,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Stats Screenshots', async ({ page }) => {
-      await page.goto('/stats');
+      await page.goto('/stats', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stats.png'), fullPage: true });
   });
 
   test('Service Actions Screenshots', async ({ page }) => {
-      await page.goto('/upstream-services');
+      await page.goto('/upstream-services', { timeout: 60000 });
       await expect(page.getByText('Primary DB')).toBeVisible();
       await page.waitForTimeout(1000);
 
@@ -711,7 +711,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
           });
       });
 
-      await page.goto('/audit');
+      await page.goto('/audit', { timeout: 60000 });
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
   });
@@ -752,7 +752,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
       });
 
-      await page.goto('/upstream-services');
+      await page.goto('/upstream-services', { timeout: 60000 });
       await expect(page.getByText('Legacy API')).toBeVisible();
       await page.waitForTimeout(1000);
 
@@ -806,7 +806,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         }
     });
 
-    await page.goto('/upstream-services');
+    await page.goto('/upstream-services', { timeout: 60000 });
     await expect(page.getByText('Primary DB')).toBeVisible();
     await page.waitForTimeout(1000);
 
