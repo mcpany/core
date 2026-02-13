@@ -1,0 +1,35 @@
+{"time":"2026-02-13T14:01:58.752565074Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"127.0.0.1:0","registration-port":"127.0.0.1:0","stdio":false,"config-path":["/app/server/tests/integration/testdata/test_regex_fail.yaml"]}
+{"time":"2026-02-13T14:01:58.752987503Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["/app/server/tests/integration/testdata/test_regex_fail.yaml"]}
+{"time":"2026-02-13T14:01:58.7532143Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-13T14:01:58.753961782Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-13T14:01:58.754275512Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-13T14:01:58.754361282Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-13T14:01:58.786909557Z","level":"INFO","msg":"Database appears empty, initializing with default configuration..."}
+{"time":"2026-02-13T14:01:58.787023834Z","level":"INFO","msg":"DEBUG: Initializing DB with defaultGS","middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-13T14:01:58.79390048Z","level":"INFO","msg":"No users found, creating default admin user..."}
+{"time":"2026-02-13T14:01:58.794004182Z","level":"WARN","msg":"⚠️  GENERATED ADMIN PASSWORD: vXTmwGmIN1Om_ip9QTPmVuHLh2Tmzx4C34pjP7Kfjo8 ⚠️"}
+{"time":"2026-02-13T14:01:58.794029199Z","level":"WARN","msg":"Please save this password immediately and change it upon first login."}
+{"time":"2026-02-13T14:01:59.157994043Z","level":"INFO","msg":"Default admin user created successfully.","username":"admin"}
+{"time":"2026-02-13T14:01:59.158175738Z","level":"INFO","msg":"Database initialized successfully."}
+{"time":"2026-02-13T14:01:59.158199982Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["/app/server/tests/integration/testdata/test_regex_fail.yaml"]}
+{"time":"2026-02-13T14:01:59.249372066Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T14:01:59.249644142Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T14:01:59.249795576Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T14:01:59.249891619Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"test-regex","disabled_field":false}
+{"time":"2026-02-13T14:01:59.24999796Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"test-regex","priority":0}
+{"time":"2026-02-13T14:01:59.250358934Z","level":"ERROR","msg":"Config validation error","component":"configLoader","service":"test-regex","error":"mcp service with stdio_connection has invalid secret environment variable: \"TEST_KEY\": secret value does not match validation regex \"^sk-[a-zA-Z0-9]{10}$\""}
+{"time":"2026-02-13T14:01:59.253688257Z","level":"ERROR","msg":"Application failed","service":"mcpany","error":"failed to load services from config: \n❌ Configuration Validation Failed:\n\n  Service: \"test-regex\"\n    Error: mcp service with stdio_connection has invalid secret environment variable: \"TEST_KEY\": secret value does not match validation regex \"^sk-[a-zA-Z0-9]{10}$\"\n"}
+{"time":"2026-02-13T14:01:59.346110082Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"127.0.0.1:0","registration-port":"127.0.0.1:0","stdio":false,"config-path":["/app/server/tests/integration/testdata/test_regex_env_fail.yaml"]}
+{"time":"2026-02-13T14:01:59.346314869Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["/app/server/tests/integration/testdata/test_regex_env_fail.yaml"]}
+{"time":"2026-02-13T14:01:59.346414668Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-13T14:01:59.34645818Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-13T14:01:59.346479466Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-13T14:01:59.349873465Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["/app/server/tests/integration/testdata/test_regex_env_fail.yaml"]}
+{"time":"2026-02-13T14:01:59.35060627Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-13T14:01:59.425485092Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T14:01:59.425636444Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T14:01:59.425667078Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T14:01:59.42571154Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"test-regex-env","disabled_field":false}
+{"time":"2026-02-13T14:01:59.425728862Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"test-regex-env","priority":0}
+{"time":"2026-02-13T14:01:59.425982581Z","level":"ERROR","msg":"Config validation error","component":"configLoader","service":"test-regex-env","error":"mcp service with stdio_connection has invalid secret environment variable: \"TEST_ENV_KEY\": secret value does not match validation regex \"^sk-[a-zA-Z0-9]{10}$\""}
+{"time":"2026-02-13T14:01:59.426505086Z","level":"ERROR","msg":"Application failed","service":"mcpany","error":"failed to load services from config: \n❌ Configuration Validation Failed:\n\n  Service: \"test-regex-env\"\n    Error: mcp service with stdio_connection has invalid secret environment variable: \"TEST_ENV_KEY\": secret value does not match validation regex \"^sk-[a-zA-Z0-9]{10}$\"\n"}
