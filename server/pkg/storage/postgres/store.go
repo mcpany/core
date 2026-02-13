@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -46,94 +47,133 @@ func (s *Store) HasConfigSources() bool {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
-	// 1. Load services
-	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
-	if err != nil {
-		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
-	}
-	defer func() { _ = rows.Close() }()
+	var (
+		services    []*configv1.UpstreamServiceConfig
+		users       []*configv1.User
+		settings    *configv1.GlobalSettings
+		collections []*configv1.Collection
+		profiles    []*configv1.ProfileDefinition
+		secrets     []*configv1.Secret
+		credentials []*configv1.Credential
 
-	var services []*configv1.UpstreamServiceConfig
-	// Allow unknown fields to be safe against schema evolution
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		wg   sync.WaitGroup
+		mu   sync.Mutex
+		errs []error
+	)
 
-	for rows.Next() {
-		var configJSON []byte
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+	wg.Add(7)
+
+	// 1. Services
+	go func() {
+		defer wg.Done()
+		res, err := s.ListServices(ctx)
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, err)
+			mu.Unlock()
+			return
 		}
+		services = res
+	}()
 
-		var service configv1.UpstreamServiceConfig
-		if err := opts.Unmarshal(configJSON, &service); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
+	// 2. Users
+	go func() {
+		defer wg.Done()
+		res, err := s.ListUsers(ctx)
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, err)
+			mu.Unlock()
+			return
 		}
-		services = append(services, &service)
-	}
-	_ = rows.Close()
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate rows: %w", err)
+		users = res
+	}()
+
+	// 3. Global Settings
+	go func() {
+		defer wg.Done()
+		res, err := s.GetGlobalSettings(ctx)
+		if err != nil {
+			// Ignore optional
+			return
+		}
+		settings = res
+	}()
+
+	// 4. Collections
+	go func() {
+		defer wg.Done()
+		res, err := s.ListServiceCollections(ctx)
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, err)
+			mu.Unlock()
+			return
+		}
+		collections = res
+	}()
+
+	// 5. Profiles
+	go func() {
+		defer wg.Done()
+		res, err := s.ListProfiles(ctx)
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, err)
+			mu.Unlock()
+			return
+		}
+		profiles = res
+	}()
+
+	// 6. Secrets
+	go func() {
+		defer wg.Done()
+		res, err := s.ListSecrets(ctx)
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, err)
+			mu.Unlock()
+			return
+		}
+		secrets = res
+	}()
+
+	// 7. Credentials
+	go func() {
+		defer wg.Done()
+		res, err := s.ListCredentials(ctx)
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, err)
+			mu.Unlock()
+			return
+		}
+		credentials = res
+	}()
+
+	wg.Wait()
+
+	if len(errs) > 0 {
+		return nil, errs[0]
 	}
 
-	// 2. Load users
-	userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
-	if err != nil {
-		return nil, fmt.Errorf("failed to query users: %w", err)
-	}
-	defer func() { _ = userRows.Close() }()
-
-	var users []*configv1.User
-	for userRows.Next() {
-		var configJSON []byte
-		if err := userRows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan user config_json: %w", err)
+	// Merge Profiles
+	if len(profiles) > 0 {
+		if settings == nil {
+			settings = configv1.GlobalSettings_builder{}.Build()
 		}
-
-		var user configv1.User
-		if err := opts.Unmarshal(configJSON, &user); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
-		}
-		users = append(users, &user)
-	}
-	_ = userRows.Close()
-	if err := userRows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate user rows: %w", err)
-	}
-
-	// 3. Load Global Settings
-	var settings *configv1.GlobalSettings
-	settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
-	var settingsJSON []byte
-	if err := settingsRow.Scan(&settingsJSON); err == nil {
-		var s configv1.GlobalSettings
-		if err := opts.Unmarshal(settingsJSON, &s); err == nil {
-			settings = &s
-		}
-	}
-
-	// 4. Load Collections
-	collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
-	var collections []*configv1.Collection
-	if err == nil {
-		defer func() { _ = collectionRows.Close() }()
-		for collectionRows.Next() {
-			var configJSON []byte
-			if err := collectionRows.Scan(&configJSON); err != nil {
-				continue
-			}
-			var c configv1.Collection
-			if err := opts.Unmarshal(configJSON, &c); err == nil {
-				collections = append(collections, &c)
-			}
-		}
-		if err := collectionRows.Err(); err != nil {
-			return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
-		}
+		current := settings.GetProfileDefinitions()
+		current = append(current, profiles...)
+		settings.SetProfileDefinitions(current)
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: services,
 		Users:            users,
 		Collections:      collections,
+		Secrets:          secrets,
+		Credentials:      credentials,
 	}
 	if settings != nil {
 		builder.GlobalSettings = settings
@@ -174,6 +214,112 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	_, err = s.db.ExecContext(ctx, query, id, service.GetName(), string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save service: %w", err)
+	}
+	return nil
+}
+
+// Credentials
+
+// ListCredentials retrieves all credentials.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query credentials: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var credentials []*configv1.Credential
+	for rows.Next() {
+		var configJSON []byte
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan credential config: %w", err)
+		}
+
+		var cred configv1.Credential
+		if err := protojson.Unmarshal(configJSON, &cred); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+		}
+		credentials = append(credentials, &cred)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return credentials, nil
+}
+
+// GetCredential retrieves a credential by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+	query := "SELECT config_json FROM credentials WHERE id = $1"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON []byte
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan credential: %w", err)
+	}
+
+	var cred configv1.Credential
+	if err := protojson.Unmarshal(configJSON, &cred); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+	}
+	return &cred, nil
+}
+
+// SaveCredential saves a credential.
+//
+// ctx is the context for the request.
+// cred is the cred.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+	if cred.GetId() == "" {
+		return fmt.Errorf("credential ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(cred)
+	if err != nil {
+		return fmt.Errorf("failed to marshal credential: %w", err)
+	}
+
+	query := `
+	INSERT INTO credentials (id, name, config_json, updated_at)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, cred.GetId(), cred.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save credential: %w", err)
+	}
+	return nil
+}
+
+// DeleteCredential deletes a credential by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns an error if the operation fails.
+func (s *Store) DeleteCredential(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM credentials WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete credential: %w", err)
 	}
 	return nil
 }
