@@ -74,6 +74,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
+            // First try to cleanup any existing service with the same name to avoid conflict
+            await context.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS }).catch(() => {});
             await context.post('/api/v1/services', { data: svc, headers: HEADERS });
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
