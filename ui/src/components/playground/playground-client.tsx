@@ -6,6 +6,7 @@
 "use client";
 
 import { apiClient, ToolDefinition } from "@/lib/client";
+import { deserializeSessionMessages } from "@/lib/session-utils";
 
 import React, { useState, useRef, useEffect, memo } from "react";
 import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff, Download, Upload } from "lucide-react";
@@ -73,6 +74,16 @@ export function PlaygroundClient() {
   const lastExecutionRef = useRef<{ toolName: string; args: string; result: unknown } | null>(null);
 
   useEffect(() => {
+    // Check for pending import from Prompt Workbench
+    const pendingImport = sessionStorage.getItem("playground_import_pending");
+    if (pendingImport) {
+        const importedMessages = deserializeSessionMessages(pendingImport);
+        if (importedMessages.length > 0) {
+            setMessages(importedMessages as any);
+            sessionStorage.removeItem("playground_import_pending");
+        }
+    }
+
     // Load tools on mount
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))

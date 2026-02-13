@@ -4,7 +4,7 @@
 
 ## Goal
 
-The Playground is the central specialized interface for Developers to interactive discover, test, and debug MCP tools. It replaces manual CLI calls with a rich, form-based GUI.
+The Playground is the central specialized interface for Developers to interactively discover, test, and debug MCP tools. It provides a chat-like interface for executing tools and viewing results.
 
 ## Actors
 
@@ -15,27 +15,29 @@ The Playground is the central specialized interface for Developers to interactiv
 
 ### 1. Overview
 
-Navigate to `/playground`. The interface presents a clean slate with access to all available tools on the left sidebar.
+Navigate to `/playground`. The interface presents a chat history view where you can see previous tool executions and their results.
 
 ![Playground Overview](screenshots/playground_blank.png)
 
-> **Note**: The page title is "Console".
+### 2. Discover Tools
 
-### 2. Select a Tool
+Click the **"Available Tools"** button in the top right to open the tools catalog.
 
-Browse the sidebar to find the tool you wish to test.
+1. A sheet will slide in listing all registered tools.
+2. Browse or search for the tool you wish to test.
+3. Click **"Use Tool"** on a specific item.
 
-1. Click on a tool name (e.g., `filesystem.list_dir`).
-2. The main pane updates to show the **Tool Description** and a dynamically generated **Input Form**.
+![Tool Selection](screenshots/playground_tool_selected.png)
 
-![Tool Selected](screenshots/playground_tool_selected.png)
+### 3. Configure & Execute
 
-### 3. Execute Tool
+A configuration dialog will open for the selected tool.
 
-Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
+1. **Form Mode**: Fill in the required arguments using the dynamically generated form.
+2. **JSON Mode**: Switch to the "JSON" tab to input raw parameters if preferred.
+3. Click **"Build Command"**.
 
-1. Enter values (e.g., `/var/log` for path).
-2. Click **"Run Tool"**.
+The tool command will be inserted into the chat input and executed immediately.
 
 ![Form Filled](screenshots/playground_form_filled.png)
 
@@ -43,17 +45,11 @@ Fill in the required arguments. The form validates your input based on the JSON 
 
 The execution result is displayed in the chat stream.
 
-- **Success**: Shows the returned JSON payload.
+- **Success**: Shows the returned JSON payload (expandable).
 - **Error**: Displays the error message and code with distinct styling.
+- **Diff View**: If you re-run a tool, you can see a diff of the output compared to the previous run.
 
 ## Advanced Features
 
-- **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
-- **History**: Previous tool calls in the session remain visible above.
-
-### 5. Session History (Import/Export)
-
-You can manage your playground session history using the buttons in the top right corner.
-
-- **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
-- **Import**: Load a previously exported session file to replay tool executions and results.
+- **Session Import/Export**: You can save your current session history to a JSON file and restore it later using the **Import** and **Export** buttons in the header.
+- **Prompt Integration**: You can import executed prompt results from the **Prompt Workbench** directly into the Playground for further analysis.

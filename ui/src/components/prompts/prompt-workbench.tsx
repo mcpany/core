@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { serializeSessionMessages, SessionMessage } from "@/lib/session-utils";
 import {
   MessageSquare,
   Search,
@@ -175,14 +176,26 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   };
 
   const openInPlayground = () => {
-      // Encode the result or logic to transfer state.
-      // Since Playground is a separate page, we might pass data via URL or localStorage.
-      // URL might be too long.
-      // For now, we'll just navigate to playground.
+      if (executionResult && executionResult.messages) {
+          try {
+              // Convert prompt messages to playground messages
+              const playgroundMessages: SessionMessage[] = executionResult.messages.map((msg: any, idx: number) => ({
+                  id: Date.now().toString() + "-" + idx,
+                  type: msg.role === 'user' ? 'user' : 'assistant' as const,
+                  content: typeof msg.content === 'string' ? msg.content : (msg.content?.text || JSON.stringify(msg.content)),
+                  timestamp: new Date()
+              }));
+
+              sessionStorage.setItem("playground_import_pending", serializeSessionMessages(playgroundMessages));
+          } catch (e) {
+              console.error("Failed to prepare playground import", e);
+          }
+      }
+
       router.push("/playground");
       toast({
           title: "Navigating to Playground",
-          description: "You can paste the prompt result there.",
+          description: "Your prompt result will be loaded into the chat.",
       });
   };
 
