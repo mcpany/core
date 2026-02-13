@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolDefinition } from "@proto/config/v1/tool";
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType, ParameterLocation } from "@proto/config/v1/call";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,6 +61,7 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                     isRequired: true,
                 },
                 disableEscape: false,
+                location: ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED,
             } as HttpParameterMapping
         ];
         updateCall({ parameters: newParams });
@@ -136,9 +137,9 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                             id="endpoint-path"
                             value={localCall.endpointPath}
                             onChange={(e) => updateCall({ endpointPath: e.target.value })}
-                            placeholder="/users/{userId}"
+                            placeholder="/users/{{userId}}"
                         />
-                        <p className="text-[10px] text-muted-foreground">Use <code>{"{paramName}"}</code> for path parameters.</p>
+                        <p className="text-[10px] text-muted-foreground">Use <code>{"{{paramName}}"}</code> for path parameters.</p>
                     </div>
                 </div>
             </div>
@@ -171,7 +172,7 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                     placeholder="userId"
                                 />
                             </div>
-                            <div className="col-span-3 space-y-2">
+                            <div className="col-span-2 space-y-2">
                                 <Label htmlFor={`param-type-${index}`}>Type</Label>
                                 <Select
                                     value={param.schema?.type.toString()}
@@ -188,7 +189,25 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="col-span-4 space-y-2">
+                            <div className="col-span-2 space-y-2">
+                                <Label htmlFor={`param-loc-${index}`}>Location</Label>
+                                <Select
+                                    value={param.location?.toString() || ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}
+                                    onValueChange={(val) => updateParameter(index, { location: parseInt(val) })}
+                                >
+                                    <SelectTrigger id={`param-loc-${index}`}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}>Auto (Path/Body)</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_QUERY.toString()}>Query</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_HEADER.toString()}>Header</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_COOKIE.toString()}>Cookie</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_PATH.toString()}>Path</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="col-span-3 space-y-2">
                                 <Label htmlFor={`param-desc-${index}`}>Description</Label>
                                 <Input
                                     id={`param-desc-${index}`}
