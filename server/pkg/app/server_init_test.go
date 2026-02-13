@@ -270,6 +270,10 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
+	// Expect check for templates (return non-empty to skip seeding for this test, or empty?
+	// If empty, we expect seeding calls. Let's return non-empty to simplify this test.)
+	mockStore.On("ListServiceTemplates", mock.Anything).Return([]*configv1.ServiceTemplate{{}}, nil)
+
 	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
@@ -284,9 +288,37 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore.AssertExpectations(t)
 }
 
+func TestInitializeDatabase_SeedTemplates(t *testing.T) {
+	mockStore := new(MockStore)
+	app := &Application{}
+
+	// Expect check for templates - empty
+	mockStore.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
+	// Expect seeding
+	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+
+	// Rest of initialization (empty services)
+	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
+
+	err := app.initializeDatabase(context.Background(), mockStore)
+	assert.NoError(t, err)
+
+	// Verify SaveServiceTemplate was called at least once (actually len(BuiltinServiceTemplates))
+	// We used generic match above, AssertExpectations will verify it was called.
+	mockStore.AssertExpectations(t)
+}
+
 func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
+
+	// Expect templates check
+	mockStore.On("ListServiceTemplates", mock.Anything).Return([]*configv1.ServiceTemplate{{}}, nil)
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
 
@@ -343,6 +375,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
+		mockStore.On("ListServiceTemplates", mock.Anything).Return([]*configv1.ServiceTemplate{{}}, nil)
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore)
@@ -354,6 +387,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
+		mockStore.On("ListServiceTemplates", mock.Anything).Return([]*configv1.ServiceTemplate{{}}, nil)
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
@@ -367,6 +401,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
+		mockStore.On("ListServiceTemplates", mock.Anything).Return([]*configv1.ServiceTemplate{{}}, nil)
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)

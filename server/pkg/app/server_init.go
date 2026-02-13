@@ -34,6 +34,17 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			return nil // Already initialized
 		}
 	} else {
+		// Seed Service Templates (Idempotent / Upsert)
+		templates, err := s.ListServiceTemplates(ctx)
+		if err == nil && len(templates) == 0 {
+			log.Info("Seeding builtin service templates...", "count", len(BuiltinServiceTemplates))
+			for _, t := range BuiltinServiceTemplates {
+				if err := s.SaveServiceTemplate(ctx, t); err != nil {
+					log.Error("Failed to save service template", "id", t.GetId(), "error", err)
+				}
+			}
+		}
+
 		// Use Storage interface
 		services, err := s.ListServices(ctx)
 		if err != nil {

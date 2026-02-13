@@ -39,6 +39,18 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
     description?: string;
 }
 
+/**
+ * Service Template for the wizard.
+ */
+export interface ServiceTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    tags?: string[];
+    serviceConfig: UpstreamServiceConfig;
+}
+
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
@@ -1685,28 +1697,41 @@ export const apiClient = {
      * Lists all service templates.
      * @returns A promise that resolves to a list of templates.
      */
-    listTemplates: async () => {
+    listTemplates: async (): Promise<ServiceTemplate[]> => {
         const res = await fetchWithAuth('/api/v1/templates');
         if (!res.ok) throw new Error('Failed to fetch templates');
         const data = await res.json();
-        // Backend returns generic UpstreamServiceConfig list.
-        // Map snake_case to camelCase
+        // Backend returns list of ServiceTemplate objects with snake_case fields (UseProtoNames=true)
         const list = Array.isArray(data) ? data : [];
-        return list.map((s: any) => ({
-            ...s,
-            // Reuse logic? Or copy/paste mapping
-            connectionPool: s.connection_pool,
-            httpService: s.http_service,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            preCallHooks: s.pre_call_hooks,
-            postCallHooks: s.post_call_hooks,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
-        }));
+        return list.map((t: any) => {
+            const s = t.service_config || {};
+            // Map service_config (snake_case) to camelCase UpstreamServiceConfig
+            const serviceConfig = {
+                ...s,
+                connectionPool: s.connection_pool,
+                httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+                grpcService: s.grpc_service,
+                commandLineService: s.command_line_service,
+                mcpService: s.mcp_service,
+                upstreamAuth: s.upstream_auth,
+                preCallHooks: s.pre_call_hooks,
+                postCallHooks: s.post_call_hooks,
+                toolExportPolicy: s.tool_export_policy,
+                promptExportPolicy: s.prompt_export_policy,
+                resourceExportPolicy: s.resource_export_policy,
+                configurationSchema: s.configuration_schema,
+                // Ensure authentication fields are mapped if present
+            };
+
+            return {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon,
+                tags: t.tags,
+                serviceConfig: serviceConfig,
+            };
+        });
     },
 
     /**
@@ -1714,50 +1739,39 @@ export const apiClient = {
      * @param template The template configuration to save.
      * @returns A promise that resolves to the saved template.
      */
-    saveTemplate: async (template: UpstreamServiceConfig) => {
+    saveTemplate: async (template: ServiceTemplate) => {
         // Map back to snake_case for saving
-        // Reuse registerService mapping logic essentially but for template endpoint
-        const payload: any = {
-            id: template.id,
-            name: template.name,
-            version: template.version,
-            disable: template.disable,
-            priority: template.priority,
-            load_balancing_strategy: template.loadBalancingStrategy,
-            tags: template.tags,
+        // We only support saving the service_config part + metadata
+        const serviceConfigPayload: any = {
+            id: template.serviceConfig.id,
+            name: template.serviceConfig.name,
+            version: template.serviceConfig.version,
+            disable: template.serviceConfig.disable,
+            priority: template.serviceConfig.priority,
+            load_balancing_strategy: template.serviceConfig.loadBalancingStrategy,
+            tags: template.serviceConfig.tags,
+            configuration_schema: template.serviceConfig.configurationSchema,
         };
 
-        if (template.httpService) {
-            payload.http_service = { address: template.httpService.address };
+        if (template.serviceConfig.httpService) {
+            serviceConfigPayload.http_service = HttpUpstreamService.toJSON(template.serviceConfig.httpService);
         }
-        if (template.grpcService) {
-            payload.grpc_service = { address: template.grpcService.address };
+        // ... (Simplified: Add other service types as needed for saving templates via UI)
+        if (template.serviceConfig.mcpService) {
+            serviceConfigPayload.mcp_service = { ...template.serviceConfig.mcpService };
         }
-        if (template.commandLineService) {
-            payload.command_line_service = {
-                command: template.commandLineService.command,
-                working_directory: template.commandLineService.workingDirectory,
-                env: template.commandLineService.env
-            };
+        if (template.serviceConfig.upstreamAuth) {
+            serviceConfigPayload.upstream_auth = template.serviceConfig.upstreamAuth;
         }
-        if (template.mcpService) {
-            payload.mcp_service = { ...template.mcpService };
-        }
-        if (template.preCallHooks) {
-            payload.pre_call_hooks = template.preCallHooks;
-        }
-        if (template.postCallHooks) {
-            payload.post_call_hooks = template.postCallHooks;
-        }
-        if (template.toolExportPolicy) {
-            payload.tool_export_policy = template.toolExportPolicy;
-        }
-        if (template.promptExportPolicy) {
-            payload.prompt_export_policy = template.promptExportPolicy;
-        }
-        if (template.resourceExportPolicy) {
-            payload.resource_export_policy = template.resourceExportPolicy;
-        }
+
+        const payload = {
+            id: template.id,
+            name: template.name,
+            description: template.description,
+            icon: template.icon,
+            tags: template.tags,
+            service_config: serviceConfigPayload,
+        };
 
         const res = await fetchWithAuth('/api/v1/templates', {
             method: 'POST',

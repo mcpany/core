@@ -5,12 +5,14 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
-import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
+import { useState, useMemo, useEffect } from "react";
+import { ServiceTemplate } from "@/lib/templates";
+import { apiClient } from "@/lib/client";
+import { convertBackendTemplateToFrontend } from "@/lib/template-utils";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star } from "lucide-react";
+import { Search, Star, Loader2, AlertCircle } from "lucide-react";
 
 interface ServiceTemplateSelectorProps {
   onSelect: (template: ServiceTemplate) => void;
@@ -30,9 +32,29 @@ const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Clou
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [templates, setTemplates] = useState<ServiceTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadTemplates() {
+        try {
+            setLoading(true);
+            const backendTemplates = await apiClient.listTemplates();
+            const frontendTemplates = backendTemplates.map(convertBackendTemplateToFrontend);
+            setTemplates(frontendTemplates);
+        } catch (e) {
+            console.error("Failed to load templates", e);
+            setError("Failed to load service templates.");
+        } finally {
+            setLoading(false);
+        }
+    }
+    loadTemplates();
+  }, []);
 
   const filteredTemplates = useMemo(() => {
-    return SERVICE_TEMPLATES.filter((template) => {
+    return templates.filter((template) => {
       const matchesCategory = selectedCategory === "All" || template.category === selectedCategory;
       const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             template.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -43,7 +65,24 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
         if (!a.featured && b.featured) return 1;
         return a.name.localeCompare(b.name);
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, templates]);
+
+  if (loading) {
+      return (
+          <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+      );
+  }
+
+  if (error) {
+      return (
+          <div className="flex flex-col items-center justify-center py-12 gap-2 text-destructive">
+              <AlertCircle className="h-8 w-8" />
+              <p>{error}</p>
+          </div>
+      );
+  }
 
   return (
     <div className="space-y-4 p-1">

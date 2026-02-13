@@ -10,6 +10,9 @@ import (
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
+// BuiltinServiceTemplates contains the seed configurations for the Service Wizard (HTTP/OAuth/Rich Metadata).
+var BuiltinServiceTemplates []*configv1.ServiceTemplate
+
 func init() {
 	BuiltinTemplates = []*configv1.UpstreamServiceConfig{
 		mkTemplate(
@@ -202,6 +205,247 @@ func init() {
 			"npx -y @modelcontextprotocol/server-cloudflare",
 		),
 	}
+
+	BuiltinServiceTemplates = []*configv1.ServiceTemplate{
+		mkServiceTemplate(
+			"google-calendar",
+			"Google Calendar",
+			"Calendar management.",
+			"calendar",
+			[]string{"productivity", "google"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("google-calendar")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://calendar.googleapis.com")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("https://www.googleapis.com/auth/calendar")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "Google Calendar Configuration",
+					"description": "Connect to Google Calendar via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
+			"github",
+			"GitHub",
+			"Code hosting and collaboration.",
+			"github",
+			[]string{"development", "git"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("github")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://api.github.com")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("repo,user")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "GitHub Configuration",
+					"description": "Connect to GitHub via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
+			"gitlab",
+			"GitLab",
+			"DevOps lifecycle tool.",
+			"gitlab",
+			[]string{"development", "git"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("gitlab")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://gitlab.com/api/v4")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("api")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "GitLab Configuration",
+					"description": "Connect to GitLab via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
+			"slack",
+			"Slack",
+			"Team communication and collaboration.",
+			"slack",
+			[]string{"productivity", "chat"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("slack")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://slack.com/api")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("channels:read,chat:write,files:read")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "Slack Configuration",
+					"description": "Connect to Slack via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
+			"notion",
+			"Notion",
+			"All-in-one workspace for notes and docs.",
+			"notion",
+			[]string{"productivity", "docs"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("notion")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://api.notion.com/v1")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("basic")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "Notion Configuration",
+					"description": "Connect to Notion via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
+			"linear",
+			"Linear",
+			"Issue tracking and project management.",
+			"linear",
+			[]string{"development", "pm"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("linear")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://api.linear.app/graphql")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("read,write")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "Linear Configuration",
+					"description": "Connect to Linear via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
+			"jira",
+			"Jira",
+			"Issue tracking and agile project management.",
+			"jira",
+			[]string{"development", "pm"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				c.SetName("jira")
+
+				conn := &configv1.McpStreamableHttpConnection{}
+				conn.SetHttpAddress("https://api.atlassian.com/ex/jira")
+
+				mcp := &configv1.McpUpstreamService{}
+				mcp.SetHttpConnection(conn)
+				mcp.SetToolAutoDiscovery(true)
+				c.SetMcpService(mcp)
+
+				auth := &configv1.Authentication{}
+				oauth := &configv1.OAuth2Auth{}
+				oauth.SetScopes("read:jira-work,write:jira-work")
+				auth.SetOauth2(oauth)
+				c.SetUpstreamAuth(auth)
+
+				c.SetConfigurationSchema(`{
+					"type": "object",
+					"title": "Jira Configuration",
+					"description": "Connect to Jira via OAuth.",
+					"properties": {},
+					"required": []
+				}`)
+				return c
+			}(),
+		),
+	}
 }
 
 func mkTemplate(id, name, schema, command string) *configv1.UpstreamServiceConfig {
@@ -217,5 +461,16 @@ func mkTemplate(id, name, schema, command string) *configv1.UpstreamServiceConfi
 
 	t.SetCommandLineService(cmd)
 	t.SetAutoDiscoverTool(true)
+	return t
+}
+
+func mkServiceTemplate(id, name, desc, icon string, tags []string, config *configv1.UpstreamServiceConfig) *configv1.ServiceTemplate {
+	t := &configv1.ServiceTemplate{}
+	t.SetId(id)
+	t.SetName(name)
+	t.SetDescription(desc)
+	t.SetIcon(icon)
+	t.SetTags(tags)
+	t.SetServiceConfig(config)
 	return t
 }
