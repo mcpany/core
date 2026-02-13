@@ -27,10 +27,14 @@ import (
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server.
 //
+// Summary: Interface for MCP server provision.
+//
 // This interface is used to decouple the Manager from the concrete server implementation,
 // avoiding circular dependencies.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
+	//
+	// Summary: Retrieves the MCP server instance.
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.
@@ -39,10 +43,14 @@ type MCPServerProvider interface {
 
 // ManagerInterface defines the contract for a tool manager.
 //
+// Summary: Interface for tool management operations.
+//
 // It outlines the methods required for managing the lifecycle, registration, discovery,
 // and execution of tools within the MCP Any server.
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
+	//
+	// Summary: Registers a new tool.
 	//
 	// Parameters:
 	//   - tool: Tool. The tool definition to register.
@@ -52,6 +60,8 @@ type ManagerInterface interface {
 	AddTool(tool Tool) error
 
 	// GetTool retrieves a tool by its unique name or ID.
+	//
+	// Summary: Retrieves a tool by name or ID.
 	//
 	// Parameters:
 	//   - toolName: string. The name or ID of the tool to retrieve.
@@ -63,11 +73,15 @@ type ManagerInterface interface {
 
 	// ListTools returns a list of all currently registered tools.
 	//
+	// Summary: Lists all registered tools.
+	//
 	// Returns:
 	//   - []Tool: A slice of registered tools.
 	ListTools() []Tool
 
 	// ListMCPTools returns a list of all registered tools formatted for the MCP protocol.
+	//
+	// Summary: Lists all tools in MCP format.
 	//
 	// This method is optimized for the MCP `tools/list` request.
 	//
@@ -77,6 +91,8 @@ type ManagerInterface interface {
 
 	// ClearToolsForService removes all tools associated with a specific service ID.
 	//
+	// Summary: Clears tools for a service.
+	//
 	// This is typically used when a service is reloaded or removed.
 	//
 	// Parameters:
@@ -84,6 +100,8 @@ type ManagerInterface interface {
 	ClearToolsForService(serviceID string)
 
 	// ExecuteTool executes a specific tool with the provided request parameters.
+	//
+	// Summary: Executes a tool.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the execution.
@@ -96,6 +114,8 @@ type ManagerInterface interface {
 
 	// SetMCPServer sets the MCP server provider for the manager.
 	//
+	// Summary: Sets the MCP server provider.
+	//
 	// This allows the manager to register tool handlers with the underlying MCP server.
 	//
 	// Parameters:
@@ -104,11 +124,15 @@ type ManagerInterface interface {
 
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
+	// Summary: Adds execution middleware.
+	//
 	// Parameters:
 	//   - middleware: ExecutionMiddleware. The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
 
 	// AddServiceInfo adds metadata for a registered service.
+	//
+	// Summary: Registers service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -116,6 +140,8 @@ type ManagerInterface interface {
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 
 	// GetServiceInfo retrieves metadata for a service by its ID.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -127,11 +153,15 @@ type ManagerInterface interface {
 
 	// ListServices returns a list of all services known to the manager.
 	//
+	// Summary: Lists all known services.
+	//
 	// Returns:
 	//   - []*ServiceInfo: A slice of service metadata.
 	ListServices() []*ServiceInfo
 
 	// SetProfiles configures the active profiles and their definitions.
+	//
+	// Summary: Configures active profiles.
 	//
 	// This is used for filtering tools based on user profiles and permissions.
 	//
@@ -141,6 +171,8 @@ type ManagerInterface interface {
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 
 	// IsServiceAllowed checks if a specific service is accessible under a given profile.
+	//
+	// Summary: Checks if a service is allowed for a profile.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -152,6 +184,8 @@ type ManagerInterface interface {
 
 	// ToolMatchesProfile checks if a specific tool is accessible under a given profile.
 	//
+	// Summary: Checks if a tool matches a profile.
+	//
 	// Parameters:
 	//   - tool: Tool. The tool to check.
 	//   - profileID: string. The identifier of the profile to check against.
@@ -161,6 +195,8 @@ type ManagerInterface interface {
 	ToolMatchesProfile(tool Tool, profileID string) bool
 
 	// GetAllowedServiceIDs returns a set of allowed service IDs for a given profile.
+	//
+	// Summary: Retrieves allowed service IDs for a profile.
 	//
 	// This is optimized for quick lookups during filtering.
 	//
@@ -173,6 +209,8 @@ type ManagerInterface interface {
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 
 	// GetToolCountForService returns the number of tools registered for a given service.
+	//
+	// Summary: Gets tool count for a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.

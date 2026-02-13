@@ -41,10 +41,17 @@ import { RotateCw, Copy, Check, Key, Lock, ShieldAlert, Eye, Pencil } from "luci
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+/**
+ * Props for the UserSheet component.
+ */
 interface UserSheetProps {
+    /** Whether the sheet is open. */
     open: boolean;
+    /** Callback to handle open state changes. */
     onOpenChange: (open: boolean) => void;
+    /** The user to edit, or null if creating a new user. */
     user: User | null;
+    /** Callback to save the user changes. */
     onSave: (user: Partial<User>, password?: string, apiKey?: string) => Promise<void>;
 }
 
@@ -57,6 +64,12 @@ const userSchema = z.object({
 
 type UserValues = z.infer<typeof userSchema>;
 
+/**
+ * A sheet component for creating or editing a user.
+ *
+ * @param props - The component props.
+ * @returns The rendered sheet component.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();
     const [generatedKey, setGeneratedKey] = useState("");

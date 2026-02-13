@@ -167,10 +167,14 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_DEBUG` | Enable debug logging | `false` |
 | `MCPANY_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
 | `MCPANY_LOG_FORMAT` | Log format (text, json) | `text` |
+| `MCPANY_LOGFILE` | Path to write logs to a file | Empty (Stderr) |
 | `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
+| `MCPANY_DB_DSN` | Database connection string (DSN) | Empty |
+| `MCPANY_DB_DRIVER` | Database driver (sqlite, postgres) | `sqlite` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+| `MCPANY_SET` | Override config values (e.g. `key=value`) | `[]` |
 
 ### Required Secrets
 

@@ -35,13 +35,26 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * Props for the UserList component.
+ */
 interface UserListProps {
+    /** The list of users to display. */
     users: User[];
+    /** Whether the data is loading. */
     isLoading?: boolean;
+    /** Callback to handle editing a user. */
     onEdit: (user: User) => void;
+    /** Callback to handle deleting a user. */
     onDelete: (id: string) => void;
 }
 
+/**
+ * A list component for displaying users in a table.
+ *
+ * @param props - The component props.
+ * @returns The rendered list component.
+ */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();
