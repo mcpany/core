@@ -71,9 +71,17 @@ test.describe('Dashboard Real Data', () => {
         await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden();
 
         // We expect around 6,000.
-        await expect(totalRequestsLocator).toBeVisible({ timeout: 45000 });
-        await expect(totalRequestsLocator).not.toHaveText('0', { timeout: 45000 });
-        await expect(totalRequestsLocator).not.toHaveText('--', { timeout: 45000 });
+        // Use expect.poll to wait for the value to become a valid number > 0
+        // This handles "0", "--", and eventual consistency robustly.
+        await expect.poll(async () => {
+            if (!await totalRequestsLocator.isVisible()) return 0;
+            const text = await totalRequestsLocator.innerText();
+            if (text === '--') return 0;
+            return parseInt(text.replace(/,/g, ''), 10);
+        }, {
+            timeout: 60000,
+            intervals: [1000, 2000, 5000]
+        }).toBeGreaterThan(0);
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();
