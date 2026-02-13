@@ -466,6 +466,7 @@ type HTTPTool struct {
 	querySegments        []urlSegment
 	paramInPath          []bool
 	paramInQuery         []bool
+	paramTargets         []configv1.ParameterLocation
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
 }
@@ -558,6 +559,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
 	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
+	t.paramTargets = make([]configv1.ParameterLocation, len(callDefinition.GetParameters()))
 
 	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
@@ -571,6 +573,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 			if strings.Contains(queryStr, placeholder) {
 				t.paramInQuery[i] = true
 			}
+			t.paramTargets[i] = param.GetLocation()
 		}
 	}
 
@@ -641,7 +644,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
+	inputs, urlString, headerParams, cookieParams, queryParams, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -667,6 +670,18 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				},
 			},
 		}
+		// Add explicit headers/cookies to dry run result
+		headers := dryRunResult["request"].(map[string]any)["headers"].(map[string]string)
+		for k, v := range headerParams {
+			headers[k] = v
+		}
+		if len(cookieParams) > 0 {
+			dryRunResult["request"].(map[string]any)["cookies"] = cookieParams
+		}
+		if len(queryParams) > 0 {
+			dryRunResult["request"].(map[string]any)["query_params"] = queryParams
+		}
+
 		if body != nil {
 			if seeker, ok := body.(io.Seeker); ok {
 				_, _ = seeker.Seek(0, io.SeekStart)
@@ -691,7 +706,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 		}
 
-		httpReq, err := t.createHTTPRequest(ctx, urlString, bodyForAttempt, contentType, inputs)
+		httpReq, err := t.createHTTPRequest(ctx, urlString, bodyForAttempt, contentType, inputs, headerParams, cookieParams, queryParams)
 		if err != nil {
 			return &resilience.PermanentError{Err: err}
 		}
@@ -764,7 +779,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return t.processResponse(ctx, resp)
 }
 
-func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body io.Reader, contentType string, inputs map[string]interface{}) (*http.Request, error) {
+func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body io.Reader, contentType string, inputs map[string]interface{}, headerParams, cookieParams, queryParams map[string]string) (*http.Request, error) {
 	httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http request: %w", err)
@@ -776,6 +791,16 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 	httpReq.Header.Set("Accept", "*/*")
 	httpReq.Header.Set("User-Agent", "MCPAny/1.0 (https://github.com/mcpany/core; contact@mcpany.org)")
 
+	// Apply explicit headers
+	for k, v := range headerParams {
+		httpReq.Header.Set(k, v)
+	}
+
+	// Apply explicit cookies
+	for k, v := range cookieParams {
+		httpReq.AddCookie(&http.Cookie{Name: k, Value: v})
+	}
+
 	if t.authenticator != nil {
 		if err := t.authenticator.Authenticate(httpReq); err != nil {
 			return nil, fmt.Errorf("failed to authenticate request: %w", err)
@@ -785,13 +810,19 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 		logging.GetLogger().Debug("No authenticator configured")
 	}
 
+	// Apply query params
+	q := httpReq.URL.Query()
+	for k, v := range queryParams {
+		q.Add(k, v)
+	}
+
 	if t.cachedMethod == http.MethodGet || t.cachedMethod == http.MethodDelete {
-		q := httpReq.URL.Query()
 		for key, value := range inputs {
 			q.Add(key, util.ToString(value))
 		}
-		httpReq.URL.RawQuery = q.Encode()
 	}
+	httpReq.URL.RawQuery = q.Encode()
+
 	return httpReq, nil
 }
 
@@ -821,7 +852,15 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 }
 
-func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, bool, error) {
+func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (
+	map[string]any,
+	string,
+	map[string]string, // headerParams
+	map[string]string, // cookieParams
+	map[string]string, // queryParams
+	bool,
+	error,
+) {
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
@@ -833,7 +872,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
-			return nil, "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
+			return nil, "", nil, nil, nil, false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
 
@@ -846,9 +885,9 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
-	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
+	pathReplacements, queryReplacements, headerParams, cookieParams, queryParams, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
-		return nil, "", false, err
+		return nil, "", nil, nil, nil, false, err
 	}
 	inputsModified = inputsModified || filtered
 
@@ -914,81 +953,133 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	}
 	urlString := buf.String()
 
-	return inputs, urlString, inputsModified, nil
+	return inputs, urlString, headerParams, cookieParams, queryParams, inputsModified, nil
 }
 
-func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
-	pathReplacements := make(map[string]string, len(t.parameters))
-	queryReplacements := make(map[string]string, len(t.parameters))
+func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (
+	map[string]string, // pathReplacements
+	map[string]string, // queryReplacements
+	map[string]string, // headerParams
+	map[string]string, // cookieParams
+	map[string]string, // queryParams (append)
+	bool, // inputsModified
+	error,
+) {
+	pathReplacements := make(map[string]string)
+	queryReplacements := make(map[string]string)
+	headerParams := make(map[string]string)
+	cookieParams := make(map[string]string)
+	queryParams := make(map[string]string)
 	inputsModified := false
 
 	for i, param := range t.parameters {
 		name := param.GetSchema().GetName()
+		var valStr string
+		var present bool
+
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				return nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+				return nil, nil, nil, nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
-			if t.paramInPath[i] {
-				pathReplacements[name] = secretValue
-			}
-			if t.paramInQuery[i] {
-				queryReplacements[name] = secretValue
-			}
+			valStr = secretValue
+			present = true
 		} else if schema := param.GetSchema(); schema != nil {
 			val, ok := inputs[name]
 			if !ok {
 				if schema.GetIsRequired() {
-					return nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
+					return nil, nil, nil, nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
 				}
-				// If optional and missing, treat as empty string
-				val = ""
-			} else if t.paramInPath[i] || t.paramInQuery[i] {
-				// Only delete from inputs if it was present AND used in path/query replacement
+				// If optional and missing, we generally skip it unless it's in a template where we might need an empty string?
+				// Existing logic treated it as empty string for template replacement.
+				// For explicit headers/cookies/query, we should probably skip sending it if missing & optional.
+				// However, maintaining compat:
+				if t.paramInPath[i] || t.paramInQuery[i] {
+					valStr = ""
+					present = true
+				} else {
+					continue
+				}
+			} else {
+				valStr = util.ToString(val)
+				present = true
+				// We will delete from inputs later if we consume it.
+			}
+		} else {
+			continue
+		}
+
+		if !present {
+			continue
+		}
+
+		loc := t.paramTargets[i]
+		consumed := false
+
+		// Implicit Path/Query Template Logic
+		if t.paramInPath[i] {
+			// Path Traversal Checks
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, nil, nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+			}
+			if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
+				if err := checkForPathTraversal(decodedVal); err != nil {
+					return nil, nil, nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
+				}
+			}
+
+			escaped := valStr
+			if !param.GetDisableEscape() {
+				escaped = url.PathEscape(valStr)
+			}
+			pathReplacements[name] = escaped
+			consumed = true
+		}
+
+		if t.paramInQuery[i] {
+			escaped := valStr
+			if !param.GetDisableEscape() {
+				escaped = url.QueryEscape(valStr)
+			}
+			queryReplacements[name] = escaped
+			consumed = true
+		}
+
+		// Explicit Location Logic
+		switch loc {
+		case configv1.ParameterLocation_AUTO:
+			// Default behavior:
+			// - If in Path/Query template (consumed=true above), good.
+			// - Else, leave in inputs -> Body (POST) or Query (GET).
+		case configv1.ParameterLocation_HEADER:
+			headerParams[name] = valStr
+			consumed = true
+		case configv1.ParameterLocation_COOKIE:
+			cookieParams[name] = valStr
+			consumed = true
+		case configv1.ParameterLocation_QUERY:
+			// Explicit Query: Force to queryParams (append) if not in template.
+			if !t.paramInQuery[i] {
+				queryParams[name] = valStr
+				consumed = true
+			}
+		case configv1.ParameterLocation_PATH:
+			// Already handled by t.paramInPath check above (implied by location or template detection)
+			consumed = true // Mark as consumed so it doesn't stay in body
+		case configv1.ParameterLocation_BODY:
+			// Explicit Body: leave in inputs.
+			// consumed = false
+		}
+
+		if consumed {
+			// Remove from inputs if it came from inputs
+			if param.GetSecret() == nil {
 				delete(inputs, name)
 				inputsModified = true
 			}
-
-			valStr := util.ToString(val)
-
-			if t.paramInPath[i] {
-				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
-				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
-				if err := checkForPathTraversal(valStr); err != nil {
-					return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
-				}
-				// Also check decoded value just in case the input was already encoded
-				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
-					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
-					}
-				}
-			}
-
-			if param.GetDisableEscape() {
-				if t.paramInPath[i] {
-					pathReplacements[name] = valStr
-				}
-				if t.paramInQuery[i] {
-					queryReplacements[name] = valStr
-				}
-			} else {
-				if t.paramInPath[i] {
-					// Even if we escape, we should check for ".." in the input because
-					// url.PathEscape does NOT escape dots, so ".." remains ".."
-					// and path.Clean will resolve it, potentially allowing path traversal.
-					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
-					}
-					pathReplacements[name] = url.PathEscape(valStr)
-				}
-				if t.paramInQuery[i] {
-					queryReplacements[name] = url.QueryEscape(valStr)
-				}
-			}
 		}
 	}
-	return pathReplacements, queryReplacements, inputsModified, nil
+	return pathReplacements, queryReplacements, headerParams, cookieParams, queryParams, inputsModified, nil
 }
 
 type urlSegment struct {

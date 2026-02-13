@@ -235,6 +235,16 @@ enum ParameterType {
   OBJECT = 5;
 }
 
+// ParameterLocation defines where an input parameter should be placed in the HTTP request.
+enum ParameterLocation {
+  AUTO = 0;
+  QUERY = 1;
+  HEADER = 2;
+  PATH = 3;
+  COOKIE = 4;
+  BODY = 5;
+}
+
 // ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
 message ParameterSchema {
   // The name of the input parameter from the MCP call.
@@ -257,6 +267,8 @@ message HttpParameterMapping {
   SecretValue secret = 2;
   // Whether to disable automatic URL escaping for this parameter.
   bool disable_escape = 3 [json_name = "disable_escape"];
+  // The location where the parameter should be placed.
+  ParameterLocation location = 4;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
