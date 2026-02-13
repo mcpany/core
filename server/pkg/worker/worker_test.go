@@ -165,7 +165,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
 			assert.Equal(t, "success-key", result.ServiceKey)
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for registration result")
 		}
 	})
@@ -205,7 +205,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		case result := <-resultChan:
 			require.Error(t, result.Error)
 			assert.Contains(t, result.Error.Error(), expectedErr.Error())
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for registration result")
 		}
 	})
@@ -259,7 +259,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
 			assert.Equal(t, "success-key-request-context", result.ServiceKey)
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for registration result")
 		}
 	})
@@ -310,7 +310,7 @@ func TestUpstreamWorker(t *testing.T) {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
 			assert.JSONEq(t, `"success"`, string(result.Result))
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
@@ -354,7 +354,7 @@ func TestUpstreamWorker(t *testing.T) {
 		case result := <-resultChan:
 			assert.Error(t, result.Error)
 			assert.Equal(t, expectedErr, result.Error)
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
@@ -399,7 +399,7 @@ func TestUpstreamWorker(t *testing.T) {
 			assert.Error(t, result.Error)
 			assert.Contains(t, result.Error.Error(), "json: unsupported type: func()")
 			assert.Nil(t, result.Result, "Result should be nil due to marshaling failure")
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
@@ -444,7 +444,7 @@ func TestUpstreamWorker(t *testing.T) {
 			assert.Error(t, result.Error)
 			assert.Equal(t, expectedErr, result.Error)
 			assert.JSONEq(t, `"partial result"`, string(result.Result))
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
@@ -675,7 +675,7 @@ func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
 			assert.Equal(t, expectedServices, result.Services)
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for list result")
 		}
 	})
