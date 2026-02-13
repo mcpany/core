@@ -33,6 +33,19 @@ test.describe('Stack Editor', () => {
     await page.goto('/stacks/default-stack');
     const visualizer = page.locator('.stack-visualizer-container');
 
+    // Wait/Reload loop for async backend registration/graph rendering
+    for (let i = 0; i < 5; i++) {
+        try {
+            await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 10000 });
+            break;
+        } catch (e) {
+            console.log(`Weather service node not found yet, reloading... (Attempt ${i + 1}/5)`);
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
+        }
+    }
+
     // Wait for initial load with increased timeout and handling for slow rendering
     // Sometimes the text might be inside a child element
     await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 45000 });
