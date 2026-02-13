@@ -300,6 +300,109 @@ var IsAllowedPath = func(path string) error {
 	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)", path)
 }
 
+// IsAllowedSystemPath checks if a given file path is allowed for system use (e.g. databases).
+// It enforces sandbox and security, but allows database file extensions.
+var IsAllowedSystemPath = func(path string) error {
+	// 1. Basic security check
+	if err := IsSecurePath(path); err != nil {
+		return err
+	}
+
+	// 2. Check for sensitive files (excluding DBs)
+	base := filepath.Base(path)
+	baseLower := strings.ToLower(base)
+	if strings.HasPrefix(baseLower, ".env") ||
+		baseLower == ".git" ||
+		baseLower == "config.yaml" || baseLower == "config.yml" || baseLower == "config.json" ||
+		baseLower == "id_rsa" || baseLower == "id_dsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" ||
+		strings.HasSuffix(baseLower, ".pem") || strings.HasSuffix(baseLower, ".key") {
+		return fmt.Errorf("access to sensitive file %q is denied", base)
+	}
+
+	// 3. Resolve to absolute path
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return fmt.Errorf("failed to resolve absolute path: %w", err)
+	}
+
+	// Resolve Symlinks
+	realPath, err := filepath.EvalSymlinks(absPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			current := absPath
+			for {
+				if _, err := os.Stat(current); err == nil {
+					break
+				}
+				parent := filepath.Dir(current)
+				if parent == current {
+					break
+				}
+				current = parent
+			}
+			realCurrent, err := filepath.EvalSymlinks(current)
+			if err != nil {
+				return fmt.Errorf("failed to resolve path %q: %w", path, err)
+			}
+			rel, err := filepath.Rel(current, absPath)
+			if err != nil {
+				return fmt.Errorf("failed to calculate relative path: %w", err)
+			}
+			realPath = filepath.Join(realCurrent, rel)
+		} else {
+			return fmt.Errorf("failed to resolve symlinks for %q: %w", path, err)
+		}
+	}
+
+	// 4. Check for sensitive files again (on resolved path, excluding DBs)
+	baseResolved := filepath.Base(realPath)
+	baseResolvedLower := strings.ToLower(baseResolved)
+	if strings.HasPrefix(baseResolvedLower, ".env") ||
+		baseResolvedLower == ".git" ||
+		baseResolvedLower == "config.yaml" || baseResolvedLower == "config.yml" || baseResolvedLower == "config.json" ||
+		baseResolvedLower == "id_rsa" || baseResolvedLower == "id_dsa" || baseResolvedLower == "id_ed25519" || baseResolvedLower == "id_ecdsa" ||
+		strings.HasSuffix(baseResolvedLower, ".pem") || strings.HasSuffix(baseResolvedLower, ".key") {
+		return fmt.Errorf("access to sensitive file %q is denied", baseResolved)
+	}
+
+	// Helper (duplicated for now as we can't extract easily without larger refactor)
+	isInside := func(parent, child string) bool {
+		realParent, err := filepath.EvalSymlinks(parent)
+		if err == nil {
+			parent = realParent
+		}
+		rel, err := filepath.Rel(parent, child)
+		if err != nil {
+			return false
+		}
+		return !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."
+	}
+
+	// 4. Check if inside CWD
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current working directory: %w", err)
+	}
+
+	if isInside(cwd, realPath) {
+		return nil
+	}
+
+	// 5. Check Allowed Paths
+	for _, allowedDir := range allowedPaths {
+		allowedDir = strings.TrimSpace(allowedDir)
+		if allowedDir == "" {
+			continue
+		}
+		allowedAbs, err := filepath.Abs(allowedDir)
+		if err == nil && isInside(allowedAbs, realPath) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)", path)
+}
+
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
 var allowedOpaqueSchemes = map[string]bool{
 	"dns":         true,

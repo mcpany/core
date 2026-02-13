@@ -34,7 +34,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
 
-	if err := validation.IsAllowedPath(path); err != nil {
+	if err := validation.IsAllowedSystemPath(path); err != nil {
 		return nil, fmt.Errorf("sqlite audit path not allowed: %w", err)
 	}
 
