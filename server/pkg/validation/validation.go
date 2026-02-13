@@ -138,6 +138,16 @@ var (
 	allowedPaths []string
 )
 
+var sensitiveFiles = map[string]bool{
+	".env":        true,
+	".git":        true,
+	"config.yaml": true,
+	"config.json": true,
+	"mcpany.db":   true,
+	"go.mod":      true,
+	"go.sum":      true,
+}
+
 // SetAllowedPaths sets the list of allowed paths for file operations.
 //
 // Summary: Sets the global allowed paths list.
@@ -204,6 +214,11 @@ var IsAllowedPath = func(path string) error {
 		}
 	}
 
+	// 3. Check for sensitive files
+	if err := IsSensitiveFile(realPath); err != nil {
+		return err
+	}
+
 	// Helper to check if child is inside parent
 	isInside := func(parent, child string) bool {
 		// We use EvalSymlinks on parent too just in case CWD is symlinked
@@ -219,7 +234,7 @@ var IsAllowedPath = func(path string) error {
 		return !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."
 	}
 
-	// 3. Check if inside CWD
+	// 4. Check if inside CWD
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory: %w", err)
@@ -229,7 +244,7 @@ var IsAllowedPath = func(path string) error {
 		return nil
 	}
 
-	// 4. Check Allowed Paths
+	// 5. Check Allowed Paths
 	for _, allowedDir := range allowedPaths {
 		allowedDir = strings.TrimSpace(allowedDir)
 		if allowedDir == "" {
@@ -310,6 +325,23 @@ func IsValidURL(s string) bool {
 	}
 
 	return true
+}
+
+// IsSensitiveFile checks if the given path points to a sensitive file.
+//
+// Summary: Checks for sensitive files.
+//
+// Parameters:
+//   - path: string. The path to check.
+//
+// Returns:
+//   - error: An error if the file is sensitive.
+func IsSensitiveFile(path string) error {
+	base := filepath.Base(path)
+	if sensitiveFiles[base] || strings.HasPrefix(base, ".env") {
+		return fmt.Errorf("access to sensitive file %q is denied", base)
+	}
+	return nil
 }
 
 // ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition.
