@@ -100,7 +100,7 @@ export function OnboardingView({ onServiceRegistered }: OnboardingViewProps) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 animate-in fade-in zoom-in duration-500">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 animate-in fade-in zoom-in duration-500" data-testid="onboarding-view">
             <div className="text-center mb-12 max-w-2xl">
                 <div className="flex justify-center mb-6">
                     <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center shadow-inner border border-primary/20">
@@ -117,7 +117,7 @@ export function OnboardingView({ onServiceRegistered }: OnboardingViewProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
                 {/* Option 1: Quick Start Memory */}
                 <Card className="relative overflow-hidden group hover:border-primary/50 transition-all cursor-pointer border-dashed" onClick={() => handleQuickInstall("memory")}>
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     <CardHeader>
                         <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
                             <Cpu className="h-6 w-6" />
@@ -136,7 +136,7 @@ export function OnboardingView({ onServiceRegistered }: OnboardingViewProps) {
 
                 {/* Option 2: Browse Marketplace */}
                 <Card className="relative overflow-hidden group hover:border-primary/50 transition-all cursor-pointer border-dashed" onClick={() => router.push("/marketplace")}>
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     <CardHeader>
                         <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4 text-purple-600 dark:text-purple-400">
                             <Globe className="h-6 w-6" />
@@ -157,7 +157,7 @@ export function OnboardingView({ onServiceRegistered }: OnboardingViewProps) {
                 <RegisterServiceDialog
                     trigger={
                         <Card className="relative overflow-hidden group hover:border-primary/50 transition-all cursor-pointer h-full border-dashed">
-                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                             <CardHeader>
                                 <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4 text-green-600 dark:text-green-400">
                                     <Plus className="h-6 w-6" />

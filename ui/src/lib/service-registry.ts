@@ -12,6 +12,10 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of known services with their configuration schemas and repository information.
+ * Used for auto-detecting and configuring services from the marketplace.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
