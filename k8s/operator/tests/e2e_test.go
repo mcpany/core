@@ -137,6 +137,9 @@ nodes:
 		"--set", "ui.apiKey=test-token",
 		"--set", "apiKey=test-token",
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
+		// Allow local IPs for testing purposes (SSRF protection bypass)
+		"--set", "env.MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true",
+		"--set", "env.MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
