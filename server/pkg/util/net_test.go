@@ -18,6 +18,9 @@ import (
 
 func TestNewSafeHTTPClient(t *testing.T) {
 	// Test default behavior (blocking private/loopback)
+	// Ensure global override is off for these tests
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	client := util.NewSafeHTTPClient()
 	require.NotNil(t, client)
 	require.NotNil(t, client.Transport)
@@ -98,6 +101,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 func TestSafeDialContext(t *testing.T) {
 	// SafeDialContext is just a wrapper around NewSafeDialer().DialContext
 	// We verify that it blocks loopback by default.
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
