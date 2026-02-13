@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # PostgreSQL Popular Service
 
 name: PostgreSQL
@@ -14,7 +17,7 @@ command_line_service:
   command: "npx -y @modelcontextprotocol/server-postgres"
   working_directory: ""
   env:
-    POSTGRES_URL: 
+    POSTGRES_URL:
       plainText: "postgresql://user:password@localhost:5432/db"
   local: false
 

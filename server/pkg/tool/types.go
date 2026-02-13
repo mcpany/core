@@ -2088,12 +2088,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		status = consts.CommandStatusError
 	}
 
+	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
+	// Randomized Selection from Top 5 High-Impact Targets
+	redactor := util.NewSecretRedactor(secrets)
+
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
-		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
-		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
+		"stdout":          redactor.Redact(stdoutBuf.String()),
+		"stderr":          redactor.Redact(stderrBuf.String()),
+		"combined_output": redactor.Redact(combinedBuf.String()),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
@@ -2437,12 +2441,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		status = consts.CommandStatusError
 	}
 
+	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
+	// Randomized Selection from Top 5 High-Impact Targets
+	redactor := util.NewSecretRedactor(secrets)
+
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
-		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
-		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
+		"stdout":          redactor.Redact(stdoutBuf.String()),
+		"stderr":          redactor.Redact(stderrBuf.String()),
+		"combined_output": redactor.Redact(combinedBuf.String()),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
