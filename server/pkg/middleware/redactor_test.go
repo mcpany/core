@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"log/slog"
+	"regexp"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -20,12 +21,14 @@ func TestNewRedactor(t *testing.T) {
 	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 	assert.NotNil(t, r)
+	assert.NotNil(t, r.customPattern)
 	assert.Len(t, r.customPatterns, 1)
 
 	// Test with invalid regex
 	cfg.SetCustomPatterns([]string{`[`})
 	r = NewRedactor(cfg, slog.Default())
 	assert.NotNil(t, r)
+	assert.Nil(t, r.customPattern)
 	assert.Len(t, r.customPatterns, 0)
 
 	// Test with nil config
@@ -255,4 +258,36 @@ func TestRedactJSON_Empty(t *testing.T) {
 	output, err = r.RedactJSON([]byte{})
 	assert.NoError(t, err)
 	assert.Empty(t, output)
+}
+
+func TestNewRedactor_DuplicateNamedGroups(t *testing.T) {
+	enabled := true
+	cfg := configv1.DLPConfig_builder{
+		Enabled:        &enabled,
+		CustomPatterns: []string{`(?P<n>foo)`, `(?P<n>bar)`},
+	}.Build()
+	r := NewRedactor(cfg, slog.Default())
+	assert.NotNil(t, r)
+	// Combined SUCCEEDS in Go for alternation with duplicate named groups
+	assert.NotNil(t, r.customPattern)
+	// Individual patterns should also be preserved
+	assert.Len(t, r.customPatterns, 2)
+
+	// Verify redaction works
+	assert.Equal(t, "***REDACTED***", r.RedactString("foo"))
+	assert.Equal(t, "***REDACTED***", r.RedactString("bar"))
+}
+
+func TestRedactString_Fallback(t *testing.T) {
+	// Manually construct a Redactor to force fallback path
+	p1 := regexp.MustCompile(`foo`)
+	p2 := regexp.MustCompile(`bar`)
+	r := &Redactor{
+		customPattern:  nil,
+		customPatterns: []*regexp.Regexp{p1, p2},
+	}
+
+	assert.Equal(t, "***REDACTED***", r.RedactString("foo"))
+	assert.Equal(t, "***REDACTED***", r.RedactString("bar"))
+	assert.Equal(t, "baz", r.RedactString("baz"))
 }
