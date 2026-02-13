@@ -1,32 +1,40 @@
-*
-!ui/
-!ui/**
-!proto/
-!proto/**
-!server/
-!server/**
-!go.mod
-!go.sum
-!Makefile
-!ui/Dockerfile.e2e
-!.dockerignore
-!server/
-!k8s/
-!go.mod
-!go.sum
-!go.work
-!go.work.sum
+# Core directories and files to ignore
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
 
-ui/node_modules
-ui/.next
-ui/test-results
-ui/playwright-report
-ui/coverage
-ui/*.log
+# Build artifacts
+build/
+dist/
+out/
+target/
+ui/.next/
+ui/test-results/
+ui/playwright-report/
+ui/coverage/
 
-proto/node_modules
-**/node_modules
-server/tools/go
-server/tools/license
-server/tools/license-header-remover
-server/tools/mockgen.go
+# Dependencies
+node_modules/
+ui/node_modules/
+proto/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker files (except those needed for build if referenced)
+ui/Dockerfile.e2e
+docker-compose.yml
+docker-compose.*.yml
+
+# Go files
+go.work
+go.work.sum
+
+# Temporary files
+tmp/
+temp/
