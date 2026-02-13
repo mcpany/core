@@ -844,72 +844,63 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
-                serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch service templates');
+        const data = await res.json();
+
+        // Map backend proto to frontend ServiceTemplate interface
+        return data.map((t: any) => {
+            // Parse JSON Schema if available to generate fields
+            let fields: any[] = [];
+            if (t.serviceConfig && t.serviceConfig.configurationSchema) {
+                try {
+                    const schema = JSON.parse(t.serviceConfig.configurationSchema);
+                    if (schema.properties) {
+                        fields = Object.entries(schema.properties).map(([key, prop]: [string, any]) => ({
+                            name: key,
+                            label: prop.title || key,
+                            placeholder: prop.description || "",
+                            key: `commandLineService.env.${key}`, // Heuristic: assume env var for now based on seeds.go
+                            type: prop.format === "password" ? "password" : "text",
+                            defaultValue: prop.default
+                        }));
+
+                        // Handle replacement tokens if description/title indicates it?
+                        // For seeds.go logic, we used mkTemplate which puts everything in ENV.
+                        // But some (postgres) used {{CONNECTION_STRING}} in command.
+                        // The schema properties for postgres were: POSTGRES_URL.
+                        // And command was "npx ... ${POSTGRES_URL}".
+                        // So setting env var is correct!
                     }
-                }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
+                } catch (e) {
+                    console.error("Failed to parse configuration schema for template", t.id, e);
                 }
             }
-        ];
+
+            return {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon, // String identifier (e.g. "github"), mapped in UI component
+                tags: t.tags,
+                config: {
+                    ...t.serviceConfig,
+                    // Ensure snake_case -> camelCase mapping if needed,
+                    // but UpstreamServiceConfig definition in client.ts handles some.
+                    // However, we receive JSON from proto which is snake_case by default
+                    // unless EmitUnpopulated/UseProtoNames was set.
+                    // api_templates.go uses UseProtoNames: true. So we get snake_case!
+                    // We need to map it back to camelCase for the UI components if they rely on it.
+                    upstreamAuth: t.serviceConfig.upstream_auth,
+                    openapiService: t.serviceConfig.openapi_service,
+                    mcpService: t.serviceConfig.mcp_service,
+                    commandLineService: t.serviceConfig.command_line_service,
+                },
+                fields: fields
+            };
+        });
     },
 
     /**

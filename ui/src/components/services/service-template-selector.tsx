@@ -5,16 +5,39 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
-import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
+import { useState, useMemo, useEffect } from "react";
+import { ServiceTemplate } from "@/lib/templates";
+import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star } from "lucide-react";
+import { Search, Star, Loader2, Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2, Calendar } from "lucide-react";
 
 interface ServiceTemplateSelectorProps {
   onSelect: (template: ServiceTemplate) => void;
 }
+
+const ICON_MAP: Record<string, any> = {
+    "database": Database,
+    "file-text": FileText,
+    "github": Github,
+    "globe": Globe,
+    "server": Server,
+    "activity": Activity,
+    "cloud": Cloud,
+    "message-square": MessageSquare,
+    "slack": MessageSquare,
+    "map": Map,
+    "clock": Clock,
+    "zap": Zap,
+    "check-circle-2": CheckCircle2,
+    "linear": CheckCircle2,
+    "calendar": Calendar,
+    "google-calendar": Calendar,
+    "jira": Activity,
+    "notion": FileText,
+    "gitlab": Github,
+};
 
 /**
  * List of available service template categories.
@@ -30,10 +53,31 @@ const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Clou
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [templates, setTemplates] = useState<ServiceTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      const loadTemplates = async () => {
+          try {
+              const fetched = await apiClient.getServiceTemplates();
+              // Map icons string to component
+              const mapped = fetched.map(t => ({
+                  ...t,
+                  icon: ICON_MAP[t.icon as string] || Server // Fallback icon
+              }));
+              setTemplates(mapped);
+          } catch (e) {
+              console.error("Failed to load templates", e);
+          } finally {
+              setLoading(false);
+          }
+      };
+      loadTemplates();
+  }, []);
 
   const filteredTemplates = useMemo(() => {
-    return SERVICE_TEMPLATES.filter((template) => {
-      const matchesCategory = selectedCategory === "All" || template.category === selectedCategory;
+    return templates.filter((template) => {
+      const matchesCategory = selectedCategory === "All" || template.category === selectedCategory || (selectedCategory === "Other" && !template.category);
       const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             template.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
@@ -43,7 +87,15 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
         if (!a.featured && b.featured) return 1;
         return a.name.localeCompare(b.name);
     });
-  }, [searchQuery, selectedCategory]);
+  }, [templates, searchQuery, selectedCategory]);
+
+  if (loading) {
+      return (
+          <div className="flex justify-center items-center h-40">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+      );
+  }
 
   return (
     <div className="space-y-4 p-1">
