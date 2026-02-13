@@ -22,8 +22,20 @@ import (
 
 func (a *Application) initializeDatabase(ctx context.Context, store config.Store) error {
 	log := logging.GetLogger()
-	// Check if already initialized
+
 	s, ok := store.(storage.Storage)
+
+	// Always seed builtin templates if storage is supported (Upsert)
+	if ok {
+		log.Info("Seeding builtin service templates", "count", len(BuiltinServiceTemplates))
+		for _, t := range BuiltinServiceTemplates {
+			if err := s.SaveServiceTemplate(ctx, t); err != nil {
+				log.Error("failed to save builtin template", "id", t.GetId(), "error", err)
+			}
+		}
+	}
+
+	// Check if already initialized
 	if !ok {
 		// Just Load using Store interface
 		cfg, err := store.Load(ctx)

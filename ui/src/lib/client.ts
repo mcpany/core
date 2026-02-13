@@ -12,7 +12,20 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
+import {
+    UpstreamServiceConfig as BaseUpstreamServiceConfig,
+    HttpUpstreamService,
+    GrpcUpstreamService,
+    OpenapiUpstreamService,
+    CommandLineUpstreamService,
+    McpUpstreamService,
+    WebsocketUpstreamService,
+    WebrtcUpstreamService,
+    GraphQLUpstreamService,
+    SqlUpstreamService,
+    FilesystemUpstreamService,
+    VectorUpstreamService
+} from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -844,72 +857,54 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
-                serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
-                    }
-                }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
-                }
-            }
-        ];
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        const data = await res.json();
+
+        return data.map((t: any) => {
+            // Map service_config (snake_case from API) to config (camelCase for UI)
+            const s = t.service_config || {};
+            const config = {
+                ...s,
+                connectionPool: s.connection_pool,
+                httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+                grpcService: s.grpc_service ? GrpcUpstreamService.fromJSON(s.grpc_service) : undefined,
+                commandLineService: s.command_line_service ? CommandLineUpstreamService.fromJSON(s.command_line_service) : undefined,
+                mcpService: s.mcp_service ? McpUpstreamService.fromJSON(s.mcp_service) : undefined,
+                openapiService: s.openapi_service ? OpenapiUpstreamService.fromJSON(s.openapi_service) : undefined,
+                websocketService: s.websocket_service ? WebsocketUpstreamService.fromJSON(s.websocket_service) : undefined,
+                webrtcService: s.webrtc_service ? WebrtcUpstreamService.fromJSON(s.webrtc_service) : undefined,
+                graphqlService: s.graphql_service ? GraphQLUpstreamService.fromJSON(s.graphql_service) : undefined,
+                sqlService: s.sql_service ? SqlUpstreamService.fromJSON(s.sql_service) : undefined,
+                filesystemService: s.filesystem_service ? FilesystemUpstreamService.fromJSON(s.filesystem_service) : undefined,
+                vectorService: s.vector_service ? VectorUpstreamService.fromJSON(s.vector_service) : undefined,
+
+                upstreamAuth: s.upstream_auth,
+                preCallHooks: s.pre_call_hooks,
+                postCallHooks: s.post_call_hooks,
+                lastError: s.last_error,
+                toolCount: s.tool_count,
+                toolExportPolicy: s.tool_export_policy,
+                promptExportPolicy: s.prompt_export_policy,
+                resourceExportPolicy: s.resource_export_policy,
+                configurationSchema: s.configuration_schema
+            };
+
+            return {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon,
+                category: t.tags?.[0] || "Other",
+                tags: t.tags || [],
+                config: config,
+                // We don't map 'fields' here as we expect UI to parse configurationSchema or use raw config
+                // If the UI relies on 'fields' for the wizard form, we might need to parse configurationSchema here
+                // but let's see if we can adapt the UI first.
+            };
+        });
     },
 
     /**

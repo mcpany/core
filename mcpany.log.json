@@ -280,3 +280,48 @@
 {"time":"2026-02-13T06:08:35.617390593Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"","path":"/api/v1/doctor"}
 {"time":"2026-02-13T06:08:35.617473313Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"","path":"/api/v1/users"}
 {"time":"2026-02-13T06:08:35.617411098Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"","path":"/api/v1/topology"}
+{"time":"2026-02-13T10:24:10.252325731Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":null}
+{"time":"2026-02-13T10:24:10.253755638Z","level":"WARN","msg":"⚠️  No configuration files provided. Server will run but no tools will be available.","service":"mcpany"}
+{"time":"2026-02-13T10:24:10.253948902Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-13T10:24:10.254025951Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-13T10:24:10.254064263Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-13T10:24:10.262400842Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-13T10:24:10.300939872Z","level":"INFO","msg":"Seeding builtin service templates","count":6}
+{"time":"2026-02-13T10:24:10.308752954Z","level":"INFO","msg":"Database appears empty, initializing with default configuration..."}
+{"time":"2026-02-13T10:24:10.308843196Z","level":"INFO","msg":"DEBUG: Initializing DB with defaultGS","middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-13T10:24:10.310784078Z","level":"INFO","msg":"No users found, creating default admin user..."}
+{"time":"2026-02-13T10:24:10.310858Z","level":"WARN","msg":"⚠️  GENERATED ADMIN PASSWORD: PbVrTPzhUK6IQOOgpIFWby6NKrRemMKmccEYO3xfmhY ⚠️"}
+{"time":"2026-02-13T10:24:10.310889384Z","level":"WARN","msg":"Please save this password immediately and change it upon first login."}
+{"time":"2026-02-13T10:24:10.739403144Z","level":"INFO","msg":"Default admin user created successfully.","username":"admin"}
+{"time":"2026-02-13T10:24:10.739530342Z","level":"INFO","msg":"Database initialized successfully."}
+{"time":"2026-02-13T10:24:10.744155827Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T10:24:10.744288016Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T10:24:10.744373989Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T10:24:10.762682369Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T10:24:10.763012715Z","level":"INFO","msg":"Seeding builtin templates","count":1}
+{"time":"2026-02-13T10:24:10.763792475Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-13T10:24:10.763902582Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-13T10:24:10.764084128Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-13T10:24:10.764420649Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-13T10:24:10.764667717Z","level":"WARN","msg":"CORSMiddleware (MCP) is a placeholder and does not handle HTTP CORS. Ensure HTTP CORS is configured via the HTTP server middleware (HTTPCORSMiddleware)."}
+{"time":"2026-02-13T10:24:10.764714393Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764686031Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T10:24:10.764756166Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764783225Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.76481398Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764849131Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764864312Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764876576Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764888277Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764900163Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764911721Z","level":"INFO","msg":"Adding middleware","count":10}
+{"time":"2026-02-13T10:24:10.764877518Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T10:24:10.765031228Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":1,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-13T10:24:10.765220186Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T10:24:10.76531694Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T10:24:10.765426637Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T10:24:10.765322526Z","level":"WARN","msg":"UI directory ./ui contains package.json. Refusing to serve source code for security.","path":"./ui"}
+{"time":"2026-02-13T10:24:10.765460293Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T10:24:10.766046236Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-13T10:24:10.772080303Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-13T10:25:01.32547033Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"","path":"/api/v1/templates"}
