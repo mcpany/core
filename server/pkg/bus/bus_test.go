@@ -11,11 +11,25 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func setupRedis(t *testing.T) (string, *redis.Client) {
+	t.Helper()
+	mr, err := miniredis.Run()
+	if err != nil {
+		t.Fatalf("failed to start miniredis: %v", err)
+	}
+	t.Cleanup(mr.Close)
+	client := redis.NewClient(&redis.Options{
+		Addr: mr.Addr(),
+	})
+	return mr.Addr(), client
+}
 
 func waitForSubscribers(t *testing.T, client *redis.Client, topic string, expected int) {
 	require.Eventually(t, func() bool {
@@ -242,16 +256,11 @@ func TestBusProvider_Concurrent(t *testing.T) {
 }
 
 func TestRedisBus_SubscribeOnce(t *testing.T) {
-	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
-	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
+	addr, client := setupRedis(t)
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(addr)
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
@@ -281,16 +290,11 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 }
 
 func TestRedisBus_Unsubscribe(t *testing.T) {
-	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
-	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
+	addr, client := setupRedis(t)
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(addr)
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
@@ -332,16 +336,11 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Concurrent(t *testing.T) {
-	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
-	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
+	addr, client := setupRedis(t)
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(addr)
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
