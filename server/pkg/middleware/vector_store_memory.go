@@ -19,14 +19,12 @@ type SimpleVectorStore struct {
 
 // VectorEntry represents a single entry in the vector store.
 type VectorEntry struct {
-	// Vector is the embedding vector.
+	// Vector is the embedding vector (normalized to unit length).
 	Vector []float32
 	// Result is the cached result associated with the vector.
 	Result any
 	// ExpiresAt is the timestamp when this entry expires.
 	ExpiresAt time.Time
-	// Norm is the precomputed Euclidean norm of the vector.
-	Norm float32
 }
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
@@ -64,11 +62,14 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 		entries = entries[1:]
 	}
 
+	// ⚡ BOLT: Pre-normalize vector to avoid Sqrt/Div in hot search loop.
+	// Randomized Selection from Top 5 High-Impact Targets
+	normalizedVector := normalize(vector)
+
 	entry := &VectorEntry{
-		Vector:    vector,
+		Vector:    normalizedVector,
 		Result:    result,
 		ExpiresAt: time.Now().Add(ttl),
-		Norm:      vectorNorm(vector),
 	}
 	s.items[key] = append(entries, entry)
 	return nil
@@ -97,13 +98,16 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	now := time.Now()
 	var bestResult any
 	var bestScore float32 = -1.0
-	queryNorm := vectorNorm(query)
+
+	// Normalize query once
+	normalizedQuery := normalize(query)
 
 	for _, entry := range entries {
 		if now.After(entry.ExpiresAt) {
 			continue
 		}
-		score := cosineSimilarityOptimized(query, entry.Vector, queryNorm, entry.Norm)
+		// ⚡ BOLT: Use dot product on normalized vectors for O(D) similarity check instead of O(D) + Sqrt/Div.
+		score := dotProduct(normalizedQuery, entry.Vector)
 		if score > bestScore {
 			bestScore = score
 			bestResult = entry.Result
@@ -156,17 +160,31 @@ func vectorNorm(v []float32) float32 {
 	return float32(math.Sqrt(float64(sum)))
 }
 
-func cosineSimilarityOptimized(a, b []float32, normA, normB float32) float32 {
+func normalize(v []float32) []float32 {
+	norm := vectorNorm(v)
+	if norm == 0 {
+		// Return zero vector if norm is 0
+		// We copy just to be safe and consistent with non-zero case (returning new slice)
+		dst := make([]float32, len(v))
+		copy(dst, v)
+		return dst
+	}
+
+	dst := make([]float32, len(v))
+	for i, x := range v {
+		dst[i] = x / norm
+	}
+	return dst
+}
+
+func dotProduct(a, b []float32) float32 {
 	if len(a) != len(b) || len(a) == 0 {
 		return 0
 	}
-	if normA == 0 || normB == 0 {
-		return 0
-	}
 
-	var dotProduct float32
+	var dot float32
 	for i := range a {
-		dotProduct += a[i] * b[i]
+		dot += a[i] * b[i]
 	}
-	return dotProduct / (normA * normB)
+	return dot
 }

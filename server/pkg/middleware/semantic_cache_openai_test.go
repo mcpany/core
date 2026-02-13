@@ -163,16 +163,16 @@ func TestSimpleVectorStore_Cleanup(t *testing.T) {
 	assert.Equal(t, "result2", res)
 }
 
-func TestCosineSimilarity_EdgeCases(t *testing.T) {
+func TestDotProduct_EdgeCases(t *testing.T) {
 	// Empty vectors
-	score := cosineSimilarityOptimized([]float32{}, []float32{}, 0, 0)
+	score := dotProduct([]float32{}, []float32{})
 	assert.Equal(t, float32(0), score)
 
 	// Mismatched lengths
-	score = cosineSimilarityOptimized([]float32{1}, []float32{1, 2}, 1, 1)
+	score = dotProduct([]float32{1}, []float32{1, 2})
 	assert.Equal(t, float32(0), score)
 
 	// Zero vectors (norm is 0)
-	score = cosineSimilarityOptimized([]float32{0, 0}, []float32{0, 0}, 0, 0)
+	score = dotProduct([]float32{0, 0}, []float32{0, 0})
 	assert.Equal(t, float32(0), score)
 }
