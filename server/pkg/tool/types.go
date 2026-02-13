@@ -2880,9 +2880,10 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Check if the argument itself (template) invokes an interpreter.
 	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
 	// and the argument is the command line for that interpreter.
-	args := strings.Fields(template)
-	if len(args) > 0 {
-		argBase := strings.ToLower(filepath.Base(args[0]))
+	// We locate the command context by finding the last command separator before the placeholder.
+	argBase := findCommandContext(template, placeholder)
+	if argBase != "" {
+		argBase = strings.ToLower(argBase)
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
 			if err := checkInterpreterInjection(val, template, argBase, quoteLevel); err != nil {
@@ -2995,6 +2996,43 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	}
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
+	}
+	if err := checkSedInjection(val, base); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkSedInjection(val, base string) error {
+	// Sed: Block 'e', 'w', 'r' commands to prevent execution and file access.
+	// We block these commands if they appear at the start of the input or after an address (digits).
+	// This prevents injections like "1e date" or "w /tmp/hack".
+	isSed := base == "sed" || base == "gsed" || strings.HasPrefix(base, "sed")
+	if isSed {
+		trimmed := strings.TrimSpace(val)
+		// Check for commands at start of line
+		if strings.HasPrefix(trimmed, "e ") || strings.HasPrefix(trimmed, "e\t") || trimmed == "e" {
+			return fmt.Errorf("sed injection detected: 'e' command")
+		}
+		if strings.HasPrefix(trimmed, "w ") || strings.HasPrefix(trimmed, "w\t") {
+			return fmt.Errorf("sed injection detected: 'w' command")
+		}
+		if strings.HasPrefix(trimmed, "r ") || strings.HasPrefix(trimmed, "r\t") {
+			return fmt.Errorf("sed injection detected: 'r' command")
+		}
+
+		// Check for address + command (e.g. 1e, 10w)
+		for i := 0; i < len(val); i++ {
+			if i > 0 && unicode.IsDigit(rune(val[i-1])) {
+				c := val[i]
+				if c == 'e' || c == 'w' || c == 'r' {
+					// Dangerous if followed by space, tab, semicolon, newline or end of string
+					if i+1 >= len(val) || unicode.IsSpace(rune(val[i+1])) || val[i+1] == ';' {
+						return fmt.Errorf("sed injection detected: address + '%c' command", c)
+					}
+				}
+			}
+		}
 	}
 	return nil
 }
@@ -3163,7 +3201,7 @@ func isInterpreter(command string) bool {
 		"python", "ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
 		"lua", "java", "R", "julia", "elixir", "go",
-		"awk", "gawk", "nawk", "mawk",
+		"awk", "gawk", "nawk", "mawk", "sed", "gsed",
 		"expect", "tclsh", "wish",
 		"groovy", "jshell", "scala", "kotlin", "swift",
 		"erl", "escript", "ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
@@ -3314,4 +3352,42 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 	return nil
+}
+
+func findCommandContext(template, placeholder string) string {
+	idx := strings.Index(template, placeholder)
+	if idx == -1 {
+		return ""
+	}
+	prefix := template[:idx]
+    // debugLog("findCommandContext prefix: %q", prefix)
+
+	// Find last separator
+	lastSep := -1
+	separators := []string{"|", ";", "&", "(", ")", "`", "\n"}
+	for _, sep := range separators {
+		if i := strings.LastIndex(prefix, sep); i > lastSep {
+			lastSep = i
+		}
+	}
+
+	// Substring after separator
+	cmdPart := prefix
+	if lastSep != -1 {
+		cmdPart = prefix[lastSep+1:]
+	}
+
+	fields := strings.Fields(cmdPart)
+	for _, token := range fields {
+		// Skip assignments
+		if strings.Contains(token, "=") {
+			continue
+		}
+
+		// This token is likely the command.
+		// Strip quotes if present (e.g. "sed")
+		token = strings.Trim(token, "\"'")
+		return filepath.Base(token)
+	}
+	return ""
 }
