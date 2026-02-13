@@ -240,8 +240,15 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 	}
 
 	if !e.skipValidation {
-		if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
-			return fmt.Errorf("schema validation failed: %w", err)
+		// Only validate against schema if we are unmarshaling the root configuration.
+		// The schema validation is strict and designed for the full configuration structure.
+		// Partial updates (like updating a single service via API) will fail validation
+		// because they lack root-level keys or contain fields at the root that the schema
+		// expects nested (e.g. 'http_service' at root instead of under 'upstream_services').
+		if _, ok := v.(*configv1.McpAnyServerConfig); ok {
+			if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
+				return fmt.Errorf("schema validation failed: %w", err)
+			}
 		}
 	}
 
