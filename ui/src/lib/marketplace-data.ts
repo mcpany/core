@@ -3,15 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-
-export interface MarketplaceItemConfig {
-  command: string;
-  args: string[];
-  envVars: EnvVarDefinition[];
-}
-
 /**
  * EnvVarDefinition type definition.
  */
@@ -22,6 +13,19 @@ export interface EnvVarDefinition {
   type: "text" | "password" | "path";
   // If true, this value is also appended to the command args
   addToArgs?: boolean;
+}
+
+/**
+ * MarketplaceItemConfig defines the configuration required to run a marketplace item.
+ *
+ * @property command - The command to execute the item.
+ * @property args - The arguments to pass to the command.
+ * @property envVars - The environment variables required by the item.
+ */
+export interface MarketplaceItemConfig {
+  command: string;
+  args: string[];
+  envVars: EnvVarDefinition[];
 }
 
 /**

@@ -5,20 +5,57 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * GrpcWebImpl is a mock implementation of the gRPC-Web client transport.
+ *
+ * It is used for testing and development when a real gRPC backend is not available.
+ */
 export class GrpcWebImpl {
+    /**
+     * Creates an instance of GrpcWebImpl.
+     *
+     * @param _host - The host address (unused).
+     * @param _options - Configuration options (unused).
+     */
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * RegistrationServiceClientImpl mocks the service client registration.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Creates an instance of RegistrationServiceClientImpl.
+     *
+     * @param _rpc - The RPC implementation (unused).
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * GetService returns a mock service response.
+     *
+     * @param _request - The request object (unused).
+     * @param _metadata - Metadata (unused).
+     * @returns A promise resolving to an empty object.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
 /**
- * UpstreamServiceConfig type definition.
+ * UpstreamServiceConfig defines the configuration for an upstream service.
+ *
+ * @property id - Unique identifier.
+ * @property name - Service name.
+ * @property version - Service version.
+ * @property disable - Whether the service is disabled.
+ * @property priority - Execution priority.
+ * @property loadBalancingStrategy - Strategy for load balancing.
+ * @property httpService - HTTP specific configuration.
+ * @property grpcService - gRPC specific configuration.
+ * @property commandLineService - CLI specific configuration.
+ * @property mcpService - MCP specific configuration.
+ * @property preCallHooks - Hooks to run before calls.
+ * @property postCallHooks - Hooks to run after calls.
  */
 export interface UpstreamServiceConfig {
     id?: string;
@@ -37,7 +74,9 @@ export interface UpstreamServiceConfig {
 }
 
 /**
- * ToolDefinition type definition.
+ * ToolDefinition defines a tool exposed by a service.
+ *
+ * @property name - The name of the tool.
  */
 export interface ToolDefinition {
     name: string;
@@ -45,7 +84,11 @@ export interface ToolDefinition {
 }
 
 /**
- * ResourceDefinition type definition.
+ * ResourceDefinition defines a resource exposed by a service.
+ *
+ * @property uri - The URI of the resource.
+ * @property name - The name of the resource.
+ * @property mimeType - The MIME type of the resource content.
  */
 export interface ResourceDefinition {
     uri: string;
@@ -55,7 +98,9 @@ export interface ResourceDefinition {
 }
 
 /**
- * PromptDefinition type definition.
+ * PromptDefinition defines a prompt template exposed by a service.
+ *
+ * @property name - The name of the prompt.
  */
 export interface PromptDefinition {
     name: string;
@@ -63,7 +108,9 @@ export interface PromptDefinition {
 }
 
 /**
- * Credential type definition.
+ * Credential defines security credentials.
+ *
+ * @property id - Unique identifier for the credential.
  */
 export interface Credential {
     id?: string;
@@ -71,21 +118,23 @@ export interface Credential {
 }
 
 /**
- * Authentication type definition.
+ * Authentication defines authentication settings.
  */
 export interface Authentication {
     [key: string]: any;
 }
 
 /**
- * ListServicesResponse type definition.
+ * ListServicesResponse represents the response for listing services.
  */
 export type ListServicesResponse = any;
+
 /**
- * GetServiceResponse type definition.
+ * GetServiceResponse represents the response for getting a single service.
  */
 export type GetServiceResponse = any;
+
 /**
- * GetServiceStatusResponse type definition.
+ * GetServiceStatusResponse represents the status of a service.
  */
 export type GetServiceStatusResponse = any;

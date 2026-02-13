@@ -3,6 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * DiagnosticResult represents the outcome of analyzing a connection error.
+ *
+ * @property category - The classification of the error (e.g., network, auth).
+ * @property title - A user-friendly title for the error.
+ * @property description - A detailed description of the error.
+ * @property suggestion - Actionable steps to resolve the issue.
+ * @property severity - The severity level of the error.
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;

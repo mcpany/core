@@ -3,6 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem defines the structure for a service available in the marketplace.
+ *
+ * @property id - The unique identifier for the service.
+ * @property name - The display name of the service.
+ * @property repo - The repository URL (partial) for matching.
+ * @property command - The command to install/run the service.
+ * @property description - A brief description of what the service does.
+ * @property configurationSchema - The JSON schema for the service's configuration.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +22,12 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * SERVICE_REGISTRY contains the list of all available services in the marketplace.
+ *
+ * This constant serves as the source of truth for the curated list of MCP servers
+ * that can be easily installed and configured via the UI.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
