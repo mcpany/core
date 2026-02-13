@@ -92,7 +92,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     echo_call: {
-                        args: ["echoed_output"]
+                        args: ["echoed_output"],
+                        parameters: [
+                            {
+                                schema: {
+                                    name: "input",
+                                    type: "STRING",
+                                    description: "Input to echo"
+                                }
+                            }
+                        ]
                     }
                 }
             }
