@@ -86,6 +86,24 @@ func TestSettings_Defaults(t *testing.T) {
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, settings.LogLevel())
 }
 
+func TestSettings_DefaultConfigYaml(t *testing.T) {
+	viper.Reset()
+	fs := afero.NewMemMapFs()
+	cmd := &cobra.Command{}
+
+	// Write config.yaml
+	err := afero.WriteFile(fs, "config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	settings := &Settings{
+		proto: configv1.GlobalSettings_builder{}.Build(),
+	}
+	err = settings.Load(cmd, fs)
+	require.NoError(t, err)
+
+	assert.Equal(t, []string{"config.yaml"}, settings.ConfigPaths())
+}
+
 func TestSettings_SetAPIKey(t *testing.T) {
 	// Test SetAPIKey on a fresh instance
 	// Reset singleton if possible, but we can just use new instance for safety in unit test

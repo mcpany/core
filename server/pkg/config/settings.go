@@ -76,6 +76,15 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.stdio = viper.GetBool("stdio") // Corrected from "std"
 	// Bind config paths
 	s.configPaths = getStringSlice("config-path")
+
+	// Auto-detect config.yaml if no config path provided
+	// This matches the documentation: "By default, it looks for config.yaml in the current directory."
+	if len(s.configPaths) == 0 {
+		if _, err := s.fs.Stat("config.yaml"); err == nil {
+			s.configPaths = []string{"config.yaml"}
+		}
+	}
+
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 
