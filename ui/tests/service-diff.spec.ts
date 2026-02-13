@@ -5,15 +5,33 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 // Use test-results/artifacts which is writable in CI
 const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DATE}`);
 
 test.describe('Service Config Diff', () => {
+    const serviceName = "Diff Payment Gateway";
+    const newServiceName = "Diff Payment Gateway Updated";
+
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Seed a unique service for this test to avoid collisions with parallel tests
+        await request.post('/api/v1/services', {
+            data: {
+                id: "svc_diff_test",
+                name: serviceName,
+                version: "v1.2.0",
+                http_service: {
+                    address: "https://stripe.com",
+                    tools: [
+                        { name: "process_payment", description: "Process a payment" }
+                    ]
+                }
+            },
+            headers: { 'X-API-Key': 'test-token' }
+        });
+
         await seedUser(request, "diff-admin");
 
         // Login
@@ -25,14 +43,12 @@ test.describe('Service Config Diff', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await request.delete(`/api/v1/services/${serviceName}`, { headers: { 'X-API-Key': 'test-token' } });
+        await request.delete(`/api/v1/services/${newServiceName}`, { headers: { 'X-API-Key': 'test-token' } });
         await cleanupUser(request, "diff-admin");
     });
 
     test('Shows diff when editing service config', async ({ page }) => {
-        const serviceName = "Payment Gateway";
-        const newServiceName = "Payment Gateway Updated";
-
         // Go to Upstream Services page to find the service
         await page.goto('/upstream-services');
         await expect(page.getByText(serviceName, { exact: true })).toBeVisible();
