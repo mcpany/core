@@ -19,8 +19,12 @@ import (
 var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
+//
+// Summary: Interface for defining and executing prompts.
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
+	//
+	// Summary: Retrieves the MCP prompt metadata.
 	//
 	// Returns:
 	//   - *mcp.Prompt: The MCP prompt definition.
@@ -28,15 +32,19 @@ type Prompt interface {
 
 	// Service returns the ID of the service that provides this prompt.
 	//
+	// Summary: Retrieves the service ID.
+	//
 	// Returns:
 	//   - string: The service ID.
 	Service() string
 
 	// Get executes the prompt with the provided arguments.
 	//
+	// Summary: Executes the prompt.
+	//
 	// Parameters:
-	//   - ctx: The context for the request.
-	//   - args: The arguments for the prompt as a raw JSON message.
+	//   - ctx: context.Context. The context for the request.
+	//   - args: json.RawMessage. The arguments for the prompt.
 	//
 	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.

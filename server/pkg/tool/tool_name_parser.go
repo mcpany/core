@@ -11,13 +11,20 @@ import (
 )
 
 // ParseToolName deconstructs a fully qualified tool name into its namespace
-// (service ID) and the bare tool name. The expected format is
-// "<namespace>/-/--<tool_name>". If the separator is not found, the entire
-// input is treated as the tool name with an empty namespace.
+// (service ID) and the bare tool name.
 //
-// toolName is the fully qualified tool name to parse.
-// It returns the namespace, the bare tool name, and an error if the tool name
-// is invalid (e.g., empty).
+// Summary: Parses a fully qualified tool name.
+//
+// The expected format is "<namespace>/-/--<tool_name>". If the separator is not found,
+// the entire input is treated as the tool name with an empty namespace.
+//
+// Parameters:
+//   - toolName: string. The fully qualified tool name to parse.
+//
+// Returns:
+//   - namespace: string. The extracted namespace (service ID).
+//   - tool: string. The extracted bare tool name.
+//   - err: error. An error if the tool name is invalid (e.g., empty).
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {
@@ -36,9 +43,14 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 // GetFullyQualifiedToolName constructs a fully qualified tool name from a
 // service ID and a method name, using the standard separator.
 //
-// serviceID is the unique identifier of the service.
-// methodName is the name of the tool/method within the service.
-// It returns the combined, fully qualified tool name.
+// Summary: Constructs a fully qualified tool name.
+//
+// Parameters:
+//   - serviceID: string. The unique identifier of the service.
+//   - methodName: string. The name of the tool/method within the service.
+//
+// Returns:
+//   - string: The combined, fully qualified tool name.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {
 	return fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, methodName)
 }

@@ -31,7 +31,10 @@ type peerConnectionWrapper struct {
 
 // Close closes the peer connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the peer connection.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -41,9 +44,13 @@ func (w *peerConnectionWrapper) Close() error {
 
 // IsHealthy checks if the peer connection is in a usable state.
 //
-// _ is an unused parameter.
+// Summary: Checks the health of the peer connection.
 //
-// Returns true if successful.
+// Parameters:
+//   - _ : context.Context. Unused.
+//
+// Returns:
+//   - bool: True if the connection is healthy.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
 		return false
@@ -75,12 +82,18 @@ type WebrtcTool struct {
 
 // NewWebrtcTool creates a new WebrtcTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a client from the connection pool.
-// serviceID identifies the specific service connection pool.
-// authenticator handles adding authentication credentials to the signaling request.
-// callDefinition contains the configuration for the WebRTC call, such as
-// parameter mappings and transformers.
+// Summary: Creates a new tool backed by WebRTC.
+//
+// Parameters:
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. Used to get a client from the connection pool.
+//   - serviceID: string. Identifies the specific service connection pool.
+//   - authenticator: auth.UpstreamAuthenticator. Handles adding authentication credentials to the signaling request.
+//   - callDefinition: *configv1.WebrtcCallDefinition. Contains the configuration for the WebRTC call.
+//
+// Returns:
+//   - *WebrtcTool: The initialized tool.
+//   - error: An error if initialization fails.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,

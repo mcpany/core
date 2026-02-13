@@ -18,10 +18,14 @@ func NewMockWatcher() *MockWatcher {
 
 // Watch mocks the Watch method.
 //
-// paths is the paths.
-// reloadFunc is the reloadFunc.
+// Summary: Mocks the file watcher functionality.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - paths: []string. The paths to watch.
+//   - reloadFunc: func(). The function to call on change.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)

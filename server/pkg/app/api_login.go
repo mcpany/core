@@ -13,12 +13,23 @@ import (
 )
 
 // LoginRequest is the request body for login.
+//
+// Summary: Payload for user login.
+//
+// Fields:
+//   - Username: string. The username.
+//   - Password: string. The password.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 // LoginResponse is the response body for login.
+//
+// Summary: Response payload for successful login.
+//
+// Fields:
+//   - Token: string. The authentication token (Base64 encoded Basic Auth).
 type LoginResponse struct {
 	Token string `json:"token"`
 }

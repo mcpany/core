@@ -18,6 +18,19 @@ import (
 )
 
 // Span represents a span in a trace.
+//
+// Summary: A single unit of work in a trace.
+//
+// Fields:
+//   - ID: string. Unique identifier for the span.
+//   - Name: string. Name of the span (e.g., tool name).
+//   - Type: string. Type of span (e.g., "tool").
+//   - StartTime: int64. Unix timestamp in milliseconds.
+//   - EndTime: int64. Unix timestamp in milliseconds.
+//   - Status: string. Execution status ("success", "error", "pending").
+//   - Input: map[string]any. Input arguments.
+//   - Output: map[string]any. Output result.
+//   - ErrorMessage: string. Error message if status is error.
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
@@ -31,6 +44,16 @@ type Span struct {
 }
 
 // Trace represents a full trace.
+//
+// Summary: A collection of spans representing a complete operation.
+//
+// Fields:
+//   - ID: string. Unique identifier for the trace.
+//   - RootSpan: Span. The root span of the trace.
+//   - Timestamp: string. ISO 8601 timestamp.
+//   - TotalDuration: int64. Total duration in milliseconds.
+//   - Status: string. Overall status ("success", "error").
+//   - Trigger: string. What triggered the trace (e.g., "user").
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`

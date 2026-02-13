@@ -13,6 +13,9 @@ import (
 )
 
 // Generator handles the interactive generation of configuration files.
+//
+// Summary: Interactive configuration generator.
+//
 // It prompts the user for input and uses templates to generate YAML configuration
 // for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
 type Generator struct {
@@ -21,8 +24,10 @@ type Generator struct {
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
+// Summary: Creates a new interactive generator.
+//
 // Returns:
-//   - A pointer to a new Generator initialized with os.Stdin.
+//   - *Generator: A pointer to a new Generator initialized with os.Stdin.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
@@ -30,12 +35,15 @@ func NewGenerator() *Generator {
 }
 
 // Generate prompts the user for service details and returns the generated
-// configuration as a byte slice. It supports multiple service types including
-// HTTP, gRPC, OpenAPI, and GraphQL.
+// configuration as a byte slice.
+//
+// Summary: Interactively generates a service configuration.
+//
+// It supports multiple service types including HTTP, gRPC, OpenAPI, and GraphQL.
 //
 // Returns:
-//   - A byte slice containing the generated YAML configuration.
-//   - An error if the generation fails or the user provides invalid input.
+//   - []byte: A byte slice containing the generated YAML configuration.
+//   - error: An error if the generation fails or the user provides invalid input.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

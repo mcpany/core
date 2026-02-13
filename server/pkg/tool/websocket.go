@@ -39,12 +39,17 @@ type WebsocketTool struct {
 
 // NewWebsocketTool creates a new WebsocketTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a WebSocket client from the connection pool.
-// serviceID identifies the specific WebSocket service connection pool.
-// authenticator handles adding authentication credentials to the connection request.
-// callDefinition contains the configuration for the WebSocket call, such as
-// parameter mappings and transformers.
+// Summary: Creates a new tool backed by WebSocket.
+//
+// Parameters:
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. Used to get a WebSocket client from the connection pool.
+//   - serviceID: string. Identifies the specific WebSocket service connection pool.
+//   - authenticator: auth.UpstreamAuthenticator. Handles adding authentication credentials.
+//   - callDefinition: *configv1.WebsocketCallDefinition. Contains the configuration for the WebSocket call.
+//
+// Returns:
+//   - *WebsocketTool: The initialized tool.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
