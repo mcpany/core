@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser, seedCollection, cleanupCollection } from './e2e/test-data';
+import { seedUser, cleanupUser, seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
@@ -12,8 +12,8 @@ test.describe('Tool Exploration', () => {
     test.beforeEach(async ({ request, page }) => {
         // Use seedCollection for a reliable MCP server (weather-service) which works in CI environment
         await seedCollection("e2e-weather", request);
-        // Still seed services for other tests if needed, but weather-service is our primary for tools check
-        await seedServices(request);
+        // Only seed user and collection. Avoid seedServices() which injects flaky/external services (Stripe, etc)
+        // that might pollute the UI or cause backend errors in CI.
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -28,7 +28,6 @@ test.describe('Tool Exploration', () => {
 
     test.afterEach(async ({ request }) => {
         await cleanupCollection("e2e-weather", request);
-        await cleanupServices(request);
         await cleanupUser(request, "e2e-tools-admin");
     });
 
