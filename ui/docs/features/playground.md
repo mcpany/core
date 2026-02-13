@@ -32,7 +32,7 @@ Browse the sidebar to find the tool you wish to test.
 
 ### 3. Execute Tool
 
-Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
+Fill in the required arguments in the form. The form validates your input based on the JSON Schema provided by the tool.
 
 1. Enter values (e.g., `/var/log` for path).
 2. Click **"Run Tool"**.
@@ -48,7 +48,8 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
+- **Command Line Mode**: You can type commands directly in the input bar using the format `tool_name {json_args}`.
+- **Dry Run**: Toggle the "Dry Run" switch to preview the tool execution without side effects.
 - **History**: Previous tool calls in the session remain visible above.
 
 ### 5. Session History (Import/Export)
