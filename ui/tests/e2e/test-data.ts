@@ -16,11 +16,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
+            auto_discover_tool: true,
             http_service: {
                 address: "https://stripe.com",
-                tools: [
-                    { name: "process_payment", description: "Process a payment", call_id: "process_payment" }
-                ],
                 calls: {
                     "process_payment": {
                         method: 2, // HTTP_METHOD_POST
@@ -33,11 +31,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
+            auto_discover_tool: true,
             http_service: {
                 address: "http://localhost:50051", // Dummy address, visibility checks don't need health
-                tools: [
-                     { name: "get_user", description: "Get user details", call_id: "get_user" }
-                ],
                 calls: {
                     "get_user": {
                         method: 1, // HTTP_METHOD_GET
@@ -51,11 +47,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
+            auto_discover_tool: true,
             http_service: {
                 address: "http://localhost:8080", // Dummy
-                tools: [
-                    { name: "calculator", description: "calc", call_id: "calculator" }
-                ],
                 calls: {
                     "calculator": {
                         method: 2, // HTTP_METHOD_POST
