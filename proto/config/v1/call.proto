@@ -249,6 +249,15 @@ message ParameterSchema {
   google.protobuf.Value default_value = 5 [json_name = "default_value"];
 }
 
+enum ParameterLocation {
+  PARAMETER_LOCATION_UNSPECIFIED = 0;
+  QUERY = 1;
+  HEADER = 2;
+  PATH = 3;
+  COOKIE = 4;
+  BODY = 5;
+}
+
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 message HttpParameterMapping {
   // The schema for the parameter.
@@ -257,6 +266,8 @@ message HttpParameterMapping {
   SecretValue secret = 2;
   // Whether to disable automatic URL escaping for this parameter.
   bool disable_escape = 3 [json_name = "disable_escape"];
+  // The location of the parameter in the HTTP request.
+  ParameterLocation location = 4;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.

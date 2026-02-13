@@ -72,6 +72,63 @@ export function parameterTypeToJSON(object: ParameterType): string {
   }
 }
 
+export enum ParameterLocation {
+  PARAMETER_LOCATION_UNSPECIFIED = 0,
+  QUERY = 1,
+  HEADER = 2,
+  PATH = 3,
+  COOKIE = 4,
+  BODY = 5,
+  UNRECOGNIZED = -1,
+}
+
+export function parameterLocationFromJSON(object: any): ParameterLocation {
+  switch (object) {
+    case 0:
+    case "PARAMETER_LOCATION_UNSPECIFIED":
+      return ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED;
+    case 1:
+    case "QUERY":
+      return ParameterLocation.QUERY;
+    case 2:
+    case "HEADER":
+      return ParameterLocation.HEADER;
+    case 3:
+    case "PATH":
+      return ParameterLocation.PATH;
+    case 4:
+    case "COOKIE":
+      return ParameterLocation.COOKIE;
+    case 5:
+    case "BODY":
+      return ParameterLocation.BODY;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ParameterLocation.UNRECOGNIZED;
+  }
+}
+
+export function parameterLocationToJSON(object: ParameterLocation): string {
+  switch (object) {
+    case ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED:
+      return "PARAMETER_LOCATION_UNSPECIFIED";
+    case ParameterLocation.QUERY:
+      return "QUERY";
+    case ParameterLocation.HEADER:
+      return "HEADER";
+    case ParameterLocation.PATH:
+      return "PATH";
+    case ParameterLocation.COOKIE:
+      return "COOKIE";
+    case ParameterLocation.BODY:
+      return "BODY";
+    case ParameterLocation.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 /** HttpCallDefinition describes how to map an MCP call to a specific HTTP request. */
 export interface HttpCallDefinition {
   /** The unique identifier for the call. */
@@ -484,6 +541,8 @@ export interface HttpParameterMapping {
     | undefined;
   /** Whether to disable automatic URL escaping for this parameter. */
   disableEscape: boolean;
+  /** The location of the parameter in the HTTP request. */
+  location: ParameterLocation;
 }
 
 /** WebsocketParameterMapping defines how to place an input parameter into a websocket message. */
@@ -2483,7 +2542,7 @@ export const ParameterSchema: MessageFns<ParameterSchema> = {
 };
 
 function createBaseHttpParameterMapping(): HttpParameterMapping {
-  return { schema: undefined, secret: undefined, disableEscape: false };
+  return { schema: undefined, secret: undefined, disableEscape: false, location: 0 };
 }
 
 export const HttpParameterMapping: MessageFns<HttpParameterMapping> = {
@@ -2496,6 +2555,9 @@ export const HttpParameterMapping: MessageFns<HttpParameterMapping> = {
     }
     if (message.disableEscape !== false) {
       writer.uint32(24).bool(message.disableEscape);
+    }
+    if (message.location !== 0) {
+      writer.uint32(32).int32(message.location);
     }
     return writer;
   },
@@ -2531,6 +2593,14 @@ export const HttpParameterMapping: MessageFns<HttpParameterMapping> = {
           message.disableEscape = reader.bool();
           continue;
         }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.location = reader.int32() as any;
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2545,6 +2615,7 @@ export const HttpParameterMapping: MessageFns<HttpParameterMapping> = {
       schema: isSet(object.schema) ? ParameterSchema.fromJSON(object.schema) : undefined,
       secret: isSet(object.secret) ? SecretValue.fromJSON(object.secret) : undefined,
       disableEscape: isSet(object.disable_escape) ? globalThis.Boolean(object.disable_escape) : false,
+      location: isSet(object.location) ? parameterLocationFromJSON(object.location) : 0,
     };
   },
 
@@ -2558,6 +2629,9 @@ export const HttpParameterMapping: MessageFns<HttpParameterMapping> = {
     }
     if (message.disableEscape !== false) {
       obj.disable_escape = message.disableEscape;
+    }
+    if (message.location !== 0) {
+      obj.location = parameterLocationToJSON(message.location);
     }
     return obj;
   },
@@ -2574,6 +2648,7 @@ export const HttpParameterMapping: MessageFns<HttpParameterMapping> = {
       ? SecretValue.fromPartial(object.secret)
       : undefined;
     message.disableEscape = object.disableEscape ?? false;
+    message.location = object.location ?? 0;
     return message;
   },
 };

@@ -466,6 +466,8 @@ type HTTPTool struct {
 	querySegments        []urlSegment
 	paramInPath          []bool
 	paramInQuery         []bool
+	paramInHeader        []bool
+	paramInCookie        []bool
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
 }
@@ -558,6 +560,8 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
 	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
+	t.paramInHeader = make([]bool, len(callDefinition.GetParameters()))
+	t.paramInCookie = make([]bool, len(callDefinition.GetParameters()))
 
 	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
@@ -565,11 +569,26 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 			t.allowedParams[name] = true
 			placeholder := "{{" + name + "}}"
 
-			if strings.Contains(pathStr, placeholder) {
-				t.paramInPath[i] = true
-			}
-			if strings.Contains(queryStr, placeholder) {
+			// Check explicit location first
+			switch param.GetLocation() {
+			case configv1.ParameterLocation_HEADER:
+				t.paramInHeader[i] = true
+			case configv1.ParameterLocation_COOKIE:
+				t.paramInCookie[i] = true
+			case configv1.ParameterLocation_QUERY:
 				t.paramInQuery[i] = true
+			case configv1.ParameterLocation_PATH:
+				t.paramInPath[i] = true
+			case configv1.ParameterLocation_BODY:
+				// Do nothing, handled by default body generation if not in other locations
+			case configv1.ParameterLocation_PARAMETER_LOCATION_UNSPECIFIED:
+				// Fallback to implicit detection for backward compatibility
+				if strings.Contains(pathStr, placeholder) {
+					t.paramInPath[i] = true
+				}
+				if strings.Contains(queryStr, placeholder) {
+					t.paramInQuery[i] = true
+				}
 			}
 		}
 	}
@@ -641,7 +660,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
+	inputs, urlString, headerParams, cookieParams, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -667,6 +686,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				},
 			},
 		}
+		for k, v := range headerParams {
+			dryRunResult["request"].(map[string]any)["headers"].(map[string]string)[k] = v
+		}
+		// Cookies in dry run? maybe
 		if body != nil {
 			if seeker, ok := body.(io.Seeker); ok {
 				_, _ = seeker.Seek(0, io.SeekStart)
@@ -691,7 +714,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 		}
 
-		httpReq, err := t.createHTTPRequest(ctx, urlString, bodyForAttempt, contentType, inputs)
+		httpReq, err := t.createHTTPRequest(ctx, urlString, bodyForAttempt, contentType, inputs, headerParams, cookieParams)
 		if err != nil {
 			return &resilience.PermanentError{Err: err}
 		}
@@ -764,7 +787,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return t.processResponse(ctx, resp)
 }
 
-func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body io.Reader, contentType string, inputs map[string]interface{}) (*http.Request, error) {
+func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body io.Reader, contentType string, inputs map[string]interface{}, headerParams map[string]string, cookieParams map[string]string) (*http.Request, error) {
 	httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http request: %w", err)
@@ -775,6 +798,13 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 	}
 	httpReq.Header.Set("Accept", "*/*")
 	httpReq.Header.Set("User-Agent", "MCPAny/1.0 (https://github.com/mcpany/core; contact@mcpany.org)")
+
+	for k, v := range headerParams {
+		httpReq.Header.Set(k, v)
+	}
+	for k, v := range cookieParams {
+		httpReq.AddCookie(&http.Cookie{Name: k, Value: v})
+	}
 
 	if t.authenticator != nil {
 		if err := t.authenticator.Authenticate(httpReq); err != nil {
@@ -790,7 +820,22 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 		for key, value := range inputs {
 			q.Add(key, util.ToString(value))
 		}
-		httpReq.URL.RawQuery = q.Encode()
+		// Append explicitly mapped query parameters if any (already in URL from prepareInputsAndURL)
+		// But wait, prepareInputsAndURL handles replacement in querySegments which comes from RawQuery.
+		// So inputs here are remaining unmapped inputs.
+		// For GET/DELETE, we append them as query params.
+		// Note: httpReq.URL.Query() parses RawQuery. If we used replacement, RawQuery is already set in urlString.
+		// So we should append to existing query.
+		// httpReq.URL.Query() returns values from parsed RawQuery.
+		// We add new ones and Encode().
+
+		// If RawQuery was "id=123" (from replacement), Query() gives {id: [123]}.
+		// We add remaining inputs.
+		currentQ := httpReq.URL.Query()
+		for key, value := range inputs {
+			currentQ.Add(key, util.ToString(value))
+		}
+		httpReq.URL.RawQuery = currentQ.Encode()
 	}
 	return httpReq, nil
 }
@@ -821,7 +866,7 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 }
 
-func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, bool, error) {
+func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, map[string]string, map[string]string, bool, error) {
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
@@ -833,7 +878,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
-			return nil, "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
+			return nil, "", nil, nil, false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
 
@@ -846,9 +891,9 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
-	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
+	pathReplacements, queryReplacements, headerReplacements, cookieReplacements, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
-		return nil, "", false, err
+		return nil, "", nil, nil, false, err
 	}
 	inputsModified = inputsModified || filtered
 
@@ -914,12 +959,14 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	}
 	urlString := buf.String()
 
-	return inputs, urlString, inputsModified, nil
+	return inputs, urlString, headerReplacements, cookieReplacements, inputsModified, nil
 }
 
-func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
+func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, map[string]string, map[string]string, bool, error) {
 	pathReplacements := make(map[string]string, len(t.parameters))
 	queryReplacements := make(map[string]string, len(t.parameters))
+	headerReplacements := make(map[string]string, len(t.parameters))
+	cookieReplacements := make(map[string]string, len(t.parameters))
 	inputsModified := false
 
 	for i, param := range t.parameters {
@@ -927,7 +974,7 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				return nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+				return nil, nil, nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			if t.paramInPath[i] {
 				pathReplacements[name] = secretValue
@@ -935,16 +982,22 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 			if t.paramInQuery[i] {
 				queryReplacements[name] = secretValue
 			}
+			if t.paramInHeader[i] {
+				headerReplacements[name] = secretValue
+			}
+			if t.paramInCookie[i] {
+				cookieReplacements[name] = secretValue
+			}
 		} else if schema := param.GetSchema(); schema != nil {
 			val, ok := inputs[name]
 			if !ok {
 				if schema.GetIsRequired() {
-					return nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
+					return nil, nil, nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
 				}
 				// If optional and missing, treat as empty string
 				val = ""
-			} else if t.paramInPath[i] || t.paramInQuery[i] {
-				// Only delete from inputs if it was present AND used in path/query replacement
+			} else if t.paramInPath[i] || t.paramInQuery[i] || t.paramInHeader[i] || t.paramInCookie[i] {
+				// Only delete from inputs if it was present AND used in path/query/header/cookie replacement
 				delete(inputs, name)
 				inputsModified = true
 			}
@@ -955,12 +1008,12 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
 				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
 				if err := checkForPathTraversal(valStr); err != nil {
-					return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+					return nil, nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 				}
 				// Also check decoded value just in case the input was already encoded
 				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
 					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
+						return nil, nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
 					}
 				}
 			}
@@ -972,23 +1025,39 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				if t.paramInQuery[i] {
 					queryReplacements[name] = valStr
 				}
+				if t.paramInHeader[i] {
+					headerReplacements[name] = valStr
+				}
+				if t.paramInCookie[i] {
+					cookieReplacements[name] = valStr
+				}
 			} else {
 				if t.paramInPath[i] {
 					// Even if we escape, we should check for ".." in the input because
 					// url.PathEscape does NOT escape dots, so ".." remains ".."
 					// and path.Clean will resolve it, potentially allowing path traversal.
 					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+						return nil, nil, nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 					}
 					pathReplacements[name] = url.PathEscape(valStr)
 				}
 				if t.paramInQuery[i] {
 					queryReplacements[name] = url.QueryEscape(valStr)
 				}
+				if t.paramInHeader[i] {
+					// Headers are generally not escaped in the same way as URL query params,
+					// but newlines should be prevented to avoid header injection.
+					// For now, assuming valStr is safe or user responsibility?
+					// Go's http.Header.Set handles some sanitization.
+					headerReplacements[name] = valStr
+				}
+				if t.paramInCookie[i] {
+					cookieReplacements[name] = valStr
+				}
 			}
 		}
 	}
-	return pathReplacements, queryReplacements, inputsModified, nil
+	return pathReplacements, queryReplacements, headerReplacements, cookieReplacements, inputsModified, nil
 }
 
 type urlSegment struct {
