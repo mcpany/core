@@ -1862,6 +1862,42 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+
+					// Sentinel Security Update: Git Config Injection Protection
+					// We must prevent injecting dangerous values (like aliases or pager commands) into git configuration.
+					// Since git -c takes a key=value pair, blocking spaces or '!' prevents most RCE attacks.
+					cmdBase := filepath.Base(t.service.GetCommand())
+					// Handle .exe extension for Windows
+					if ext := filepath.Ext(cmdBase); strings.EqualFold(ext, ".exe") {
+						cmdBase = strings.TrimSuffix(cmdBase, ext)
+					}
+					isGit := cmdBase == "git"
+
+					if isGit {
+						// Check if we are likely injecting into a config option (-c or --config)
+						// or an alias command (alias.*).
+						// We check:
+						// 1. If 'arg' itself starts with -c or --config (e.g. "-cname=val")
+						// 2. If 'arg' looks like an alias definition ("alias.foo=bar")
+						// 3. If the PREVIOUS argument was -c or --config (split argument style: "-c", "name=val")
+						isConfig := strings.HasPrefix(arg, "-c") || strings.HasPrefix(arg, "--config") || strings.Contains(arg, "alias.")
+						if !isConfig && i > 0 {
+							prev := args[i-1]
+							if prev == "-c" || prev == "--config" {
+								isConfig = true
+							}
+						}
+
+						if isConfig {
+							if strings.ContainsAny(val, " \t\n\r") {
+								return nil, fmt.Errorf("parameter %q: spaces not allowed in git config values to prevent RCE", k)
+							}
+							if strings.Contains(val, "!") {
+								return nil, fmt.Errorf("parameter %q: '!' not allowed in git config values to prevent RCE", k)
+							}
+						}
+					}
+
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
