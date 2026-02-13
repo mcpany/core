@@ -37,19 +37,18 @@ test.describe('Tool Exploration', () => {
         let found = false;
         // Increase retries to 15 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 15; i++) {
-            try {
-                // Check for Echo Service tool which is more stable than HTTP services in CI
-                // Use a slightly longer timeout per attempt
-                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
+            // Use a safer check that doesn't throw if not found immediately
+            const count = await page.getByText(/echo_tool/).count();
+            if (count > 0) {
                 found = true;
                 break;
-            } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
-                await page.reload();
-                // Wait for network idle and a small buffer
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000); // Increase wait to 2s
             }
+
+            console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/15)`);
+            await page.reload();
+            // Wait for network idle and a small buffer
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000); // Increase wait to 2s
         }
 
         // Look for the seeded Echo Service tool
@@ -70,15 +69,13 @@ test.describe('Tool Exploration', () => {
 
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 15; i++) {
-            try {
-                // Check for Echo Service tool
-                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
+            const count = await page.getByText(/echo_tool/).count();
+            if (count > 0) {
                 break;
-            } catch (e) {
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
             }
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
         }
 
         // Use regex for filtering row as well
@@ -95,14 +92,13 @@ test.describe('Tool Exploration', () => {
 
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 15; i++) {
-            try {
-                await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 5000 });
+            const count = await page.getByText(/echo_tool/).count();
+            if (count > 0) {
                 break;
-            } catch (e) {
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
             }
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
         }
 
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
