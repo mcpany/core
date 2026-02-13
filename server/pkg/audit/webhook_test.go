@@ -17,6 +17,9 @@ import (
 )
 
 func TestWebhookAuditStore(t *testing.T) {
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Setup test server
 	var mu sync.Mutex
 	var receivedEntries []Entry
@@ -90,6 +93,9 @@ func TestWebhookAuditStore(t *testing.T) {
 }
 
 func TestWebhookAuditStore_Batch(t *testing.T) {
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	var mu sync.Mutex
 	var receivedEntries []Entry
 	done := make(chan struct{})
