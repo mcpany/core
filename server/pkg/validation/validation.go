@@ -148,6 +148,50 @@ func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
 
+// IsSensitivePath checks if a given file path points to a sensitive file or directory.
+// It blocks access to:
+// - .env files and variants
+// - .git directory
+// - Server configuration files (config.yaml, config.json)
+// - Database files (mcpany.db)
+// - Private keys (id_rsa, id_dsa, *.pem, *.key)
+//
+// Summary: Checks for sensitive file patterns.
+var IsSensitivePath = func(path string) error {
+	base := filepath.Base(path)
+	baseLower := strings.ToLower(base)
+
+	// Block .env files
+	if strings.HasPrefix(baseLower, ".env") {
+		return fmt.Errorf("access to sensitive file %q is denied", base)
+	}
+
+	// Block .git directory
+	if baseLower == ".git" {
+		return fmt.Errorf("access to sensitive directory %q is denied", base)
+	}
+
+	// Block server configuration files
+	if baseLower == "config.yaml" || baseLower == "config.yml" || baseLower == "config.json" {
+		return fmt.Errorf("access to sensitive configuration file %q is denied", base)
+	}
+
+	// Block database files
+	if baseLower == "mcpany.db" || strings.HasSuffix(baseLower, ".db") || strings.HasSuffix(baseLower, ".sqlite") {
+		return fmt.Errorf("access to database file %q is denied", base)
+	}
+
+	// Block private keys
+	if baseLower == "id_rsa" || baseLower == "id_dsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" {
+		return fmt.Errorf("access to private key %q is denied", base)
+	}
+	if strings.HasSuffix(baseLower, ".pem") || strings.HasSuffix(baseLower, ".key") {
+		return fmt.Errorf("access to private key file %q is denied", base)
+	}
+
+	return nil
+}
+
 // IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
 // and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
@@ -159,7 +203,12 @@ var IsAllowedPath = func(path string) error {
 		return err
 	}
 
-	// 2. Resolve to absolute path
+	// 2. Check for sensitive files (on input path)
+	if err := IsSensitivePath(path); err != nil {
+		return err
+	}
+
+	// 3. Resolve to absolute path
 	absPath, err := filepath.Abs(path)
 	if err != nil {
 		return fmt.Errorf("failed to resolve absolute path: %w", err)
@@ -202,6 +251,11 @@ var IsAllowedPath = func(path string) error {
 		} else {
 			return fmt.Errorf("failed to resolve symlinks for %q: %w", path, err)
 		}
+	}
+
+	// 4. Check for sensitive files again (on resolved path)
+	if err := IsSensitivePath(realPath); err != nil {
+		return fmt.Errorf("resolved path %q points to sensitive file: %w", realPath, err)
 	}
 
 	// Helper to check if child is inside parent
