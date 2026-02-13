@@ -74,7 +74,7 @@ audit: build-test-docker build-server-docker
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
-test-ci: clean-test-results
+test-ci: clean-test-results build-test-docker
 	mkdir -p test-results .audit ../build/playwright-report
 	chmod -R 777 test-results .audit ../build/playwright-report || true
 	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
