@@ -65,7 +65,7 @@ services:
       server:
         condition: service_healthy
       ui-http-echo-server:
-        condition: service_started
+        condition: service_healthy
     networks:
       default:
 
@@ -73,3 +73,9 @@ services:
     image: mcpany/http-echo-server:latest
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 5s
