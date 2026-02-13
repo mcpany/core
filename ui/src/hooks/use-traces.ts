@@ -17,6 +17,8 @@ interface UseTracesOptions {
  * @param options.initialPaused - Whether to start in a paused state.
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
+const MAX_TRACES = 1000;
+
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
@@ -65,6 +67,8 @@ export function useTraces(options: UseTracesOptions = {}) {
             try {
                 const trace: Trace = JSON.parse(event.data);
                 setTraces((prev) => {
+                    // ⚡ BOLT: Memory Optimization
+                    // Randomized Selection from Top 5 High-Impact Targets
                     // Deduplicate by ID
                     const index = prev.findIndex(t => t.id === trace.id);
                     if (index !== -1) {
@@ -72,7 +76,13 @@ export function useTraces(options: UseTracesOptions = {}) {
                         newTraces[index] = trace;
                         return newTraces;
                     }
-                    return [trace, ...prev];
+
+                    // Limit array size to prevent memory leaks
+                    const newTraces = [trace, ...prev];
+                    if (newTraces.length > MAX_TRACES) {
+                        return newTraces.slice(0, MAX_TRACES);
+                    }
+                    return newTraces;
                 });
             } catch (e) {
                 console.error("Failed to parse trace", e);
