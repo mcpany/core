@@ -2859,7 +2859,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
 		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val); err != nil {
+			if err := checkInterpreterFunctionCalls(val, command); err != nil {
 				return err
 			}
 		}
@@ -2878,7 +2878,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			}
 			// Also check function calls for the detected interpreter context
 			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val); err != nil {
+				if err := checkInterpreterFunctionCalls(val, args[0]); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -2934,11 +2934,105 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func checkInterpreterFunctionCalls(val string) error {
+func cleanInterpreterInput(val, command string) string {
+	base := strings.ToLower(filepath.Base(command))
+
+	// Determine comment style
+	// Default to # (covers Python, Ruby, Perl, Shell, Awk, Sed, Jq, R, Tcl)
+	hasHashComments := true
+	hasSlashComments := false
+	hasDashComments := false
+
+	// Languages that use // and /* */
+	// Check prefix to match "nodejs" vs "node", etc.
+	slashLangs := []string{
+		"node", "bun", "deno",
+		"gcc", "g++", "clang", "java",
+		"swift", "kotlin", "scala", "groovy",
+		"rust", "go",
+	}
+	for _, l := range slashLangs {
+		if base == l || strings.HasPrefix(base, l) {
+			hasSlashComments = true
+			hasHashComments = false
+			break
+		}
+	}
+
+	// PHP supports both # and //
+	if base == "php" || strings.HasPrefix(base, "php") {
+		hasSlashComments = true
+		hasHashComments = true
+	}
+
+	// SQL / Lua / Haskell use --
+	dashLangs := []string{"psql", "mysql", "sqlite3", "lua", "haskell", "ada"}
+	for _, l := range dashLangs {
+		if base == l || strings.HasPrefix(base, l) {
+			hasDashComments = true
+			hasHashComments = false
+			break
+		}
+	}
+
+	var buf bytes.Buffer
+	buf.Grow(len(val))
+
+	for i := 0; i < len(val); i++ {
+		// Line continuation check: Replace backslash with space to prevent joining lines or escaping logic
+		if val[i] == '\\' {
+			buf.WriteByte(' ')
+			continue
+		}
+
+		// Comment check
+		isComment := false
+		if hasHashComments && val[i] == '#' {
+			isComment = true
+		} else if hasSlashComments && i+1 < len(val) {
+			if val[i] == '/' && val[i+1] == '/' {
+				isComment = true // Line comment
+			} else if val[i] == '/' && val[i+1] == '*' {
+				// Block comment: skip until */
+				i += 2
+				for i+1 < len(val) {
+					if val[i] == '*' && val[i+1] == '/' {
+						i++ // Skip /
+						break
+					}
+					i++
+				}
+				buf.WriteByte(' ')
+				continue
+			}
+		} else if hasDashComments && i+1 < len(val) && val[i] == '-' && val[i+1] == '-' {
+			isComment = true
+		}
+
+		if isComment {
+			// Skip until newline
+			for i < len(val) && val[i] != '\n' {
+				i++
+			}
+			// Replace comment with space
+			buf.WriteByte(' ')
+			continue
+		}
+
+		buf.WriteByte(val[i])
+	}
+	return buf.String()
+}
+
+func checkInterpreterFunctionCalls(val, command string) error {
+	// Sentinel Security Update: Clean input first (strip comments and line continuations)
+	// This prevents obfuscation bypasses like "system # \n ('ls')"
+	cleanedVal := cleanInterpreterInput(val, command)
+
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
+	b.Grow(len(cleanedVal))
+	for _, r := range cleanedVal {
 		if !unicode.IsSpace(r) {
 			b.WriteRune(r)
 		}
