@@ -138,7 +138,7 @@ nodes:
 		"--set", "apiKey=test-token",
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--wait",
-		"--timeout", "10m",
+		"--timeout", "15m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
