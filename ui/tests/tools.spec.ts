@@ -9,7 +9,7 @@ import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
-    // Increased overall timeout for CI stability
+    // Increased overall timeout for CI stability (3 minutes)
     test.setTimeout(180000);
 
     test.beforeEach(async ({ request, page }) => {
@@ -36,20 +36,25 @@ test.describe('Tool Exploration', () => {
         // The UI fetches once on mount.
         // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
         let found = false;
-        // Increase retries to 30 for slow CI environments where backend worker might be lagging significantly
-        for (let i = 0; i < 30; i++) {
+
+        // Increase retries to 60 for slow CI environments (2 minutes of polling)
+        // Backend registration can be slow under load.
+        for (let i = 0; i < 60; i++) {
             try {
                 // Check for Payment Gateway first (svc_01) to verify generic seeding works
-                // Use a longer timeout per attempt (10s)
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+                // Use a short timeout per attempt (2s) to poll faster
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 2000 });
                 found = true;
                 break;
             } catch (e) {
-                console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/30)`);
-                await page.reload();
-                // Wait for network idle and a larger buffer
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
+                if ((i + 1) % 5 === 0) {
+                     console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/60)`);
+                     await page.reload();
+                     await page.waitForLoadState('networkidle');
+                } else {
+                     // Wait a bit before checking again or reloading
+                     await page.waitForTimeout(2000);
+                }
             }
         }
 
@@ -76,14 +81,17 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 60; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 2000 });
                 break;
             } catch (e) {
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
+                if ((i + 1) % 5 === 0) {
+                     await page.reload();
+                     await page.waitForLoadState('networkidle');
+                } else {
+                     await page.waitForTimeout(2000);
+                }
             }
         }
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 20000 });
@@ -100,14 +108,17 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
 
         // Wait/Reload loop for async backend registration
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 60; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 2000 });
                 break;
             } catch (e) {
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
+                if ((i + 1) % 5 === 0) {
+                     await page.reload();
+                     await page.waitForLoadState('networkidle');
+                } else {
+                     await page.waitForTimeout(2000);
+                }
             }
         }
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 20000 });
