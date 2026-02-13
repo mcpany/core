@@ -1239,13 +1239,16 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 }
 
 // WaitForStartup waits for the application to be fully initialized.
+//
+// Summary: Blocks until application startup is complete.
+//
 // It blocks until the startup process is complete or the context is canceled.
 //
 // Parameters:
-//   - ctx (context.Context): The context to wait on.
+//   - ctx: context.Context. The context to wait on.
 //
 // Returns:
-//   - (error): nil if startup completes successfully, or a context error if canceled.
+//   - error: nil if startup completes successfully, or a context error if canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1365,17 +1368,19 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 // HTTP GET request to its /healthz endpoint. This is useful for monitoring and
 // ensuring the server is operational.
 //
+// Summary: Checks the health of a running server instance.
+//
 // The function constructs the health check URL from the provided address and
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
 // Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
+//   - timeout: time.Duration. The maximum duration to wait for the health check.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
+//   - error: nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
@@ -1388,17 +1393,19 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // sending an HTTP GET request to its /healthz endpoint. This is useful for
 // monitoring and ensuring the server is operational.
 //
+// Summary: Checks the health of a running server instance with context.
+//
 // The function constructs the health check URL from the provided address and
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing the health check's lifecycle.
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
+//   - ctx: context.Context. The context for managing the health check's lifecycle.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
+//   - error: nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
 func HealthCheckWithContext(

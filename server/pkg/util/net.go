@@ -19,22 +19,35 @@ import (
 )
 
 // IPResolver defines an interface for looking up IP addresses.
+//
+// Summary: Interface for IP address resolution.
+//
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
+	//
+	// Summary: Resolves a host to IP addresses.
+	//
 	// It returns a slice of that host's IPv4 and IPv6 addresses.
 	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
 }
 
 // NetDialer defines an interface for dialing network connections.
+//
+// Summary: Interface for dialing network connections.
+//
 // It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using
 	// the provided context.
+	//
+	// Summary: Dials a network connection.
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+//
+// Summary: A secure network dialer that prevents SSRF.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -189,15 +202,18 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: Checks if a network address is reachable.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the connection attempt.
-//   - address (string): The target address (URL or host:port).
+//   - ctx: context.Context. The context for the connection attempt.
+//   - address: string. The target address (URL or host:port).
 //
 // Returns:
-//   - (error): nil if the connection succeeded, or an error if it failed.
+//   - error: nil if the connection succeeded, or an error if it failed.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -258,17 +274,20 @@ func CheckConnection(ctx context.Context, address string) error {
 }
 
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
+// Summary: Listens on an address with retries.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the listen operation.
-//   - network (string): The network type (e.g., "tcp").
-//   - address (string): The address to listen on.
+//   - ctx: context.Context. The context for the listen operation.
+//   - network: string. The network type (e.g., "tcp").
+//   - address: string. The address to listen on.
 //
 // Returns:
-//   - (net.Listener): The successfully bound listener.
-//   - (error): An error if binding fails after all retries.
+//   - net.Listener: The successfully bound listener.
+//   - error: An error if binding fails after all retries.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

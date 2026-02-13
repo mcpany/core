@@ -185,6 +185,8 @@ const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool embedded.
 //
+// Summary: Embeds a tool in the context.
+//
 // Parameters:
 //   - ctx: The context to extend.
 //   - t: The tool instance to embed in the context.
@@ -251,6 +253,8 @@ const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
+// Summary: Embeds CacheControl in the context.
+//
 // Parameters:
 //   - ctx: The context to extend.
 //   - cc: The CacheControl instance to embed.
@@ -310,6 +314,8 @@ type GRPCTool struct {
 }
 
 // NewGRPCTool creates a new GRPCTool instance.
+//
+// Summary: Initializes a GRPCTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -471,6 +477,8 @@ type HTTPTool struct {
 }
 
 // NewHTTPTool creates a new HTTPTool instance.
+//
+// Summary: Initializes an HTTPTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1200,6 +1208,8 @@ type MCPTool struct {
 
 // NewMCPTool creates a new MCPTool instance.
 //
+// Summary: Initializes an MCPTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - client: The MCP client for downstream communication.
@@ -1414,6 +1424,8 @@ type OpenAPITool struct {
 }
 
 // NewOpenAPITool creates a new OpenAPITool instance.
+//
+// Summary: Initializes an OpenAPITool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1677,6 +1689,8 @@ type CommandTool struct {
 
 // NewCommandTool creates a new CommandTool instance.
 //
+// Summary: Initializes a CommandTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - service: The configuration of the command-line service.
@@ -1723,6 +1737,8 @@ type LocalCommandTool struct {
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
+//
+// Summary: Initializes a LocalCommandTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
