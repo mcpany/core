@@ -41,7 +41,9 @@ import { RotateCw, Copy, Check, Key, AlertTriangle, ShieldCheck } from "lucide-r
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
-// Types matching the backend User definition (simplified)
+/**
+ * User interface matching the backend definition (simplified).
+ */
 export interface User {
     id: string;
     roles: string[];
@@ -69,6 +71,16 @@ interface UserSheetProps {
     onSave: () => void;
 }
 
+/**
+ * UserSheet component for creating and editing users.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the sheet is open.
+ * @param props.onOpenChange - Callback for changing the open state.
+ * @param props.user - The user being edited, or null for new user.
+ * @param props.onSave - Callback triggered after successful save.
+ * @returns The rendered component.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();
     const [authType, setAuthType] = useState<"password" | "api_key">("password");
