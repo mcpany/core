@@ -275,6 +275,20 @@ func init() {
 // It is used for consistent string comparisons and parsing of boolean-like strings.
 const TrueStr = "true"
 
+// IsEnvTrue checks if an environment variable is set to "true" (case-insensitive).
+//
+// Summary: Checks if an environment variable is true.
+//
+// Parameters:
+//   - key: string. The environment variable key.
+//
+// Returns:
+//   - bool: True if the environment variable is set to "true" (case-insensitive), false otherwise.
+func IsEnvTrue(key string) bool {
+	val := os.Getenv(key)
+	return strings.EqualFold(val, "true")
+}
+
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Summary: Generates a random UUID.
