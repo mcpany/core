@@ -8,10 +8,13 @@ import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
+    let serviceSuffix = '';
 
     test.beforeEach(async ({ request, page }) => {
-        // Use a unique suffix to avoid collision with other tests running in parallel
-        await seedServices(request, " Tools");
+        // Use a unique suffix per test run to completely avoid backend race conditions
+        // where unregister (cleanup) overlaps with register (seed) for the same ID.
+        serviceSuffix = ` Tools ${Math.random().toString(36).substring(7)}`;
+        await seedServices(request, serviceSuffix);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -23,7 +26,9 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request, " Tools");
+        if (serviceSuffix) {
+            await cleanupServices(request, serviceSuffix);
+        }
         await cleanupUser(request, "e2e-tools-admin");
     });
 
