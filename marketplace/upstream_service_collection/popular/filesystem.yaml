@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # FileSystem Popular Service
 
 name: FileSystem
@@ -14,7 +17,7 @@ command_line_service:
   command: "npx -y @modelcontextprotocol/server-filesystem"
   working_directory: ""
   env:
-    ALLOWED_DIRECTORIES: 
+    ALLOWED_DIRECTORIES:
       plainText: "/tmp"
   local: false
 
