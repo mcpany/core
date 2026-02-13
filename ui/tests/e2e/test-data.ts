@@ -28,7 +28,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: "http://mcpany-server:50051", // Point to server container
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -40,7 +40,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://ui-http-echo-server:5678", // Point to echo server
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
