@@ -69,6 +69,8 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
+// Summary: Initializes a new Prompt Manager.
+//
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
 func NewManager() *Manager {

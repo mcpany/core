@@ -16,6 +16,8 @@ import (
 
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
+//
+// Summary: A resource backed by a dynamic tool execution.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool

@@ -311,6 +311,8 @@ type GRPCTool struct {
 
 // NewGRPCTool creates a new GRPCTool instance.
 //
+// Summary: Initializes a new GRPCTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - poolManager: The connection pool manager for gRPC connections.
@@ -471,6 +473,8 @@ type HTTPTool struct {
 }
 
 // NewHTTPTool creates a new HTTPTool instance.
+//
+// Summary: Initializes a new HTTPTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1415,6 +1419,8 @@ type OpenAPITool struct {
 
 // NewOpenAPITool creates a new OpenAPITool instance.
 //
+// Summary: Initializes a new OpenAPITool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - client: The HTTP client for requests.
@@ -1677,6 +1683,8 @@ type CommandTool struct {
 
 // NewCommandTool creates a new CommandTool instance.
 //
+// Summary: Initializes a new CommandTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - service: The configuration of the command-line service.
@@ -1723,6 +1731,8 @@ type LocalCommandTool struct {
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
+//
+// Summary: Initializes a new LocalCommandTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.

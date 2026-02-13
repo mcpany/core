@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package catalog
 
 import (
@@ -13,6 +16,8 @@ import (
 )
 
 // Manager handles the loading and listing of catalog services.
+//
+// Summary: Manages the lifecycle of catalog services.
 type Manager struct {
 	mu          sync.RWMutex
 	fs          afero.Fs
@@ -21,6 +26,15 @@ type Manager struct {
 }
 
 // NewManager creates a new Catalog Manager.
+//
+// Summary: Initializes a new Catalog Manager.
+//
+// Parameters:
+//   - fs: afero.Fs. The filesystem to use.
+//   - catalogPath: string. The path to the catalog directory.
+//
+// Returns:
+//   - *Manager: The initialized manager.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -29,6 +43,14 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 }
 
 // Load scans the catalog directory and loads all service configurations.
+//
+// Summary: Loads services from the filesystem.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if loading fails.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -73,6 +95,15 @@ func (m *Manager) Load(ctx context.Context) error {
 }
 
 // ListServices returns the list of loaded services.
+//
+// Summary: Lists loaded services.
+//
+// Parameters:
+//   - _: context.Context. Unused.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: The list of services.
+//   - error: An error if the operation fails (currently always nil).
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

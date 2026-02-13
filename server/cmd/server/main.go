@@ -80,7 +80,7 @@ func loadEnv(cmd *cobra.Command) error {
 // Summary: Creates the root command hierarchy.
 //
 // Returns:
-//   - *cobra.Command: The configured root command.
+//   - *cobra.Command: The configured root command, which serves as the entry point for all CLI operations.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,

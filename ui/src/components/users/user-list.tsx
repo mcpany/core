@@ -42,6 +42,15 @@ interface UserListProps {
     onDelete: (id: string) => void;
 }
 
+/**
+ * UserList component displays a paginated list of users with actions.
+ *
+ * @param props - The component props.
+ * @param props.users - The list of users to display.
+ * @param props.isLoading - Whether the list is loading.
+ * @param props.onEdit - Callback when edit is clicked.
+ * @param props.onDelete - Callback when delete is clicked.
+ */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();

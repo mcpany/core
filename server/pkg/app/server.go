@@ -1247,11 +1247,13 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 // WaitForStartup waits for the application to be fully initialized.
 // It blocks until the startup process is complete or the context is canceled.
 //
+// Summary: Waits for application startup.
+//
 // Parameters:
-//   - ctx (context.Context): The context to wait on.
+//   - ctx: context.Context. The context to wait on.
 //
 // Returns:
-//   - (error): nil if startup completes successfully, or a context error if canceled.
+//   - error: nil if startup completes successfully, or a context error if canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1375,15 +1377,15 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
+// Summary: Performs a health check against a server.
+//
 // Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
+//   - timeout: time.Duration. The maximum duration to wait for the health check.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
-//     error if the health check fails for any reason (e.g., connection error,
-//     non-200 status code).
+//   - error: nil if the server is healthy, or an error if the check fails.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1398,15 +1400,15 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
+// Summary: Performs a health check with context.
+//
 // Parameters:
-//   - ctx (context.Context): The context for managing the health check's lifecycle.
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
+//   - ctx: context.Context. The context for managing the health check's lifecycle.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
-//     error if the health check fails for any reason (e.g., connection error,
-//     non-200 status code).
+//   - error: nil if the server is healthy, or an error if the check fails.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2378,12 +2380,22 @@ func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handl
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener for the server.
-// register is a function that registers the gRPC services with the server.
+// Summary: Starts the gRPC server asynchronously.
+//
+// Parameters:
+//   - ctx: context.Context. The context for managing the server's lifecycle.
+//   - wg: *sync.WaitGroup. A WaitGroup to signal when the server has shut down.
+//   - errChan: chan<- error. A channel for reporting errors during startup.
+//   - readyChan: chan<- struct{}. A channel to signal when the server is ready to accept connections.
+//   - name: string. A descriptive name for the server, used in logging.
+//   - lis: net.Listener. The net.Listener for the server.
+//   - shutdownTimeout: time.Duration. The duration to wait for graceful shutdown.
+//   - server: *gogrpc.Server. The gRPC server instance.
+//
+// Side Effects:
+//   - Spawns a goroutine.
+//   - Writes to errChan on failure.
+//   - Writes to readyChan on success.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -2450,6 +2462,17 @@ func startGrpcServer(
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
+//
+// Summary: Formats bind errors with helpful hints.
+//
+// Parameters:
+//   - err: error. The original error.
+//   - serverType: string. The type of server (e.g., "HTTP", "gRPC").
+//   - address: string. The address that failed to bind.
+//   - flag: string. The configuration flag to change the port.
+//
+// Returns:
+//   - error: A formatted error message.
 func wrapBindError(err error, serverType, address, flag string) error {
 	if strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind: permission denied") {
 		return fmt.Errorf("❌ %s server failed to listen on %s: %w\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
@@ -2460,12 +2483,23 @@ func wrapBindError(err error, serverType, address, flag string) error {
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener on which the server will listen.
-// handler is the HTTP handler for processing requests.
+// Summary: Starts the HTTP server asynchronously.
+//
+// Parameters:
+//   - ctx: context.Context. The context for managing the server's lifecycle.
+//   - wg: *sync.WaitGroup. A WaitGroup to signal when the server has shut down.
+//   - errChan: chan<- error. A channel for reporting errors during startup.
+//   - readyChan: chan<- struct{}. A channel to signal when the server is ready to accept connections.
+//   - name: string. A descriptive name for the server, used in logging.
+//   - lis: net.Listener. The net.Listener on which the server will listen.
+//   - handler: http.Handler. The HTTP handler for processing requests.
+//   - shutdownTimeout: time.Duration. The duration to wait for graceful shutdown.
+//   - connState: func(net.Conn, http.ConnState). Optional callback for connection state changes.
+//
+// Side Effects:
+//   - Spawns a goroutine.
+//   - Writes to errChan on failure.
+//   - Writes to readyChan on success.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,

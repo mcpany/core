@@ -56,12 +56,16 @@ type MCPServerProvider interface {
 }
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
+//
+// Summary: A prompt defined by a configuration template.
 type TemplatedPrompt struct {
 	definition *configv1.PromptDefinition
 	serviceID  string
 }
 
 // NewTemplatedPrompt creates a new TemplatedPrompt instance.
+//
+// Summary: Initializes a new TemplatedPrompt.
 //
 // Parameters:
 //   - definition: The prompt definition from configuration.
@@ -183,6 +187,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 }
 
 // NewPromptFromConfig creates a new Prompt from a configuration definition.
+//
+// Summary: Factory method to create a Prompt from config.
 //
 // Parameters:
 //   - definition: The prompt definition from configuration.
