@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * Option represents a selectable item in the MultiSelect component.
+ */
 export interface Option {
   label: string;
   value: string;
@@ -33,6 +36,18 @@ interface MultiSelectProps {
   className?: string;
 }
 
+/**
+ * MultiSelect component allows selecting multiple items from a dropdown list.
+ * It displays selected items as badges (tags).
+ *
+ * @param props - The component props.
+ * @param props.options - List of available options.
+ * @param props.selected - Array of selected values.
+ * @param props.onChange - Callback when selection changes.
+ * @param props.placeholder - Placeholder text when empty.
+ * @param props.className - Optional CSS classes.
+ * @returns The rendered MultiSelect component.
+ */
 export function MultiSelect({
   options,
   selected,
