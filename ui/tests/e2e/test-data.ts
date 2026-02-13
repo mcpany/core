@@ -126,6 +126,8 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        // Clean up potentially renamed services from other tests
+        await context.delete('/api/v1/services/Payment Gateway Updated', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
