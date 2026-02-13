@@ -197,6 +197,17 @@ export function PlaygroundClientPro() {
   const handleRunRequest = async (toolName: string, args: Record<string, unknown>) => {
       const command = `${toolName} ${JSON.stringify(args)}`;
       setInput(command);
+
+      const userMsg: Message = {
+          id: Date.now().toString(),
+          type: "user",
+          content: command,
+          timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, userMsg]);
+      setIsLoading(true);
+
       await processResponse(command);
   };
 

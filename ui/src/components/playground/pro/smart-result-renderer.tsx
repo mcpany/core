@@ -62,6 +62,19 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
             content = content.content;
         }
 
+        // Handle stringified JSON content (common with command_line_service echoing JSON)
+        if (content && Array.isArray(content) && content.length === 1 && content[0].type === 'text' && content[0].text) {
+            try {
+                const parsed = JSON.parse(content[0].text);
+                // If parsed is an array of objects that look like MCP content (or at least have type property), use it
+                if (Array.isArray(parsed) && parsed.length > 0 && parsed.every((item: any) => typeof item === 'object' && (item.type === 'text' || item.type === 'image' || item.type === 'resource'))) {
+                    content = parsed;
+                }
+            } catch (e) {
+                // Ignore parse errors
+            }
+        }
+
         return content;
     }, [result]);
 

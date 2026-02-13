@@ -16,9 +16,19 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * SavedRequest represents a saved tool execution request.
@@ -71,6 +81,8 @@ export function CollectionsSidebar({ collections, setCollections, onRunRequest, 
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
     const [isCreating, setIsCreating] = useState(false);
     const [newCollectionName, setNewCollectionName] = useState("");
+    const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
+    const { toast } = useToast();
 
     const toggleExpand = (id: string) => {
         const newExpanded = new Set(expanded);
@@ -93,13 +105,14 @@ export function CollectionsSidebar({ collections, setCollections, onRunRequest, 
         setNewCollectionName("");
         setIsCreating(false);
         toggleExpand(newCol.id); // Auto expand
-        toast.success("Collection created");
+        toast({ title: "Collection created" });
     };
 
-    const deleteCollection = (id: string) => {
-        if (confirm("Delete this collection?")) {
-            setCollections(collections.filter(c => c.id !== id));
-            toast.success("Collection deleted");
+    const confirmDeleteCollection = () => {
+        if (collectionToDelete) {
+            setCollections(collections.filter(c => c.id !== collectionToDelete));
+            setCollectionToDelete(null);
+            toast({ title: "Collection deleted" });
         }
     };
 
@@ -110,21 +123,6 @@ export function CollectionsSidebar({ collections, setCollections, onRunRequest, 
             }
             return c;
         }));
-    };
-
-    const runCollection = async (collection: Collection) => {
-        toast.message(`Running collection: ${collection.name}`);
-        for (const req of collection.requests) {
-            // Sequential execution
-            // We rely on parent to handle async execution if needed, but here we just trigger
-            // Note: If onRunRequest is async, we should await it?
-            // The prop definition returns void, but we can assume parent handles queueing.
-            // For true sequential execution, parent needs to support it.
-            // For now, let's just fire them.
-            onRunRequest(req.toolName, req.toolArgs);
-            // Small delay to prevent UI freeze/race
-            await new Promise(r => setTimeout(r, 500));
-        }
     };
 
     return (
@@ -177,9 +175,6 @@ export function CollectionsSidebar({ collections, setCollections, onRunRequest, 
                                     <Badge variant="secondary" className="text-[9px] h-4 px-1">{col.requests.length}</Badge>
                                 </div>
                                 <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); runCollection(col); }} title="Run All">
-                                        <Play className="h-3 w-3 text-green-500" />
-                                    </Button>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
@@ -187,7 +182,7 @@ export function CollectionsSidebar({ collections, setCollections, onRunRequest, 
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => deleteCollection(col.id)} className="text-destructive">
+                                            <DropdownMenuItem onClick={() => setCollectionToDelete(col.id)} className="text-destructive">
                                                 <Trash2 className="mr-2 h-4 w-4" /> Delete
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
@@ -223,6 +218,23 @@ export function CollectionsSidebar({ collections, setCollections, onRunRequest, 
                     ))}
                 </div>
             </ScrollArea>
+
+            <AlertDialog open={!!collectionToDelete} onOpenChange={(open) => !open && setCollectionToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the collection and all its saved requests.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDeleteCollection} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
