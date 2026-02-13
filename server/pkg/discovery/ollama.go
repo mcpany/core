@@ -18,27 +18,58 @@ import (
 )
 
 // Provider defines the interface for auto-discovering local services.
+//
+// Summary: Interface for service auto-discovery.
 type Provider interface {
 	// Name returns the name of the discovery provider.
+	//
+	// Returns:
+	//   - string: The unique name of the provider (e.g., "ollama").
 	Name() string
+
 	// Discover attempts to find services and return their configurations.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the discovery operation.
+	//
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: A list of discovered service configurations.
+	//   - error: An error if discovery fails.
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
 // OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+//
+// Summary: Discovery provider for Ollama.
+//
+// Fields:
+//   - Endpoint: string. The base URL of the Ollama API (e.g., "http://localhost:11434").
 type OllamaProvider struct {
-	Endpoint   string // e.g., "http://localhost:11434"
+	Endpoint   string
 	client     *http.Client
 	clientOnce sync.Once
 }
 
 // Name returns the name of the provider.
+//
+// Summary: Returns the provider name.
+//
+// Returns:
+//   - string: Always returns "ollama".
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
+//
+// Summary: Discovers local Ollama services.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A list containing the Ollama service config if found.
+//   - error: An error if the Ollama instance is unreachable.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets
