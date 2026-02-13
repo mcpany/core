@@ -257,6 +257,19 @@ message HttpParameterMapping {
   SecretValue secret = 2;
   // Whether to disable automatic URL escaping for this parameter.
   bool disable_escape = 3 [json_name = "disable_escape"];
+  // The location where the parameter should be placed in the request.
+  ParameterLocation location = 4;
+  // The name of the target parameter (e.g. header name, cookie name).
+  // If empty, defaults to the parameter name defined in the schema.
+  string target_name = 5 [json_name = "target_name"];
+}
+
+enum ParameterLocation {
+  PARAMETER_LOCATION_UNSPECIFIED = 0; // Auto-detect (Path/Template)
+  PARAMETER_LOCATION_QUERY = 1;
+  PARAMETER_LOCATION_HEADER = 2;
+  PARAMETER_LOCATION_COOKIE = 3;
+  PARAMETER_LOCATION_PATH = 4;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.

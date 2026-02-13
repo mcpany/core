@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolDefinition } from "@proto/config/v1/tool";
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType, ParameterLocation } from "@proto/config/v1/call";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -188,7 +188,33 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="col-span-4 space-y-2">
+                            <div className="col-span-3 space-y-2">
+                                <Label htmlFor={`param-loc-${index}`}>Location</Label>
+                                <Select
+                                    value={param.location?.toString() || ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}
+                                    onValueChange={(val) => updateParameter(index, { location: parseInt(val) })}
+                                >
+                                    <SelectTrigger id={`param-loc-${index}`}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}>Auto / Path</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_QUERY.toString()}>Query</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_HEADER.toString()}>Header</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_COOKIE.toString()}>Cookie</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="col-span-3 space-y-2">
+                                <Label htmlFor={`param-target-${index}`}>Target Name</Label>
+                                <Input
+                                    id={`param-target-${index}`}
+                                    value={param.targetName || ""}
+                                    onChange={(e) => updateParameter(index, { targetName: e.target.value })}
+                                    placeholder={param.schema?.name || "Optional"}
+                                />
+                            </div>
+                            <div className="col-span-10 space-y-2">
                                 <Label htmlFor={`param-desc-${index}`}>Description</Label>
                                 <Input
                                     id={`param-desc-${index}`}
