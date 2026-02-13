@@ -2755,6 +2755,13 @@ func checkForLocalFileAccess(val string) error {
 	if strings.HasPrefix(strings.ToLower(val), "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
+
+	// Sentinel Security Update: Ensure path is allowed and not sensitive.
+	// This prevents accessing sensitive files (e.g. .env) even if they are in the CWD,
+	// and resolves symlinks to ensure they don't point outside allowed paths or to sensitive files.
+	if err := validation.IsAllowedPath(val); err != nil {
+		return fmt.Errorf("path access denied: %w", err)
+	}
 	return nil
 }
 
