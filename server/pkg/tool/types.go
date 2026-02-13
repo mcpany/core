@@ -2824,18 +2824,6 @@ func isShell(cmd string) bool {
 	return false
 }
 
-func isVersionSuffix(s string) bool {
-	if s == "" {
-		return false
-	}
-	for _, r := range s {
-		if (r < '0' || r > '9') && r != '.' && r != '-' {
-			return false
-		}
-	}
-	return true
-}
-
 func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
