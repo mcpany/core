@@ -3,17 +3,21 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
+set -x
 
 echo "=== Protobuf Generation Debug Start ==="
 echo "Current Directory: $(pwd)"
 echo "Protoc Path: $(which protoc)"
 echo "Protoc Version: $(protoc --version)"
 
+# Check node modules
+echo "Listing /app/node_modules/.bin/:"
+ls -la /app/node_modules/.bin/
+
 PLUGIN="/app/node_modules/.bin/protoc-gen-ts_proto"
 echo "Checking Plugin at $PLUGIN..."
 if [ ! -f "$PLUGIN" ]; then
     echo "ERROR: Plugin not found at $PLUGIN"
-    ls -la /app/node_modules/.bin/
     exit 1
 fi
 echo "Plugin found."
