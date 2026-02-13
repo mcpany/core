@@ -72,6 +72,8 @@ func TestSafeDialer_Coverage(t *testing.T) {
 
 	// Direct SafeDialContext usage
 	// Should fail for loopback if default
+	// Unset env var to test default behavior
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 	dialer := NewSafeDialer()
 	// Split ts.URL (http://127.0.0.1:port)
 	u, _ :=  ts.Listener.Addr().(*net.TCPAddr)

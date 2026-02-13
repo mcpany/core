@@ -108,6 +108,8 @@ func NewSafeDialer() *SafeDialer {
 		AllowLoopback:  false,
 		AllowPrivate:   false,
 		AllowLinkLocal: false,
+		Resolver:       net.DefaultResolver,
+		Dialer:         &net.Dialer{},
 	}
 
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
