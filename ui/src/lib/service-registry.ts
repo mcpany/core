@@ -3,6 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents a service available in the registry.
+ *
+ * Summary: Definition of a registry item.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -12,6 +17,13 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * A registry of popular MCP services available for quick installation.
+ *
+ * Summary: List of available services.
+ *
+ * @type {ServiceRegistryItem[]}
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {

@@ -2,6 +2,7 @@
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
 
 ## 1. Elevator Pitch
 
@@ -12,6 +13,12 @@
 **Why does it exist?**
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
+
+### Key Features
+- **Zero Code Integration**: Turn any API into an MCP tool via YAML/JSON.
+- **Universal Protocol Support**: REST, gRPC, GraphQL, and CLI commands supported out-of-the-box.
+- **Enterprise Security**: Built-in authentication, rate limiting, and audit logging.
+- **Observability**: Prometheus metrics and structured logging.
 
 ## 2. Architecture
 
@@ -120,6 +127,7 @@ make test
 ### Linting
 We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
+*   **TypeScript:** We use `check-ts-doc` to ensure JSDoc coverage for exported symbols.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
 To run linters:

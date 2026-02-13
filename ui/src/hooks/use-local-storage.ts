@@ -15,6 +15,10 @@ import { useState, useEffect, useCallback } from "react";
  *          1. The current value (T).
  *          2. A function to update the value (similar to useState's setter).
  *          3. A boolean indicating if the value has been initialized from localStorage.
+ *
+ * Side Effects:
+ * - Reads from window.localStorage on mount.
+ * - Writes to window.localStorage when setValue is called.
  */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void, boolean] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
