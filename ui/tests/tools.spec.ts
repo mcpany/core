@@ -33,8 +33,11 @@ test.describe('Tool Exploration', () => {
         // This ensures the backend has the tools before we expect the UI to show them
         const maxApiRetries = 30;
         let toolsAvailable = false;
+        const apiKey = process.env.MCPANY_API_KEY || 'test-token';
+        const headers = { 'X-API-Key': apiKey };
+
         for (let i = 0; i < maxApiRetries; i++) {
-            const response = await request.get('/api/v1/tools');
+            const response = await request.get('/api/v1/tools', { headers });
             if (response.ok()) {
                 const tools = await response.json();
                 if (Array.isArray(tools) && tools.some((t: any) => t.name.includes('process_payment'))) {
@@ -42,6 +45,8 @@ test.describe('Tool Exploration', () => {
                     console.log('Backend reports tools are available.');
                     break;
                 }
+            } else {
+                console.log(`Backend API poll failed: ${response.status()} ${response.statusText()}`);
             }
             console.log(`Backend tools not ready yet, retrying API check... (Attempt ${i + 1}/${maxApiRetries})`);
             await page.waitForTimeout(1000);
