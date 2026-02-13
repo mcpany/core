@@ -87,6 +87,13 @@ type StdioConnection struct {
 	Env     map[string]string `yaml:"env,omitempty"`
 }
 
+// newImportCmd creates the command to import Claude Desktop configuration.
+//
+// This command reads a `claude_desktop_config.json` file and converts it into
+// an MCP Any configuration file (YAML), facilitating easy migration.
+//
+// Returns:
+//   - *cobra.Command: The configured import command.
 func newImportCmd() *cobra.Command {
 	var outputPath string
 
