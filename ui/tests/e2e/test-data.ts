@@ -19,7 +19,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
+                    { name: "process_payment", description: "Process a payment", call_id: "process_payment" }
                 ],
                 calls: {
                     process_payment: {
@@ -38,7 +38,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 // ui-http-echo-server is available in docker-compose at port 5678
                 address: "http://ui-http-echo-server:5678",
                 tools: [
-                     { name: "get_user", description: "Get user details" }
+                     { name: "get_user", description: "Get user details", call_id: "get_user" }
                 ],
                 calls: {
                     get_user: {
@@ -56,7 +56,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://ui-http-echo-server:5678",
                 tools: [
-                    { name: "calculator", description: "calc" }
+                    { name: "calculator", description: "calc", call_id: "calculator" }
                 ],
                 calls: {
                     calculator: {
