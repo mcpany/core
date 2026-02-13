@@ -19,8 +19,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "process_payment" }
+                ],
+                calls: {
+                    process_payment: {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/v1/charges"
+                    }
+                }
             }
         },
         {
@@ -30,8 +36,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://localhost:50051", // Dummy address, visibility checks don't need health
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                     { name: "get_user", description: "Get user details", call_id: "get_user" }
+                ],
+                calls: {
+                    get_user: {
+                        method: "HTTP_METHOD_GET",
+                        endpoint_path: "/users/{id}"
+                    }
+                }
             }
         },
         // Add a service with calculator for existing test compatibility if desired
@@ -42,8 +54,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://localhost:8080", // Dummy
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    { name: "calculator", description: "calc", call_id: "calculator" }
+                ],
+                calls: {
+                    calculator: {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/calc"
+                    }
+                }
             }
         },
         {
