@@ -94,7 +94,6 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
   const filteredTemplates = useMemo(() => {
     return combinedCatalog.filter((template) => {
       // Source Filter
-      // @ts-ignore
       const source = template.source || "official";
       if (sourceFilter !== "all") {
           if (sourceFilter === "official" && source !== "official") return false;
@@ -118,11 +117,8 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
         if (!a.featured && b.featured) return 1;
 
         // Official first, then Verified, then Community
-        // @ts-ignore
-        const score = (t) => t.source === 'official' ? 3 : t.source === 'verified' ? 2 : 1;
-        // @ts-ignore
+        const score = (t: ServiceTemplate) => t.source === 'official' ? 3 : t.source === 'verified' ? 2 : 1;
         const scoreA = score(a);
-        // @ts-ignore
         const scoreB = score(b);
         if (scoreA !== scoreB) return scoreB - scoreA;
 
@@ -174,7 +170,6 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
         {filteredTemplates.map((template) => {
           const Icon = template.icon;
-          // @ts-ignore
           const source = template.source || "official";
 
           return (
@@ -227,7 +222,6 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
                           {template.category}
                       </Badge>
                   )}
-                  {/* @ts-ignore */}
                   {template.url && (
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1 opacity-50">
                           <Globe className="h-3 w-3" />

@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Definition of a service registry item.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;

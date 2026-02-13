@@ -64,7 +64,6 @@ export function mapRegistryToTemplate(item: ServiceRegistryItem): ServiceTemplat
             } as any
         },
         fields: fields,
-        // @ts-ignore - Adding custom property for UI badge
         source: "verified"
     };
 }
@@ -124,9 +123,7 @@ export function mapCommunityToTemplate(server: CommunityServer): ServiceTemplate
                 defaultValue: command
             }
         ],
-        // @ts-ignore - Adding custom property for UI badge
         source: "community",
-        // @ts-ignore
         url: server.url
     };
 }

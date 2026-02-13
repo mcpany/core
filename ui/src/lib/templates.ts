@@ -25,6 +25,10 @@ export interface ServiceTemplate {
   category?: string;
   /** Whether the service is featured. */
   featured?: boolean;
+  /** The source of the template (e.g., 'official', 'verified', 'community'). */
+  source?: string;
+  /** The URL where the template was sourced from (e.g., GitHub repo). */
+  url?: string;
   /**
    * Optional list of fields that need to be filled in by the user.
    */
