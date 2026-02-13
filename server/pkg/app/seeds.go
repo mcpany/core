@@ -4,11 +4,16 @@
 package app
 
 import (
+	"google.golang.org/protobuf/proto"
+
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
+
+// BuiltinServiceTemplates contains the rich service templates.
+var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {
 	BuiltinTemplates = []*configv1.UpstreamServiceConfig{
@@ -201,6 +206,84 @@ func init() {
 }`,
 			"npx -y @modelcontextprotocol/server-cloudflare",
 		),
+	}
+
+	BuiltinServiceTemplates = []*configv1.ServiceTemplate{
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("google-calendar"),
+			Name:        proto.String("Google Calendar"),
+			Description: proto.String("Manage events and calendars."),
+			Icon:        proto.String("calendar"),
+			Tags:        []string{"google", "productivity"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("google_calendar"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("https://calendar.googleapis.com"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					Oauth2: configv1.OAuth2Auth_builder{
+						Scopes: proto.String("https://www.googleapis.com/auth/calendar"),
+					}.Build(),
+				}.Build(),
+				OpenapiService: configv1.OpenapiUpstreamService_builder{
+					SpecUrl: proto.String("https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("github"),
+			Name:        proto.String("GitHub"),
+			Description: proto.String("Interact with repositories, issues, and PRs."),
+			Icon:        proto.String("github"),
+			Tags:        []string{"dev", "git"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("github"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("https://api.github.com"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					BearerToken: configv1.BearerTokenAuth_builder{
+						Token: configv1.SecretValue_builder{
+							PlainText: proto.String(""),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+				OpenapiService: configv1.OpenapiUpstreamService_builder{
+					Address: proto.String("https://api.github.com"),
+					SpecUrl: proto.String("https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("linear"),
+			Name:        proto.String("Linear"),
+			Description: proto.String("Issue tracking and project management."),
+			Icon:        proto.String("linear"),
+			Tags:        []string{"dev", "pm"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("linear"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("https://api.linear.app/graphql"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{PlainText: proto.String("")}.Build(),
+					}.Build(),
+				}.Build(),
+				OpenapiService: configv1.OpenapiUpstreamService_builder{
+					SpecUrl: proto.String("https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }
 

@@ -20,6 +20,7 @@ import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
+import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2, Calendar } from "lucide-react";
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
@@ -218,6 +219,36 @@ const getMetadata = () => {
     return undefined;
 };
 
+// Helper to map snake_case response to camelCase object
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapUpstreamServiceConfig = (s: any) => ({
+    ...s,
+    connectionPool: s.connection_pool,
+    httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+    grpcService: s.grpc_service,
+    commandLineService: s.command_line_service,
+    mcpService: s.mcp_service,
+    upstreamAuth: s.upstream_auth,
+    preCallHooks: s.pre_call_hooks,
+    postCallHooks: s.post_call_hooks,
+    lastError: s.last_error,
+    toolCount: s.tool_count,
+    toolExportPolicy: s.tool_export_policy,
+    promptExportPolicy: s.prompt_export_policy,
+    resourceExportPolicy: s.resource_export_policy,
+    openapiService: s.openapi_service, // Add mapping for openapi service
+    callPolicies: s.call_policies?.map((p: any) => ({
+        defaultAction: p.default_action,
+        rules: p.rules?.map((r: any) => ({
+            action: r.action,
+            nameRegex: r.name_regex,
+            argumentRegex: r.argument_regex,
+            urlRegex: r.url_regex,
+            callIdRegex: r.call_id_regex
+        }))
+    })),
+});
+
 /**
  * API Client for interacting with the MCP Any server.
  */
@@ -241,32 +272,8 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);
         // Map snake_case to camelCase for UI compatibility
-        return list.map((s: any) => ({
-            ...s,
-            connectionPool: s.connection_pool,
-            httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            preCallHooks: s.pre_call_hooks,
-            postCallHooks: s.post_call_hooks,
-            lastError: s.last_error,
-            toolCount: s.tool_count,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
-            callPolicies: s.call_policies?.map((p: any) => ({
-                defaultAction: p.default_action,
-                rules: p.rules?.map((r: any) => ({
-                    action: r.action,
-                    nameRegex: r.name_regex,
-                    argumentRegex: r.argument_regex,
-                    urlRegex: r.url_regex,
-                    callIdRegex: r.call_id_regex
-                }))
-            })),
-        }));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return list.map((s: any) => mapUpstreamServiceConfig(s));
     },
 
     /**
@@ -844,72 +851,50 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
-                serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
-                    }
-                }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
-                }
-            }
-        ];
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        const list = await res.json();
+
+        // Icon Mapping
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ICON_MAP: any = {
+            "server": Server,
+            "cloud": Cloud,
+            "map": Map,
+            "message-square": MessageSquare,
+            "check-circle-2": CheckCircle2,
+            "clock": Clock,
+            "database": Database,
+            "file-text": FileText,
+            "github": Github,
+            "activity": Activity,
+            "globe": Globe,
+            "zap": Zap,
+            "calendar": Calendar,
+            // Aliases
+            "google-calendar": Calendar,
+            "linear": CheckCircle2,
+            "slack": MessageSquare,
+            "notion": FileText,
+            "jira": Activity,
+            "gitlab": Github,
+        };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return list.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            // Fallback to Server icon if missing/unknown
+            icon: ICON_MAP[t.icon] || Server,
+            // Simple category inference
+            category: t.tags?.[0] ? t.tags[0].charAt(0).toUpperCase() + t.tags[0].slice(1) : "Other",
+            config: t.service_config ? mapUpstreamServiceConfig(t.service_config) : {},
+            // Backend doesn't store wizard fields yet, rely on Service Editor
+            fields: [],
+        }));
     },
 
     /**
