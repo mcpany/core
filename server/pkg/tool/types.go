@@ -2801,6 +2801,7 @@ func isShellCommand(cmd string) bool {
 		"find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
+		"git", "tar",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
 		// Additional interpreters and compilers that can execute code
