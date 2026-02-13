@@ -4,13 +4,54 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Seed unique service for this test to avoid collision with parallel tests
+        await request.post('/api/v1/services', {
+            data: {
+                id: "svc_tools_spec",
+                name: "Tools Spec Service",
+                version: "v1.0",
+                http_service: {
+                    address: "https://example.com",
+                    tools: [
+                        { name: "tools_spec_payment", description: "Process a payment (Tools Spec)" }
+                    ]
+                }
+            },
+            headers: { 'X-API-Key': 'test-token' }
+        });
+
+        // Also seed echo for inspection test
+        await request.post('/api/v1/services', {
+            data: {
+                id: "svc_echo_spec",
+                name: "Echo Service Spec",
+                version: "v1.0",
+                command_line_service: {
+                    command: "/bin/echo",
+                    tools: [
+                        {
+                            name: "echo_tool_spec",
+                            description: "Echoes back input",
+                            inputSchema: { type: "object" },
+                            call_id: "echo_call"
+                        }
+                    ],
+                    calls: {
+                        echo_call: {
+                            args: ["echoed_output"]
+                        }
+                    }
+                }
+            },
+            headers: { 'X-API-Key': 'test-token' }
+        });
+
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -22,7 +63,9 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        // Cleanup unique services
+        await request.delete('/api/v1/services/Tools Spec Service', { headers: { 'X-API-Key': 'test-token' } });
+        await request.delete('/api/v1/services/Echo Service Spec', { headers: { 'X-API-Key': 'test-token' } });
         await cleanupUser(request, "e2e-tools-admin");
     });
 
@@ -31,17 +74,13 @@ test.describe('Tool Exploration', () => {
 
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
-        // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
-        let found = false;
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
-                // Check for Payment Gateway first (svc_01) to verify generic seeding works
-                // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
-                found = true;
+                // Check for unique seeded tool
+                await expect(page.getByText('tools_spec_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
-            } catch (e) {
+            } catch {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
                 await page.reload();
                 // Wait for network idle and a small buffer
@@ -51,13 +90,11 @@ test.describe('Tool Exploration', () => {
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('tools_spec_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
-        // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
-        // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
         try {
-            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(/echo_tool_spec/).first()).toBeVisible({ timeout: 20000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
@@ -71,18 +108,18 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('tools_spec_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
-            } catch (e) {
+            } catch {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('tools_spec_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: /echo_tool_spec/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
@@ -95,17 +132,17 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('tools_spec_payment').first()).toBeVisible({ timeout: 5000 });
                 break;
-            } catch (e) {
+            } catch {
                 await page.reload();
                 await page.waitForLoadState('networkidle');
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('tools_spec_payment').first()).toBeVisible({ timeout: 10000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: /echo_tool_spec/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
