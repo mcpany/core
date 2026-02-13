@@ -61,6 +61,11 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
 }
 
 func TestResolveSecret_SSRF_Blocked(t *testing.T) {
+	// Ensure env vars are unset for this test
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// Attempt to access AWS Metadata service IP
 	// This should be blocked by our SSRF protection
 	// The test expects the function to return an error explicitly stating it is blocked.
@@ -85,7 +90,15 @@ func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
 	// Attempt to access a private IP (e.g. 192.168.1.1)
 	// This should be blocked by our SSRF protection (if enhanced).
 
+	// Ensure env vars are unset for this test
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false") // Replaces MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS likely, check mapping
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// Force block by setting env var to false (or ensuring default is block)
+	// Note: The original code used MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS, but NewSafeHTTPClient uses MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES.
+	// Assuming ResolveSecret uses NewSafeHTTPClient, we should set RESOURCES.
+	// But let's keep the original Setenv just in case there's another check.
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS", "false")
 
 	remoteContent := &configv1.RemoteContent{}
