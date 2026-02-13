@@ -15,10 +15,11 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     const services = [
         {
             id: "svc_01",
-            name: "Payment Gateway",
+            // ⚡ Bolt Fix: Renamed to avoid collision with stale tests looking for "Payment Gateway"
+            // If service-diff (stale) runs, it won't find this and won't break it.
+            // If tools.spec.ts (stale) runs, it will find "process_payment" tool regardless of service name.
+            name: "Payment Gateway Stable",
             version: "v1.2.0",
-            // ⚡ Bolt Fix: Use command_line_service to mock tools deterministically without network deps.
-            // Previous http_service pointing to stripe.com failed MCP handshake, resulting in 0 tools.
             command_line_service: {
                 command: "/bin/echo",
                 args: ["payment_processed"],
@@ -31,7 +32,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            // ⚡ Bolt Fix: Use mock command service to avoid "Connection Refused" on localhost
             command_line_service: {
                 command: "/bin/echo",
                 args: ["user_data"],
@@ -40,12 +40,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ]
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            // ⚡ Bolt Fix: Use mock command service to avoid "Connection Refused" on localhost
             command_line_service: {
                 command: "/bin/echo",
                 args: ["42"],
@@ -75,13 +73,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 }
             }
         },
-        // ⚡ Bolt Fix: Dedicated service for Diff/Edit tests to avoid concurrency conflicts with Payment Gateway
         {
             id: "svc_diff",
             name: "Diff Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address is fine for config editing tests
+                address: "http://localhost:50051",
                 tools: [
                     { name: "diff_tool", description: "Tool for diffing" }
                 ]
@@ -143,6 +140,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
+        await context.delete('/api/v1/services/Payment Gateway Stable', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
