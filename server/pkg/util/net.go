@@ -217,12 +217,6 @@ func NewSafeHTTPClient() *http.Client {
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
 func CheckConnection(ctx context.Context, address string) error {
-	// DEBUG: Print environment variables to diagnose CI failures
-	val := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-	if val != "" {
-		fmt.Printf("DEBUG: CheckConnection: MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=%q\n", val)
-	}
-
 	var target string
 	if strings.Contains(address, "://") {
 		u, err := url.Parse(address)
