@@ -1,4 +1,4 @@
-# Services Management
+# Upstream Services Management
 
 **Status:** Implemented
 
@@ -15,24 +15,24 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
+Navigate to the **Upstream Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 
 Key columns:
 
-- **Name**: Application identifier.
+- **Name**: Application identifier. Clicking the name navigates to the Service Details page.
 - **Type**: Protocol (HTTP, gRPC, MCP, CMD).
-- **Status**: Health indicator (Healthy, Degraded, Unhealthy).
+- **Status**: Health indicator (Visualized via Sparkline and color coding).
 - **Control**: Toggle switch to quickly enable/disable traffic.
-- **Actions**: "View Logs" to jump directly to the live logs for a specific service.
+- **Actions**: Menu (⋮) containing options like **Edit**, **View Logs**, **Restart**, **Duplicate**, and **Delete**.
 
 ### 2. Add New Service
 
 To register a new upstream service:
 
 1. Click the **"Add Service"** button in the top-right corner.
-2. A **Marketplace** sheet will open.
+2. A **Marketplace** sheet will open, allowing you to choose from templates or start from scratch.
 3. Select the desired service type (e.g., HTTP, gRPC) or a pre-configured service template.
 4. Follow the configuration wizard to register the service.
 
@@ -42,9 +42,10 @@ To register a new upstream service:
 
 To edit an existing service:
 
-1. Click on the service name in the list (or select "Edit" from the Actions menu).
-2. A detailed **Configuration Sheet** will open.
-3. Here you can update the endpoint, managing **Environment Variables**, and view specialized settings.
+1. Click the **Actions** menu (⋮) on the service row.
+2. Select **Edit**.
+3. A detailed **Configuration Sheet** will open.
+4. Here you can update the endpoint, manage **Environment Variables**, and view specialized settings.
 
 ![Service Configuration](screenshots/service_config.png)
 
@@ -62,9 +63,9 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 - **HTTP (OpenAPI)**: Connects to REST/OpenAPI endpoints. Ideal for third-party SaaS (e.g., GitHub, Stripe).
 - **gRPC**: Connects to high-performance internal microservices using Protobuf reflection.
 - **MCP**: Connects to other Model Context Protocol servers.
-- **CMD (Local)**: Executes local command-line tools (stdio). Perfect for scripts, Python environments, or CLI utilities.
+- **CMD (Local)**: Executes local command-line tools (stdio) or containers. Perfect for scripts, Python environments, or CLI utilities.
 
 ### Special Configuration
 
 - **Environment Variables**: Define key-value pairs injected into the process (for CMD) or sent as metadata. Supports `secrets.*` references.
-- **Health Checks**: The system periodically pings the `health_check_endpoint` (default `/health`) to update the status.
+- **Health Checks**: The system periodically checks service health based on configured protocol (HTTP status, gRPC Check, etc.).
