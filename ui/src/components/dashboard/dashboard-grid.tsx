@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -214,6 +215,7 @@ export function DashboardGrid() {
 
     return (
         <div className="space-y-4">
+            <OnboardingCard />
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
