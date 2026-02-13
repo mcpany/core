@@ -29,6 +29,9 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	t.Run("Default restricted", func(t *testing.T) {
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+		// Explicitly unset the dangerous bypass for this test to ensure default behavior is checked
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+
 		client := util.NewSafeHTTPClient()
 		assert.Equal(t, 10*time.Second, client.Timeout)
 
@@ -98,6 +101,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 func TestSafeDialContext(t *testing.T) {
 	// SafeDialContext is just a wrapper around NewSafeDialer().DialContext
 	// We verify that it blocks loopback by default.
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()

@@ -102,6 +102,10 @@ tolerations: []
 
 affinity: {}
 
+env:
+  # Allow connecting to services in the cluster (Private IPs)
+  MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: "true"
+
 database:
   image:
     repository: postgres
