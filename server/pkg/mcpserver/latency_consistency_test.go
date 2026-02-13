@@ -59,7 +59,7 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	_, err = metrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.Manager)

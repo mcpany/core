@@ -92,7 +92,7 @@ func TestFeatureSamplingSupport(t *testing.T) {
 	ctx := context.Background()
 
 	// Initialize Server
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.Manager)

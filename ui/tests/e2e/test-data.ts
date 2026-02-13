@@ -19,8 +19,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                ],
+                calls: {
+                    process_payment_call: {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/v1/charges"
+                    }
+                }
             }
         },
         {
@@ -28,10 +34,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: "http://localhost:50051", // Dummy address
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                    { name: "get_user", description: "Get user details", call_id: "get_user_call" }
+                ],
+                calls: {
+                    get_user_call: {
+                        method: "HTTP_METHOD_GET",
+                        endpoint_path: "/users/{id}"
+                    }
+                }
             }
         },
         // Add a service with calculator for existing test compatibility if desired
@@ -42,8 +54,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://localhost:8080", // Dummy
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    { name: "calculator", description: "calc", call_id: "calc_call" }
+                ],
+                calls: {
+                    calc_call: {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/calc"
+                    }
+                }
             }
         },
         {
@@ -51,12 +69,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Echo Service",
             version: "v1.0",
             command_line_service: {
-                command: "/bin/echo",
+                command: "echo",
                 tools: [
                     {
                         name: "echo_tool",
                         description: "Echoes back input",
-                        inputSchema: { type: "object" },
+                        input_schema: { type: "object" },
                         call_id: "echo_call"
                     }
                 ],
@@ -71,9 +89,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) {
+                const text = await res.text();
+                throw new Error(`${res.status()} ${text}`);
+            }
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
+            throw e;
         }
     }
 };
@@ -85,12 +108,19 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
         services: [
             {
                 name: "weather-service",
-                mcp_service: {
-                    stdio_connection: {
-                        command: "weather",
-                        container_image: "mcpany/weather-service:latest",
-                        env: {
-                            API_KEY: { plain_text: "secret" }
+                // Use command_line_service matching config.minimal.yaml to avoid Docker issues in E2E
+                command_line_service: {
+                    command: "echo",
+                    tools: [
+                        {
+                            name: "get_weather",
+                            description: "Get current weather",
+                            call_id: "get_weather"
+                        }
+                    ],
+                    calls: {
+                        get_weather: {
+                            args: ['{"weather": "sunny"}']
                         }
                     }
                 }
@@ -100,10 +130,12 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
     try {
         const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
         if (!res.ok()) {
-            console.log(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
+            const text = await res.text();
+            throw new Error(`Failed to seed collection ${name}: ${res.status()} ${text}`);
         }
     } catch (e) {
         console.log(`Failed to seed collection ${name}: ${e}`);
+        throw e;
     }
 };
 
@@ -153,11 +185,18 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         },
         roles: ["admin"]
     };
+    // Ensure clean state by deleting the user if it exists (e.g. from previous failed run)
+    await cleanupUser(context, username);
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`${res.status()} ${text}`);
+        }
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
+        throw e;
     }
 };
 

@@ -63,14 +63,14 @@ paths:
 		serviceName string
 		configFile  string
 	}{
-		{"github", "popular_services/github/config.yaml"},
-		{"stripe", "popular_services/stripe/config.yaml"},
-		{"jira", "popular_services/jira/config.yaml"},
-		{"slack", "popular_services/slack/config.yaml"},
-		{"google_calendar", "popular_services/google/calendar/config.yaml"},
-		{"spotify", "popular_services/spotify/config.yaml"},
-		{"gitlab", "popular_services/gitlab/config.yaml"},
-		{"chrome", "popular_services/chrome/config.yaml"},
+		{"github", "github/config.yaml"},
+		{"stripe", "stripe/config.yaml"},
+		{"jira", "jira/config.yaml"},
+		{"slack", "slack/config.yaml"},
+		{"google_calendar", "google_calendar/config.yaml"},
+		{"spotify", "spotify/config.yaml"},
+		{"gitlab", "gitlab/config.yaml"},
+		{"chrome", "chrome/config.yaml"},
 	}
 
 	for _, tc := range testCases {
@@ -78,7 +78,7 @@ paths:
 			// t.Parallel() removed because t.Setenv is used
 
 			// Read the example config file
-			configPath := filepath.Join(projectRoot, "examples", tc.configFile)
+			configPath := filepath.Join(projectRoot, "..", "marketplace", "catalog", tc.configFile)
 			configBytes, err := os.ReadFile(configPath)
 			require.NoError(t, err, "Failed to read config file: %s", configPath)
 			configContent := string(configBytes)

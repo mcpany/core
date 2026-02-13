@@ -107,7 +107,7 @@ func TestAuthorizationBypass(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, busProvider, false)
+	server, err := mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
 	// Add restricted prompt

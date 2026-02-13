@@ -1,0 +1,34 @@
+# Redis Popular Service
+# This file is used to generate the Popular Service configuration in the UI.
+
+name: Redis
+version: "1.0.0"
+description: "Manage Redis key-value store using the official MCP server."
+disable: false
+sanitized_name: "redis"
+priority: 0
+load_balancing_strategy: 0
+read_only: false
+tags: ["database", "redis", "key-value"]
+
+command_line_service:
+  command: "uvx mcp-server-redis"
+  working_directory: ""
+  env:
+    REDIS_URL: 
+      plainText: "redis://localhost:6379"
+  local: false
+
+configuration_schema: |
+  {
+    "type": "object",
+    "required": ["REDIS_URL"],
+    "properties": {
+      "REDIS_URL": {
+        "type": "string",
+        "title": "Redis URL",
+        "description": "Connection URL (e.g. redis://localhost:6379)",
+        "default": "redis://localhost:6379"
+      }
+    }
+  }

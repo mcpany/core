@@ -138,7 +138,7 @@ upstream_services:
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
 
-	mcpServer, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, true)
+	mcpServer, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, true)
 	require.NoError(t, err)
 
 	// Set Profiles

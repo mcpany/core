@@ -16,7 +16,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 4 : 4, // Limit workers to prevent server overload
+  workers: 1, // Run serially to avoid state collisions in shared backend
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 120000,

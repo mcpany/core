@@ -12,6 +12,9 @@ export interface ServiceRegistryItem {
   configurationSchema: Record<string, any>;
 }
 
+/**
+ * Registry of popular services with their default configurations.
+ */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---
   {
@@ -388,6 +391,66 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
       type: "object",
       required: [],
       properties: {}
+    }
+  },
+  {
+    id: "redis",
+    name: "Redis",
+    repo: "modelcontextprotocol/servers/tree/main/src/redis",
+    command: "uvx mcp-server-redis",
+    description: "Manage Redis key-value store",
+    configurationSchema: {
+      type: "object",
+      required: ["REDIS_URL"],
+      properties: {
+        REDIS_URL: {
+          type: "string",
+          title: "Redis URL",
+          description: "redis://localhost:6379",
+          default: "redis://localhost:6379"
+        }
+      }
+    }
+  },
+  {
+    id: "mysql",
+    name: "MySQL",
+    repo: "benborla29/mcp-server-mysql",
+    command: "npx -y @benborla29/mcp-server-mysql",
+    description: "Access MySQL databases",
+    configurationSchema: {
+      type: "object",
+      required: ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE"],
+      properties: {
+        MYSQL_HOST: {
+          type: "string",
+          title: "Host",
+          description: "MySQL Host (e.g. localhost)",
+          default: "localhost"
+        },
+        MYSQL_PORT: {
+          type: "string",
+          title: "Port",
+          description: "MySQL Port",
+          default: "3306"
+        },
+        MYSQL_USER: {
+          type: "string",
+          title: "User",
+          description: "MySQL User"
+        },
+        MYSQL_PASSWORD: {
+          type: "string",
+          title: "Password",
+          description: "MySQL Password",
+          format: "password"
+        },
+        MYSQL_DATABASE: {
+          type: "string",
+          title: "Database",
+          description: "MySQL Database Name"
+        }
+      }
     }
   }
 ];
