@@ -257,11 +257,10 @@ func CheckConnection(ctx context.Context, address string) error {
 	valPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
 	if IsTrue(valPrivate) {
 		dialer.AllowPrivate = true
-	} else {
-		// Log the value for debugging CI failures if private access is not enabled but might be expected
-		if valPrivate != "" {
-			slog.Debug("CheckConnection: MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES is set but evaluated to false", "value", valPrivate)
-		}
+	} else if valPrivate != "" {
+		// Log the value for debugging CI failures if private access is not enabled but might be expected.
+		// Use Warn level to ensure visibility in default log configuration.
+		slog.Warn("CheckConnection: MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES is set but evaluated to false", "value", valPrivate)
 	}
 
 	dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
