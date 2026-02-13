@@ -206,10 +206,25 @@ export const seedToolsService = async (requestContext?: APIRequestContext) => {
     };
 
     try {
-        await context.post('/api/v1/services', { data: service, headers: HEADERS });
-        await context.post('/api/v1/services', { data: echoService, headers: HEADERS });
+        const res = await context.post('/api/v1/services', { data: service, headers: HEADERS });
+        if (!res.ok()) {
+             console.log(`Failed to seed Tools Gateway: ${res.status()} ${await res.text()}`);
+        } else {
+             console.log(`Seeded Tools Gateway (svc_tools_01)`);
+        }
     } catch (e) {
-        console.log(`Failed to seed tools services: ${e}`);
+        console.log(`Failed to seed Tools Gateway: ${e}`);
+    }
+
+    try {
+        const res = await context.post('/api/v1/services', { data: echoService, headers: HEADERS });
+        if (!res.ok()) {
+             console.log(`Failed to seed Tools Echo Service: ${res.status()} ${await res.text()}`);
+        } else {
+             console.log(`Seeded Tools Echo Service (svc_tools_echo)`);
+        }
+    } catch (e) {
+        console.log(`Failed to seed Tools Echo Service: ${e}`);
     }
 };
 
