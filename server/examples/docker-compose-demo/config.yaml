@@ -11,6 +11,9 @@ upstream_services:
         echo:
           method: "HTTP_METHOD_POST"
           endpoint_path: "/echo"
+          body:
+            # Pass all arguments as JSON body
+            json_template: "{{ toJson . }}"
       tools:
         - name: "echo"
           description: "Echoes back the request body."

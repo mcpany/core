@@ -51,14 +51,15 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080",
+                // Point to the echo server running in the docker network
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc" }
                 ],
                 calls: {
                     calc: {
                         method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
+                        endpoint_path: "/echo"
                     }
                 }
             }
