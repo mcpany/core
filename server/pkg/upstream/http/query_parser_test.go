@@ -62,6 +62,14 @@ func TestParseQueryManual(t *testing.T) {
 				{raw: "foo=bar", key: "foo", keyDecoded: true},
 			},
 		},
+		{
+			name:     "complex_stripe_like",
+			rawQuery: "limit=10&starting_after=xhq_123",
+			want: []queryPart{
+				{raw: "limit=10", key: "limit", keyDecoded: true},
+				{raw: "starting_after=xhq_123", key: "starting_after", keyDecoded: true},
+			},
+		},
 	}
 
 	for _, tt := range tests {
