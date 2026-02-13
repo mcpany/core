@@ -89,7 +89,11 @@ export const seedToolsTestServices = async (requestContext?: APIRequestContext) 
                 command: "/bin/echo",
                 args: ["payment_processed"],
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
+                    {
+                        name: "process_payment",
+                        description: "Process a payment",
+                        inputSchema: { type: "object" }
+                    }
                 ]
             }
         },
