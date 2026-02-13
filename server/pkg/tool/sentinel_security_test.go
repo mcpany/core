@@ -348,3 +348,60 @@ func TestSentinelRCE_NodeExecSync(t *testing.T) {
 	assert.Contains(t, err.Error(), "interpreter injection detected")
 	assert.Contains(t, err.Error(), "require")
 }
+
+func TestSentinelRCE_CommentInjection(t *testing.T) {
+	// 1. Configure a PHP tool vulnerable to injection via argument substitution
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("php"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-r", "eval(\"{{input}}\");"}, // Vulnerable context: double quotes
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("input"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("php_eval_comment_injection")
+
+	tool := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDef,
+		nil,
+		"php_eval_comment_injection",
+	)
+
+	// 2. Craft a malicious input that uses a comment '#' to break the adjacency of 'system' and '('
+	// This payload is: system # comment \n ('ls')
+	payload := "system # comment\n('ls')"
+
+	inputMap := map[string]interface{}{
+		"input": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	req := &ExecutionRequest{
+		ToolName:   "php_eval_comment_injection",
+		ToolInputs: inputBytes,
+		DryRun:     true,
+	}
+
+	// 3. Execute - Expect Error
+	res, err := tool.Execute(context.Background(), req)
+
+	// 4. Assert
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "interpreter injection detected")
+	assert.Contains(t, err.Error(), "system")
+}

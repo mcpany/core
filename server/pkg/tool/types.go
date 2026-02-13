@@ -2938,7 +2938,47 @@ func checkInterpreterFunctionCalls(val string) error {
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
 	b.Grow(len(val))
-	for _, r := range val {
+
+	runes := []rune(val)
+	length := len(runes)
+
+	for i := 0; i < length; i++ {
+		r := runes[i]
+
+		// Sentinel Security Update: Strip comments to prevent bypasses
+		// Check for single line comment #
+		if r == '#' {
+			// Skip until newline
+			for i < length && runes[i] != '\n' {
+				i++
+			}
+			continue
+		}
+
+		if r == '/' && i+1 < length {
+			if runes[i+1] == '/' {
+				// Single line comment //
+				i += 2
+				for i < length && runes[i] != '\n' {
+					i++
+				}
+				continue
+			}
+			if runes[i+1] == '*' {
+				// Multi line comment /* */
+				i += 2
+				for i < length-1 {
+					if runes[i] == '*' && runes[i+1] == '/' {
+						i++ // Skip *
+						// Skip / is handled by loop increment
+						break
+					}
+					i++
+				}
+				continue
+			}
+		}
+
 		if !unicode.IsSpace(r) {
 			b.WriteRune(r)
 		}
