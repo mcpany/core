@@ -69,9 +69,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Echo Service",
             version: "v1.0",
             http_service: {
-                // Use the dedicated echo server available in the test environment (docker-compose)
-                // This is more reliable than assuming /bin/echo exists in the server container
-                address: "http://ui-http-echo-server:5678",
+                // Use a public external service (httpbin) to avoid local Docker network resolution issues in CI.
+                // This ensures the service is reachable and registered by the server.
+                address: "https://httpbin.org",
                 tools: [
                     {
                         name: "echo_tool",
@@ -83,7 +83,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 calls: {
                     echo_call: {
                         method: "HTTP_METHOD_POST",
-                        endpoint_path: "/echo"
+                        endpoint_path: "/post"
                     }
                 }
             }
