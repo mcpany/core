@@ -153,7 +153,43 @@ nodes:
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
-	// 8. Run UI Tests
+	// 8. Port Forward Backend Service for Seeding
+	backendPort, err := getFreePort()
+	if err != nil {
+		t.Fatalf("Failed to get free port for backend: %v", err)
+	}
+	t.Logf("Forwarding backend service to local port %d for seeding...", backendPort)
+
+	// Check service name
+	serviceName := "mcpany"
+	// Run kubectl port-forward in background
+	pfCmd := exec.CommandContext(ctx, "kubectl", "port-forward", fmt.Sprintf("svc/%s", serviceName), fmt.Sprintf("%d:50050", backendPort), "-n", namespace)
+	// We need to keep it running
+	if err := pfCmd.Start(); err != nil {
+		t.Fatalf("Failed to start port-forward: %v", err)
+	}
+	defer func() {
+		if pfCmd.Process != nil {
+			pfCmd.Process.Kill()
+		}
+	}()
+
+	// Wait for port-forward to be ready
+	// Try multiple times with backoff or loop because kubectl takes time to establish the tunnel
+	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", backendPort), 30*time.Second); err != nil {
+		t.Logf("Warning: Port forward for backend failed/timed out, seeding might fail: %v", err)
+		// List services to debug
+		out, _ := exec.Command("kubectl", "get", "svc", "-n", namespace).CombinedOutput()
+		t.Logf("Services in namespace %s: %s", namespace, string(out))
+		// Log pfCmd error if process died
+		if pfCmd.ProcessState != nil && pfCmd.ProcessState.Exited() {
+			t.Logf("Port forward process exited with code %d", pfCmd.ProcessState.ExitCode())
+		}
+	} else {
+		t.Log("Backend port-forward established successfully")
+	}
+
+	// 9. Run UI Tests
 	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
 
 	// Wait for NodePort to be accessible
@@ -182,9 +218,8 @@ nodes:
 	playwrightCmd.Env = append(
 		os.Environ(),
 		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
-		// Use the UI NodePort as the Backend URL for seeding.
-		// The UI middleware will proxy /api/v1 requests to the backend service.
-		fmt.Sprintf("BACKEND_URL=http://127.0.0.1:%d", hostPort),
+		// Use the port-forwarded backend URL for seeding
+		fmt.Sprintf("BACKEND_URL=http://127.0.0.1:%d", backendPort),
 		"SKIP_WEBSERVER=true",
 	)
 	playwrightCmd.Stdout = os.Stdout
