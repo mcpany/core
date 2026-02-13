@@ -32,6 +32,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
+import { EmptyDashboardGuide } from "@/components/dashboard/empty-dashboard-guide";
+import { Loader2 } from "lucide-react";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -66,9 +69,23 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [serviceCount, setServiceCount] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setIsMounted(true);
+
+        // Fetch services to determine if we should show the empty state guide
+        apiClient.listServices()
+            .then(services => {
+                setServiceCount(services.length);
+            })
+            .catch(err => {
+                console.error("Failed to fetch services count", err);
+                setServiceCount(0); // Assume 0 on error to be safe/show guide
+            })
+            .finally(() => setLoading(false));
+
         const saved = localStorage.getItem("dashboard-layout");
         if (saved) {
             try {
@@ -191,6 +208,19 @@ export function DashboardGrid() {
     };
 
     if (!isMounted) return null;
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
+
+    // Show onboarding guide if no services are configured
+    if (serviceCount === 0) {
+        return <EmptyDashboardGuide />;
+    }
 
     const renderWidget = (widget: WidgetInstance) => {
         const def = getWidgetDefinition(widget.type);

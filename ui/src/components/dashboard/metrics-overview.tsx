@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SystemHealthCard } from "./system-health-card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Metric interface now imported from @/lib/client
 
@@ -55,34 +57,43 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
   }
 
   return (
-    <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {metric.label}
-        </CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
-        <div className="flex items-center justify-between mt-1">
-            {metric.change && (
-          <p className={`text-xs flex items-center ${trendColor}`}>
-            {metric.trend === "up" ? (
-              <ArrowUpRight className="h-3 w-3 mr-1" />
-            ) : (
-              <ArrowDownRight className="h-3 w-3 mr-1" />
-            )}
-            <span>
-              {metric.change}
-            </span>
-          </p>
-        )}
-          {metric.subLabel && (
-            <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300 cursor-help">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {metric.label}
+              </CardTitle>
+              <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+              <div className="flex items-center justify-between mt-1">
+                  {metric.change && (
+                <p className={`text-xs flex items-center ${trendColor}`}>
+                  {metric.trend === "up" ? (
+                    <ArrowUpRight className="h-3 w-3 mr-1" />
+                  ) : (
+                    <ArrowDownRight className="h-3 w-3 mr-1" />
+                  )}
+                  <span>
+                    {metric.change}
+                  </span>
+                </p>
+              )}
+                {metric.subLabel && (
+                  <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{metric.subLabel || metric.label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 });
 
@@ -135,7 +146,24 @@ export const MetricsOverview = memo(function MetricsOverview() {
   }, [serviceId]);
 
   if (metrics.length === 0) {
-    return <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>;
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-4 w-4 rounded-full" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-[60px] mb-2" />
+                <Skeleton className="h-3 w-[120px]" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (

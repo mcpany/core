@@ -298,6 +298,15 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
                 </div>
             </Panel>
         )}
+
+        {widgetMode && filteredNodes.length <= 2 && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="bg-background/80 backdrop-blur-md p-4 rounded-lg border shadow-sm text-center max-w-[200px]">
+                    <Activity className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+                    <p className="text-sm font-medium text-muted-foreground">Network visualization waiting for services...</p>
+                </div>
+            </div>
+        )}
       </ReactFlow>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>

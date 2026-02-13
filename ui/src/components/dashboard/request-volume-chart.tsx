@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart3 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 
@@ -58,41 +59,48 @@ export function RequestVolumeChart() {
       </CardHeader>
       <CardContent className="pl-2">
         <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
-                <defs>
-                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-                    </linearGradient>
-                </defs>
-                <XAxis
-                dataKey="time"
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                />
-                <YAxis
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}`}
-                />
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                <Tooltip
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Area
-                    type="monotone"
-                    dataKey="requests"
-                    stroke="#8884d8"
-                    fillOpacity={1}
-                    fill="url(#colorTotal)"
-                />
-            </AreaChart>
-            </ResponsiveContainer>
+            {data.length === 0 || data.every(d => d.total === 0) ? (
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+                    <BarChart3 className="h-10 w-10 mb-2 opacity-20" />
+                    <p>No traffic data yet.</p>
+                </div>
+            ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data}>
+                    <defs>
+                        <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                        </linearGradient>
+                    </defs>
+                    <XAxis
+                    dataKey="time"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    />
+                    <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}`}
+                    />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
+                    <Tooltip
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    />
+                    <Area
+                        type="monotone"
+                        dataKey="requests"
+                        stroke="#8884d8"
+                        fillOpacity={1}
+                        fill="url(#colorTotal)"
+                    />
+                </AreaChart>
+                </ResponsiveContainer>
+            )}
         </div>
       </CardContent>
     </Card>
