@@ -61,7 +61,7 @@ func main() {
 		fmt.Printf("%d\n", actualPort) // Output port for test runner
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/echo", echoHandler)
+	mux.HandleFunc("/", echoHandler) // Echo back everything sent to root
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
