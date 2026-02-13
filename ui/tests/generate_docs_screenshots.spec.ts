@@ -440,8 +440,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       // Legacy alias
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_webhooks.png'), fullPage: true });
 
-      await page.getByText('New Webhook').click();
-      await page.waitForTimeout(500);
+      // No modal for create, we just show the page configuration
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'webhook_create_modal.png') });
   });
 
