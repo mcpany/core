@@ -2976,6 +2976,59 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
 	}
+	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkSQLInjection(val, base string, quoteLevel int) error {
+	// SQL Injection Check
+	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
+	// we must prevent SQL injection by blocking SQL keywords.
+	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
+	if isSQL && quoteLevel == 0 {
+		// Block common SQL keywords and comment markers
+		// We check for keywords surrounded by word boundaries or at start/end of string.
+		// val is user input, e.g. "1 OR 1=1"
+		upperVal := strings.ToUpper(val)
+		keywords := []string{
+			"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
+			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
+			"--",
+		}
+
+		// Helper to check word boundary
+		isBoundary := func(r byte) bool {
+			return !isWordChar(r)
+		}
+
+		for _, kw := range keywords {
+			if kw == "--" {
+				if strings.Contains(upperVal, "--") {
+					return fmt.Errorf("SQL injection detected: value contains '--'")
+				}
+				continue
+			}
+
+			idx := strings.Index(upperVal, kw)
+			for idx != -1 {
+				// Check boundaries
+				startOk := idx == 0 || isBoundary(upperVal[idx-1])
+				endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
+
+				if startOk && endOk {
+					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
+				}
+				// Find next occurrence
+				nextIdx := strings.Index(upperVal[idx+1:], kw)
+				if nextIdx == -1 {
+					break
+				}
+				idx += 1 + nextIdx
+			}
+		}
+	}
 	return nil
 }
 
