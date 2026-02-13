@@ -18,8 +18,12 @@ var ErrResourceNotFound = errors.New("resource not found")
 //
 // A resource represents a data source (e.g., a file, a database record) that can be
 // read by an MCP client.
+//
+// Summary: Interface for a managed resource.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
+	//
+	// Summary: Retrieves the MCP resource definition.
 	//
 	// Returns:
 	//   - *mcp.Resource: The MCP resource definition.
@@ -27,11 +31,15 @@ type Resource interface {
 
 	// Service returns the ID of the service that provides this resource.
 	//
+	// Summary: Retrieves the provider service ID.
+	//
 	// Returns:
 	//   - string: The service ID.
 	Service() string
 
 	// Read retrieves the content of the resource.
+	//
+	// Summary: Reads the resource content.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
@@ -42,6 +50,8 @@ type Resource interface {
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
+	//
+	// Summary: Subscribes to resource updates.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the subscription.
@@ -55,8 +65,12 @@ type Resource interface {
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
 // as managing callbacks for list changes.
+//
+// Summary: Interface for resource management.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
+	//
+	// Summary: Retrieves a resource by URI.
 	//
 	// Parameters:
 	//   - uri: string. The URI of the resource.
@@ -68,11 +82,15 @@ type ManagerInterface interface {
 
 	// AddResource adds a new resource to the manager.
 	//
+	// Summary: Registers a new resource.
+	//
 	// Parameters:
 	//   - resource: Resource. The resource to add.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
+	//
+	// Summary: Removes a resource by URI.
 	//
 	// Parameters:
 	//   - uri: string. The URI of the resource to remove.
@@ -80,17 +98,23 @@ type ManagerInterface interface {
 
 	// ListResources returns a slice of all resources currently in the manager.
 	//
+	// Summary: Lists all registered resources.
+	//
 	// Returns:
 	//   - []Resource: A slice of resources.
 	ListResources() []Resource
 
 	// OnListChanged registers a callback function to be called when the list of resources changes.
 	//
+	// Summary: Registers a list change callback.
+	//
 	// Parameters:
 	//   - f: func(). The callback function to execute on change.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
+	//
+	// Summary: Removes all resources for a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The service ID.
@@ -101,6 +125,8 @@ type ManagerInterface interface {
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
 // and efficient listing via caching.
+//
+// Summary: Thread-safe resource manager.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -109,6 +135,8 @@ type Manager struct {
 }
 
 // NewManager creates and returns a new, empty Manager.
+//
+// Summary: Initializes a new Resource Manager.
 //
 // Returns:
 //   - *Manager: A new Manager instance.
@@ -119,6 +147,8 @@ func NewManager() *Manager {
 }
 
 // GetResource retrieves a resource from the manager by its URI.
+//
+// Summary: Retrieves a resource by URI.
 //
 // Parameters:
 //   - uri: string. The URI of the resource.
@@ -134,6 +164,8 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 }
 
 // AddResource adds a new resource to the manager.
+//
+// Summary: Registers a new resource.
 //
 // Parameters:
 //   - resource: Resource. The resource to add.
@@ -156,6 +188,8 @@ func (rm *Manager) AddResource(resource Resource) {
 }
 
 // RemoveResource removes a resource from the manager by its URI.
+//
+// Summary: Removes a resource by URI.
 //
 // Parameters:
 //   - uri: string. The URI of the resource.
@@ -183,6 +217,8 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // It uses a read-through cache (double-checked locking) to minimize allocation overhead
 // for frequent calls.
+//
+// Summary: Lists all registered resources.
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
@@ -226,6 +262,8 @@ func (rm *Manager) ListResources() []Resource {
 // OnListChanged sets a callback function that will be invoked whenever the list
 // of resources is modified.
 //
+// Summary: Registers a list change callback.
+//
 // Parameters:
 //   - f: func(). The callback function.
 func (rm *Manager) OnListChanged(f func()) {
@@ -235,6 +273,8 @@ func (rm *Manager) OnListChanged(f func()) {
 }
 
 // Subscribe finds a resource by its URI and calls its Subscribe method.
+//
+// Summary: Subscribes to a resource by URI.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the subscription.
@@ -251,6 +291,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 }
 
 // ClearResourcesForService removes all resources associated with a given service ID.
+//
+// Summary: Removes all resources for a service.
 //
 // Parameters:
 //   - serviceID: string. The service ID.

@@ -26,10 +26,14 @@ import (
 //
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
+//
+// Summary: Interface for service registration and management.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
 	// It establishes the connection to the upstream service and discovers its capabilities.
+	//
+	// Summary: Registers a new service.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The registration context.
@@ -46,6 +50,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//
 	// It gracefully shuts down the upstream connection and cleans up associated resources.
 	//
+	// Summary: Unregisters a service.
+	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the unregistration.
 	//   - serviceName: string. The name of the service to remove.
@@ -56,12 +62,16 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetAllServices returns a list of all currently registered services.
 	//
+	// Summary: Lists all registered services.
+	//
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if retrieval fails (unlikely for in-memory registry).
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -73,6 +83,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceConfig returns the configuration for a given service ID.
 	//
+	// Summary: Retrieves service configuration.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -82,6 +94,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the last known registration or health error for a service.
+	//
+	// Summary: Retrieves the last service error.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -96,6 +110,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 //
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
+//
+// Summary: Central registry for upstream services.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -111,6 +127,8 @@ type ServiceRegistry struct {
 }
 
 // New creates and initializes a new ServiceRegistry.
+//
+// Summary: Initializes a new ServiceRegistry.
 //
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.

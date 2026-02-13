@@ -15,8 +15,12 @@ import (
 // ManagerInterface defines the interface for a prompt manager.
 //
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
+//
+// Summary: Interface for prompt management.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
+	//
+	// Summary: Registers a new prompt.
 	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt definition to add.
@@ -24,11 +28,15 @@ type ManagerInterface interface {
 
 	// UpdatePrompt updates an existing prompt.
 	//
+	// Summary: Updates an existing prompt.
+	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt with updated information.
 	UpdatePrompt(prompt Prompt)
 
 	// GetPrompt retrieves a prompt by its name.
+	//
+	// Summary: Retrieves a prompt by name.
 	//
 	// Parameters:
 	//   - name: string. The unique name of the prompt.
@@ -40,17 +48,23 @@ type ManagerInterface interface {
 
 	// ListPrompts returns all registered prompts.
 	//
+	// Summary: Lists all registered prompts.
+	//
 	// Returns:
 	//   - []Prompt: A slice of all registered prompts.
 	ListPrompts() []Prompt
 
 	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
+	// Summary: Removes all prompts for a service.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	ClearPromptsForService(serviceID string)
 
 	// SetMCPServer sets the MCP server provider.
+	//
+	// Summary: Sets the MCP server provider.
 	//
 	// Parameters:
 	//   - mcpServer: MCPServerProvider. The provider interface.
@@ -60,6 +74,8 @@ type ManagerInterface interface {
 // Manager is a thread-safe manager for registering and retrieving prompts.
 //
 // It supports concurrent access and uses caching for efficient list operations.
+//
+// Summary: Thread-safe prompt manager.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -68,6 +84,8 @@ type Manager struct {
 }
 
 // NewManager creates and returns a new, empty Manager.
+//
+// Summary: Initializes a new Prompt Manager.
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
@@ -78,6 +96,8 @@ func NewManager() *Manager {
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
+//
+// Summary: Sets the MCP server provider.
 //
 // Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
@@ -91,6 +111,8 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // If a prompt with the same name already exists, it will be overwritten, and a warning
 // will be logged.
+//
+// Summary: Registers a new prompt.
 //
 // Parameters:
 //   - prompt: Prompt. The prompt to add.
@@ -116,6 +138,8 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // If the prompt does not exist, it will be added.
 //
+// Summary: Updates an existing prompt.
+//
 // Parameters:
 //   - prompt: Prompt. The prompt definition to update.
 //
@@ -131,6 +155,8 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 
 // GetPrompt retrieves a prompt from the manager by its name.
 //
+// Summary: Retrieves a prompt by name.
+//
 // Parameters:
 //   - name: string. The name of the prompt.
 //
@@ -145,6 +171,8 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 // ListPrompts returns a slice containing all the prompts currently registered.
 //
 // It uses a read-through cache to improve performance.
+//
+// Summary: Lists all registered prompts.
 //
 // Returns:
 //   - []Prompt: A slice of currently registered prompts.
@@ -187,6 +215,8 @@ func (pm *Manager) ListPrompts() []Prompt {
 }
 
 // ClearPromptsForService removes all prompts associated with a given service.
+//
+// Summary: Removes all prompts for a service.
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.

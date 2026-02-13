@@ -1,6 +1,19 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 from playwright.sync_api import sync_playwright
 
 def verify_users_page():
+    """Verifies the functionality of the users page using Playwright.
+
+    This function performs an end-to-end test by logging in, navigating to the
+    users page, and capturing screenshots of the user list and the 'Add User' sheet.
+
+    Side Effects:
+        - Launches a headless Chromium browser.
+        - Generates screenshots in the 'verification' directory.
+        - Prints progress to stdout.
+    """
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()

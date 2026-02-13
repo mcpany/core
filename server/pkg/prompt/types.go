@@ -19,8 +19,12 @@ import (
 var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
+//
+// Summary: Interface for defining and executing prompts.
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
+	//
+	// Summary: Retrieves the MCP prompt definition.
 	//
 	// Returns:
 	//   - *mcp.Prompt: The MCP prompt definition.
@@ -28,15 +32,19 @@ type Prompt interface {
 
 	// Service returns the ID of the service that provides this prompt.
 	//
+	// Summary: Retrieves the provider service ID.
+	//
 	// Returns:
 	//   - string: The service ID.
 	Service() string
 
 	// Get executes the prompt with the provided arguments.
 	//
+	// Summary: Executes the prompt.
+	//
 	// Parameters:
-	//   - ctx: The context for the request.
-	//   - args: The arguments for the prompt as a raw JSON message.
+	//   - ctx: context.Context. The context for the request.
+	//   - args: json.RawMessage. The arguments for the prompt as a raw JSON message.
 	//
 	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.
@@ -47,8 +55,12 @@ type Prompt interface {
 // MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
 //
 // This is used to decouple the Manager from the concrete server implementation.
+//
+// Summary: Interface for providing an MCP server instance.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
+	//
+	// Summary: Retrieves the MCP server instance.
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.
@@ -56,6 +68,8 @@ type MCPServerProvider interface {
 }
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
+//
+// Summary: Implementation of a templated prompt.
 type TemplatedPrompt struct {
 	definition *configv1.PromptDefinition
 	serviceID  string
@@ -63,9 +77,11 @@ type TemplatedPrompt struct {
 
 // NewTemplatedPrompt creates a new TemplatedPrompt instance.
 //
+// Summary: Creates a new TemplatedPrompt.
+//
 // Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
+//   - definition: *configv1.PromptDefinition. The prompt definition from configuration.
+//   - serviceID: string. The ID of the service providing the prompt.
 //
 // Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
@@ -77,6 +93,8 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 }
 
 // Prompt returns the MCP prompt definition.
+//
+// Summary: Retrieves the MCP prompt definition.
 //
 // Returns:
 //   - *mcp.Prompt: The MCP prompt definition.
@@ -135,6 +153,8 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 
 // Service returns the ID of the service that provides this prompt.
 //
+// Summary: Retrieves the provider service ID.
+//
 // Returns:
 //   - string: The service ID.
 func (p *TemplatedPrompt) Service() string {
@@ -145,9 +165,11 @@ func (p *TemplatedPrompt) Service() string {
 //
 // It renders the prompt template using the provided arguments.
 //
+// Summary: Executes the prompt.
+//
 // Parameters:
-//   - _ : The context (unused in this implementation).
-//   - args: The arguments for the prompt as a raw JSON message.
+//   - _ : context.Context. The context (unused in this implementation).
+//   - args: json.RawMessage. The arguments for the prompt as a raw JSON message.
 //
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
@@ -184,9 +206,11 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 
 // NewPromptFromConfig creates a new Prompt from a configuration definition.
 //
+// Summary: Creates a new Prompt from config.
+//
 // Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
+//   - definition: *configv1.PromptDefinition. The prompt definition from configuration.
+//   - serviceID: string. The ID of the service providing the prompt.
 //
 // Returns:
 //   - Prompt: The created Prompt instance.
