@@ -109,7 +109,10 @@ test.describe('Tool Exploration', () => {
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
-        await page.getByRole('tab', { name: 'JSON', exact: true }).click();
+        // Use a more specific selector to avoid ambiguity with Schema tabs.
+        // We look for the tab list that contains 'Form', which is part of the Input section.
+        const inputTabs = page.locator('div').filter({ hasText: 'Input' }).first();
+        await inputTabs.getByRole('tab', { name: 'JSON', exact: true }).click();
 
         // Fill arguments
         const textArea = page.locator('textarea#args');
