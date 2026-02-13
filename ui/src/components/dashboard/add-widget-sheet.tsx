@@ -22,6 +22,7 @@ import { useState } from "react";
 
 interface AddWidgetSheetProps {
     onAdd: (type: string) => void;
+    trigger?: React.ReactNode;
 }
 
 /**
@@ -30,7 +31,7 @@ interface AddWidgetSheetProps {
  * @param props - The component props.
  * @returns The rendered component.
  */
-export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
+export function AddWidgetSheet({ onAdd, trigger }: AddWidgetSheetProps) {
     const [open, setOpen] = useState(false);
 
     const handleAdd = (type: string) => {
@@ -41,9 +42,11 @@ export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button size="sm" className="gap-2">
-                    <Plus className="h-4 w-4" /> Add Widget
-                </Button>
+                {trigger || (
+                    <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" /> Add Widget
+                    </Button>
+                )}
             </SheetTrigger>
             <SheetContent className="w-[400px] sm:w-[540px]">
                 <SheetHeader>

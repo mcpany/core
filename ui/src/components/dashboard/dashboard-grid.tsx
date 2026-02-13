@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -340,11 +341,8 @@ export function DashboardGrid() {
 
             {/* Empty State / Onboarding */}
             {visibleWidgets.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
-                    <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium">Your dashboard is empty</h3>
-                    <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
-                    <AddWidgetSheet onAdd={addWidget} />
+                <div className="flex justify-center py-10">
+                    <OnboardingCard onAddWidget={addWidget} />
                 </div>
             )}
         </div>
