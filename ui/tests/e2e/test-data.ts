@@ -9,6 +9,10 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
+// Use internal docker hostname if in CI, otherwise localhost fallback (though localhost might fail if server is in docker and we are not)
+// Ideally, we use a service that exists.
+const ECHO_SERVER_URL = process.env.CI ? 'http://ui-http-echo-server:5678' : 'http://localhost:5678';
+
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -17,7 +21,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: ECHO_SERVER_URL,
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -28,7 +32,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: ECHO_SERVER_URL,
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -40,7 +44,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: ECHO_SERVER_URL,
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
