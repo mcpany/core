@@ -13,14 +13,6 @@ import (
 	"time"
 )
 
-// IsSafeURL checks if the URL is safe to connect to.
-// It validates the scheme and resolves the host to ensure it doesn't point to
-// loopback, link-local, private, or multicast addresses.
-//
-// NOTE: This function performs DNS resolution to check the IP.
-// It is susceptible to DNS rebinding attacks if the check is separated from the connection.
-// For critical security, use a custom Dialer that validates the IP after resolution.
-//
 // lookupIPFunc is a variable to allow mocking DNS resolution in tests.
 var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, error) {
 	return net.DefaultResolver.LookupIP(ctx, network, host)
@@ -57,8 +49,8 @@ func validateURL(urlStr string, allowCommandSchemes bool) error {
 		return nil
 	}
 
-	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
-	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true"
 
 	u, err := url.Parse(urlStr)
 	if err != nil {
@@ -85,7 +77,11 @@ func validateURL(urlStr string, allowCommandSchemes bool) error {
 
 	// Check if host is an IP literal
 	if ip := net.ParseIP(host); ip != nil {
-		return validateIP(ip, allowLoopback, allowPrivate)
+		if err := validateIP(ip, allowLoopback, allowPrivate); err != nil {
+			fmt.Printf("SSRF Blocked IP Literal: URL=%q, IP=%s, EnvVar=%q, CleanVar=%q\n", urlStr, ip.String(), envVal, cleanVal)
+			return err
+		}
+		return nil
 	}
 
 	// Resolve Domain
@@ -105,8 +101,8 @@ func validateURL(urlStr string, allowCommandSchemes bool) error {
 	// Check all resolved IPs
 	for _, ip := range ips {
 		if err := validateIP(ip, allowLoopback, allowPrivate); err != nil {
-			// Debug log for CI troubleshooting (temporary)
-			// fmt.Printf("SSRF Blocked: URL=%q, Host=%q, IP=%s, EnvVar=%q, CleanVar=%q\n", urlStr, host, ip.String(), envVal, cleanVal)
+			// Debug log for CI troubleshooting
+			fmt.Printf("SSRF Blocked Resolved IP: URL=%q, Host=%q, IP=%s, EnvVar=%q, CleanVar=%q\n", urlStr, host, ip.String(), envVal, cleanVal)
 			return fmt.Errorf("ssrf attempt blocked: host %s resolved to loopback/private ip %s", host, ip.String())
 		}
 	}
