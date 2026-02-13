@@ -30,8 +30,9 @@ test.describe('Service Config Diff', () => {
     });
 
     test('Shows diff when editing service config', async ({ page }) => {
-        const serviceName = "Payment Gateway";
-        const newServiceName = "Payment Gateway Updated";
+        // Use "Diff Candidate" to avoid conflict with "Payment Gateway" used by tools.spec.ts
+        const serviceName = "Diff Candidate";
+        const newServiceName = "Diff Candidate Updated";
 
         // Go to Upstream Services page to find the service
         await page.goto('/upstream-services');
