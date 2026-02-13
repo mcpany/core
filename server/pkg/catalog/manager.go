@@ -7,12 +7,14 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/spf13/afero"
+	"golang.org/x/sync/errgroup"
 )
 
 // Manager handles the loading and listing of catalog services.
@@ -63,7 +65,9 @@ func (m *Manager) Load(ctx context.Context) error {
 
 	m.services = nil // Reset
 
-	// Walk the directory
+	var paths []string
+
+	// 1. Walk the directory to collect paths
 	err := afero.Walk(m.fs, m.catalogPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -72,18 +76,32 @@ func (m *Manager) Load(ctx context.Context) error {
 			return nil
 		}
 		// Only look for config.yaml or popular/*.yaml
-		// The moved structure is marketplace/catalog/<service_name>/config.yaml
-		// OR we might have marketplace/upstream_service_collection/popular/*.yaml (which we created earlier)
-		// Let's support both for now, or focus on the requested structure.
-		// The user moved server/examples/popular_services/* -> marketplace/catalog/*
-		// so we expect .../catalog/gemini/config.yaml etc.
-
 		if strings.HasSuffix(info.Name(), ".yaml") || strings.HasSuffix(info.Name(), ".yml") {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// 2. Load configs in parallel
+	// ⚡ BOLT: Parallelize catalog loading using errgroup to reduce startup time.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	g, ctx := errgroup.WithContext(ctx)
+	g.SetLimit(10) // Limit concurrency to prevent resource exhaustion
+
+	var mu sync.Mutex
+
+	for _, path := range paths {
+		path := path // Capture for closure
+		g.Go(func() error {
 			// Load config
 			store := config.NewFileStore(m.fs, []string{path})
 			// We skip validation here to be lenient, or strict? Let's be strict but log errors.
 			// Actually Store.Load returns McpAnyServerConfig
-			cfg, loadErr := store.Load(ctx) // Renamed err to loadErr to avoid shadowing
+			cfg, loadErr := store.Load(ctx)
 			if loadErr != nil {
 				// Log error but continue
 				fmt.Printf("Failed to load catalog item %s: %v\n", path, loadErr)
@@ -91,13 +109,24 @@ func (m *Manager) Load(ctx context.Context) error {
 			}
 
 			if cfg.GetUpstreamServices() != nil {
+				mu.Lock()
 				m.services = append(m.services, cfg.GetUpstreamServices()...)
+				mu.Unlock()
 			}
-		}
-		return nil
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return err
+	}
+
+	// Sort services for deterministic order
+	sort.Slice(m.services, func(i, j int) bool {
+		return m.services[i].GetName() < m.services[j].GetName()
 	})
 
-	return err
+	return nil
 }
 
 // ListServices returns the list of loaded services.
