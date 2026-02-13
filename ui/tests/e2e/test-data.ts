@@ -20,7 +20,13 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 address: "https://stripe.com",
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
-                ]
+                ],
+                calls: {
+                    process_payment: {
+                        endpoint_path: "/v1/charges",
+                        method: "POST"
+                    }
+                }
             }
         },
         {
@@ -28,10 +34,18 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                // Use a reachable address if running in docker, or a public one.
+                // ui-http-echo-server is available in docker-compose at port 5678
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                      { name: "get_user", description: "Get user details" }
-                ]
+                ],
+                calls: {
+                    get_user: {
+                        endpoint_path: "/users",
+                        method: "GET"
+                    }
+                }
             }
         },
         // Add a service with calculator for existing test compatibility if desired
@@ -40,10 +54,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                     { name: "calculator", description: "calc" }
-                ]
+                ],
+                calls: {
+                    calculator: {
+                        endpoint_path: "/calc",
+                        method: "POST"
+                    }
+                }
             }
         },
         {
