@@ -139,19 +139,31 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const servicesToDelete = [
-        'Payment Gateway',
-        'Payment Gateway Updated', // Cleanup renamed service from other tests
-        'User Service',
-        'Math',
-        'Echo Service'
-    ];
-    for (const name of servicesToDelete) {
-        try {
-            await context.delete(`/api/v1/services/${encodeURIComponent(name)}`, { headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to cleanup service ${name}: ${e}`);
+    try {
+        // List all services
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const services = data.services || [];
+            // Filter out system services if any (though currently all are deletable)
+            // Just assume we want to delete all services seeded or created by tests
+            for (const svc of services) {
+                // Delete each service
+                try {
+                    // Use encoded name
+                    const deleteRes = await context.delete(`/api/v1/services/${encodeURIComponent(svc.name)}`, { headers: HEADERS });
+                    if (!deleteRes.ok()) {
+                        console.log(`Failed to delete service ${svc.name}: ${deleteRes.status()}`);
+                    }
+                } catch (e) {
+                    console.log(`Error deleting service ${svc.name}: ${e}`);
+                }
+            }
+        } else {
+            console.log(`Failed to list services for cleanup: ${res.status()}`);
         }
+    } catch (e) {
+        console.log(`Failed to cleanup services: ${e}`);
     }
 };
 
