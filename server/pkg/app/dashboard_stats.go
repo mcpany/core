@@ -13,7 +13,34 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/prometheus/client_golang/prometheus"
+	dto "github.com/prometheus/client_model/go"
 )
+
+// getPrometheusMetrics returns cached raw metrics if valid, or gathers them.
+func (a *Application) getPrometheusMetrics() ([]*dto.MetricFamily, error) {
+	// ⚡ Bolt Optimization: Use short-lived cache for raw metrics to prevent Thundering Herd
+	// when multiple dashboard widgets request metrics simultaneously.
+	// Randomized Selection from Top 5 High-Impact Targets
+	key := "raw_prometheus_metrics"
+	if data, ok := a.getStatsCache(key); ok {
+		if mfs, ok := data.([]*dto.MetricFamily); ok {
+			return mfs, nil
+		}
+	}
+
+	gatherer := a.MetricsGatherer
+	if gatherer == nil {
+		gatherer = prometheus.DefaultGatherer
+	}
+
+	mfs, err := gatherer.Gather()
+	if err != nil {
+		return nil, err
+	}
+
+	a.setStatsCache(key, mfs)
+	return mfs, nil
+}
 
 // getStatsCache returns cached data if valid.
 func (a *Application) getStatsCache(key string) (any, bool) {
@@ -86,12 +113,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			return
 		}
 
-		gatherer := a.MetricsGatherer
-		if gatherer == nil {
-			gatherer = prometheus.DefaultGatherer
-		}
-
-		mfs, err := gatherer.Gather()
+		mfs, err := a.getPrometheusMetrics()
 		if err != nil {
 			logging.GetLogger().Error("failed to gather metrics", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -233,12 +255,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			return
 		}
 
-		gatherer := a.MetricsGatherer
-		if gatherer == nil {
-			gatherer = prometheus.DefaultGatherer
-		}
-
-		mfs, err := gatherer.Gather()
+		mfs, err := a.getPrometheusMetrics()
 		if err != nil {
 			logging.GetLogger().Error("failed to gather metrics", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -353,12 +370,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 			return
 		}
 
-		gatherer := a.MetricsGatherer
-		if gatherer == nil {
-			gatherer = prometheus.DefaultGatherer
-		}
-
-		mfs, err := gatherer.Gather()
+		mfs, err := a.getPrometheusMetrics()
 		if err != nil {
 			logging.GetLogger().Error("failed to gather metrics", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
