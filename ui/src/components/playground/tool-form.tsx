@@ -20,6 +20,7 @@ interface ToolFormProps {
   tool: ToolDefinition;
   onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
+  initialValues?: Record<string, unknown>;
 }
 
 /**
@@ -27,9 +28,9 @@ interface ToolFormProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
-  const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [jsonInput, setJsonInput] = useState<string>("{}");
+export function ToolForm({ tool, onSubmit, onCancel, initialValues }: ToolFormProps) {
+  const [formData, setFormData] = useState<Record<string, unknown>>(initialValues || {});
+  const [jsonInput, setJsonInput] = useState<string>(initialValues ? JSON.stringify(initialValues, null, 2) : "{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [mode, setMode] = useState<"form" | "json" | "schema">("form");
 

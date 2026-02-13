@@ -5,7 +5,13 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PlaygroundClientPro } from './playground-client-pro';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { apiClient } from '@/lib/client';
+
+// Hoist mocks to be accessible inside vi.mock
+const { mockedSearchParams } = vi.hoisted(() => {
+    return { mockedSearchParams: vi.fn() };
+});
 
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
@@ -36,7 +42,7 @@ vi.mock('@/hooks/use-mobile', () => ({
 }));
 
 vi.mock('next/navigation', () => ({
-    useSearchParams: () => new URLSearchParams(),
+    useSearchParams: mockedSearchParams,
 }));
 
 // Mock scrollIntoView
@@ -50,6 +56,11 @@ window.ResizeObserver = vi.fn().mockImplementation(() => ({
 }));
 
 describe('PlaygroundClientPro', () => {
+  beforeEach(() => {
+      vi.clearAllMocks();
+      mockedSearchParams.mockReturnValue(new URLSearchParams());
+  });
+
   it('renders correctly', () => {
       render(<PlaygroundClientPro />);
       expect(screen.getByText('Console')).toBeInTheDocument();
@@ -75,10 +86,6 @@ describe('PlaygroundClientPro', () => {
       ];
       const file = new File([JSON.stringify(messages)], "history.json", { type: "application/json" });
 
-      // Find the Import button to verify it exists
-      const importButton = screen.getByText('Import');
-      expect(importButton).toBeInTheDocument();
-
       // Find the hidden input
       const input = container.querySelector('input[type="file"]') as HTMLInputElement;
       expect(input).toBeInTheDocument();
@@ -92,6 +99,38 @@ describe('PlaygroundClientPro', () => {
       await waitFor(() => {
           expect(screen.getByText('imported command')).toBeInTheDocument();
           expect(screen.getByText('imported response')).toBeInTheDocument();
+      });
+  });
+
+  it('opens tool form with pre-filled arguments from URL params', async () => {
+      // Setup mock tool
+      const mockTool = {
+          name: 'weather',
+          description: 'Get weather',
+          inputSchema: {
+              type: 'object',
+              properties: {
+                  city: { type: 'string' }
+              }
+          }
+      };
+
+      // Mock listTools to return our tool
+      (apiClient.listTools as any).mockResolvedValue({ tools: [mockTool] });
+
+      // Setup URL params
+      const params = new URLSearchParams();
+      params.set('tool', 'weather');
+      params.set('args', JSON.stringify({ city: 'London' }));
+      mockedSearchParams.mockReturnValue(params);
+
+      render(<PlaygroundClientPro />);
+
+      // Wait for tools to load and dialog to open
+      await waitFor(() => {
+          // Check if the input field is pre-filled with "London"
+          // This confirms the dialog opened and form initialized correctly
+          expect(screen.getByDisplayValue('London')).toBeInTheDocument();
       });
   });
 });

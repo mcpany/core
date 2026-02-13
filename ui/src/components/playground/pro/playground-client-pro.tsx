@@ -85,22 +85,52 @@ export function PlaygroundClientPro() {
       }));
   }, [messages]);
 
-  useEffect(() => {
-    const tool = searchParams.get('tool');
-    const args = searchParams.get('args');
-    if (tool) {
-        let command = tool;
-        if (args) {
-             command += ` ${args}`;
-        }
-        setInput(command);
-    }
-  }, [searchParams]);
-
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const [toolInitialValues, setToolInitialValues] = useState<Record<string, unknown>>({});
+  const [pendingReplay, setPendingReplay] = useState<{ tool: string, args: Record<string, unknown> } | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const tool = searchParams.get('tool');
+    const argsStr = searchParams.get('args');
+
+    if (tool) {
+        // Try to parse args
+        let args = {};
+        if (argsStr) {
+            try {
+                args = JSON.parse(argsStr);
+            } catch (e) {
+                console.warn("Failed to parse args from URL", e);
+            }
+        }
+
+        // Check if tools are already loaded
+        const foundTool = availableTools.find(t => t.name === tool);
+
+        if (foundTool) {
+            setToolToConfigure(foundTool);
+            setToolInitialValues(args);
+        } else {
+            // Store intent for when tools load
+            setPendingReplay({ tool, args });
+        }
+    }
+  }, [searchParams, availableTools]);
+
+  // Handle pending replays when tools become available
+  useEffect(() => {
+      if (pendingReplay && availableTools.length > 0) {
+          const foundTool = availableTools.find(t => t.name === pendingReplay.tool);
+          if (foundTool) {
+              setToolToConfigure(foundTool);
+              setToolInitialValues(pendingReplay.args);
+              setPendingReplay(null); // Clear pending
+          }
+      }
+  }, [availableTools, pendingReplay]);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -174,6 +204,7 @@ export function PlaygroundClientPro() {
 
   const selectSuggestion = (tool: ToolDefinition) => {
       setToolToConfigure(tool);
+      setToolInitialValues({});
       setShowSuggestions(false);
   };
 
@@ -355,7 +386,10 @@ export function PlaygroundClientPro() {
          >
              <ToolSidebar
                 tools={availableTools}
-                onSelectTool={setToolToConfigure}
+                onSelectTool={(t) => {
+                    setToolToConfigure(t);
+                    setToolInitialValues({});
+                }}
              />
          </ResizablePanel>
 
@@ -533,6 +567,7 @@ export function PlaygroundClientPro() {
                         tool={toolToConfigure}
                         onSubmit={handleToolFormSubmit}
                         onCancel={() => setToolToConfigure(null)}
+                        initialValues={toolInitialValues}
                     />
                 )}
             </div>
