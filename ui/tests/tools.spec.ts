@@ -38,17 +38,13 @@ test.describe('Tool Exploration', () => {
             try {
                 // Check for ANY of the expected tools to verify registration works
                 // We check for 'process_payment' (generic seed) OR 'get_weather' (weather service)
-                // Use a slightly longer timeout per attempt
-                const paymentVisible = await page.getByText('process_payment').first().isVisible();
-                const weatherVisible = await page.getByText('get_weather').first().isVisible();
-
-                if (paymentVisible || weatherVisible) {
-                    found = true;
-                    break;
-                }
-
-                // If neither found, throw to trigger catch block
-                throw new Error('No expected tools found yet');
+                // We use Promise.any to wait for EITHER tool to become visible, preserving the timeout behavior
+                await Promise.any([
+                    expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 }),
+                    expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 5000 })
+                ]);
+                found = true;
+                break;
             } catch (e) {
                 console.log(`Tools not found yet, reloading... (Attempt ${i + 1}/10)`);
                 await page.reload();
