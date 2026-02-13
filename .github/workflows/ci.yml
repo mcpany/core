@@ -799,6 +799,8 @@ jobs:
       - name: Test UI
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
+        env:
+          MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: "true"
 
   k8s-e2e:
     runs-on: ubuntu-latest
@@ -882,6 +884,8 @@ jobs:
       - name: Run K8s E2E Tests
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
+        env:
+          MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: "true"
 
   ci-success:
     runs-on: ubuntu-slim
