@@ -18,10 +18,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.2.0",
             command_line_service: {
                 command: "/bin/echo",
-                args: ["payment_processed"],
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "pay_call" }
+                ],
+                calls: {
+                    pay_call: { args: ["payment_processed"] }
+                }
             }
         },
         {
@@ -30,10 +32,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             command_line_service: {
                 command: "/bin/echo",
-                args: ["user_details"],
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                     { name: "get_user", description: "Get user details", call_id: "user_call" }
+                ],
+                calls: {
+                    user_call: { args: ["user_details"] }
+                }
             }
         },
         // Add a service with calculator for existing test compatibility if desired
@@ -43,10 +47,12 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             command_line_service: {
                 command: "/bin/echo",
-                args: ["42"],
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    { name: "calculator", description: "calc", call_id: "calc_call" }
+                ],
+                calls: {
+                    calc_call: { args: ["42"] }
+                }
             }
         },
         {
