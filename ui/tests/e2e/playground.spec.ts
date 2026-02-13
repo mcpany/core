@@ -88,7 +88,9 @@ test.describe('Playground Complex Schema Support', () => {
 
     // Verify execution
     // The playground adds a user message with the command
-    await expect(page.getByText('complex_tool {"user"', { exact: false })).toBeVisible();
+    // Note: Tool name and args are rendered in separate elements now
+    await expect(page.getByText('complex_tool', { exact: false })).toBeVisible();
+    await expect(page.getByText('"user"', { exact: false })).toBeVisible();
     // await expect(page.getByText('Bob', { exact: false })).toBeVisible();
     // await expect(page.getByText('developer', { exact: false })).toBeVisible();
 

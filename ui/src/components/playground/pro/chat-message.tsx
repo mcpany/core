@@ -92,7 +92,7 @@ function analyzeError(error: string): string | null {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
+export function ChatMessage({ message, onReplay, onRetry, onSave }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
     const { theme } = useTheme();
