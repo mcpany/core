@@ -12,7 +12,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skill, SkillService } from '@/lib/skill-service';
 import { toast } from 'sonner';
-import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, Loader2 } from 'lucide-react';
+import { apiClient, ToolDefinition } from '@/lib/client';
+import { MultiSelect, Option } from '@/components/ui/multi-select';
+import { MarkdownEditor } from '@/components/markdown-editor';
 
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
@@ -36,11 +39,14 @@ export default function SkillWizard() {
     assets: [],
   });
   const [files, setFiles] = useState<File[]>([]);
+  const [availableTools, setAvailableTools] = useState<Option[]>([]);
+  const [toolsLoading, setToolsLoading] = useState(false);
 
   useEffect(() => {
     if (isEdit && name) {
       loadSkill(name);
     }
+    loadTools();
   }, [name]);
 
   const loadSkill = async (skillName: string) => {
@@ -54,6 +60,24 @@ export default function SkillWizard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadTools = async () => {
+      setToolsLoading(true);
+      try {
+          const data = await apiClient.listTools();
+          const options: Option[] = (data.tools || []).map((t: ToolDefinition) => ({
+              label: t.name,
+              value: t.name,
+              description: t.description ? (t.description.length > 50 ? t.description.substring(0, 50) + "..." : t.description) : undefined
+          }));
+          setAvailableTools(options);
+      } catch (e) {
+          console.error("Failed to load tools", e);
+          toast.error("Failed to load available tools");
+      } finally {
+          setToolsLoading(false);
+      }
   };
 
   const handleChange = (field: keyof Skill, value: any) => {
@@ -85,13 +109,8 @@ export default function SkillWizard() {
 
       // Upload pending files if any
       if (files.length > 0) {
-        // We need the skill name (it might have changed during create, but for now assume input name)
-        // If edit, use `name` from params (original). If create, use `skill.name`.
         const targetName = isEdit ? name : skill.name;
-
         for (const file of files) {
-           // Default to scripts/ folder for simplicity for now, or just root?
-           // Provide a way to specify path? For now simple upload to scripts/
            await SkillService.uploadAsset(targetName!, `scripts/${file.name}`, file);
         }
         toast.success('Assets uploaded');
@@ -112,7 +131,11 @@ export default function SkillWizard() {
   };
 
   if (loading && isEdit && !skill.name) {
-     return <div>Loading...</div>;
+     return (
+         <div className="flex items-center justify-center h-64">
+             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+         </div>
+     );
   }
 
   return (
@@ -124,7 +147,7 @@ export default function SkillWizard() {
             {STEPS.map((step, idx) => (
               <div
                 key={step}
-                className={`flex-1 h-2 rounded-full ${
+                className={`flex-1 h-2 rounded-full transition-colors ${
                   idx <= currentStep ? 'bg-primary' : 'bg-secondary'
                 }`}
               />
@@ -144,7 +167,7 @@ export default function SkillWizard() {
                   value={skill.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="e.g. data-processing"
-                  disabled={loading} // ID immutable on edit? Backend supports rename. But safe to allow.
+                  disabled={isEdit || loading}
                 />
                 <p className="text-xs text-muted-foreground">
                   Lowercase alphanumeric and hyphens only.
@@ -160,24 +183,34 @@ export default function SkillWizard() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="tools">Allowed Tools (comma separated)</Label>
-                <Input
-                    id="tools"
-                    value={skill.allowedTools?.join(', ') || ''}
-                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                    placeholder="tool1, tool2"
-                />
+                <Label htmlFor="tools">Allowed Tools</Label>
+                {toolsLoading ? (
+                    <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Loader2 className="h-3 w-3 animate-spin" /> Loading tools...
+                    </div>
+                ) : (
+                    <MultiSelect
+                        options={availableTools}
+                        selected={skill.allowedTools || []}
+                        onChange={(selected) => handleChange('allowedTools', selected)}
+                        placeholder="Select tools..."
+                    />
+                )}
+                <p className="text-xs text-muted-foreground">
+                    Select the tools that this skill is permitted to use.
+                </p>
               </div>
             </div>
           )}
 
           {currentStep === 1 && (
-            <div className="space-y-4 h-[400px] flex flex-col">
-              <Label>Instructions (Markdown)</Label>
-              <Textarea
-                className="flex-1 font-mono text-sm leading-relaxed"
+            <div className="space-y-4 h-[500px] flex flex-col">
+              <Label>Instructions</Label>
+              <MarkdownEditor
+                className="flex-1"
                 value={skill.instructions}
-                onChange={(e) => handleChange('instructions', e.target.value)}
+                onChange={(val) => handleChange('instructions', val)}
+                placeholder="# Skill Instructions..."
               />
             </div>
           )}
@@ -188,18 +221,18 @@ export default function SkillWizard() {
                   <h3 className="font-medium mb-2">Existing Assets</h3>
                   {skill.assets && skill.assets.length > 0 ? (
                       <ul className="list-disc pl-5">
-                          {skill.assets.map(a => <li key={a}>{a}</li>)}
+                          {skill.assets.map(a => <li key={a} className="text-sm font-mono">{a}</li>)}
                       </ul>
-                  ) : <p className="text-sm text-muted-foreground">No assets uploaded.</p>}
+                  ) : <p className="text-sm text-muted-foreground italic">No assets uploaded.</p>}
                </div>
 
                <div className="border-t pt-4">
-                  <Label htmlFor="file-upload">Upload New Assets (Scripts)</Label>
+                  <Label htmlFor="file-upload">Upload New Assets</Label>
                   <div className="flex gap-2 items-center mt-2">
                      <Input id="file-upload" type="file" multiple onChange={handleFileSelect} />
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                      Files will be uploaded to the `scripts/` directory upon save.
+                      Scripts, templates, or data files required by the skill.
                   </p>
                </div>
             </div>
@@ -216,7 +249,8 @@ export default function SkillWizard() {
             </Button>
           ) : (
             <Button onClick={handleSave} disabled={loading}>
-              <Save className="mr-2 h-4 w-4" /> {isEdit ? 'Update Skill' : 'Create Skill'}
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              {isEdit ? 'Update Skill' : 'Create Skill'}
             </Button>
           )}
         </CardFooter>
