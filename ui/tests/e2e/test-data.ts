@@ -68,8 +68,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
-            command_line_service: {
-                command: "/bin/echo",
+            http_service: {
+                // Use the dedicated echo server available in the test environment (docker-compose)
+                // This is more reliable than assuming /bin/echo exists in the server container
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                     {
                         name: "echo_tool",
@@ -80,7 +82,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     echo_call: {
-                        args: ["echoed_output"]
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/echo"
                     }
                 }
             }
