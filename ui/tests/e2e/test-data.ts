@@ -74,7 +74,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                     {
                         name: "echo_tool",
                         description: "Echoes back input",
-                        inputSchema: { type: "object" },
+                        input_schema: { type: "object" },
                         call_id: "echo_call"
                     }
                 ],
