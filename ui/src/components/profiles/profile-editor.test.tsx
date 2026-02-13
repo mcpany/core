@@ -23,6 +23,19 @@ vi.mock("sonner", () => ({
     },
 }));
 
+// Mock Virtuoso to render all items without virtualization
+vi.mock('react-virtuoso', () => ({
+  Virtuoso: ({ data, itemContent, context }: any) => (
+    <div data-testid="virtuoso-mock">
+      {data.map((item: any, index: number) => (
+        <div key={index}>
+          {itemContent(index, item, context)}
+        </div>
+      ))}
+    </div>
+  ),
+}));
+
 describe("ProfileEditor", () => {
     const mockServices = [
         { name: "service-a", tags: ["finance"], version: "1.0.0", httpService: {} },

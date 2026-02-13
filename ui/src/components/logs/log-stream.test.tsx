@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
@@ -75,7 +75,6 @@ describe("LogStream", () => {
   });
 
   it("stops processing logs when paused", async () => {
-    vi.useFakeTimers();
     render(<LogStream />);
 
     // Trigger connection open
@@ -96,12 +95,7 @@ describe("LogStream", () => {
       if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log1) });
     });
 
-    // Advance time to flush buffer (100ms interval)
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
-    expect(screen.getByText("First Log")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("First Log")).toBeInTheDocument());
 
     // Find the Pause button.
     const pauseButton = screen.getAllByText(/Pause/i)[0];
@@ -123,10 +117,10 @@ describe("LogStream", () => {
       if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log2) });
     });
 
-    // Advance time
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
+    // Wait a bit to ensure it DOESN'T appear (waitFor would fail if we expect NOT, so we check queryByText)
+    // We can't wait for "not to happen" easily.
+    // We can wait for 200ms then check.
+    await new Promise(r => setTimeout(r, 200));
 
     // Should NOT be in document
     expect(screen.queryByText("Second Log")).not.toBeInTheDocument();
@@ -148,18 +142,10 @@ describe("LogStream", () => {
       if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log3) });
     });
 
-    // Advance time
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
-    expect(screen.getByText("Third Log")).toBeInTheDocument();
-
-    vi.useRealTimers();
+    await waitFor(() => expect(screen.getByText("Third Log")).toBeInTheDocument());
   });
 
   it("filters logs by source", async () => {
-    vi.useFakeTimers();
     render(<LogStream />);
 
     // Trigger connection open
@@ -191,16 +177,11 @@ describe("LogStream", () => {
       }
     });
 
-    // Advance time to flush buffer
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
     // Verify both logs are present initially
-    expect(screen.getByText("Log from Service A")).toBeInTheDocument();
-    expect(screen.getByText("Log from Service B")).toBeInTheDocument();
-
-    vi.useRealTimers();
+    await waitFor(() => {
+        expect(screen.getByText("Log from Service A")).toBeInTheDocument();
+        expect(screen.getByText("Log from Service B")).toBeInTheDocument();
+    });
 
     // Find the Selects. There are two (Source and Level).
     // We can find the one that contains the "service-a" option.
@@ -217,12 +198,13 @@ describe("LogStream", () => {
     fireEvent.change(sourceSelect, { target: { value: "service-a" } });
 
     // Verify filtering
-    expect(screen.getByText("Log from Service A")).toBeInTheDocument();
-    expect(screen.queryByText("Log from Service B")).not.toBeInTheDocument();
+    await waitFor(() => {
+        expect(screen.getByText("Log from Service A")).toBeInTheDocument();
+        expect(screen.queryByText("Log from Service B")).not.toBeInTheDocument();
+    });
   });
 
   it("detects and renders JSON logs", async () => {
-    vi.useFakeTimers();
     render(<LogStream />);
 
     act(() => {
@@ -242,12 +224,8 @@ describe("LogStream", () => {
       if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(jsonLog) });
     });
 
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
     // Check if the expand button exists
-    const expandButton = screen.getByLabelText("Expand JSON");
+    const expandButton = await waitFor(() => screen.getByLabelText("Expand JSON"));
     expect(expandButton).toBeInTheDocument();
 
     // The raw message string should be visible
@@ -257,14 +235,13 @@ describe("LogStream", () => {
     fireEvent.click(expandButton);
 
     // Verify state changed to expanded (button label changes)
-    const collapseButton = screen.getByLabelText("Collapse JSON");
-    expect(collapseButton).toBeInTheDocument();
-
-    vi.useRealTimers();
+    await waitFor(() => {
+        const collapseButton = screen.getByLabelText("Collapse JSON");
+        expect(collapseButton).toBeInTheDocument();
+    });
   });
 
   it("highlights search terms in log messages", async () => {
-    vi.useFakeTimers();
     render(<LogStream />);
 
     act(() => {
@@ -283,29 +260,21 @@ describe("LogStream", () => {
       if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
     });
 
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
+    await waitFor(() => expect(screen.getByText("An error occurred in the system")).toBeInTheDocument());
 
     // Enter search term
     const searchInput = screen.getByPlaceholderText("Search logs...");
     fireEvent.change(searchInput, { target: { value: "error" } });
 
-    // Advance time to allow for any deferred updates (useDeferredValue)
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
     // We expect the word "error" to be wrapped in a <mark> tag
-    const highlighted = screen.getByText("error");
-    expect(highlighted.tagName).toBe("MARK");
-    expect(highlighted).toHaveClass("bg-yellow-500/40");
-
-    vi.useRealTimers();
+    await waitFor(() => {
+        const highlighted = screen.getByText("error");
+        expect(highlighted.tagName).toBe("MARK");
+        expect(highlighted).toHaveClass("bg-yellow-500/40");
+    });
   });
 
   it("gracefully handles invalid JSON that passes heuristic", async () => {
-    vi.useFakeTimers();
     render(<LogStream />);
 
     act(() => {
@@ -325,20 +294,14 @@ describe("LogStream", () => {
       if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
     });
 
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
     // Check if the expand button exists (heuristic should pass)
-    const expandButton = screen.getByLabelText("Expand JSON");
+    const expandButton = await waitFor(() => screen.getByLabelText("Expand JSON"));
     expect(expandButton).toBeInTheDocument();
 
     // Click expand
     fireEvent.click(expandButton);
 
     // Should show "Invalid JSON" message
-    expect(screen.getByText("Invalid JSON")).toBeInTheDocument();
-
-    vi.useRealTimers();
+    await waitFor(() => expect(screen.getByText("Invalid JSON")).toBeInTheDocument());
   });
 });

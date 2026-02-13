@@ -36,7 +36,8 @@ describe("ServiceHealthContext", () => {
         (global.fetch as any).mockResolvedValue({
             ok: true,
             json: async () => mockTopology,
-            text: async () => JSON.stringify(mockTopology)
+            text: async () => JSON.stringify(mockTopology),
+            headers: { get: () => null }
         });
 
         const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -47,7 +48,8 @@ describe("ServiceHealthContext", () => {
 
         // Wait for fetch
         await waitFor(() => {
-             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology');
+             // Accept any second argument (headers/options)
+             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', expect.anything());
         });
 
         // Check history
@@ -102,7 +104,7 @@ describe("ServiceHealthContext", () => {
         });
 
         // Verify first fetch
-        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology');
+        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', expect.anything());
 
         // Capture render count after initial fetch setup
         const rendersAfterInit = renderCount;
@@ -113,7 +115,8 @@ describe("ServiceHealthContext", () => {
         (global.fetch as any).mockResolvedValue({
             ok: true,
             json: async () => mockTopology2,
-            text: async () => JSON.stringify(mockTopology2)
+            text: async () => JSON.stringify(mockTopology2),
+            headers: { get: () => null }
         });
 
         // Advance timer to trigger poll

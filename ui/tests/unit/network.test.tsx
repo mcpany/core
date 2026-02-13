@@ -26,7 +26,10 @@ describe('useNetworkTopology', () => {
         global.fetch = vi.fn().mockResolvedValue({
             ok: true,
             json: async () => mockGraph,
-            text: async () => JSON.stringify(mockGraph)
+            text: async () => JSON.stringify(mockGraph),
+            headers: {
+                get: () => null
+            }
         });
     });
 

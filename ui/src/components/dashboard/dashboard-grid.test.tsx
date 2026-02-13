@@ -7,9 +7,24 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import { DashboardGrid } from "./dashboard-grid";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  useSearchParams: () => ({
+    get: vi.fn(),
+  }),
+}));
+
 // Mock Child Widgets
 vi.mock("@/components/dashboard/metrics-overview", () => ({
   MetricsOverview: () => <div data-testid="widget-metrics">Metrics Overview Widget</div>
+}));
+vi.mock("@/components/dashboard/network-graph-widget", () => ({
+  NetworkGraphWidget: () => <div data-testid="widget-network-graph">Network Graph Widget</div>
 }));
 vi.mock("@/components/dashboard/service-health-widget", () => ({
   ServiceHealthWidget: () => <div data-testid="widget-service-health">Service Health Widget</div>
