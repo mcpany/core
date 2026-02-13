@@ -14,6 +14,11 @@ test.describe('Tool Exploration', () => {
     test.beforeEach(async ({ request, page }) => {
         const data = await seedToolsTestServices(request);
         suffix = data.suffix;
+
+        // Give backend a moment to process async registration before we even try logging in
+        // This helps reduce race conditions where the UI might load before tools are ready.
+        await page.waitForTimeout(1000);
+
         await seedUser(request, "e2e-tools-admin");
 
         // Login first

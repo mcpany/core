@@ -80,7 +80,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
 export const seedToolsTestServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const suffix = Date.now().toString();
+    // Use a more robust suffix including random numbers to avoid collisions
+    // if tests run in parallel processes with close start times.
+    const suffix = `${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const services = [
         {
             id: `svc_tool_01_${suffix}`,
