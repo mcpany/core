@@ -1,0 +1,1009 @@
+{"time":"2026-02-13T16:19:17.069736151Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:19:17.069949331Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:19:17.069982533Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-13T16:19:17.070127651Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":["config.minimal.yaml"]}
+{"time":"2026-02-13T16:19:17.07029163Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["config.minimal.yaml"]}
+{"time":"2026-02-13T16:19:17.070372625Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-13T16:19:17.070420322Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-13T16:19:17.070442303Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-13T16:19:17.070888246Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-13T16:19:17.113380754Z","level":"INFO","msg":"Database appears empty, initializing with default configuration..."}
+{"time":"2026-02-13T16:19:17.113541324Z","level":"INFO","msg":"DEBUG: Initializing DB with defaultGS","middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-13T16:19:17.116570481Z","level":"INFO","msg":"No users found, creating default admin user..."}
+{"time":"2026-02-13T16:19:17.116680802Z","level":"WARN","msg":"⚠️  GENERATED ADMIN PASSWORD: qqa9jC7nBpf69GCz1FMRtypivS_8wGNrGV-pSa4m0NU ⚠️"}
+{"time":"2026-02-13T16:19:17.116749285Z","level":"WARN","msg":"Please save this password immediately and change it upon first login."}
+{"time":"2026-02-13T16:19:17.455528165Z","level":"INFO","msg":"Default admin user created successfully.","username":"admin"}
+{"time":"2026-02-13T16:19:17.45564132Z","level":"INFO","msg":"Database initialized successfully."}
+{"time":"2026-02-13T16:19:17.455666628Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["config.minimal.yaml"]}
+{"time":"2026-02-13T16:19:17.529953686Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:19:17.530090678Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:19:17.530116066Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:19:17.530135199Z","level":"WARN","msg":"Duplicate service name found, skipping","component":"UpstreamServiceManager","service_name":"weather-service"}
+{"time":"2026-02-13T16:19:17.549099327Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:19:17.549569203Z","level":"INFO","msg":"Seeding builtin templates","count":10}
+{"time":"2026-02-13T16:19:17.550571654Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-13T16:19:17.550703387Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-13T16:19:17.550913884Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-13T16:19:17.551241584Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-13T16:19:17.551429388Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:19:17.551621719Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":2,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]},{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-13T16:19:17.55170494Z","level":"WARN","msg":"Auth middleware is disabled by config! Enforcing private-IP-only access for safety."}
+{"time":"2026-02-13T16:19:17.551799348Z","level":"INFO","msg":"No UI directory found (./ui/out, ./ui/dist, ./ui). UI will not be served."}
+{"time":"2026-02-13T16:19:17.551631419Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:19:17.551961668Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:19:17.551975716Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:19:17.552142237Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:19:17.552172652Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:19:17.552377386Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-13T16:19:17.554543732Z","level":"INFO","msg":"HTTP server listening","server":"MCP Any HTTP","port":"[::]:50050"}
+{"time":"2026-02-13T16:20:02.010611327Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:20:02.013313489Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:20:02.013504668Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:02.013543267Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:02.013714707Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:20:02.01378558Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:20:02.013812374Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:20:02.01386594Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:20:02.013950944Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:20:02.01400674Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:20:02.014058003Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:20:02.014122855Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:20:02.014124191Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:02.014311924Z","level":"INFO","msg":"ReloadConfig completed","duration":3708028}
+{"time":"2026-02-13T16:20:02.014347768Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:02.014524681Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:20:02.014572219Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:02.014604946Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:02.014630511Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:17.617530719Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:17.617770669Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:17.617813439Z","level":"INFO","msg":"No users configured, creating default user","component":"configLoader"}
+{"time":"2026-02-13T16:20:17.617922175Z","level":"INFO","msg":"Configuration","service":"mcpany","mcp-listen-address":"50050","registration-port":"","stdio":false,"config-path":["config.minimal.yaml"]}
+{"time":"2026-02-13T16:20:17.617969086Z","level":"INFO","msg":"Attempting to load services from config path","service":"mcpany","paths":["config.minimal.yaml"]}
+{"time":"2026-02-13T16:20:17.618044077Z","level":"WARN","msg":"⚠️  Running without a global API key. This is NOT recommended for production deployment.","service":"mcpany"}
+{"time":"2026-02-13T16:20:17.61810355Z","level":"INFO","msg":"DEBUG: Run API Key","key":""}
+{"time":"2026-02-13T16:20:17.618126888Z","level":"INFO","msg":"Starting MCP Any Service..."}
+{"time":"2026-02-13T16:20:17.618715844Z","level":"INFO","msg":"Hydrated log history from file","service":"mcpany","path":"mcpany.log.json"}
+{"time":"2026-02-13T16:20:17.619926953Z","level":"INFO","msg":"Loading config from files (overrides database)","paths":["config.minimal.yaml"]}
+{"time":"2026-02-13T16:20:17.68962781Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:17.6898201Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:17.689849853Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:17.689883048Z","level":"WARN","msg":"Duplicate service name found, skipping","component":"UpstreamServiceManager","service_name":"weather-service"}
+{"time":"2026-02-13T16:20:17.690047266Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:20:17.690897427Z","level":"INFO","msg":"Upstream worker started","component":"UpstreamWorker"}
+{"time":"2026-02-13T16:20:17.691016818Z","level":"INFO","msg":"Service registration worker started","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-13T16:20:17.691115012Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"builtin.mcplist_roots_b10148e7","toolName":"builtin.mcp:list_roots","tool":{"description":"Lists the roots available on the client side.","inputSchema":{"type":"object"},"name":"builtin.mcp:list_roots","title":"List Roots"}}
+{"time":"2026-02-13T16:20:17.691517289Z","level":"INFO","msg":"Queueing service for registration from config","service":"weather-service"}
+{"time":"2026-02-13T16:20:17.69166359Z","level":"INFO","msg":"Adding middleware","count":1}
+{"time":"2026-02-13T16:20:17.691717109Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:17.691772492Z","level":"INFO","msg":"DEBUG: GlobalSettings middlewares","count":2,"middlewares":[{"XXX_raceDetectHookData":{},"XXX_presence":[7]},{"XXX_raceDetectHookData":{},"XXX_presence":[7]}]}
+{"time":"2026-02-13T16:20:17.691873476Z","level":"INFO","msg":"No UI directory found (./ui/out, ./ui/dist, ./ui). UI will not be served."}
+{"time":"2026-02-13T16:20:17.691927304Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:17.692170182Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:17.692253582Z","level":"INFO","msg":"DEBUG: Registering /mcp/u/ handler"}
+{"time":"2026-02-13T16:20:17.692290897Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:17.692323136Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:17.692121511Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:20:17.692988972Z","level":"ERROR","msg":"Server startup failed, initiating shutdown...","error":"failed to start a server: ❌ HTTP server failed to listen on :50050: listen tcp :50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
+{"time":"2026-02-13T16:20:17.693116418Z","level":"INFO","msg":"Waiting for HTTP and gRPC servers to shut down..."}
+{"time":"2026-02-13T16:20:17.693149711Z","level":"INFO","msg":"All servers have shut down."}
+{"time":"2026-02-13T16:20:17.69327105Z","level":"INFO","msg":"Upstream worker stopping","component":"UpstreamWorker"}
+{"time":"2026-02-13T16:20:17.693272101Z","level":"INFO","msg":"Service registration worker stopping","component":"ServiceRegistrationWorker"}
+{"time":"2026-02-13T16:20:17.693883244Z","level":"ERROR","msg":"Application failed","service":"mcpany","error":"failed to start a server: ❌ HTTP server failed to listen on :50050: listen tcp :50050: bind: address already in use\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run --json-rpc-port <new_port>"}
+{"time":"2026-02-13T16:20:33.611592947Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:20:33.614528778Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:20:33.615916499Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:20:33.616002352Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:33.616032773Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:33.616084695Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Tools Spec Service","disabled_field":false}
+{"time":"2026-02-13T16:20:33.61610619Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Tools Spec Service","priority":0}
+{"time":"2026-02-13T16:20:33.616279937Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-13T16:20:33.616338072Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:20:33.616366756Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:20:33.616431477Z","level":"INFO","msg":"Adding new service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:33.616549996Z","level":"INFO","msg":"Queued service for registration update","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:33.616579787Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:33.616591855Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.616696446Z","level":"ERROR","msg":"Call definition not found for tool","call_id":"","tool_name":"tools_spec_payment"}
+{"time":"2026-02-13T16:20:33.616760756Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.61677789Z","level":"INFO","msg":"Registered command service","serviceID":"ToolsSpecService_160e874c","toolsAdded":0}
+{"time":"2026-02-13T16:20:33.616791512Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.616834757Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.616867586Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:20:33.616869752Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Tools Spec Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-13T16:20:33.616900501Z","level":"INFO","msg":"health status changed","service":"Tools Spec Service","status":"up"}
+{"time":"2026-02-13T16:20:33.61693642Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:33.616977399Z","level":"INFO","msg":"ReloadConfig completed","duration":2456831}
+{"time":"2026-02-13T16:20:33.617033684Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:33.617203269Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:20:33.617291925Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:33.617354532Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:33.617379406Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:33.64667439Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:20:33.671101348Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:20:33.673268053Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:20:33.675797963Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:20:33.675905074Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:33.675933649Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:33.675956187Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Tools Spec Service","disabled_field":false}
+{"time":"2026-02-13T16:20:33.675975027Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Tools Spec Service","priority":0}
+{"time":"2026-02-13T16:20:33.676135104Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-13T16:20:33.676191935Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:20:33.676216043Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:20:33.676263498Z","level":"INFO","msg":"Updating service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:33.67631543Z","level":"INFO","msg":"Shutting down upstream","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:33.67633812Z","level":"INFO","msg":"Upstream shutdown complete","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:33.6763732Z","level":"INFO","msg":"Queued service for registration update","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:33.676432225Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.676424176Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:33.676498239Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.676544343Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.676603452Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:20:33.676627397Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:20:33.676641252Z","level":"ERROR","msg":"Call definition not found for tool","call_id":"","tool_name":"tools_spec_payment"}
+{"time":"2026-02-13T16:20:33.676704911Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:33.676753927Z","level":"INFO","msg":"ReloadConfig completed","duration":3492737}
+{"time":"2026-02-13T16:20:33.67675835Z","level":"INFO","msg":"health status changed","service":"Tools Spec Service","status":"up"}
+{"time":"2026-02-13T16:20:33.676712246Z","level":"INFO","msg":"Registered command service","serviceID":"ToolsSpecService_160e874c","toolsAdded":0}
+{"time":"2026-02-13T16:20:33.676926595Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Tools Spec Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-13T16:20:33.676845148Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:33.677050368Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:33.677080441Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:33.677101959Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:33.677114626Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:20:35.94840417Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:20:35.948625853Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:20:41.457538452Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:20:41.457740487Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:20:47.184679971Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:20:47.184868792Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:20:57.761712474Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:20:57.76188213Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:20:57.763393213Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:20:57.766422674Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Tools Spec Service"}
+{"time":"2026-02-13T16:20:57.770730521Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:20:57.77159188Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:20:57.778262629Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:57.778328445Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:57.778511953Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:20:57.778545427Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:20:57.778570357Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:20:57.778625305Z","level":"INFO","msg":"Removing service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:57.778782899Z","level":"INFO","msg":"Shutting down upstream","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:57.778805201Z","level":"INFO","msg":"Upstream shutdown complete","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:20:57.778881183Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:20:57.778905694Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:20:57.778929873Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:20:57.778969429Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:20:57.778992696Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:20:57.779164452Z","level":"INFO","msg":"ReloadConfig completed","duration":8439023}
+{"time":"2026-02-13T16:20:57.779416707Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:57.779536947Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:57.780061832Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:57.780095251Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:57.780132825Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:57.780205648Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:20:59.230540037Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Echo Service Spec"}
+{"time":"2026-02-13T16:20:59.230809804Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:20:59.231381762Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:20:59.231432458Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:59.23145826Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:59.231608093Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:20:59.231637215Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:20:59.231659879Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:20:59.231750507Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.231775634Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.231796676Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.231839053Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.231861687Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:20:59.231964326Z","level":"INFO","msg":"ReloadConfig completed","duration":1157412}
+{"time":"2026-02-13T16:20:59.23210702Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:59.232218893Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:59.232415206Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:59.232443676Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:59.232466768Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:59.232520295Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:20:59.326484808Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:20:59.328290275Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:20:59.328997732Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:20:59.329060076Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:20:59.329217828Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:20:59.329389723Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:20:59.329419702Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:20:59.32944128Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:20:59.3294904Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.329513843Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.329535295Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.329578947Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:20:59.329602855Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:20:59.329743793Z","level":"INFO","msg":"ReloadConfig completed","duration":1459969}
+{"time":"2026-02-13T16:20:59.329885614Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:20:59.329985743Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:20:59.330245265Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:20:59.330285355Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:20:59.330311028Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:20:59.330377909Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:22:27.18550717Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:22:27.188064296Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:22:27.188766103Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:22:27.188878397Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:22:27.188917956Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:22:27.189123571Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:22:27.189195903Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:22:27.1892214Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:22:27.189280784Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:22:27.189311879Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:22:27.189337131Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:22:27.189444423Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:22:27.1895042Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:22:27.189528381Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:22:27.189626878Z","level":"INFO","msg":"ReloadConfig completed","duration":1569387}
+{"time":"2026-02-13T16:22:27.189688176Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:22:27.189803628Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:22:27.189905106Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:22:27.189939589Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:22:27.18996771Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:22:27.216544654Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/auth/login"}
+{"time":"2026-02-13T16:23:02.689697311Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:23:02.690291877Z","level":"ERROR","msg":"failed to create user","error":"failed to create user: constraint failed: UNIQUE constraint failed: users.id (1555)"}
+{"time":"2026-02-13T16:23:04.917705751Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:04.919623866Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:23:29.350932642Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:23:29.353497704Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:23:29.356593893Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:23:29.356720415Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:23:29.356796285Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:23:29.3568344Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Tools Spec Service","disabled_field":false}
+{"time":"2026-02-13T16:23:29.356868719Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Tools Spec Service","priority":0}
+{"time":"2026-02-13T16:23:29.357083281Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-13T16:23:29.357171948Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:23:29.357202124Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:23:29.357246981Z","level":"INFO","msg":"Adding new service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:23:29.357286063Z","level":"INFO","msg":"Queued service for registration update","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:23:29.357371657Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:23:29.357400216Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.357542594Z","level":"ERROR","msg":"Call definition not found for tool","call_id":"","tool_name":"tools_spec_payment"}
+{"time":"2026-02-13T16:23:29.357599719Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.35761466Z","level":"INFO","msg":"Registered command service","serviceID":"ToolsSpecService_160e874c","toolsAdded":0}
+{"time":"2026-02-13T16:23:29.357633466Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.357686571Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.357698795Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Tools Spec Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-13T16:23:29.357694835Z","level":"INFO","msg":"health status changed","service":"Tools Spec Service","status":"up"}
+{"time":"2026-02-13T16:23:29.357718451Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:23:29.357734346Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:23:29.357969632Z","level":"INFO","msg":"ReloadConfig completed","duration":4478572}
+{"time":"2026-02-13T16:23:29.358009679Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:23:29.358139188Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:23:29.358340282Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:23:29.358386764Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:23:29.358412787Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:23:29.394987893Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:23:29.429227686Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:23:29.43120307Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:23:29.433233547Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:23:29.433354583Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:23:29.433383854Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:23:29.433406953Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Tools Spec Service","disabled_field":false}
+{"time":"2026-02-13T16:23:29.43342828Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Tools Spec Service","priority":0}
+{"time":"2026-02-13T16:23:29.433600784Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-13T16:23:29.433685644Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:23:29.433707949Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:23:29.433759908Z","level":"INFO","msg":"Updating service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:23:29.43378707Z","level":"INFO","msg":"Shutting down upstream","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:23:29.433838128Z","level":"INFO","msg":"Upstream shutdown complete","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:23:29.433900967Z","level":"INFO","msg":"Queued service for registration update","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:23:29.433933468Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.433931712Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:23:29.433983903Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.434008431Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.434046237Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:23:29.434071963Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:23:29.434234915Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:23:29.434158852Z","level":"ERROR","msg":"Call definition not found for tool","call_id":"","tool_name":"tools_spec_payment"}
+{"time":"2026-02-13T16:23:29.434244219Z","level":"INFO","msg":"health status changed","service":"Tools Spec Service","status":"up"}
+{"time":"2026-02-13T16:23:29.434273901Z","level":"INFO","msg":"ReloadConfig completed","duration":3076800}
+{"time":"2026-02-13T16:23:29.434336841Z","level":"INFO","msg":"Registered command service","serviceID":"ToolsSpecService_160e874c","toolsAdded":0}
+{"time":"2026-02-13T16:23:29.434373686Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Tools Spec Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-13T16:23:29.434461795Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:23:29.434395604Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:23:29.434603787Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:23:29.43463285Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:23:29.434665943Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:23:31.087598939Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:31.087700852Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:23:35.866714616Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:35.870491097Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:23:35.870501011Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:23:37.922577547Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-failures"}
+{"time":"2026-02-13T16:23:37.922579357Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/metrics"}
+{"time":"2026-02-13T16:23:38.918863344Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-failures"}
+{"time":"2026-02-13T16:23:38.922143974Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/traces"}
+{"time":"2026-02-13T16:23:39.833934138Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/metrics"}
+{"time":"2026-02-13T16:23:39.8745783Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/system/status"}
+{"time":"2026-02-13T16:23:43.622649655Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/traces"}
+{"time":"2026-02-13T16:23:43.664568888Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:43.665598836Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:23:44.499472422Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-13T16:23:44.502418217Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-13T16:23:44.568493602Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/system/status"}
+{"time":"2026-02-13T16:23:44.700100173Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/metrics"}
+{"time":"2026-02-13T16:23:45.74575887Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:45.746139321Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/top-tools"}
+{"time":"2026-02-13T16:23:45.746231901Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/traces"}
+{"time":"2026-02-13T16:23:46.346132172Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-13T16:23:46.448224005Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/traffic"}
+{"time":"2026-02-13T16:23:46.44861286Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:23:46.454470655Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/system/status"}
+{"time":"2026-02-13T16:23:47.612138928Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/metrics"}
+{"time":"2026-02-13T16:23:47.612443502Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:47.617219838Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/traces"}
+{"time":"2026-02-13T16:23:47.617867394Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/top-tools"}
+{"time":"2026-02-13T16:23:53.680917583Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:23:53.695007716Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:23:53.695480446Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:23:53.698464123Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:23:53.71836572Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:00.652800239Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:00.653563388Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:00.680721532Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:00.680820891Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:00.70073456Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:05.646498554Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:05.654869849Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:08.534663124Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:08.534819134Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:08.535093666Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:08.537192247Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:08.549721092Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:13.509021304Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:13.51424002Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:16.440350475Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:16.440428677Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:16.442808511Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:16.442935488Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:16.459959679Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:21.415600279Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:21.421718126Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:24.598936319Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:24.602460151Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:24.602541647Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:24.604964108Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:24.618493746Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:29.566488025Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:29.572115793Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:32.487113663Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:32.49049314Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:32.490515649Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:32.494159391Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:32.506464946Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:37.469092237Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:37.46922848Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:40.407148165Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:40.410420142Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:40.410481974Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:40.414404277Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:40.449860772Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:45.382122553Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:45.388438926Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:51.800180544Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:51.856513424Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:54.258157694Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:54.258677308Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:24:54.262380335Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:24:54.266365828Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:24:54.270473742Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:24:59.244933863Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:24:59.250679147Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:02.104398394Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:02.104654095Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:25:02.104882852Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:02.110804146Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:25:02.104688056Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:25:07.072591495Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:07.097486643Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:09.8653835Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:25:09.865490702Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:09.865640714Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:09.865396631Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:25:09.865506985Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:25:14.853743488Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:14.86645131Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:18.325341Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:25:18.325464392Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:25:18.326831611Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:18.328372486Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:25:18.335653991Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:23.314691707Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:23.327775823Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:28.320047226Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:25:28.320119509Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:25:29.199282182Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Tools Spec Service"}
+{"time":"2026-02-13T16:25:29.201524588Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:25:29.203608844Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:25:29.203702929Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:25:29.203731734Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:25:29.203905369Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:25:29.20396398Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:25:29.203988449Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:25:29.204052178Z","level":"INFO","msg":"Removing service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:25:29.204105367Z","level":"INFO","msg":"Shutting down upstream","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:25:29.204130292Z","level":"INFO","msg":"Upstream shutdown complete","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:25:29.204215636Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.204292699Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.204311929Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.204377858Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.204425533Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:25:29.204536414Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:25:29.2045675Z","level":"INFO","msg":"ReloadConfig completed","duration":3048563}
+{"time":"2026-02-13T16:25:29.204695158Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:25:29.204880797Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:25:29.205015151Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:25:29.205075598Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:25:29.205128732Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:25:29.224458276Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Echo Service Spec"}
+{"time":"2026-02-13T16:25:29.224750049Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:25:29.226312672Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:25:29.226404026Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:25:29.226435068Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:25:29.226596742Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:25:29.226662497Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:25:29.226685037Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:25:29.226733499Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.226756877Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.226805112Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.226849709Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.226896771Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:25:29.227031663Z","level":"INFO","msg":"ReloadConfig completed","duration":2284313}
+{"time":"2026-02-13T16:25:29.227035593Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:25:29.227168387Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:25:29.227369429Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:25:29.227442234Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:25:29.227475287Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:25:29.227526315Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:25:29.249988231Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:25:29.251802203Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:25:29.254313323Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:25:29.254412961Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:25:29.254449266Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:25:29.254618295Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:25:29.254683359Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:25:29.254704789Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:25:29.25476204Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.254784879Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.254805772Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.254847415Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:25:29.254870783Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:25:29.25500071Z","level":"INFO","msg":"ReloadConfig completed","duration":3202869}
+{"time":"2026-02-13T16:25:29.255004727Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:25:29.25522009Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:25:29.255159271Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:25:29.255458558Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:25:29.255488505Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:25:29.255514437Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:26:31.844896328Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:26:31.848452661Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:26:31.853435443Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:26:31.853583837Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:26:31.853623422Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:26:31.853824617Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:26:31.853916636Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:26:31.853955723Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:26:31.854044168Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.854116965Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.854159591Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.854345799Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.854443182Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:26:31.854476471Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:26:31.85464952Z","level":"INFO","msg":"ReloadConfig completed","duration":6206908}
+{"time":"2026-02-13T16:26:31.854704403Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:26:31.85487505Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:26:31.854951706Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:26:31.855034315Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:26:31.855098575Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:26:31.901325208Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:26:31.904925048Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:26:31.908383986Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:26:31.908626683Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:26:31.908740922Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:26:31.90881464Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"Tools Spec Service","disabled_field":false}
+{"time":"2026-02-13T16:26:31.908880326Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"Tools Spec Service","priority":0}
+{"time":"2026-02-13T16:26:31.909319185Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":2}
+{"time":"2026-02-13T16:26:31.909493858Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:26:31.909556456Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:26:31.909692023Z","level":"INFO","msg":"Adding new service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:26:31.909809644Z","level":"INFO","msg":"Queued service for registration update","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:26:31.90992276Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.909938813Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:26:31.909994526Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.910063381Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.910122968Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:26:31.910254838Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:26:31.910298959Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:26:31.910498361Z","level":"INFO","msg":"health status changed","service":"Tools Spec Service","status":"up"}
+{"time":"2026-02-13T16:26:31.91028644Z","level":"ERROR","msg":"Call definition not found for tool","call_id":"","tool_name":"tools_spec_payment"}
+{"time":"2026-02-13T16:26:31.910636925Z","level":"INFO","msg":"Registered command service","serviceID":"ToolsSpecService_160e874c","toolsAdded":0}
+{"time":"2026-02-13T16:26:31.910701189Z","level":"INFO","msg":"ReloadConfig completed","duration":5787433}
+{"time":"2026-02-13T16:26:31.910713226Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:26:31.910490738Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:26:31.910725028Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"Tools Spec Service","tools_count":0,"resources_count":0}
+{"time":"2026-02-13T16:26:31.911023875Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:26:31.91109389Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:26:31.911181049Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:26:31.954030842Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:26:34.545928773Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:26:34.546444999Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:26:38.536867065Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:26:38.536916682Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:26:38.542361937Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:26:38.546448325Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:26:38.56856864Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:26:44.930638486Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:26:44.93084224Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:26:44.934449075Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:26:44.934623009Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:26:44.949568895Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:26:49.901986498Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:26:49.907892731Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:26:52.666335815Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:26:52.666407234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:26:52.670484916Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:26:52.677884898Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:26:52.682433689Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:26:57.632292042Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:26:57.640105141Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:00.46250048Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:00.462666044Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:00.465448733Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:00.46649247Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:00.478415477Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:05.440032278Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:05.44515328Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:08.223478583Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:08.223614653Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:08.226342509Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:08.227658095Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:08.223503525Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:13.210077935Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:13.210516427Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:16.022051553Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:16.022156735Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:16.022441801Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:16.022544493Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:16.022058408Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:21.001436039Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:21.007988134Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:23.7876544Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:23.790472878Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:23.790515794Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:23.794505753Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:23.8143552Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:28.754459851Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:28.754641063Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:31.650964631Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:31.651022211Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:31.651092835Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:31.651177054Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:31.66020962Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:36.623992266Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:36.626036779Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:40.444777764Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:40.445285068Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:40.445413719Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:40.47105077Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:40.486436409Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:45.405906539Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:45.412127568Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:48.902106983Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:48.906537726Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:48.906612813Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:27:48.910717157Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:48.926579425Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:53.866359993Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:53.866672723Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:57.376306656Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:27:57.37649356Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:27:57.376626299Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:27:57.410528177Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:27:57.442434534Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:28:02.357117134Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:28:02.36345138Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:28:07.367514005Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:28:07.36765345Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:28:08.604126166Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Tools Spec Service"}
+{"time":"2026-02-13T16:28:08.607190201Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:28:08.609806049Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:28:08.609962374Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:28:08.610011305Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:28:08.610335133Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:28:08.610412471Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:28:08.610435557Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:28:08.610492868Z","level":"INFO","msg":"Removing service","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:28:08.610548415Z","level":"INFO","msg":"Shutting down upstream","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:28:08.610582788Z","level":"INFO","msg":"Upstream shutdown complete","service":"Tools Spec Service"}
+{"time":"2026-02-13T16:28:08.610651172Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.610702977Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.610724203Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.610790517Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.610886565Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:28:08.610846534Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:28:08.611144992Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:28:08.611316163Z","level":"INFO","msg":"ReloadConfig completed","duration":4131252}
+{"time":"2026-02-13T16:28:08.611412288Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:28:08.611465178Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:28:08.61146554Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:28:08.611496561Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:28:08.636517502Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Echo Service Spec"}
+{"time":"2026-02-13T16:28:08.63684229Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:28:08.638409978Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:28:08.638514501Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:28:08.638549114Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:28:08.638722647Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:28:08.638786611Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:28:08.638819005Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:28:08.638913444Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.638944297Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.638987737Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.639035267Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.639058172Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:28:08.639074166Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:28:08.639221142Z","level":"INFO","msg":"ReloadConfig completed","duration":2382027}
+{"time":"2026-02-13T16:28:08.639252388Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:28:08.639488194Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:28:08.639529699Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:28:08.639555015Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:28:08.639518418Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:28:08.663033969Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:28:08.665437426Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:28:08.668515438Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:28:08.668640155Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:28:08.668677273Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:28:08.668904712Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:28:08.668976261Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:28:08.669016031Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:28:08.669097402Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.669161069Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.669219643Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.66930849Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:28:08.669350226Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:28:08.669376984Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:28:08.669511829Z","level":"INFO","msg":"ReloadConfig completed","duration":4082973}
+{"time":"2026-02-13T16:28:08.669559364Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:28:08.669777886Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:28:08.669839475Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:28:08.669799133Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:28:08.669905876Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:29:50.885254598Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:29:50.891261154Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:29:51.114813676Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:29:51.116026353Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:29:51.883732281Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services/Payment Gateway"}
+{"time":"2026-02-13T16:29:56.225811891Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:29:56.227147992Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:29:56.228224044Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:29:56.230233736Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:29:56.845912443Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"","path":"/api/v1/ws/logs"}
+{"time":"2026-02-13T16:29:56.881200591Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"","path":"/api/v1/ws/logs"}
+{"time":"2026-02-13T16:31:09.474051826Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:31:09.474364246Z","level":"ERROR","msg":"failed to write log message to websocket","error":"write tcp [::1]:50050->[::1]:53986: i/o timeout"}
+{"time":"2026-02-13T16:31:09.474486941Z","level":"ERROR","msg":"failed to write log message to websocket","error":"write tcp [::1]:50050->[::1]:53996: i/o timeout"}
+{"time":"2026-02-13T16:31:09.476118307Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:31:09.478595531Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:31:09.478684409Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:31:09.478715133Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:31:09.478873906Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:31:09.478940159Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:31:09.478966042Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:31:09.479017969Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:31:09.479080413Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:31:09.479162712Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:31:09.479343031Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:31:09.479403129Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:31:09.479447666Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:31:09.479582966Z","level":"INFO","msg":"ReloadConfig completed","duration":3468150}
+{"time":"2026-02-13T16:31:09.479760978Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:31:09.479602533Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:31:09.479917639Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:31:09.479982712Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:31:09.480035244Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:31:11.394100234Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:31:11.394312166Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:31:15.092024957Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:31:15.094304212Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:31:15.098828119Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:31:15.099363346Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:31:15.114475745Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:31:15.991286262Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:31:15.993009358Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:31:15.994807778Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:31:15.994899302Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:31:15.994928172Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:31:15.99508116Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:31:15.99516553Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:31:15.995210334Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:31:15.995257396Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:31:15.995282271Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:31:15.995304724Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:31:15.995345258Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:31:15.995392742Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:31:15.995364805Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:31:15.995540913Z","level":"INFO","msg":"ReloadConfig completed","duration":2536809}
+{"time":"2026-02-13T16:31:15.995536666Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:31:15.995744952Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:31:15.995778574Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:31:15.995812393Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:31:15.995798248Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:31:16.101803792Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:31:16.104059797Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:31:16.106705425Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:31:16.106820282Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:31:16.106860875Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:31:16.107014157Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:31:16.107077732Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:31:16.107100708Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:31:16.107149364Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:31:16.107199651Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:31:16.107246872Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:31:16.107314225Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:31:16.107368303Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:31:16.107472815Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:31:16.107540698Z","level":"INFO","msg":"ReloadConfig completed","duration":3486668}
+{"time":"2026-02-13T16:31:16.107625848Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:31:16.107838845Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:31:16.107883212Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:31:16.1079192Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:31:16.107961668Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:31:17.709593026Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:31:17.70964847Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:31:20.641613879Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:31:20.646421525Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:31:20.646525834Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:31:20.667054173Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:31:20.683023988Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:31:21.849940675Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/audit/logs"}
+{"time":"2026-02-13T16:31:21.850357333Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:31:22.027994281Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:31:22.031716546Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:31:22.034434485Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:31:22.034532045Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:31:22.03456038Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:31:22.034733219Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:31:22.034830771Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:31:22.034869326Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:31:22.034930603Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.034954071Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.034975715Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.035019283Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.035043311Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:31:22.035167681Z","level":"INFO","msg":"ReloadConfig completed","duration":3459617}
+{"time":"2026-02-13T16:31:22.03542719Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:31:22.035545122Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:31:22.035846961Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:31:22.035888111Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:31:22.035915042Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:31:22.035981894Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:31:22.201334539Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:31:22.205432908Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:31:22.206544524Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:31:22.206623859Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:31:22.206654121Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:31:22.206852914Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:31:22.206920941Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:31:22.206942769Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:31:22.207003255Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.207056011Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.207079126Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.207120425Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:31:22.207144066Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:31:22.207245552Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:31:22.207266387Z","level":"INFO","msg":"ReloadConfig completed","duration":1840970}
+{"time":"2026-02-13T16:31:22.207393887Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:31:22.20761376Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:31:22.207645807Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:31:22.207671043Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:31:22.207708185Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:31:23.775227768Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:31:23.775655862Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:31:26.817503626Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:31:26.817686988Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:31:26.8181207Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:31:26.822442233Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:31:26.856663968Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:31:28.094975554Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:31:28.094989126Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/audit/logs"}
+{"time":"2026-02-13T16:31:28.296505198Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:31:28.2985518Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:31:28.299467725Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:31:28.299550628Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:31:28.299621566Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:31:28.299819511Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:31:28.299854062Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:31:28.299874571Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:31:28.299932056Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:31:28.299955479Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:31:28.299977182Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:31:28.300019631Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:31:28.300042815Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:31:28.300235975Z","level":"INFO","msg":"ReloadConfig completed","duration":1690354}
+{"time":"2026-02-13T16:31:28.300405222Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:31:28.300521059Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:31:28.300714811Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:31:28.300743011Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:31:28.300765892Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:31:28.30081972Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:33:38.105488686Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:33:38.11170282Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:33:38.120323077Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:33:38.120747083Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:33:38.120860647Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:33:38.121338627Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:33:38.121552927Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:33:38.121687389Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:33:38.122118008Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:33:38.122308934Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:33:38.122512408Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:33:38.123067462Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:33:38.123333302Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:33:38.123366625Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:33:38.123811428Z","level":"INFO","msg":"ReloadConfig completed","duration":12115205}
+{"time":"2026-02-13T16:33:38.124013406Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:33:38.124382598Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:33:38.125208443Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:33:38.125374654Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:33:38.125462363Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:33:41.756093217Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:33:41.756321496Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:33:46.04800233Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:33:46.050665751Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:33:46.053960732Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:33:46.058921873Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:33:46.062828062Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:33:47.507290651Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:33:47.510755248Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:33:47.516033724Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:33:47.516244409Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:33:47.516459657Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:33:47.516749746Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:33:47.516947812Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:33:47.517046394Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:33:47.517147021Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.517214599Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.517275828Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.517407851Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.517493241Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:33:47.517586593Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:33:47.517713902Z","level":"INFO","msg":"ReloadConfig completed","duration":6965453}
+{"time":"2026-02-13T16:33:47.517833169Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:33:47.518323837Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:33:47.518577633Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:33:47.518699597Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:33:47.518776409Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:33:47.66207073Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:33:47.665078381Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:33:47.669453366Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:33:47.669595304Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:33:47.669674972Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:33:47.670152367Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:33:47.670263602Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:33:47.670339148Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:33:47.67042538Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.670493667Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.670540606Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.670642201Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:33:47.670682426Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:33:47.670712267Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:33:47.67106067Z","level":"INFO","msg":"ReloadConfig completed","duration":6031547}
+{"time":"2026-02-13T16:33:47.671091546Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:33:47.670960273Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:33:47.671611431Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:33:47.671667459Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:33:47.671781721Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:33:49.647845197Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:33:49.648732271Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:33:52.737514776Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:33:52.737649776Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:33:52.737829037Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:33:52.738722858Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:33:52.737601681Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:33:53.75567643Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:33:53.755773648Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/audit/logs"}
+{"time":"2026-02-13T16:33:53.956246257Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:33:53.958160293Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:33:53.961916785Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:33:53.962084993Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:33:53.962258018Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:33:53.962517492Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:33:53.962686685Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:33:53.962748842Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:33:53.962836176Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:33:53.962893757Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:33:53.962956517Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:33:53.963071007Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:33:53.963158993Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:33:53.963312003Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:33:53.963703477Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:33:53.963751863Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:33:53.963810965Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:33:53.963923225Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:33:53.964116172Z","level":"INFO","msg":"Reload complete","tools_count":2}
+{"time":"2026-02-13T16:33:53.964564522Z","level":"INFO","msg":"ReloadConfig completed","duration":6410153}
+{"time":"2026-02-13T16:33:54.11904665Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users"}
+{"time":"2026-02-13T16:33:54.121497207Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:33:54.122586015Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:33:54.122663285Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:33:54.122740506Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:33:54.122940796Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:33:54.12298303Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:33:54.123006183Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:33:54.123053101Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:33:54.123114838Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:33:54.123221126Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:33:54.123332819Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:33:54.123365406Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:33:54.123447076Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:33:54.123657046Z","level":"INFO","msg":"ReloadConfig completed","duration":2159523}
+{"time":"2026-02-13T16:33:54.123774252Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:33:54.124036875Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:33:54.124080094Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:33:54.124126454Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:33:54.124159064Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:33:55.825851794Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:33:55.826023914Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:34:00.030416405Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:34:00.038443656Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:34:00.042466576Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/services"}
+{"time":"2026-02-13T16:34:00.04444809Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/tools"}
+{"time":"2026-02-13T16:34:00.058438392Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:34:03.327438321Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:34:03.330771719Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/audit/logs"}
+{"time":"2026-02-13T16:34:04.04282906Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:34:04.043576747Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:34:04.533725002Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/execute"}
+{"time":"2026-02-13T16:34:04.948645961Z","level":"ERROR","msg":"Tool not found","toolName":""}
+{"time":"2026-02-13T16:34:04.948940476Z","level":"ERROR","msg":"failed to execute tool","error":"unknown tool"}
+{"time":"2026-02-13T16:34:05.491027851Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/dashboard/tool-usage"}
+{"time":"2026-02-13T16:34:05.491213315Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/audit/logs"}
+{"time":"2026-02-13T16:34:08.933219778Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:34:08.946108572Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:34:13.908074856Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:34:13.913512067Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:34:18.907085926Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/doctor"}
+{"time":"2026-02-13T16:34:18.912800361Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/topology"}
+{"time":"2026-02-13T16:34:20.611992994Z","level":"INFO","msg":"DEBUG: AuthMiddleware details","configured_key":"","request_key":"test-token","path":"/api/v1/users/e2e-tools-admin"}
+{"time":"2026-02-13T16:34:20.614938591Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:34:20.61904633Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:34:20.619217513Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:34:20.619369972Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:34:20.619669252Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:34:20.61978981Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:34:20.619838959Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:34:20.619997616Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:34:20.620076117Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:34:20.620120287Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:34:20.620237111Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:34:20.620332938Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:34:20.620399815Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:34:20.620652328Z","level":"INFO","msg":"ReloadConfig completed","duration":5717928}
+{"time":"2026-02-13T16:34:20.620584833Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:34:20.620930974Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:34:20.620996946Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:34:20.621033204Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
+{"time":"2026-02-13T16:34:20.620965366Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:34:51.68679255Z","level":"INFO","msg":"Reloading configuration..."}
+{"time":"2026-02-13T16:34:51.689733179Z","level":"WARN","msg":"Failed to resolve profile","component":"UpstreamServiceManager","profile":"default","error":"profile not found: default"}
+{"time":"2026-02-13T16:34:51.690047168Z","level":"INFO","msg":"Checking service disabled status","component":"UpstreamServiceManager","service":"weather-service","disabled_field":false}
+{"time":"2026-02-13T16:34:51.69008046Z","level":"INFO","msg":"Added new service","component":"UpstreamServiceManager","service_name":"weather-service","priority":0}
+{"time":"2026-02-13T16:34:51.690330086Z","level":"INFO","msg":"Successfully processed config file","component":"configLoader","services":1}
+{"time":"2026-02-13T16:34:51.690454367Z","level":"INFO","msg":"Updated users configuration"}
+{"time":"2026-02-13T16:34:51.690506413Z","level":"INFO","msg":"Updated profile definitions configuration"}
+{"time":"2026-02-13T16:34:51.690619288Z","level":"INFO","msg":"Updating service","service":"weather-service"}
+{"time":"2026-02-13T16:34:51.690725056Z","level":"INFO","msg":"Shutting down upstream","service":"weather-service"}
+{"time":"2026-02-13T16:34:51.690774633Z","level":"INFO","msg":"Upstream shutdown complete","service":"weather-service"}
+{"time":"2026-02-13T16:34:51.690857162Z","level":"INFO","msg":"Queued service for registration update","service":"weather-service"}
+{"time":"2026-02-13T16:34:51.690946457Z","level":"INFO","msg":"Reload complete","tools_count":1}
+{"time":"2026-02-13T16:34:51.690891795Z","level":"INFO","msg":"Received service registration request","component":"ServiceRegistrationWorker","correlationID":""}
+{"time":"2026-02-13T16:34:51.691204464Z","level":"INFO","msg":"ReloadConfig completed","duration":4419981}
+{"time":"2026-02-13T16:34:51.691209144Z","level":"INFO","msg":"Registering tool with MCP server","toolID":"weather-service.get_weather","toolName":"weather-service.get_weather","tool":{"annotations":{"destructiveHint":false,"openWorldHint":false},"description":"Get current weather","inputSchema":{"properties":{},"type":"object"},"name":"weather-service.get_weather","outputSchema":{"properties":{"args":{"description":"The arguments passed to the command.","type":"array"},"combined_output":{"description":"The combined standard output and standard error.","type":"string"},"command":{"description":"The command that was executed.","type":"string"},"end_time":{"description":"The time the command finished executing.","type":"string"},"return_code":{"description":"The exit code of the command.","type":"integer"},"start_time":{"description":"The time the command started executing.","type":"string"},"status":{"description":"The execution status of the command (e.g., success, error, timeout).","type":"string"},"stderr":{"description":"The standard error of the command.","type":"string"},"stdout":{"description":"The standard output of the command.","type":"string"}},"type":"object"},"title":"get_weather"}}
+{"time":"2026-02-13T16:34:51.691462318Z","level":"INFO","msg":"health status changed","service":"weather-service","status":"up"}
+{"time":"2026-02-13T16:34:51.691606778Z","level":"INFO","msg":"Registered command service","serviceID":"weather-service","toolsAdded":1}
+{"time":"2026-02-13T16:34:51.691645348Z","level":"INFO","msg":"Registered prompt","prompt_name":"weather-service.summarize_text"}
+{"time":"2026-02-13T16:34:51.691698508Z","level":"INFO","msg":"Successfully registered service","component":"ServiceRegistrationWorker","service":"weather-service","tools_count":1,"resources_count":0}
