@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { renderHook, act } from '@testing-library/react';
 import { useTraces } from './use-traces';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
