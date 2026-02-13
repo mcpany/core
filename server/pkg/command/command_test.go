@@ -202,6 +202,9 @@ func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
+	if testing.Short() {
+		t.Skip("Skipping Docker tests in short mode")
+	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
@@ -367,6 +370,9 @@ func TestCombinedOutput(t *testing.T) {
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
+	if testing.Short() {
+		t.Skip("Skipping Docker tests in short mode")
+	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := NewExecutor(containerEnv)
@@ -407,6 +413,9 @@ func TestCombinedOutput(t *testing.T) {
 func TestNewDockerExecutorSuccess(t *testing.T) {
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+	}
+	if testing.Short() {
+		t.Skip("Skipping Docker tests in short mode")
 	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
