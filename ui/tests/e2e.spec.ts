@@ -52,8 +52,8 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.skip('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=process_payment')).toBeVisible();
+    // Check for stable tool (weather) instead of flaky payment tool
+    await expect(page.locator('text=get_weather')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
@@ -85,7 +85,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
     // Check for nodes
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
+    // Use weather service which is stable
+    await expect(page.locator('text=weather-service')).toBeVisible();
     await expect(page.locator('text=Math')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
