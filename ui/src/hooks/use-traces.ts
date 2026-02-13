@@ -27,9 +27,55 @@ export function useTraces(options: UseTracesOptions = {}) {
     const isMountedRef = useRef(true);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // ⚡ BOLT: Buffer for incoming traces to avoid rapid re-renders.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const bufferRef = useRef<Trace[]>([]);
+
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
+
+    useEffect(() => {
+        const flushInterval = setInterval(() => {
+            if (bufferRef.current.length > 0) {
+                const incoming = [...bufferRef.current];
+                bufferRef.current = []; // Clear buffer immediately
+
+                setTraces((prev) => {
+                    // Optimization: Deduplicate efficiently using Map to avoid O(N*M) complexity
+                    // Create a Map of incoming traces (latest wins if duplicate in buffer)
+                    const incomingMap = new Map<string, Trace>();
+                    incoming.forEach(t => incomingMap.set(t.id, t));
+
+                    // Update existing traces in place if they are in the incoming batch
+                    const nextTraces = prev.map(t => {
+                        if (incomingMap.has(t.id)) {
+                            const updated = incomingMap.get(t.id)!;
+                            incomingMap.delete(t.id);
+                            return updated;
+                        }
+                        return t;
+                    });
+
+                    // Prepend new traces (remaining in incomingMap)
+                    // We reverse newTraces because incomingMap follows insertion order (oldest first),
+                    // but we want the newest traces at the top of the list.
+                    const newTraces = Array.from(incomingMap.values()).reverse();
+
+                    // Optimization: Limit total traces to avoid unbounded memory growth
+                    const MAX_TRACES = 5000;
+                    const combined = [...newTraces, ...nextTraces];
+
+                    if (combined.length > MAX_TRACES) {
+                        return combined.slice(0, MAX_TRACES);
+                    }
+                    return combined;
+                });
+            }
+        }, 100); // Flush every 100ms
+
+        return () => clearInterval(flushInterval);
+    }, []);
 
     const connect = () => {
         if (!isMountedRef.current) return;
@@ -64,16 +110,8 @@ export function useTraces(options: UseTracesOptions = {}) {
             if (isPausedRef.current) return;
             try {
                 const trace: Trace = JSON.parse(event.data);
-                setTraces((prev) => {
-                    // Deduplicate by ID
-                    const index = prev.findIndex(t => t.id === trace.id);
-                    if (index !== -1) {
-                        const newTraces = [...prev];
-                        newTraces[index] = trace;
-                        return newTraces;
-                    }
-                    return [trace, ...prev];
-                });
+                // Optimization: Push to buffer instead of setting state directly
+                bufferRef.current.push(trace);
             } catch (e) {
                 console.error("Failed to parse trace", e);
             }
