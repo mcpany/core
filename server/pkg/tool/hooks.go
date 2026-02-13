@@ -391,7 +391,8 @@ func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 			// ⚡ BOLT: Optimize memory allocation by pre-allocating buffer if ContentLength is known.
 			// Randomized Selection from Top 5 High-Impact Targets
 			var buf bytes.Buffer
-			if req.ContentLength > 0 {
+			// Cap pre-allocation to 10MB to avoid potential DoS or OOM with huge Content-Length
+			if req.ContentLength > 0 && req.ContentLength < 10*1024*1024 {
 				buf.Grow(int(req.ContentLength))
 			}
 
