@@ -16,8 +16,11 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            // ⚡ Bolt: Use command_line_service to avoid SSRF blocks (localhost) and flaky external network (stripe.com) in CI.
+            // This ensures the 'process_payment' tool is always registered for UI tests.
+            command_line_service: {
+                command: "/bin/echo",
+                args: ["payment_processed"],
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -27,8 +30,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+            command_line_service: {
+                command: "/bin/echo",
+                args: ["user_details"],
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
@@ -39,8 +43,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            command_line_service: {
+                command: "/bin/echo",
+                args: ["42"],
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
