@@ -1398,19 +1398,28 @@ export const apiClient = {
      * @returns A promise that resolves to a list of users.
      */
     listUsers: async () => {
-        // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
-        // We do have @proto/admin/v1/admin
-        // Let's rely on fetch for now if we expose REST, OR we can try to use standard gRPC-Web if we set it up.
-        // For simplicity in this UI iteration (which seems to use fetchWithAuth mostly),
-        // we might assume there is a REST gateway or we use a custom endpoint.
-        // Wait, server/pkg/admin/server.go implements providing gRPC.
-        // Does it expose REST?
-        // The previous task walkthrough mentions "Admin Service RPCs".
-        // And `server/pkg/app/server.go` likely mounts gRPC-Gateway?
-        // Let's try fetch first.
         const res = await fetchWithAuth('/api/v1/users');
         if (!res.ok) throw new Error('Failed to list users');
-        return res.json();
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.users || []);
+
+        // Map snake_case to camelCase
+        return list.map((u: any) => ({
+            id: u.id,
+            roles: u.roles || [],
+            profileIds: u.profile_ids || [],
+            authentication: u.authentication ? {
+                apiKey: u.authentication.api_key ? {
+                    paramName: u.authentication.api_key.param_name,
+                    in: u.authentication.api_key.in,
+                    verificationValue: u.authentication.api_key.verification_value
+                } : undefined,
+                basicAuth: u.authentication.basic_auth ? {
+                    username: u.authentication.basic_auth.username,
+                    passwordHash: u.authentication.basic_auth.password_hash
+                } : undefined
+            } : undefined
+        }));
     },
 
     /**
@@ -1419,10 +1428,34 @@ export const apiClient = {
      * @returns A promise that resolves to the created user.
      */
     createUser: async (user: any) => {
+        // Map camelCase to snake_case
+        const payload: any = {
+            id: user.id,
+            roles: user.roles,
+            profile_ids: user.profileIds
+        };
+
+        if (user.authentication) {
+            payload.authentication = {};
+            if (user.authentication.apiKey) {
+                payload.authentication.api_key = {
+                    param_name: user.authentication.apiKey.paramName,
+                    in: user.authentication.apiKey.in,
+                    verification_value: user.authentication.apiKey.verificationValue
+                };
+            }
+            if (user.authentication.basicAuth) {
+                payload.authentication.basic_auth = {
+                    username: user.authentication.basicAuth.username,
+                    password_hash: user.authentication.basicAuth.passwordHash
+                };
+            }
+        }
+
         const res = await fetchWithAuth('/api/v1/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user }) // Wrapper expected by AdminRPC? Request is CreateUserRequest { user: User }
+            body: JSON.stringify({ user: payload })
         });
         if (!res.ok) throw new Error('Failed to create user');
         return res.json();
@@ -1434,10 +1467,34 @@ export const apiClient = {
      * @returns A promise that resolves to the updated user.
      */
     updateUser: async (user: any) => {
+        // Map camelCase to snake_case
+        const payload: any = {
+            id: user.id,
+            roles: user.roles,
+            profile_ids: user.profileIds
+        };
+
+        if (user.authentication) {
+            payload.authentication = {};
+            if (user.authentication.apiKey) {
+                payload.authentication.api_key = {
+                    param_name: user.authentication.apiKey.paramName,
+                    in: user.authentication.apiKey.in,
+                    verification_value: user.authentication.apiKey.verificationValue
+                };
+            }
+            if (user.authentication.basicAuth) {
+                payload.authentication.basic_auth = {
+                    username: user.authentication.basicAuth.username,
+                    password_hash: user.authentication.basicAuth.passwordHash
+                };
+            }
+        }
+
          const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user })
+            body: JSON.stringify({ user: payload })
         });
         if (!res.ok) throw new Error('Failed to update user');
         return res.json();
