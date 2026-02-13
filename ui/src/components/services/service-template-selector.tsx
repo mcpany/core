@@ -5,12 +5,13 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
-import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
+import { useState, useMemo, useEffect } from "react";
+import { ServiceTemplate } from "@/lib/templates";
+import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star } from "lucide-react";
+import { Search, Star, Loader2 } from "lucide-react";
 
 interface ServiceTemplateSelectorProps {
   onSelect: (template: ServiceTemplate) => void;
@@ -30,9 +31,24 @@ const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Clou
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [templates, setTemplates] = useState<ServiceTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient.getServiceTemplates()
+      .then((data) => {
+        setTemplates(data as unknown as ServiceTemplate[]);
+      })
+      .catch((err) => {
+        console.error("Failed to load templates", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const filteredTemplates = useMemo(() => {
-    return SERVICE_TEMPLATES.filter((template) => {
+    return templates.filter((template) => {
       const matchesCategory = selectedCategory === "All" || template.category === selectedCategory;
       const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             template.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -43,7 +59,15 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
         if (!a.featured && b.featured) return 1;
         return a.name.localeCompare(b.name);
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, templates]);
+
+  if (loading) {
+      return (
+          <div className="flex h-64 items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+      );
+  }
 
   return (
     <div className="space-y-4 p-1">

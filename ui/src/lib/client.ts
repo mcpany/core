@@ -20,6 +20,27 @@ import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
+import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2, Calendar } from "lucide-react";
+
+// Icon mapping for templates
+const ICON_MAP: Record<string, any> = {
+    "database": Database,
+    "folder": FileText,
+    "github": Github,
+    "globe": Globe,
+    "server": Server,
+    "activity": Activity,
+    "cloud": Cloud,
+    "message-square": MessageSquare,
+    "map": Map,
+    "clock": Clock,
+    "zap": Zap,
+    "check-circle-2": CheckCircle2,
+    "calendar": Calendar,
+    "linear": CheckCircle2,
+    "slack": MessageSquare,
+    "default": Server
+};
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
@@ -217,6 +238,67 @@ const getMetadata = () => {
     // If we use that, the middleware WILL run and inject the header!
     return undefined;
 };
+
+// Helper to infer auth type from config
+function inferAuthType(config: any): string | undefined {
+    if (!config || !config.upstream_auth) return undefined;
+    if (config.upstream_auth.oauth2) return "oauth2";
+    if (config.upstream_auth.api_key) return "apiKey";
+    if (config.upstream_auth.bearer_token) return "token";
+    return "custom";
+}
+
+function findPathForToken(obj: any, token: string, currentPath: string = ""): string | null {
+    if (typeof obj === 'string') {
+        if (obj.includes(token)) return currentPath;
+        return null;
+    }
+    if (typeof obj === 'object' && obj !== null) {
+        for (const key in obj) {
+            // Convert snake_case keys to camelCase for path construction if needed,
+            // BUT applyValueToConfig recursively splits by dot and matches keys.
+            // If the object structure here matches what applyValueToConfig traverses, we are good.
+            // We are traversing the snake_case object here.
+            // But the wizard applies to the camelCase object (in client.ts).
+            // So we need to return the camelCase path!
+
+            // Simple camelCase converter
+            const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+            const newPath = currentPath ? `${currentPath}.${camelKey}` : camelKey;
+
+            const found = findPathForToken(obj[key], token, newPath);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
+// Helper to generate fields from schema
+function generateFieldsFromSchema(schemaStr: string, config: any): any[] {
+    if (!schemaStr) return [];
+    try {
+        const schema = JSON.parse(schemaStr);
+        if (!schema.properties) return [];
+
+        return Object.keys(schema.properties).map(key => {
+            const prop = schema.properties[key];
+            const token = "${" + key + "}";
+            // Find where this token is used in the config
+            const path = findPathForToken(config, token);
+
+            return {
+                name: key,
+                label: prop.title || key,
+                placeholder: prop.description || "",
+                type: prop.format === "password" ? "password" : "text",
+                key: path || key, // Fallback to key if path not found
+                replaceToken: token
+            };
+        });
+    } catch (e) {
+        return [];
+    }
+}
 
 /**
  * API Client for interacting with the MCP Any server.
@@ -844,72 +926,46 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
+     * Fetches real templates from the backend API.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
-                serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
-                    }
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch service templates');
+        const data = await res.json();
+
+        // Map backend proto objects to UI expected format
+        return data.map((t: any) => {
+            const rawConfig = t.service_config || {};
+            // Generate fields from schema if available
+            const fields = t.service_config?.configuration_schema
+                ? generateFieldsFromSchema(t.service_config.configuration_schema, rawConfig)
+                : undefined;
+
+            return {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: ICON_MAP[t.icon] || ICON_MAP["default"],
+                tags: t.tags || [],
+                authType: inferAuthType(rawConfig),
+                fields: fields,
+                category: "General", // Default category, could be inferred from tags
+                config: { // UI uses 'config' property, not 'serviceConfig' in ServiceTemplate interface (see templates.ts)
+                    ...rawConfig,
+                    // Map snake_case keys to camelCase for UI consumption
+                    upstreamAuth: rawConfig.upstream_auth,
+                    openapiService: rawConfig.openapi_service,
+                    mcpService: rawConfig.mcp_service,
+                    httpService: rawConfig.http_service,
+                    commandLineService: rawConfig.command_line_service,
+                    filesystemService: rawConfig.filesystem_service,
+                    sqlService: rawConfig.sql_service,
+
+                    // Recursive mapping might be needed for deeper fields if UI accesses them directly.
+                    // For now, top-level service config blocks are most critical.
                 }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
-                }
-            }
-        ];
+            };
+        });
     },
 
     /**

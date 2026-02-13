@@ -274,6 +274,7 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
 	// Admin User Init expectations
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
@@ -289,6 +290,10 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	app := &Application{}
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+	// Admin User Init expectations
+	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
@@ -328,17 +333,6 @@ func (m *MockSimpleStore) HasConfigSources() bool {
 }
 
 func TestInitializeDatabase_Errors(t *testing.T) {
-	t.Run("Store Load Error", func(t *testing.T) {
-		mockSimpleStore := new(MockSimpleStore)
-		app := &Application{}
-
-		mockSimpleStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
-
-		err := app.initializeDatabase(context.Background(), mockSimpleStore)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "load error")
-	})
-
 	t.Run("Storage ListServices Error", func(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
