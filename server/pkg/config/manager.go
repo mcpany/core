@@ -59,19 +59,17 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
 	}
+	// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets
+	// Use NewSafeHTTPClient to ensure environment variables for loopback/private access are respected.
 	return &UpstreamServiceManager{
 		log:                     logging.GetLogger().With("component", "UpstreamServiceManager"),
 		services:                make(map[string]*configv1.UpstreamServiceConfig),
 		servicePriorities:       make(map[string]int32),
 		profileServiceOverrides: make(map[string]*configv1.ProfileServiceConfig),
 		profileSecrets:          make(map[string]*configv1.SecretValue),
-		httpClient: &http.Client{
-			Transport: &http.Transport{
-				DialContext: util.SafeDialContext,
-			},
-		},
-		newGitHub:       NewGitHub,
-		enabledProfiles: enabledProfiles,
+		httpClient:              util.NewSafeHTTPClient(),
+		newGitHub:               NewGitHub,
+		enabledProfiles:         enabledProfiles,
 	}
 }
 
