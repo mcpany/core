@@ -3,16 +3,89 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { test, expect, APIRequestContext, request } from '@playwright/test';
+import { seedUser, cleanupUser } from './e2e/test-data';
+
+const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
+const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+const HEADERS = { 'X-API-Key': API_KEY };
+
+// Unique IDs for this test file to avoid conflicts
+const PAYMENT_SVC_ID = "svc_tools_payment";
+const PAYMENT_SVC_NAME = "Payment Gateway Tools";
+const PAYMENT_TOOL_NAME = "process_payment_tools";
+
+const ECHO_SVC_ID = "svc_tools_echo";
+const ECHO_SVC_NAME = "Echo Service Tools";
+const ECHO_TOOL_NAME = "echo_tool_tools";
+
+const seedIsolatedServices = async (requestContext: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const services = [
+        {
+            id: PAYMENT_SVC_ID,
+            name: PAYMENT_SVC_NAME,
+            version: "v1.2.0",
+            http_service: {
+                address: "https://stripe.com",
+                tools: [
+                    { name: PAYMENT_TOOL_NAME, description: "Process a payment isolated" }
+                ]
+            }
+        },
+        {
+            id: ECHO_SVC_ID,
+            name: ECHO_SVC_NAME,
+            version: "v1.0",
+            command_line_service: {
+                command: "/bin/echo",
+                tools: [
+                    {
+                        name: ECHO_TOOL_NAME,
+                        description: "Echoes back input isolated",
+                        inputSchema: { type: "object" },
+                        call_id: "echo_call"
+                    }
+                ],
+                calls: {
+                    echo_call: {
+                        args: ["echoed_output"]
+                    }
+                }
+            }
+        }
+    ];
+
+    for (const svc of services) {
+        try {
+            // First delete if exists (defensive)
+            await context.delete(`/api/v1/services/${svc.name}`, { headers: HEADERS });
+        } catch (e) {}
+
+        try {
+            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed isolated service ${svc.name}: ${e}`);
+        }
+    }
+};
+
+const cleanupIsolatedServices = async (requestContext: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete(`/api/v1/services/${PAYMENT_SVC_NAME}`, { headers: HEADERS });
+        await context.delete(`/api/v1/services/${ECHO_SVC_NAME}`, { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup isolated services: ${e}`);
+    }
+};
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        // Ensure clean state before seeding to avoid conflict with other tests (e.g. service-diff renaming)
-        await cleanupServices(request);
-        await seedServices(request);
+        await cleanupIsolatedServices(request);
+        await seedIsolatedServices(request);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -24,7 +97,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        await cleanupIsolatedServices(request);
         await cleanupUser(request, "e2e-tools-admin");
     });
 
@@ -33,14 +106,13 @@ test.describe('Tool Exploration', () => {
 
         // Backend registration is async (worker-based), so we might need to reload if not immediately visible.
         // The UI fetches once on mount.
-        // Note: The UI tool table displays the service ID ('svc_echo'), not the friendly name ('Echo Service').
+        // Note: The UI tool table displays the service ID, not the friendly name.
         let found = false;
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
-                // Check for Payment Gateway first (svc_01) to verify generic seeding works
-                // Use a slightly longer timeout per attempt
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                // Check for Payment Gateway tool
+                await expect(page.getByText(PAYMENT_TOOL_NAME).first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
@@ -53,18 +125,18 @@ test.describe('Tool Exploration', () => {
         }
 
         // Verify Payment Gateway tool is visible
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(PAYMENT_TOOL_NAME).first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
-        // We use a regex to handle potential service name prefixes (e.g. "Echo Service.echo_tool")
+        // We use a regex to handle potential service name prefixes
         try {
-            await expect(page.getByText(/echo_tool/).first()).toBeVisible({ timeout: 20000 });
+            await expect(page.getByText(new RegExp(ECHO_TOOL_NAME)).first()).toBeVisible({ timeout: 20000 });
         } catch (e) {
             console.log('Echo tool not found. Page content:', await page.content());
             throw e;
         }
-        await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 20000 });
+        await expect(page.getByText('Echoes back input isolated').first()).toBeVisible({ timeout: 20000 });
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
@@ -73,7 +145,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(PAYMENT_TOOL_NAME).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -81,13 +153,13 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(PAYMENT_TOOL_NAME).first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: new RegExp(ECHO_TOOL_NAME) });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
-        await expect(page.getByText('Echoes back input').first()).toBeVisible();
+        await expect(page.getByText('Echoes back input isolated').first()).toBeVisible();
         await expect(page.getByText('Test & Execute').first()).toBeVisible();
     });
 
@@ -97,7 +169,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(PAYMENT_TOOL_NAME).first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -105,9 +177,9 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText(PAYMENT_TOOL_NAME).first()).toBeVisible({ timeout: 10000 });
 
-        const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        const toolRow = page.locator('tr').filter({ hasText: new RegExp(ECHO_TOOL_NAME) });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         // Switch to JSON input tab
@@ -121,31 +193,11 @@ test.describe('Tool Exploration', () => {
         await page.getByRole('button', { name: 'Execute' }).click();
 
         // Verify result
-        // If the server supports "dumb echo", it might return the output.
-        // If it fails, the UI shows the error.
-        // We check for EITHER success (output) OR failure (error message),
-        // proving that we hit the REAL backend.
-        // If we were mocking, we wouldn't see a real backend error.
-
         const outputArea = page.locator('pre.text-green-600, pre.text-green-400');
-        // We accept that execution might fail if 'echo' isn't fully configured as an MCP server,
-        // but seeing the error proves we talked to the backend.
-        // Ideally we want success.
 
-        // Wait for *some* result (success or error)
-        // Error would likely be in red text or an alert.
-        // But let's check for the successful outcome first.
         try {
             await expect(outputArea).toBeVisible({ timeout: 5000 });
         } catch (e) {
-            // If success not visible, check for error
-            // Error usually shown in the same area but maybe red?
-            // The ToolInspector code says: setOutput(`Error: ${e.message}`);
-            // And displays it in the same pre block?
-            // <pre className="text-xs text-green-600 dark:text-green-400 font-mono">{output}</pre>
-            // Wait, looking at ToolInspector code:
-            // setOutput(`Error: ${e.message}`);
-            // So it will be in the same pre tag, just with "Error: " prefix.
             const errorArea = page.getByText(/Error:/);
             await expect(errorArea).toBeVisible({ timeout: 5000 });
         }
