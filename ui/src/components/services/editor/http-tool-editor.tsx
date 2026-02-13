@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolDefinition } from "@proto/config/v1/tool";
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType, ParameterLocation } from "@proto/config/v1/call";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -172,6 +172,25 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                 />
                             </div>
                             <div className="col-span-3 space-y-2">
+                                <Label htmlFor={`param-loc-${index}`}>Location</Label>
+                                <Select
+                                    value={param.location?.toString() || ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}
+                                    onValueChange={(val) => updateParameter(index, { location: parseInt(val) })}
+                                >
+                                    <SelectTrigger id={`param-loc-${index}`}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}>Auto (Path/Query)</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_QUERY.toString()}>Query</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_HEADER.toString()}>Header</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_PATH.toString()}>Path</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_COOKIE.toString()}>Cookie</SelectItem>
+                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_BODY.toString()}>Body</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="col-span-3 space-y-2">
                                 <Label htmlFor={`param-type-${index}`}>Type</Label>
                                 <Select
                                     value={param.schema?.type.toString()}
@@ -188,7 +207,14 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="col-span-4 space-y-2">
+                            <div className="col-span-3 flex items-center pt-8 space-x-2">
+                                <Switch
+                                    checked={param.schema?.isRequired}
+                                    onCheckedChange={(checked) => updateParameterSchema(index, { isRequired: checked })}
+                                />
+                                <Label className="text-xs">Required</Label>
+                            </div>
+                            <div className="col-span-12 space-y-2">
                                 <Label htmlFor={`param-desc-${index}`}>Description</Label>
                                 <Input
                                     id={`param-desc-${index}`}
@@ -196,13 +222,6 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                     onChange={(e) => updateParameterSchema(index, { description: e.target.value })}
                                     placeholder="The ID of the user"
                                 />
-                            </div>
-                            <div className="col-span-2 flex items-center justify-center pt-8 space-x-2">
-                                <Switch
-                                    checked={param.schema?.isRequired}
-                                    onCheckedChange={(checked) => updateParameterSchema(index, { isRequired: checked })}
-                                />
-                                <Label className="text-xs">Required</Label>
                             </div>
                         </CardContent>
                     </Card>
