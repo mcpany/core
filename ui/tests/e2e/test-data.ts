@@ -36,7 +36,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         },
         // Add a service with calculator for existing test compatibility if desired
         {
-            id: "svc_03",
+            id: "svc_math_01",
             name: "MathService",
             version: "v1.0",
             http_service: {

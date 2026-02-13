@@ -77,6 +77,7 @@ audit: build-test-docker build-server-docker
 test-ci: clean-test-results build-test-docker
 	mkdir -p test-results .audit ../build/playwright-report
 	chmod -R 777 test-results .audit ../build/playwright-report || true
+	docker compose -f ./docker-compose.test.yml down -v --remove-orphans || true
 	PLAYWRIGHT_ARGS="$(PLAYWRIGHT_ARGS)" docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
