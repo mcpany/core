@@ -348,3 +348,51 @@ func TestSentinelRCE_NodeExecSync(t *testing.T) {
 	assert.Contains(t, err.Error(), "interpreter injection detected")
 	assert.Contains(t, err.Error(), "require")
 }
+
+func TestSentinelRCE_PHPCommentInjection(t *testing.T) {
+	// Setup a PHP tool vulnerable to injection via argument substitution
+	toolProto := &v1.Tool{}
+	toolProto.SetName("php_eval_repro")
+
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("php"),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-r", "eval(\"{{input}}\");"}, // Vulnerable context: double quotes
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("input"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	tool := NewLocalCommandTool(toolProto, svc, callDef, nil, "test-call")
+
+	// Payload that attempts to bypass checkInterpreterFunctionCalls
+	// It uses a comment '#' to break the adjacency of 'system' and '('
+	// This payload is: system # comment \n ('ls')
+	// The newline is critical for PHP comment syntax to end the comment.
+	payload := "system # comment\n('ls')"
+
+	inputs := map[string]interface{}{
+		"input": payload,
+	}
+	inputsBytes, _ := json.Marshal(inputs)
+
+	req := &ExecutionRequest{
+		ToolName:   "php_eval_repro",
+		ToolInputs: inputsBytes,
+		DryRun:     true,
+	}
+
+	// Execute the tool
+	_, err := tool.Execute(context.Background(), req)
+
+	// Assert that it is blocked
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "interpreter injection detected")
+	assert.Contains(t, err.Error(), "system")
+}

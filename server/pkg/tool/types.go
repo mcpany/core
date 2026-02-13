@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -2936,13 +2937,99 @@ func checkForShellInjection(val string, template string, placeholder string, com
 
 func checkInterpreterFunctionCalls(val string) error {
 	// Normalize value to detect obfuscation (e.g. system ( ) )
+	// Sentinel Security Update: Strip comments to prevent bypass (e.g. system # comment ( ... ))
+
 	var b strings.Builder
 	b.Grow(len(val))
-	for _, r := range val {
+
+	const (
+		StateNormal = iota
+		StateHashComment
+		StateSlashSlashComment
+		StateSlashStarComment
+		StateDashDashComment
+	)
+
+	state := StateNormal
+
+	for i := 0; i < len(val); i++ {
+		ch := val[i]
+
+		switch state {
+		case StateHashComment:
+			if ch == '\n' || ch == '\r' {
+				state = StateNormal
+			}
+			continue
+		case StateSlashSlashComment:
+			if ch == '\n' || ch == '\r' {
+				state = StateNormal
+			}
+			continue
+		case StateDashDashComment:
+			if ch == '\n' || ch == '\r' {
+				state = StateNormal
+			}
+			continue
+		case StateSlashStarComment:
+			if ch == '*' && i+1 < len(val) && val[i+1] == '/' {
+				state = StateNormal
+				i++
+			}
+			continue
+		}
+
+		// StateNormal
+
+		// Check for comment starts
+		// We prioritize comment detection over character accumulation
+		if ch == '#' {
+			state = StateHashComment
+			continue
+		}
+		if ch == '/' {
+			if i+1 < len(val) {
+				if val[i+1] == '/' {
+					state = StateSlashSlashComment
+					i++
+					continue
+				}
+				if val[i+1] == '*' {
+					state = StateSlashStarComment
+					i++
+					continue
+				}
+			}
+		}
+		if ch == '-' {
+			if i+1 < len(val) && val[i+1] == '-' {
+				state = StateDashDashComment
+				i++
+				continue
+			}
+		}
+
+		// Not a comment char, verify if it's space
+		// Fast path for ASCII non-space
+		if ch > 32 && ch < 127 {
+			b.WriteByte(ch)
+			continue
+		}
+
+		// If ch <= 32, it IS space (or control), so skip.
+		if ch <= 32 {
+			continue
+		}
+
+		// If ch >= 127, it might be unicode space or unicode char.
+		r, w := utf8.DecodeRuneInString(val[i:])
 		if !unicode.IsSpace(r) {
 			b.WriteRune(r)
 		}
+		// Adjust i for consumed bytes (loop increments by 1)
+		i += w - 1
 	}
+
 	cleanVal := strings.ToLower(b.String())
 
 	dangerousKeywords := []string{
