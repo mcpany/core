@@ -2754,10 +2754,16 @@ func TestRun_WithListenAddress(t *testing.T) {
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
 	}()
 
-	time.Sleep(100 * time.Millisecond)
+	// Wait for startup instead of arbitrary sleep
+	require.NoError(t, app.WaitForStartup(ctx))
+
 	cancel()
-	err := <-errChan
-	assert.NoError(t, err)
+	select {
+	case err := <-errChan:
+		assert.NoError(t, err)
+	case <-time.After(2 * time.Second):
+		t.Fatal("Timeout waiting for server shutdown")
+	}
 }
 
 func TestUploadFile_TempDirFail(t *testing.T) {

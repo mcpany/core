@@ -214,45 +214,49 @@ func (u *Upstream) Register(
 
 	// Verify that the upstream is reachable.
 	// This is a startup check to warn the user if the service configuration is incorrect or the service is down.
-	if err := util.CheckConnection(ctx, address); err != nil {
-		// Track 1: Friction Fighter - Automated Diagnosis
-		// If basic connectivity fails, we run a full Doctor check to give actionable advice.
-		log.Warn("⚠️  Upstream service appears unreachable. Running diagnostic...", "service", serviceConfig.GetName())
-		diagnosis := doctor.CheckService(ctx, serviceConfig)
+	// ⚡ Bolt: Allow disabling this check via environment variable to speed up startup in dev/test environments
+	// where upstream services might be lazily loaded or mocked.
+	if !util.IsEnvTrue("MCPANY_SKIP_STARTUP_HEALTH_CHECK") {
+		if err := util.CheckConnection(ctx, address); err != nil {
+			// Track 1: Friction Fighter - Automated Diagnosis
+			// If basic connectivity fails, we run a full Doctor check to give actionable advice.
+			log.Warn("⚠️  Upstream service appears unreachable. Running diagnostic...", "service", serviceConfig.GetName())
+			diagnosis := doctor.CheckService(ctx, serviceConfig)
 
-		// Format the diagnosis box
-		border := strings.Repeat("-", 60)
-		var msg string
-		if diagnosis.Status == doctor.StatusOk {
-			// Transient failure that recovered
-			msg = fmt.Sprintf("\n%s\nCONNECTION FLAPPING: %s\n%s\nStatus:  %s\nDetails: %s\n%s\n",
-				border,
-				serviceConfig.GetName(),
-				border,
-				"RECOVERED",
-				"Connection succeeded during diagnostic check (transient failure).",
-				border,
+			// Format the diagnosis box
+			border := strings.Repeat("-", 60)
+			var msg string
+			if diagnosis.Status == doctor.StatusOk {
+				// Transient failure that recovered
+				msg = fmt.Sprintf("\n%s\nCONNECTION FLAPPING: %s\n%s\nStatus:  %s\nDetails: %s\n%s\n",
+					border,
+					serviceConfig.GetName(),
+					border,
+					"RECOVERED",
+					"Connection succeeded during diagnostic check (transient failure).",
+					border,
+				)
+				log.Warn(msg)
+			} else {
+				// Confirmed failure
+				msg = fmt.Sprintf("\n%s\nFAILED TO CONNECT: %s\n%s\nStatus:  %s\nDetails: %s\nError:   %v\n%s\n",
+					border,
+					serviceConfig.GetName(),
+					border,
+					diagnosis.Status,
+					diagnosis.Message,
+					diagnosis.Error,
+					border,
+				)
+				// We log as Error to make it stand out, even though we continue startup
+				log.Error(msg)
+			}
+
+			log.Warn("Tools will still be registered but will likely fail at runtime.",
+				"service", serviceConfig.GetName(),
+				"address", address,
 			)
-			log.Warn(msg)
-		} else {
-			// Confirmed failure
-			msg = fmt.Sprintf("\n%s\nFAILED TO CONNECT: %s\n%s\nStatus:  %s\nDetails: %s\nError:   %v\n%s\n",
-				border,
-				serviceConfig.GetName(),
-				border,
-				diagnosis.Status,
-				diagnosis.Message,
-				diagnosis.Error,
-				border,
-			)
-			// We log as Error to make it stand out, even though we continue startup
-			log.Error(msg)
 		}
-
-		log.Warn("Tools will still be registered but will likely fail at runtime.",
-			"service", serviceConfig.GetName(),
-			"address", address,
-		)
 	}
 
 	// Auto-discovery of tools from calls

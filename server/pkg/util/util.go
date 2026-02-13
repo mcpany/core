@@ -276,9 +276,12 @@ func init() {
 const TrueStr = "true"
 
 // IsEnvTrue checks if an environment variable is set to a truthy value.
-// It accepts "true", "TRUE", "True", "1".
+// It accepts "true", "TRUE", "True", "1", and handles quoted values like "'true'".
 func IsEnvTrue(key string) bool {
-	val := strings.ToLower(strings.TrimSpace(os.Getenv(key)))
+	val := strings.TrimSpace(os.Getenv(key))
+	// Handle single or double quotes
+	val = strings.Trim(val, "'\"")
+	val = strings.ToLower(val)
 	return val == "true" || val == "1"
 }
 
