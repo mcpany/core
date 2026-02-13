@@ -52,9 +52,6 @@ test.describe('Tool Exploration', () => {
 
         // Verify Payment Gateway tool is visible
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
-
-        // We do NOT check for echo_tool anymore as it seems unreliable in CI.
-        // Instead we rely on process_payment which is proven to be registered.
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
