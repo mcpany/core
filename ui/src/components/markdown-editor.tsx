@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import * as React from "react";
@@ -17,6 +22,16 @@ interface MarkdownEditorProps {
   className?: string;
 }
 
+/**
+ * MarkdownEditor component.
+ * Provides a text editor with markdown preview capabilities.
+ * @param props - The component props.
+ * @param props.value - The markdown content.
+ * @param props.onChange - Callback when content changes.
+ * @param props.placeholder - Placeholder text.
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered component.
+ */
 export function MarkdownEditor({ value, onChange, placeholder, className }: MarkdownEditorProps) {
   const [activeTab, setActiveTab] = React.useState("edit");
 

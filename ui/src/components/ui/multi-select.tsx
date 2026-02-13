@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import * as React from "react";
@@ -15,6 +20,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Option type for MultiSelect.
+ */
 export interface Option {
   label: string;
   value: string;
@@ -29,6 +37,17 @@ interface MultiSelectProps {
   className?: string;
 }
 
+/**
+ * MultiSelect component.
+ * Allows selecting multiple items from a list with search and chips.
+ * @param props - The component props.
+ * @param props.options - List of options to select from.
+ * @param props.selected - List of currently selected values.
+ * @param props.onChange - Callback when selection changes.
+ * @param props.placeholder - Placeholder text.
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered component.
+ */
 export function MultiSelect({
   options,
   selected,
