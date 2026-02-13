@@ -496,23 +496,43 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //   - string: The redacted DSN string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
-	if err == nil && u.User != nil {
-		if _, hasPassword := u.User.Password(); hasPassword {
-			u.User = url.UserPassword(u.User.Username(), redactedPlaceholder)
-			// url.String() encodes the placeholder, e.g. [REDACTED] -> %5BREDACTED%5D
-			// We decode it back to keep it readable, as standard loggers often prefer readable placeholders.
-			// However, a simple string replace is safer than query unescaping the whole string.
-			s := u.String()
-			// Replace URL encoded placeholder with readable one.
-			// Note: [ is %5B and ] is %5D
-			// We do string replacement.
-			encodedPlaceholder := "%5BREDACTED%5D"
-			// Replace all occurrences of the encoded placeholder with the readable one
-			return strings.Replace(s, encodedPlaceholder, redactedPlaceholder, 1)
+	if err == nil {
+		// Sentinel Security Update: Redact sensitive query parameters
+		q := u.Query()
+		hasChanges := false
+		for k := range q {
+			if IsSensitiveKey(k) {
+				q.Set(k, redactedPlaceholder)
+				hasChanges = true
+			}
 		}
-		// If parsed successfully AND found User but no password, we trust the parser.
-		// This handles cases like mysql://user@host correctly (don't fallback to regex).
-		return dsn
+		if hasChanges {
+			u.RawQuery = q.Encode()
+			// Replace URL encoded placeholder with readable one in query params
+			// This makes logs more readable: ?password=[REDACTED] instead of ?password=%5BREDACTED%5D
+			// Note: This replaces ALL occurrences in query string which is safe as [REDACTED] is unique
+			u.RawQuery = strings.ReplaceAll(u.RawQuery, "%5BREDACTED%5D", redactedPlaceholder)
+			dsn = u.String()
+		}
+
+		if u.User != nil {
+			if _, hasPassword := u.User.Password(); hasPassword {
+				u.User = url.UserPassword(u.User.Username(), redactedPlaceholder)
+				// url.String() encodes the placeholder, e.g. [REDACTED] -> %5BREDACTED%5D
+				// We decode it back to keep it readable, as standard loggers often prefer readable placeholders.
+				// However, a simple string replace is safer than query unescaping the whole string.
+				s := u.String()
+				// Replace URL encoded placeholder with readable one.
+				// Note: [ is %5B and ] is %5D
+				// We do string replacement.
+				encodedPlaceholder := "%5BREDACTED%5D"
+				// Replace all occurrences of the encoded placeholder with the readable one
+				return strings.Replace(s, encodedPlaceholder, redactedPlaceholder, 1)
+			}
+			// If parsed successfully AND found User but no password, we trust the parser.
+			// This handles cases like mysql://user@host correctly (don't fallback to regex).
+			return dsn
+		}
 	}
 
 	// If parsed successfully but no User info found, check for known non-DSN schemes.
@@ -531,6 +551,28 @@ func RedactDSN(dsn string) string {
 		// the credentials are hiding in the path (e.g. "scheme:/pass@host").
 		if u.Opaque == "" && u.Host != "" && !strings.Contains(u.Host, "@") {
 			return dsn
+		}
+	}
+
+	// Sentinel Security Update: Redact query parameters in fallback mode (e.g. invalid URL)
+	if idx := strings.LastIndex(dsn, "?"); idx != -1 && idx < len(dsn)-1 {
+		queryStr := dsn[idx+1:]
+		if strings.Contains(queryStr, "=") {
+			values, err := url.ParseQuery(queryStr)
+			if err == nil {
+				hasChanges := false
+				for k := range values {
+					if IsSensitiveKey(k) {
+						values.Set(k, redactedPlaceholder)
+						hasChanges = true
+					}
+				}
+				if hasChanges {
+					encoded := values.Encode()
+					encoded = strings.ReplaceAll(encoded, "%5BREDACTED%5D", redactedPlaceholder)
+					dsn = dsn[:idx+1] + encoded
+				}
+			}
 		}
 	}
 
