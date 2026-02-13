@@ -662,7 +662,7 @@ endif
 
 # Target to run the UI Docker smoke test
 # Target to build UI Docker image (wrapper for CI)
-docker-build-ui:
+docker-build-ui: gen
 	$(MAKE) -C ../ui docker-build-ui
 
 docker-smoke-test-ui:
@@ -692,7 +692,7 @@ endif
 
 BUILD_CONTEXT_DIR := .build-context
 
-prepare-docker-context:
+prepare-docker-context: gen
 	@echo "Preparing build context..."
 	@rm -rf $(BUILD_CONTEXT_DIR)
 	@mkdir -p $(BUILD_CONTEXT_DIR)/core
