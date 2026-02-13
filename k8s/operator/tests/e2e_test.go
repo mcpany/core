@@ -137,7 +137,7 @@ nodes:
 		"--set", "ui.apiKey=test-token",
 		"--set", "apiKey=test-token",
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
-		"--set", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
+		"--set-string", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
