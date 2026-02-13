@@ -19,7 +19,12 @@ export function middleware(request: NextRequest) {
   // console.log(`[Middleware] Processing ${pathname}`);
   if (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/') || pathname.startsWith('/sse') || pathname.startsWith('/messages') || pathname.startsWith('/mcp/')) {
     // Dynamic Proxying via Middleware to avoid build-time baking of BACKEND_URL
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
+    // In CI (Docker Compose), the backend is at http://server:50050, not localhost.
+    let defaultBackend = 'http://localhost:50050';
+    if (process.env.CI) {
+        defaultBackend = 'http://server:50050';
+    }
+    const backendUrl = process.env.BACKEND_URL || defaultBackend;
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
     // Inject API Key for backend authentication
