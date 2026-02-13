@@ -64,11 +64,15 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 		entries = entries[1:]
 	}
 
+	// ⚡ BOLT: Normalize vector on insertion to optimize search speed.
+	// Randomized Selection from Top 5 High-Impact Targets
+	normalizedVector, _ := normalize(vector)
+
 	entry := &VectorEntry{
-		Vector:    vector,
+		Vector:    normalizedVector,
 		Result:    result,
 		ExpiresAt: time.Now().Add(ttl),
-		Norm:      vectorNorm(vector),
+		Norm:      1.0, // Pre-normalized
 	}
 	s.items[key] = append(entries, entry)
 	return nil
@@ -97,13 +101,17 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	now := time.Now()
 	var bestResult any
 	var bestScore float32 = -1.0
-	queryNorm := vectorNorm(query)
+	// ⚡ BOLT: Normalize query vector once to enable dot product optimization
+	// Randomized Selection from Top 5 High-Impact Targets
+	normalizedQuery, _ := normalize(query)
 
 	for _, entry := range entries {
 		if now.After(entry.ExpiresAt) {
 			continue
 		}
-		score := cosineSimilarityOptimized(query, entry.Vector, queryNorm, entry.Norm)
+		// entry.Vector is already normalized (Norm=1.0).
+		// We use simple dot product.
+		score := dotProduct(normalizedQuery, entry.Vector)
 		if score > bestScore {
 			bestScore = score
 			bestResult = entry.Result
@@ -156,11 +164,22 @@ func vectorNorm(v []float32) float32 {
 	return float32(math.Sqrt(float64(sum)))
 }
 
-func cosineSimilarityOptimized(a, b []float32, normA, normB float32) float32 {
-	if len(a) != len(b) || len(a) == 0 {
-		return 0
+func normalize(v []float32) ([]float32, float32) {
+	norm := vectorNorm(v)
+	if norm == 0 {
+		// Return copy of zero vector to avoid mutating original if we were mutating in place (we aren't, but safety)
+		// Or just return v if we treat it as immutable
+		return append([]float32(nil), v...), 0
 	}
-	if normA == 0 || normB == 0 {
+	normalized := make([]float32, len(v))
+	for i, x := range v {
+		normalized[i] = x / norm
+	}
+	return normalized, norm
+}
+
+func dotProduct(a, b []float32) float32 {
+	if len(a) != len(b) || len(a) == 0 {
 		return 0
 	}
 
@@ -168,5 +187,5 @@ func cosineSimilarityOptimized(a, b []float32, normA, normB float32) float32 {
 	for i := range a {
 		dotProduct += a[i] * b[i]
 	}
-	return dotProduct / (normA * normB)
+	return dotProduct
 }
