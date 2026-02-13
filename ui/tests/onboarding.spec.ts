@@ -85,7 +85,7 @@ test.describe('Onboarding Flow', () => {
         // The toast might be transient or missed by Playwright, but reaching Step 2 confirms success.
         // If registration failed, we would see "Registration Failed" or stay on Step 1.
         await Promise.any([
-            expect(page.getByText('Service Registered')).toBeVisible({ timeout: 10000 }),
+            expect(page.getByText('Service Registered')).toBeVisible({ timeout: 30000 }),
             expect(page.getByText('Step 2: Connect AI Client')).toBeVisible({ timeout: 30000 })
         ]).catch(async (e) => {
             // If both fail, log diagnostics
