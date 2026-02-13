@@ -172,10 +172,10 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if strings.EqualFold(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES"), TrueStr) {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if strings.EqualFold(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"), TrueStr) {
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
@@ -234,16 +234,16 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if strings.EqualFold(os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"), TrueStr) {
 		dialer.AllowLoopback = true
 		dialer.AllowPrivate = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if strings.EqualFold(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES"), TrueStr) {
 		dialer.AllowLoopback = true
 	}
 
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if strings.EqualFold(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"), TrueStr) {
 		dialer.AllowPrivate = true
 	}
 
