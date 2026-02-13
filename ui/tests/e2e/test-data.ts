@@ -16,8 +16,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            // Use command_line_service to ensure tools are registered without network dependency in CI
+            command_line_service: {
+                command: "echo",
+                args: ["mock"],
                 tools: [
                     { name: "process_payment", description: "Process a payment" }
                 ]
@@ -27,20 +29,23 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://example.com", // Valid dummy address to avoid SSRF localhost blocks in CI
+            // Use command_line_service to ensure tools are registered without network dependency in CI
+            command_line_service: {
+                command: "echo",
+                args: ["mock"],
                 tools: [
                      { name: "get_user", description: "Get user details" }
                 ]
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://example.org", // Valid dummy address
+            // Use command_line_service to ensure tools are registered without network dependency in CI
+            command_line_service: {
+                command: "echo",
+                args: ["mock"],
                 tools: [
                     { name: "calculator", description: "calc" }
                 ]
