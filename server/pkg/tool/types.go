@@ -1862,9 +1862,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
-					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+					// If running a shell or interpreter, validate that inputs are safe
+					cmd := t.service.GetCommand()
+					if isShellCommand(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -1897,8 +1898,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+						cmd := t.service.GetCommand()
+						if isShellCommand(cmd) {
+							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -1911,6 +1913,17 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
 			delete(inputs, "args")
+		}
+	}
+
+	// Sentinel Security Update: Block git ext:: protocol
+	// We check this after all argument substitutions to capture injected protocols.
+	if filepath.Base(t.service.GetCommand()) == "git" {
+		for _, arg := range args {
+			// Check for ext:: in arguments (potentially hidden in options or URLs)
+			if strings.Contains(arg, "ext::") {
+				return nil, fmt.Errorf("git ext:: protocol is not allowed")
+			}
 		}
 	}
 
@@ -2181,9 +2194,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
-					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+					// If running a shell or interpreter, validate that inputs are safe
+					cmd := t.service.GetCommand()
+					if isShellCommand(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2232,6 +2246,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
 			delete(inputs, "args")
+		}
+	}
+
+	// Sentinel Security Update: Block git ext:: protocol
+	if filepath.Base(t.service.GetCommand()) == "git" {
+		for _, arg := range args {
+			if strings.Contains(arg, "ext::") {
+				return nil, fmt.Errorf("git ext:: protocol is not allowed")
+			}
 		}
 	}
 
@@ -2777,88 +2800,38 @@ func checkForArgumentInjection(val string) error {
 }
 
 func isShellCommand(cmd string) bool {
-	// Shells and commands that invoke a shell or execute code remotely/locally via shell.
-	// We treat them as shells to enforce strict argument validation.
+	return isShell(cmd) || isInterpreter(cmd)
+}
+
+func isShell(cmd string) bool {
+	// True shells and commands that behave like shells (parsing command lines)
 	shells := []string{
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
 		"busybox", "expect", "watch", "tmux", "screen",
-		// Common interpreters and runners that can execute code
-		"python", "python2", "python3",
-		"ruby", "perl", "php",
-		"node", "nodejs", "bun", "deno",
-		"lua", "awk", "gawk", "nawk", "mawk", "sed",
-		"jq",
-		"psql", "mysql", "sqlite3",
-		"docker",
-		// Additional shells/runners found missing
-		"busybox", "expect", "tclsh", "wish",
-		"irb", "php-cgi", "perl5",
-		// Editors and pagers that can execute commands
-		"vi", "vim", "nvim", "emacs", "nano",
-		"less", "more", "man",
-		// Build tools and others that can execute commands
-		"find", "xargs", "tee",
-		"make", "rake", "ant", "mvn", "gradle",
-		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
-		// Cloud/DevOps tools that can execute commands or have sensitive flags
-		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
-		// Additional interpreters and compilers that can execute code
-		"R", "Rscript", "julia", "groovy", "jshell",
-		"scala", "kotlin", "swift",
-		"elixir", "iex", "erl", "escript",
-		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
-		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
-		"gcc", "g++", "clang", "java",
-		// Additional dangerous tools
-		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
 		if base == shell {
 			return true
 		}
-		// Check for versioned binaries (e.g. python3.10, ruby2.7)
-		if strings.HasPrefix(base, shell) {
-			suffix := base[len(shell):]
-			if isVersionSuffix(suffix) {
-				return true
-			}
-		}
 	}
-
-	// Check for script extensions that indicate shell execution or interpretation
+	// Check for script extensions that indicate shell execution
 	ext := strings.ToLower(filepath.Ext(base))
 	scriptExts := []string{
 		".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
-		".bat", ".cmd", ".ps1", ".vbs", ".js", ".mjs", ".ts",
-		".py", ".pyc", ".pyo", ".pyd",
-		".rb", ".pl", ".pm", ".php",
-		".lua", ".r",
+		".bat", ".cmd", ".ps1", ".vbs",
 	}
 	for _, scriptExt := range scriptExts {
 		if ext == scriptExt {
 			return true
 		}
 	}
-
 	return false
 }
 
-func isVersionSuffix(s string) bool {
-	if s == "" {
-		return false
-	}
-	for _, r := range s {
-		if (r < '0' || r > '9') && r != '.' && r != '-' {
-			return false
-		}
-	}
-	return true
-}
-
-func checkForShellInjection(val string, template string, placeholder string, command string) error {
+func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
@@ -2950,7 +2923,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
-	return checkUnquotedInjection(val, command)
+	return checkUnquotedInjection(val, command, isShell)
 }
 
 func checkInterpreterFunctionCalls(val string) error {
@@ -3138,14 +3111,18 @@ func isSafeBacktickLanguage(command string) bool {
 	return false
 }
 
-func checkUnquotedInjection(val, command string) error {
+func checkUnquotedInjection(val, command string, isShell bool) error {
 	// Unquoted (or unknown quoting): strict check
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
 	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+	// Sentinel Security Update: Space is only dangerous for Shells, not for Interpreters when using exec.Command
+	dangerousChars := ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+	if isShell {
+		dangerousChars += " "
+	}
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
@@ -3162,24 +3139,54 @@ func checkUnquotedInjection(val, command string) error {
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
 	interpreters := []string{
-		// Shells
-		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
-		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
-		"busybox",
-		// Interpreters
+		// Common interpreters and runners that can execute code
 		"python", "ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
-		"lua", "java", "R", "julia", "elixir", "go",
-		"awk", "gawk", "nawk", "mawk",
-		"expect", "tclsh", "wish",
-		"groovy", "jshell", "scala", "kotlin", "swift",
-		"erl", "escript", "ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"lua", "awk", "gawk", "nawk", "mawk", "sed",
+		"jq",
+		"psql", "mysql", "sqlite3",
+		"docker",
+		"tclsh", "wish",
+		"irb", "php-cgi",
+		// Editors and pagers that can execute commands
+		"vi", "vim", "nvim", "emacs", "nano",
+		"less", "more", "man",
+		// Build tools and others that can execute commands
+		"find", "xargs", "tee",
+		"make", "rake", "ant", "mvn", "gradle",
+		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
+		// Cloud/DevOps tools that can execute commands or have sensitive flags
+		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
+		// Additional interpreters and compilers that can execute code
+		"r", "rscript", "julia", "groovy", "jshell",
+		"scala", "kotlin", "swift",
+		"elixir", "iex", "erl", "escript",
+		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"lua", "luajit",
+		"gcc", "g++", "clang", "java",
+		// Additional dangerous tools
+		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
 		}
 	}
+
+	// Check for script extensions that indicate interpretation
+	ext := strings.ToLower(filepath.Ext(base))
+	scriptExts := []string{
+		".js", ".mjs", ".ts",
+		".py", ".pyc", ".pyo", ".pyd",
+		".rb", ".pl", ".pm", ".php",
+		".lua", ".r",
+	}
+	for _, scriptExt := range scriptExts {
+		if ext == scriptExt {
+			return true
+		}
+	}
+
 	return false
 }
 
