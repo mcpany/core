@@ -2630,6 +2630,7 @@ var dangerousEnvVars = map[string]bool{
 	"GIT_PAGER": true, "GIT_EDITOR": true, "GIT_EXTERNAL_DIFF": true,
 	"GIT_MAN_VIEWER": true, "GIT_SEQUENCE_EDITOR": true,
 	"GIT_CONFIG_PARAMETERS": true, "GIT_CONFIG_COUNT": true,
+	"GIT_ALLOW_PROTOCOL": true,
 
 	// Interpreters
 	"PYTHONPATH": true, "PYTHONSTARTUP": true, "PYTHONHOME": true,
@@ -2752,8 +2753,16 @@ func checkForLocalFileAccess(val string) error {
 	}
 	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
 	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
+	lowerVal := strings.ToLower(val)
+	if strings.HasPrefix(lowerVal, "file:") {
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+	}
+	// Sentinel Security Update: Block "ext:" and "ssh:" schemes to prevent RCE and dangerous execution
+	if strings.HasPrefix(lowerVal, "ext:") {
+		return fmt.Errorf("ext: scheme detected: %s (potential RCE vector)", val)
+	}
+	if strings.HasPrefix(lowerVal, "ssh:") {
+		return fmt.Errorf("ssh: scheme detected: %s (potential RCE vector)", val)
 	}
 	return nil
 }
