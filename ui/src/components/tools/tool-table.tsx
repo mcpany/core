@@ -241,8 +241,18 @@ export const ToolTable = memo(function ToolTable({
     setSelected(new Set());
   }, [tools]);
 
+  // ⚡ BOLT: Debug logging to diagnose CI failures
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'test' || process.env.CI) {
+      console.log(`ToolTable rendered with ${tools?.length || 0} tools.`);
+      if (!tools || tools.length === 0) {
+        console.warn("ToolTable received empty or undefined tools list.");
+      }
+    }
+  }, [tools]);
+
   const handleSelectAll = useCallback((checked: boolean) => {
-    if (checked) {
+    if (tools && checked) {
       setSelected(new Set(tools.map(t => t.name)));
     } else {
       setSelected(new Set());
@@ -264,7 +274,7 @@ export const ToolTable = memo(function ToolTable({
   const getSelected = useCallback(() => Array.from(selected), [selected]);
   const clearSelection = useCallback(() => setSelected(new Set()), []);
 
-  const isAllSelected = tools.length > 0 && selected.size === tools.length;
+  const isAllSelected = tools && tools.length > 0 && selected.size === tools.length;
 
   const virtuosoComponents = useMemo(() => ({
     Table: (props: React.ComponentProps<"table">) => (
@@ -296,6 +306,8 @@ export const ToolTable = memo(function ToolTable({
         );
     }
   }), [isCompact]);
+
+  if (!tools) return null;
 
   return (
     <div className="space-y-2">
