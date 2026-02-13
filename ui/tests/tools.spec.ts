@@ -4,14 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, cleanupServices, seedUser, cleanupUser, seedToolsService } from './e2e/test-data';
+import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Tool Exploration', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
         await seedServices(request);
-        await seedToolsService(request);
         await seedUser(request, "e2e-tools-admin");
 
         // Login first
@@ -37,9 +36,9 @@ test.describe('Tool Exploration', () => {
         // Increase retries to 10 for slow CI environments where backend worker might be lagging
         for (let i = 0; i < 10; i++) {
             try {
-                // Check for Tools Service (svc_tools) to verify specific seeding works
+                // Check for Echo Service tool (echo_tool)
                 // Use a slightly longer timeout per attempt
-                await expect(page.getByText('tools_check').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 5000 });
                 found = true;
                 break;
             } catch (e) {
@@ -51,8 +50,8 @@ test.describe('Tool Exploration', () => {
             }
         }
 
-        // Verify Tools Service tool is visible
-        await expect(page.getByText('tools_check').first()).toBeVisible({ timeout: 10000 });
+        // Verify Echo Service tool is visible
+        await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 10000 });
 
         // Look for the seeded Echo Service tool
         // Note: The UI might capitalize or format names, but usually it shows the raw tool name.
@@ -72,7 +71,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('tools_check').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -80,7 +79,7 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('tools_check').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
@@ -96,7 +95,7 @@ test.describe('Tool Exploration', () => {
         // Wait/Reload loop for async backend registration
         for (let i = 0; i < 10; i++) {
             try {
-                await expect(page.getByText('tools_check').first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 5000 });
                 break;
             } catch (e) {
                 await page.reload();
@@ -104,7 +103,7 @@ test.describe('Tool Exploration', () => {
                 await page.waitForTimeout(1000);
             }
         }
-        await expect(page.getByText('tools_check').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 10000 });
 
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();

@@ -128,26 +128,6 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     }
 };
 
-export const seedToolsService = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const service = {
-        id: "svc_tools",
-        name: "Tools Service",
-        version: "v1.0",
-        http_service: {
-            address: "http://127.0.0.1:8080", // Dummy address
-            tools: [
-                { name: "tools_check", description: "Verification tool" }
-            ]
-        }
-    };
-    try {
-        await context.post('/api/v1/services', { data: service, headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to seed tools service: ${e}`);
-    }
-};
-
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
@@ -157,7 +137,6 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Diff Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Diff Service Updated', { headers: HEADERS });
-        await context.delete('/api/v1/services/Tools Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
