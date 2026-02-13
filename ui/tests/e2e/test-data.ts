@@ -61,6 +61,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             command_line_service: {
                 command: "/bin/echo",
+                local: true,
                 tools: [
                     {
                         name: "echo_tool",
