@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Redis Popular Service
 # This file is used to generate the Popular Service configuration in the UI.
 
@@ -15,7 +18,7 @@ command_line_service:
   command: "uvx mcp-server-redis"
   working_directory: ""
   env:
-    REDIS_URL: 
+    REDIS_URL:
       plainText: "redis://localhost:6379"
   local: false
 

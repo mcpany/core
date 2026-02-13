@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # MySQL Popular Service
 
 name: MySQL
@@ -14,15 +17,15 @@ command_line_service:
   command: "npx -y @benborla29/mcp-server-mysql"
   working_directory: ""
   env:
-    MYSQL_HOST: 
+    MYSQL_HOST:
       plainText: "localhost"
-    MYSQL_PORT: 
+    MYSQL_PORT:
       plainText: "3306"
-    MYSQL_USER: 
+    MYSQL_USER:
       plainText: ""
-    MYSQL_PASSWORD: 
+    MYSQL_PASSWORD:
       plainText: ""
-    MYSQL_DATABASE: 
+    MYSQL_DATABASE:
       plainText: ""
   local: false
 
