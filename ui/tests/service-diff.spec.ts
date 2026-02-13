@@ -13,7 +13,20 @@ const AUDIT_DIR = path.join(process.cwd(), `test-results/artifacts/audit/ui/${DA
 
 test.describe('Service Config Diff', () => {
     test.beforeEach(async ({ request, page }) => {
-        await seedServices(request);
+        // Create a dedicated service for this test to avoid conflicts with other tests running in parallel
+        await request.post('/api/v1/services', {
+            data: {
+                id: "svc_diff_test",
+                name: "Diff Test Service",
+                version: "v1.0.0",
+                http_service: {
+                    address: "https://example.com",
+                    tools: [{ name: "diff_tool", description: "Tool for diff testing" }]
+                }
+            },
+            headers: { 'X-API-Key': 'test-token' }
+        });
+
         await seedUser(request, "diff-admin");
 
         // Login
@@ -25,13 +38,17 @@ test.describe('Service Config Diff', () => {
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupServices(request);
+        // Clean up the dedicated service
+        await request.delete('/api/v1/services/Diff Test Service', { headers: { 'X-API-Key': 'test-token' } });
+        // Also try to clean up the renamed version if the test passed
+        await request.delete('/api/v1/services/Diff Test Service Updated', { headers: { 'X-API-Key': 'test-token' } });
+
         await cleanupUser(request, "diff-admin");
     });
 
     test('Shows diff when editing service config', async ({ page }) => {
-        const serviceName = "Payment Gateway";
-        const newServiceName = "Payment Gateway Updated";
+        const serviceName = "Diff Test Service";
+        const newServiceName = "Diff Test Service Updated";
 
         // Go to Upstream Services page to find the service
         await page.goto('/upstream-services');
