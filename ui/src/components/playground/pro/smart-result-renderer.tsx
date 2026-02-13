@@ -91,6 +91,15 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
                         return parsed;
                     }
+                    // Handle nested stdout (e.g. CLI output wrapped in JSON)
+                    if (parsed && typeof parsed === 'object' && parsed.stdout && typeof parsed.stdout === 'string') {
+                        try {
+                            const inner = JSON.parse(parsed.stdout);
+                            if (Array.isArray(inner) && inner.every(item => typeof item === 'object')) {
+                                return inner;
+                            }
+                        } catch {}
+                    }
                 } catch (e) {}
              }
              return null;
