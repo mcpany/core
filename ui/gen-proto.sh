@@ -46,7 +46,8 @@ cp -r "$GATEWAY_DIR/"* "$BUILD_DIR/grpc-gateway/"
 
 # Generate TypeScript protos (Source)
 echo "Generating TypeScript protos (Source)..."
-find /proto -name "*.proto" -exec protoc \
+# Exclude problematic proto files that are causing import errors
+find /proto -name "*.proto" -not -path "*/examples/*" -not -path "*/mcp_options/*" -exec protoc \
     --proto_path=/proto \
     --proto_path="$BUILD_DIR/grpc-gateway" \
     --proto_path="$BUILD_DIR/googleapis" \
