@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { seedServices, seedTraffic, seedTemplates, seedWebhooks, cleanupServices, cleanupTemplates, cleanupWebhooks, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 // Use test-results directory which is writable in CI
@@ -17,6 +17,8 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
       await seedTraffic(request);
+      await seedTemplates(request);
+      await seedWebhooks(request);
       await seedUser(request, "e2e-admin");
 
       // Login before each test
@@ -34,6 +36,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
+      await cleanupTemplates(request);
+      await cleanupWebhooks(request);
       await cleanupUser(request, "e2e-admin");
   });
 
@@ -49,7 +53,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
     await expect(page.locator('text=calculator')).toBeVisible();
@@ -71,7 +75,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Webhooks page displays configuration', async ({ page }) => {
+  test('Webhooks page displays configuration', async ({ page }) => {
     await page.goto('/settings/webhooks');
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
 
@@ -80,7 +84,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
@@ -93,7 +97,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
     const userService = page.locator('.group', { hasText: 'User Service' });
     await expect(userService).toBeVisible();
