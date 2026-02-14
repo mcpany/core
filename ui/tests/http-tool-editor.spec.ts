@@ -65,6 +65,10 @@ test.describe('HTTP Tool Editor', () => {
     await page.getByRole('button', { name: 'Add Parameter' }).click();
     await page.getByLabel('Name', { exact: true }).fill('city');
 
+    // Select Location (default is Auto, explicitly set to Query to verify interaction)
+    await page.getByLabel('Location').click();
+    await page.getByRole('option', { name: 'Query' }).click();
+
     // Close Tool Editor Sheet
     // There isn't a "Done" button in my implementation, just auto-save to parent state.
     // So we close the sheet. Pressing Escape might close the top-most sheet.
