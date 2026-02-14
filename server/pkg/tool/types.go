@@ -2958,6 +2958,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+func getCommentStyles(language string) (bool, bool, bool) {
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		return true, false, false
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		return false, true, true
+	case "php":
+		return true, true, true
+	default:
+		// Default to strict: strip all known comment types if unsure
+		return true, true, true
+	}
+}
+
+//nolint:gocyclo // State machine parser is inherently complex
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
@@ -2969,27 +2984,7 @@ func stripInterpreterComments(val, language string) string {
 	inBacktick := false
 	escaped := false
 
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		supportsHash = true
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		supportsSlash = true
-		supportsBlock = true
-	case "php":
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	}
+	supportsHash, supportsSlash, supportsBlock := getCommentStyles(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
@@ -3063,9 +3058,6 @@ func stripInterpreterComments(val, language string) string {
 
 		// Skip backslash (line continuation outside quotes)
 		if char == '\\' {
-			// If followed by newline, it's a line continuation. Strip it.
-			// If not, it's just a backslash. Strip it anyway for safety?
-			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
 			continue
 		}
 
@@ -3596,7 +3588,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr // not a URL, so safe
 		}
 
 		if u.Scheme == "" || u.Host == "" {

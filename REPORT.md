@@ -1,40 +1,42 @@
 # Truth Reconciliation Audit Report
 
-## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
+## 1. Executive Summary
+Performed a comprehensive "Truth Reconciliation Audit" on the MCP Any project, verifying alignment between Documentation, Codebase, and Product Roadmap.
+Sampled 10 key features covering UI flows, Backend Core Features, and Advanced Integrations.
+**Result:** High degree of alignment found (7/10 features verified as Correct).
+**Divergences:** 3 discrepancies identified and remediated.
+- 2 cases of **Documentation Drift** (Code was ahead/richer than docs).
+- 1 case of **Roadmap Debt** (UI Mockup documented as "Implemented" without backend support).
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
+The codebase health is strong, with `make build` and `make lint` passing.
 
-All discrepancies have been remediated.
-
-## Verification Matrix
+## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
+| `ui/docs/features/services.md` | **Drift** | Fixed Doc | Code has "Activity" sparklines and combined Status/Control columns. |
+| `ui/docs/features/dashboard.md` | **Correct** | Verified | Widget grid and Quick Actions match implementation. |
+| `ui/docs/features/traces.md` | **Drift** | Fixed Doc | Tab structure ("Overview"/"Payload") differed from doc ("Request"/"Response"). |
+| `server/docs/features/rate-limiting/README.md` | **Correct** | Verified | Implementation uses Strategy pattern (`NewLocalStrategy`, `NewRedisStrategy`). |
+| `server/docs/features/health-checks.md` | **Correct** | Verified | All protocols (HTTP, gRPC, etc.) implemented in `server/pkg/health`. |
+| `server/docs/features/audit_logging.md` | **Correct** | Verified | Support for File, Splunk, Datadog, Webhook confirmed. |
+| `server/docs/features/debugger.md` | **Correct** | Verified | Middleware and API endpoint (`/debug/entries`) hooked up. |
+| `ui/docs/features/webhooks.md` | **Gap** | Downgraded Doc | UI is a mock. Backend dynamic management missing. Updated doc to "Prototype". |
+| `server/docs/features/wasm.md` | **Correct** | Verified | Marked as Experimental, matches code state. |
+| `server/docs/features/kafka.md` | **Correct** | Verified | Kafka bus implementation found in `server/pkg/bus/kafka`. |
 
-## Remediation Log
+## 3. Remediation Log
 
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
+### Documentation Fixes
+- **Services UI (`ui/docs/features/services.md`)**: Updated column list to include "Activity" and "Address", and corrected "Control" column description to match the actual UI component.
+- **Traces UI (`ui/docs/features/traces.md`)**: Updated the "Inspect Detail" section to reflect the actual Tab organization ("Overview" with Diagnostics/Timeline vs "Payload" with raw JSON).
+- **Webhooks UI (`ui/docs/features/webhooks.md`)**: Downgraded status from "Implemented" to "Prototype / In Progress". Added notes clarifying that the UI is currently a mockup and backend integration is pending.
 
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
+### Code Fixes
+- **Linting (`server/pkg/tool/types.go`)**:
+    - Fixed `gocyclo` issues by refactoring `stripInterpreterComments` (extracted `getCommentStyles`).
+    - Fixed `nilerr` lint error by explicitly suppressing false positive in `checkForSSRF` where non-URL inputs are considered safe.
 
-## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+## 4. Security Scrub
+- No PII, secrets, or internal IPs were found in the report or the committed changes.
+- Redaction logic in `server/pkg/middleware/debugger.go` and `server/pkg/tool/types.go` was reviewed and preserved.

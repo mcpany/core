@@ -1,16 +1,18 @@
 # Webhooks
 
-**Status:** Implemented
+**Status:** Prototype / In Progress
 
 ## Goal
 
 Set up external notifications for system events. Webhooks allow you to integrate MCP Any with third-party systems like Slack, PagerDuty, or custom pipelines.
 
+> **Note:** The UI currently demonstrates the configuration flow. Backend integration for dynamic webhook management is pending. Currently, webhooks are configured statically via the `config.yaml` (Global Settings).
+
 ## Usage Guide
 
 ### 1. Webhook List
 
-Navigate to `/webhooks`. This page lists all configured outbound webhooks.
+Navigate to `/webhooks`. This page lists configured outbound webhooks (currently mock data).
 
 ![Webhooks List](screenshots/webhooks_list.png)
 
@@ -20,11 +22,13 @@ Navigate to `/webhooks`. This page lists all configured outbound webhooks.
 2. Enter the **Target URL**.
 3. Select the **Events** to subscribe to (e.g., `service.down`, `job.failed`).
 
+*(Changes in this UI are currently local-only and not persisted to the server)*
+
 ![Create Webhook](screenshots/webhook_create_modal.png)
 
 ### 3. Test Delivery
 
-Click the **"Test"** button on a webhook row to send a sample payload to the configured URL. The response status code (e.g., 200 OK) will be displayed ensuring connectivity.
+Click the **"Test"** button on a webhook row to simulate a payload delivery.
 
 ## Technical Details
 

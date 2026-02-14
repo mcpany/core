@@ -22,9 +22,12 @@ Navigate to `/traces`. This view shows a chronological log of all system activit
 Click on any row in the trace list to open the **Detail View**.
 this view is split into tabs:
 
-- **Request**: The JSON arguments sent to the tool.
-- **Response**: The JSON output returned.
-- **Timeline**: A waterfall view of the operation lifecycle (Request -> Call -> Result -> Response).
+- **Overview**: A comprehensive summary including:
+    - **Diagnostics**: AI-powered analysis of errors and suggestions.
+    - **Sequence Diagram**: Visual representation of the interaction flow.
+    - **Execution Waterfall**: Detailed timeline of the operation lifecycle.
+    - **Root Input/Output**: The initial arguments and final result.
+- **Payload**: Detailed raw JSON view of the Request and Response payloads.
 
 ![Trace Detail](../screenshots/trace_detail.png)
 

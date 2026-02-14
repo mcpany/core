@@ -21,11 +21,12 @@ Navigate to the **Services** page via the sidebar. This view provides a high-lev
 
 Key columns:
 
+- **Status**: Toggle switch to enable/disable service, plus health indicators (Error icons).
 - **Name**: Application identifier.
 - **Type**: Protocol (HTTP, gRPC, MCP, CMD).
-- **Status**: Health indicator (Healthy, Degraded, Unhealthy).
-- **Control**: Toggle switch to quickly enable/disable traffic.
-- **Actions**: "View Logs" to jump directly to the live logs for a specific service.
+- **Activity**: Real-time latency sparkline indicating service health (Green=Healthy, Red=Error).
+- **Address**: Connection endpoint or command.
+- **Actions**: Dropdown menu to View Logs, Restart, Edit, or Delete.
 
 ### 2. Add New Service
 
