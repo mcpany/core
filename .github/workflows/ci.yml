@@ -131,7 +131,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but ignore failure if systemd/service is not available (e.g. in some containers)
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, skipping mirror config application"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +252,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but ignore failure if systemd/service is not available (e.g. in some containers)
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, skipping mirror config application"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -516,7 +518,8 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          # Try to restart docker, but ignore failure if systemd/service is not available (e.g. in some containers)
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, skipping mirror config application"
           docker info
 
       - name: Set up Go
@@ -632,7 +635,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but ignore failure if systemd/service is not available (e.g. in some containers)
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, skipping mirror config application"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -720,7 +724,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but ignore failure if systemd/service is not available (e.g. in some containers)
+          sudo systemctl restart docker || sudo service docker restart || echo "Could not restart docker, skipping mirror config application"
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
