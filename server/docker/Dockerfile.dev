@@ -64,8 +64,11 @@ WORKDIR /workspace/server
 
 # Run make prepare to install tools
 ENV TOOL_INSTALL_DIR=/tools
+# Upgrade pip to latest version to avoid compatibility issues
+RUN pip3 install --upgrade pip
+
 # Install pre-commit globally to be available in CI mode
-RUN pip3 install --break-system-packages pre-commit fastmcp || (sleep 2 && pip3 install --break-system-packages pre-commit fastmcp)
+RUN pip3 install --break-system-packages pre-commit fastmcp --default-timeout=100 || (sleep 5 && pip3 install --break-system-packages pre-commit fastmcp --default-timeout=100)
 # Set CI=true to skip venv setup in Makefile
 ENV CI=true
 RUN mkdir -p /tools && make prepare && chmod -R 777 /tools
