@@ -671,9 +671,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			},
 		}
 		// Add explicit headers/cookies to dry run result
-		headers := dryRunResult["request"].(map[string]any)["headers"].(map[string]string)
-		for k, v := range headerParams {
-			headers[k] = v
+		if reqMap, ok := dryRunResult["request"].(map[string]any); ok {
+			if headers, ok := reqMap["headers"].(map[string]string); ok {
+				for k, v := range headerParams {
+					headers[k] = v
+				}
+			}
 		}
 		if len(cookieParams) > 0 {
 			dryRunResult["request"].(map[string]any)["cookies"] = cookieParams
