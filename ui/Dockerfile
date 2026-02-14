@@ -17,12 +17,33 @@ RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-aud
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+
+# Install protoc for generating protobuf files
+RUN apt-get update && apt-get install -y protobuf-compiler unzip curl && rm -rf /var/lib/apt/lists/*
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
+
+# Generate Protobuf files (TypeScript)
+# This is necessary because generated .ts files are ignored by git and .dockerignore
+RUN npm install -g ts-proto
+# Find all proto files and generate typescript code
+RUN find /proto -name "*.proto" -exec protoc \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/ \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    --proto_path=/ \
+    {} +
+
+# Fix imports in generated files (match Makefile logic if needed, but ts-proto usually handles relative imports well if configured right)
+# The Makefile does: sed -i 's|\.\./\.\./\.\./google|\.\./\.\./\.\./google|g' {} +; which seems specific.
+# Let's assume standard generation is enough or replicate if failures occur.
+# However, next.config.ts maps @proto to /proto.
+# The generated files will be in /proto alongside .proto files.
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
