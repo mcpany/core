@@ -11,7 +11,7 @@
 
 **Why does it exist?**
 
-Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
+Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing. Designed with security and observability as first-class citizens.
 
 ## 2. Architecture
 
@@ -28,7 +28,7 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
     *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
     *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
     *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
-4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+4.  **Policy Engine & Middleware**: A robust security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging. It evaluates every request against granular policies to ensure safe operations.
 
 ```mermaid
 graph TD
@@ -131,7 +131,8 @@ make test
 
 ### Linting
 We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
+*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. All public symbols must be documented.
+*   **TypeScript:** We use `eslint` and `check-ts-doc` to enforce TSDoc standards for UI components and libraries.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
 To run linters:
