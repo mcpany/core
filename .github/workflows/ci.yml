@@ -218,6 +218,12 @@ jobs:
           if [ -f /usr/bin/xz ] && [ ! -f /bin/xz ]; then
             sudo ln -s /usr/bin/xz /bin/xz
           fi
+          if [ -f /usr/bin/xz ] && [ ! -f /usr/local/bin/xz ]; then
+             sudo ln -s /usr/bin/xz /usr/local/bin/xz
+          fi
+          echo "Debug: Listing xz locations"
+          ls -l /usr/bin/xz /bin/xz /usr/local/bin/xz || true
+          echo "Debug: PATH=$PATH"
           # Also symlink to /usr/local/bin if not present
           if [ -f /usr/bin/xz ] && [ ! -f /usr/local/bin/xz ]; then
              sudo ln -s /usr/bin/xz /usr/local/bin/xz
@@ -397,6 +403,12 @@ jobs:
           if [ -f /usr/bin/xz ] && [ ! -f /bin/xz ]; then
             sudo ln -s /usr/bin/xz /bin/xz
           fi
+          if [ -f /usr/bin/xz ] && [ ! -f /usr/local/bin/xz ]; then
+             sudo ln -s /usr/bin/xz /usr/local/bin/xz
+          fi
+          echo "Debug: Listing xz locations"
+          ls -l /usr/bin/xz /bin/xz /usr/local/bin/xz || true
+          echo "Debug: PATH=$PATH"
           # Also symlink to /usr/local/bin if not present
           if [ -f /usr/bin/xz ] && [ ! -f /usr/local/bin/xz ]; then
              sudo ln -s /usr/bin/xz /usr/local/bin/xz
