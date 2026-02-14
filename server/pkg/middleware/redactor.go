@@ -93,6 +93,12 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	// Request/Response bodies in our system are standard JSON, so we can skip
 	// the expensive comment detection logic.
 	return util.WalkStandardJSONStrings(data, func(raw []byte) ([]byte, bool) {
+		// ⚡ BOLT: Optimized JSON redaction by skipping unmarshal for strings without escapes.
+		// Randomized Selection from Top 5 High-Impact Targets
+
+		// Check for escapes using optimized SIMD scan
+		hasEscape := bytes.IndexByte(raw, '\\') != -1
+
 		// Optimization: Check for obviously safe strings before unmarshaling.
 		// If we have no custom patterns, we can skip unmarshaling if the raw bytes
 		// (including quotes) don't contain indicators of PII: '@', digits, or escapes.
@@ -100,7 +106,7 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		if r.customPattern == nil && len(r.customPatterns) == 0 {
 			hasIndicator := false
 			// Check for '@' and '\' first using optimized SIMD scan
-			if bytes.IndexByte(raw, '@') != -1 || bytes.IndexByte(raw, '\\') != -1 {
+			if bytes.IndexByte(raw, '@') != -1 || hasEscape {
 				hasIndicator = true
 			} else {
 				// Check for digits '0'-'9'
@@ -121,6 +127,30 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		}
 
 		var s string
+
+		// If no escapes, we can safely slice the string without unmarshaling.
+		// This avoids allocation and parsing overhead for the vast majority of strings.
+		// Standard JSON strings are just "content" where content can only contain escaped " or \
+		// Since we checked for backslash, if none, it's a raw literal.
+		// We also need to be careful about unicode sequences \uXXXX but those start with backslash.
+		if !hasEscape && len(raw) >= 2 {
+			// Fast path: direct slice to string conversion
+			// raw includes quotes, e.g. "foo"
+			s = string(raw[1 : len(raw)-1])
+
+			redacted := r.RedactString(s)
+			if redacted != s {
+				// If redacted, we need to marshal it back to JSON to handle potential special chars in replacement
+				// although usually replacement is ***REDACTED*** which is safe.
+				b, err := json.Marshal(redacted)
+				if err != nil {
+					return nil, false
+				}
+				return b, true
+			}
+			return nil, false
+		}
+
 		if err := json.Unmarshal(raw, &s); err != nil {
 			// Should not happen for valid JSON strings
 			return nil, false
