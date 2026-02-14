@@ -35,15 +35,12 @@ test.describe('Dashboard Onboarding', () => {
       await expect(page).toHaveURL('/', { timeout: 15000 });
   });
 
-  test('Shows onboarding guide when empty', async ({ page, request }) => {
-      // Ensure no services
-      const res = await request.get('/api/v1/services', { headers: HEADERS });
-      const data = await res.json();
-      const services = Array.isArray(data) ? data : (data.services || []);
-
-      for (const s of services) {
-          await request.delete(`/api/v1/services/${s.id || s.name}`, { headers: HEADERS });
-      }
+  test('Shows onboarding guide when empty', async ({ page }) => {
+      // Mock the services API response to return empty list for this specific test
+      // because the backend might have persistent services from config files (e.g. weather-service)
+      await page.route('/api/v1/services', async route => {
+          await route.fulfill({ json: { services: [] } });
+      });
 
       await page.reload();
       await expect(page.getByText('Welcome to MCP Any')).toBeVisible();
@@ -67,8 +64,7 @@ test.describe('Dashboard Onboarding', () => {
 
       await page.reload();
       await expect(page.getByText('Welcome to MCP Any')).not.toBeVisible();
-      // Check for Network Graph visibility (it might take a moment for topology to update)
-      // We can check for "Quick Actions" which is part of the standard grid
+      // Check for Quick Actions which is part of the standard grid
       await expect(page.getByText('Quick Actions')).toBeVisible();
   });
 
