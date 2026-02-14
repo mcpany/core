@@ -132,7 +132,47 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		// We don't fail hard here to allow server to start, but auth might be broken for admin
 	}
 
+	// Initialize User Library Service for Prompts
+	if err := a.initializeUserLibraryService(ctx, store); err != nil {
+		log.Error("Failed to initialize user library service", "error", err)
+	}
+
 	log.Info("Database initialized successfully.")
+	return nil
+}
+
+func (a *Application) initializeUserLibraryService(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil
+	}
+
+	// Check if service exists
+	svc, err := s.GetService(ctx, "user-library")
+	if err != nil {
+		return fmt.Errorf("failed to check user library service: %w", err)
+	}
+	if svc != nil {
+		return nil // Already exists
+	}
+
+	logging.GetLogger().Info("Initializing user library service for prompts...")
+
+	userLibraryService := configv1.UpstreamServiceConfig_builder{
+		Id:      proto.String("user-library"),
+		Name:    proto.String("user-library"),
+		Version: proto.String("1.0.0"),
+		// We use CommandLineService as a container.
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("echo"),
+		}.Build(),
+	}.Build()
+
+	if err := s.SaveService(ctx, userLibraryService); err != nil {
+		return fmt.Errorf("failed to save user library service: %w", err)
+	}
+
+	logging.GetLogger().Info("User library service initialized successfully.")
 	return nil
 }
 

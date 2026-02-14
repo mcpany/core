@@ -826,6 +826,46 @@ export const apiClient = {
     },
 
     /**
+     * Creates a new prompt.
+     * @param prompt The prompt definition.
+     */
+    createPrompt: async (prompt: PromptDefinition) => {
+        const res = await fetchWithAuth('/api/v1/prompts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prompt)
+        });
+        if (!res.ok) throw new Error('Failed to create prompt');
+        return res.json();
+    },
+
+    /**
+     * Updates an existing prompt.
+     * @param prompt The prompt definition.
+     */
+    updatePrompt: async (prompt: PromptDefinition) => {
+        const res = await fetchWithAuth(`/api/v1/prompts/${prompt.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prompt)
+        });
+        if (!res.ok) throw new Error('Failed to update prompt');
+        return res.json();
+    },
+
+    /**
+     * Deletes a prompt.
+     * @param name The name of the prompt to delete.
+     */
+    deletePrompt: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/prompts/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete prompt');
+        return {};
+    },
+
+    /**
      * Sets the status (enabled/disabled) of a prompt.
      * @param name The name of the prompt.
      * @param enabled True to enable the prompt, false to disable it.
