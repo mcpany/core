@@ -504,7 +504,11 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
           sudo systemctl restart docker
           docker info
 
