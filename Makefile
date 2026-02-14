@@ -158,10 +158,10 @@ gen-go: prepare-proto-go
 			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
 			--include_imports \
 			--go_out=. \
-			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
 			--go-grpc_out=. \
-			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
+			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
+			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_opt=module=github.com/mcpany/core \
 			{} +; \
 		rm -rf google

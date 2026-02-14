@@ -51,6 +51,7 @@ find /proto -name "*.proto" -not -path "*/examples/*" -not -path "*/mcp_options/
     --proto_path=/proto \
     --proto_path="$BUILD_DIR/grpc-gateway" \
     --proto_path="$BUILD_DIR/googleapis" \
+    --proto_path=/usr/local/include \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
