@@ -28,6 +28,10 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
+# Ensure /app/proto exists as a symlink to /proto to satisfy any relative path resolution that might look for ./proto
+# even though tsconfig maps @proto to ../proto. Some tools might be confused.
+RUN ln -s /proto /app/proto
+
 # Generate Protobuf files (TypeScript)
 # This is necessary because generated .ts files are ignored by git and .dockerignore
 # Install ts-proto locally so we can reference the binary reliably
