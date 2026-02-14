@@ -320,10 +320,19 @@ prepare:
 		ARCH=$$(uname -m); \
 		if [ "$$ARCH" = "aarch64" ]; then SC_ARCH="aarch64"; else SC_ARCH="x86_64"; fi; \
 		echo "Downloading ShellCheck $${SC_VERSION} for $${SC_ARCH}..."; \
+		rm -rf "/tmp/shellcheck-extract"; \
+		mkdir -p "/tmp/shellcheck-extract"; \
 		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.$${SC_ARCH}.tar.xz" -o "/tmp/shellcheck.tar.xz"; \
-		tar -xJf "/tmp/shellcheck.tar.xz" -C "/tmp"; \
-		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-		rm -rf "/tmp/shellcheck-$${SC_VERSION}" "/tmp/shellcheck.tar.xz"; \
+		tar -xJf "/tmp/shellcheck.tar.xz" -C "/tmp/shellcheck-extract"; \
+		echo "Extracted files:"; \
+		ls -R "/tmp/shellcheck-extract"; \
+		SC_BIN=$$(find "/tmp/shellcheck-extract" -type f -name shellcheck | head -n 1); \
+		if [ -z "$$SC_BIN" ]; then \
+			echo "Error: shellcheck binary not found in extraction"; \
+			exit 1; \
+		fi; \
+		mv "$$SC_BIN" "$(SHELLCHECK_BIN)"; \
+		rm -rf "/tmp/shellcheck-extract" "/tmp/shellcheck.tar.xz"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
 			echo "ShellCheck installed successfully."; \
 		else \
