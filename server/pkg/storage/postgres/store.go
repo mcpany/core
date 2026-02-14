@@ -13,38 +13,57 @@ import (
 )
 
 // Store implements config.Store using PostgreSQL.
+//
+// Summary: PostgreSQL implementation of the configuration store.
 type Store struct {
 	db *DB
 }
 
 // NewStore creates a new PostgreSQL store.
 //
-// db is the db.
+// Summary: Initializes a new Store instance backed by the provided database connection.
 //
-// Returns the result.
+// Parameters:
+//   - db: *DB. The database connection to use.
+//
+// Returns:
+//   - *Store: The initialized Store instance.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
 
 // Close closes the underlying database connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the database connection associated with the store.
+//
+// Returns:
+//   - error: An error if closing the database fails.
 func (s *Store) Close() error {
 	return s.db.Close()
 }
 
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
-// For DB stores, we assume they always have a source (the DB itself).
+//
+// Summary: Checks if the store has configuration sources.
+//
+// Description: For DB stores, we assume they always have a source (the DB itself).
+//
+// Returns:
+//   - bool: Always returns true for DB stores.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
 
 // Load implements config.Store interface.
 //
-// ctx is the context for the request.
+// Summary: Loads the complete server configuration from the database.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database query.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The loaded server configuration.
+//   - error: An error if loading any configuration component fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	// 1. Load services
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
@@ -144,10 +163,14 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 // SaveService saves an upstream service configuration.
 //
-// ctx is the context for the request.
-// service is the service instance.
+// Summary: Persists an upstream service configuration to the database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database operation.
+//   - service: *configv1.UpstreamServiceConfig. The service configuration to save.
+//
+// Returns:
+//   - error: An error if saving the service fails.
 func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
@@ -180,11 +203,15 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 
 // GetService retrieves an upstream service configuration by name.
 //
-// ctx is the context for the request.
-// name is the name of the resource.
+// Summary: Fetches an upstream service configuration by its name.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database query.
+//   - name: string. The name of the service to retrieve.
+//
+// Returns:
+//   - *configv1.UpstreamServiceConfig: The service configuration if found, or nil if not found.
+//   - error: An error if the database query fails.
 func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -206,10 +233,14 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 
 // ListServices lists all upstream service configurations.
 //
-// ctx is the context for the request.
+// Summary: Retrieves all upstream service configurations from the database.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database query.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A list of all service configurations.
+//   - error: An error if the database query fails.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
@@ -241,10 +272,14 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 
 // DeleteService deletes an upstream service configuration by name.
 //
-// ctx is the context for the request.
-// name is the name of the resource.
+// Summary: Removes an upstream service configuration from the database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database operation.
+//   - name: string. The name of the service to delete.
+//
+// Returns:
+//   - error: An error if the deletion fails.
 func (s *Store) DeleteService(ctx context.Context, name string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM upstream_services WHERE name = $1", name)
 	if err != nil {
@@ -255,10 +290,14 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 
 // GetGlobalSettings retrieves the global configuration.
 //
-// ctx is the context for the request.
+// Summary: Fetches the global settings from the database.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database query.
+//
+// Returns:
+//   - *configv1.GlobalSettings: The global settings if found, or nil if not found.
+//   - error: An error if the database query fails.
 func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
@@ -280,10 +319,14 @@ func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings
 
 // SaveGlobalSettings saves the global configuration.
 //
-// ctx is the context for the request.
-// settings is the settings.
+// Summary: Persists the global settings to the database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the database operation.
+//   - settings: *configv1.GlobalSettings. The global settings to save.
+//
+// Returns:
+//   - error: An error if saving the settings fails.
 func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(settings)

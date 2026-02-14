@@ -21,10 +21,16 @@ type DB struct {
 
 // NewDB opens or creates a SQLite database at the specified path.
 //
-// path is the path.
+// Summary: Initializes a new SQLite database connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Description: It configures the database with WAL mode and other performance settings.
+//
+// Parameters:
+//   - path: string. The file path to the SQLite database.
+//
+// Returns:
+//   - *DB: The initialized database wrapper.
+//   - error: An error if the database file cannot be opened or initialized.
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

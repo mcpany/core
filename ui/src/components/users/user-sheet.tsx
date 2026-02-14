@@ -57,6 +57,19 @@ const userSchema = z.object({
 
 type UserValues = z.infer<typeof userSchema>;
 
+/**
+ * UserSheet component for managing user creation and editing.
+ *
+ * Summary: Displays a slide-out sheet with a form to add or edit user details, roles, and authentication methods.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the sheet is currently open.
+ * @param props.onOpenChange - Callback to handle opening/closing the sheet.
+ * @param props.user - The user object to edit, or null if creating a new user.
+ * @param props.onSave - Async callback invoked when the form is submitted successfully.
+ *
+ * @returns A React component rendering the user management sheet.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();
     const [generatedKey, setGeneratedKey] = useState("");
