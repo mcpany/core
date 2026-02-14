@@ -2859,7 +2859,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
 		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val); err != nil {
+			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
 		}
@@ -2878,7 +2878,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			}
 			// Also check function calls for the detected interpreter context
 			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val); err != nil {
+				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -2934,7 +2934,126 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func checkInterpreterFunctionCalls(val string) error {
+func stripInterpreterComments(val, language string) string {
+	var b strings.Builder
+	b.Grow(len(val))
+
+	inLineComment := false  // # or //
+	inBlockComment := false // /* ... */
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	// Determine comment style
+	supportsHash := false
+	supportsSlash := false
+	supportsBlock := false
+
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		supportsHash = true
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		supportsSlash = true
+		supportsBlock = true
+	case "php":
+		supportsHash = true
+		supportsSlash = true
+		supportsBlock = true
+	default:
+		// Default to strict: strip all known comment types if unsure
+		supportsHash = true
+		supportsSlash = true
+		supportsBlock = true
+	}
+
+	for i := 0; i < len(val); i++ {
+		char := val[i]
+
+		if inLineComment {
+			if char == '\n' {
+				inLineComment = false
+				b.WriteByte(char)
+			}
+			continue
+		}
+		if inBlockComment {
+			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
+				inBlockComment = false
+				i++
+			}
+			continue
+		}
+
+		if escaped {
+			escaped = false
+			b.WriteByte(char)
+			continue
+		}
+
+		// Quote handling
+		if char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			b.WriteByte(char)
+			continue
+		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			b.WriteByte(char)
+			continue
+		}
+		if char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			b.WriteByte(char)
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			if char == '\\' {
+				escaped = true
+				// Write escape char to preserve string content (e.g. \n)
+				b.WriteByte(char)
+				continue
+			}
+			b.WriteByte(char)
+			continue
+		}
+
+		// Not in quotes, check for comments
+		if supportsHash && char == '#' {
+			inLineComment = true
+			continue
+		}
+		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
+			if supportsSlash && val[i+1] == '/' {
+				inLineComment = true
+				i++
+				continue
+			}
+			if supportsBlock && val[i+1] == '*' {
+				inBlockComment = true
+				i++
+				continue
+			}
+		}
+
+		// Skip backslash (line continuation outside quotes)
+		if char == '\\' {
+			// If followed by newline, it's a line continuation. Strip it.
+			// If not, it's just a backslash. Strip it anyway for safety?
+			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
+			continue
+		}
+
+		b.WriteByte(char)
+	}
+	return b.String()
+}
+
+func checkInterpreterFunctionCalls(val, language string) error {
+	// Strip comments and line continuations first
+	val = stripInterpreterComments(val, language)
+
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
 	b.Grow(len(val))
