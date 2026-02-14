@@ -142,6 +142,11 @@ jobs:
 
           docker info || true # Verify the mirrors are listed
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make xz-utils
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -269,6 +274,11 @@ jobs:
           fi
 
           docker info || true # Verify the mirrors are listed
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make xz-utils
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -536,6 +546,11 @@ jobs:
 
           docker info || true # Verify the mirrors are listed
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make xz-utils
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -659,6 +674,11 @@ jobs:
           fi
 
           docker info || true # Verify the mirrors are listed
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make xz-utils
 
       - name: Set up Go
         uses: actions/setup-go@v6
