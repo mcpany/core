@@ -16,13 +16,35 @@ RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-aud
 
 # Rebuild the source code only when needed
 FROM base AS builder
+ARG TARGETARCH
 WORKDIR /app
+
+# Install protoc to generate typescript definitions
+RUN apt-get update && apt-get install -y curl unzip
+RUN PROTOC_ARCH="x86_64"; \
+    if [ "$TARGETARCH" = "arm64" ]; then PROTOC_ARCH="aarch_64"; fi; \
+    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-$PROTOC_ARCH.zip" && \
+    unzip protoc-29.3-linux-$PROTOC_ARCH.zip -d /usr/local && \
+    rm protoc-29.3-linux-$PROTOC_ARCH.zip
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
+
+# Generate TS protos (since they are not in the build context in CI)
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/proto \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
+# Fix relative imports in generated files to point to local google protos (if any generated)
+# This matches the behavior in the root Makefile
+RUN find /proto -name "*.ts" -exec sed -i 's|\.\./\.\./\.\./google|\.\./\.\./google|g' {} +
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
