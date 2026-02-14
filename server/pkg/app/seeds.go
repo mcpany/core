@@ -210,6 +210,19 @@ func init() {
 
 	BuiltinServiceTemplates = []*configv1.ServiceTemplate{
 		configv1.ServiceTemplate_builder{
+			Id:          proto.String("empty"),
+			Name:        proto.String("Custom Service"),
+			Description: proto.String("Configure a service from scratch."),
+			Icon:        proto.String("server"),
+			Tags:        []string{"other"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String(""),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String(""),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
 			Id:          proto.String("google-calendar"),
 			Name:        proto.String("Google Calendar"),
 			Description: proto.String("Manage events and calendars."),

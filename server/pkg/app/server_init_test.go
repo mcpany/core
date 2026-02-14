@@ -274,6 +274,7 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
 	// Admin User Init expectations
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
