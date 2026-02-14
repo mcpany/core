@@ -44,7 +44,7 @@ RUN ln -s /app/node_modules /app/proto/node_modules
 # For example, "proto/config/v1/profile.proto" resolves to "/app/proto/config/v1/profile.proto".
 RUN find proto -name "*.proto" -exec protoc \
     --proto_path=/app \
-    -I /usr/local/include \
+    --proto_path=/usr/local/include \
     --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/app \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
