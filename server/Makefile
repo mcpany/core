@@ -134,7 +134,16 @@ prepare:
 	@if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v xz >/dev/null 2>&1; then \
 		echo "Installing base dependencies (curl, unzip, xz-utils)..."; \
 		if command -v apt-get >/dev/null 2>&1; then \
-			sudo apt-get update && sudo apt-get install -y curl unzip xz-utils; \
+			if [ "$$(id -u)" -eq 0 ]; then \
+				apt-get update && apt-get install -y curl unzip xz-utils; \
+			else \
+				if command -v sudo >/dev/null 2>&1; then \
+					sudo apt-get update && sudo apt-get install -y curl unzip xz-utils; \
+				else \
+					echo "sudo not found, trying apt-get without it..."; \
+					apt-get update && apt-get install -y curl unzip xz-utils; \
+				fi; \
+			fi; \
 		elif command -v apk >/dev/null 2>&1; then \
 			apk add --no-cache curl unzip xz; \
 		fi; \

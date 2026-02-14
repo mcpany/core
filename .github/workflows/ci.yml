@@ -132,7 +132,7 @@ jobs:
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if [ -d /run/systemd/system ]; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || echo "Docker restart via systemctl failed, ignoring."
           else
             echo "Systemd not found, skipping docker restart. Mirrors might not be applied immediately."
             # Try service command if available as fallback
@@ -140,7 +140,7 @@ jobs:
                sudo service docker restart || echo "Service restart failed, ignoring."
             fi
           fi
-          docker info # Verify the mirrors are listed
+          docker info || echo "Docker info failed, ignoring."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -259,8 +259,16 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if [ -d /run/systemd/system ]; then
+            sudo systemctl restart docker || echo "Docker restart via systemctl failed, ignoring."
+          else
+            echo "Systemd not found, skipping docker restart. Mirrors might not be applied immediately."
+            # Try service command if available as fallback
+            if command -v service >/dev/null 2>&1; then
+               sudo service docker restart || echo "Service restart failed, ignoring."
+            fi
+          fi
+          docker info || echo "Docker info failed, ignoring."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -514,8 +522,17 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          docker info
+
+          if [ -d /run/systemd/system ]; then
+            sudo systemctl restart docker || echo "Docker restart via systemctl failed, ignoring."
+          else
+            echo "Systemd not found, skipping docker restart. Mirrors might not be applied immediately."
+            # Try service command if available as fallback
+            if command -v service >/dev/null 2>&1; then
+               sudo service docker restart || echo "Service restart failed, ignoring."
+            fi
+          fi
+          docker info || echo "Docker info failed, ignoring."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -630,8 +647,16 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if [ -d /run/systemd/system ]; then
+            sudo systemctl restart docker || echo "Docker restart via systemctl failed, ignoring."
+          else
+            echo "Systemd not found, skipping docker restart. Mirrors might not be applied immediately."
+            # Try service command if available as fallback
+            if command -v service >/dev/null 2>&1; then
+               sudo service docker restart || echo "Service restart failed, ignoring."
+            fi
+          fi
+          docker info || echo "Docker info failed, ignoring."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -718,8 +743,16 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if [ -d /run/systemd/system ]; then
+            sudo systemctl restart docker || echo "Docker restart via systemctl failed, ignoring."
+          else
+            echo "Systemd not found, skipping docker restart. Mirrors might not be applied immediately."
+            # Try service command if available as fallback
+            if command -v service >/dev/null 2>&1; then
+               sudo service docker restart || echo "Service restart failed, ignoring."
+            fi
+          fi
+          docker info || echo "Docker info failed, ignoring."
 
       - name: Set up Go
         uses: actions/setup-go@v6
