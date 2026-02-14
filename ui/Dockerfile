@@ -33,7 +33,11 @@ RUN ln -s /app/node_modules /proto/node_modules
 # Install ts-proto locally so we can reference the binary reliably
 RUN npm install ts-proto
 # Run protoc on all proto files at once to handle dependencies correctly
-# We use shell expansion to find files
+# We use shell expansion to find files. The output will be relative to --ts_proto_out path.
+# Since our tsconfig maps @proto/* to ../proto/*, and ui root is /app, ../proto is /proto.
+# So we need generated files in /proto.
+# If we set --ts_proto_out=/proto and proto_path=/proto, then input file 'config/v1/auth.proto'
+# generates '/proto/config/v1/auth.ts'. This matches expectations.
 RUN protoc \
     --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/ \
