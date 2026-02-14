@@ -89,7 +89,16 @@ test.describe('Dashboard Real Data', () => {
         // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
         const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+
+        // Reload page once if data isn't there immediately (race condition with seeding)
+        try {
+            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 5000 });
+        } catch (e) {
+            console.log('Data not found immediately, reloading...');
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+        }
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();
