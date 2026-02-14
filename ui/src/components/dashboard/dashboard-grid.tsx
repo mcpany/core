@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -57,6 +57,17 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
     size: def.defaultSize,
     hidden: false
 }));
+
+// ⚡ BOLT: Memoized wrapper to prevent re-rendering heavy widgets during layout changes
+// Randomized Selection from Top 5 High-Impact Targets
+const DashboardWidget = memo(({ widget }: { widget: WidgetInstance }) => {
+    const def = getWidgetDefinition(widget.type);
+    if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+
+    const Component = def.component;
+    return <Component />;
+});
+DashboardWidget.displayName = "DashboardWidget";
 
 /**
  * DashboardGrid component.
@@ -192,14 +203,6 @@ export function DashboardGrid() {
 
     if (!isMounted) return null;
 
-    const renderWidget = (widget: WidgetInstance) => {
-        const def = getWidgetDefinition(widget.type);
-        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
-
-        const Component = def.component;
-        return <Component />;
-    };
-
     const getColSpan = (size: WidgetSize) => {
         switch (size) {
             case "full": return "col-span-12";
@@ -327,7 +330,7 @@ export function DashboardGrid() {
                                                 </DropdownMenu>
                                             </div>
 
-                                            {renderWidget(widget)}
+                                            <DashboardWidget widget={widget} />
                                         </div>
                                     )}
                                 </Draggable>

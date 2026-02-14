@@ -23,6 +23,12 @@ vi.mock("@/components/dashboard/lazy-charts", () => ({
 vi.mock("@/components/dashboard/tool-failure-rate-widget", () => ({
   ToolFailureRateWidget: () => <div data-testid="widget-failure-rate">Tool Failure Rate Widget</div>
 }));
+vi.mock("@/components/dashboard/network-graph-widget", () => ({
+  NetworkGraphWidget: () => <div data-testid="widget-network">Network Graph Widget</div>
+}));
+vi.mock("@/components/dashboard/quick-actions-widget", () => ({
+  QuickActionsWidget: () => <div data-testid="widget-quick-actions">Quick Actions Widget</div>
+}));
 
 // Mock Drag and Drop
 vi.mock("@hello-pangea/dnd", () => ({
