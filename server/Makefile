@@ -265,7 +265,7 @@ prepare:
 		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
 			(cd tests/integration/upstream && npm install) || true; \
-			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
+			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ] && [ -z "$(SKIP_PLAYWRIGHT)" ]; then \
 				echo "CI detected, installing Playwright with system dependencies..."; \
 				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
 			else \
