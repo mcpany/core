@@ -92,10 +92,24 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make
+          if ! command -v make &> /dev/null; then
+            if command -v apt-get &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make build-essential
+            elif command -v apk &> /dev/null; then
+              sudo apk add --no-cache make build-base
+            fi
+          if ! command -v make &> /dev/null; then
+            if command -v apt-get &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make build-essential
+            elif command -v apk &> /dev/null; then
+              sudo apk add --no-cache make build-base
+            fi
+          if ! command -v make &> /dev/null; then
+            if command -v apt-get &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make build-essential
+            elif command -v apk &> /dev/null; then
+              sudo apk add --no-cache make build-base
+            fi
           fi
 
       - name: Prepare environment
