@@ -50,6 +50,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -130,6 +135,11 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -245,6 +255,11 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -386,6 +401,11 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -535,6 +555,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -640,6 +665,11 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
 
       - name: Set up Go
         uses: actions/setup-go@v6
