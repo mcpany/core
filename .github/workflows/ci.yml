@@ -131,7 +131,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +251,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -528,8 +528,9 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          sudo systemctl restart docker || true
           docker info
 
       - name: Set up Go
@@ -645,7 +646,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -733,7 +734,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || true
           docker info # Verify the mirrors are listed
 
       - name: Set up Go

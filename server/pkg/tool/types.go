@@ -958,10 +958,13 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 					return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 				}
 				// Also check decoded value just in case the input was already encoded
-				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
+				decodedVal, err := url.QueryUnescape(valStr)
+				if err == nil && decodedVal != valStr {
 					if err := checkForPathTraversal(decodedVal); err != nil {
 						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
 					}
+				} else if err != nil {
+					_ = err
 				}
 			}
 
@@ -2934,8 +2937,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func checkInterpreterFunctionCalls(val string) error {
-	// Normalize value to detect obfuscation (e.g. system ( ) )
+// stripInterpreterComments normalizes the input by stripping comments and whitespace.
+// It handles single-line comments (#, //) and multi-line comments (/* */).
+func stripInterpreterComments(val string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
@@ -2945,7 +2949,6 @@ func checkInterpreterFunctionCalls(val string) error {
 	for i := 0; i < length; i++ {
 		r := runes[i]
 
-		// Sentinel Security Update: Strip comments to prevent bypasses
 		// Check for single line comment #
 		if r == '#' {
 			// Skip until newline
@@ -2983,7 +2986,12 @@ func checkInterpreterFunctionCalls(val string) error {
 			b.WriteRune(r)
 		}
 	}
-	cleanVal := strings.ToLower(b.String())
+	return strings.ToLower(b.String())
+}
+
+func checkInterpreterFunctionCalls(val string) error {
+	// Normalize value to detect obfuscation (e.g. system ( ) )
+	cleanVal := stripInterpreterComments(val)
 
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
@@ -3401,10 +3409,14 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		return err
 	}
 	// Also check decoded value just in case the input was already encoded
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+	decodedVal, err := url.QueryUnescape(val)
+	if err == nil && decodedVal != val {
 		if err := checkForPathTraversal(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
+	} else if err != nil {
+		// Ignore decoding errors, validate original value
+		_ = err
 	}
 
 	if !isDocker {
@@ -3412,10 +3424,13 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 			return err
 		}
 		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		decodedVal, err := url.QueryUnescape(val)
+		if err == nil && decodedVal != val {
 			if err := checkForLocalFileAccess(decodedVal); err != nil {
 				return fmt.Errorf("%w (decoded)", err)
 			}
+		} else if err != nil {
+			_ = err
 		}
 	}
 
@@ -3423,10 +3438,13 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		return err
 	}
 	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+	decodedVal, err = url.QueryUnescape(val)
+	if err == nil && decodedVal != val {
 		if err := checkForArgumentInjection(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
+	} else if err != nil {
+		_ = err
 	}
 	return nil
 }
