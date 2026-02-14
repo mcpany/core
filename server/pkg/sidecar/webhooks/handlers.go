@@ -26,12 +26,14 @@ const KindPostCall = "PostCall"
 type MarkdownHandler struct{}
 
 // Handle processes the markdown conversion request.
-// It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
 //
 // Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request containing the CloudEvent.
 //
-//	w: The HTTP response writer.
-//	r: The HTTP request.
+// Side Effects:
+//   - Reads from the request body.
+//   - Writes a JSON CloudEvent response to the response writer.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -92,9 +94,12 @@ type TruncateHandler struct{}
 // Handle processes the text truncation request.
 //
 // Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request containing the CloudEvent and optional "max_chars" query param.
 //
-//	w: The HTTP response writer.
-//	r: The HTTP request.
+// Side Effects:
+//   - Reads from the request body.
+//   - Writes a JSON CloudEvent response to the response writer.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -161,9 +166,12 @@ type PaginateHandler struct{}
 // Handle processes the pagination request.
 //
 // Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request containing the CloudEvent and optional "page_size" query param.
 //
-//	w: The HTTP response writer.
-//	r: The HTTP request.
+// Side Effects:
+//   - Reads from the request body.
+//   - Writes a JSON CloudEvent response to the response writer.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

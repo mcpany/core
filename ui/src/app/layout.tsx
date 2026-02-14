@@ -46,9 +46,12 @@ const robotoMono = Roboto_Mono({
 
 /**
  * Root layout component for the application.
- * Wraps the application with necessary providers and the sidebar layout.
- * @param props.children - The child components to render.
- * @returns The root layout structure.
+ *
+ * Summary: Wraps the application with necessary providers (Theme, User, Sidebar) and the base HTML structure.
+ *
+ * @param {Readonly<{ children: React.ReactNode }>} props - The component props.
+ * @param {React.ReactNode} props.children - The child components to render.
+ * @returns {JSX.Element} The root layout structure.
  */
 export default function RootLayout({
   children,
