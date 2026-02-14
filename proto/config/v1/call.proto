@@ -247,6 +247,25 @@ message ParameterSchema {
   bool is_required = 4 [json_name = "is_required"];
   // The default value of the parameter.
   google.protobuf.Value default_value = 5 [json_name = "default_value"];
+
+  // The regular expression pattern that the parameter must match.
+  // Only applicable for STRING type.
+  string pattern = 6;
+  // The minimum length of the string parameter.
+  // Only applicable for STRING type.
+  int32 min_length = 7 [json_name = "minLength"];
+  // The maximum length of the string parameter.
+  // Only applicable for STRING type.
+  int32 max_length = 8 [json_name = "maxLength"];
+  // The minimum value of the numeric parameter.
+  // Only applicable for NUMBER and INTEGER types.
+  double minimum = 9;
+  // The maximum value of the numeric parameter.
+  // Only applicable for NUMBER and INTEGER types.
+  double maximum = 10;
+  // The allowed values for the parameter.
+  // Only applicable for STRING type.
+  repeated string enum = 11;
 }
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.

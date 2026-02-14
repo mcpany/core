@@ -1003,6 +1003,10 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				inputsModified = true
 			}
 
+			if err := validation.ValidateParameter(schema, val); err != nil {
+				return nil, nil, false, fmt.Errorf("parameter %q validation failed: %w", name, err)
+			}
+
 			valStr := util.ToString(val)
 
 			if t.paramInPath[i] {
@@ -1998,6 +2002,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
+			if err := validation.ValidateParameter(param.GetSchema(), val); err != nil {
+				return nil, fmt.Errorf("parameter %q validation failed: %w", name, err)
+			}
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
@@ -2346,6 +2353,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
+			if err := validation.ValidateParameter(param.GetSchema(), val); err != nil {
+				return nil, fmt.Errorf("parameter %q validation failed: %w", name, err)
+			}
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
