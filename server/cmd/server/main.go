@@ -31,8 +31,12 @@ import (
 )
 
 var (
-	// Version is set at build time.
-	Version              = "dev"
+	// Version holds the current version of the application.
+	// It is typically injected at build time using linker flags (e.g., -ldflags "-X main.Version=...").
+	Version = "dev"
+
+	// appRunner is the interface used to run the application logic.
+	// It is exposed as a variable to allow dependency injection for testing purposes.
 	appRunner app.Runner = app.NewApplication()
 )
 
@@ -46,6 +50,9 @@ const (
 // loadEnv loads environment variables from a .env file.
 //
 // Summary: Loads environment variables from a file.
+//
+// It checks for an explicit --env-file flag. If not provided, it attempts to load
+// from a default ".env" file in the current directory.
 //
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to check for the --env-file flag.
@@ -78,6 +85,10 @@ func loadEnv(cmd *cobra.Command) error {
 // newRootCmd creates and configures the main command for the application.
 //
 // Summary: Creates the root command hierarchy.
+//
+// It sets up the root "mcpany" command and its subcommands (run, version, update,
+// health, doctor, config, lint). It also handles global flag binding and environment
+// variable loading.
 //
 // Returns:
 //   - *cobra.Command: The configured root command.
@@ -612,6 +623,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 // main is the entry point for the MCP Any server application.
 //
 // Summary: Entry point for the application.
+//
+// It initializes the root command and executes it. If execution fails,
+// it exits the process with a non-zero status code.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)

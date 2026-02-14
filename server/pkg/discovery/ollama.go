@@ -18,27 +18,60 @@ import (
 )
 
 // Provider defines the interface for auto-discovering local services.
+//
+// Implementations should search for specific services (e.g., Docker containers,
+// local processes) and return their configurations as UpstreamServiceConfig.
 type Provider interface {
-	// Name returns the name of the discovery provider.
+	// Name returns the unique name of the discovery provider.
+	//
+	// Returns:
+	//   - string: The provider name.
 	Name() string
 	// Discover attempts to find services and return their configurations.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the discovery operation.
+	//
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: A list of discovered service configurations.
+	//   - error: An error if discovery fails significantly (partial failures should ideally be logged).
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
 // OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+//
+// It attempts to connect to the configured endpoint (defaulting to localhost:11434)
+// and, if successful, returns a configuration to proxy requests to it.
 type OllamaProvider struct {
-	Endpoint   string // e.g., "http://localhost:11434"
+	// Endpoint is the URL of the Ollama server (e.g., "http://localhost:11434").
+	Endpoint   string
 	client     *http.Client
 	clientOnce sync.Once
 }
 
 // Name returns the name of the provider.
+//
+// Summary: Retrieves the provider name.
+//
+// Returns:
+//   - string: "ollama".
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
 // Discover attempts to find local Ollama instances and return them as tools.
+//
+// It checks if the Ollama endpoint is reachable. If so, it returns an
+// HTTP upstream service configuration pointing to the /v1 OpenAI-compatible endpoint.
+//
+// Summary: Discovers local Ollama services.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A list containing the Ollama service config if found.
+//   - error: An error if the check fails.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

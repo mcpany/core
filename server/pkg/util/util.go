@@ -622,10 +622,13 @@ func toStringRecursive(v any, depth int) string {
 	}
 }
 
-// RandomFloat64 returns a random float64 in [0.0, 1.0).
-// It uses the global math/rand source.
+// RandomFloat64 returns a pseudo-random float64 in the half-open interval [0.0, 1.0).
 //
-// Summary: Generates a random float.
+// It uses the global math/rand source and is NOT cryptographically secure.
+// This function should only be used for non-security-critical operations, such as
+// calculating jitter for retries.
+//
+// Summary: Generates a pseudo-random float.
 //
 // Returns:
 //   - float64: A random float64 value.

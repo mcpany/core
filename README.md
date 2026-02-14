@@ -131,7 +131,7 @@ make test
 
 ### Linting
 We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
+*   **Go:** We use `golangci-lint` (including `revive`) to enforce GoDoc standards.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
 To run linters:
