@@ -129,7 +129,13 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Check if daemon.json exists, if so merge, else create
+          if [ -f /etc/docker/daemon.json ]; then
+            sudo cat /etc/docker/daemon.json | jq '."registry-mirrors" = ["https://mirror.gcr.io"]' | sudo tee /etc/docker/daemon.json.tmp
+            sudo mv /etc/docker/daemon.json.tmp /etc/docker/daemon.json
+          else
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -249,7 +255,13 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Check if daemon.json exists, if so merge, else create
+          if [ -f /etc/docker/daemon.json ]; then
+            sudo cat /etc/docker/daemon.json | jq '."registry-mirrors" = ["https://mirror.gcr.io"]' | sudo tee /etc/docker/daemon.json.tmp
+            sudo mv /etc/docker/daemon.json.tmp /etc/docker/daemon.json
+          else
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -504,10 +516,19 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Check if daemon.json exists, if so merge, else create
+          if [ -f /etc/docker/daemon.json ]; then
+            sudo cat /etc/docker/daemon.json | jq '."registry-mirrors" = ["https://mirror.gcr.io"]' | sudo tee /etc/docker/daemon.json.tmp
+            sudo mv /etc/docker/daemon.json.tmp /etc/docker/daemon.json
+          else
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
+
           sudo systemctl restart docker
-          docker info
+          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -620,7 +641,13 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Check if daemon.json exists, if so merge, else create
+          if [ -f /etc/docker/daemon.json ]; then
+            sudo cat /etc/docker/daemon.json | jq '."registry-mirrors" = ["https://mirror.gcr.io"]' | sudo tee /etc/docker/daemon.json.tmp
+            sudo mv /etc/docker/daemon.json.tmp /etc/docker/daemon.json
+          else
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -708,7 +735,13 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Check if daemon.json exists, if so merge, else create
+          if [ -f /etc/docker/daemon.json ]; then
+            sudo cat /etc/docker/daemon.json | jq '."registry-mirrors" = ["https://mirror.gcr.io"]' | sudo tee /etc/docker/daemon.json.tmp
+            sudo mv /etc/docker/daemon.json.tmp /etc/docker/daemon.json
+          else
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          fi
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
