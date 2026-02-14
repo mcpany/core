@@ -70,7 +70,7 @@ func (a *Application) handleUpdateUserPreferences(w http.ResponseWriter, r *http
 
 	// Fetch existing user from STORAGE first
 	user, err := a.Storage.GetUser(ctx, userID)
-	if err != nil {
+	if err != nil || user == nil {
 		// User not in DB. Check AuthManager for in-memory definition (from config).
 		// We need to create a new DB record, preserving existing config if any.
 
