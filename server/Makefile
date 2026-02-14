@@ -312,30 +312,8 @@ prepare:
 	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
-	@if test -f "$(SHELLCHECK_BIN)"; then \
-		echo "ShellCheck is already installed."; \
-	else \
-		echo "Installing ShellCheck..."; \
-		if command -v apt-get >/dev/null 2>&1; then \
-			(sudo apt-get update && sudo apt-get install -y shellcheck && \
-			ln -sf $$(which shellcheck) "$(SHELLCHECK_BIN)" && \
-			echo "ShellCheck installed via apt-get.") || echo "Warning: apt-get install failed. Skipping ShellCheck."; \
-		else \
-			echo "apt-get not found, attempting binary download..."; \
-			if command -v xz >/dev/null 2>&1; then \
-				SC_VERSION="stable"; \
-				if curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; then \
-					mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-					rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
-					echo "ShellCheck installed successfully."; \
-				else \
-					echo "Warning: ShellCheck download/extract failed. Skipping."; \
-				fi; \
-			else \
-				echo "Warning: xz not found and no apt-get. Skipping ShellCheck installation."; \
-			fi; \
-		fi; \
-	fi
+	@chmod +x tools/install_shellcheck.sh
+	@./tools/install_shellcheck.sh "$(SHELLCHECK_BIN)"
 	@# Install nats-server
 	@echo "Checking for nats-server..."
 	@if test -f "$(NATS_SERVER_BIN)"; then \
