@@ -128,6 +128,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
@@ -247,6 +248,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
@@ -392,6 +394,37 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
+
+      - name: Configure Docker Registry Mirrors
+        run: |
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
+          sudo systemctl restart docker
+          docker info # Verify the mirrors are listed
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Prepare environment (Generate Protos)
+        run: |
+          # Ensure make, curl, unzip are installed (needed for make prepare/gen)
+          sudo apt-get update && sudo apt-get install -y make curl unzip
+          make prepare
+          make gen
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -616,6 +649,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
@@ -703,6 +737,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
