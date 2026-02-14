@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl
+          sudo apt-get install -y make curl unzip
 
       - name: Prepare environment
         run: make prepare
@@ -203,6 +203,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -351,6 +356,11 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
+
       - name: Prepare environment
         run: make prepare
 
@@ -423,18 +433,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make curl unzip
 
       - name: Prepare environment
         run: |
           # Verify prepare success
           make prepare
           ls -R build/env/bin || echo "build/env/bin empty or missing"
-
-      - name: Install dependencies (build-images)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make curl
 
       - name: Build and Save Images
         run: |
@@ -628,6 +633,11 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
+
       - name: Prepare environment
         run: make prepare
 
@@ -718,6 +728,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
 
       - name: Prepare environment
         run: make prepare
