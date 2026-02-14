@@ -66,6 +66,7 @@ export function BulkImportWizard({ onImportSuccess, onCancel }: BulkImportWizard
 
   // Handlers for Navigation
   const handleNext = async () => {
+    // Reset errors on next attempt
     if (step === "input") {
       setParseError(null);
       setValidating(true);
