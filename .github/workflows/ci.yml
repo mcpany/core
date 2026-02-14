@@ -211,6 +211,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xz-utils
+          which xz || echo "xz not found in PATH"
+          xz --version || echo "xz version check failed"
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -377,6 +379,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xz-utils
+          which xz || echo "xz not found in PATH"
+          xz --version || echo "xz version check failed"
 
       - name: Prepare environment
         run: make prepare
