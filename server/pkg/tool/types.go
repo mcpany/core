@@ -228,6 +228,8 @@ type Callable interface {
 }
 
 // Action defines the decision made by a pre-call hook.
+//
+// Summary: Enumeration for hook decisions.
 type Action int
 
 const (
@@ -2958,7 +2960,17 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
+// stripInterpreterComments removes comments from a script snippet to prevent injection bypasses.
+//
+// Summary: Strips comments from code snippets.
+//
+// Parameters:
+//   - val: string. The code snippet.
+//   - language: string. The language (e.g. "python", "bash").
+//
+// Returns:
+//   - string: The code snippet without comments.
+func stripInterpreterComments(val, language string) string { //nolint:gocyclo // Complex parsing logic required for security
 	var b strings.Builder
 	b.Grow(len(val))
 

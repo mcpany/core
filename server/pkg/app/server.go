@@ -2389,10 +2389,10 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 // HTTPRequestContextMiddleware injects the HTTP request into the context.
 //
-// Summary: Middleware to add HTTP request to context.
+// Summary: Middleware that adds the HTTP request to the context.
 //
 // Parameters:
-//   - next: http.Handler. The next handler.
+//   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
 //   - http.Handler: The wrapped handler.
@@ -2403,15 +2403,23 @@ func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handl
 	})
 }
 
-// startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startGrpcServer starts a gRPC server in a new goroutine.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener for the server.
-// register is a function that registers the gRPC services with the server.
+// Summary: Starts a gRPC server asynchronously.
+//
+// Parameters:
+//   - ctx: context.Context. The context for managing the server's lifecycle.
+//   - wg: *sync.WaitGroup. A WaitGroup to signal when the server has shut down.
+//   - errChan: chan<- error. A channel for reporting errors during startup.
+//   - readyChan: chan<- struct{}. A channel to signal when the server is ready.
+//   - name: string. A descriptive name for the server, used in logging.
+//   - lis: net.Listener. The net.Listener for the server.
+//   - shutdownTimeout: time.Duration. The timeout for graceful shutdown.
+//   - server: *gogrpc.Server. The gRPC server instance.
+//
+// Side Effects:
+//   - Starts a goroutine.
+//   - Accepts network connections.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -2478,6 +2486,17 @@ func startGrpcServer(
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
+//
+// Summary: Wraps a bind error with a user-friendly message.
+//
+// Parameters:
+//   - err: error. The original error.
+//   - serverType: string. The type of server (e.g. "HTTP").
+//   - address: string. The address that failed to bind.
+//   - flag: string. The CLI flag to change the port.
+//
+// Returns:
+//   - error: The wrapped error.
 func wrapBindError(err error, serverType, address, flag string) error {
 	if strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind: permission denied") {
 		return fmt.Errorf("❌ %s server failed to listen on %s: %w\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
@@ -2485,15 +2504,24 @@ func wrapBindError(err error, serverType, address, flag string) error {
 	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }
 
-// startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startHTTPServer starts an HTTP server in a new goroutine.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener on which the server will listen.
-// handler is the HTTP handler for processing requests.
+// Summary: Starts an HTTP server asynchronously.
+//
+// Parameters:
+//   - ctx: context.Context. The context for managing the server's lifecycle.
+//   - wg: *sync.WaitGroup. A WaitGroup to signal when the server has shut down.
+//   - errChan: chan<- error. A channel for reporting errors during startup.
+//   - readyChan: chan<- struct{}. A channel to signal when the server is ready.
+//   - name: string. A descriptive name for the server, used in logging.
+//   - lis: net.Listener. The net.Listener on which the server will listen.
+//   - handler: http.Handler. The HTTP handler for processing requests.
+//   - shutdownTimeout: time.Duration. The timeout for graceful shutdown.
+//   - connState: func(net.Conn, http.ConnState). A callback for connection state changes.
+//
+// Side Effects:
+//   - Starts a goroutine.
+//   - Accepts network connections.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,

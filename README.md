@@ -94,7 +94,7 @@ Follow these steps to get up and running with MCP Any immediately.
 
 4.  **Run with an example configuration:**
     ```bash
-    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ./build/bin/server run --config-path server/examples/upstream_service_demo/http/config/mcp_any_config.yaml
     ```
 
 ### Hello World
@@ -117,7 +117,7 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 Ask your agent:
 > "What is the weather in Tokyo?"
 
-The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
+The agent will use the configured HTTP tool (e.g. `wttr.in` if configured) to fetch the data.
 
 ## 4. Development
 
