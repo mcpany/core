@@ -316,10 +316,14 @@ prepare:
 		echo "ShellCheck is already installed."; \
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
-		SC_VERSION="stable"; \
-		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		SC_VERSION="v0.9.0"; \
+		ARCH=$$(uname -m); \
+		if [ "$$ARCH" = "aarch64" ]; then SC_ARCH="aarch64"; else SC_ARCH="x86_64"; fi; \
+		echo "Downloading ShellCheck $${SC_VERSION} for $${SC_ARCH}..."; \
+		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.$${SC_ARCH}.tar.xz" -o "/tmp/shellcheck.tar.xz"; \
+		tar -xJf "/tmp/shellcheck.tar.xz" -C "/tmp"; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+		rm -rf "/tmp/shellcheck-$${SC_VERSION}" "/tmp/shellcheck.tar.xz"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
 			echo "ShellCheck installed successfully."; \
 		else \
