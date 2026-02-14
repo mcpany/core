@@ -84,7 +84,7 @@ Follow these steps to get up and running with MCP Any immediately.
     ```bash
     make prepare
     ```
-    This command installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
+    This command installs necessary tools (protoc, linter, hooks, shellcheck) into `build/env/bin`.
 
 3.  **Build the server:**
     ```bash
@@ -133,6 +133,7 @@ make test
 We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` (including `revive`) to enforce GoDoc standards.
 *   **Protocol:** We check for breaking changes in `.proto` files.
+*   **Shell:** We use `shellcheck` to lint shell scripts.
 
 To run linters:
 ```bash
