@@ -15,17 +15,19 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
+Navigate to the **Upstream Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 
 Key columns:
 
-- **Name**: Application identifier.
-- **Type**: Protocol (HTTP, gRPC, MCP, CMD).
-- **Status**: Health indicator (Healthy, Degraded, Unhealthy).
-- **Control**: Toggle switch to quickly enable/disable traffic.
-- **Actions**: "View Logs" to jump directly to the live logs for a specific service.
+- **Status/Control**: Toggle switch to enable/disable traffic, and status indicators.
+- **Name**: Application identifier (clickable to edit).
+- **Type**: Protocol (HTTP, gRPC, MCP, CLI).
+- **Activity**: Real-time health sparkline (Green=Healthy, Yellow=Slow, Red=Error).
+- **Tags**: Organization tags.
+- **Address**: Connection target or command.
+- **Actions**: Menu for diagnostics, logs, editing, duplicating, and exporting.
 
 ### 2. Add New Service
 

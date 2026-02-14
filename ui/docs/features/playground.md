@@ -15,18 +15,19 @@ The Playground is the central specialized interface for Developers to interactiv
 
 ### 1. Overview
 
-Navigate to `/playground`. The interface presents a clean slate with access to all available tools on the left sidebar.
+Navigate to `/playground`. The interface presents a clean slate with a chat interface for executing tools.
 
 ![Playground Overview](screenshots/playground_blank.png)
 
-> **Note**: The page title is "Console".
+> **Note**: The page title is "Playground".
 
 ### 2. Select a Tool
 
-Browse the sidebar to find the tool you wish to test.
+Click the **Available Tools** button in the top toolbar to open the tool selection sheet.
 
-1. Click on a tool name (e.g., `filesystem.list_dir`).
-2. The main pane updates to show the **Tool Description** and a dynamically generated **Input Form**.
+1. Browse or search for the tool you wish to test (e.g., `filesystem.list_dir`).
+2. Click **Use Tool** next to the desired tool.
+3. A configuration dialog opens showing the **Tool Description** and a dynamically generated **Input Form**.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
 
