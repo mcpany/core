@@ -65,7 +65,7 @@ WORKDIR /workspace/server
 # Run make prepare to install tools
 ENV TOOL_INSTALL_DIR=/tools
 # Upgrade pip to latest version to avoid compatibility issues
-RUN pip3 install --upgrade pip
+RUN pip3 install --break-system-packages --upgrade pip
 
 # Install pre-commit globally to be available in CI mode
 RUN pip3 install --break-system-packages pre-commit fastmcp --default-timeout=100 || (sleep 5 && pip3 install --break-system-packages pre-commit fastmcp --default-timeout=100)

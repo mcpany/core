@@ -6,6 +6,7 @@
 "use client";
 
 import { apiClient, ToolDefinition } from "@/lib/client";
+import { deserializeSessionMessages } from "@/lib/session-utils";
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
@@ -47,6 +48,25 @@ export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");
   const searchParams = useSearchParams();
+
+  // Check for pending import from Prompt Workbench
+  useEffect(() => {
+    const pendingImport = sessionStorage.getItem("playground_import_pending");
+    if (pendingImport) {
+        try {
+            const importedMessages = deserializeSessionMessages(pendingImport);
+            if (importedMessages.length > 0) {
+                // We need to cast or ensure types match. Message in Pro might be slightly different?
+                // Pro uses Message from "./chat-message".
+                // deserializeSessionMessages returns any[].
+                setMessages(importedMessages as Message[]);
+                sessionStorage.removeItem("playground_import_pending");
+            }
+        } catch (e) {
+            console.error("Failed to import session from prompts:", e);
+        }
+    }
+  }, [setMessages]);
 
   // Initialize with welcome message if empty and only after local storage is loaded
   useEffect(() => {

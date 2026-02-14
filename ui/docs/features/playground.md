@@ -21,11 +21,11 @@ Navigate to `/playground`. The interface presents a chat history view where you 
 
 ### 2. Discover Tools
 
-Click the **"Available Tools"** button in the top right to open the tools catalog.
+Use the **left sidebar** to browse the tools catalog.
 
-1. A sheet will slide in listing all registered tools.
-2. Browse or search for the tool you wish to test.
-3. Click **"Use Tool"** on a specific item.
+1. The sidebar lists all registered tools, grouped or searchable.
+2. Click on a tool to select it.
+3. Click **"Use Tool"** or **"Configure"** to open the configuration dialog.
 
 ![Tool Selection](screenshots/playground_tool_selected.png)
 
