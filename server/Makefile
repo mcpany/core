@@ -310,6 +310,15 @@ prepare:
 			exit 1; \
 		fi; \
 	fi
+	@# Install xz-utils for shellcheck extraction
+	@if ! command -v xz >/dev/null 2>&1; then \
+		echo "xz not found. Installing xz-utils..."; \
+		if command -v apt-get >/dev/null 2>&1; then \
+			if command -v sudo >/dev/null 2>&1; then sudo apt-get update && sudo apt-get install -y xz-utils; else apt-get update && apt-get install -y xz-utils; fi; \
+		elif command -v apk >/dev/null 2>&1; then \
+			apk add --no-cache xz; \
+		fi; \
+	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
 	@if test -f "$(SHELLCHECK_BIN)"; then \
