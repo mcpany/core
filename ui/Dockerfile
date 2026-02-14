@@ -27,6 +27,11 @@ RUN ARCH=$(uname -m); \
     unzip protoc-29.3-linux-$PROTOC_ARCH.zip -d /usr/local && \
     rm protoc-29.3-linux-$PROTOC_ARCH.zip
 
+# Download Google API protos that are not included in the standard protoc release
+RUN mkdir -p /usr/local/include/google/api && \
+    curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto -o /usr/local/include/google/api/annotations.proto && \
+    curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto -o /usr/local/include/google/api/http.proto
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json

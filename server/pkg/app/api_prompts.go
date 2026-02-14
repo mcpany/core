@@ -58,11 +58,6 @@ func (a *Application) handleCreatePrompt(w http.ResponseWriter, r *http.Request,
 	svc.SetPrompts(newPrompts)
 
 	// Save service
-	// Note: ValidateOrError might fail if we don't have a valid command/etc, but user-library is just a placeholder.
-	// We skip strict validation of the *service* structure here assuming it was valid before,
-	// but we should ideally validate the prompt itself.
-	// Since PromptDefinition is self-contained, we can rely on what we have.
-
 	if err := store.SaveService(r.Context(), svc); err != nil {
 		logging.GetLogger().Error("failed to save user-library service", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -114,10 +109,6 @@ func (a *Application) handleUpdatePrompt(w http.ResponseWriter, r *http.Request,
 	}
 
 	if !found {
-		// If not found in user-library, maybe it's a system prompt from another service?
-		// We can only edit prompts in user-library via this API.
-		// If the user tries to edit a prompt from another service, we should probably forbid it or it will just fail here.
-		// For now, we assume this API endpoint manages user-library prompts.
 		http.Error(w, "Prompt not found in user library (cannot edit system prompts)", http.StatusNotFound)
 		return
 	}
@@ -211,10 +202,6 @@ func (a *Application) handlePromptExecute(store storage.Storage) http.HandlerFun
 			return
 		}
 
-		// Use config.ValidateOrError? No, logic is in PromptManager
-		// PromptManager.GetPrompt returns a Prompt interface.
-		// Prompt.Get(ctx, args) executes it.
-
 		prompt, ok := a.PromptManager.GetPrompt(name)
 		if !ok {
 			http.Error(w, "prompt not found", http.StatusNotFound)
@@ -239,7 +226,6 @@ func (a *Application) handlePromptExecute(store storage.Storage) http.HandlerFun
 	}
 }
 
-// Wrapper for main handler to dispatch
 func (a *Application) handlePromptsDispatch(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check if it's /prompts or /prompts/NAME
