@@ -92,8 +92,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make xz-utils
+          if command -v apk &> /dev/null; then
+            sudo apk add --no-cache make xz
+          elif command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          else
+            echo "Unknown package manager"
+            exit 1
+          fi
 
       - name: Prepare environment
         run: make prepare
@@ -208,8 +214,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make xz-utils
+          if command -v apk &> /dev/null; then
+            sudo apk add --no-cache make xz
+          elif command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          else
+            echo "Unknown package manager"
+            exit 1
+          fi
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -456,8 +468,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make xz-utils
+          if command -v apk &> /dev/null; then
+            sudo apk add --no-cache make xz
+          elif command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          else
+            echo "Unknown package manager"
+            exit 1
+          fi
 
       - name: Prepare environment
         run: make prepare
