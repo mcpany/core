@@ -208,6 +208,21 @@ func init() {
 
 	BuiltinServiceTemplates = []*configv1.ServiceTemplate{
 		mkServiceTemplate(
+			"empty",
+			"Custom Service",
+			"Configure a service from scratch.",
+			"server",
+			[]string{"other"},
+			func() *configv1.UpstreamServiceConfig {
+				c := &configv1.UpstreamServiceConfig{}
+				// Initialize with empty HTTP service to default the form type
+				h := &configv1.HttpUpstreamService{}
+				h.SetAddress("")
+				c.SetHttpService(h)
+				return c
+			}(),
+		),
+		mkServiceTemplate(
 			"google-calendar",
 			"Google Calendar",
 			"Calendar management.",

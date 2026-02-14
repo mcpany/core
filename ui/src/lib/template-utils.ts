@@ -90,7 +90,14 @@ function applyValueToConfig(
   }
 }
 
+/**
+ * Returns a Lucide icon component for a given icon name.
+ *
+ * @param name The name of the icon.
+ * @returns The Lucide icon component.
+ */
 export function getIconForName(name: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const map: Record<string, any> = {
         "activity": Activity,
         "calendar": Calendar,
@@ -115,6 +122,12 @@ export function getIconForName(name: string) {
     return map[name.toLowerCase()] || Server;
 }
 
+/**
+ * Converts a backend ServiceTemplate to a FrontendServiceTemplate.
+ *
+ * @param backend The backend service template.
+ * @returns The frontend service template.
+ */
 export function convertBackendTemplateToFrontend(backend: ClientServiceTemplate): FrontendServiceTemplate {
     const fields = parseSchemaToFields(backend.serviceConfig.configurationSchema);
 

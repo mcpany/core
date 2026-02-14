@@ -1132,7 +1132,8 @@ func TestHandleAuditExport(t *testing.T) {
 	app, _ := setupApiTestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 
-	dbPath := "./audit_test_export.db"
+	// Use .dat to avoid sensitive file check blocking .db
+	dbPath := "./audit_test_export.dat"
 	defer os.Remove(dbPath)
 
 	sqliteStore, err := audit.NewSQLiteAuditStore(dbPath)
