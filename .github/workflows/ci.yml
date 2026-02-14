@@ -140,6 +140,7 @@ jobs:
                sudo service docker restart || echo "Service restart failed, ignoring."
             fi
           fi
+          # Ensure Docker is running/restartable before proceeding
           docker info || echo "Docker info failed, ignoring."
 
       - name: Set up Go

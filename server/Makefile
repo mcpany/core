@@ -140,8 +140,8 @@ prepare:
 				if command -v sudo >/dev/null 2>&1; then \
 					sudo apt-get update && sudo apt-get install -y curl unzip xz-utils; \
 				else \
-					echo "sudo not found, trying apt-get without it..."; \
-					apt-get update && apt-get install -y curl unzip xz-utils; \
+					echo "sudo not found, cannot install dependencies. Please install curl, unzip, and xz-utils manually."; \
+					exit 1; \
 				fi; \
 			fi; \
 		elif command -v apk >/dev/null 2>&1; then \
