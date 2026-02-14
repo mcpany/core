@@ -18,6 +18,7 @@ import (
 type GrpcClient interface {
 	// Invoke performs a unary RPC and blocks until the response is received.
 	//
+	//
 	// Parameters:
 	//   - ctx: The context for the RPC.
 	//   - method: The full gRPC method string (e.g., "/service.Service/Method").
@@ -27,6 +28,7 @@ type GrpcClient interface {
 	Invoke(ctx context.Context, method string, args any, reply any, opts ...grpc.CallOption) error
 
 	// NewStream creates a new gRPC stream.
+	//
 	//
 	// Parameters:
 	//   - ctx: The context for the stream.
@@ -42,6 +44,7 @@ type GrpcClient interface {
 type HTTPClient interface {
 	// Do sends an HTTP request and returns an HTTP response.
 	//
+	//
 	// Parameters:
 	//   - req: The HTTP request to send.
 	Do(req *http.Request) (*http.Response, error)
@@ -52,6 +55,7 @@ type HTTPClient interface {
 type MCPClient interface {
 	// CallTool executes a tool on the MCP service, sending the tool name and
 	// inputs and returning the result.
+	//
 	//
 	// Parameters:
 	//   - ctx: The context for the call.
