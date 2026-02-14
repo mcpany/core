@@ -284,7 +284,7 @@ prepare:
 		echo "Helm is already installed."; \
 	else \
 		echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
-		OS=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
+		(OS=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
 		ARCH=$$(uname -m); \
 		case $${ARCH} in \
 			x86_64) ARCH=amd64 ;; \
@@ -308,7 +308,7 @@ prepare:
 		else \
 			echo "Failed to download Helm."; \
 			exit 1; \
-		fi; \
+		fi) || echo "Warning: Helm installation failed. Continuing..."; \
 	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
@@ -320,13 +320,13 @@ prepare:
 		echo "nats-server is already installed."; \
 	else \
 		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
-		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
+		(GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest && \
 		if test -f "$(NATS_SERVER_BIN)"; then \
 			echo "nats-server installed successfully."; \
 		else \
 			echo "nats-server installation failed."; \
 			exit 1; \
-		fi; \
+		fi) || echo "Warning: nats-server installation failed. Continuing..."; \
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
@@ -335,13 +335,13 @@ prepare:
 		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
 		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		(curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5 && \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
 			echo "golangci-lint installation failed."; \
 			exit 1; \
-		fi; \
+		fi) || echo "Warning: golangci-lint installation failed. Continuing..."; \
 	fi
 	@echo "Downloading go modules..." && \
 	go mod download
