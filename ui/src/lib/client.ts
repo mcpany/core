@@ -43,6 +43,47 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
+/**
+ * ServiceTemplate defines a template for an upstream service.
+ */
+export interface ServiceTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    tags: string[];
+    authType?: string; // Optional helper for UI
+    serviceConfig: UpstreamServiceConfig;
+}
+
+// Helper to map snake_case config to camelCase UpstreamServiceConfig
+const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
+    ...s,
+    connectionPool: s.connection_pool,
+    httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+    grpcService: s.grpc_service,
+    commandLineService: s.command_line_service,
+    mcpService: s.mcp_service,
+    upstreamAuth: s.upstream_auth,
+    preCallHooks: s.pre_call_hooks,
+    postCallHooks: s.post_call_hooks,
+    lastError: s.last_error,
+    toolCount: s.tool_count,
+    toolExportPolicy: s.tool_export_policy,
+    promptExportPolicy: s.prompt_export_policy,
+    resourceExportPolicy: s.resource_export_policy,
+    callPolicies: s.call_policies?.map((p: any) => ({
+        defaultAction: p.default_action,
+        rules: p.rules?.map((r: any) => ({
+            action: r.action,
+            nameRegex: r.name_regex,
+            argumentRegex: r.argument_regex,
+            urlRegex: r.url_regex,
+            callIdRegex: r.call_id_regex
+        }))
+    })),
+});
+
 // Initialize gRPC Web Client
 // Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
 // server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
@@ -241,32 +282,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);
         // Map snake_case to camelCase for UI compatibility
-        return list.map((s: any) => ({
-            ...s,
-            connectionPool: s.connection_pool,
-            httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            preCallHooks: s.pre_call_hooks,
-            postCallHooks: s.post_call_hooks,
-            lastError: s.last_error,
-            toolCount: s.tool_count,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
-            callPolicies: s.call_policies?.map((p: any) => ({
-                defaultAction: p.default_action,
-                rules: p.rules?.map((r: any) => ({
-                    action: r.action,
-                    nameRegex: r.name_regex,
-                    argumentRegex: r.argument_regex,
-                    urlRegex: r.url_regex,
-                    callIdRegex: r.call_id_regex
-                }))
-            })),
-        }));
+        return list.map(mapUpstreamServiceConfig);
     },
 
     /**
@@ -844,72 +860,69 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
+     * Fetches from the backend /api/v1/templates endpoint.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+
+        return list.map((t: any) => {
+            const sc = t.service_config || {};
+            const auth = sc.upstream_auth;
+            let authType = 'none';
+            if (auth?.oauth2) authType = 'oauth2';
+            else if (auth?.api_key) authType = 'apiKey';
+            else if (auth?.bearer_token) authType = 'token';
+            else if (auth?.basic_auth) authType = 'basic';
+
+            return {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon,
+                tags: t.tags || [],
+                authType: authType,
                 serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
-                    }
+                    ...sc,
+                    // Map snake_case to camelCase for UI consumption
+                    connectionPool: sc.connection_pool,
+                    httpService: sc.http_service ? HttpUpstreamService.fromJSON(sc.http_service) : undefined,
+                    grpcService: sc.grpc_service,
+                    commandLineService: sc.command_line_service,
+                    mcpService: sc.mcp_service,
+                    upstreamAuth: sc.upstream_auth,
+                    preCallHooks: sc.pre_call_hooks,
+                    postCallHooks: sc.post_call_hooks,
+                    toolExportPolicy: sc.tool_export_policy,
+                    promptExportPolicy: sc.prompt_export_policy,
+                    resourceExportPolicy: sc.resource_export_policy,
+                    callPolicies: sc.call_policies?.map((p: any) => ({
+                        defaultAction: p.default_action,
+                        rules: p.rules?.map((r: any) => ({
+                            action: r.action,
+                            nameRegex: r.name_regex,
+                            argumentRegex: r.argument_regex,
+                            urlRegex: r.url_regex,
+                            callIdRegex: r.call_id_regex
+                        }))
+                    })),
+                    // Specific mapping for openapi_service
+                    openapiService: sc.openapi_service ? {
+                        address: sc.openapi_service.address,
+                        specUrl: sc.openapi_service.spec_url,
+                        specContent: sc.openapi_service.spec_content,
+                        tools: sc.openapi_service.tools,
+                        resources: sc.openapi_service.resources,
+                        prompts: sc.openapi_service.prompts,
+                        calls: sc.openapi_service.calls,
+                        healthCheck: sc.openapi_service.health_check,
+                        tlsConfig: sc.openapi_service.tls_config
+                    } : undefined
                 }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
-                }
-            }
-        ];
+            };
+        });
     },
 
     /**
@@ -1685,28 +1698,28 @@ export const apiClient = {
      * Lists all service templates.
      * @returns A promise that resolves to a list of templates.
      */
-    listTemplates: async () => {
+    listTemplates: async (): Promise<ServiceTemplate[]> => {
         const res = await fetchWithAuth('/api/v1/templates');
         if (!res.ok) throw new Error('Failed to fetch templates');
         const data = await res.json();
-        // Backend returns generic UpstreamServiceConfig list.
-        // Map snake_case to camelCase
         const list = Array.isArray(data) ? data : [];
-        return list.map((s: any) => ({
-            ...s,
-            // Reuse logic? Or copy/paste mapping
-            connectionPool: s.connection_pool,
-            httpService: s.http_service,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            preCallHooks: s.pre_call_hooks,
-            postCallHooks: s.post_call_hooks,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
-        }));
+        return list.map((t: any) => {
+            const template: ServiceTemplate = {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon,
+                tags: t.tags,
+                serviceConfig: mapUpstreamServiceConfig(t.service_config || {}),
+            };
+            // Infer authType for UI helper
+            if (template.serviceConfig.upstreamAuth?.oauth2) {
+                template.authType = "oauth2";
+            } else if (template.serviceConfig.upstreamAuth?.apiKey) {
+                template.authType = "token";
+            }
+            return template;
+        });
     },
 
     /**

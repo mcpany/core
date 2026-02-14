@@ -4,11 +4,27 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './test-data';
 
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test.beforeEach(async ({ request, page }) => {
+        await seedUser(request, "e2e-admin");
+        // Login
+        await page.goto('/login');
+        await page.waitForLoadState('networkidle');
+        await page.fill('input[name="username"]', 'e2e-admin');
+        await page.fill('input[name="password"]', 'password');
+        await page.click('button[type="submit"]');
+        await expect(page).toHaveURL('/', { timeout: 15000 });
+    });
+
+    test.afterEach(async ({ request }) => {
+        await cleanupUser(request, "e2e-admin");
+    });
+
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency

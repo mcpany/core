@@ -52,6 +52,15 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Returns an error if the operation fails.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
+	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
+	// Randomized Selection from Top 5 High-Impact Targets
+	b, err := json.Marshal(entry)
+	if err != nil {
+		return err
+	}
+	// json.NewEncoder.Encode appends a newline, so we must add it here too.
+	b = append(b, '\n')
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -62,7 +71,8 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 		w = s.out
 	}
 
-	return json.NewEncoder(w).Encode(entry)
+	_, err = w.Write(b)
+	return err
 }
 
 // Read implements the Store interface.

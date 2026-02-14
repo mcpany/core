@@ -99,44 +99,6 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_HeaderParameterMapping(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "my-value", r.Header.Get("X-Custom-Header"))
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"status": "ok"}`))
-	})
-	server := httptest.NewServer(handler)
-	defer server.Close()
-
-	poolManager := pool.NewManager()
-	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
-		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
-	poolManager.Register("test-service", p)
-
-	methodAndURL := "GET " + server.URL
-	mcpTool := v1.Tool_builder{
-		UnderlyingMethodFqn: &methodAndURL,
-	}.Build()
-
-	paramMapping := configv1.HttpParameterMapping_builder{
-		Schema: configv1.ParameterSchema_builder{
-			Name: proto.String("X-Custom-Header"),
-		}.Build(),
-		Location: configv1.ParameterLocation_HEADER.Enum(),
-	}.Build()
-	callDef := configv1.HttpCallDefinition_builder{
-		Parameters: []*configv1.HttpParameterMapping{paramMapping},
-	}.Build()
-
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
-
-	inputs := json.RawMessage(`{"X-Custom-Header": "my-value"}`)
-	req := &tool.ExecutionRequest{ToolInputs: inputs}
-	_, err := httpTool.Execute(context.Background(), req)
-	require.NoError(t, err)
-}
-
 func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 
 

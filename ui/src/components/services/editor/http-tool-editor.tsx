@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolDefinition } from "@proto/config/v1/tool";
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType, ParameterLocation } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,7 +61,6 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                     isRequired: true,
                 },
                 disableEscape: false,
-                location: ParameterLocation.QUERY,
             } as HttpParameterMapping
         ];
         updateCall({ parameters: newParams });
@@ -163,7 +162,7 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                             <Trash2 className="h-4 w-4" />
                         </Button>
                         <CardContent className="p-4 grid grid-cols-12 gap-4">
-                            <div className="col-span-2 space-y-2">
+                            <div className="col-span-3 space-y-2">
                                 <Label htmlFor={`param-name-${index}`}>Name</Label>
                                 <Input
                                     id={`param-name-${index}`}
@@ -172,26 +171,7 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                                     placeholder="userId"
                                 />
                             </div>
-                            <div className="col-span-2 space-y-2">
-                                <Label htmlFor={`param-loc-${index}`}>Location</Label>
-                                <Select
-                                    value={param.location?.toString() || ParameterLocation.QUERY.toString()}
-                                    onValueChange={(val) => updateParameter(index, { location: parseInt(val) })}
-                                >
-                                    <SelectTrigger id={`param-loc-${index}`}>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={ParameterLocation.PARAMETER_LOCATION_UNSPECIFIED.toString()}>Auto (Legacy)</SelectItem>
-                                        <SelectItem value={ParameterLocation.QUERY.toString()}>Query</SelectItem>
-                                        <SelectItem value={ParameterLocation.HEADER.toString()}>Header</SelectItem>
-                                        <SelectItem value={ParameterLocation.PATH.toString()}>Path</SelectItem>
-                                        <SelectItem value={ParameterLocation.COOKIE.toString()}>Cookie</SelectItem>
-                                        <SelectItem value={ParameterLocation.BODY.toString()}>Body</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="col-span-2 space-y-2">
+                            <div className="col-span-3 space-y-2">
                                 <Label htmlFor={`param-type-${index}`}>Type</Label>
                                 <Select
                                     value={param.schema?.type.toString()}

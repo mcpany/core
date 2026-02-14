@@ -151,6 +151,109 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedTemplates = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const templates = [
+        {
+            id: "google-calendar",
+            name: "Google Calendar",
+            description: "Manage events and calendars.",
+            icon: "calendar",
+            tags: ["google", "productivity"],
+            service_config: {
+                name: "google_calendar",
+                upstream_auth: {
+                    oauth2: {
+                        token_url: "https://oauth2.googleapis.com/token",
+                        client_id: { plain_text: "" },
+                        client_secret: { plain_text: "" },
+                        scopes: "https://www.googleapis.com/auth/calendar"
+                    }
+                },
+                openapi_service: {
+                    spec_url: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
+                }
+            }
+        },
+        {
+            id: "github",
+            name: "GitHub",
+            description: "Interact with repositories, issues, and PRs.",
+            icon: "github",
+            tags: ["dev", "git"],
+            service_config: {
+                name: "github",
+                upstream_auth: {
+                    bearer_token: { token: { plain_text: "" } }
+                },
+                openapi_service: {
+                    address: "https://api.github.com",
+                    spec_url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
+                }
+            }
+        },
+        {
+            id: "linear",
+            name: "Linear",
+            description: "Issue tracking and project management.",
+            icon: "linear",
+            tags: ["dev", "pm"],
+            service_config: {
+                name: "linear",
+                upstream_auth: {
+                    api_key: { plain_text: "" }
+                },
+                openapi_service: {
+                    spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
+                }
+            }
+        }
+    ];
+
+    for (const tmpl of templates) {
+        try {
+            await context.post('/api/v1/templates', { data: tmpl, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed template ${tmpl.name}: ${e}`);
+        }
+    }
+};
+
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
+    // Seed global webhook
+    try {
+        await context.post('/api/v1/alerts/webhook', {
+            data: { url: "https://example.com/webhook" },
+            headers: HEADERS
+        });
+    } catch (e) {
+        console.log(`Failed to seed global webhook: ${e}`);
+    }
+
+    // Seed alert rules (which might be displayed as webhooks or alerts)
+    const alerts = [
+        {
+            id: "alert_1",
+            name: "Critical Service Down",
+            condition: "service.status == 'down' && service.priority <= 1",
+            action: { webhook: { url: "https://pagerduty.com/webhook" } }
+        }
+    ];
+
+    for (const alert of alerts) {
+        try {
+            // Note: If /api/v1/alerts supports POST for creating alerts/rules
+            // api_alerts.go has handleAlerts (POST -> CreateAlert) and handleAlertRules (POST -> CreateRule).
+            // The object above looks more like a Rule.
+            await context.post('/api/v1/alerts/rules', { data: alert, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed alert ${alert.name}: ${e}`);
+        }
+    }
+};
+
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
@@ -169,6 +272,34 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup collection ${name}: ${e}`);
+    }
+};
+
+export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const ids = ["google-calendar", "github", "linear"];
+    for (const id of ids) {
+        try {
+            await context.delete(`/api/v1/templates/${id}`, { headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to cleanup template ${id}: ${e}`);
+        }
+    }
+};
+
+export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    // Cleanup global webhook (set to empty)
+    try {
+        await context.post('/api/v1/alerts/webhook', { data: { url: "" }, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup global webhook: ${e}`);
+    }
+    // Cleanup alerts/rules
+    try {
+        await context.delete(`/api/v1/alerts/rules/alert_1`, { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup alert rule: ${e}`);
     }
 };
 

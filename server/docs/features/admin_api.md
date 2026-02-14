@@ -43,6 +43,55 @@ Clears the global cache (if caching is enabled).
 - **Request**: `ClearCacheRequest` (empty)
 - **Response**: `ClearCacheResponse` (empty)
 
+#### `CreateUser`
+
+Creates a new user.
+
+- **Request**: `CreateUserRequest` containing `user` definition.
+- **Response**: `CreateUserResponse` containing the created `user`.
+
+#### `GetUser`
+
+Returns a specific user by ID.
+
+- **Request**: `GetUserRequest` containing `user_id`.
+- **Response**: `GetUserResponse` containing `user`.
+
+#### `ListUsers`
+
+Returns all registered users.
+
+- **Request**: `ListUsersRequest` (empty).
+- **Response**: `ListUsersResponse` containing a list of `users`.
+
+#### `UpdateUser`
+
+Updates an existing user.
+
+- **Request**: `UpdateUserRequest` containing `user`.
+- **Response**: `UpdateUserResponse` containing the updated `user`.
+
+#### `DeleteUser`
+
+Deletes a user by ID.
+
+- **Request**: `DeleteUserRequest` containing `user_id`.
+- **Response**: `DeleteUserResponse` (empty).
+
+#### `GetDiscoveryStatus`
+
+Returns the status of auto-discovery providers.
+
+- **Request**: `GetDiscoveryStatusRequest` (empty).
+- **Response**: `GetDiscoveryStatusResponse` containing a list of `providers`.
+
+#### `ListAuditLogs`
+
+Returns audit logs matching the filter.
+
+- **Request**: `ListAuditLogsRequest` containing filters (`start_time`, `end_time`, `tool_name`, `user_id`, `profile_id`, `limit`, `offset`).
+- **Response**: `ListAuditLogsResponse` containing a list of `entries`.
+
 ## Usage
 
 You can interact with the Admin API using any gRPC client, such as `grpcurl` or by generating a client in your preferred language using the provided protobuf definition.
