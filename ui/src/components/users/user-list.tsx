@@ -28,8 +28,6 @@ import {
     Trash2,
     Copy,
     Search,
-    Shield,
-    User as UserIcon,
     ShieldAlert,
     Eye
 } from "lucide-react";
@@ -42,6 +40,17 @@ interface UserListProps {
     onDelete: (id: string) => void;
 }
 
+/**
+ * UserList component.
+ * Displays a table of users with filtering and actions.
+ *
+ * @param props - The component props.
+ * @param props.users - The list of users to display.
+ * @param props.isLoading - Whether the data is loading.
+ * @param props.onEdit - Callback when the edit button is clicked.
+ * @param props.onDelete - Callback when the delete button is clicked.
+ * @returns The rendered component.
+ */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();

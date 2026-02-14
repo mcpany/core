@@ -181,6 +181,7 @@ func sanitizeSecret(s *configv1.Secret) *configv1.Secret {
 		return nil
 	}
 	// We modify in place assuming ownership of the object (returned from storage unmarshaler)
+	// Ensure value is masked
 	s.SetValue("••••••••••••••••••••••••")
 	return s
 }
