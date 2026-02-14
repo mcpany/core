@@ -18,10 +18,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistrationWorker is a background worker responsible for handling
-// service registration requests. It listens for ServiceRegistrationRequest
-// messages on the event bus, processes them using the service registry, and
-// publishes the results as ServiceRegistrationResult messages.
+// ServiceRegistrationWorker is a background worker responsible for handling service registration requests. It listens for ServiceRegistrationRequest messages on the event bus, processes them using the service registry, and publishes the results as ServiceRegistrationResult messages.
+//
+// Summary: is a background worker responsible for handling service registration requests. It listens for ServiceRegistrationRequest messages on the event bus, processes them using the service registry, and publishes the results as ServiceRegistrationResult messages.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -31,12 +30,14 @@ type ServiceRegistrationWorker struct {
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
+// Summary: creates a new ServiceRegistrationWorker.
+//
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - serviceRegistry: The registry that will handle the actual registration logic.
+//   - bus: *bus.Provider
+//   - serviceRegistry: serviceregistry.ServiceRegistryInterface
 //
 // Returns:
-//   - *ServiceRegistrationWorker: A new service registration worker.
+//   - *ServiceRegistrationWorker
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,

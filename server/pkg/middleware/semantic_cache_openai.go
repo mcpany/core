@@ -14,6 +14,8 @@ import (
 )
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
+//
+// Summary: implements EmbeddingProvider for OpenAI.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -21,8 +23,16 @@ type OpenAIEmbeddingProvider struct {
 	client  *http.Client
 }
 
-// NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
-// It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
+// NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider. It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
+//
+// Summary: creates a new OpenAIEmbeddingProvider. It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
+//
+// Parameters:
+//   - apiKey: unknown
+//   - model: string
+//
+// Returns:
+//   - *OpenAIEmbeddingProvider
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"

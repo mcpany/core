@@ -30,9 +30,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed via a WebSocket connection. It manages a connection pool and
-// registers tools based on the service configuration.
+// Upstream implements the upstream.Upstream interface for services that are exposed via a WebSocket connection. It manages a connection pool and registers tools based on the service configuration.
+//
+// Summary: implements the upstream.Upstream interface for services that are exposed via a WebSocket connection. It manages a connection pool and registers tools based on the service configuration.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -80,11 +80,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
+// Summary: creates a new instance of WebsocketUpstream.
+//
 // Parameters:
-//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
+//   - poolManager: *pool.Manager
 //
 // Returns:
-//   - upstream.Upstream: A new Upstream instance for WebSocket services.
+//   - upstream.Upstream
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

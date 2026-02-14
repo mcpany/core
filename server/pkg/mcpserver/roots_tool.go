@@ -15,21 +15,20 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// RootsTool implements the Tool interface for listing roots.
+// RootsTool implements the Tool interface for listing roots. It provides a built-in tool ("mcp:list_roots") that allows the server to query the client for available filesystem roots.
 //
-// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
-// for available filesystem roots.
+// Summary: implements the Tool interface for listing roots. It provides a built-in tool ("mcp:list_roots") that allows the server to query the client for available filesystem roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool creates a new instance of the RootsTool.
+// NewRootsTool creates a new instance of the RootsTool. It initializes the tool definition including its schema and service ID.
 //
-// It initializes the tool definition including its schema and service ID.
+// Summary: creates a new instance of the RootsTool. It initializes the tool definition including its schema and service ID.
 //
 // Returns:
-//   - *RootsTool: A pointer to the initialized RootsTool.
+//   - *RootsTool
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{

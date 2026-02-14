@@ -13,6 +13,8 @@ import (
 )
 
 // ProviderStatus represents the status of a discovery provider.
+//
+// Summary: represents the status of a discovery provider.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -22,6 +24,8 @@ type ProviderStatus struct {
 }
 
 // Manager manages auto-discovery providers.
+//
+// Summary: manages auto-discovery providers.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -29,6 +33,11 @@ type Manager struct {
 }
 
 // NewManager creates a new discovery manager.
+//
+// Summary: creates a new discovery manager.
+//
+// Returns:
+//   - *Manager
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),

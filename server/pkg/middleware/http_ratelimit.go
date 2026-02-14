@@ -14,6 +14,8 @@ import (
 )
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
+//
+// Summary: provides global rate limiting for HTTP endpoints.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -22,10 +24,19 @@ type HTTPRateLimitMiddleware struct {
 }
 
 // HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
+//
+// Summary: defines a functional option for HTTPRateLimitMiddleware.
 type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
-// WithTrustProxy enables trusting the X-Forwarded-For header.
-// This should only be used when the server is behind a trusted reverse proxy.
+// WithTrustProxy enables trusting the X-Forwarded-For header. This should only be used when the server is behind a trusted reverse proxy.
+//
+// Summary: enables trusting the X-Forwarded-For header. This should only be used when the server is behind a trusted reverse proxy.
+//
+// Parameters:
+//   - trust: bool
+//
+// Returns:
+//   - HTTPRateLimitOption
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -34,13 +45,15 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
 //
+// Summary: creates a new HTTPRateLimitMiddleware.
+//
 // Parameters:
-//   - rps: Requests per second allowed per IP.
-//   - burst: Maximum burst size allowed per IP.
-//   - opts: Optional configuration options.
+//   - rps: float64
+//   - burst: int
+//   - opts: ...HTTPRateLimitOption
 //
 // Returns:
-//   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
+//   - *HTTPRateLimitMiddleware
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets

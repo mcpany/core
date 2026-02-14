@@ -16,12 +16,16 @@ import (
 )
 
 // Seeder seeds the database with service templates.
+//
+// Summary: seeds the database with service templates.
 type Seeder struct {
 	Store       storage.Storage
 	ExamplesDir string
 }
 
 // ConfigFile represents the structure of the config.yaml in examples.
+//
+// Summary: represents the structure of the config.yaml in examples.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }

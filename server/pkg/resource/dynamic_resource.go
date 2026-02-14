@@ -14,8 +14,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DynamicResource implements the Resource interface for resources that are
-// fetched dynamically by executing a tool.
+// DynamicResource implements the Resource interface for resources that are fetched dynamically by executing a tool.
+//
+// Summary: implements the Resource interface for resources that are fetched dynamically by executing a tool.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool

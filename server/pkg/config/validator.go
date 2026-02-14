@@ -24,6 +24,8 @@ import (
 )
 
 // BinaryType defines the type of the binary being validated.
+//
+// Summary: defines the type of the binary being validated.
 type BinaryType int
 
 const (
@@ -41,6 +43,8 @@ const (
 )
 
 // AuthValidationContext defines the context for authentication validation.
+//
+// Summary: defines the context for authentication validation.
 type AuthValidationContext int
 
 const (
@@ -68,6 +72,8 @@ var (
 )
 
 // ValidationError encapsulates a validation error for a specific service.
+//
+// Summary: encapsulates a validation error for a specific service.
 type ValidationError struct {
 	ServiceName string
 	Err         error

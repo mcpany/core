@@ -9,6 +9,8 @@ import (
 )
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
+//
+// Summary: defines the interface for fetching text embeddings.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	// It returns the embedding as a slice of float32 and any error encountered.
@@ -16,6 +18,8 @@ type EmbeddingProvider interface {
 }
 
 // VectorStore defines the interface for storing and searching vectors.
+//
+// Summary: defines the interface for storing and searching vectors.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -45,19 +49,25 @@ type VectorStore interface {
 }
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
+//
+// Summary: implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore
 	threshold float32
 }
 
-// NewSemanticCache creates a new SemanticCache.
+// NewSemanticCache creates a new SemanticCache. provider is the provider. store is the store. threshold is the threshold. Returns the result.
 //
-// provider is the provider.
-// store is the store.
-// threshold is the threshold.
+// Summary: creates a new SemanticCache. provider is the provider. store is the store. threshold is the threshold. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - provider: EmbeddingProvider
+//   - store: VectorStore
+//   - threshold: float32
+//
+// Returns:
+//   - *SemanticCache
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold

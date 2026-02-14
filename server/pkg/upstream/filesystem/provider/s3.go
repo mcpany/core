@@ -17,16 +17,19 @@ import (
 )
 
 // S3Provider provides access to files in an S3 bucket.
+//
+// Summary: provides access to files in an S3 bucket.
 type S3Provider struct {
 	fs afero.Fs
 }
 
-// NewS3Provider creates a new S3Provider from the given configuration.
+// NewS3Provider creates a new S3Provider from the given configuration. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
-// config holds the configuration settings.
+// Summary: creates a new S3Provider from the given configuration. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - config *configv1.S3Fs): (*S3Provider
+//   - error: unknown
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("s3 config is nil")

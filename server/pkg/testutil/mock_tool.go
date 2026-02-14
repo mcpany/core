@@ -14,6 +14,8 @@ import (
 )
 
 // MockTool is a mock implementation of the tool.Tool interface for testing.
+//
+// Summary: is a mock implementation of the tool.Tool interface for testing.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }

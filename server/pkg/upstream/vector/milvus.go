@@ -15,17 +15,20 @@ import (
 )
 
 // MilvusClient implements VectorClient for Milvus.
+//
+// Summary: implements VectorClient for Milvus.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
 }
 
-// NewMilvusClient creates a new Milvus client.
+// NewMilvusClient creates a new Milvus client. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
-// config holds the configuration settings.
+// Summary: creates a new Milvus client. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - config *configv1.MilvusVectorDB): (*MilvusClient
+//   - error: unknown
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
 		return nil, fmt.Errorf("address is required for Milvus")

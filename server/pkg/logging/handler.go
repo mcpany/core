@@ -14,8 +14,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// LogEntry is the structure for logs sent over WebSocket.
-// It matches the frontend expectation.
+// LogEntry is the structure for logs sent over WebSocket. It matches the frontend expectation.
+//
+// Summary: is the structure for logs sent over WebSocket. It matches the frontend expectation.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -26,6 +27,8 @@ type LogEntry struct {
 }
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+//
+// Summary: implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -34,12 +37,16 @@ type BroadcastHandler struct {
 	level       slog.Level
 }
 
-// NewBroadcastHandler creates a new BroadcastHandler.
+// NewBroadcastHandler creates a new BroadcastHandler. broadcaster is the broadcaster. level is the minimum log level to broadcast. Returns the result.
 //
-// broadcaster is the broadcaster.
-// level is the minimum log level to broadcast.
+// Summary: creates a new BroadcastHandler. broadcaster is the broadcaster. level is the minimum log level to broadcast. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - broadcaster: *Broadcaster
+//   - level: slog.Level
+//
+// Returns:
+//   - *BroadcastHandler
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
@@ -146,15 +153,21 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 }
 
 // TeeHandler is a slog.Handler that writes to multiple handlers.
+//
+// Summary: is a slog.Handler that writes to multiple handlers.
 type TeeHandler struct {
 	handlers []slog.Handler
 }
 
-// NewTeeHandler creates a new TeeHandler.
+// NewTeeHandler creates a new TeeHandler. handlers is the handlers. Returns the result.
 //
-// handlers is the handlers.
+// Summary: creates a new TeeHandler. handlers is the handlers. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - handlers: ...slog.Handler
+//
+// Returns:
+//   - *TeeHandler
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }

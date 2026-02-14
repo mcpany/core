@@ -11,6 +11,8 @@ import (
 )
 
 // SimpleVectorStore is a naive in-memory vector store.
+//
+// Summary: is a naive in-memory vector store.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -18,6 +20,8 @@ type SimpleVectorStore struct {
 }
 
 // VectorEntry represents a single entry in the vector store.
+//
+// Summary: represents a single entry in the vector store.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32
@@ -29,11 +33,12 @@ type VectorEntry struct {
 	Norm float32
 }
 
-// NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
+// NewSimpleVectorStore creates a new SimpleVectorStore. It initializes the store with a default configuration.
+//
+// Summary: creates a new SimpleVectorStore. It initializes the store with a default configuration.
 //
 // Returns:
-//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
+//   - *SimpleVectorStore
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),

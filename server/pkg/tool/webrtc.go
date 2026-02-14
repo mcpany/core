@@ -55,11 +55,9 @@ func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 		state == webrtc.ICEConnectionStateCompleted
 }
 
-// WebrtcTool implements the Tool interface for a tool that is exposed via a
-// WebRTC data channel. It handles the signaling and establishment of a peer
-// connection to communicate with the remote service. This is useful for
-// scenarios requiring low-latency, peer-to-peer communication directly from the
-// server.
+// WebrtcTool implements the Tool interface for a tool that is exposed via a WebRTC data channel. It handles the signaling and establishment of a peer connection to communicate with the remote service. This is useful for scenarios requiring low-latency, peer-to-peer communication directly from the server.
+//
+// Summary: implements the Tool interface for a tool that is exposed via a WebRTC data channel. It handles the signaling and establishment of a peer connection to communicate with the remote service. This is useful for scenarios requiring low-latency, peer-to-peer communication directly from the server.
 type WebrtcTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool

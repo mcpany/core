@@ -19,16 +19,22 @@ import (
 )
 
 // MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
+//
+// Summary: serves as a mock OIDC/OAuth2 provider.
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey
 }
 
-// NewMockOAuth2Server creates a new mock OAuth2 server.
+// NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
 //
-// t is the t.
+// Summary: creates a new mock OAuth2 server. t is the t. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - t: *testing.T
+//
+// Returns:
+//   - *MockOAuth2Server
 func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)

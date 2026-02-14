@@ -21,6 +21,8 @@ import (
 )
 
 // Settings defines the global configuration for the application.
+//
+// Summary: defines the global configuration for the application.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string
@@ -43,9 +45,12 @@ var (
 	once           sync.Once
 )
 
-// GlobalSettings returns the singleton instance of the global settings.
+// GlobalSettings returns the singleton instance of the global settings. Returns the result.
 //
-// Returns the result.
+// Summary: returns the singleton instance of the global settings. Returns the result.
+//
+// Returns:
+//   - *Settings
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{

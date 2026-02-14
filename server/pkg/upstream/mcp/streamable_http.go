@@ -40,9 +40,9 @@ var (
 	connectForTesting       func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)
 )
 
-// ClientSession defines an interface that abstracts the capabilities of an
-// mcp.ClientSession. This is used primarily for testing, allowing mock sessions
-// to be injected.
+// ClientSession defines an interface that abstracts the capabilities of an mcp.ClientSession. This is used primarily for testing, allowing mock sessions to be injected.
+//
+// Summary: defines an interface that abstracts the capabilities of an mcp.ClientSession. This is used primarily for testing, allowing mock sessions to be injected.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -98,28 +98,45 @@ type ClientSession interface {
 	Close() error
 }
 
-// SetNewClientImplForTesting provides a hook for injecting a mock MCP client
-// implementation during tests. This should only be used for testing purposes.
+// SetNewClientImplForTesting provides a hook for injecting a mock MCP client implementation during tests. This should only be used for testing purposes.
+//
+// Summary: provides a hook for injecting a mock MCP client implementation during tests. This should only be used for testing purposes.
+//
+// Parameters:
+//   - f func(client *mcp.Client: client.MCPClient
+//   - stdioConfig *configv1.McpStdioConnection: client.MCPClient
+//   - httpAddress string: client.MCPClient
+//   - httpClient *http.Client): client.MCPClient
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
 
-// SetNewClientForTesting provides a hook for injecting a mock mcp.Client
-// during tests. This should only be used for testing purposes.
+// SetNewClientForTesting provides a hook for injecting a mock mcp.Client during tests. This should only be used for testing purposes.
+//
+// Summary: provides a hook for injecting a mock mcp.Client during tests. This should only be used for testing purposes.
+//
+// Parameters:
+//   - f func(impl *mcp.Implementation): *mcp.Client
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
 
-// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect
-// function during tests. This should only be used for testing purposes.
+// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect function during tests. This should only be used for testing purposes.
+//
+// Summary: provides a hook for injecting a mock mcp.Client.Connect function during tests. This should only be used for testing purposes.
+//
+// Parameters:
+//   - f func(client *mcp.Client: error)
+//   - ctx context.Context: error)
+//   - transport mcp.Transport: error)
+//   - roots []mcp.Root) (ClientSession: error)
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
 
-// Upstream implements the upstream.Upstream interface for services that are
-// themselves MCP-compliant. It connects to the downstream MCP service, discovers
-// its tools, prompts, and resources, and registers them with the current server,
-// effectively acting as a proxy or aggregator.
+// Upstream implements the upstream.Upstream interface for services that are themselves MCP-compliant. It connects to the downstream MCP service, discovers its tools, prompts, and resources, and registers them with the current server, effectively acting as a proxy or aggregator.
+//
+// Summary: implements the upstream.Upstream interface for services that are themselves MCP-compliant. It connects to the downstream MCP service, discovers its tools, prompts, and resources, and registers them with the current server, effectively acting as a proxy or aggregator.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -174,11 +191,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream creates a new instance of Upstream. globalSettings is the globalSettings. Returns the result.
 //
-// globalSettings is the globalSettings.
+// Summary: creates a new instance of Upstream. globalSettings is the globalSettings. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - globalSettings: *configv1.GlobalSettings
+//
+// Returns:
+//   - upstream.Upstream
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -1107,6 +1128,8 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 }
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
+//
+// Summary: implements the mcp.Transport interface for HTTP connections.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string

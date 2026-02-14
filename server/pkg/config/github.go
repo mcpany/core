@@ -55,16 +55,14 @@ type GitHub struct {
 	httpClient    *http.Client
 }
 
-// NewGitHub creates a new GitHub client by parsing a GitHub URL. It supports
-// standard GitHub URLs for repositories, trees, and blobs.
+// NewGitHub creates a new GitHub client by parsing a GitHub URL. It supports standard GitHub URLs for repositories, trees, and blobs.
+//
+// Summary: creates a new GitHub client by parsing a GitHub URL. It supports standard GitHub URLs for repositories, trees, and blobs.
 //
 // Parameters:
-//   - ctx: The context for the client creation.
-//   - rawURL: The GitHub URL to parse.
-//
-// Returns:
-//   - A pointer to a new GitHub client.
-//   - An error if the URL is invalid.
+//   - _: context.Context
+//   - rawURL string): (*GitHub
+//   - error: unknown
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {

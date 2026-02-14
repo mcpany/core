@@ -14,18 +14,24 @@ import (
 )
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+//
+// Summary: implements EmbeddingProvider for Ollama.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
 	client  *http.Client
 }
 
-// NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
+// NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider. baseURL is the baseURL. model is the model. Returns the result.
 //
-// baseURL is the baseURL.
-// model is the model.
+// Summary: creates a new OllamaEmbeddingProvider. baseURL is the baseURL. model is the model. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - baseURL: unknown
+//   - model: string
+//
+// Returns:
+//   - *OllamaEmbeddingProvider
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"

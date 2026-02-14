@@ -25,6 +25,8 @@ const (
 )
 
 // DatadogAuditStore sends audit logs to Datadog.
+//
+// Summary: sends audit logs to Datadog.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -35,6 +37,14 @@ type DatadogAuditStore struct {
 }
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
+//
+// Summary: creates a new DatadogAuditStore.
+//
+// Parameters:
+//   - config: *configv1.DatadogConfig
+//
+// Returns:
+//   - *DatadogAuditStore
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}

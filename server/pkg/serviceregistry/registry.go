@@ -22,10 +22,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ServiceRegistryInterface defines the interface for a service registry.
+// ServiceRegistryInterface defines the interface for a service registry. It manages the registration, lifecycle, and discovery of upstream services and their associated capabilities (tools, resources, prompts).
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
+// Summary: defines the interface for a service registry. It manages the registration, lifecycle, and discovery of upstream services and their associated capabilities (tools, resources, prompts).
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -92,10 +91,9 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceError(serviceID string) (string, bool)
 }
 
-// ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+// ServiceRegistry is the concrete implementation of ServiceRegistryInterface. It serves as the central hub for managing upstream services, coordinating with tool, prompt, and resource managers.
 //
-// It serves as the central hub for managing upstream services, coordinating
-// with tool, prompt, and resource managers.
+// Summary: is the concrete implementation of ServiceRegistryInterface. It serves as the central hub for managing upstream services, coordinating with tool, prompt, and resource managers.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -112,15 +110,17 @@ type ServiceRegistry struct {
 
 // New creates and initializes a new ServiceRegistry.
 //
+// Summary: creates and initializes a new ServiceRegistry.
+//
 // Parameters:
-//   - factory: factory.Factory. The factory used to create upstream connections.
-//   - toolManager: tool.ManagerInterface. The manager for tools.
-//   - promptManager: prompt.ManagerInterface. The manager for prompts.
-//   - resourceManager: resource.ManagerInterface. The manager for resources.
-//   - authManager: *auth.Manager. The manager for authentication.
+//   - factory: factory.Factory
+//   - toolManager: tool.ManagerInterface
+//   - promptManager: prompt.ManagerInterface
+//   - resourceManager: resource.ManagerInterface
+//   - authManager: *auth.Manager
 //
 // Returns:
-//   - *ServiceRegistry: A pointer to the newly created ServiceRegistry.
+//   - *ServiceRegistry
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),

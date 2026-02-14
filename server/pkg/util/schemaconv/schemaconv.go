@@ -32,30 +32,24 @@ const (
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 const MaxRecursionDepth = 10
 
-// MethodDescriptorToProtoProperties converts the fields of a method's input
-// message into a `structpb.Struct` for use as the `properties` field in a tool
-// input schema.
+// MethodDescriptorToProtoProperties converts the fields of a method's input message into a `structpb.Struct` for use as the `properties` field in a tool input schema.
+//
+// Summary: converts the fields of a method's input message into a `structpb.Struct` for use as the `properties` field in a tool input schema.
 //
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
-//
-// Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - error: An error if the conversion fails.
+//   - methodDesc protoreflect.MethodDescriptor): (*structpb.Struct
+//   - error: unknown
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
 
-// MethodOutputDescriptorToProtoProperties converts the fields of a method's
-// output message into a `structpb.Struct` for use as the `properties` field in
-// a tool output schema.
+// MethodOutputDescriptorToProtoProperties converts the fields of a method's output message into a `structpb.Struct` for use as the `properties` field in a tool output schema.
+//
+// Summary: converts the fields of a method's output message into a `structpb.Struct` for use as the `properties` field in a tool output schema.
 //
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
-//
-// Returns:
-//   - *structpb.Struct: The properties structure for the output schema.
-//   - error: An error if the conversion fails.
+//   - methodDesc protoreflect.MethodDescriptor): (*structpb.Struct
+//   - error: unknown
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -151,6 +145,8 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 }
 
 // ConfigParameter an interface for config parameter schemas.
+//
+// Summary: an interface for config parameter schemas.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -160,6 +156,8 @@ type ConfigParameter interface {
 }
 
 // McpFieldParameter an interface for McpField parameter schemas.
+//
+// Summary: an interface for McpField parameter schemas.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

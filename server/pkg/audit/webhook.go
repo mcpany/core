@@ -22,6 +22,8 @@ const (
 )
 
 // WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Summary: sends audit logs to a configured webhook URL.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string
@@ -32,6 +34,15 @@ type WebhookAuditStore struct {
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
+//
+// Summary: creates a new WebhookAuditStore.
+//
+// Parameters:
+//   - webhookURL: string
+//   - headers: map[string]string
+//
+// Returns:
+//   - *WebhookAuditStore
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,

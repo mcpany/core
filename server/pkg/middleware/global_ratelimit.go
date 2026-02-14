@@ -25,6 +25,8 @@ import (
 )
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+//
+// Summary: provides rate limiting functionality for all MCP requests.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -34,11 +36,15 @@ type GlobalRateLimitMiddleware struct {
 	redisClients sync.Map
 }
 
-// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware. config holds the configuration settings. Returns the result.
 //
-// config holds the configuration settings.
+// Summary: creates a new GlobalRateLimitMiddleware. config holds the configuration settings. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.RateLimitConfig
+//
+// Returns:
+//   - *GlobalRateLimitMiddleware
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,

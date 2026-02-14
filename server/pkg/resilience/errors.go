@@ -4,6 +4,8 @@
 package resilience
 
 // PermanentError is an error that should not be retried.
+//
+// Summary: is an error that should not be retried.
 type PermanentError struct {
 	Err error
 }

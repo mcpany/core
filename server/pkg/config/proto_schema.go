@@ -17,25 +17,25 @@ type schemaGenerator struct {
 
 // GenerateSchemaFromProto generates a jsonschema from a protobuf message using reflection.
 //
-// Parameters:
-//   msg: The protobuf message to generate the schema from.
+// Summary: generates a jsonschema from a protobuf message using reflection.
 //
-// Returns:
-//   *jsonschema.Schema: The generated JSON schema.
-//   error: An error if the schema generation fails.
+// Parameters:
+//   - msg protoreflect.Message): (*jsonschema.Schema
+//   - error: unknown
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
 	schemaMap := GenerateSchemaMapFromProto(msg)
 	return CompileSchema(schemaMap)
 }
 
-// GenerateSchemaMapFromProto generates a raw JSON schema map from a protobuf message using reflection.
-// This is useful if you want to export the schema as JSON.
+// GenerateSchemaMapFromProto generates a raw JSON schema map from a protobuf message using reflection. This is useful if you want to export the schema as JSON.
+//
+// Summary: generates a raw JSON schema map from a protobuf message using reflection. This is useful if you want to export the schema as JSON.
 //
 // Parameters:
-//   msg: The protobuf message to generate the schema from.
+//   - msg: protoreflect.Message
 //
 // Returns:
-//   map[string]interface{}: The generated JSON schema map.
+//   - map[string]interface}
 func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{} {
 	gen := &schemaGenerator{
 		defs: make(map[string]interface{}),
@@ -50,12 +50,13 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 	}
 }
 
-// CompileSchema compiles a raw JSON schema map into a jsonschema.Schema object.
+// CompileSchema compiles a raw JSON schema map into a jsonschema.Schema object. schemaMap is the schemaMap. Returns the result. Returns an error if the operation fails.
 //
-// schemaMap is the schemaMap.
+// Summary: compiles a raw JSON schema map into a jsonschema.Schema object. schemaMap is the schemaMap. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - schemaMap map[string]interface{}): (*jsonschema.Schema
+//   - error: unknown
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"

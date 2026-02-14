@@ -19,6 +19,8 @@ import (
 var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
+//
+// Summary: is the fundamental interface for any executable prompt in the system.
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
 	//
@@ -44,9 +46,9 @@ type Prompt interface {
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
-// MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
+// MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server. This is used to decouple the Manager from the concrete server implementation.
 //
-// This is used to decouple the Manager from the concrete server implementation.
+// Summary: defines an interface for components that can provide an instance of an *mcp.Server. This is used to decouple the Manager from the concrete server implementation.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
@@ -56,6 +58,8 @@ type MCPServerProvider interface {
 }
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
+//
+// Summary: implements the Prompt interface for a prompt that is defined by a template.
 type TemplatedPrompt struct {
 	definition *configv1.PromptDefinition
 	serviceID  string
@@ -63,12 +67,14 @@ type TemplatedPrompt struct {
 
 // NewTemplatedPrompt creates a new TemplatedPrompt instance.
 //
+// Summary: creates a new TemplatedPrompt instance.
+//
 // Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
+//   - definition: *configv1.PromptDefinition
+//   - serviceID: string
 //
 // Returns:
-//   - *TemplatedPrompt: The initialized TemplatedPrompt.
+//   - *TemplatedPrompt
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) *TemplatedPrompt {
 	return &TemplatedPrompt{
 		definition: definition,
@@ -184,13 +190,12 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 
 // NewPromptFromConfig creates a new Prompt from a configuration definition.
 //
-// Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
+// Summary: creates a new Prompt from a configuration definition.
 //
-// Returns:
-//   - Prompt: The created Prompt instance.
-//   - error: An error if the prompt cannot be created.
+// Parameters:
+//   - definition: *configv1.PromptDefinition
+//   - serviceID string): (Prompt
+//   - error: unknown
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID), nil
 }

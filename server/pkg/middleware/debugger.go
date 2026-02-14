@@ -17,6 +17,8 @@ import (
 )
 
 // DebugEntry represents a captured HTTP request/response.
+//
+// Summary: represents a captured HTTP request/response.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -34,6 +36,8 @@ type DebugEntry struct {
 }
 
 // Debugger monitors and records traffic for inspection.
+//
+// Summary: monitors and records traffic for inspection.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -43,11 +47,15 @@ type Debugger struct {
 	done        chan struct{}
 }
 
-// NewDebugger creates a new Debugger middleware.
+// NewDebugger creates a new Debugger middleware. size is the size. Returns the result.
 //
-// size is the size.
+// Summary: creates a new Debugger middleware. size is the size. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - size: int
+//
+// Returns:
+//   - *Debugger
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),

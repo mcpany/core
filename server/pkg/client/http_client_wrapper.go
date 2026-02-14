@@ -12,10 +12,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// HTTPClientWrapper wraps an `*http.Client` to adapt it to the
-// `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
-// connection pool, which can help control the number of concurrent connections
-// and reuse them where appropriate.
+// HTTPClientWrapper wraps an `*http.Client` to adapt it to the `pool.ClosableClient` interface. This allows HTTP clients to be managed by a connection pool, which can help control the number of concurrent connections and reuse them where appropriate.
+//
+// Summary: wraps an `*http.Client` to adapt it to the `pool.ClosableClient` interface. This allows HTTP clients to be managed by a connection pool, which can help control the number of concurrent connections and reuse them where appropriate.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -23,8 +22,17 @@ type HTTPClientWrapper struct {
 	checker health.Checker
 }
 
-// NewHTTPClientWrapper creates a new HTTPClientWrapper.
-// It accepts a shared health checker to avoid creating a new one for every client.
+// NewHTTPClientWrapper creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+//
+// Summary: creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+//
+// Parameters:
+//   - client: *http.Client
+//   - config: *configv1.UpstreamServiceConfig
+//   - checker: health.Checker
+//
+// Returns:
+//   - *HTTPClientWrapper
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {

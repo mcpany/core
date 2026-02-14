@@ -20,10 +20,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// SkillResource adapts a Skill (or its asset) to the Resource interface.
+// SkillResource adapts a Skill (or its asset) to the Resource interface. It provides a way to expose skill documentation and associated assets (like images or text files) as MCP resources, making them accessible to clients.
 //
-// It provides a way to expose skill documentation and associated assets (like images or text files)
-// as MCP resources, making them accessible to clients.
+// Summary: adapts a Skill (or its asset) to the Resource interface. It provides a way to expose skill documentation and associated assets (like images or text files) as MCP resources, making them accessible to clients.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
@@ -36,32 +35,31 @@ type SkillResource struct {
 // Ensure SkillResource implements resource.Resource.
 var _ resource.Resource = &SkillResource{}
 
-// NewSkillResource creates a new resource for the main SKILL.md.
+// NewSkillResource creates a new resource for the main SKILL.md. It wraps the provided Skill definition into a Resource that serves the skill's documentation file (SKILL.md).
 //
-// It wraps the provided Skill definition into a Resource that serves the skill's
-// documentation file (SKILL.md).
+// Summary: creates a new resource for the main SKILL.md. It wraps the provided Skill definition into a Resource that serves the skill's documentation file (SKILL.md).
 //
 // Parameters:
-//   - s: *skill.Skill. The skill definition to expose as a resource.
+//   - s: *skill.Skill
 //
 // Returns:
-//   - *SkillResource: A new instance of SkillResource pointing to the skill's documentation.
+//   - *SkillResource
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
 	}
 }
 
-// NewSkillAssetResource creates a new resource for a skill asset.
+// NewSkillAssetResource creates a new resource for a skill asset. It wraps a specific asset associated with a skill into a Resource.
 //
-// It wraps a specific asset associated with a skill into a Resource.
+// Summary: creates a new resource for a skill asset. It wraps a specific asset associated with a skill into a Resource.
 //
 // Parameters:
-//   - s: *skill.Skill. The skill definition the asset belongs to.
-//   - assetPath: string. The relative path to the asset file within the skill's directory.
+//   - s: *skill.Skill
+//   - assetPath: string
 //
 // Returns:
-//   - *SkillResource: A new instance of SkillResource pointing to the specified asset.
+//   - *SkillResource
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -285,17 +283,16 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 	return nil
 }
 
-// RegisterSkillResources registers all skills from the manager into the resource manager.
+// RegisterSkillResources registers all skills from the manager into the resource manager. It iterates through all available skills and registers their documentation (SKILL.md) and associated assets as resources in the provided Resource Manager.
 //
-// It iterates through all available skills and registers their documentation (SKILL.md)
-// and associated assets as resources in the provided Resource Manager.
+// Summary: registers all skills from the manager into the resource manager. It iterates through all available skills and registers their documentation (SKILL.md) and associated assets as resources in the provided Resource Manager.
 //
 // Parameters:
-//   - rm: resource.ManagerInterface. The resource manager to register resources with.
-//   - sm: *skill.Manager. The skill manager to retrieve skills from.
+//   - rm: resource.ManagerInterface
+//   - sm: *skill.Manager
 //
 // Returns:
-//   - error: An error if listing skills fails.
+//   - error
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

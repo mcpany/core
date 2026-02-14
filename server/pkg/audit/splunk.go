@@ -24,6 +24,8 @@ const (
 )
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
+//
+// Summary: sends audit logs to Splunk HTTP Event Collector.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -33,6 +35,14 @@ type SplunkAuditStore struct {
 }
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
+//
+// Summary: creates a new SplunkAuditStore.
+//
+// Parameters:
+//   - config: *configv1.SplunkConfig
+//
+// Returns:
+//   - *SplunkAuditStore
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}

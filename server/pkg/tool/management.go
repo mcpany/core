@@ -24,11 +24,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MCPServerProvider defines an interface for components that can provide an
-// instance of an *mcp.Server.
+// MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server. This interface is used to decouple the Manager from the concrete server implementation, avoiding circular dependencies.
 //
-// This interface is used to decouple the Manager from the concrete server implementation,
-// avoiding circular dependencies.
+// Summary: defines an interface for components that can provide an instance of an *mcp.Server. This interface is used to decouple the Manager from the concrete server implementation, avoiding circular dependencies.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
@@ -37,10 +35,9 @@ type MCPServerProvider interface {
 	Server() *mcp.Server
 }
 
-// ManagerInterface defines the contract for a tool manager.
+// ManagerInterface defines the contract for a tool manager. It outlines the methods required for managing the lifecycle, registration, discovery, and execution of tools within the MCP Any server.
 //
-// It outlines the methods required for managing the lifecycle, registration, discovery,
-// and execution of tools within the MCP Any server.
+// Summary: defines the contract for a tool manager. It outlines the methods required for managing the lifecycle, registration, discovery, and execution of tools within the MCP Any server.
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
 	//
@@ -183,6 +180,8 @@ type ManagerInterface interface {
 }
 
 // ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
+//
+// Summary: defines the interface for middleware that intercepts tool execution.
 type ExecutionMiddleware interface {
 	// Execute performs the middleware logic wrapping the next handler in the chain.
 	//
@@ -197,10 +196,9 @@ type ExecutionMiddleware interface {
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-// Manager is the central component for managing tools in MCP Any.
+// Manager is the central component for managing tools in MCP Any. It handles tool registration, retrieval, execution, and profile-based filtering. It is thread-safe and supports efficient lookups via caching and indexing.
 //
-// It handles tool registration, retrieval, execution, and profile-based filtering.
-// It is thread-safe and supports efficient lookups via caching and indexing.
+// Summary: is the central component for managing tools in MCP Any. It handles tool registration, retrieval, execution, and profile-based filtering. It is thread-safe and supports efficient lookups via caching and indexing.
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
@@ -226,11 +224,13 @@ type Manager struct {
 
 // NewManager creates and initializes a new Tool Manager.
 //
+// Summary: creates and initializes a new Tool Manager.
+//
 // Parameters:
-//   - bus: *bus.Provider. The event bus provider for publishing tool execution events.
+//   - bus: *bus.Provider
 //
 // Returns:
-//   - *Manager: A pointer to the newly created Manager.
+//   - *Manager
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,

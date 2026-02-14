@@ -29,16 +29,22 @@ type compiledRule struct {
 }
 
 // PolicyHook implements PreCallHook using CallPolicy.
+//
+// Summary: implements PreCallHook using CallPolicy.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
 }
 
-// NewPolicyHook creates a new PolicyHook with the given call policy.
+// NewPolicyHook creates a new PolicyHook with the given call policy. policy is the policy. Returns the result.
 //
-// policy is the policy.
+// Summary: creates a new PolicyHook with the given call policy. policy is the policy. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - policy: *configv1.CallPolicy
+//
+// Returns:
+//   - *PolicyHook
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -134,6 +140,8 @@ func (h *PolicyHook) ExecutePre(
 // (Deprecated hooks removed)
 
 // WebhookClient handles the communication with an external webhook.
+//
+// Summary: handles the communication with an external webhook.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -141,11 +149,15 @@ type WebhookClient struct {
 	webhook *webhook.Webhook
 }
 
-// NewWebhookClient creates a new WebhookClient.
+// NewWebhookClient creates a new WebhookClient. config holds the configuration settings. Returns the result.
 //
-// config holds the configuration settings.
+// Summary: creates a new WebhookClient. config holds the configuration settings. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.WebhookConfig
+//
+// Returns:
+//   - *WebhookClient
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -223,15 +235,21 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 }
 
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+//
+// Summary: supports modification of requests and responses via external webhook using CloudEvents.
 type WebhookHook struct {
 	client *WebhookClient
 }
 
-// NewWebhookHook creates a new WebhookHook.
+// NewWebhookHook creates a new WebhookHook. config holds the configuration settings. Returns the result.
 //
-// config holds the configuration settings.
+// Summary: creates a new WebhookHook. config holds the configuration settings. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.WebhookConfig
+//
+// Returns:
+//   - *WebhookHook
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -364,6 +382,8 @@ func (h *WebhookHook) ExecutePost(
 }
 
 // WebhookStatus represents the status returned by the webhook.
+//
+// Summary: represents the status returned by the webhook.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -372,6 +392,8 @@ type WebhookStatus struct {
 }
 
 // SigningRoundTripper signs the request using the webhook signer.
+//
+// Summary: signs the request using the webhook signer.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper

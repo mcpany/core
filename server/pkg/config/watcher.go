@@ -13,9 +13,9 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// Watcher monitors configuration files for changes and triggers a reload.
-// It watches the parent directory of specified files to handle atomic saves (rename/move)
-// commonly used by text editors.
+// Watcher monitors configuration files for changes and triggers a reload. It watches the parent directory of specified files to handle atomic saves (rename/move) commonly used by text editors.
+//
+// Summary: monitors configuration files for changes and triggers a reload. It watches the parent directory of specified files to handle atomic saves (rename/move) commonly used by text editors.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -25,9 +25,11 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
-// Returns:
-//   - A pointer to a new Watcher.
-//   - An error if the watcher creation fails.
+// Summary: creates a new file watcher.
+//
+// Parameters:
+//   - ): (*Watcher
+//   - error: unknown
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {

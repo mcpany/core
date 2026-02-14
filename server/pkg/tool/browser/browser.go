@@ -10,13 +10,18 @@ import (
 )
 
 // Provider implements a basic browser automation tool.
+//
+// Summary: implements a basic browser automation tool.
 type Provider struct {
 	// dependencies like chromedp allocator would go here
 }
 
-// NewProvider creates a new Provider.
+// NewProvider creates a new Provider. Returns the result.
 //
-// Returns the result.
+// Summary: creates a new Provider. Returns the result.
+//
+// Returns:
+//   - *Provider
 func NewProvider() *Provider {
 	return &Provider{}
 }

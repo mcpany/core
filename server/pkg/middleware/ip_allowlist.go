@@ -12,19 +12,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// IPAllowlistMiddleware restricts access to allowed IP addresses.
-// It is thread-safe and supports dynamic updates.
+// IPAllowlistMiddleware restricts access to allowed IP addresses. It is thread-safe and supports dynamic updates.
+//
+// Summary: restricts access to allowed IP addresses. It is thread-safe and supports dynamic updates.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
 }
 
-// NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
+// NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware. allowedCIDRs is the allowedCIDRs. Returns the result. Returns an error if the operation fails.
 //
-// allowedCIDRs is the allowedCIDRs.
+// Summary: creates a new IPAllowlistMiddleware. allowedCIDRs is the allowedCIDRs. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - allowedCIDRs []string): (*IPAllowlistMiddleware
+//   - error: unknown
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {

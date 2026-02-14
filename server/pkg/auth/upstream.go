@@ -18,49 +18,22 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// UpstreamAuthenticator defines the interface for authentication methods used
-// when communicating with upstream services. Each implementation is responsible
-// for modifying the HTTP request to include the necessary authentication
-// credentials.
+// UpstreamAuthenticator defines the interface for authentication methods used when communicating with upstream services. Each implementation is responsible for modifying the HTTP request to include the necessary authentication credentials.
+//
+// Summary: defines the interface for authentication methods used when communicating with upstream services. Each implementation is responsible for modifying the HTTP request to include the necessary authentication credentials.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
 	Authenticate(req *http.Request) error
 }
 
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
+// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the provided authentication configuration. It supports API key, bearer token, and basic authentication, as well as substitution of environment variables in the authentication parameters. If the `authConfig` is `nil`, no authenticator is created, and the function returns `nil, nil`. If the configuration is invalid (e.g., missing required fields), an error is returned.
 //
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
+// Summary: creates an `UpstreamAuthenticator` based on the provided authentication configuration. It supports API key, bearer token, and basic authentication, as well as substitution of environment variables in the authentication parameters. If the `authConfig` is `nil`, no authenticator is created, and the function returns `nil, nil`. If the configuration is invalid (e.g., missing required fields), an error is returned.
 //
 // Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
-//
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
-//
-// Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
+//   - authConfig *configv1.Authentication): (UpstreamAuthenticator
+//   - error: unknown
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -124,8 +97,9 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 	return nil, nil
 }
 
-// APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
-// It adds a specified header with a static API key value to the request.
+// APIKeyAuth implements UpstreamAuthenticator for API key-based authentication. It adds a specified header with a static API key value to the request.
+//
+// Summary: implements UpstreamAuthenticator for API key-based authentication. It adds a specified header with a static API key value to the request.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
@@ -166,8 +140,9 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
-// authentication. It adds an "Authorization" header with a bearer token.
+// BearerTokenAuth implements UpstreamAuthenticator for bearer token-based authentication. It adds an "Authorization" header with a bearer token.
+//
+// Summary: implements UpstreamAuthenticator for bearer token-based authentication. It adds an "Authorization" header with a bearer token.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
@@ -191,8 +166,9 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
-// It adds an "Authorization" header with the username and password.
+// BasicAuth implements UpstreamAuthenticator for basic HTTP authentication. It adds an "Authorization" header with the username and password.
+//
+// Summary: implements UpstreamAuthenticator for basic HTTP authentication. It adds an "Authorization" header with the username and password.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
@@ -218,6 +194,8 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 }
 
 // OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
+//
+// Summary: implements UpstreamAuthenticator for OAuth2 client credentials flow.
 type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue

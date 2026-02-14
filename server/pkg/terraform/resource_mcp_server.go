@@ -4,17 +4,21 @@
 // Package terraform provides a Terraform provider skeleton.
 package terraform
 
-// ResourceMCPServer represents the configuration schema for an MCP Server resource
-// This would map to hashicorp/terraform-plugin-sdk in a real provider.
+// ResourceMCPServer represents the configuration schema for an MCP Server resource This would map to hashicorp/terraform-plugin-sdk in a real provider.
+//
+// Summary: represents the configuration schema for an MCP Server resource This would map to hashicorp/terraform-plugin-sdk in a real provider.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int
 	Enabled bool
 }
 
-// Schema returns the Terraform schema definition (Mock).
+// Schema returns the Terraform schema definition (Mock). Returns the result.
 //
-// Returns the result.
+// Summary: returns the Terraform schema definition (Mock). Returns the result.
+//
+// Returns:
+//   - map[string]interface}
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -37,22 +41,27 @@ func Schema() map[string]interface{} {
 	}
 }
 
-// Create mimics the Create operation of a Terraform resource.
+// Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
 //
-// _ is an unused parameter.
+// Summary: mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: *ResourceMCPServer
+//
+// Returns:
+//   - error
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
 }
 
-// Read mimics the Read operation.
+// Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
-// name is the name of the resource.
+// Summary: mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - name string): (*ResourceMCPServer
+//   - error: unknown
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

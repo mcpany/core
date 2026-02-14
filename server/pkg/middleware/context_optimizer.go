@@ -15,15 +15,21 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+//
+// Summary: optimises the context size of responses.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
-// NewContextOptimizer creates a new ContextOptimizer.
+// NewContextOptimizer creates a new ContextOptimizer. maxChars is the maxChars. Returns the result.
 //
-// maxChars is the maxChars.
+// Summary: creates a new ContextOptimizer. maxChars is the maxChars. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - maxChars: int
+//
+// Returns:
+//   - *ContextOptimizer
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,

@@ -18,18 +18,21 @@ import (
 )
 
 // PineconeClient implements VectorClient for Pinecone.
+//
+// Summary: implements VectorClient for Pinecone.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client
 	baseURL string
 }
 
-// NewPineconeClient creates a new Pinecone client.
+// NewPineconeClient creates a new Pinecone client. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
-// config holds the configuration settings.
+// Summary: creates a new Pinecone client. config holds the configuration settings. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - config *configv1.PineconeVectorDB): (*PineconeClient
+//   - error: unknown
 func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, error) {
 	if config.GetApiKey() == "" {
 		return nil, fmt.Errorf("api_key is required for Pinecone")

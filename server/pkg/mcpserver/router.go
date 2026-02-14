@@ -11,27 +11,22 @@ import (
 
 // MethodHandler defines the signature for a function that handles an MCP method call.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: mcp.Request. The request object.
-//
-// Returns:
-//   - mcp.Result: The result of the operation.
-//   - error: An error if the operation fails.
+// Summary: defines the signature for a function that handles an MCP method call.
 type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
 
-// Router is responsible for mapping MCP method names to their corresponding handler functions.
+// Router is responsible for mapping MCP method names to their corresponding handler functions. Side Effects: - Stores handlers in an internal map.
 //
-// Side Effects:
-//   - Stores handlers in an internal map.
+// Summary: is responsible for mapping MCP method names to their corresponding handler functions. Side Effects: - Stores handlers in an internal map.
 type Router struct {
 	handlers map[string]MethodHandler
 }
 
 // NewRouter creates and returns a new, empty Router.
 //
+// Summary: creates and returns a new, empty Router.
+//
 // Returns:
-//   - *Router: A pointer to a new, initialized Router.
+//   - *Router
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),

@@ -18,6 +18,8 @@ import (
 )
 
 // ManagerInterface defines the interface for managing alerts.
+//
+// Summary: defines the interface for managing alerts.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -50,6 +52,8 @@ type ManagerInterface interface {
 }
 
 // Manager implements ManagerInterface using in-memory storage.
+//
+// Summary: implements ManagerInterface using in-memory storage.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
@@ -58,6 +62,11 @@ type Manager struct {
 }
 
 // NewManager creates a new Manager and seeds it with initial data.
+//
+// Summary: creates a new Manager and seeds it with initial data.
+//
+// Returns:
+//   - *Manager
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),

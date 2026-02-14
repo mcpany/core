@@ -23,6 +23,8 @@ import (
 )
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
+//
+// Summary: implements the Tool interface for a tool that executes a SQL query.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -34,15 +36,19 @@ type Tool struct {
 	initError   error
 }
 
-// NewTool creates a new SQL Tool.
+// NewTool creates a new SQL Tool. t is the t. db is the db. callDef is the callDef. policies is the policies. callID is the callID. Returns the result.
 //
-// t is the t.
-// db is the db.
-// callDef is the callDef.
-// policies is the policies.
-// callID is the callID.
+// Summary: creates a new SQL Tool. t is the t. db is the db. callDef is the callDef. policies is the policies. callID is the callID. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - t: *v1.Tool
+//   - db: *sql.DB
+//   - callDef: *configv1.SqlCallDefinition
+//   - policies: []*configv1.CallPolicy
+//   - callID: string
+//
+// Returns:
+//   - *Tool
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{

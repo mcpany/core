@@ -23,14 +23,19 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: implements the upstream.Upstream interface for SQL databases.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
+// NewUpstream creates a new SQL upstream. Returns the result.
 //
-// Returns the result.
+// Summary: creates a new SQL upstream. Returns the result.
+//
+// Returns:
+//   - *Upstream
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }

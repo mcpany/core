@@ -21,9 +21,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
-// connection. It handles sending and receiving messages over a persistent
-// WebSocket connection managed by a connection pool.
+// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket connection. It handles sending and receiving messages over a persistent WebSocket connection managed by a connection pool.
+//
+// Summary: implements the Tool interface for a tool exposed via a WebSocket connection. It handles sending and receiving messages over a persistent WebSocket connection managed by a connection pool.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool

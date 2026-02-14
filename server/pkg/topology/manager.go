@@ -25,6 +25,8 @@ type activityEvent struct {
 }
 
 // Manager handles topology state tracking.
+//
+// Summary: handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -37,6 +39,8 @@ type Manager struct {
 }
 
 // SessionStats contains statistics about a topology session.
+//
+// Summary: contains statistics about a topology session.
 type SessionStats struct {
 	ID             string
 	Metadata       map[string]string
@@ -50,6 +54,8 @@ type SessionStats struct {
 }
 
 // Stats aggregated metrics.
+//
+// Summary: aggregated metrics.
 type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
@@ -57,6 +63,8 @@ type Stats struct {
 }
 
 // MinuteStats tracks stats for a single minute.
+//
+// Summary: tracks stats for a single minute.
 type MinuteStats struct {
 	Requests     int64
 	Errors       int64
@@ -65,6 +73,8 @@ type MinuteStats struct {
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
+//
+// Summary: tracks stats for a single service in a minute.
 type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
@@ -72,6 +82,8 @@ type ServiceTrafficStats struct {
 }
 
 // TrafficPoint represents a data point for the traffic chart.
+//
+// Summary: represents a data point for the traffic chart.
 type TrafficPoint struct {
 	Time    string `json:"time"`
 	Total   int64  `json:"requests"` // mapped to "requests" for UI
@@ -79,12 +91,16 @@ type TrafficPoint struct {
 	Latency int64  `json:"latency"`
 }
 
-// NewManager creates a new Topology Manager.
+// NewManager creates a new Topology Manager. registry is the registry. tm is the tm. Returns the result.
 //
-// registry is the registry.
-// tm is the tm.
+// Summary: creates a new Topology Manager. registry is the registry. tm is the tm. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - registry: serviceregistry.ServiceRegistryInterface
+//   - tm: tool.ManagerInterface
+//
+// Returns:
+//   - *Manager
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),

@@ -13,15 +13,21 @@ import (
 )
 
 // Store implements config.Store using PostgreSQL.
+//
+// Summary: implements config.Store using PostgreSQL.
 type Store struct {
 	db *DB
 }
 
-// NewStore creates a new PostgreSQL store.
+// NewStore creates a new PostgreSQL store. db is the db. Returns the result.
 //
-// db is the db.
+// Summary: creates a new PostgreSQL store. db is the db. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - db: *DB
+//
+// Returns:
+//   - *Store
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }

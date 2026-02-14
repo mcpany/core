@@ -18,16 +18,18 @@ import (
 	"time"
 )
 
-// IPResolver defines an interface for looking up IP addresses.
-// It matches the signature of net.Resolver.LookupIP.
+// IPResolver defines an interface for looking up IP addresses. It matches the signature of net.Resolver.LookupIP.
+//
+// Summary: defines an interface for looking up IP addresses. It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
 	// It returns a slice of that host's IPv4 and IPv6 addresses.
 	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
 }
 
-// NetDialer defines an interface for dialing network connections.
-// It matches the signature of net.Dialer.DialContext.
+// NetDialer defines an interface for dialing network connections. It matches the signature of net.Dialer.DialContext.
+//
+// Summary: defines an interface for dialing network connections. It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using
 	// the provided context.
@@ -35,6 +37,8 @@ type NetDialer interface {
 }
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+//
+// Summary: provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -188,16 +192,16 @@ func NewSafeHTTPClient() *http.Client {
 	}
 }
 
-// CheckConnection verifies if a TCP connection can be established to the given address.
-// This is typically used for health checks or validating upstream service reachability.
-// It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
+// CheckConnection verifies if a TCP connection can be established to the given address. This is typically used for health checks or validating upstream service reachability. It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
+//
+// Summary: verifies if a TCP connection can be established to the given address. This is typically used for health checks or validating upstream service reachability. It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the connection attempt.
-//   - address (string): The target address (URL or host:port).
+//   - ctx: context.Context
+//   - address: string
 //
 // Returns:
-//   - (error): nil if the connection succeeded, or an error if it failed.
+//   - error
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -257,18 +261,15 @@ func CheckConnection(ctx context.Context, address string) error {
 	return nil
 }
 
-// ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
-// It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
-// in high-churn environments.
+// ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts. It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation) in high-churn environments.
+//
+// Summary: attempts to listen on the given address with retries to handle transient port conflicts. It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation) in high-churn environments.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the listen operation.
-//   - network (string): The network type (e.g., "tcp").
-//   - address (string): The address to listen on.
-//
-// Returns:
-//   - (net.Listener): The successfully bound listener.
-//   - (error): An error if binding fails after all retries.
+//   - ctx: context.Context
+//   - network: unknown
+//   - address string): (net.Listener
+//   - error: unknown
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

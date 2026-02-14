@@ -28,8 +28,9 @@ import (
 // Pre-allocated to avoid allocation on every request.
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
+// RateLimitMiddleware is a tool execution middleware that provides rate limiting functionality for upstream services.
+//
+// Summary: is a tool execution middleware that provides rate limiting functionality for upstream services.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -40,25 +41,35 @@ type RateLimitMiddleware struct {
 }
 
 // Option defines a functional option for RateLimitMiddleware.
+//
+// Summary: defines a functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
-// WithTokenizer sets a custom tokenizer for the middleware.
+// WithTokenizer sets a custom tokenizer for the middleware. t is the t. Returns the result.
 //
-// t is the t.
+// Summary: sets a custom tokenizer for the middleware. t is the t. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - t: tokenizer.Tokenizer
+//
+// Returns:
+//   - Option
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// NewRateLimitMiddleware creates a new RateLimitMiddleware. toolManager is the toolManager. opts contains the options. Returns the result.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Summary: creates a new RateLimitMiddleware. toolManager is the toolManager. opts contains the options. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface
+//   - opts: ...Option
+//
+// Returns:
+//   - *RateLimitMiddleware
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,

@@ -7,11 +7,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// StripSecretsFromService removes sensitive information from the service configuration.
-// It specifically targets plain text secrets in UpstreamAuth and other locations.
+// StripSecretsFromService removes sensitive information from the service configuration. It specifically targets plain text secrets in UpstreamAuth and other locations.
+//
+// Summary: removes sensitive information from the service configuration. It specifically targets plain text secrets in UpstreamAuth and other locations.
 //
 // Parameters:
-//   - svc: The upstream service configuration to strip secrets from.
+//   - svc: *configv1.UpstreamServiceConfig
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -62,8 +63,10 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 
 // StripSecretsFromProfile removes sensitive information from the profile definition.
 //
+// Summary: removes sensitive information from the profile definition.
+//
 // Parameters:
-//   - profile: The profile definition to strip secrets from.
+//   - profile: *configv1.ProfileDefinition
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -75,8 +78,10 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 
 // StripSecretsFromCollection removes sensitive information from the service collection.
 //
+// Summary: removes sensitive information from the service collection.
+//
 // Parameters:
-//   - collection: The service collection to strip secrets from.
+//   - collection: *configv1.Collection
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -88,8 +93,10 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 
 // StripSecretsFromAuth removes sensitive values from the authentication config.
 //
+// Summary: removes sensitive values from the authentication config.
+//
 // Parameters:
-//   - auth: The authentication configuration to strip secrets from.
+//   - auth: *configv1.Authentication
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -303,9 +310,11 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 
 // HydrateSecretsInService populates the service configuration with resolved secret values.
 //
+// Summary: populates the service configuration with resolved secret values.
+//
 // Parameters:
-//   - svc: The upstream service configuration to hydrate secrets into.
-//   - secrets: A map of resolved secret values.
+//   - svc: *configv1.UpstreamServiceConfig
+//   - secrets: map[string]*configv1.SecretValue
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

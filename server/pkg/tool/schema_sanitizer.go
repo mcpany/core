@@ -8,9 +8,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
-// It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
-// This function does NOT modify the input schema.
+// SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail. It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct. This function does NOT modify the input schema.
+//
+// Summary: attempts to fix common schema issues that cause strict MCP clients to fail. It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct. This function does NOT modify the input schema.
+//
+// Parameters:
+//   - schema any): (*structpb.Struct
+//   - error: unknown
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

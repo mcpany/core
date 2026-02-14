@@ -10,8 +10,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CallableTool implements the Tool interface for a tool that is executed by a
-// Callable.
+// CallableTool implements the Tool interface for a tool that is executed by a Callable.
+//
+// Summary: implements the Tool interface for a tool that is executed by a Callable.
 type CallableTool struct {
 	*baseTool
 }

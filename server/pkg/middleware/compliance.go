@@ -13,6 +13,8 @@ import (
 )
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
+//
+// Summary: represents a JSON-RPC 2.0 error object.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -20,15 +22,23 @@ type JSONRPCError struct {
 }
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
+//
+// Summary: represents a JSON-RPC 2.0 response object.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
 	Error   *JSONRPCError `json:"error,omitempty"`
 }
 
-// JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
-// It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format.
-// Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+// JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses. It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format. Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+//
+// Summary: ensures that errors are returned as valid JSON-RPC responses. It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format. Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+//
+// Parameters:
+//   - next: http.Handler
+//
+// Returns:
+//   - http.Handler
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)

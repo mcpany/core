@@ -21,6 +21,8 @@ type tokenKey struct {
 }
 
 // Store implements storage.Storage in memory.
+//
+// Summary: implements storage.Storage in memory.
 type Store struct {
 	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig
@@ -34,9 +36,12 @@ type Store struct {
 	serviceTemplates   map[string]*configv1.ServiceTemplate
 }
 
-// NewStore creates a new memory store.
+// NewStore creates a new memory store. Returns the result.
 //
-// Returns the result.
+// Summary: creates a new memory store. Returns the result.
+//
+// Returns:
+//   - *Store
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),

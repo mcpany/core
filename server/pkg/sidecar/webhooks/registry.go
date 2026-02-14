@@ -8,8 +8,9 @@ import (
 	"sync"
 )
 
-// Handler defines the interface for handling webhook requests.
-// Implementations of this interface process incoming webhook events.
+// Handler defines the interface for handling webhook requests. Implementations of this interface process incoming webhook events.
+//
+// Summary: defines the interface for handling webhook requests. Implementations of this interface process incoming webhook events.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
@@ -19,8 +20,9 @@ type Handler interface {
 	Handle(w http.ResponseWriter, r *http.Request)
 }
 
-// Registry manages the registration and retrieval of system webhooks.
-// It provides a thread-safe mechanism to store and lookup handlers by name.
+// Registry manages the registration and retrieval of system webhooks. It provides a thread-safe mechanism to store and lookup handlers by name.
+//
+// Summary: manages the registration and retrieval of system webhooks. It provides a thread-safe mechanism to store and lookup handlers by name.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler
@@ -28,8 +30,10 @@ type Registry struct {
 
 // NewRegistry creates and initializes a new Registry instance.
 //
+// Summary: creates and initializes a new Registry instance.
+//
 // Returns:
-//   A pointer to a new, empty Registry.
+//   - *Registry
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),

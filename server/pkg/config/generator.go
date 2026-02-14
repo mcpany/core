@@ -12,17 +12,19 @@ import (
 	"text/template"
 )
 
-// Generator handles the interactive generation of configuration files.
-// It prompts the user for input and uses templates to generate YAML configuration
-// for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
+// Generator handles the interactive generation of configuration files. It prompts the user for input and uses templates to generate YAML configuration for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
+//
+// Summary: handles the interactive generation of configuration files. It prompts the user for input and uses templates to generate YAML configuration for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
 type Generator struct {
 	Reader *bufio.Reader
 }
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
+// Summary: creates a new Generator instance that reads from standard input.
+//
 // Returns:
-//   - A pointer to a new Generator initialized with os.Stdin.
+//   - *Generator
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),

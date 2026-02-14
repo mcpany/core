@@ -1,6 +1,26 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+"""
+This module contains verification scripts for the Users page.
+
+It uses Playwright to simulate user interactions and verify the functionality of the Users page.
+"""
+
 from playwright.sync_api import sync_playwright
 
 def verify_users_page():
+    """
+    Verifies the Users page functionality by logging in and navigating to the Users page.
+
+    It performs the following steps:
+    1. Launches a headless Chromium browser.
+    2. Logs in with default credentials.
+    3. Navigates to the Users page.
+    4. Takes a screenshot of the user list.
+    5. Opens the "Add User" sheet.
+    6. Takes a screenshot of the sheet.
+    """
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()

@@ -25,17 +25,23 @@ var (
 )
 
 // Redactor handles redaction of sensitive data based on configuration.
+//
+// Summary: handles redaction of sensitive data based on configuration.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
 }
 
-// NewRedactor creates a new Redactor from the given DLP config.
+// NewRedactor creates a new Redactor from the given DLP config. config holds the configuration settings. log is the log. Returns the result.
 //
-// config holds the configuration settings.
-// log is the log.
+// Summary: creates a new Redactor from the given DLP config. config holds the configuration settings. log is the log. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.DLPConfig
+//   - log: *slog.Logger
+//
+// Returns:
+//   - *Redactor
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil

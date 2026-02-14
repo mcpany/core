@@ -15,8 +15,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StaticResource implements the Resource interface for resources that are
-// defined statically in the configuration (e.g. pointing to a URL).
+// StaticResource implements the Resource interface for resources that are defined statically in the configuration (e.g. pointing to a URL).
+//
+// Summary: implements the Resource interface for resources that are defined statically in the configuration (e.g. pointing to a URL).
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string

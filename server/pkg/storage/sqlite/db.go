@@ -15,16 +15,19 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: wraps the sql.DB connection.
 type DB struct {
 	*sql.DB
 }
 
-// NewDB opens or creates a SQLite database at the specified path.
+// NewDB opens or creates a SQLite database at the specified path. path is the path. Returns the result. Returns an error if the operation fails.
 //
-// path is the path.
+// Summary: opens or creates a SQLite database at the specified path. path is the path. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - path string): (*DB
+//   - error: unknown
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

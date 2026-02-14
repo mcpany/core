@@ -12,18 +12,22 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-// PerRPCCredentials adapts an UpstreamAuthenticator to the gRPC
-// credentials.PerRPCCredentials interface. It allows applying upstream
-// authentication headers to outgoing gRPC requests.
+// PerRPCCredentials adapts an UpstreamAuthenticator to the gRPC credentials.PerRPCCredentials interface. It allows applying upstream authentication headers to outgoing gRPC requests.
+//
+// Summary: adapts an UpstreamAuthenticator to the gRPC credentials.PerRPCCredentials interface. It allows applying upstream authentication headers to outgoing gRPC requests.
 type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }
 
-// NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an
-// UpstreamAuthenticator. It returns nil if the provided authenticator is nil.
+// NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an UpstreamAuthenticator. It returns nil if the provided authenticator is nil. authenticator is the upstream authenticator to be used for generating gRPC request metadata.
 //
-// authenticator is the upstream authenticator to be used for generating gRPC
-// request metadata.
+// Summary: creates a new gRPC PerRPCCredentials from an UpstreamAuthenticator. It returns nil if the provided authenticator is nil. authenticator is the upstream authenticator to be used for generating gRPC request metadata.
+//
+// Parameters:
+//   - authenticator: UpstreamAuthenticator
+//
+// Returns:
+//   - credentials.PerRPCCredentials
 func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRPCCredentials {
 	if authenticator == nil {
 		return nil

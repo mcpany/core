@@ -42,6 +42,11 @@ interface UserListProps {
     onDelete: (id: string) => void;
 }
 
+/**
+ * UserList function.
+ *
+ * @param { users, isLoading, onEdit, onDelete } - [Description]
+ */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();

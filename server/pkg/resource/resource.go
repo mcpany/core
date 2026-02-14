@@ -14,10 +14,9 @@ import (
 // ErrResourceNotFound is returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
-// Resource defines the interface for a resource that can be managed by the Manager.
+// Resource defines the interface for a resource that can be managed by the Manager. A resource represents a data source (e.g., a file, a database record) that can be read by an MCP client.
 //
-// A resource represents a data source (e.g., a file, a database record) that can be
-// read by an MCP client.
+// Summary: defines the interface for a resource that can be managed by the Manager. A resource represents a data source (e.g., a file, a database record) that can be read by an MCP client.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -51,10 +50,9 @@ type Resource interface {
 	Subscribe(ctx context.Context) error
 }
 
-// ManagerInterface defines the interface for managing a collection of resources.
+// ManagerInterface defines the interface for managing a collection of resources. It provides methods for adding, removing, listing, and retrieving resources, as well as managing callbacks for list changes.
 //
-// It provides methods for adding, removing, listing, and retrieving resources, as well
-// as managing callbacks for list changes.
+// Summary: defines the interface for managing a collection of resources. It provides methods for adding, removing, listing, and retrieving resources, as well as managing callbacks for list changes.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -97,10 +95,9 @@ type ManagerInterface interface {
 	ClearResourcesForService(serviceID string)
 }
 
-// Manager is a thread-safe implementation of the ManagerInterface.
+// Manager is a thread-safe implementation of the ManagerInterface. It manages the lifecycle and retrieval of resources, providing thread-safe access and efficient listing via caching.
 //
-// It manages the lifecycle and retrieval of resources, providing thread-safe access
-// and efficient listing via caching.
+// Summary: is a thread-safe implementation of the ManagerInterface. It manages the lifecycle and retrieval of resources, providing thread-safe access and efficient listing via caching.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -110,8 +107,10 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
+// Summary: creates and returns a new, empty Manager.
+//
 // Returns:
-//   - *Manager: A new Manager instance.
+//   - *Manager
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),

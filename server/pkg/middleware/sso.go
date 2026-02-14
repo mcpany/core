@@ -11,16 +11,22 @@ import (
 )
 
 // SSOConfig defines the SSO configuration.
+//
+// Summary: defines the SSO configuration.
 type SSOConfig struct {
 	Enabled bool
 	IDPURL  string
 }
 
-// SSOMiddleware creates a new SSO middleware.
+// SSOMiddleware creates a new SSO middleware. config holds the configuration settings. Returns the result.
 //
-// config holds the configuration settings.
+// Summary: creates a new SSO middleware. config holds the configuration settings. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - config: SSOConfig
+//
+// Returns:
+//   - gin.HandlerFunc
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

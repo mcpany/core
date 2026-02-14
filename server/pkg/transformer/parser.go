@@ -25,10 +25,9 @@ var (
 	jqCache       sync.Map // map[string]*gojq.Query
 )
 
-// TextParser provides functionality to parse various text formats (JSON, XML,
-// plain text) and extract data into a structured map. It uses a configuration
-// map to define the extraction rules for each format, such as JSONPath for
-// JSON, XPath for XML, and regex for plain text.
+// TextParser provides functionality to parse various text formats (JSON, XML, plain text) and extract data into a structured map. It uses a configuration map to define the extraction rules for each format, such as JSONPath for JSON, XPath for XML, and regex for plain text.
+//
+// Summary: provides functionality to parse various text formats (JSON, XML, plain text) and extract data into a structured map. It uses a configuration map to define the extraction rules for each format, such as JSONPath for JSON, XPath for XML, and regex for plain text.
 type TextParser struct {
 	transformer *Transformer
 }
@@ -38,9 +37,12 @@ var (
 	defaultTextParserOnce sync.Once
 )
 
-// NewTextParser returns a shared instance of TextParser.
+// NewTextParser returns a shared instance of TextParser. Returns the result.
 //
-// Returns the result.
+// Summary: returns a shared instance of TextParser. Returns the result.
+//
+// Returns:
+//   - *TextParser
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{

@@ -18,9 +18,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Updater handles the self-update process.
+// Updater handles the self-update process. It manages checking for updates on GitHub and applying them to the local executable.
 //
-// It manages checking for updates on GitHub and applying them to the local executable.
+// Summary: handles the self-update process. It manages checking for updates on GitHub and applying them to the local executable.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -28,12 +28,14 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
+// Summary: creates a new Updater.
+//
 // Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
+//   - httpClient: *http.Client
+//   - githubAPIURL: string
 //
 // Returns:
-//   - *Updater: A new Updater instance.
+//   - *Updater
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient

@@ -15,10 +15,9 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// UpstreamWorker is a background worker that handles tool execution requests. It
-// listens for ToolExecutionRequest messages on the event bus, uses the
-// tool manager to execute the requested tool, and then publishes the outcome as
-// a ToolExecutionResult message.
+// UpstreamWorker is a background worker that handles tool execution requests. It listens for ToolExecutionRequest messages on the event bus, uses the tool manager to execute the requested tool, and then publishes the outcome as a ToolExecutionResult message.
+//
+// Summary: is a background worker that handles tool execution requests. It listens for ToolExecutionRequest messages on the event bus, uses the tool manager to execute the requested tool, and then publishes the outcome as a ToolExecutionResult message.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -27,12 +26,14 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
+// Summary: creates a new UpstreamWorker.
+//
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+//   - bus: *bus.Provider
+//   - toolManager: tool.ManagerInterface
 //
 // Returns:
-//   - *UpstreamWorker: A new upstream worker.
+//   - *UpstreamWorker
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,

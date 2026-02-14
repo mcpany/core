@@ -1367,23 +1367,17 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 	}
 }
 
-// HealthCheck performs a health check against a running server by sending an
-// HTTP GET request to its /healthz endpoint. This is useful for monitoring and
-// ensuring the server is operational.
+// HealthCheck performs a health check against a running server by sending an HTTP GET request to its /healthz endpoint. This is useful for monitoring and ensuring the server is operational. The function constructs the health check URL from the provided address and sends an HTTP GET request. It expects a 200 OK status code for a successful health check.
 //
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
+// Summary: performs a health check against a running server by sending an HTTP GET request to its /healthz endpoint. This is useful for monitoring and ensuring the server is operational. The function constructs the health check URL from the provided address and sends an HTTP GET request. It expects a 200 OK status code for a successful health check.
 //
 // Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//   - out: io.Writer
+//   - addr: string
+//   - timeout: time.Duration
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
-//     error if the health check fails for any reason (e.g., connection error,
-//     non-200 status code).
+//   - error
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

@@ -14,15 +14,21 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteVectorStore implements VectorStore using SQLite for persistence
-// and an in-memory cache for fast search.
+// SQLiteVectorStore implements VectorStore using SQLite for persistence and an in-memory cache for fast search.
+//
+// Summary: implements VectorStore using SQLite for persistence and an in-memory cache for fast search.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
 }
 
-// NewSQLiteVectorStore creates a new SQLiteVectorStore.
-// It loads existing entries from the database into memory.
+// NewSQLiteVectorStore creates a new SQLiteVectorStore. It loads existing entries from the database into memory.
+//
+// Summary: creates a new SQLiteVectorStore. It loads existing entries from the database into memory.
+//
+// Parameters:
+//   - path string): (*SQLiteVectorStore
+//   - error: unknown
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")

@@ -17,8 +17,9 @@ var (
 	metricGrpcConnectionsClosedTotal = []string{"grpc", "connections", "closed", "total"}
 )
 
-// GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
-// It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
+// GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections. It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
+//
+// Summary: is a gRPC stats handler that records metrics for RPCs and connections. It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }

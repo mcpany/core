@@ -11,12 +11,16 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
+// DLPMiddleware creates a middleware that redacts PII from request arguments and result content. config holds the configuration settings. log is the log. Returns the result.
 //
-// config holds the configuration settings.
-// log is the log.
+// Summary: creates a middleware that redacts PII from request arguments and result content. config holds the configuration settings. log is the log. Returns the result.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.DLPConfig
+//   - log: *slog.Logger
+//
+// Returns:
+//   - mcp.Middleware
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

@@ -17,6 +17,8 @@ import (
 )
 
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
+//
+// Summary: implements a generic HTTP EmbeddingProvider.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
@@ -25,15 +27,16 @@ type HTTPEmbeddingProvider struct {
 	client           *http.Client
 }
 
-// NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
+// NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider. url is the url. headers is the headers. bodyTemplateStr is the bodyTemplateStr. responseJSONPath is the responseJSONPath. Returns the result. Returns an error if the operation fails.
 //
-// url is the url.
-// headers is the headers.
-// bodyTemplateStr is the bodyTemplateStr.
-// responseJSONPath is the responseJSONPath.
+// Summary: creates a new HTTPEmbeddingProvider. url is the url. headers is the headers. bodyTemplateStr is the bodyTemplateStr. responseJSONPath is the responseJSONPath. Returns the result. Returns an error if the operation fails.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - url: string
+//   - headers: map[string]string
+//   - bodyTemplateStr: unknown
+//   - responseJSONPath string): (*HTTPEmbeddingProvider
+//   - error: unknown
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
