@@ -617,8 +617,16 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 	}.Build()
+
+	// Ensure 'arg' is in the schema so it's not filtered out
+	schema := configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build()
+	mapping := configv1.CommandLineParameterMapping_builder{
+		Schema: schema,
+	}.Build()
+
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"{{arg}}"},
+		Args:       []string{"{{arg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{mapping},
 	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")
@@ -630,8 +638,9 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	}
 
 	_, err := cmdTool.Execute(context.Background(), req)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "path traversal attempt detected")
+	if assert.Error(t, err) {
+		assert.Contains(t, err.Error(), "path traversal attempt detected")
+	}
 }
 
 func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {

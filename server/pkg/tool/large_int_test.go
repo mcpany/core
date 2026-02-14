@@ -76,6 +76,7 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 		executorFactory: func(_ *configv1.ContainerEnvironment) command.Executor {
 			return mockExec
 		},
+		allowedParams: map[string]bool{"id": true},
 	}
 
 	// Execute

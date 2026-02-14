@@ -1697,6 +1697,7 @@ type CommandTool struct {
 	policies        []*CompiledCallPolicy
 	callID          string
 	initError       error
+	allowedParams   map[string]bool
 }
 
 // NewCommandTool creates a new CommandTool instance.
@@ -1724,10 +1725,27 @@ func NewCommandTool(
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
+		allowedParams:  make(map[string]bool),
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	for _, param := range callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			t.allowedParams[schema.GetName()] = true
+		}
+	}
+
+	// Check if 'args' is allowed in the schema
+	if inputSchema := tool.GetInputSchema(); inputSchema != nil {
+		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+			if _, ok := props.Fields["args"]; ok {
+				t.allowedParams["args"] = true
+			}
+		}
+	}
+
 	return t
 }
 
@@ -1744,6 +1762,7 @@ type LocalCommandTool struct {
 	callID         string
 	sandboxArgs    []string
 	initError      error
+	allowedParams  map[string]bool
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
@@ -1771,9 +1790,25 @@ func NewLocalCommandTool(
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
+		allowedParams:  make(map[string]bool),
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+
+	for _, param := range callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			t.allowedParams[schema.GetName()] = true
+		}
+	}
+
+	// Check if 'args' is allowed in the schema
+	if inputSchema := tool.GetInputSchema(); inputSchema != nil {
+		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+			if _, ok := props.Fields["args"]; ok {
+				t.allowedParams["args"] = true
+			}
+		}
 	}
 
 	// Check if the command is sed and supports sandbox
@@ -1862,6 +1897,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	for k := range inputs {
+		if !t.allowedParams[k] {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}
@@ -2194,6 +2236,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	for k := range inputs {
+		if !t.allowedParams[k] {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}

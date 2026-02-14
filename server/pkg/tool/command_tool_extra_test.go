@@ -87,9 +87,11 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 		inputs, _ := json.Marshal(inputData)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
-		_, err := cmdTool.Execute(context.Background(), req)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "'args' parameter is not allowed")
+		result, err := cmdTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+		// Expect args to be ignored (filtered out), so echo runs without arguments
+		resultMap := result.(map[string]interface{})
+		assert.Equal(t, "\n", resultMap["stdout"])
 	})
 
 	// 5. 'args' parameter invalid type (not array of strings)
