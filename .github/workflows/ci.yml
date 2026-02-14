@@ -199,7 +199,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y --no-install-recommends xz-utils
+          xz --version
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -344,7 +345,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y --no-install-recommends xz-utils
+          xz --version
 
       - name: Prepare environment
         run: make prepare
@@ -608,7 +610,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y --no-install-recommends xz-utils
+          xz --version
 
       - name: Prepare environment
         run: make prepare
@@ -697,7 +700,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y --no-install-recommends xz-utils
+          xz --version
 
       - name: Prepare environment
         run: make prepare

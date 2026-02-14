@@ -41,10 +41,10 @@ RUN rm -f go.work go.work.sum
 # Force replace to use absolute path in container
 RUN go mod edit -replace github.com/mcpany/core=/app
 
-# CGO_ENABLED=1 is required for go-sqlite3
+# CGO_ENABLED=0 is sufficient for modernc.org/sqlite and allows cross-compilation
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -o /server cmd/server/main.go
 
 # Stage 2: Create the small runtime image
