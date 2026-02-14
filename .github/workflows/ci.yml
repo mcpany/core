@@ -133,7 +133,7 @@ jobs:
 
           # Try to restart docker if systemd is available, otherwise just check info
           if command -v systemctl >/dev/null && systemctl is-active --quiet docker; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || true
           fi
           docker info # Verify the mirrors are listed
 
@@ -210,7 +210,7 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update || true
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y xz-utils curl ca-certificates
           echo "PATH=$PATH"
           which xz || echo "xz not found in PATH"
           xz --version || echo "xz version check failed"
@@ -280,7 +280,7 @@ jobs:
 
           # Try to restart docker if systemd is available, otherwise just check info
           if command -v systemctl >/dev/null && systemctl is-active --quiet docker; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || true
           fi
           docker info # Verify the mirrors are listed
 
@@ -385,17 +385,17 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update || true
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y xz-utils curl ca-certificates
 
       - name: Install System Dependencies
         run: |
           sudo apt-get update || true
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y xz-utils curl ca-certificates
 
       - name: Install System Dependencies
         run: |
           sudo apt-get update || true
-          sudo apt-get install -y xz-utils
+          sudo apt-get install -y xz-utils curl ca-certificates
           echo "PATH=$PATH"
           which xz || echo "xz not found in PATH"
           xz --version || echo "xz version check failed"
@@ -712,7 +712,7 @@ jobs:
 
           # Try to restart docker if systemd is available, otherwise just check info
           if command -v systemctl >/dev/null && systemctl is-active --quiet docker; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || true
           fi
           docker info # Verify the mirrors are listed
 
@@ -803,7 +803,7 @@ jobs:
 
           # Try to restart docker if systemd is available, otherwise just check info
           if command -v systemctl >/dev/null && systemctl is-active --quiet docker; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || true
           fi
           docker info # Verify the mirrors are listed
 
