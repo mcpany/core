@@ -92,12 +92,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if ! command -v make &> /dev/null; then
-            if command -v apt-get &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make build-essential
-            elif command -v apk &> /dev/null; then
-              sudo apk add --no-cache make build-base
-            fi
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make build-essential curl unzip tar
+          elif command -v apk &> /dev/null; then
+            sudo apk add --no-cache make build-base curl
           fi
 
       - name: Prepare environment
@@ -217,9 +215,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make
+            sudo apt-get update && sudo apt-get install -y make curl unzip tar
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make
+             sudo apk add --no-cache make curl
           fi
 
       - name: Prepare environment
@@ -374,6 +372,14 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make curl unzip tar
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make curl
+          fi
+
       - name: Prepare environment
         run: make prepare
 
@@ -416,6 +422,41 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Cache Tools
+        uses: actions/cache@v4
+        with:
+          path: build/env/bin
+          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-env-bin-
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make curl unzip tar
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make curl
+          fi
+
+      - name: Prepare and Generate
+        run: |
+          make prepare
+          make gen
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -618,9 +659,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make
+            sudo apt-get update && sudo apt-get install -y make curl unzip tar
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make
+             sudo apk add --no-cache make curl
           fi
 
       - name: Prepare environment
