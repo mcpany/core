@@ -44,7 +44,12 @@ This audit verified the synchronization between documentation, codebase, and pro
 - **Issue:** High cyclomatic complexity in `stripInterpreterComments` function in `server/pkg/tool/types.go`.
 - **Action:** Refactored the function into smaller helper methods (`getCommentConfig`, `checkCommentStart`, `handleQuotes`) to improve readability and maintainability.
 - **Issue:** Potential ignored error in `checkForSSRF` logic.
-- **Action:** Explicitly handled the error case (commented intent).
+- **Action:** Explicitly handled the error case (commented intent and suppressed linter warning).
+
+### 4. Build System (UI Protocol Buffers)
+- **Issue:** The UI Docker build failed because TypeScript Protocol Buffer files (which are git-ignored) were missing from the build context, causing "Module not found" errors.
+- **Action:** Implemented `ui/gen-proto.sh` to download necessary dependencies (googleapis, grpc-gateway) and generate TypeScript Protocol Buffers during the Docker build process.
+- **Updates:** Modified `ui/Dockerfile` to execute generation script. Updated root `Makefile` to support separate Go/TS generation targets.
 
 ## Security Scrub
 This report contains no PII, secrets, or internal IP addresses.

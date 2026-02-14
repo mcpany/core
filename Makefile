@@ -1,5 +1,5 @@
 # Shim Makefile to forward commands to server/Makefile and ui/Makefile
-.PHONY: all test lint build run clean gen prepare-proto clean-protos
+.PHONY: all test lint build run clean gen prepare-proto clean-protos prepare-proto-common prepare-proto-go gen-go gen-ts
 
 # Variables
 GO = go
@@ -77,8 +77,8 @@ clean:
 	$(MAKE) -C server clean
 	# ui clean if needed, likely just removing node_modules or build artifacts?
 
-prepare-proto:
-	@echo "Preparing protobuf environment..."
+prepare-proto-common:
+	@echo "Preparing protobuf environment (common)..."
 	@mkdir -p $(TOOL_INSTALL_DIR)
 	@# Check if protoc is installed
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
@@ -90,7 +90,7 @@ prepare-proto:
 		else \
 			echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
 			rm -f "$(PROTOC_BIN)"; \
-			$(MAKE) prepare-proto; \
+			$(MAKE) prepare-proto-common; \
 		fi; \
 	else \
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
@@ -108,12 +108,6 @@ prepare-proto:
 			rm -f "$(PROTOC_ZIP)"; \
 		fi; \
 	fi
-	@# Install Go protobuf plugins
-	@echo "Installing Go protobuf plugins..."
-	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
 	@# Download grpc-gateway source for protos
 	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \
@@ -132,6 +126,16 @@ prepare-proto:
 		rm googleapis.zip; \
 	fi
 
+prepare-proto-go: prepare-proto-common
+	@# Install Go protobuf plugins
+	@echo "Installing Go protobuf plugins..."
+	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
+
+prepare-proto: prepare-proto-go
+
 clean-protos:
 	@echo "Cleaning generated protobuf files..."
 	@-find proto -name "*.ts" -delete
@@ -139,7 +143,7 @@ clean-protos:
 	@-find proto server/pkg server/cmd -name "*.pb.go" -delete
 	@-find proto -name "*.pb.gw.go" -delete
 
-gen: clean-protos prepare-proto
+gen-go: prepare-proto-go
 	@echo "Generating protobuf files (Go)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		mkdir -p $(BUILD_DIR); \
@@ -158,7 +162,7 @@ gen: clean-protos prepare-proto
 			{} +; \
 		rm -rf google
 
-
+gen-ts: prepare-proto-common
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
@@ -193,6 +197,8 @@ gen: clean-protos prepare-proto
 	else \
 		echo "Warning: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. Skipping TypeScript generation."; \
 	fi
+
+gen: clean-protos gen-go gen-ts
 
 update-screenshots:
 	$(MAKE) -C ui update-screenshots

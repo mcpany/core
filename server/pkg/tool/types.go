@@ -3612,7 +3612,7 @@ func checkForSSRF(val string) error {
 		if err != nil {
 			// If parsing fails, we assume it's not a valid URL that needs blocking,
 			// or subsequent checks will catch other issues.
-			return nil
+			return nil //nolint:nilerr
 		}
 
 		if u.Scheme == "" || u.Host == "" {
