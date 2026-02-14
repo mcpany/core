@@ -38,6 +38,29 @@ type Upstream struct {
 	checker health.Checker
 }
 
+// CheckHealth performs a health check on the upstream service.
+//
+// Summary: Checks the health of the command upstream.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the check.
+//
+// Returns:
+//   - error: nil if healthy, error if unhealthy.
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	u.mu.Lock()
+	checker := u.checker
+	u.mu.Unlock()
+
+	if checker != nil {
+		res := checker.Check(ctx)
+		if res.Status != health.StatusUp {
+			return fmt.Errorf("health check failed: %v", res)
+		}
+	}
+	return nil
+}
+
 // Shutdown implements the upstream.Upstream interface.
 //
 // Summary: Shuts down the command upstream.

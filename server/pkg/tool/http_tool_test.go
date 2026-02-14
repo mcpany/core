@@ -78,7 +78,7 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 
 	callDef := configv1.HttpCallDefinition_builder{
 		InputTransformer: configv1.InputTransformer_builder{
-			Template: lo.ToPtr(`name={{name}}&age={{age}}`),
+			Template: lo.ToPtr(`name={{.name}}&age={{.age}}`),
 		}.Build(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
@@ -358,7 +358,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	t.Run("input_transformation_render_error", func(t *testing.T) {
 
 		it := configv1.InputTransformer_builder{
-			Template: lo.ToPtr(`{"key": "{{some_key.nested}}"}`), // This will fail as some_key is not a map
+			Template: lo.ToPtr(`{"key": "{{.some_key.nested}}"}`), // This will fail as some_key is not a map
 		}.Build()
 		callDef := configv1.HttpCallDefinition_builder{
 			InputTransformer: it,
@@ -370,7 +370,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{"some_key": 123}`)}
 		_, err := httpTool.Execute(context.Background(), req)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "missing key")
+		assert.Contains(t, err.Error(), "map has no entry for key")
 	})
 
 	t.Run("output_transformation_parse_error", func(t *testing.T) {

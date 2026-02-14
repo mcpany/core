@@ -40,7 +40,7 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 
 		callDef := configv1.OpenAPICallDefinition_builder{
 			InputTransformer: configv1.InputTransformer_builder{
-				Template: proto.String(`{"name": "{{name}}"}`),
+				Template: proto.String(`{"name": "{{.name}}"}`),
 			}.Build(),
 		}.Build()
 
@@ -70,7 +70,7 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		callDef := configv1.OpenAPICallDefinition_builder{
 			OutputTransformer: configv1.OutputTransformer_builder{
 				Format:   configv1.OutputTransformer_JSON.Enum(),
-				Template: proto.String(`Result: {{data}}`),
+				Template: proto.String(`Result: {{.data}}`),
 				ExtractionRules: map[string]string{
 					"data": "{.data}",
 				},

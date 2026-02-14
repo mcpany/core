@@ -143,7 +143,7 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 
 		callDef := configv1.OpenAPICallDefinition_builder{
 			InputTransformer: configv1.InputTransformer_builder{
-				Template: proto.String(`{"name": "{{name}}"}`),
+				Template: proto.String(`{"name": "{{.name}}"}`),
 			}.Build(),
 		}.Build()
 
@@ -174,7 +174,7 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 		callDef := configv1.OpenAPICallDefinition_builder{
 			OutputTransformer: configv1.OutputTransformer_builder{
 				Format:   &format,
-				Template: proto.String(`Result: {{data}}`),
+				Template: proto.String(`Result: {{.data}}`),
 				ExtractionRules: map[string]string{
 					"data": "{.data}",
 				},

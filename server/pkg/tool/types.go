@@ -2962,80 +2962,40 @@ func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		supportsHash = true
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		supportsSlash = true
-		supportsBlock = true
-	case "php":
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	}
+	state := &commentParserState{}
+	config := getCommentConfig(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
 
-		if inLineComment {
+		if state.inLineComment {
 			if char == '\n' {
-				inLineComment = false
+				state.inLineComment = false
 				b.WriteByte(char)
 			}
 			continue
 		}
-		if inBlockComment {
+		if state.inBlockComment {
 			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
-				inBlockComment = false
+				state.inBlockComment = false
 				i++
 			}
 			continue
 		}
 
-		if escaped {
-			escaped = false
+		if state.escaped {
+			state.escaped = false
 			b.WriteByte(char)
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			b.WriteByte(char)
+		if handleQuotes(state, char, &b) {
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if state.inQuotes() {
 			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
+				state.escaped = true
 				b.WriteByte(char)
 				continue
 			}
@@ -3043,35 +3003,89 @@ func stripInterpreterComments(val, language string) string {
 			continue
 		}
 
-		// Not in quotes, check for comments
-		if supportsHash && char == '#' {
-			inLineComment = true
+		if checkCommentStart(state, config, char, val, &i) {
 			continue
 		}
-		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
-			if supportsSlash && val[i+1] == '/' {
-				inLineComment = true
-				i++
-				continue
-			}
-			if supportsBlock && val[i+1] == '*' {
-				inBlockComment = true
-				i++
-				continue
-			}
-		}
 
-		// Skip backslash (line continuation outside quotes)
 		if char == '\\' {
-			// If followed by newline, it's a line continuation. Strip it.
-			// If not, it's just a backslash. Strip it anyway for safety?
-			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
 			continue
 		}
 
 		b.WriteByte(char)
 	}
 	return b.String()
+}
+
+type commentParserState struct {
+	inLineComment  bool
+	inBlockComment bool
+	inSingle       bool
+	inDouble       bool
+	inBacktick     bool
+	escaped        bool
+}
+
+func (s *commentParserState) inQuotes() bool {
+	return s.inSingle || s.inDouble || s.inBacktick
+}
+
+type commentConfig struct {
+	supportsHash  bool
+	supportsSlash bool
+	supportsBlock bool
+}
+
+func getCommentConfig(language string) commentConfig {
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		return commentConfig{supportsHash: true}
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		return commentConfig{supportsSlash: true, supportsBlock: true}
+	case "php":
+		return commentConfig{supportsHash: true, supportsSlash: true, supportsBlock: true}
+	default:
+		return commentConfig{supportsHash: true, supportsSlash: true, supportsBlock: true}
+	}
+}
+
+func handleQuotes(s *commentParserState, char byte, b *strings.Builder) bool {
+	if char == '\'' && !s.inDouble && !s.inBacktick {
+		s.inSingle = !s.inSingle
+		b.WriteByte(char)
+		return true
+	}
+	if char == '"' && !s.inSingle && !s.inBacktick {
+		s.inDouble = !s.inDouble
+		b.WriteByte(char)
+		return true
+	}
+	if char == '`' && !s.inSingle && !s.inDouble {
+		s.inBacktick = !s.inBacktick
+		b.WriteByte(char)
+		return true
+	}
+	return false
+}
+
+func checkCommentStart(s *commentParserState, c commentConfig, char byte, val string, idx *int) bool {
+	i := *idx
+	if c.supportsHash && char == '#' {
+		s.inLineComment = true
+		return true
+	}
+	if (c.supportsSlash || c.supportsBlock) && char == '/' && i+1 < len(val) {
+		if c.supportsSlash && val[i+1] == '/' {
+			s.inLineComment = true
+			*idx++
+			return true
+		}
+		if c.supportsBlock && val[i+1] == '*' {
+			s.inBlockComment = true
+			*idx++
+			return true
+		}
+	}
+	return false
 }
 
 func checkInterpreterFunctionCalls(val, language string) error {
@@ -3596,6 +3610,8 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
+			// If parsing fails, we assume it's not a valid URL that needs blocking,
+			// or subsequent checks will catch other issues.
 			return nil
 		}
 

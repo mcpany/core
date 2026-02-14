@@ -44,7 +44,7 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 			configv1.PromptMessage_builder{
 				Role: &role,
 				Text: configv1.TextContent_builder{
-					Text: proto.String("Hello, {{name}}"),
+					Text: proto.String("Hello, {{.name}}"),
 				}.Build(),
 			}.Build(),
 		},
@@ -81,7 +81,7 @@ func TestTemplatedPrompt_Get_RenderError(t *testing.T) {
 			configv1.PromptMessage_builder{
 				Role: &role,
 				Text: configv1.TextContent_builder{
-					Text: proto.String("Hello, {{name}}"),
+					Text: proto.String("Hello, {{.name}}"),
 				}.Build(),
 			}.Build(),
 		},

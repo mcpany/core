@@ -87,12 +87,16 @@ func TestHTTPTool_PrepareBody_Template(t *testing.T) {
 		Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
 		EndpointPath: proto.String(urlStr),
 		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String(`{"key": "{{arg}}"}`),
+			Template: proto.String(`{"key": "{{.arg}}"}`),
 		}.Build(),
 	}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
+
+	if httpTool.initError != nil {
+		t.Fatalf("NewHTTPTool init error: %v", httpTool.initError)
+	}
 
 	// Since we are in the same package, we can directly call private methods like prepareBody.
 	ctx := context.Background()

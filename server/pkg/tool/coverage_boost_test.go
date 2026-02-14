@@ -258,7 +258,7 @@ func TestHTTPTool_OutputTransformer(t *testing.T) {
 	// Test output transformer template
 	callDef := configv1.HttpCallDefinition_builder{
 		OutputTransformer: configv1.OutputTransformer_builder{
-			Template: proto.String("Foo is {{foo}}"),
+			Template: proto.String("Foo is {{.foo}}"),
 			Format:   configv1.OutputTransformer_JSON.Enum(),
 			ExtractionRules: map[string]string{
 				"foo": "{.foo}",
@@ -324,7 +324,7 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
 
     callDef := configv1.HttpCallDefinition_builder{
         InputTransformer: configv1.InputTransformer_builder{
-            Template: proto.String("Hello {{name}}"),
+            Template: proto.String("Hello {{.name}}"),
         }.Build(),
         Parameters: []*configv1.HttpParameterMapping{
             configv1.HttpParameterMapping_builder{

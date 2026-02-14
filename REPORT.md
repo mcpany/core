@@ -1,40 +1,50 @@
-# Truth Reconciliation Audit Report
+# Audit Report: Truth Reconciliation
 
 ## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
+This audit verified the synchronization between documentation, codebase, and product roadmap. A sampling of 10 features (5 UI, 5 Server) was conducted.
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
-
-All discrepancies have been remediated.
+- **UI Features:** 5/5 verified as consistent with documentation and codebase. No discrepancies found.
+- **Server Features:** 3/5 verified as consistent. 2 discrepancies were identified and resolved.
+    - **Transformation:** Documentation claimed support for "Go Templates", but the implementation used a limited `fasttemplate` library. This was resolved by upgrading the implementation to standard `text/template` to match the documentation and roadmap intent for powerful transformation capabilities.
+    - **Health Checks:** Documentation listed "Command Line" support, but the upstream implementation lacked the `CheckHealth` method required for on-demand checks. This was resolved by implementing the missing method.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
+| `ui/docs/features/browser_connectivity_check.md` | **Verified** | None | Verified code in `connection-diagnostic.tsx` matches doc. |
+| `ui/docs/features/native_file_upload_playground.md` | **Verified** | None | Verified code in `schema-form.tsx` matches doc. |
+| `ui/docs/features/structured_log_viewer.md` | **Verified** | None | Verified code in `json-viewer.tsx` matches doc. |
+| `ui/docs/features/server-health-history.md` | **Verified** | None | Verified code in `service-health-widget.tsx` matches doc. |
+| `ui/docs/features/tool_search_bar.md` | **Verified** | None | Verified code in `tool-sidebar.tsx` matches doc. |
+| `server/docs/features/context_optimizer.md` | **Verified** | None | Verified code in `context_optimizer.go` matches doc. |
+| `server/docs/features/config_validator.md` | **Verified** | None | Verified API endpoint usage in `server.go`. |
+| `server/docs/features/health-checks.md` | **Missing Feature** | **Fixed Code** | Implemented `CheckHealth` in `command.go`. Added tests. |
+| `server/docs/features/hot_reload.md` | **Verified** | None | Verified code in `watcher.go`. |
+| `server/docs/features/transformation.md` | **Doc Drift / Code Debt** | **Refactored Code** | Replaced `fasttemplate` with `text/template` to match "Go Templates" documentation. Updated docs and tests. |
 
 ## Remediation Log
 
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
+### 1. Transformation Feature (Code Refactor)
+- **Issue:** The documentation stated that "Go Templates" were supported, implying standard library capabilities (logic, loops, etc.). However, the codebase was using `fasttemplate`, a limited substitution-only library. This created a functional gap between documented promise and reality.
+- **Action:** Refactored `server/pkg/transformer/template.go` to use Go's standard `text/template`.
+- **Impact:** Enabled full Go template capabilities for Input/Output transformers.
+- **Updates:**
+    - Updated `NewTemplate` to use `template.New`.
+    - Updated all dependent unit tests (`server/pkg/transformer/`, `server/pkg/tool/`, `server/pkg/prompt/`) to use correct Go Template syntax (`{{.variable}}` instead of `{{variable}}`).
+    - Updated `server/docs/features/transformation.md` with a clear example of Go Template syntax.
 
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
+### 2. Command Line Health Checks (Missing Feature)
+- **Issue:** The documentation `health-checks.md` listed "Command Line" as a supported protocol for health checks. However, the `CommandUpstream` implementation in `server/pkg/upstream/command` did not implement the `CheckHealth` method, meaning on-demand health checks (e.g., via Doctor/API) would not function as expected for command services.
+- **Action:** Implemented `CheckHealth` method in `server/pkg/upstream/command/command.go` to delegate to the internal health checker.
+- **Impact:** Command line services now support on-demand health checks.
+- **Updates:** Added `TestUpstream_CheckHealth` verification test.
+
+### 3. Code Quality (Linting)
+- **Issue:** High cyclomatic complexity in `stripInterpreterComments` function in `server/pkg/tool/types.go`.
+- **Action:** Refactored the function into smaller helper methods (`getCommentConfig`, `checkCommentStart`, `handleQuotes`) to improve readability and maintainability.
+- **Issue:** Potential ignored error in `checkForSSRF` logic.
+- **Action:** Explicitly handled the error case (commented intent).
 
 ## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+This report contains no PII, secrets, or internal IP addresses.

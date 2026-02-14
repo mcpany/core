@@ -230,7 +230,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}
 	callDef.SetInputTransformer(&configv1.InputTransformer{})
-	callDef.GetInputTransformer().SetTemplate(`{"transformed_message":"input_{{message}}"}`)
+	callDef.GetInputTransformer().SetTemplate(`{"transformed_message":"input_{{.message}}"}`)
 	callDef.SetOutputTransformer(&configv1.OutputTransformer{})
 	callDef.GetOutputTransformer().SetFormat(configv1.OutputTransformer_JSON)
 	callDef.GetOutputTransformer().SetExtractionRules(map[string]string{

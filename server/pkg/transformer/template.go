@@ -4,49 +4,56 @@
 package transformer
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"strings"
-
-	"github.com/valyala/fasttemplate"
+	"text/template"
 )
 
-// TextTemplate provides a simple wrapper around Go's standard text/template
+// TextTemplate provides a wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 type TextTemplate struct {
-	template *fasttemplate.Template
+	template *template.Template
 	raw      string
-	startTag string
-	endTag   string
-	IsJSON   bool
 }
 
 // NewTemplate parses a template string and creates a new TextTemplate.
 //
 // templateString is the template content to be parsed.
+// startTag and endTag are currently ignored as text/template uses {{ }} by default,
+// but kept for API compatibility.
 // It returns a new TextTemplate or an error if the template string is invalid.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
-	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
-	if err != nil {
-		return nil, err
+	// Create a new template with helper functions
+	tpl := template.New("template").Option("missingkey=error").Funcs(template.FuncMap{
+		"json": func(v any) (string, error) {
+			b, err := json.Marshal(v)
+			if err != nil {
+				return "", err
+			}
+			return string(b), nil
+		},
+		"join": func(sep string, s []string) string {
+			return strings.Join(s, sep)
+		},
+	})
+
+	// Parse the template
+	// Note: text/template uses {{ }} by default. Custom delimiters are supported via Delims(),
+	// but we only support if startTag/endTag are provided and non-empty.
+	if startTag != "" && endTag != "" {
+		tpl = tpl.Delims(startTag, endTag)
 	}
 
-	trimmed := strings.TrimSpace(templateString)
-	// Heuristic detection of JSON:
-	// 1. Must start with { and end with } (Object) OR start with [ and end with ] (Array)
-	// 2. Must NOT start with the startTag (to avoid misidentifying "{{ var }}" as JSON)
-	isObject := strings.HasPrefix(trimmed, "{") && strings.HasSuffix(trimmed, "}")
-	isArray := strings.HasPrefix(trimmed, "[") && strings.HasSuffix(trimmed, "]")
-
-	isJSON := (isObject || isArray) && !strings.HasPrefix(trimmed, startTag)
+	parsedTpl, err := tpl.Parse(templateString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse template: %w", err)
+	}
 
 	return &TextTemplate{
-		template: tpl,
+		template: parsedTpl,
 		raw:      templateString,
-		startTag: startTag,
-		endTag:   endTag,
-		IsJSON:   isJSON,
 	}, nil
 }
 
@@ -57,34 +64,9 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 // template.
 // It returns the rendered string or an error if the template execution fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
-	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
-		val, ok := params[tag]
-		if !ok {
-			return 0, fmt.Errorf("missing key: %s", tag)
-		}
-
-		if t.IsJSON {
-			if s, ok := val.(string); ok {
-				return io.WriteString(w, escapeJSONString(s))
-			}
-			b, err := json.Marshal(val)
-			if err != nil {
-				return fmt.Fprintf(w, "%v", val)
-			}
-			return w.Write(b)
-		}
-
-		if s, ok := val.(string); ok {
-			return io.WriteString(w, s)
-		}
-		return fmt.Fprintf(w, "%v", val)
-	})
-}
-
-func escapeJSONString(s string) string {
-	b, _ := json.Marshal(s)
-	if len(b) >= 2 {
-		return string(b[1 : len(b)-1])
+	var buf bytes.Buffer
+	if err := t.template.Execute(&buf, params); err != nil {
+		return "", fmt.Errorf("failed to execute template: %w", err)
 	}
-	return s
+	return buf.String(), nil
 }

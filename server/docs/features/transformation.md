@@ -10,12 +10,19 @@ Sometimes raw API responses are too verbose or complex for an LLM. Transformatio
 
 - **JQ Support**: Use JQ filters to slice, dice, and reshape JSON data.
 - **JSONPath**: Use standard JSONPath expressions for selection.
-- **Templates**: Format output using Go templates.
+- **Templates**: Format output using Go templates. Note: Use `{{.key}}` syntax to access fields.
 
 ## Example
 
+### JQ Transformation
 ```yaml
 transform:
   type: jq
   filter: ".items[] | {name: .metadata.name, status: .status.phase}"
+```
+
+### Template Transformation
+```yaml
+output_transformer:
+  template: "Name: {{.name}}, Status: {{.status}}"
 ```

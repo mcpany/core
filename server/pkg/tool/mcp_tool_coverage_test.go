@@ -147,7 +147,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
             OutputTransformer: configv1.OutputTransformer_builder{
                 Format: &format,
                 ExtractionRules: map[string]string{"key": "{.key}"},
-                Template: lo.ToPtr("Value is {{key}}"),
+                Template: lo.ToPtr("Value is {{.key}}"),
             }.Build(),
         }.Build()
 

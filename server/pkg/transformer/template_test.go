@@ -12,7 +12,7 @@ import (
 
 func TestTextTemplate_Render(t *testing.T) {
 	t.Parallel()
-	templateString := "Hello, {{name}}! You are {{age}} years old."
+	templateString := "Hello, {{.name}}! You are {{.age}} years old."
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -28,26 +28,27 @@ func TestTextTemplate_Render(t *testing.T) {
 
 func TestTextTemplate_InvalidTemplate(t *testing.T) {
 	t.Parallel()
-	templateString := "Hello, {{name!"
+	templateString := "Hello, {{.name!"
 	_, err := NewTemplate(templateString, "{{", "}}")
 	require.Error(t, err)
 }
 
 func TestTextTemplate_MissingParameter(t *testing.T) {
 	t.Parallel()
-	templateString := "Hello, {{name}}!"
+	// text/template configured with missingkey=error
+	templateString := "Hello, {{.name}}!"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
 	params := map[string]any{}
 	_, err = tpl.Render(params)
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "missing key")
+	assert.Contains(t, err.Error(), "map has no entry for key \"name\"")
 }
 
 func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
 	t.Parallel()
-	templateString := "User: {{user}}, Role: {{role}}, ID: {{id}}"
+	templateString := "User: {{.user}}, Role: {{.role}}, ID: {{.id}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -63,7 +64,7 @@ func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
 
 func TestTextTemplate_CustomDelimiters(t *testing.T) {
 	t.Parallel()
-	templateString := "Data: [=data=], Value: [=value=]"
+	templateString := "Data: [=.data=], Value: [=.value=]"
 	tpl, err := NewTemplate(templateString, "[=", "=]")
 	require.NoError(t, err)
 
@@ -90,8 +91,8 @@ func TestTextTemplate_EmptyTemplate(t *testing.T) {
 
 func TestTextTemplate_JSONEscaping(t *testing.T) {
 	t.Parallel()
-	// JSON template
-	templateString := `{"key": "{{val}}"}`
+	// JSON template using custom 'json' function
+	templateString := `{"key": {{.val | json}}}`
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -110,8 +111,8 @@ func TestTextTemplate_JSONEscaping(t *testing.T) {
 
 func TestTextTemplate_JSONComplexTypes(t *testing.T) {
 	t.Parallel()
-	// JSON template expecting a value (not string)
-	templateString := `{"config": {{config}}}`
+	// JSON template using 'json' function
+	templateString := `{"config": {{.config | json}}}`
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -129,8 +130,8 @@ func TestTextTemplate_JSONComplexTypes(t *testing.T) {
 
 func TestTextTemplate_NonJSON(t *testing.T) {
 	t.Parallel()
-	// Text template (no JSON escaping)
-	templateString := `Value: {{val}}`
+	// Text template (no JSON escaping by default)
+	templateString := `Value: {{.val}}`
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -144,36 +145,4 @@ func TestTextTemplate_NonJSON(t *testing.T) {
 	// Expect NO escaping
 	expected := `Value: foo"bar`
 	assert.Equal(t, expected, rendered)
-}
-
-func TestTextTemplate_FalsePositives(t *testing.T) {
-	t.Parallel()
-
-	// Case 1: Template starts with {{ (which starts with {)
-	// Should NOT be detected as JSON.
-	templateString := `{{val}}`
-	tpl, err := NewTemplate(templateString, "{{", "}}")
-	require.NoError(t, err)
-
-	params := map[string]any{
-		"val": `foo"bar`,
-	}
-
-	rendered, err := tpl.Render(params)
-	require.NoError(t, err)
-
-	// Expect NO escaping
-	assert.Equal(t, `foo"bar`, rendered)
-
-	// Case 2: Template starts with [INFO] (starts with [)
-	// Should NOT be detected as JSON.
-	templateString = `[INFO] {{val}}`
-	tpl, err = NewTemplate(templateString, "{{", "}}")
-	require.NoError(t, err)
-
-	rendered, err = tpl.Render(params)
-	require.NoError(t, err)
-
-	// Expect NO escaping
-	assert.Equal(t, `[INFO] foo"bar`, rendered)
 }
