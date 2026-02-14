@@ -75,21 +75,31 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	// Track source priority to ensure we get the most specific source
 	sourcePriority := 0 // 0: none, 1: component/source, 2: toolName
 
-	// Try to find source in attributes or use default
-	r.Attrs(func(a slog.Attr) bool {
-		// Collect all attributes into Metadata
+	// Helper function to process attributes
+	processAttr := func(a slog.Attr) {
 		entry.Metadata[a.Key] = a.Value.Any()
 
+		prio := 0
 		if a.Key == "source" || a.Key == "component" {
-			if sourcePriority < 1 {
-				entry.Source = a.Value.String()
-				sourcePriority = 1
-			}
+			prio = 1
+		} else if a.Key == "toolName" {
+			prio = 2
 		}
-		if a.Key == "toolName" {
+
+		if prio > 0 && prio >= sourcePriority {
 			entry.Source = a.Value.String()
-			sourcePriority = 2
+			sourcePriority = prio
 		}
+	}
+
+	// Process handler attributes (from WithAttrs)
+	for _, a := range h.attrs {
+		processAttr(a)
+	}
+
+	// Process record attributes (overrides handler attributes)
+	r.Attrs(func(a slog.Attr) bool {
+		processAttr(a)
 		return true
 	})
 
