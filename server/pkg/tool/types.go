@@ -3091,6 +3091,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	if err := checkTarInjection(val, base); err != nil {
+		return err
+	}
 	if err := checkPythonInjection(val, template, base); err != nil {
 		return err
 	}
@@ -3105,6 +3108,25 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
 		return err
+	}
+	return nil
+}
+
+func checkTarInjection(val, base string) error {
+	// Tar Injection Check
+	// Block RCE via --checkpoint-action and --to-command flags by detecting execution directives
+	// inside flag values.
+	isTar := base == "tar" || base == "gtar" || base == "bsdtar"
+	if isTar {
+		valLower := strings.ToLower(val)
+		// Check for execution directives commonly used in --checkpoint-action and --to-command
+		if strings.Contains(valLower, "exec=") || strings.Contains(valLower, "command=") {
+			return fmt.Errorf("tar injection detected: value contains execution directive")
+		}
+		// Also block checkpoint-action keyword itself if it somehow appears in value
+		if strings.Contains(valLower, "checkpoint-action") {
+			return fmt.Errorf("tar injection detected: value contains 'checkpoint-action'")
+		}
 	}
 	return nil
 }
@@ -3346,6 +3368,7 @@ func isInterpreter(command string) bool {
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
+		"tar", "gtar", "bsdtar",
 	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
