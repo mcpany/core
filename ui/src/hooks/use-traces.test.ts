@@ -13,6 +13,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 interface Trace {
   id: string;
   timestamp: string;
+  name?: string;
   // other fields...
 }
 
@@ -54,7 +55,7 @@ describe('useTraces', () => {
     expect(result.current.loading).toBe(false);
 
     // Simulate incoming trace
-    const trace1 = { id: 't1', timestamp: '2023-01-01T00:00:00Z', name: 'trace1' };
+    const trace1: Trace = { id: 't1', timestamp: '2023-01-01T00:00:00Z', name: 'trace1' };
 
     if (mockSocketInstance.onmessage) {
         mockSocketInstance.onmessage({ data: JSON.stringify(trace1) });
@@ -67,7 +68,7 @@ describe('useTraces', () => {
     });
 
     // Simulate another trace
-    const trace2 = { id: 't2', timestamp: '2023-01-01T00:00:01Z', name: 'trace2' };
+    const trace2: Trace = { id: 't2', timestamp: '2023-01-01T00:00:01Z', name: 'trace2' };
     if (mockSocketInstance.onmessage) {
         mockSocketInstance.onmessage({ data: JSON.stringify(trace2) });
     }
@@ -78,15 +79,16 @@ describe('useTraces', () => {
     });
 
     // Simulate update to existing trace
-    const trace1Updated = { ...trace1, name: 'trace1-updated' };
+    const trace1Updated: Trace = { ...trace1, name: 'trace1-updated' };
     if (mockSocketInstance.onmessage) {
         mockSocketInstance.onmessage({ data: JSON.stringify(trace1Updated) });
     }
 
     await waitFor(() => {
         expect(result.current.traces).toHaveLength(2);
-        const t1 = result.current.traces.find((t: any) => t.id === 't1');
-        expect(t1.name).toBe('trace1-updated');
+        const t1 = result.current.traces.find((t: Trace) => t.id === 't1');
+        expect(t1).toBeDefined();
+        expect(t1?.name).toBe('trace1-updated');
     });
   });
 
