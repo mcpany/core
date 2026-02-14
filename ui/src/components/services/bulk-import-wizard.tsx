@@ -183,7 +183,7 @@ export function BulkImportWizard({ onImportSuccess, onCancel }: BulkImportWizard
         setLoading(false);
         setStep(WizardStep.RESULT);
 
-        // Notify parent if all success?
+        // Notify parent if any success
         const successCount = results.filter(r => r.success).length;
         if (successCount > 0) {
              toast({
