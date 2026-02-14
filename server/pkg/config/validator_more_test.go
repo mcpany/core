@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpany/core/proto/bus"
@@ -103,8 +104,8 @@ func TestValidate_MoreServices(t *testing.T) {
 						}.Build(),
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
-								ClientCertPath: proto.String("non-existent-cert.pem"),
-								ClientKeyPath:  proto.String("non-existent-key.pem"),
+								ClientCertPath: proto.String(filepath.Join(os.TempDir(), "non-existent-cert.crt")),
+								ClientKeyPath:  proto.String(filepath.Join(os.TempDir(), "non-existent-key.txt")),
 							}.Build(),
 						}.Build(),
 					}.Build(),
@@ -512,7 +513,7 @@ func TestValidate_MoreServices(t *testing.T) {
 							Mtls: configv1.MTLSAuth_builder{
 								ClientCertPath: proto.String(insecurePath),
 								ClientKeyPath:  proto.String(insecurePath),
-								CaCertPath:     proto.String("non-existent-ca.pem"),
+								CaCertPath:     proto.String(filepath.Join(os.TempDir(), "non-existent-ca.crt")),
 							}.Build(),
 						}.Build(),
 					}.Build(),

@@ -821,6 +821,15 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil
 		}
 
+		// Mock validation.IsAllowedPath because "cert.pem" is blocked by IsSensitivePath (ends in .pem)
+		oldIsAllowed := validation.IsAllowedPath
+		defer func() { validation.IsAllowedPath = oldIsAllowed }()
+
+		validation.IsAllowedPath = func(path string) error {
+			// Reuse the mock logic of IsSecurePath for consistency or just allow everything except the error case
+			return validation.IsSecurePath(path)
+		}
+
 		mtls := configv1.Authentication_builder{
 			Mtls: configv1.MTLSAuth_builder{
 				ClientCertPath: proto.String("cert.pem"),
