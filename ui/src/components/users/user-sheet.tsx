@@ -57,6 +57,21 @@ const userSchema = z.object({
 
 type UserValues = z.infer<typeof userSchema>;
 
+/**
+ * UserSheet is a component for creating or editing a user.
+ *
+ * Summary: Displays a sheet (slide-over) for managing user details, including role and authentication.
+ *
+ * Parameters:
+ *   - props: UserSheetProps. The component props.
+ *   - props.open: boolean. Whether the sheet is open.
+ *   - props.onOpenChange: (open: boolean) => void. Callback when the sheet open state changes.
+ *   - props.user: User | null. The user to edit, or null for a new user.
+ *   - props.onSave: (user: Partial<User>, password?: string, apiKey?: string) => Promise<void>. Callback to save the user.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered sheet component.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();
     const [generatedKey, setGeneratedKey] = useState("");
