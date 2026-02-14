@@ -105,7 +105,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make curl unzip
 
       - name: Prepare environment
         run: make prepare
