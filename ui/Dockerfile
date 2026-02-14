@@ -19,6 +19,7 @@ FROM base AS builder
 WORKDIR /app
 
 # Install protoc for generating protobuf files
+# protobuf-compiler usually includes standard google protos in /usr/include/google/protobuf
 RUN apt-get update && apt-get install -y protobuf-compiler unzip curl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -29,7 +30,6 @@ COPY proto/ /proto/
 RUN ln -s /app/node_modules /proto/node_modules
 
 # Ensure /app/proto exists as a symlink to /proto to satisfy any relative path resolution that might look for ./proto
-# even though tsconfig maps @proto to ../proto. Some tools might be confused.
 RUN ln -s /proto /app/proto
 
 # Generate Protobuf files (TypeScript)
@@ -37,16 +37,13 @@ RUN ln -s /proto /app/proto
 # Install ts-proto locally so we can reference the binary reliably
 RUN npm install ts-proto
 # Run protoc on all proto files at once to handle dependencies correctly
-# We use shell expansion to find files. The output will be relative to --ts_proto_out path.
-# Since our tsconfig maps @proto/* to ../proto/*, and ui root is /app, ../proto is /proto.
-# So we need generated files in /proto.
-# If we set --ts_proto_out=/proto and proto_path=/proto, then input file 'config/v1/auth.proto'
-# generates '/proto/config/v1/auth.ts'. This matches expectations.
+# We include /usr/include in proto_path to find standard google/protobuf files if they are not in /proto
 RUN protoc \
     --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/ \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     --proto_path=/ \
+    --proto_path=/usr/include \
     $(find /proto -name "*.proto")
 
 # Fix imports in generated files (match Makefile logic if needed, but ts-proto usually handles relative imports well if configured right)
