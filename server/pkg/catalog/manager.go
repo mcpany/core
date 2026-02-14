@@ -13,6 +13,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/spf13/afero"
+	"golang.org/x/sync/errgroup"
 )
 
 // Manager handles the loading and listing of catalog services.
@@ -63,7 +64,8 @@ func (m *Manager) Load(ctx context.Context) error {
 
 	m.services = nil // Reset
 
-	// Walk the directory
+	var paths []string
+	// Walk the directory to collect file paths
 	err := afero.Walk(m.fs, m.catalogPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -72,13 +74,26 @@ func (m *Manager) Load(ctx context.Context) error {
 			return nil
 		}
 		// Only look for config.yaml or popular/*.yaml
-		// The moved structure is marketplace/catalog/<service_name>/config.yaml
-		// OR we might have marketplace/upstream_service_collection/popular/*.yaml (which we created earlier)
-		// Let's support both for now, or focus on the requested structure.
-		// The user moved server/examples/popular_services/* -> marketplace/catalog/*
-		// so we expect .../catalog/gemini/config.yaml etc.
-
 		if strings.HasSuffix(info.Name(), ".yaml") || strings.HasSuffix(info.Name(), ".yml") {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// ⚡ BOLT: Parallelize catalog loading to reduce startup time.
+	// Randomized Selection from Top 5 High-Impact Targets
+	g, ctx := errgroup.WithContext(ctx)
+	g.SetLimit(8)
+
+	var sliceMu sync.Mutex
+
+	for _, path := range paths {
+		path := path
+		g.Go(func() error {
 			// Load config
 			store := config.NewFileStore(m.fs, []string{path})
 			// We skip validation here to be lenient, or strict? Let's be strict but log errors.
@@ -90,14 +105,16 @@ func (m *Manager) Load(ctx context.Context) error {
 				return nil
 			}
 
-			if cfg.GetUpstreamServices() != nil {
-				m.services = append(m.services, cfg.GetUpstreamServices()...)
+			if services := cfg.GetUpstreamServices(); len(services) > 0 {
+				sliceMu.Lock()
+				m.services = append(m.services, services...)
+				sliceMu.Unlock()
 			}
-		}
-		return nil
-	})
+			return nil
+		})
+	}
 
-	return err
+	return g.Wait()
 }
 
 // ListServices returns the list of loaded services.
