@@ -62,7 +62,7 @@ func TestCommandTool_InputValidation(t *testing.T) {
 		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 
-		// Malicious input
+		// Malicious input (contains prohibited characters)
 		inputData := map[string]interface{}{"safe_arg": "invalid-chars!"}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
