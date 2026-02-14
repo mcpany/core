@@ -22,9 +22,11 @@ func TestCommandInjection_SpaceInjection(t *testing.T) {
 		tool := createTestCommandToolWithTemplate(cmd, "curl {{input}}")
 
 		// Input introduces new arguments to curl: -o /etc/passwd
+		// Note: We avoid "http://" to bypass IsSafeURL check in validateSafePathAndInjection,
+		// ensuring we test the shell injection logic specifically.
 		req := &ExecutionRequest{
 			ToolName: "test",
-			ToolInputs: []byte(`{"input": "http://example.com -o /etc/passwd"}`),
+			ToolInputs: []byte(`{"input": "example.com -o /etc/passwd"}`),
 		}
 
 		_, err := tool.Execute(context.Background(), req)
