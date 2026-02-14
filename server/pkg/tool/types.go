@@ -3499,6 +3499,15 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
+	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
+	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
+	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
+	if strings.Contains(val, "://") {
+		if err := validation.IsSafeURL(val); err != nil {
+			return fmt.Errorf("unsafe url argument: %w", err)
+		}
+	}
+
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
