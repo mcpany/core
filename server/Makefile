@@ -151,7 +151,7 @@ prepare:
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+		(if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
 			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
 			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
@@ -165,7 +165,7 @@ prepare:
 				exit 1; \
 			fi; \
 			rm -f "$(PROTOC_ZIP)"; \
-		fi; \
+		fi) || echo "Warning: protoc download failed"; \
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
@@ -183,10 +183,10 @@ prepare:
 			rm -f "$(PROTOC_GEN_GO_GRPC)"; \
 		fi; \
 	fi
-	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
+	if ! test -f "$(PROTOC_GEN_GO)"; then (GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION) || echo "Warning: protoc-gen-go install failed"); fi
+	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then (GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION) || echo "Warning: protoc-gen-go-grpc install failed"); fi
+	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then (GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION) || echo "Warning: protoc-gen-grpc-gateway install failed"); fi
+	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then (GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION) || echo "Warning: protoc-gen-openapiv2 install failed"); fi
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -204,19 +204,19 @@ prepare:
 	@# Download grpc-gateway source for protos
 	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \
-		curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
-		unzip -q grpc-gateway.zip -d $(BUILD_DIR); \
-		GRPC_GATEWAY_VER_NO_V=$$(echo "$(GRPC_GATEWAY_VERSION)" | sed 's/v//'); \
-		mv $(BUILD_DIR)/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(BUILD_DIR)/grpc-gateway; \
-		rm grpc-gateway.zip; \
+		(curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip && \
+		unzip -q grpc-gateway.zip -d $(BUILD_DIR) && \
+		GRPC_GATEWAY_VER_NO_V=$$(echo "$(GRPC_GATEWAY_VERSION)" | sed 's/v//') && \
+		mv $(BUILD_DIR)/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(BUILD_DIR)/grpc-gateway && \
+		rm grpc-gateway.zip) || echo "Warning: grpc-gateway download failed"; \
 	fi
 	@# Download googleapis
 	@if ! test -d "$(BUILD_DIR)/googleapis"; then \
 		echo "Downloading googleapis..."; \
-		curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
-		unzip -q googleapis.zip -d $(BUILD_DIR); \
-		mv $(BUILD_DIR)/googleapis-master $(BUILD_DIR)/googleapis; \
-		rm googleapis.zip; \
+		(curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+		unzip -q googleapis.zip -d $(BUILD_DIR) && \
+		mv $(BUILD_DIR)/googleapis-master $(BUILD_DIR)/googleapis && \
+		rm googleapis.zip) || echo "Warning: googleapis download failed"; \
 	fi
 	@# Install Python dependencies and pre-commit hooks
 	@echo "Checking for Python to install dependencies and pre-commit hooks..."
