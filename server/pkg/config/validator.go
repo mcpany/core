@@ -245,6 +245,11 @@ func validateStdioArgs(ctx context.Context, command string, args []string, worki
 		// Check for URLs (Deno/Bun/remote scripts)
 		// These are valid arguments for some interpreters but not local files.
 		if strings.HasPrefix(arg, "http://") || strings.HasPrefix(arg, "https://") {
+			// Sentinel Security Update: Enforce SSRF protection for remote scripts.
+			// This prevents loading malicious scripts from internal resources (e.g. localhost, private IPs).
+			if err := validation.IsSafeURL(arg); err != nil {
+				return fmt.Errorf("unsafe url argument %q: %w", arg, err)
+			}
 			return nil
 		}
 
