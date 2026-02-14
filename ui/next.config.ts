@@ -130,7 +130,6 @@ const nextConfig: NextConfig = {
       '@proto': protoPath,
       '@google': path.join(protoPath, 'google'),
     };
-    console.log('[DEBUG] Webpack @proto path:', protoPath);
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
