@@ -336,7 +336,7 @@ prepare:
 				echo "ShellCheck installation failed."; \
 				exit 1; \
 			fi; \
-		fi; \
+		fi || echo "Warning: ShellCheck installation failed. Continuing..."; \
 	fi
 	@# Install nats-server
 	@echo "Checking for nats-server..."
