@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -2857,9 +2858,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val); err != nil {
+		// in unquoted, single, and double-quoted strings.
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
+			if err := checkInterpreterFunctionCalls(val, quoteLevel); err != nil {
 				return err
 			}
 		}
@@ -2877,8 +2878,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
-			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val); err != nil {
+			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
+				if err := checkInterpreterFunctionCalls(val, quoteLevel); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -2934,7 +2935,18 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func checkInterpreterFunctionCalls(val string) error {
+var highRiskKeywordsRegex = regexp.MustCompile(`(?i)\b(system|exec|popen|eval|spawn|fork)\b`)
+
+func checkInterpreterFunctionCalls(val string, quoteLevel int) error {
+	// In unquoted context (Level 0), we must prevent execution of barewords like "exec ls".
+	// Since space is allowed in unquoted context for interpreters (to allow args),
+	// we use regex to block high-risk keywords appearing as whole words.
+	if quoteLevel == 0 {
+		if highRiskKeywordsRegex.MatchString(val) {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous keyword in unquoted context")
+		}
+	}
+
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
 	b.Grow(len(val))

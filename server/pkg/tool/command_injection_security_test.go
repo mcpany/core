@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -95,7 +96,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// Updated expectation: newer interpreter checks might catch this first
+		assert.True(t,
+			strings.Contains(err.Error(), "shell injection detected") ||
+			strings.Contains(err.Error(), "interpreter injection detected"),
+			"Expected shell or interpreter injection error, got: %v", err,
+		)
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
