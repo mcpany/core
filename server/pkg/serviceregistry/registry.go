@@ -99,7 +99,10 @@ type ServiceRegistryInterface interface { //nolint:revive
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
-	serviceInfo     map[string]*tool.ServiceInfo
+	// ⚡ BOLT: Cache for secrets-stripped configurations to optimize GetAllServices.
+	// Randomized Selection from Top 5 High-Impact Targets
+	safeServiceConfigs map[string]*config.UpstreamServiceConfig
+	serviceInfo        map[string]*tool.ServiceInfo
 	serviceErrors   map[string]string
 	healthErrors    map[string]string
 	upstreams       map[string]upstream.Upstream
@@ -123,8 +126,9 @@ type ServiceRegistry struct {
 //   - *ServiceRegistry: A pointer to the newly created ServiceRegistry.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
-		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
-		serviceInfo:     make(map[string]*tool.ServiceInfo),
+		serviceConfigs:     make(map[string]*config.UpstreamServiceConfig),
+		safeServiceConfigs: make(map[string]*config.UpstreamServiceConfig),
+		serviceInfo:        make(map[string]*tool.ServiceInfo),
 		serviceErrors:   make(map[string]string),
 		healthErrors:    make(map[string]string),
 		upstreams:       make(map[string]upstream.Upstream),
@@ -182,6 +186,10 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 	// Register the config and clear error
 	r.serviceConfigs[serviceID] = serviceConfig
+	// ⚡ BOLT: Pre-compute stripped config for caching
+	safeConfig := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
+	util.StripSecretsFromService(safeConfig)
+	r.safeServiceConfigs[serviceID] = safeConfig
 	delete(r.serviceErrors, serviceID)
 
 	u, err := r.factory.NewUpstream(serviceConfig)
@@ -341,14 +349,14 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	serviceConfig, ok := r.serviceConfigs[serviceID]
+	serviceConfig, ok := r.safeServiceConfigs[serviceID]
 	if !ok {
 		return nil, false
 	}
-	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
-	util.StripSecretsFromService(cloned)
-	r.injectRuntimeInfo(cloned)
-	return cloned, true
+	// ⚡ BOLT: Optimization - Use cached stripped config with shallow copy.
+	cloned := *serviceConfig
+	r.injectRuntimeInfo(&cloned)
+	return &cloned, true
 }
 
 // UnregisterService removes a service from the registry.
@@ -390,6 +398,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	}
 
 	delete(r.serviceConfigs, serviceID)
+	delete(r.safeServiceConfigs, serviceID)
 	delete(r.serviceInfo, serviceID)
 	delete(r.serviceErrors, serviceID)
 	r.toolManager.ClearToolsForService(serviceID)
@@ -525,12 +534,16 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	services := make([]*config.UpstreamServiceConfig, 0, len(r.serviceConfigs))
-	for _, service := range r.serviceConfigs {
-		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
-		util.StripSecretsFromService(cloned)
-		r.injectRuntimeInfo(cloned)
-		services = append(services, cloned)
+	services := make([]*config.UpstreamServiceConfig, 0, len(r.safeServiceConfigs))
+	// ⚡ BOLT: Optimization - Use cached stripped config with shallow copy.
+	// Randomized Selection from Top 5 High-Impact Targets
+	for _, service := range r.safeServiceConfigs {
+		// Use a shallow copy to inject runtime info without affecting the cache.
+		// Note: injectRuntimeInfo MUST NOT modify nested pointer fields.
+		// It only sets LastError and ToolCount which are fields on the UpstreamServiceConfig struct.
+		cloned := *service
+		r.injectRuntimeInfo(&cloned)
+		services = append(services, &cloned)
 	}
 	return services, nil
 }
