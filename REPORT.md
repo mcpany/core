@@ -1,20 +1,30 @@
 # Impact Report: Coverage Intervention
 
-## Target: `server/pkg/servicetemplates/seed.go`
+## Target
+`server/pkg/catalog/manager.go`
 
 ## Risk Profile
-This component was selected because:
-*   **Critical Functionality:** It is responsible for seeding the database with initial service templates (Google Calendar, GitHub, etc.), which are the core entry points for user interaction with the platform.
-*   **High Complexity / Risk:** It performs file system I/O and parses external YAML configurations. Errors here could lead to a broken initial state or application crashes.
-*   **Zero Coverage:** Prior to this intervention, there were no unit tests for this critical logic (`seed_test.go` did not exist).
+This component was selected based on the following risk factors:
+*   **Criticality:** It is responsible for loading and managing the service catalog, which is the core registry for all upstream services. Failure here means no services are available.
+*   **Zero Coverage:** Prior to this intervention, this file had 0% test coverage.
+*   **Complexity:** The logic involves filesystem traversal, file filtering, configuration parsing (via `server/pkg/config`), error handling, and concurrency management (mutex locks).
 
 ## New Coverage
-A robust test suite `server/pkg/servicetemplates/seed_test.go` has been implemented, providing the following coverage:
-1.  **Hardcoded Template Seeding:** Verifies that all built-in "popular" service templates (e.g., "google-calendar", "github", "slack") are correctly instantiated and saved to the storage backend.
-2.  **File Scanning Logic:** Exercises the directory scanning logic by simulating a file system with `os.MkdirTemp`.
-3.  **Error Handling Resilience:** Verifies that the seeder handles invalid YAML files and directory structures gracefully (logging errors instead of crashing), ensuring system stability during initialization.
+The newly implemented test suite `server/pkg/catalog/manager_test.go` provides robust coverage for:
+*   **Happy Path:**
+    *   Correctly loading valid service configurations (HTTP and gRPC).
+    *   Verifying that service attributes (name, address) are correctly parsed.
+*   **Edge Cases:**
+    *   **Empty Directory:** Verifying behavior when no services are present.
+    *   **File Filtering:** Ensuring non-YAML files (e.g., `README.md`) are ignored.
+    *   **Error Handling:** Verifying that a single invalid configuration file does not crash the entire load process (partial success).
+*   **Concurrency:**
+    *   Verifying thread safety when `ListServices` is called concurrently with `Load`.
 
 ## Verification
-*   **Unit Tests:** `go test -v ./server/pkg/servicetemplates/...` passed successfully.
-*   **Regression Tests:** `make test` confirmed no regressions in the codebase (noting pre-existing environmental failures unrelated to these changes).
-*   **Linting:** `golangci-lint` passed cleanly on the new test file.
+*   **New Tests:** `go test -v ./server/pkg/catalog/...` passed successfully.
+*   **Linting:** `make lint` passed cleanly, automatically fixing license headers in several files.
+*   **Regression Testing:** The full test suite (`make test` subset due to environment constraints) was executed.
+    *   `server/pkg/catalog` tests passed.
+    *   `server/pkg/app` tests failed, but this was confirmed to be a pre-existing issue/flake unrelated to the changes (verified by running tests without the new file).
+    *   No new regressions were introduced.
