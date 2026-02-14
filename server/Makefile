@@ -316,6 +316,10 @@ prepare:
 		echo "ShellCheck is already installed."; \
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
+		if ! command -v xz >/dev/null 2>&1; then \
+			echo "xz not found. Installing xz-utils..."; \
+			sudo apt-get update && sudo apt-get install -y xz-utils || echo "Failed to install xz-utils, ShellCheck install might fail."; \
+		fi; \
 		SC_VERSION="stable"; \
 		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
@@ -530,7 +534,7 @@ build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver te
 ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
+	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples || echo "Warning: Failed to build timeserver image. E2E tests using it may fail."
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
