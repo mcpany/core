@@ -9,10 +9,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"hash"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+	"unsafe"
 
 	armonmetrics "github.com/armon/go-metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -320,11 +323,67 @@ func (m *RateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy configv
 	}
 }
 
+// hasherState holds reusable hasher and buffer to minimize allocations.
+type hasherState struct {
+	h   hash.Hash
+	buf []byte
+}
+
+// hasherPool is a pool of hash.Hash objects (reusing sha256 state)
+// and a byte buffer for result construction to minimize allocations.
+// ⚡ BOLT: Optimization to reduce allocations in hot path (hashKey).
+// Randomized Selection from Top 5 High-Impact Targets
+var hasherPool = sync.Pool{
+	New: func() interface{} {
+		// sha256.New() allocates a struct.
+		return &hasherState{
+			h:   sha256.New(),
+			buf: make([]byte, 0, 128), // Pre-allocate buffer for result
+		}
+	},
+}
+
 func hashKey(prefix, key string) string {
-	hash := sha256.Sum256([]byte(key))
-	// Pre-allocate buffer for prefix + hex encoded hash (32 bytes -> 64 hex chars)
-	buf := make([]byte, len(prefix)+hex.EncodedLen(len(hash)))
-	copy(buf, prefix)
-	hex.Encode(buf[len(prefix):], hash[:])
-	return string(buf)
+	state := hasherPool.Get().(*hasherState)
+	defer func() {
+		state.h.Reset()
+		// We don't want to keep huge buffers, but 128 is small.
+		if cap(state.buf) > 1024 {
+			// If buffer grew too large (unlikely here but safe), discard or reset capacity
+			state.buf = make([]byte, 0, 128)
+		} else {
+			state.buf = state.buf[:0]
+		}
+		hasherPool.Put(state)
+	}()
+
+	// Zero-allocation write using unsafe to avoid []byte conversion
+	_, _ = state.h.Write(unsafe.Slice(unsafe.StringData(key), len(key)))
+
+	// Compute hash into a stack array to avoid heap allocation from Sum()
+	var sum [32]byte
+	// Sum appends to the slice. Passing sum[:0] makes it write to the beginning.
+	hashed := state.h.Sum(sum[:0])
+
+	// Build the result string in state.buf
+	// 1. Write prefix
+	state.buf = append(state.buf, prefix...)
+
+	// 2. Write hex encoded hash
+	encodedLen := hex.EncodedLen(len(hashed))
+	required := len(state.buf) + encodedLen
+
+	// Ensure capacity
+	if cap(state.buf) < required {
+		newBuf := make([]byte, len(state.buf), required)
+		copy(newBuf, state.buf)
+		state.buf = newBuf
+	}
+
+	// Append hex
+	start := len(state.buf)
+	state.buf = state.buf[:start+encodedLen]
+	hex.Encode(state.buf[start:], hashed)
+
+	return string(state.buf)
 }
