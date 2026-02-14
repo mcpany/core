@@ -132,6 +132,7 @@ const nextConfig: NextConfig = {
     };
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
     config.resolve.symlinks = false;
+    console.log('[DEBUG] Webpack @proto path:', protoPath);
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support

@@ -24,7 +24,7 @@ COPY proto/ ./proto/
 # Update tsconfig paths to point to local proto directory instead of parent
 RUN sed -i 's|../proto|./proto|g' tsconfig.json
 # List proto files to verify copy
-RUN ls -R ./proto && cat tsconfig.json
+RUN ls -R ./proto && ls -la ./proto/config/v1 && cat tsconfig.json
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry

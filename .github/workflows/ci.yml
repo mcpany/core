@@ -211,12 +211,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xz-utils
+          echo "PATH=$PATH"
           which xz || echo "xz not found in PATH"
           xz --version || echo "xz version check failed"
           # Ensure xz is available in /bin just in case
           if [ -f /usr/bin/xz ] && [ ! -f /bin/xz ]; then
             sudo ln -s /usr/bin/xz /bin/xz
           fi
+          # Also symlink to /usr/local/bin if not present
+          if [ -f /usr/bin/xz ] && [ ! -f /usr/local/bin/xz ]; then
+             sudo ln -s /usr/bin/xz /usr/local/bin/xz
+          fi
+          # Verify dpkg
+          dpkg -L xz-utils || echo "xz-utils files not found"
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -383,12 +390,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xz-utils
+          echo "PATH=$PATH"
           which xz || echo "xz not found in PATH"
           xz --version || echo "xz version check failed"
           # Ensure xz is available in /bin just in case
           if [ -f /usr/bin/xz ] && [ ! -f /bin/xz ]; then
             sudo ln -s /usr/bin/xz /bin/xz
           fi
+          # Also symlink to /usr/local/bin if not present
+          if [ -f /usr/bin/xz ] && [ ! -f /usr/local/bin/xz ]; then
+             sudo ln -s /usr/bin/xz /usr/local/bin/xz
+          fi
+          # Verify dpkg
+          dpkg -L xz-utils || echo "xz-utils files not found"
 
       - name: Prepare environment
         run: make prepare
