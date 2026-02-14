@@ -29,7 +29,7 @@ type LogEntry struct {
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
-	group       string
+	groups      []string
 	mu          sync.Mutex
 	level       slog.Level
 }
@@ -72,32 +72,56 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		Metadata:  make(map[string]any),
 	}
 
-	// Track source priority to ensure we get the most specific source
-	sourcePriority := 0 // 0: none, 1: component/source, 2: toolName
+	// Helper to merge attribute into metadata, respecting groups
+	mergeAttr := func(root map[string]any, groups []string, a slog.Attr) {
+		targetMap := root
 
-	// Try to find source in attributes or use default
-	r.Attrs(func(a slog.Attr) bool {
-		// Collect all attributes into Metadata
-		entry.Metadata[a.Key] = a.Value.Any()
-
-		if a.Key == "source" || a.Key == "component" {
-			if sourcePriority < 1 {
-				entry.Source = a.Value.String()
-				sourcePriority = 1
+		// Navigate/Create nested maps for groups
+		for _, g := range groups {
+			if _, ok := targetMap[g]; !ok {
+				targetMap[g] = make(map[string]any)
+			}
+			if m, ok := targetMap[g].(map[string]any); ok {
+				targetMap = m
+			} else {
+				// Conflict: overwrite with new map
+				m := make(map[string]any)
+				targetMap[g] = m
+				targetMap = m
 			}
 		}
-		if a.Key == "toolName" {
-			entry.Source = a.Value.String()
-			sourcePriority = 2
-		}
+
+		targetMap[a.Key] = a.Value.Any()
+	}
+
+	// 1. Process attributes from WithAttrs
+	// Note: We currently do not apply h.groups to h.attrs because of the implementation structure.
+	// h.attrs are treated as root-level or pre-scoped attributes.
+	// This ensures 'WithAttrs' data is at least visible.
+	for _, a := range h.attrs {
+		// We pass nil for groups here to keep them at root (or as they were added)
+		// If we wanted to support 'WithGroup().WithAttrs()', we'd need to associate groups with attrs at creation time.
+		mergeAttr(entry.Metadata, nil, a)
+	}
+
+	// 2. Process attributes from Record
+	r.Attrs(func(a slog.Attr) bool {
+		mergeAttr(entry.Metadata, h.groups, a)
 		return true
 	})
 
-	// If message is empty but we have attributes, maybe format them?
-	// For now, let's append attributes to message if it's debugging or specific keys
-	// This is a simplification. Ideally we'd send structured data.
+	// Source detection
+	// We prioritize source found at root level.
+	// Priority: toolName (2) > source (1) > component (1)
+	if tool, ok := entry.Metadata["toolName"].(string); ok && tool != "" {
+		entry.Source = tool
+	} else if src, ok := entry.Metadata["source"].(string); ok && src != "" {
+		entry.Source = src
+	} else if comp, ok := entry.Metadata["component"].(string); ok && comp != "" {
+		entry.Source = comp
+	}
 
-	// Also handle source from record PC if available
+	// Also handle source from record PC if available and not yet found
 	if entry.Source == "" && r.PC != 0 {
 		fs := runtime.CallersFrames([]uintptr{r.PC})
 		f, _ := fs.Next()
@@ -121,10 +145,15 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+
+	newAttrs := make([]slog.Attr, len(h.attrs)+len(attrs))
+	copy(newAttrs, h.attrs)
+	copy(newAttrs[len(h.attrs):], attrs)
+
 	return &BroadcastHandler{
 		broadcaster: h.broadcaster,
-		attrs:       append(h.attrs, attrs...),
-		group:       h.group,
+		attrs:       newAttrs,
+		groups:      h.groups,
 		level:       h.level,
 	}
 }
@@ -137,10 +166,15 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+
+	newGroups := make([]string, len(h.groups)+1)
+	copy(newGroups, h.groups)
+	newGroups[len(h.groups)] = name
+
 	return &BroadcastHandler{
 		broadcaster: h.broadcaster,
 		attrs:       h.attrs,
-		group:       name,
+		groups:      newGroups,
 		level:       h.level,
 	}
 }
