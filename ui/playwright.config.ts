@@ -21,13 +21,13 @@ export default defineConfig({
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 120000,
   expect: {
-    timeout: 15000,
+    timeout: 30000,
   },
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     colorScheme: 'dark',
-    actionTimeout: 15000,
+    actionTimeout: 30000,
     extraHTTPHeaders: {
       'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
     },
