@@ -178,7 +178,7 @@ export function BulkImportWizard({ onImportSuccess, onCancel }: BulkImportWizard
     try {
       const data = JSON.parse(content);
 
-      // Handle OpenAPI/Swagger Spec
+      // Handle OpenAPI/Swagger Spec (transforms to single service config)
       if (data.openapi || data.swagger) {
           const serviceName = data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service";
           return [{
