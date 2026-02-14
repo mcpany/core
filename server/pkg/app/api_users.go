@@ -187,6 +187,25 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			}
 			user.SetId(id)
 
+			// Fetch existing user to preserve protected fields
+			existingUser, err := store.GetUser(r.Context(), id)
+			if err != nil {
+				logging.GetLogger().Error("failed to get user", "id", id, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if existingUser == nil {
+				http.NotFound(w, r)
+				return
+			}
+
+			// If not admin, prevent modification of protected fields (roles, profile_ids)
+			if !isAdmin {
+				// Force roles and profiles to match what's in the DB
+				user.SetRoles(existingUser.GetRoles())
+				user.SetProfileIds(existingUser.GetProfileIds())
+			}
+
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
