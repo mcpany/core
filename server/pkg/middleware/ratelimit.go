@@ -40,9 +40,13 @@ type RateLimitMiddleware struct {
 }
 
 // Option defines a functional option for RateLimitMiddleware.
+//
+// Summary: Functional option type.
 type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
+//
+// Summary: Sets the tokenizer option.
 //
 // t is the t.
 //
@@ -54,6 +58,8 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
+//
+// Summary: Initializes a RateLimitMiddleware.
 //
 // toolManager is the toolManager.
 // opts contains the options.
@@ -82,6 +88,8 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 }
 
 // Execute executes the rate limiting middleware.
+//
+// Summary: Enforces rate limits on tool execution.
 //
 // ctx is the context for the request.
 // req is the request object.

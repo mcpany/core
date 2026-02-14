@@ -57,6 +57,17 @@ const userSchema = z.object({
 
 type UserValues = z.infer<typeof userSchema>;
 
+/**
+ * UserSheet component.
+ *
+ * Summary: A sheet for creating and editing users.
+ *
+ * @param props - Component properties.
+ * @param props.open - Whether the sheet is open.
+ * @param props.onOpenChange - Callback when open state changes.
+ * @param props.user - The user being edited (null for new user).
+ * @param props.onSave - Callback to save user changes.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();
     const [generatedKey, setGeneratedKey] = useState("");

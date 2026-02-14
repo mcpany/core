@@ -24,10 +24,14 @@ import (
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
+// Summary: Interface for service registration and management.
+//
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
+	//
+	// Summary: Registers a service.
 	//
 	// It establishes the connection to the upstream service and discovers its capabilities.
 	//
@@ -44,6 +48,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// UnregisterService removes a service from the registry.
 	//
+	// Summary: Unregisters a service.
+	//
 	// It gracefully shuts down the upstream connection and cleans up associated resources.
 	//
 	// Parameters:
@@ -56,12 +62,16 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetAllServices returns a list of all currently registered services.
 	//
+	// Summary: Retrieves all services.
+	//
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if retrieval fails (unlikely for in-memory registry).
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -73,6 +83,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceConfig returns the configuration for a given service ID.
 	//
+	// Summary: Retrieves service configuration.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -82,6 +94,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the last known registration or health error for a service.
+	//
+	// Summary: Retrieves the last error for a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -93,6 +107,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 }
 
 // ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+//
+// Summary: Manages upstream services.
 //
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
@@ -111,6 +127,8 @@ type ServiceRegistry struct {
 }
 
 // New creates and initializes a new ServiceRegistry.
+//
+// Summary: Initializes a new ServiceRegistry.
 //
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.

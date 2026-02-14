@@ -70,16 +70,24 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
+	// Summary: Retrieves the protobuf tool definition.
+	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
+	//
+	// Summary: Retrieves the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
+
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Summary: Executes the tool.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The execution context.
@@ -89,7 +97,10 @@ type Tool interface {
 	//   - any: The execution result.
 	//   - error: An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Summary: Retrieves the cache configuration.
 	//
 	// Returns:
 	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
@@ -149,6 +160,8 @@ type ExecutionRequest struct {
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
+	// Summary: Retrieves a tool by name.
+	//
 	// Parameters:
 	//   - toolName: The name of the tool to retrieve.
 	//
@@ -158,6 +171,8 @@ type ServiceRegistry interface {
 	GetTool(toolName string) (Tool, bool)
 
 	// GetServiceInfo retrieves metadata for a service.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: The unique identifier of the service.
@@ -169,6 +184,8 @@ type ServiceRegistry interface {
 }
 
 // ExecutionFunc represents the next middleware in the chain.
+//
+// Summary: Middleware execution function type.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.
@@ -185,9 +202,11 @@ const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool embedded.
 //
+// Summary: Embeds a tool into the context.
+//
 // Parameters:
-//   - ctx: The context to extend.
-//   - t: The tool instance to embed in the context.
+//   - ctx: context.Context. The context to extend.
+//   - t: Tool. The tool instance to embed in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
@@ -216,9 +235,11 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
+	// Summary: Executes the tool logic.
+	//
 	// Parameters:
-	//   - ctx: The context for the request.
-	//   - req: The execution request details.
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The execution request details.
 	//
 	// Returns:
 	//   - any: The result of the execution.
@@ -282,6 +303,17 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
+	//
+	// Summary: Executes the pre-hook logic.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request payload.
+	//
+	// Returns:
+	//   - Action: The action to take (Allow, Deny, etc.).
+	//   - *ExecutionRequest: A potentially modified request (nil if unchanged).
+	//   - error: An error if the hook fails.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
@@ -291,6 +323,17 @@ type PreCallHook interface {
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
+	//
+	// Summary: Executes the post-hook logic.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request payload.
+	//   - result: any. The result of the tool execution.
+	//
+	// Returns:
+	//   - any: The potentially modified result.
+	//   - error: An error if the hook fails.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 
