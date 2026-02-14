@@ -24,7 +24,8 @@ import {
     List as ListIcon,
     Expand,
     ChevronLeft,
-    SearchCode
+    SearchCode,
+    X
 } from "lucide-react";
 
 import { apiClient, ResourceDefinition, ResourceContent } from "@/lib/client";
@@ -34,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     ContextMenu,
     ContextMenuContent,
@@ -67,6 +69,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const [contentLoading, setContentLoading] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [previewResource, setPreviewResource] = useState<ResourceDefinition | null>(null);
+    const [selectedUris, setSelectedUris] = useState<Set<string>>(new Set());
 
     const { toast } = useToast();
 
@@ -243,30 +246,104 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     };
 
+    // Bulk Actions Logic
+    const toggleSelection = (uri: string) => {
+        const newSelected = new Set(selectedUris);
+        if (newSelected.has(uri)) {
+            newSelected.delete(uri);
+        } else {
+            newSelected.add(uri);
+        }
+        setSelectedUris(newSelected);
+    };
+
+    const toggleAll = () => {
+        if (selectedUris.size === filteredResources.length && filteredResources.length > 0) {
+            setSelectedUris(new Set());
+        } else {
+            setSelectedUris(new Set(filteredResources.map(r => r.uri)));
+        }
+    };
+
+    const handleBulkCopyUri = () => {
+        const uris = Array.from(selectedUris).join('\n');
+        navigator.clipboard.writeText(uris);
+        toast({ title: "Copied", description: `${selectedUris.size} URIs copied to clipboard.` });
+    };
+
+    const handleBulkCopyContent = async () => {
+        toast({ title: "Copying content...", description: `Fetching content for ${selectedUris.size} resources.` });
+
+        const uris = Array.from(selectedUris);
+        const promises = uris.map(async (uri) => {
+            try {
+                const res = await apiClient.readResource(uri);
+                if (res.contents && res.contents.length > 0) {
+                    const content = res.contents[0];
+                    const text = content.text || (content.blob ? "[Binary Content]" : "");
+                    return `--- Resource: ${uri} ---\n${text}\n\n`;
+                }
+            } catch (e) {
+                console.error(`Failed to read ${uri}`, e);
+            }
+            return "";
+        });
+
+        const results = await Promise.all(promises);
+        const combinedContent = results.filter(Boolean).join("");
+        const successCount = results.filter(Boolean).length;
+
+        if (combinedContent) {
+            navigator.clipboard.writeText(combinedContent);
+            toast({ title: "Copied", description: `Content from ${successCount} resources copied to clipboard.` });
+        } else {
+            toast({ title: "Error", description: "Failed to fetch content.", variant: "destructive" });
+        }
+    };
+
+    const isAllSelected = filteredResources.length > 0 && selectedUris.size === filteredResources.length;
+
     return (
         <div className={cn("flex flex-col h-full bg-background", isFullscreen ? "fixed inset-0 z-50" : "rounded-lg border shadow-sm")}>
             {/* Header Toolbar */}
-            <div className="flex items-center justify-between p-2 px-4 border-b bg-muted/20 h-14 shrink-0">
-                <div className="flex items-center gap-2 flex-1 max-w-md">
-                     <div className="relative w-full">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search resources..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-8 h-9 text-xs"
-                        />
+            <div className="flex items-center justify-between p-2 px-4 border-b bg-muted/20 h-14 shrink-0 gap-2">
+                {selectedUris.size > 0 ? (
+                    <div className="flex items-center gap-2 flex-1 animate-in slide-in-from-top-2 duration-200">
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedUris(new Set())} className="h-8 w-8 p-0">
+                            <X className="h-4 w-4" />
+                        </Button>
+                        <span className="text-sm font-medium ml-1">{selectedUris.size} selected</span>
+                        <div className="h-4 w-px bg-border mx-2" />
+                        <Button variant="secondary" size="sm" onClick={handleBulkCopyUri} className="h-8 text-xs">
+                            <Copy className="mr-2 h-3.5 w-3.5" /> Copy URIs
+                        </Button>
+                        <Button variant="default" size="sm" onClick={handleBulkCopyContent} className="h-8 text-xs">
+                            <FileText className="mr-2 h-3.5 w-3.5" /> Copy Content
+                        </Button>
+                        <div className="flex-1" />
                     </div>
-                    <Button
-                        variant={isDeepSearch ? "secondary" : "ghost"}
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setIsDeepSearch(!isDeepSearch)}
-                        title="Search within content (cached only)"
-                    >
-                        <SearchCode className={cn("h-4 w-4", isDeepSearch && "text-primary")} />
-                    </Button>
-                </div>
+                ) : (
+                    <div className="flex items-center gap-2 flex-1 max-w-md">
+                         <div className="relative w-full">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search resources..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-8 h-9 text-xs"
+                            />
+                        </div>
+                        <Button
+                            variant={isDeepSearch ? "secondary" : "ghost"}
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setIsDeepSearch(!isDeepSearch)}
+                            title="Search within content (cached only)"
+                        >
+                            <SearchCode className={cn("h-4 w-4", isDeepSearch && "text-primary")} />
+                        </Button>
+                    </div>
+                )}
 
                 <div className="flex items-center gap-2">
                     <div className="flex items-center bg-muted rounded-md p-1 gap-1">
@@ -301,6 +378,19 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
 
             <ResizablePanelGroup direction="horizontal" className="flex-1">
                 <ResizablePanel defaultSize={30} minSize={20} maxSize={50} className="flex flex-col bg-muted/5">
+                    {/* Select All Bar (Optional, or integrated into list header) */}
+                    <div className="flex items-center px-4 py-2 border-b bg-background/50 text-xs text-muted-foreground justify-between">
+                        <div className="flex items-center gap-2 cursor-pointer hover:text-foreground" onClick={toggleAll}>
+                            <Checkbox
+                                checked={isAllSelected}
+                                onCheckedChange={toggleAll}
+                                className="h-3.5 w-3.5"
+                            />
+                            <span>Select All</span>
+                        </div>
+                        <span>{filteredResources.length} items</span>
+                    </div>
+
                     <ScrollArea className="flex-1">
                         {filteredResources.length === 0 ? (
                             <div className="p-8 text-center text-muted-foreground text-sm">
@@ -311,6 +401,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                 {filteredResources.map(res => {
                                     const Icon = getIcon(res.mimeType);
                                     const isSelected = selectedUri === res.uri;
+                                    const isChecked = selectedUris.has(res.uri);
                                     return (
                                         <ContextMenu key={res.uri}>
                                             <ContextMenuTrigger asChild>
@@ -323,6 +414,13 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                     draggable
                                                     onDragStart={(e) => handleDragStart(e, res)}
                                                 >
+                                                    <div onClick={(e) => e.stopPropagation()}>
+                                                        <Checkbox
+                                                            checked={isChecked}
+                                                            onCheckedChange={() => toggleSelection(res.uri)}
+                                                            className={cn("transition-opacity", isChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100")}
+                                                        />
+                                                    </div>
                                                     <Icon className={cn("h-4 w-4 text-muted-foreground group-hover:text-primary", isSelected && "text-primary")} />
                                                     <div className="flex-1 min-w-0">
                                                         <div className="font-medium truncate">{res.name}</div>
@@ -359,17 +457,25 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                 {filteredResources.map(res => {
                                     const Icon = getIcon(res.mimeType);
                                     const isSelected = selectedUri === res.uri;
+                                    const isChecked = selectedUris.has(res.uri);
                                     return (
                                         <ContextMenu key={res.uri}>
                                             <ContextMenuTrigger asChild>
                                                 <Card
                                                     className={cn(
-                                                        "cursor-pointer hover:border-primary/50 transition-all",
+                                                        "cursor-pointer hover:border-primary/50 transition-all group relative",
                                                         isSelected ? "border-primary ring-1 ring-primary" : ""
                                                     )}
                                                     onClick={() => setSelectedUri(res.uri)}
                                                 >
-                                                    <CardContent className="p-3 flex flex-col items-center text-center gap-2">
+                                                     <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
+                                                        <Checkbox
+                                                            checked={isChecked}
+                                                            onCheckedChange={() => toggleSelection(res.uri)}
+                                                            className={cn("bg-background/80 backdrop-blur-sm transition-opacity", isChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100")}
+                                                        />
+                                                    </div>
+                                                    <CardContent className="p-3 flex flex-col items-center text-center gap-2 pt-6">
                                                         <div className="p-2 bg-muted rounded-full">
                                                             <Icon className="h-6 w-6 text-muted-foreground" />
                                                         </div>
