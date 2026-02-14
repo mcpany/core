@@ -20,6 +20,12 @@ test.describe('Onboarding Wizard', () => {
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
         await expect(page).toHaveURL('/', { timeout: 15000 });
+
+        // Force empty layout to trigger onboarding
+        await page.evaluate(() => {
+            localStorage.setItem("dashboard-layout", "[]");
+        });
+        await page.reload();
     });
 
     test.afterEach(async ({ request }) => {
