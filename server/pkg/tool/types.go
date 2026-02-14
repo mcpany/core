@@ -2935,10 +2935,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func checkInterpreterFunctionCalls(val string) error {
-	// Normalize value to detect obfuscation (e.g. system ( ) )
-	// Sentinel Security Update: Strip comments to prevent bypass (e.g. system # comment ( ... ))
-
+func stripComments(val string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
@@ -3029,8 +3026,13 @@ func checkInterpreterFunctionCalls(val string) error {
 		// Adjust i for consumed bytes (loop increments by 1)
 		i += w - 1
 	}
+	return b.String()
+}
 
-	cleanVal := strings.ToLower(b.String())
+func checkInterpreterFunctionCalls(val string) error {
+	// Normalize value to detect obfuscation (e.g. system ( ) )
+	// Sentinel Security Update: Strip comments to prevent bypass (e.g. system # comment ( ... ))
+	cleanVal := strings.ToLower(stripComments(val))
 
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
