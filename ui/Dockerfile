@@ -24,6 +24,23 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
+# Install protoc to generate typescript files
+RUN apt-get update && apt-get install -y curl unzip
+RUN curl -sSL "https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip" -o protoc.zip && \
+    unzip protoc.zip -d /usr/local && \
+    rm protoc.zip
+
+# Generate TS protos
+# We use the same plugin installed in node_modules
+# We assume /proto contains the source .proto files
+# We output to / so that /proto/config/... matches the source structure and tsconfig mapping
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/ \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/ \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
