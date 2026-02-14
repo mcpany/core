@@ -58,8 +58,7 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   }
 
   // Verify Playground input
-  // Verify Playground input
-  const input = page.getByPlaceholder('Enter command or select a tool...').or(page.locator('textarea'));
-  await expect(input).toBeVisible();
-  await expect(input).toHaveValue(/calculate_sum/);
+  // With Smart Replay, this should now open the Tool Configuration Dialog
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'calculate_sum' })).toBeVisible();
 });
