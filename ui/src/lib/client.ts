@@ -856,6 +856,55 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Creates a new prompt.
+     * @param prompt The prompt definition to create.
+     * @returns A promise that resolves to the created prompt.
+     */
+    createPrompt: async (prompt: PromptDefinition) => {
+        const res = await fetchWithAuth('/api/v1/prompts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prompt)
+        });
+        if (!res.ok) {
+             const text = await res.text();
+             throw new Error(`Failed to create prompt: ${text}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Updates an existing prompt.
+     * @param prompt The prompt definition to update.
+     * @returns A promise that resolves to the updated prompt.
+     */
+    updatePrompt: async (prompt: PromptDefinition) => {
+        const res = await fetchWithAuth(`/api/v1/prompts/${prompt.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prompt)
+        });
+        if (!res.ok) {
+             const text = await res.text();
+             throw new Error(`Failed to update prompt: ${text}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes a prompt.
+     * @param name The name of the prompt to delete.
+     * @returns A promise that resolves when the prompt is deleted.
+     */
+    deletePrompt: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/prompts/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete prompt');
+        return {};
+    },
+
     // Wizard Helpers
 
     /**

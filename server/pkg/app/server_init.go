@@ -126,6 +126,11 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		log.Error("Failed to seed service templates", "error", err)
 	}
 
+	// Initialize User Library Service
+	if err := a.initializeUserLibrary(ctx, store); err != nil {
+		log.Error("Failed to initialize user library service", "error", err)
+	}
+
 	// Initialize Admin User
 	if err := a.initializeAdminUser(ctx, store); err != nil {
 		log.Error("Failed to initialize admin user", "error", err)
@@ -190,6 +195,38 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 
 	logging.GetLogger().Info("Default admin user created successfully.", "username", username)
+	return nil
+}
+
+func (a *Application) initializeUserLibrary(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil
+	}
+
+	// Check if already exists
+	svc, err := s.GetService(ctx, "user-library")
+	if err == nil && svc != nil {
+		return nil
+	}
+
+	logging.GetLogger().Info("Initializing user-library service for custom prompts...")
+
+	userLibrary := configv1.UpstreamServiceConfig_builder{
+		Id:      proto.String("user-library"),
+		Name:    proto.String("user-library"),
+		Version: proto.String("1.0.0"),
+		// Use CommandLineService as a container, effectively no-op if command is echo
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("echo"),
+		}.Build(),
+		Prompts: []*configv1.PromptDefinition{},
+	}.Build()
+
+	if err := s.SaveService(ctx, userLibrary); err != nil {
+		return fmt.Errorf("failed to save user-library service: %w", err)
+	}
+
 	return nil
 }
 

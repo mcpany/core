@@ -85,8 +85,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())
 
-	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
+	mux.HandleFunc("/prompts", a.handlePromptsDispatch(store))
+	mux.HandleFunc("/prompts/", a.handlePromptsDispatch(store))
 
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())
@@ -753,19 +753,6 @@ func (a *Application) handleExecute() http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(result)
-	}
-}
-
-func (a *Application) handlePrompts() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			prompts := a.PromptManager.ListPrompts()
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(prompts)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
 	}
 }
 
