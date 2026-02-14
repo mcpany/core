@@ -130,8 +130,6 @@ const nextConfig: NextConfig = {
       '@proto': protoPath,
       '@google': path.join(protoPath, 'google'),
     };
-    // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
-    config.resolve.symlinks = false;
     console.log('[DEBUG] Webpack @proto path:', protoPath);
     return config;
   },
