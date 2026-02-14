@@ -16,7 +16,15 @@ import { User } from "./user";
 
 export const protobufPackage = "mcpany.config.v1";
 
-/** McpAnyServerConfig is the root configuration for the entire MCPANY server. */
+/**
+ * McpAnyServerConfig is the root configuration for the entire MCPANY server.
+ *
+ * Summary: Root configuration message.
+ *
+ * Description:
+ * This message defines the complete configuration for the MCP Any server, including
+ * global settings, upstream services, collections, users, and merge strategies.
+ */
 export interface McpAnyServerConfig {
   /** Server-wide operational parameters. */
   globalSettings?:
@@ -32,7 +40,11 @@ export interface McpAnyServerConfig {
   mergeStrategy?: MergeStrategyConfig | undefined;
 }
 
-/** MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources. */
+/**
+ * MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.
+ *
+ * Summary: Configuration for list merging strategies.
+ */
 export interface MergeStrategyConfig {
   /** Strategy for merging upstream_services list ("extend" or "replace"). */
   upstreamServiceList: string;
@@ -40,7 +52,11 @@ export interface MergeStrategyConfig {
   profileList: string;
 }
 
-/** Secret defines a secret value. */
+/**
+ * Secret defines a secret value.
+ *
+ * Summary: Represents a sensitive value or credential.
+ */
 export interface Secret {
   /** name is the human-readable name of the secret. */
   name: string;
@@ -58,13 +74,21 @@ export interface Secret {
   createdAt: string;
 }
 
-/** SecretList is a container for a list of secrets. */
+/**
+ * SecretList is a container for a list of secrets.
+ *
+ * Summary: A collection of Secret messages.
+ */
 export interface SecretList {
   /** The list of secrets. */
   secrets: Secret[];
 }
 
-/** GlobalSettings defines server-wide operational parameters. */
+/**
+ * GlobalSettings defines server-wide operational parameters.
+ *
+ * Summary: Configuration for global server behavior.
+ */
 export interface GlobalSettings {
   /** The address the MCP server listens on. */
   mcpListenAddress: string;

@@ -22,7 +22,12 @@ option java_outer_classname = "UpstreamServiceProto";
 option features.(pb.go).api_level = API_OPAQUE;
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
-// that mcpany will proxy. It defines the service's identity, how to connect to it,
+// that mcpany will proxy.
+//
+// Summary: Configuration for a single upstream service.
+//
+// Description:
+// It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 message UpstreamServiceConfig {
   // The original user-provided name for the upstream service.
@@ -107,6 +112,9 @@ message UpstreamServiceConfig {
   string configuration_schema = 38 [json_name = "configuration_schema"];
 }
 
+// CallPolicy defines the rules for allowing or denying calls to the service.
+//
+// Summary: Policy for controlling access to service capabilities.
 message CallPolicy {
   enum Action {
     ALLOW = 0;
@@ -120,6 +128,9 @@ message CallPolicy {
   repeated CallPolicyRule rules = 2;
 }
 
+// CallPolicyRule defines a single rule within a CallPolicy.
+//
+// Summary: A rule matching specific calls and defining an action.
 message CallPolicyRule {
   CallPolicy.Action action = 1;
   // Regex to match the call name. Empty means match all.
@@ -161,6 +172,8 @@ message CallHook {
 // --- Upstream Service Types ---
 
 // GrpcUpstreamService defines an upstream service that speaks gRPC.
+//
+// Summary: Configuration for a gRPC-based upstream service.
 message GrpcUpstreamService {
   // The address of the gRPC server (e.g., "localhost:50051").
   string address = 1;
@@ -213,6 +226,8 @@ message ProtoCollection {
 }
 
 // HttpUpstreamService defines an upstream service that speaks HTTP.
+//
+// Summary: Configuration for an HTTP/REST-based upstream service.
 message HttpUpstreamService {
   // The base URL of the HTTP service (e.g., "https://api.example.com").
   string address = 1;
@@ -521,6 +536,8 @@ message McpBundleConnection {
 }
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
+//
+// Summary: Configuration for connection pooling.
 message ConnectionPoolConfig {
   // The maximum number of simultaneous connections to allow to the upstream service.
   int32 max_connections = 1 [json_name = "max_connections"];
@@ -588,6 +605,8 @@ message RetryConfig {
 
 
 // TLSConfig defines the TLS settings for connecting to an upstream service.
+//
+// Summary: Transport Layer Security (TLS) configuration.
 message TLSConfig {
   // The server name to use for SNI.
   string server_name = 1 [json_name = "server_name"];

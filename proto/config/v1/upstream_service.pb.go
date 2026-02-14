@@ -257,7 +257,12 @@ func (x FilesystemUpstreamService_SymlinkMode) Number() protoreflect.EnumNumber 
 }
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
-// that mcpany will proxy. It defines the service's identity, how to connect to it,
+// that mcpany will proxy.
+//
+// Summary: Configuration for a single upstream service.
+//
+// Description:
+// It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 type UpstreamServiceConfig struct {
 	state                            protoimpl.MessageState                `protogen:"opaque.v1"`
@@ -1581,6 +1586,9 @@ func (*upstreamServiceConfig_FilesystemService) isUpstreamServiceConfig_ServiceC
 
 func (*upstreamServiceConfig_VectorService) isUpstreamServiceConfig_ServiceConfig() {}
 
+// CallPolicy defines the rules for allowing or denying calls to the service.
+//
+// Summary: Policy for controlling access to service capabilities.
 type CallPolicy struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_DefaultAction CallPolicy_Action      `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.CallPolicy_Action"`
@@ -1676,6 +1684,9 @@ func (b0 CallPolicy_builder) Build() *CallPolicy {
 	return m0
 }
 
+// CallPolicyRule defines a single rule within a CallPolicy.
+//
+// Summary: A rule matching specific calls and defining an action.
 type CallPolicyRule struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Action        CallPolicy_Action      `protobuf:"varint,1,opt,name=action,enum=mcpany.config.v1.CallPolicy_Action"`
@@ -2301,6 +2312,8 @@ func (*callHook_Webhook) isCallHook_HookConfig() {}
 func (*callHook_CallPolicy) isCallHook_HookConfig() {}
 
 // GrpcUpstreamService defines an upstream service that speaks gRPC.
+//
+// Summary: Configuration for a gRPC-based upstream service.
 type GrpcUpstreamService struct {
 	state                       protoimpl.MessageState         `protogen:"opaque.v1"`
 	xxx_hidden_Address          *string                        `protobuf:"bytes,1,opt,name=address"`
@@ -3232,6 +3245,8 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 }
 
 // HttpUpstreamService defines an upstream service that speaks HTTP.
+//
+// Summary: Configuration for an HTTP/REST-based upstream service.
 type HttpUpstreamService struct {
 	state                  protoimpl.MessageState         `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                        `protobuf:"bytes,1,opt,name=address"`
@@ -7604,6 +7619,8 @@ func (b0 McpBundleConnection_builder) Build() *McpBundleConnection {
 }
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
+//
+// Summary: Configuration for connection pooling.
 type ConnectionPoolConfig struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_MaxConnections     int32                  `protobuf:"varint,1,opt,name=max_connections"`
@@ -8324,6 +8341,8 @@ func (b0 RetryConfig_builder) Build() *RetryConfig {
 }
 
 // TLSConfig defines the TLS settings for connecting to an upstream service.
+//
+// Summary: Transport Layer Security (TLS) configuration.
 type TLSConfig struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServerName         *string                `protobuf:"bytes,1,opt,name=server_name"`

@@ -14,6 +14,13 @@ export interface DiagnosticResult {
 /**
  * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
  *
+ * Summary: Categorizes connection errors for user display.
+ *
+ * Description:
+ * This function parses raw error strings from various sources (Network, Auth, Configuration)
+ * and maps them to a structured `DiagnosticResult` with a category, title, description,
+ * suggestion, and severity. This aids in troubleshooting connectivity issues.
+ *
  * @param error - The raw error string received from the backend or network.
  * @returns A structured DiagnosticResult containing the category, severity, and suggested remediation.
  */

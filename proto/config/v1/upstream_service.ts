@@ -81,7 +81,12 @@ export function loadBalancingStrategyToJSON(object: LoadBalancingStrategy): stri
 
 /**
  * UpstreamServiceConfig is the top-level configuration for a single upstream service
- * that mcpany will proxy. It defines the service's identity, how to connect to it,
+ * that mcpany will proxy.
+ *
+ * Summary: Configuration for a single upstream service.
+ *
+ * Description:
+ * It defines the service's identity, how to connect to it,
  * and policies like authentication, caching, rate limiting, and load balancing.
  */
 export interface UpstreamServiceConfig {
@@ -190,6 +195,11 @@ export interface UpstreamServiceConfig {
   configurationSchema: string;
 }
 
+/**
+ * CallPolicy defines the rules for allowing or denying calls to the service.
+ *
+ * Summary: Policy for controlling access to service capabilities.
+ */
 export interface CallPolicy {
   /** Default action if no rules match. */
   defaultAction: CallPolicy_Action;
@@ -242,6 +252,11 @@ export function callPolicy_ActionToJSON(object: CallPolicy_Action): string {
   }
 }
 
+/**
+ * CallPolicyRule defines a single rule within a CallPolicy.
+ *
+ * Summary: A rule matching specific calls and defining an action.
+ */
 export interface CallPolicyRule {
   action: CallPolicy_Action;
   /** Regex to match the call name. Empty means match all. */
@@ -313,7 +328,11 @@ export interface CallHook {
   callPolicy?: CallPolicy | undefined;
 }
 
-/** GrpcUpstreamService defines an upstream service that speaks gRPC. */
+/**
+ * GrpcUpstreamService defines an upstream service that speaks gRPC.
+ *
+ * Summary: Configuration for a gRPC-based upstream service.
+ */
 export interface GrpcUpstreamService {
   /** The address of the gRPC server (e.g., "localhost:50051"). */
   address: string;
@@ -368,7 +387,11 @@ export interface ProtoCollection {
   isRecursive: boolean;
 }
 
-/** HttpUpstreamService defines an upstream service that speaks HTTP. */
+/**
+ * HttpUpstreamService defines an upstream service that speaks HTTP.
+ *
+ * Summary: Configuration for an HTTP/REST-based upstream service.
+ */
 export interface HttpUpstreamService {
   /** The base URL of the HTTP service (e.g., "https://api.example.com"). */
   address: string;
@@ -837,7 +860,11 @@ export interface McpBundleConnection_EnvEntry {
   value?: SecretValue | undefined;
 }
 
-/** ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service. */
+/**
+ * ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
+ *
+ * Summary: Configuration for connection pooling.
+ */
 export interface ConnectionPoolConfig {
   /** The maximum number of simultaneous connections to allow to the upstream service. */
   maxConnections: number;
@@ -913,7 +940,11 @@ export interface RetryConfig {
   maxElapsedTime?: Duration | undefined;
 }
 
-/** TLSConfig defines the TLS settings for connecting to an upstream service. */
+/**
+ * TLSConfig defines the TLS settings for connecting to an upstream service.
+ *
+ * Summary: Transport Layer Security (TLS) configuration.
+ */
 export interface TLSConfig {
   /** The server name to use for SNI. */
   serverName: string;

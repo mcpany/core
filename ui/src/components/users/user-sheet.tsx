@@ -57,6 +57,29 @@ const userSchema = z.object({
 
 type UserValues = z.infer<typeof userSchema>;
 
+/**
+ * UserSheet is a sheet component for creating and editing user details.
+ *
+ * Summary: Provides a form interface for managing user profiles, roles, and authentication.
+ *
+ * Description:
+ * This component handles the display and submission of user data. It supports
+ * creating new users or editing existing ones. It manages authentication type selection
+ * (Password vs API Key) and generates secure API keys.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the sheet is open.
+ * @param props.onOpenChange - Callback function when the sheet open state changes.
+ * @param props.user - The user object to edit, or null if creating a new user.
+ * @param props.onSave - Async callback function to save the user data. Receives the partial user update, password, and apiKey.
+ *
+ * @returns A React component rendering the user management sheet.
+ *
+ * Side Effects:
+ * - Generates random values for API keys using `window.crypto`.
+ * - Writes to the clipboard when copying the API key.
+ * - Displays toast notifications on success or error.
+ */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();
     const [generatedKey, setGeneratedKey] = useState("");

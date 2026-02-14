@@ -23,6 +23,12 @@ option features.(pb.go).api_level = API_OPAQUE;
 import "proto/config/v1/user.proto";
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
+//
+// Summary: Root configuration message.
+//
+// Description:
+// This message defines the complete configuration for the MCP Any server, including
+// global settings, upstream services, collections, users, and merge strategies.
 message McpAnyServerConfig {
   // Server-wide operational parameters.
   GlobalSettings global_settings = 1 [json_name = "global_settings"];
@@ -37,6 +43,8 @@ message McpAnyServerConfig {
 }
 
 // MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.
+//
+// Summary: Configuration for list merging strategies.
 message MergeStrategyConfig {
   // Strategy for merging upstream_services list ("extend" or "replace").
   string upstream_service_list = 1 [json_name = "upstream_service_list"];
@@ -45,6 +53,8 @@ message MergeStrategyConfig {
 }
 
 // Secret defines a secret value.
+//
+// Summary: Represents a sensitive value or credential.
 message Secret {
   // name is the human-readable name of the secret.
   string name = 1;
@@ -63,12 +73,16 @@ message Secret {
 }
 
 // SecretList is a container for a list of secrets.
+//
+// Summary: A collection of Secret messages.
 message SecretList {
   // The list of secrets.
   repeated Secret secrets = 1;
 }
 
 // GlobalSettings defines server-wide operational parameters.
+//
+// Summary: Configuration for global server behavior.
 message GlobalSettings {
   // LogLevel defines the severity of logs to emit.
   enum LogLevel {

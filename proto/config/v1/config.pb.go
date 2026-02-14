@@ -179,6 +179,12 @@ func (x AuditConfig_StorageType) Number() protoreflect.EnumNumber {
 }
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
+//
+// Summary: Root configuration message.
+//
+// Description:
+// This message defines the complete configuration for the MCP Any server, including
+// global settings, upstream services, collections, users, and merge strategies.
 type McpAnyServerConfig struct {
 	state                       protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_GlobalSettings   *GlobalSettings           `protobuf:"bytes,1,opt,name=global_settings"`
@@ -326,6 +332,8 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 }
 
 // MergeStrategyConfig defines how to merge lists when loading configuration from multiple sources.
+//
+// Summary: Configuration for list merging strategies.
 type MergeStrategyConfig struct {
 	state                          protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UpstreamServiceList *string                `protobuf:"bytes,1,opt,name=upstream_service_list"`
@@ -440,6 +448,8 @@ func (b0 MergeStrategyConfig_builder) Build() *MergeStrategyConfig {
 }
 
 // Secret defines a secret value.
+//
+// Summary: Represents a sensitive value or credential.
 type Secret struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -724,6 +734,8 @@ func (b0 Secret_builder) Build() *Secret {
 }
 
 // SecretList is a container for a list of secrets.
+//
+// Summary: A collection of Secret messages.
 type SecretList struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Secrets *[]*Secret             `protobuf:"bytes,1,rep,name=secrets"`
@@ -785,6 +797,8 @@ func (b0 SecretList_builder) Build() *SecretList {
 }
 
 // GlobalSettings defines server-wide operational parameters.
+//
+// Summary: Configuration for global server behavior.
 type GlobalSettings struct {
 	state                         protoimpl.MessageState   `protogen:"opaque.v1"`
 	xxx_hidden_McpListenAddress   *string                  `protobuf:"bytes,1,opt,name=mcp_listen_address"`
