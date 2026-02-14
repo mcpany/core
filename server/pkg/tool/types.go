@@ -42,6 +42,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -1731,21 +1732,7 @@ func NewCommandTool(
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
-	for _, param := range callDefinition.GetParameters() {
-		if schema := param.GetSchema(); schema != nil {
-			t.allowedParams[schema.GetName()] = true
-		}
-	}
-
-	// Check if 'args' is allowed in the schema
-	if inputSchema := tool.GetInputSchema(); inputSchema != nil {
-		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-			if _, ok := props.Fields["args"]; ok {
-				t.allowedParams["args"] = true
-			}
-		}
-	}
-
+	t.allowedParams = initializeAllowedParams(callDefinition, tool.GetInputSchema())
 	return t
 }
 
@@ -1796,20 +1783,7 @@ func NewLocalCommandTool(
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
-	for _, param := range callDefinition.GetParameters() {
-		if schema := param.GetSchema(); schema != nil {
-			t.allowedParams[schema.GetName()] = true
-		}
-	}
-
-	// Check if 'args' is allowed in the schema
-	if inputSchema := tool.GetInputSchema(); inputSchema != nil {
-		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-			if _, ok := props.Fields["args"]; ok {
-				t.allowedParams["args"] = true
-			}
-		}
-	}
+	t.allowedParams = initializeAllowedParams(callDefinition, tool.GetInputSchema())
 
 	// Check if the command is sed and supports sandbox
 	cmd := service.GetCommand()
@@ -1900,11 +1874,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	// Filter undefined parameters from inputs to prevent mass assignment/pollution
-	for k := range inputs {
-		if !t.allowedParams[k] {
-			delete(inputs, k)
-		}
-	}
+	filterInputs(inputs, t.allowedParams)
+	filterInputs(inputs, t.allowedParams)
 
 	args := []string{}
 	if len(t.sandboxArgs) > 0 {
@@ -3620,6 +3591,33 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	}
 
 	return nil
+}
+
+func initializeAllowedParams(callDefinition *configv1.CommandLineCallDefinition, inputSchema *structpb.Struct) map[string]bool {
+	allowed := make(map[string]bool)
+	for _, param := range callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			allowed[schema.GetName()] = true
+		}
+	}
+
+	// Check if 'args' is allowed in the schema
+	if inputSchema != nil {
+		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+			if _, ok := props.Fields["args"]; ok {
+				allowed["args"] = true
+			}
+		}
+	}
+	return allowed
+}
+
+func filterInputs(inputs map[string]any, allowedParams map[string]bool) {
+	for k := range inputs {
+		if !allowedParams[k] {
+			delete(inputs, k)
+		}
+	}
 }
 
 func checkForSSRF(val string) error {
