@@ -92,8 +92,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make
+          if command -v sudo &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y make
+          else
+            apt-get update
+            apt-get install -y make
+          fi
 
       - name: Prepare environment
         run: make prepare
@@ -128,11 +133,22 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Check if sudo is available
+          if command -v sudo &> /dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
+
+          if command -v systemctl &> /dev/null; then
+             $SUDO systemctl restart docker || true
+          fi
+
+          docker info || true # Verify the mirrors are listed, ignore error if docker not running
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -248,11 +264,21 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if command -v sudo &> /dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
+
+          if command -v systemctl &> /dev/null; then
+             $SUDO systemctl restart docker || true
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -504,10 +530,20 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          docker info
+          if command -v sudo &> /dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
+
+          if command -v systemctl &> /dev/null; then
+             $SUDO systemctl restart docker || true
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -619,11 +655,21 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if command -v sudo &> /dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
+
+          if command -v systemctl &> /dev/null; then
+             $SUDO systemctl restart docker || true
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -707,11 +753,21 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if command -v sudo &> /dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
+
+          if command -v systemctl &> /dev/null; then
+             $SUDO systemctl restart docker || true
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
