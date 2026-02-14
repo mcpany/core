@@ -43,6 +43,47 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
+/**
+ * ServiceTemplate defines a template for an upstream service.
+ */
+export interface ServiceTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    tags: string[];
+    authType?: string; // Optional helper for UI
+    serviceConfig: UpstreamServiceConfig;
+}
+
+// Helper to map snake_case config to camelCase UpstreamServiceConfig
+const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
+    ...s,
+    connectionPool: s.connection_pool,
+    httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+    grpcService: s.grpc_service,
+    commandLineService: s.command_line_service,
+    mcpService: s.mcp_service,
+    upstreamAuth: s.upstream_auth,
+    preCallHooks: s.pre_call_hooks,
+    postCallHooks: s.post_call_hooks,
+    lastError: s.last_error,
+    toolCount: s.tool_count,
+    toolExportPolicy: s.tool_export_policy,
+    promptExportPolicy: s.prompt_export_policy,
+    resourceExportPolicy: s.resource_export_policy,
+    callPolicies: s.call_policies?.map((p: any) => ({
+        defaultAction: p.default_action,
+        rules: p.rules?.map((r: any) => ({
+            action: r.action,
+            nameRegex: r.name_regex,
+            argumentRegex: r.argument_regex,
+            urlRegex: r.url_regex,
+            callIdRegex: r.call_id_regex
+        }))
+    })),
+});
+
 // Initialize gRPC Web Client
 // Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
 // server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
@@ -241,32 +282,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);
         // Map snake_case to camelCase for UI compatibility
-        return list.map((s: any) => ({
-            ...s,
-            connectionPool: s.connection_pool,
-            httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            preCallHooks: s.pre_call_hooks,
-            postCallHooks: s.post_call_hooks,
-            lastError: s.last_error,
-            toolCount: s.tool_count,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
-            callPolicies: s.call_policies?.map((p: any) => ({
-                defaultAction: p.default_action,
-                rules: p.rules?.map((r: any) => ({
-                    action: r.action,
-                    nameRegex: r.name_regex,
-                    argumentRegex: r.argument_regex,
-                    urlRegex: r.url_regex,
-                    callIdRegex: r.call_id_regex
-                }))
-            })),
-        }));
+        return list.map(mapUpstreamServiceConfig);
     },
 
     /**
@@ -1685,28 +1701,28 @@ export const apiClient = {
      * Lists all service templates.
      * @returns A promise that resolves to a list of templates.
      */
-    listTemplates: async () => {
+    listTemplates: async (): Promise<ServiceTemplate[]> => {
         const res = await fetchWithAuth('/api/v1/templates');
         if (!res.ok) throw new Error('Failed to fetch templates');
         const data = await res.json();
-        // Backend returns generic UpstreamServiceConfig list.
-        // Map snake_case to camelCase
         const list = Array.isArray(data) ? data : [];
-        return list.map((s: any) => ({
-            ...s,
-            // Reuse logic? Or copy/paste mapping
-            connectionPool: s.connection_pool,
-            httpService: s.http_service,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            preCallHooks: s.pre_call_hooks,
-            postCallHooks: s.post_call_hooks,
-            toolExportPolicy: s.tool_export_policy,
-            promptExportPolicy: s.prompt_export_policy,
-            resourceExportPolicy: s.resource_export_policy,
-        }));
+        return list.map((t: any) => {
+            const template: ServiceTemplate = {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon,
+                tags: t.tags,
+                serviceConfig: mapUpstreamServiceConfig(t.service_config || {}),
+            };
+            // Infer authType for UI helper
+            if (template.serviceConfig.upstreamAuth?.oauth2) {
+                template.authType = "oauth2";
+            } else if (template.serviceConfig.upstreamAuth?.apiKey) {
+                template.authType = "token";
+            }
+            return template;
+        });
     },
 
     /**
