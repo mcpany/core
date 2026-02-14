@@ -5,13 +5,13 @@ package catalog
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/spf13/afero"
 	"golang.org/x/sync/errgroup"
 )
@@ -100,8 +100,7 @@ func (m *Manager) Load(ctx context.Context) error {
 			// Actually Store.Load returns McpAnyServerConfig
 			cfg, loadErr := store.Load(ctx) // Renamed err to loadErr to avoid shadowing
 			if loadErr != nil {
-				// Log error but continue
-				fmt.Printf("Failed to load catalog item %s: %v\n", path, loadErr)
+				logging.GetLogger().Error("Failed to load catalog item", "path", path, "error", loadErr)
 				return nil
 			}
 
