@@ -429,6 +429,11 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
+      - name: Install dependencies (build-images)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl
+
       - name: Build and Save Images
         run: |
           PLATFORM="${{ matrix.platform }}"
