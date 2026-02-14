@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2, Calendar } from "lucide-react";
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -44,13 +45,6 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
-// Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
-// server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
-// So we can point to window.location.origin or relative?
-// GrpcWebImpl needs a full URL host usually.
-// If running in browser, we can use empty string or relative?
-// GrpcWebImpl implementation uses `this.host`. If empty?
-// Let's assume we point to the current origin.
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
@@ -203,20 +197,31 @@ export interface SystemStatus {
 
 
 const getMetadata = () => {
-    // Metadata for gRPC calls.
-    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-    // we need to be careful.
-    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-    // The gRPC calls should ideally be proxied or use a session token.
-    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-    // if they require the static key.
-    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-    // is also behind the Next.js proxy (rewrites).
-    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-    // If we use that, the middleware WILL run and inject the header!
     return undefined;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const iconMap: Record<string, any> = {
+    "google-calendar": Calendar,
+    "calendar": Calendar,
+    "github": Github,
+    "gitlab": Github,
+    "slack": MessageSquare,
+    "notion": FileText,
+    "linear": CheckCircle2,
+    "jira": Activity,
+    "postgres": Database,
+    "filesystem": FileText,
+    "brave-search": Globe,
+    "google-maps": Map,
+    "sentry": Activity,
+    "cloudflare": Cloud,
+    "default": Server
+};
+
+const mapIcon = (name: string) => {
+    return iconMap[name] || iconMap["default"];
+}
 
 /**
  * API Client for interacting with the MCP Any server.
@@ -226,21 +231,14 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     *
-     * Summary: Fetches the list of all configured upstream services from the backend.
-     *
-     * @returns A promise that resolves to a list of services.
-     * @throws {Error} If the network request fails or the response is not OK.
-     *
-     * Side Effects: Makes a GET request to /api/v1/services.
      */
     listServices: async () => {
-        // Fallback to REST for E2E reliability until gRPC-Web is stable
         const res = await fetchWithAuth('/api/v1/services');
         if (!res.ok) throw new Error('Failed to fetch services');
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);
         // Map snake_case to camelCase for UI compatibility
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return list.map((s: any) => ({
             ...s,
             connectionPool: s.connection_pool,
@@ -256,8 +254,10 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             callPolicies: s.call_policies?.map((p: any) => ({
                 defaultAction: p.default_action,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rules: p.rules?.map((r: any) => ({
                     action: r.action,
                     nameRegex: r.name_regex,
@@ -271,8 +271,6 @@ export const apiClient = {
 
     /**
      * Lists services from the dynamic catalog.
-     *
-     * @returns A promise that resolves to a list of catalog services.
      */
     listCatalog: async () => {
         const res = await fetchWithAuth('/api/v1/catalog/services');
@@ -280,6 +278,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.services || []);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return list.map((s: any) => ({
             ...s,
             connectionPool: s.connection_pool,
@@ -300,14 +299,6 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     *
-     * Summary: Retrieves the configuration details for a specific upstream service.
-     *
-     * @param id - The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
-     * @throws {Error} If the service is not found or the request fails.
-     *
-     * Side Effects: Makes a gRPC call or GET request to /api/v1/services/:id.
      */
     getService: async (id: string) => {
          try {
@@ -315,13 +306,9 @@ export const apiClient = {
              const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
              return response;
          } catch (e) {
-             // Fallback to REST if gRPC fails (e.g. in E2E tests passing through Next.js proxy or mock)
-             // Check if we are in a test env or just try fetch
              const res = await fetchWithAuth(`/api/v1/services/${id}`);
              if (res.ok) {
                  const data = await res.json();
-                 // REST returns { service: ... }, gRPC returns { service: ... }
-                 // Map snake_case to camelCase for ServiceDetail
                  if (data.service) {
                      const s = data.service;
                      data.service = {
@@ -337,8 +324,10 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                          callPolicies: s.call_policies?.map((p: any) => ({
                             defaultAction: p.default_action,
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             rules: p.rules?.map((r: any) => ({
                                 action: r.action,
                                 nameRegex: r.name_regex,
@@ -357,9 +346,6 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
-     * @param name The name of the service.
-     * @param disable True to disable the service, false to enable it.
-     * @returns A promise that resolves to the updated service status.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -373,8 +359,6 @@ export const apiClient = {
 
     /**
      * Gets the status of a service.
-     * @param name The name of the service.
-     * @returns A promise that resolves to the service status.
      */
     getServiceStatus: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
@@ -384,8 +368,6 @@ export const apiClient = {
 
     /**
      * Restarts a service.
-     * @param name The name of the service to restart.
-     * @returns A promise that resolves when the service is restarted.
      */
     restartService: async (name: string) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
@@ -397,17 +379,10 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     *
-     * Summary: Registers a new upstream service with the provided configuration.
-     *
-     * @param config - The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
-     * @throws {Error} If the registration fails (e.g., validation error, duplicate ID).
-     *
-     * Side Effects: Makes a POST request to /api/v1/services.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = {
             id: config.id,
             name: config.name,
@@ -455,8 +430,10 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
         if (config.callPolicies) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             payload.call_policies = config.callPolicies.map((p: any) => ({
                 default_action: p.defaultAction,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rules: p.rules?.map((r: any) => ({
                     action: r.action,
                     name_regex: r.nameRegex,
@@ -491,11 +468,10 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
-     * @param config The updated configuration of the service.
-     * @returns A promise that resolves to the updated service configuration.
      */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = {
              id: config.id,
             name: config.name,
@@ -541,8 +517,10 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
         if (config.callPolicies) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             payload.call_policies = config.callPolicies.map((p: any) => ({
                 default_action: p.defaultAction,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rules: p.rules?.map((r: any) => ({
                     action: r.action,
                     name_regex: r.nameRegex,
@@ -577,8 +555,6 @@ export const apiClient = {
 
     /**
      * Unregisters (deletes) an upstream service.
-     * @param id The ID of the service to unregister.
-     * @returns A promise that resolves when the service is unregistered.
      */
     unregisterService: async (id: string) => {
          const response = await fetchWithAuth(`/api/v1/services/${id}`, {
@@ -590,11 +566,10 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
-     * @param config The service configuration to validate.
-     * @returns A promise that resolves to the validation result.
      */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = {
             id: config.id,
             name: config.name,
@@ -642,8 +617,10 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
         if (config.callPolicies) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             payload.call_policies = config.callPolicies.map((p: any) => ({
                 default_action: p.defaultAction,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rules: p.rules?.map((r: any) => ({
                     action: r.action,
                     name_regex: r.nameRegex,
@@ -670,6 +647,7 @@ export const apiClient = {
         });
 
         const text = await response.text();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let data: any;
         try {
             data = JSON.parse(text);
@@ -693,7 +671,6 @@ export const apiClient = {
 
     /**
      * Lists all available tools.
-     * @returns A promise that resolves to a list of tools.
      */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
@@ -701,6 +678,7 @@ export const apiClient = {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.tools || []);
         return {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             tools: list.map((t: any) => ({
                 ...t,
                 serviceId: t.serviceId || t.service_id,
@@ -716,6 +694,7 @@ export const apiClient = {
      * @param dryRun If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     executeTool: async (request: any, dryRun?: boolean) => {
         try {
             const payload = { ...request };
@@ -748,9 +727,6 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a tool.
-     * @param name The name of the tool.
-     * @param disabled True to disable the tool, false to enable it.
-     * @returns A promise that resolves to the updated tool status.
      */
     setToolStatus: async (name: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/tools', {
@@ -764,7 +740,6 @@ export const apiClient = {
 
     /**
      * Lists all available resources.
-     * @returns A promise that resolves to a list of resources.
      */
     listResources: async () => {
         const res = await fetchWithAuth('/api/v1/resources');
@@ -774,8 +749,6 @@ export const apiClient = {
 
     /**
      * Reads the content of a resource.
-     * @param uri The URI of the resource to read.
-     * @returns A promise that resolves to the resource content.
      */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
@@ -785,9 +758,6 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a resource.
-     * @param uri The URI of the resource.
-     * @param disabled True to disable the resource, false to enable it.
-     * @returns A promise that resolves to the updated resource status.
      */
     setResourceStatus: async (uri: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/resources', {
@@ -801,7 +771,6 @@ export const apiClient = {
 
     /**
      * Lists all available prompts.
-     * @returns A promise that resolves to a list of prompts.
      */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
@@ -811,9 +780,6 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a prompt.
-     * @param name The name of the prompt.
-     * @param enabled True to enable the prompt, false to disable it.
-     * @returns A promise that resolves to the updated prompt status.
      */
     setPromptStatus: async (name: string, enabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/prompts', {
@@ -826,9 +792,6 @@ export const apiClient = {
 
     /**
      * Executes a prompt with the given arguments.
-     * @param name The name of the prompt.
-     * @param args The arguments for the prompt.
-     * @returns A promise that resolves to the prompt execution result.
      */
     executePrompt: async (name: string, args: Record<string, string>) => {
         const res = await fetchWithAuth('/api/v1/prompts/execute', {
@@ -844,80 +807,28 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
-     * Check server/examples/popular_services for source of truth.
-     * This is currently mocked in the client for the wizard UI.
+     * Fetches from the backend API.
      */
     getServiceTemplates: async () => {
-        // Mock data mirroring server/examples/popular_services
-        // In a real implementation, this should come from an endpoint like /api/v1/templates/services
-        return [
-            {
-                id: "google-calendar",
-                name: "Google Calendar",
-                description: "Manage events and calendars.",
-                icon: "calendar",
-                tags: ["google", "productivity"],
-                authType: "oauth2",
-                serviceConfig: {
-                    name: "google_calendar",
-                    upstreamAuth: {
-                        oauth2: {
-                            tokenUrl: "https://oauth2.googleapis.com/token",
-                            clientId: { plainText: "" }, // User must provide or we use env vars if set?
-                            clientSecret: { plainText: "" },
-                            scopes: "https://www.googleapis.com/auth/calendar"
-                        }
-                    },
-                    openapiService: {
-                        specUrl: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
-                    }
-                }
-            },
-            {
-                id: "github",
-                name: "GitHub",
-                description: "Interact with repositories, issues, and PRs.",
-                icon: "github",
-                tags: ["dev", "git"],
-                authType: "token", // Can also be oauth2 but token is easier for wizard?
-                serviceConfig: {
-                    name: "github",
-                    upstreamAuth: {
-                        bearerToken: { token: { plainText: "" } }
-                    },
-                    openapiService: {
-                        address: "https://api.github.com",
-                        specUrl: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                    }
-                }
-            },
-            {
-                id: "linear",
-                name: "Linear",
-                description: "Issue tracking and project management.",
-                icon: "linear",
-                tags: ["dev", "pm"],
-                authType: "oauth2", // or api key
-                serviceConfig: {
-                    name: "linear",
-                    upstreamAuth: {
-                        apiKey: { plainText: "" } // Usually API key for simplicity
-                    },
-                    openapiService: {
-                        // Placeholder
-                        specUrl: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                    }
-                }
-            }
-        ];
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        const templates = await res.json();
+        // Map backend templates to frontend structure
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return templates.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            icon: mapIcon(t.icon),
+            config: t.serviceConfig,
+            category: "General",
+            tags: t.tags || [],
+            // Generate fields if schema is present? (Future enhancement)
+        }));
     },
 
     /**
      * Initiates an OAuth flow for a specific service.
-     * @param serviceId The ID of the service (e.g. "google_calendar").
-     * @param credentialId The ID of the credential to bind (usually same as service name for now).
-     * @param redirectUrl The URL to redirect back to after auth.
-     * @returns The authorization URL to redirect the user to.
      */
     initiateOAuth: async (serviceId: string, credentialId: string, redirectUrl: string) => {
         const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {
@@ -940,8 +851,8 @@ export const apiClient = {
 
     /**
      * Creates a new profile.
-     * @param profileData The profile configuration.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createProfile: async (profileData: any) => {
         const res = await fetchWithAuth('/api/v1/profiles', {
             method: 'POST',
@@ -954,8 +865,8 @@ export const apiClient = {
 
     /**
      * Updates an existing profile.
-     * @param profileData The profile configuration.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateProfile: async (profileData: any) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${profileData.name}`, {
             method: 'PUT',
@@ -968,7 +879,6 @@ export const apiClient = {
 
     /**
     * Deletes a profile.
-    * @param name The name of the profile to delete.
     */
     deleteProfile: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${name}`, {
@@ -995,7 +905,6 @@ export const apiClient = {
 
     /**
      * Lists all stored secrets.
-     * @returns A promise that resolves to a list of secrets.
      */
     listSecrets: async () => {
         const res = await fetchWithAuth('/api/v1/secrets');
@@ -1006,8 +915,6 @@ export const apiClient = {
 
     /**
      * Reveals a secret value.
-     * @param id The ID of the secret to reveal.
-     * @returns A promise that resolves to the secret value.
      */
     revealSecret: async (id: string): Promise<{ value: string }> => {
         const res = await fetchWithAuth(`/api/v1/secrets/${id}/reveal`, {
@@ -1019,8 +926,6 @@ export const apiClient = {
 
     /**
      * Saves a secret.
-     * @param secret The secret definition to save.
-     * @returns A promise that resolves to the saved secret.
      */
     saveSecret: async (secret: SecretDefinition) => {
         const res = await fetchWithAuth('/api/v1/secrets', {
@@ -1034,8 +939,6 @@ export const apiClient = {
 
     /**
      * Deletes a secret.
-     * @param id The ID of the secret to delete.
-     * @returns A promise that resolves when the secret is deleted.
      */
     deleteSecret: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/secrets/${id}`, {
@@ -1049,13 +952,6 @@ export const apiClient = {
 
     /**
      * Gets the global server settings.
-     *
-     * Summary: Retrieves the global configuration settings for the server.
-     *
-     * @returns A promise that resolves to the global settings.
-     * @throws {Error} If the request fails.
-     *
-     * Side Effects: Makes a GET request to /api/v1/settings.
      */
     getGlobalSettings: async () => {
         const res = await fetchWithAuth('/api/v1/settings');
@@ -1065,9 +961,8 @@ export const apiClient = {
 
     /**
      * Saves the global server settings.
-     * @param settings The settings to save.
-     * @returns A promise that resolves when the settings are saved.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     saveGlobalSettings: async (settings: any) => {
         const res = await fetchWithAuth('/api/v1/settings', {
             method: 'POST',
@@ -1079,9 +974,6 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
-     * @param serviceId Optional service ID to filter by.
-     * @param timeRange Optional time range to filter by (e.g. "1h", "24h").
-     * @returns A promise that resolves to the traffic history points.
      */
     getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
         let url = '/api/v1/dashboard/traffic';
@@ -1098,8 +990,6 @@ export const apiClient = {
 
     /**
      * Gets the top used tools.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the top tools stats.
      */
     getTopTools: async (serviceId?: string) => {
         let url = '/api/v1/dashboard/top-tools';
@@ -1114,7 +1004,6 @@ export const apiClient = {
 
     /**
      * Lists all alerts.
-     * @returns A promise that resolves to a list of alerts.
      */
     listAlerts: async () => {
         const res = await fetchWithAuth('/api/v1/alerts');
@@ -1124,7 +1013,6 @@ export const apiClient = {
 
     /**
      * Lists all alert rules.
-     * @returns A promise that resolves to a list of alert rules.
      */
     listAlertRules: async () => {
         const res = await fetchWithAuth('/api/v1/alerts/rules');
@@ -1134,9 +1022,8 @@ export const apiClient = {
 
     /**
      * Creates a new alert rule.
-     * @param rule The rule to create.
-     * @returns A promise that resolves to the created rule.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createAlertRule: async (rule: any) => {
         const res = await fetchWithAuth('/api/v1/alerts/rules', {
             method: 'POST',
@@ -1149,8 +1036,6 @@ export const apiClient = {
 
     /**
      * Gets an alert rule by ID.
-     * @param id The ID of the rule.
-     * @returns A promise that resolves to the rule.
      */
     getAlertRule: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`);
@@ -1160,9 +1045,8 @@ export const apiClient = {
 
     /**
      * Updates an alert rule.
-     * @param rule The rule to update.
-     * @returns A promise that resolves to the updated rule.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateAlertRule: async (rule: any) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${rule.id}`, {
             method: 'PUT',
@@ -1175,8 +1059,6 @@ export const apiClient = {
 
     /**
      * Deletes an alert rule.
-     * @param id The ID of the rule to delete.
-     * @returns A promise that resolves when the rule is deleted.
      */
     deleteAlertRule: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
@@ -1188,8 +1070,6 @@ export const apiClient = {
 
     /**
      * Gets the tools with highest failure rates.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the tool failure stats.
      */
     getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
         let url = '/api/v1/dashboard/tool-failures';
@@ -1201,8 +1081,6 @@ export const apiClient = {
 
     /**
      * Gets the tool usage analytics.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the tool usage stats.
      */
     getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
         let url = '/api/v1/dashboard/tool-usage';
@@ -1215,7 +1093,6 @@ export const apiClient = {
 
     /**
      * Gets the system status.
-     * @returns A promise that resolves to the system status.
      */
     getSystemStatus: async (): Promise<SystemStatus> => {
         const res = await fetchWithAuth('/api/v1/system/status');
@@ -1225,8 +1102,6 @@ export const apiClient = {
 
     /**
      * Gets the dashboard metrics.
-     * @param serviceId Optional service ID to filter by.
-     * @returns A promise that resolves to the metrics list.
      */
     getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
         let url = '/api/v1/dashboard/metrics';
@@ -1238,10 +1113,9 @@ export const apiClient = {
 
     /**
      * Gets the latest execution traces.
-     * @param options Optional parameters.
-     * @returns A promise that resolves to the traces list.
      */
-    getTraces: async (options?: { limit?: number }): Promise<any[]> => {
+    getTraces: async (options?: { limit?: number }): Promise<// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    any[]> => {
         let url = '/api/v1/traces';
         if (options?.limit) {
             url += `?limit=${options.limit}`;
@@ -1253,8 +1127,8 @@ export const apiClient = {
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
-     * @param points The traffic points to seed.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     seedTrafficData: async (points: any[]) => {
         const res = await fetchWithAuth('/api/v1/debug/seed_traffic', {
             method: 'POST',
@@ -1266,9 +1140,6 @@ export const apiClient = {
 
     /**
      * Updates an alert status.
-     * @param id The ID of the alert.
-     * @param status The new status.
-     * @returns A promise that resolves to the updated alert.
      */
     updateAlertStatus: async (id: string, status: string) => {
         const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
@@ -1282,7 +1153,6 @@ export const apiClient = {
 
     /**
      * Gets the configured global webhook URL for alerts.
-     * @returns A promise that resolves to the webhook configuration.
      */
     getWebhookURL: async (): Promise<{ url: string }> => {
         const res = await fetchWithAuth('/api/v1/alerts/webhook');
@@ -1292,8 +1162,6 @@ export const apiClient = {
 
     /**
      * Saves the configured global webhook URL for alerts.
-     * @param url The webhook URL.
-     * @returns A promise that resolves to the updated webhook configuration.
      */
     saveWebhookURL: async (url: string) => {
         const res = await fetchWithAuth('/api/v1/alerts/webhook', {
@@ -1309,7 +1177,6 @@ export const apiClient = {
 
     /**
      * Lists all service collections (stacks).
-     * @returns A promise that resolves to a list of collections.
      */
     listCollections: async () => {
         const res = await fetchWithAuth('/api/v1/collections');
@@ -1319,8 +1186,6 @@ export const apiClient = {
 
     /**
      * Gets a single service collection (stack) by its name.
-     * @param name The name of the collection.
-     * @returns A promise that resolves to the collection.
      */
     getCollection: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/collections/${name}`);
@@ -1330,9 +1195,8 @@ export const apiClient = {
 
     /**
      * Saves a service collection (stack).
-     * @param collection The collection to save.
-     * @returns A promise that resolves when the collection is saved.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     saveCollection: async (collection: any) => {
         // Decide if create or update based on existence?
         // The API might expect POST for create, PUT for update.
@@ -1358,8 +1222,6 @@ export const apiClient = {
 
     /**
      * Deletes a service collection (stack).
-     * @param name The name of the collection to delete.
-     * @returns A promise that resolves when the collection is deleted.
      */
     deleteCollection: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/collections/${name}`, {
@@ -1371,8 +1233,6 @@ export const apiClient = {
 
     /**
      * Gets the configuration for a stack (Compatibility wrapper).
-     * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration.
      */
     getStackConfig: async (stackId: string) => {
         // Map to getCollection
@@ -1381,10 +1241,8 @@ export const apiClient = {
 
     /**
      * Saves the configuration for a stack (Compatibility wrapper).
-     * @param stackId The ID of the stack.
-     * @param config The configuration content (Collection object).
-     * @returns A promise that resolves when the config is saved.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     saveStackConfig: async (stackId: string, config: any) => {
         // Map to saveCollection. Ensure name is set.
         const collection = typeof config === 'string' ? JSON.parse(config) : config;
@@ -1394,8 +1252,6 @@ export const apiClient = {
 
     /**
      * Gets the stack configuration as YAML.
-     * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the YAML string.
      */
     getStackYaml: async (stackId: string) => {
         const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
@@ -1405,9 +1261,6 @@ export const apiClient = {
 
     /**
      * Saves the stack configuration from YAML.
-     * @param stackId The ID of the stack.
-     * @param yamlContent The YAML configuration content.
-     * @returns A promise that resolves when the config is saved.
      */
     saveStackYaml: async (stackId: string, yamlContent: string) => {
         const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
@@ -1428,7 +1281,6 @@ export const apiClient = {
 
     /**
      * Lists all users.
-     * @returns A promise that resolves to a list of users.
      */
     listUsers: async () => {
         const res = await fetchWithAuth('/api/v1/users');
@@ -1437,6 +1289,7 @@ export const apiClient = {
         const list = Array.isArray(data) ? data : (data.users || []);
 
         // Map snake_case to camelCase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return list.map((u: any) => ({
             id: u.id,
             roles: u.roles || [],
@@ -1457,11 +1310,11 @@ export const apiClient = {
 
     /**
      * Creates a new user.
-     * @param user The user object to create.
-     * @returns A promise that resolves to the created user.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createUser: async (user: any) => {
         // Map camelCase to snake_case
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = {
             id: user.id,
             roles: user.roles,
@@ -1496,11 +1349,11 @@ export const apiClient = {
 
     /**
      * Updates an existing user.
-     * @param user The user object to update.
-     * @returns A promise that resolves to the updated user.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateUser: async (user: any) => {
         // Map camelCase to snake_case
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = {
             id: user.id,
             roles: user.roles,
@@ -1535,8 +1388,6 @@ export const apiClient = {
 
     /**
      * Deletes a user.
-     * @param id The ID of the user to delete.
-     * @returns A promise that resolves when the user is deleted.
      */
     deleteUser: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/users/${id}`, {
@@ -1551,12 +1402,9 @@ export const apiClient = {
 
     /**
      * Initiates an OAuth flow.
-     * @param serviceID The ID of the service for which to initiate OAuth.
-     * @param redirectURL The URL to redirect to after OAuth completes.
-     * @param credentialID Optional credential ID to associate with the token.
-     * @returns A promise that resolves to the initiation response.
      */
     initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = { redirect_url: redirectURL };
         if (serviceID) payload.service_id = serviceID;
         if (credentialID) payload.credential_id = credentialID;
@@ -1575,13 +1423,9 @@ export const apiClient = {
 
     /**
      * Handles the OAuth callback.
-     * @param serviceID The ID of the service (optional).
-     * @param code The OAuth authorization code.
-     * @param redirectURL The redirect URL used in the initial request.
-     * @param credentialID Optional credential ID.
-     * @returns A promise that resolves to the callback handling result.
      */
     handleOAuthCallback: async (serviceID: string | null, code: string, redirectURL: string, credentialID?: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = { code, redirect_url: redirectURL };
         if (serviceID) payload.service_id = serviceID;
         if (credentialID) payload.credential_id = credentialID;
@@ -1602,7 +1446,6 @@ export const apiClient = {
 
     /**
      * Lists all stored credentials.
-     * @returns A promise that resolves to a list of credentials.
      */
     listCredentials: async () => {
         const res = await fetchWithAuth('/api/v1/credentials');
@@ -1613,8 +1456,6 @@ export const apiClient = {
 
     /**
      * Saves (creates or updates) a credential.
-     * @param credential The credential to save.
-     * @returns A promise that resolves to the saved credential.
      */
     saveCredential: async (credential: Credential) => {
         // ... (logic omitted for brevity, keeping same) ...
@@ -1623,8 +1464,6 @@ export const apiClient = {
 
     /**
      * Creates a new credential.
-     * @param credential The credential to create.
-     * @returns A promise that resolves to the created credential.
      */
     createCredential: async (credential: Credential) => {
         const res = await fetchWithAuth('/api/v1/credentials', {
@@ -1638,8 +1477,6 @@ export const apiClient = {
 
     /**
      * Updates an existing credential.
-     * @param credential The credential to update.
-     * @returns A promise that resolves to the updated credential.
      */
     updateCredential: async (credential: Credential) => {
         const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
@@ -1653,8 +1490,6 @@ export const apiClient = {
 
     /**
      * Deletes a credential.
-     * @param id The ID of the credential to delete.
-     * @returns A promise that resolves when the credential is deleted.
      */
     deleteCredential: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
@@ -1666,9 +1501,8 @@ export const apiClient = {
 
     /**
      * Tests authentication with the provided parameters.
-     * @param req The authentication test request.
-     * @returns A promise that resolves to the test result.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     testAuth: async (req: any) => {
         const res = await fetchWithAuth('/api/v1/debug/auth-test', {
             method: 'POST',
@@ -1683,7 +1517,6 @@ export const apiClient = {
 
     /**
      * Lists all service templates.
-     * @returns A promise that resolves to a list of templates.
      */
     listTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
@@ -1692,6 +1525,7 @@ export const apiClient = {
         // Backend returns generic UpstreamServiceConfig list.
         // Map snake_case to camelCase
         const list = Array.isArray(data) ? data : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return list.map((s: any) => ({
             ...s,
             // Reuse logic? Or copy/paste mapping
@@ -1711,12 +1545,11 @@ export const apiClient = {
 
     /**
      * Saves a service template.
-     * @param template The template configuration to save.
-     * @returns A promise that resolves to the saved template.
      */
     saveTemplate: async (template: UpstreamServiceConfig) => {
         // Map back to snake_case for saving
         // Reuse registerService mapping logic essentially but for template endpoint
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = {
             id: template.id,
             name: template.name,
@@ -1770,8 +1603,6 @@ export const apiClient = {
 
     /**
      * Deletes a service template.
-     * @param id The ID of the template to delete.
-     * @returns A promise that resolves when the template is deleted.
      */
     deleteTemplate: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
@@ -1785,7 +1616,6 @@ export const apiClient = {
 
     /**
      * Gets the doctor status report.
-     * @returns A promise that resolves to the doctor report.
      */
     getDoctorStatus: async (): Promise<DoctorReport> => {
         const res = await fetchWithAuth('/api/v1/doctor');
@@ -1797,8 +1627,6 @@ export const apiClient = {
 
     /**
      * Lists audit logs.
-     * @param filters The filters for the audit logs.
-     * @returns A promise that resolves to the list of audit logs.
      */
     listAuditLogs: async (filters: {
         start_time?: string;

@@ -117,6 +117,14 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		if err := s.SaveService(ctx, weatherService); err != nil {
 			return fmt.Errorf("failed to save default weather service: %w", err)
 		}
+
+		// Seed Service Templates
+		log.Info("Seeding builtin service templates", "count", len(BuiltinServiceTemplates))
+		for _, tmpl := range BuiltinServiceTemplates {
+			if err := s.SaveServiceTemplate(ctx, tmpl); err != nil {
+				log.Error("failed to seed service template", "template", tmpl.GetName(), "error", err)
+			}
+		}
 	} else {
 		log.Warn("Store/Storage does not support saving defaults.")
 	}
