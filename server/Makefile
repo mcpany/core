@@ -315,20 +315,27 @@ prepare:
 	@if test -f "$(SHELLCHECK_BIN)"; then \
 		echo "ShellCheck is already installed."; \
 	else \
-		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
-		if ! command -v xz >/dev/null 2>&1; then \
-			echo "xz not found. Installing xz-utils..."; \
-			sudo apt-get update && sudo apt-get install -y xz-utils || echo "Failed to install xz-utils, ShellCheck install might fail."; \
-		fi; \
-		SC_VERSION="stable"; \
-		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
-		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
-		if test -f "$(SHELLCHECK_BIN)"; then \
-			echo "ShellCheck installed successfully."; \
+		echo "Installing ShellCheck..."; \
+		if command -v apt-get >/dev/null 2>&1; then \
+			sudo apt-get update && sudo apt-get install -y shellcheck && \
+			ln -sf $$(which shellcheck) "$(SHELLCHECK_BIN)" && \
+			echo "ShellCheck installed via apt-get."; \
 		else \
-			echo "ShellCheck installation failed."; \
-			exit 1; \
+			echo "apt-get not found, attempting binary download..."; \
+			if ! command -v xz >/dev/null 2>&1; then \
+				echo "xz not found. Installing xz-utils..."; \
+				sudo apt-get update && sudo apt-get install -y xz-utils || echo "Failed to install xz-utils, ShellCheck install might fail."; \
+			fi; \
+			SC_VERSION="stable"; \
+			curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+			mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
+			rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+			if test -f "$(SHELLCHECK_BIN)"; then \
+				echo "ShellCheck installed successfully."; \
+			else \
+				echo "ShellCheck installation failed."; \
+				exit 1; \
+			fi; \
 		fi; \
 	fi
 	@# Install nats-server
