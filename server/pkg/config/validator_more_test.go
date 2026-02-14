@@ -104,7 +104,7 @@ func TestValidate_MoreServices(t *testing.T) {
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
 								ClientCertPath: proto.String("non-existent-cert.crt"),
-								ClientKeyPath:  proto.String("non-existent-key.crt"),
+								ClientKeyPath:  proto.String("non-existent-key.dat"),
 							}.Build(),
 						}.Build(),
 					}.Build(),
