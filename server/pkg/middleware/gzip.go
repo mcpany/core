@@ -17,6 +17,10 @@ import (
 // due to CPU overhead and increased size from headers/framing.
 const minSize = 1400
 
+// ⚡ Bolt: Maximum buffer size to return to pool (32KB).
+// Randomized Selection from Top 5 High-Impact Targets.
+const maxPooledBufferSize = 32 * 1024
+
 var compressibleContentTypes = []string{
 	"text/html",
 	"text/css",
@@ -28,6 +32,7 @@ var compressibleContentTypes = []string{
 	"application/xml",
 	"text/xml",
 	"image/svg+xml",
+	"text/event-stream", // Added for SSE support
 }
 
 func isCompressible(contentType string) bool {
@@ -154,6 +159,36 @@ func (w *gzipResponseWriter) WriteHeader(code int) {
 	}
 }
 
+// Randomized Selection from Top 5 High-Impact Targets.
+func (w *gzipResponseWriter) Flush() {
+	if !w.headerWritten {
+		// If headers aren't written, we must decide now whether to gzip.
+		// If Content-Type is missing, detect it from the buffer.
+		if w.Header().Get("Content-Type") == "" {
+			detectBuf := w.buf.data
+			if len(detectBuf) > 512 {
+				detectBuf = detectBuf[:512]
+			}
+			w.Header().Set("Content-Type", http.DetectContentType(detectBuf))
+		}
+
+		contentType := w.Header().Get("Content-Type")
+		if isCompressible(contentType) {
+			_ = w.flushBuffer(true)
+		} else {
+			_ = w.flushBuffer(false)
+		}
+	}
+
+	if w.writer != nil {
+		_ = w.writer.Flush()
+	}
+
+	if flusher, ok := w.ResponseWriter.(http.Flusher); ok {
+		flusher.Flush()
+	}
+}
+
 // flushBuffer transitions from buffering to writing.
 // startGzip: true to enable gzip, false to write raw.
 func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
@@ -190,8 +225,11 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 
 		if len(w.buf.data) > 0 {
 			_, err := w.writer.Write(w.buf.data)
-			byteBufferPool.Put(w.buf) // Return to pool
-			w.buf = nil               // Release reference
+			// ⚡ BOLT: Prevent memory leak by checking capacity before returning to pool.
+			if cap(w.buf.data) <= maxPooledBufferSize {
+				byteBufferPool.Put(w.buf) // Return to pool
+			}
+			w.buf = nil // Release reference
 			return err
 		}
 		return nil
@@ -200,7 +238,10 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	w.ResponseWriter.WriteHeader(w.code)
 	if len(w.buf.data) > 0 {
 		_, err := w.ResponseWriter.Write(w.buf.data)
-		byteBufferPool.Put(w.buf) // Return to pool
+		// ⚡ BOLT: Prevent memory leak by checking capacity before returning to pool.
+		if cap(w.buf.data) <= maxPooledBufferSize {
+			byteBufferPool.Put(w.buf) // Return to pool
+		}
 		w.buf = nil
 		return err
 	}
@@ -229,9 +270,12 @@ func (w *gzipResponseWriter) Close() {
 
 	_ = w.flushBuffer(false)
 
-	// In case flushBuffer didn't run or didn't clear buf
+	// In case flushBuffer didn't run or didn't clear buf (e.g. if we flushed raw)
 	if w.buf != nil {
-		byteBufferPool.Put(w.buf)
+		// ⚡ BOLT: Prevent memory leak by checking capacity before returning to pool.
+		if cap(w.buf.data) <= maxPooledBufferSize {
+			byteBufferPool.Put(w.buf)
+		}
 		w.buf = nil
 	}
 }

@@ -129,4 +129,35 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 			t.Error("Expected no Content-Encoding for empty response")
 		}
 	})
+
+	t.Run("Flush Support", func(t *testing.T) {
+		flushHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/event-stream")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("data: event1\n\n"))
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			} else {
+				t.Error("ResponseWriter does not implement http.Flusher")
+			}
+		})
+		gzipFlushHandler := GzipCompressionMiddleware(flushHandler)
+
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Accept-Encoding", "gzip")
+		rec := httptest.NewRecorder()
+
+		gzipFlushHandler.ServeHTTP(rec, req)
+
+		if !rec.Flushed {
+			t.Error("Expected ResponseRecorder to be flushed")
+		}
+
+		// Verify that Content-Encoding is gzip (since we forced flush, it should have started gzip)
+		// Note: The middleware logic currently buffers small payloads.
+		// If Flush is implemented correctly, it should force the buffer to flush to the writer.
+		if rec.Header().Get("Content-Encoding") != "gzip" {
+			t.Errorf("Expected Content-Encoding: gzip for flushed stream, got %s", rec.Header().Get("Content-Encoding"))
+		}
+	})
 }
