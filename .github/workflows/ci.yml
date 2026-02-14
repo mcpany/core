@@ -128,10 +128,17 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
-          sudo systemctl restart docker
+          # Try multiple ways to restart docker (systemd, service, or ignore if managed externally)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Warning: Could not restart docker (no systemctl/service). Changes to daemon.json might not take effect."
+          fi
+
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -248,10 +255,17 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
-          sudo systemctl restart docker
+          # Try multiple ways to restart docker (systemd, service, or ignore if managed externally)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Warning: Could not restart docker (no systemctl/service). Changes to daemon.json might not take effect."
+          fi
+
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -618,10 +632,17 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
-          sudo systemctl restart docker
+          # Try multiple ways to restart docker (systemd, service, or ignore if managed externally)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Warning: Could not restart docker (no systemctl/service). Changes to daemon.json might not take effect."
+          fi
+
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -706,10 +727,17 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json'
 
-          sudo systemctl restart docker
+          # Try multiple ways to restart docker (systemd, service, or ignore if managed externally)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Warning: Could not restart docker (no systemctl/service). Changes to daemon.json might not take effect."
+          fi
+
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
