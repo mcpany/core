@@ -1200,12 +1200,11 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	// ⚡ Bolt: Use json-iterator
 	var result any
 	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil //nolint:nilerr
+		return string(respBody), nil //nolint:nilerr // intentional fallback for non-JSON responses
 	}
 
 	return result, nil
 }
-
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service. It acts as a proxy, forwarding the tool call to the
@@ -3608,7 +3607,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr // If URL parsing fails, it's not a valid URL to check for SSRF
 		}
 
 		if u.Scheme == "" || u.Host == "" {
