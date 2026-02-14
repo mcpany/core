@@ -131,20 +131,6 @@ jobs:
 
       - uses: actions/checkout@v5
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if command -v systemctl >/dev/null 2>&1; then
-             sudo systemctl restart docker
-          else
-             echo "Systemd not found, skipping restart"
-          fi
-          docker info # Verify the mirrors are listed
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -259,20 +245,6 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if command -v systemctl >/dev/null 2>&1; then
-             sudo systemctl restart docker
-          else
-             echo "Systemd not found, skipping restart"
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -414,20 +386,6 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if command -v systemctl >/dev/null 2>&1; then
-             sudo systemctl restart docker
-          else
-             echo "Systemd not found, skipping restart"
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -577,20 +535,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if command -v systemctl >/dev/null 2>&1; then
-             sudo systemctl restart docker
-          else
-             echo "Systemd not found, skipping restart"
-          fi
-          docker info
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -697,20 +641,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if command -v systemctl >/dev/null 2>&1; then
-             sudo systemctl restart docker
-          else
-             echo "Systemd not found, skipping restart"
-          fi
-          docker info # Verify the mirrors are listed
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -788,20 +718,6 @@ jobs:
     needs: [build-images]
     steps:
       - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if command -v systemctl >/dev/null 2>&1; then
-             sudo systemctl restart docker
-          else
-             echo "Systemd not found, skipping restart"
-          endif
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
