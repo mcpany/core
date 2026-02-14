@@ -1920,6 +1920,35 @@ func (a *Application) runServerMode(
 	// mux.Handle("/api/v1/skills", authMiddleware(a.handleListSkills())) // Replaced by gRPC Gateway
 	// mux.Handle("/api/v1/skills/create", authMiddleware(a.handleCreateSkill())) // Replaced by gRPC Gateway
 
+	// Secrets API
+	mux.Handle("/api/v1/secrets", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.listSecretsHandler(w, r)
+		case http.MethodPost:
+			a.createSecretHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	mux.Handle("/api/v1/secrets/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Handle /reveal
+		if strings.HasSuffix(r.URL.Path, "/reveal") {
+			a.revealSecretHandler(w, r)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			a.getSecretHandler(w, r)
+		case http.MethodDelete:
+			a.deleteSecretHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
