@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -3562,5 +3563,52 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
+
+	// Sentinel Security Update: Detect SSRF attempts in command arguments
+	// We check for URLs, IP addresses, and localhost references.
+	if err := checkForSSRF(val); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func checkForSSRF(val string) error {
+	// 1. Check for "localhost" explicitly
+	if strings.EqualFold(val, "localhost") {
+		return fmt.Errorf("potential SSRF detected: localhost is not allowed")
+	}
+
+	// 2. Check for raw IP address
+	if ip := net.ParseIP(val); ip != nil {
+		// Reuse validation.IsSafeURL logic by constructing a URL.
+		// This ensures consistent blocking of loopback/private IPs.
+		// We use http scheme to pass the scheme check.
+		checkURL := "http://" + val
+		if err := validation.IsSafeURL(checkURL); err != nil {
+			return fmt.Errorf("potential SSRF detected: %w", err)
+		}
+		return nil
+	}
+
+	// 3. Check for URL with scheme
+	// Heuristic: Must contain "://" to be treated as a URL for SSRF check
+	if strings.Contains(val, "://") {
+		u, err := url.Parse(val)
+		if err != nil {
+			return nil
+		}
+
+		if u.Scheme == "" || u.Host == "" {
+			return nil
+		}
+
+		// Check host against allowlist/blocklist logic
+		checkURL := "http://" + u.Host
+		if err := validation.IsSafeURL(checkURL); err != nil {
+			return fmt.Errorf("potential SSRF detected: %w", err)
+		}
+	}
+
 	return nil
 }
