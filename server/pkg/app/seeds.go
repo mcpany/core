@@ -184,6 +184,26 @@ func init() {
 				}`),
 			}.Build(),
 		}.Build(),
+
+		// 6. Custom Service
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("custom-service"),
+			Name:        proto.String("Custom Service"),
+			Description: proto.String("Manually configure a service connection."),
+			Icon:        proto.String("settings"),
+			Tags:        []string{"custom", "manual", "generic"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("custom-service"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String(""),
+				}.Build(),
+				ConfigurationSchema: proto.String(`{
+					"type": "object",
+					"title": "Custom Service Config",
+					"properties": {}
+				}`),
+			}.Build(),
+		}.Build(),
 	}
 }
 

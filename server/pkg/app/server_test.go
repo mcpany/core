@@ -609,8 +609,6 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
-	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
-	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
