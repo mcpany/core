@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -131,8 +131,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Restart docker if possible, but do not fail if systemd/service is not available
+          if command -v systemctl >/dev/null 2>&1 && pidof systemd >/dev/null 2>&1; then
+            sudo systemctl restart docker || true
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart || true
+          fi
+
+          docker info # Verify the mirrors are listed (if restart worked)
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -251,8 +257,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Restart docker if possible, but do not fail if systemd/service is not available
+          if command -v systemctl >/dev/null 2>&1 && pidof systemd >/dev/null 2>&1; then
+            sudo systemctl restart docker || true
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart || true
+          fi
+
+          docker info # Verify the mirrors are listed (if restart worked)
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -506,7 +518,14 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+
+          # Restart docker if possible, but do not fail if systemd/service is not available
+          if command -v systemctl >/dev/null 2>&1 && pidof systemd >/dev/null 2>&1; then
+            sudo systemctl restart docker || true
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart || true
+          fi
+
           docker info
 
       - name: Set up Go
@@ -622,8 +641,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Restart docker if possible, but do not fail if systemd/service is not available
+          if command -v systemctl >/dev/null 2>&1 && pidof systemd >/dev/null 2>&1; then
+            sudo systemctl restart docker || true
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart || true
+          fi
+
+          docker info # Verify the mirrors are listed (if restart worked)
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -710,8 +735,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Restart docker if possible, but do not fail if systemd/service is not available
+          if command -v systemctl >/dev/null 2>&1 && pidof systemd >/dev/null 2>&1; then
+            sudo systemctl restart docker || true
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart || true
+          fi
+
+          docker info # Verify the mirrors are listed (if restart worked)
 
       - name: Set up Go
         uses: actions/setup-go@v6
