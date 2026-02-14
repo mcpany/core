@@ -24,7 +24,7 @@ import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
-import { BulkServiceImport } from "@/components/services/bulk-service-import";
+import { BulkImportWizard } from "@/components/services/bulk-import-wizard";
 import {
     Dialog,
     DialogContent,
@@ -413,14 +413,14 @@ export default function ServicesPage() {
                         <Download className="mr-2 h-4 w-4" /> Bulk Import
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-xl">
+                <DialogContent className="sm:max-w-3xl">
                     <DialogHeader>
                         <DialogTitle>Bulk Service Import</DialogTitle>
                         <DialogDescription>
-                            Import multiple services at once from a JSON configuration.
+                            Import multiple services at once from a JSON configuration or URL.
                         </DialogDescription>
                     </DialogHeader>
-                    <BulkServiceImport
+                    <BulkImportWizard
                         onImportSuccess={() => fetchServices()}
                         onCancel={() => {}}
                     />
