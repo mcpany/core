@@ -10,14 +10,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree } from "lucide-react";
 import dynamic from "next/dynamic";
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";
 
-// ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
+// ⚡ BOLT: Optimized import to use lightweight syntax highlighter and only load JSON language support.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
-const SyntaxHighlighter = dynamic(() => import('react-syntax-highlighter').then(mod => mod.Prism), {
+const SyntaxHighlighter = dynamic(async () => {
+  const { default: SyntaxHighlighter } = await import('react-syntax-highlighter/dist/esm/light');
+  const { default: json } = await import('react-syntax-highlighter/dist/esm/languages/hljs/json');
+  SyntaxHighlighter.registerLanguage('json', json);
+  return SyntaxHighlighter;
+}, {
   ssr: false,
   loading: () => <div className="p-4 text-xs font-mono text-muted-foreground">Loading source...</div>,
 });
@@ -152,7 +157,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
         >
             <SyntaxHighlighter
                 language="json"
-                style={vscDarkPlus}
+                style={vs2015}
                 customStyle={{
                     margin: 0,
                     padding: '1rem',
