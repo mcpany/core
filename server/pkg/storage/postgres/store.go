@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -46,88 +47,178 @@ func (s *Store) HasConfigSources() bool {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+	// ⚡ BOLT: Parallelized configuration loading.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var (
+		services    []*configv1.UpstreamServiceConfig
+		users       []*configv1.User
+		settings    *configv1.GlobalSettings
+		collections []*configv1.Collection
+		err         error
+		errOnce     sync.Once
+	)
+
+	// Helper to capture the first error
+	setError := func(e error) {
+		if e != nil {
+			errOnce.Do(func() {
+				err = e
+			})
+		}
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(4)
+
 	// 1. Load services
-	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
-	if err != nil {
-		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
-	}
-	defer func() { _ = rows.Close() }()
-
-	var services []*configv1.UpstreamServiceConfig
-	// Allow unknown fields to be safe against schema evolution
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-
-	for rows.Next() {
-		var configJSON []byte
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+	go func() {
+		defer wg.Done()
+		rows, qErr := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
+		if qErr != nil {
+			setError(fmt.Errorf("failed to query upstream_services: %w", qErr))
+			return
 		}
+		defer func() { _ = rows.Close() }()
 
-		var service configv1.UpstreamServiceConfig
-		if err := opts.Unmarshal(configJSON, &service); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
+		// Allow unknown fields to be safe against schema evolution
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+
+		for rows.Next() {
+			var configJSON []byte
+			if sErr := rows.Scan(&configJSON); sErr != nil {
+				setError(fmt.Errorf("failed to scan config_json: %w", sErr))
+				return
+			}
+
+			var service configv1.UpstreamServiceConfig
+			if uErr := opts.Unmarshal(configJSON, &service); uErr != nil {
+				setError(fmt.Errorf("failed to unmarshal service config: %w", uErr))
+				return
+			}
+			services = append(services, &service)
 		}
-		services = append(services, &service)
-	}
-	_ = rows.Close()
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate rows: %w", err)
-	}
+		if rErr := rows.Err(); rErr != nil {
+			setError(fmt.Errorf("failed to iterate rows: %w", rErr))
+		}
+	}()
 
 	// 2. Load users
-	userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
-	if err != nil {
-		return nil, fmt.Errorf("failed to query users: %w", err)
-	}
-	defer func() { _ = userRows.Close() }()
-
-	var users []*configv1.User
-	for userRows.Next() {
-		var configJSON []byte
-		if err := userRows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan user config_json: %w", err)
+	go func() {
+		defer wg.Done()
+		userRows, qErr := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+		if qErr != nil {
+			setError(fmt.Errorf("failed to query users: %w", qErr))
+			return
 		}
+		defer func() { _ = userRows.Close() }()
 
-		var user configv1.User
-		if err := opts.Unmarshal(configJSON, &user); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+
+		for userRows.Next() {
+			var configJSON []byte
+			if sErr := userRows.Scan(&configJSON); sErr != nil {
+				setError(fmt.Errorf("failed to scan user config_json: %w", sErr))
+				return
+			}
+
+			var user configv1.User
+			if uErr := opts.Unmarshal(configJSON, &user); uErr != nil {
+				setError(fmt.Errorf("failed to unmarshal user config: %w", uErr))
+				return
+			}
+			users = append(users, &user)
 		}
-		users = append(users, &user)
-	}
-	_ = userRows.Close()
-	if err := userRows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate user rows: %w", err)
-	}
+		if rErr := userRows.Err(); rErr != nil {
+			setError(fmt.Errorf("failed to iterate user rows: %w", rErr))
+		}
+	}()
 
 	// 3. Load Global Settings
-	var settings *configv1.GlobalSettings
-	settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
-	var settingsJSON []byte
-	if err := settingsRow.Scan(&settingsJSON); err == nil {
-		var s configv1.GlobalSettings
-		if err := opts.Unmarshal(settingsJSON, &s); err == nil {
-			settings = &s
+	go func() {
+		defer wg.Done()
+		settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
+		var settingsJSON []byte
+		if sErr := settingsRow.Scan(&settingsJSON); sErr == nil {
+			var s configv1.GlobalSettings
+			opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+			if uErr := opts.Unmarshal(settingsJSON, &s); uErr == nil {
+				settings = &s
+			}
 		}
-	}
+	}()
 
 	// 4. Load Collections
-	collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
-	var collections []*configv1.Collection
-	if err == nil {
+	go func() {
+		defer wg.Done()
+		collectionRows, qErr := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
+		if qErr != nil {
+			// Historically (in original code), error here might have been ignored if not nil?
+			// Original code: if err == nil { ... } else { return err } ??
+			// Original code checked `err` from `QueryContext`.
+			// "if err == nil" was wrapping the loop.
+			// Wait, let's check original code behavior for Collections.
+			/*
+				collectionRows, err := s.db.QueryContext(...)
+				var collections []*configv1.Collection
+				if err == nil {
+					defer ...
+					for ...
+					if rows.Err() ...
+				}
+				// It didn't return error if QueryContext failed?
+				// Ah, in original code:
+				// collectionRows, err := s.db.QueryContext(...)
+				// var collections []*configv1.Collection
+				// if err == nil { ... }
+				// return builder.Build(), nil
+			*/
+			// So original code SILENTLY IGNORED errors in fetching collections?
+			// No, wait.
+			/*
+				// 4. Load Collections
+				collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
+				var collections []*configv1.Collection
+				if err == nil {
+					defer func() { _ = collectionRows.Close() }()
+					for collectionRows.Next() { ... }
+					if err := collectionRows.Err(); err != nil {
+						return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
+					}
+				}
+			*/
+			// Yes, if `QueryContext` returned error, it just skipped loading collections and didn't return error.
+			// BUT if `rows.Err()` returned error, it DID return error.
+			// That seems inconsistent. I should probably preserve behavior or fix it.
+			// "The Fix" implies improving things. Silently ignoring DB errors is bad.
+			// However, strict backward compatibility might be needed.
+			// Let's assume the silent ignore was a bug or intentional "optional" feature.
+			// Given I'm "Bolt", I should probably fix it or stick to exact behavior.
+			// The safest bet for a refactor is to preserve behavior.
+			return
+		}
 		defer func() { _ = collectionRows.Close() }()
+
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+
 		for collectionRows.Next() {
 			var configJSON []byte
-			if err := collectionRows.Scan(&configJSON); err != nil {
+			if sErr := collectionRows.Scan(&configJSON); sErr != nil {
 				continue
 			}
 			var c configv1.Collection
-			if err := opts.Unmarshal(configJSON, &c); err == nil {
+			if uErr := opts.Unmarshal(configJSON, &c); uErr == nil {
 				collections = append(collections, &c)
 			}
 		}
-		if err := collectionRows.Err(); err != nil {
-			return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
+		if rErr := collectionRows.Err(); rErr != nil {
+			setError(fmt.Errorf("failed to iterate collection rows: %w", rErr))
 		}
+	}()
+
+	wg.Wait()
+
+	if err != nil {
+		return nil, err
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
