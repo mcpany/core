@@ -2935,10 +2935,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterFunctionCalls(val string) error {
+	// Sentinel Security Update: Strip comments before normalization
+	// This prevents attackers from using comments to break up function calls (e.g. system # comment ( ... ))
+	valNoComments := stripComments(val)
+
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
+	b.Grow(len(valNoComments))
+	for _, r := range valNoComments {
 		if !unicode.IsSpace(r) {
 			b.WriteRune(r)
 		}
@@ -3351,6 +3355,52 @@ func checkEnvInjection(val string) error {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+// stripComments removes common comment patterns (#, //, /* ... */) from the input string.
+// This prevents comment injection attacks that break up function calls (e.g. system # comment ( ... )).
+func stripComments(val string) string {
+	var buf strings.Builder
+	buf.Grow(len(val))
+	n := len(val)
+	for i := 0; i < n; i++ {
+		// Check for block comment /* ... */
+		if i+1 < n && val[i] == '/' && val[i+1] == '*' {
+			i += 2
+			for i+1 < n && !(val[i] == '*' && val[i+1] == '/') {
+				i++
+			}
+			i++ // Skip /
+			// Replace with space to avoid merging tokens
+			buf.WriteByte(' ')
+			continue
+		}
+		// Check for line comment // ...
+		if i+1 < n && val[i] == '/' && val[i+1] == '/' {
+			i += 2
+			for i < n && val[i] != '\n' {
+				i++
+			}
+			// Keep newline as it might be significant
+			if i < n && val[i] == '\n' {
+				buf.WriteByte('\n')
+			}
+			continue
+		}
+		// Check for hash comment # ...
+		if val[i] == '#' {
+			i++
+			for i < n && val[i] != '\n' {
+				i++
+			}
+			if i < n && val[i] == '\n' {
+				buf.WriteByte('\n')
+			}
+			continue
+		}
+		buf.WriteByte(val[i])
+	}
+	return buf.String()
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
