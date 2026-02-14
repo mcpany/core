@@ -17,6 +17,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -3074,43 +3075,29 @@ func stripInterpreterComments(val, language string) string {
 	return b.String()
 }
 
+var (
+	// strictKeywordsRegex matches keywords that are always dangerous in an injection context.
+	strictKeywordsRegex = regexp.MustCompile(`(?i)\b(exec|eval|popen|spawn|fork|import|require|subprocess|child_process|__import__)\b`)
+	// contextualKeywordsRegex matches keywords that are dangerous when followed by specific characters (function call, member access, string).
+	contextualKeywordsRegex = regexp.MustCompile(`(?i)\b(system|os|sys|open|read|write)\s*[\(\.'"` + "`" + `]`)
+)
+
 func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
-	// Normalize value to detect obfuscation (e.g. system ( ) )
-	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
-		if !unicode.IsSpace(r) {
-			b.WriteRune(r)
-		}
-	}
-	cleanVal := strings.ToLower(b.String())
+	// Sentinel Security Update: Use Regex for robust keyword detection with word boundaries.
+	// This prevents bypasses like "subprocess.call" (dot notation) or "import os" (space separation),
+	// while avoiding false positives for common words like "read" in normal text (unless followed by dangerous chars).
 
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
-		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
+	if match := strictKeywordsRegex.FindString(val); match != "" {
+		return fmt.Errorf("interpreter injection detected: value contains dangerous keyword %q", match)
 	}
 
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
-		}
+	if match := contextualKeywordsRegex.FindString(val); match != "" {
+		return fmt.Errorf("interpreter injection detected: value contains dangerous usage of %q", match)
 	}
 
-	if strings.Contains(cleanVal, "__import__") {
-		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
-	}
 	return nil
 }
 
