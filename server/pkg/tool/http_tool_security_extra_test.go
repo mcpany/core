@@ -17,15 +17,13 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestHTTPTool_Security_PathTraversal(t *testing.T) {
-	// Not parallel because setupHTTPToolTest uses a real server but that's fine.
-	// However, we are not modifying global state here.
+	t.Parallel()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Should not be reached if blocked
@@ -93,6 +91,7 @@ func TestHTTPTool_Security_PathTraversal(t *testing.T) {
 }
 
 func TestHTTPTool_Security_SSRF_Host_Parsing(t *testing.T) {
+	t.Parallel()
 	// This test confirms that dynamic host injection via simple substitution
 	// (e.g. http://{{host}}/) is PREVENTED by the strict URL parsing at initialization.
 	// HTTPTool requires the method+url string to be a valid URL *before* substitution.
@@ -133,16 +132,11 @@ func TestHTTPTool_Security_SSRF_Host_Parsing(t *testing.T) {
 }
 
 func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
-	// Not parallel because we modify global validation.IsSafeURL
-	originalIsSafeURL := validation.IsSafeURL
-	defer func() { validation.IsSafeURL = originalIsSafeURL }()
-
-	validation.IsSafeURL = func(u string) error {
-		if strings.HasPrefix(strings.ToLower(u), "file:") {
-			return fmt.Errorf("unsafe scheme: file")
-		}
-		return nil
-	}
+	t.Parallel()
+	// Verify that Scheme Injection is prevented.
+	// We rely on the real IsSafeURL or http.Client validation.
+	// IsSafeURL (real) blocks anything other than http/https.
+	// http.Client blocks unsupported schemes or invalid URLs.
 
 	poolManager := pool.NewManager()
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
@@ -176,12 +170,10 @@ func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
 	_, err = httpTool.Execute(context.Background(), req)
 
 	// With DisableEscape=true, the constructed URL becomes "/file:///etc/passwd" (prepended slash).
-	// This passes our mock validation because it starts with "/", but fails at http.Client execution
-	// because it's a relative URL without a scheme.
-	// This confirms that Scheme Injection is prevented either by validation or by the HTTP client requirements.
+	// This fails at http.Client execution because it's a relative URL without a scheme.
+	// Or IsSafeURL might catch it if it parses weirdly.
+
 	require.Error(t, err)
-	// We accept either "unsafe url" (if validation catches it) or "unsupported protocol scheme" (if client catches it)
-	// or "unsupported scheme" (from url.Parse)
 	assert.True(t,
 		strings.Contains(err.Error(), "unsafe url") ||
 		strings.Contains(err.Error(), "unsupported protocol scheme") ||
@@ -190,6 +182,7 @@ func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
 }
 
 func TestHTTPTool_Security_HeaderInjection(t *testing.T) {
+	t.Parallel()
 	// Attempt to inject headers via path or query parameters.
 	// Go's net/http and url packages should prevent this by escaping or rejecting control characters.
 
