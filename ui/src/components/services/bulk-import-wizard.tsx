@@ -190,7 +190,7 @@ export function BulkImportWizard({ onImportSuccess, onCancel }: BulkImportWizard
                 title: "Import Completed",
                 description: `Successfully imported ${successCount} services.`,
             });
-            onImportSuccess(); // Refresh parent list
+            onImportSuccess(); // Refresh parent list to show new services
         }
     };
 
