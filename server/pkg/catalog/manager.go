@@ -7,12 +7,14 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/spf13/afero"
+	"golang.org/x/sync/errgroup"
 )
 
 // Manager handles the loading and listing of catalog services.
@@ -63,6 +65,8 @@ func (m *Manager) Load(ctx context.Context) error {
 
 	m.services = nil // Reset
 
+	var paths []string
+
 	// Walk the directory
 	err := afero.Walk(m.fs, m.catalogPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -79,6 +83,27 @@ func (m *Manager) Load(ctx context.Context) error {
 		// so we expect .../catalog/gemini/config.yaml etc.
 
 		if strings.HasSuffix(info.Name(), ".yaml") || strings.HasSuffix(info.Name(), ".yml") {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// ⚡ BOLT: Parallelize catalog loading to reduce startup time.
+	// Randomized Selection from Top 5 High-Impact Targets
+	g, ctx := errgroup.WithContext(ctx)
+	// Limit concurrency to avoid overwhelming the system (e.g. file descriptors)
+	g.SetLimit(runtime.GOMAXPROCS(0) * 2)
+
+	var mu sync.Mutex
+	m.services = make([]*configv1.UpstreamServiceConfig, 0, len(paths))
+
+	for _, path := range paths {
+		path := path // Capture loop variable
+		g.Go(func() error {
 			// Load config
 			store := config.NewFileStore(m.fs, []string{path})
 			// We skip validation here to be lenient, or strict? Let's be strict but log errors.
@@ -90,14 +115,16 @@ func (m *Manager) Load(ctx context.Context) error {
 				return nil
 			}
 
-			if cfg.GetUpstreamServices() != nil {
-				m.services = append(m.services, cfg.GetUpstreamServices()...)
+			if services := cfg.GetUpstreamServices(); services != nil {
+				mu.Lock()
+				m.services = append(m.services, services...)
+				mu.Unlock()
 			}
-		}
-		return nil
-	})
+			return nil
+		})
+	}
 
-	return err
+	return g.Wait()
 }
 
 // ListServices returns the list of loaded services.
