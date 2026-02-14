@@ -66,7 +66,7 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 
 	// ⚡ BOLT: Normalize vector on insertion to optimize search speed.
 	// Randomized Selection from Top 5 High-Impact Targets
-	normalizedVector, _ := normalize(vector)
+	normalizedVector := normalize(vector)
 
 	entry := &VectorEntry{
 		Vector:    normalizedVector,
@@ -103,7 +103,7 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	var bestScore float32 = -1.0
 	// ⚡ BOLT: Normalize query vector once to enable dot product optimization
 	// Randomized Selection from Top 5 High-Impact Targets
-	normalizedQuery, _ := normalize(query)
+	normalizedQuery := normalize(query)
 
 	for _, entry := range entries {
 		if now.After(entry.ExpiresAt) {
@@ -164,18 +164,18 @@ func vectorNorm(v []float32) float32 {
 	return float32(math.Sqrt(float64(sum)))
 }
 
-func normalize(v []float32) ([]float32, float32) {
+func normalize(v []float32) []float32 {
 	norm := vectorNorm(v)
 	if norm == 0 {
 		// Return copy of zero vector to avoid mutating original if we were mutating in place (we aren't, but safety)
 		// Or just return v if we treat it as immutable
-		return append([]float32(nil), v...), 0
+		return append([]float32(nil), v...)
 	}
 	normalized := make([]float32, len(v))
 	for i, x := range v {
 		normalized[i] = x / norm
 	}
-	return normalized, norm
+	return normalized
 }
 
 func dotProduct(a, b []float32) float32 {

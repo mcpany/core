@@ -112,8 +112,7 @@ func TestVectorMath(t *testing.T) {
 	assert.Equal(t, float32(5.0), vectorNorm(v))
 
 	// normalize
-	normV, n := normalize(v)
-	assert.Equal(t, float32(5.0), n)
+	normV := normalize(v)
 	assert.Equal(t, float32(0.6), normV[0])
 	assert.Equal(t, float32(0.8), normV[1])
 
