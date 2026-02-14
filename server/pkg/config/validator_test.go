@@ -821,6 +821,14 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil
 		}
 
+		// Also mock IsAllowedPath because validateAuthentication might use it (default context)
+		oldIsAllowed := validation.IsAllowedPath
+		defer func() { validation.IsAllowedPath = oldIsAllowed }()
+		validation.IsAllowedPath = func(path string) error {
+			// Reuse IsSecurePath logic for consistency in this test
+			return validation.IsSecurePath(path)
+		}
+
 		mtls := configv1.Authentication_builder{
 			Mtls: configv1.MTLSAuth_builder{
 				ClientCertPath: proto.String("cert.pem"),
