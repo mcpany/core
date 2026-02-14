@@ -23,9 +23,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y curl unzip
 RUN ARCH=$(uname -m); \
     if [ "$ARCH" = "aarch64" ]; then PROTOC_ARCH="aarch_64"; else PROTOC_ARCH="x86_64"; fi; \
-    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-$PROTOC_ARCH.zip" && \
-    unzip protoc-29.3-linux-$PROTOC_ARCH.zip -d /usr/local && \
-    rm protoc-29.3-linux-$PROTOC_ARCH.zip
+    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protoc-33.1-linux-$PROTOC_ARCH.zip" && \
+    unzip protoc-33.1-linux-$PROTOC_ARCH.zip -d /usr/local && \
+    rm protoc-33.1-linux-$PROTOC_ARCH.zip
 
 # Download Google API protos that are not included in the standard protoc release
 RUN mkdir -p /usr/local/include/google/api && \
