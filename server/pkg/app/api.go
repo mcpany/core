@@ -118,6 +118,18 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/users", a.handleUsers(store))
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 
+	// User Preferences
+	mux.HandleFunc("/user/preferences", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.handleGetUserPreferences(w, r)
+		case http.MethodPost:
+			a.handleUpdateUserPreferences(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
 	// Credentials
 	mux.HandleFunc("/credentials", a.listCredentialsHandler)
 	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
