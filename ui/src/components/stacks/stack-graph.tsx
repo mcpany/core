@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useMemo, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     ReactFlow,
     Controls,
@@ -13,19 +13,17 @@ import {
     BackgroundVariant,
     useNodesState,
     useEdgesState,
-    Position,
     Node,
     Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import jsyaml from "js-yaml";
-import dagre from "dagre";
 import {
     Database,
     Terminal,
     Cpu,
     Box,
-    AlertTriangle
+    AlertTriangle,
+    Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,34 +44,6 @@ interface ParsedService {
 
 const nodeWidth = 250;
 const nodeHeight = 100;
-
-const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-    dagreGraph.setGraph({ rankdir: 'TB' });
-
-    nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-    });
-
-    edges.forEach((edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    const layoutedNodes = nodes.map((node) => {
-        const nodeWithPosition = dagreGraph.node(node.id);
-        node.position = {
-            x: nodeWithPosition.x - nodeWidth / 2,
-            y: nodeWithPosition.y - nodeHeight / 2,
-        };
-        return node;
-    });
-
-    return { nodes: layoutedNodes, edges };
-};
 
 /**
  * ServiceNode component for ReactFlow.
@@ -119,94 +89,159 @@ const nodeTypes = {
 export function StackGraph({ yamlContent }: StackGraphProps) {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-    const { services, error } = useMemo(() => {
-        try {
-            const parsed = jsyaml.load(yamlContent) as any;
-            if (!parsed || typeof parsed !== 'object') {
-                return { services: [], error: null };
-            }
-
-            const rawServices = parsed.services || {};
-            let serviceList: ParsedService[] = [];
-
-            const processService = (key: string, val: any): ParsedService => {
-                 const env = val.environment || val.env || {};
-                 const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
-                 const ports = val.ports || [];
-                 const dependsOn = val.depends_on || [];
-
-                 let type: ParsedService['type'] = "unknown";
-                 if (val.mcp_service) {
-                     type = "image";
-                     if (val.mcp_service.stdio_connection) {
-                         val.image = val.mcp_service.stdio_connection.container_image;
-                         val.command = val.mcp_service.stdio_connection.command;
-                     } else if (val.mcp_service.bundle_connection) {
-                         val.image = val.mcp_service.bundle_connection.container_image;
-                     }
-                 } else if (val.image) type = "image";
-                 else if (val.command) type = "command";
-
-                 return {
-                     name: val.name || key,
-                     image: val.image,
-                     command: val.command,
-                     envCount,
-                     ports,
-                     type,
-                     dependsOn: Array.isArray(dependsOn) ? dependsOn : Object.keys(dependsOn)
-                 };
-            };
-
-            if (Array.isArray(rawServices)) {
-                serviceList = rawServices.map((val: any) => processService(val.name || "unknown", val));
-            } else {
-                serviceList = Object.entries(rawServices).map(([key, val]: [string, any]) => processService(key, val));
-            }
-
-            return { services: serviceList, error: null };
-        } catch (e: any) {
-            return { services: [], error: e.message };
-        }
-    }, [yamlContent]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (error || services.length === 0) {
-            setNodes([]);
-            setEdges([]);
-            return;
-        }
+        let isMounted = true;
 
-        const newNodes: Node[] = services.map((svc) => ({
-            id: svc.name,
-            type: 'service',
-            data: { ...svc },
-            position: { x: 0, y: 0 }, // Initial position, will be layouted
-        }));
+        const processGraph = async () => {
+             setIsLoading(true);
+             setError(null);
 
-        const newEdges: Edge[] = [];
-        services.forEach((svc) => {
-            if (svc.dependsOn) {
-                svc.dependsOn.forEach((dep) => {
-                    // Check if dependency exists
-                    if (services.some(s => s.name === dep)) {
-                        newEdges.push({
-                            id: `${svc.name}-${dep}`,
-                            source: dep, // Dependency is source (must start first)
-                            target: svc.name,
-                            animated: true,
+             try {
+                // ⚡ Bolt: Lazy load heavy dependencies (js-yaml, dagre) to reduce initial bundle size.
+                // Randomized Selection from Top 5 High-Impact Targets
+                const [jsyamlModule, dagreModule] = await Promise.all([
+                    import("js-yaml"),
+                    import("dagre")
+                ]);
+
+                // Handle potential ESM/CJS interop differences
+                const jsyaml = jsyamlModule.default || jsyamlModule;
+                const dagre = dagreModule.default || dagreModule;
+
+                if (!isMounted) return;
+
+                const parsed = jsyaml.load(yamlContent) as any;
+                if (!parsed || typeof parsed !== 'object') {
+                    if (isMounted) {
+                        setNodes([]);
+                        setEdges([]);
+                        setIsLoading(false);
+                    }
+                    return;
+                }
+
+                const rawServices = parsed.services || {};
+                let serviceList: ParsedService[] = [];
+
+                const processService = (key: string, val: any): ParsedService => {
+                     const env = val.environment || val.env || {};
+                     const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
+                     const ports = val.ports || [];
+                     const dependsOn = val.depends_on || [];
+
+                     let type: ParsedService['type'] = "unknown";
+                     if (val.mcp_service) {
+                         type = "image";
+                         if (val.mcp_service.stdio_connection) {
+                             val.image = val.mcp_service.stdio_connection.container_image;
+                             val.command = val.mcp_service.stdio_connection.command;
+                         } else if (val.mcp_service.bundle_connection) {
+                             val.image = val.mcp_service.bundle_connection.container_image;
+                         }
+                     } else if (val.image) type = "image";
+                     else if (val.command) type = "command";
+
+                     return {
+                         name: val.name || key,
+                         image: val.image,
+                         command: val.command,
+                         envCount,
+                         ports,
+                         type,
+                         dependsOn: Array.isArray(dependsOn) ? dependsOn : Object.keys(dependsOn)
+                     };
+                };
+
+                if (Array.isArray(rawServices)) {
+                    serviceList = rawServices.map((val: any) => processService(val.name || "unknown", val));
+                } else {
+                    serviceList = Object.entries(rawServices).map(([key, val]: [string, any]) => processService(key, val));
+                }
+
+                if (serviceList.length === 0) {
+                     if (isMounted) {
+                         setNodes([]);
+                         setEdges([]);
+                         setIsLoading(false);
+                     }
+                     return;
+                }
+
+                const newNodes: Node[] = serviceList.map((svc) => ({
+                    id: svc.name,
+                    type: 'service',
+                    data: { ...svc },
+                    position: { x: 0, y: 0 },
+                }));
+
+                const newEdges: Edge[] = [];
+                serviceList.forEach((svc) => {
+                    if (svc.dependsOn) {
+                        svc.dependsOn.forEach((dep) => {
+                            if (serviceList.some(s => s.name === dep)) {
+                                newEdges.push({
+                                    id: `${svc.name}-${dep}`,
+                                    source: dep,
+                                    target: svc.name,
+                                    animated: true,
+                                });
+                            }
                         });
                     }
                 });
-            }
-        });
 
-        const layouted = getLayoutedElements(newNodes, newEdges);
-        setNodes(layouted.nodes);
-        setEdges(layouted.edges);
+                // Layout logic
+                const dagreGraph = new dagre.graphlib.Graph();
+                dagreGraph.setDefaultEdgeLabel(() => ({}));
+                dagreGraph.setGraph({ rankdir: 'TB' });
 
-    }, [services, error, setNodes, setEdges]);
+                newNodes.forEach((node) => {
+                    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+                });
+
+                newEdges.forEach((edge) => {
+                    dagreGraph.setEdge(edge.source, edge.target);
+                });
+
+                dagre.layout(dagreGraph);
+
+                const layoutedNodes = newNodes.map((node) => {
+                    const nodeWithPosition = dagreGraph.node(node.id);
+                    node.position = {
+                        x: nodeWithPosition.x - nodeWidth / 2,
+                        y: nodeWithPosition.y - nodeHeight / 2,
+                    };
+                    return node;
+                });
+
+                if (isMounted) {
+                    setNodes(layoutedNodes);
+                    setEdges(newEdges);
+                }
+
+             } catch (e: any) {
+                 if (isMounted) setError(e.message);
+             } finally {
+                 if (isMounted) setIsLoading(false);
+             }
+        };
+
+        processGraph();
+
+        return () => { isMounted = false; };
+    }, [yamlContent, setNodes, setEdges]);
+
+    if (isLoading) {
+        return (
+             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4 gap-2">
+                <Loader2 className="h-8 w-8 animate-spin opacity-20" />
+                <p className="text-xs">Loading graph...</p>
+            </div>
+        )
+    }
 
     if (error) {
          return (
@@ -218,7 +253,7 @@ export function StackGraph({ yamlContent }: StackGraphProps) {
         );
     }
 
-    if (services.length === 0) {
+    if (nodes.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4 gap-2">
                 <Box className="h-8 w-8 opacity-20" />
