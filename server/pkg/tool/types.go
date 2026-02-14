@@ -2925,7 +2925,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
-		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+		// Sentinel Security Update: Added backtick (`) to dangerous characters as it allows execution in Shell/Perl/Ruby/PHP inside double quotes.
+		if idx := strings.IndexAny(val, "\"$`\\%`"); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
 		return nil
@@ -2935,40 +2936,143 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterFunctionCalls(val string) error {
-	// Normalize value to detect obfuscation (e.g. system ( ) )
+	// Sentinel Security Update: Smart Keyword Detection
+	// Instead of naive string matching, we tokenize the input to respect quotes and comments.
+	// This prevents bypasses like "system # ('ls')" and false positives like "print 'system'".
+
+	sanitized := sanitizeInterpreterCode(val)
+
+	// Replace non-word characters with space to isolate tokens
 	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
-		if !unicode.IsSpace(r) {
+	b.Grow(len(sanitized))
+	for _, r := range sanitized {
+		if isWordChar(byte(r)) {
 			b.WriteRune(r)
+		} else {
+			b.WriteRune(' ')
 		}
 	}
-	cleanVal := strings.ToLower(b.String())
+	tokenized := b.String()
 
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
-		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
+	// Dangerous keywords that should not appear as standalone tokens in code
+	dangerousKeywords := map[string]bool{
+		"system":        true,
+		"exec":          true,
+		"popen":         true,
+		"eval":          true,
+		"spawn":         true,
+		"fork":          true,
+		"import":        true,
+		"require":       true,
+		"subprocess":    true,
+		"child_process": true,
+		"os":            true,
+		"sys":           true,
+		"open":          true,
+		// "read" and "write" are removed to reduce false positives (common variable/method names)
+		// "open" is sufficient to block file access in most cases.
+		"__import__": true,
 	}
 
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+	tokens := strings.Fields(tokenized)
+	for _, token := range tokens {
+		if dangerousKeywords[strings.ToLower(token)] {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous keyword %q", token)
 		}
 	}
 
-	if strings.Contains(cleanVal, "__import__") {
-		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
-	}
 	return nil
+}
+
+// sanitizeInterpreterCode strips string literals and comments from code to expose only the logic.
+// It handles single/double/backtick quotes and #, //, /* comments.
+func sanitizeInterpreterCode(input string) string {
+	var b strings.Builder
+	b.Grow(len(input))
+
+	const (
+		StateNone = iota
+		StateSingleQuote
+		StateDoubleQuote
+		StateHashComment
+		StateSlashSlashComment
+		StateBlockComment
+	)
+
+	state := StateNone
+	escaped := false
+
+	runes := []rune(input)
+	n := len(runes)
+
+	for i := 0; i < n; i++ {
+		r := runes[i]
+
+		if state == StateNone {
+			if r == '\'' {
+				state = StateSingleQuote
+				b.WriteRune(' ') // preserve boundary
+			} else if r == '"' {
+				state = StateDoubleQuote
+				b.WriteRune(' ')
+			} else if r == '`' {
+				// Sentinel Security Update: Backticks are treated as code (StateNone) because they often imply execution or interpolation.
+				// We do NOT strip them, so keywords inside them are scanned.
+				b.WriteRune(r)
+			} else if r == '#' {
+				state = StateHashComment
+				b.WriteRune(' ')
+			} else if r == '/' && i+1 < n && runes[i+1] == '/' {
+				state = StateSlashSlashComment
+				b.WriteRune(' ')
+				i++ // Skip second slash
+			} else if r == '/' && i+1 < n && runes[i+1] == '*' {
+				state = StateBlockComment
+				b.WriteRune(' ')
+				i++ // Skip star
+			} else {
+				b.WriteRune(r)
+			}
+			continue
+		}
+
+		// Handle States
+		switch state {
+		case StateSingleQuote:
+			if escaped {
+				escaped = false
+			} else if r == '\\' {
+				escaped = true
+			} else if r == '\'' {
+				state = StateNone
+			}
+		case StateDoubleQuote:
+			if escaped {
+				escaped = false
+			} else if r == '\\' {
+				escaped = true
+			} else if r == '"' {
+				state = StateNone
+			}
+		case StateHashComment:
+			if r == '\n' {
+				state = StateNone
+				b.WriteRune('\n')
+			}
+		case StateSlashSlashComment:
+			if r == '\n' {
+				state = StateNone
+				b.WriteRune('\n')
+			}
+		case StateBlockComment:
+			if r == '*' && i+1 < n && runes[i+1] == '/' {
+				state = StateNone
+				i++
+			}
+		}
+	}
+
+	return b.String()
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {

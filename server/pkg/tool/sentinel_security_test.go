@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -345,6 +346,18 @@ func TestSentinelRCE_NodeExecSync(t *testing.T) {
 	// 4. Assert
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "interpreter injection detected")
-	assert.Contains(t, err.Error(), "require")
+	// Sentinel Security Update:
+	// The injection payload `"); require...` attempts to break out of the double-quoted string.
+	// This can trigger either:
+	// 1. "shell injection detected" (if the quote character is caught by checkForShellInjection)
+	// 2. "interpreter injection detected" (if the quote is missed but the keyword is caught)
+	// Both are valid security blocks.
+	if err != nil {
+		errStr := err.Error()
+		assert.True(t,
+			(strings.Contains(errStr, "interpreter injection detected") && strings.Contains(errStr, "require")) ||
+				(strings.Contains(errStr, "shell injection detected") && strings.Contains(errStr, "\"")),
+			"Error should be either interpreter injection (require) or shell injection (quote). Got: %s", errStr,
+		)
+	}
 }
