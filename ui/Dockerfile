@@ -30,14 +30,16 @@ RUN ln -s /app/node_modules /proto/node_modules
 
 # Generate Protobuf files (TypeScript)
 # This is necessary because generated .ts files are ignored by git and .dockerignore
-RUN npm install -g ts-proto
-# Find all proto files and generate typescript code
-RUN find /proto -name "*.proto" -exec protoc \
+# Install ts-proto locally so we can reference the binary reliably
+RUN npm install ts-proto
+# Run protoc on all proto files at once to handle dependencies correctly
+# We use shell expansion to find files
+RUN protoc \
     --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/ \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     --proto_path=/ \
-    {} +
+    $(find /proto -name "*.proto")
 
 # Fix imports in generated files (match Makefile logic if needed, but ts-proto usually handles relative imports well if configured right)
 # The Makefile does: sed -i 's|\.\./\.\./\.\./google|\.\./\.\./\.\./google|g' {} +; which seems specific.
