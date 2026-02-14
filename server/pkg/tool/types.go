@@ -3515,7 +3515,7 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
 	if strings.Contains(val, "://") {
 		if err := validation.IsSafeURL(val); err != nil {
-			return fmt.Errorf("unsafe url argument: %w", err)
+			return fmt.Errorf("potential SSRF detected: %w", err)
 		}
 	}
 
