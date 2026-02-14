@@ -223,6 +223,29 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 			paramStruct.Fields["default"] = paramSchema.GetDefaultValue()
 		}
 
+		if paramSchema.HasPattern() {
+			paramStruct.Fields["pattern"] = structpb.NewStringValue(paramSchema.GetPattern())
+		}
+		if paramSchema.HasMinLength() {
+			paramStruct.Fields["minLength"] = structpb.NewNumberValue(float64(paramSchema.GetMinLength()))
+		}
+		if paramSchema.HasMaxLength() {
+			paramStruct.Fields["maxLength"] = structpb.NewNumberValue(float64(paramSchema.GetMaxLength()))
+		}
+		if paramSchema.HasMinimum() {
+			paramStruct.Fields["minimum"] = structpb.NewNumberValue(paramSchema.GetMinimum())
+		}
+		if paramSchema.HasMaximum() {
+			paramStruct.Fields["maximum"] = structpb.NewNumberValue(paramSchema.GetMaximum())
+		}
+		if len(paramSchema.GetEnum()) > 0 {
+			enumVals := make([]*structpb.Value, len(paramSchema.GetEnum()))
+			for i, v := range paramSchema.GetEnum() {
+				enumVals[i] = structpb.NewStringValue(v)
+			}
+			paramStruct.Fields["enum"] = structpb.NewListValue(&structpb.ListValue{Values: enumVals})
+		}
+
 		properties.Fields[paramSchema.GetName()] = structpb.NewStructValue(paramStruct)
 	}
 

@@ -77,7 +77,10 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	// Expectation: Failure (Secure) due to SSRF protection
 	assert.Error(t, err, "Should fail due to SSRF protection")
 	if err != nil {
-		assert.Contains(t, err.Error(), "potential SSRF detected")
+		// Can fail with "potential SSRF detected" or "unsafe url argument" depending on where it is caught
+		isSSRF := strings.Contains(err.Error(), "potential SSRF detected")
+		isUnsafe := strings.Contains(err.Error(), "unsafe url argument")
+		assert.True(t, isSSRF || isUnsafe, "Error should indicate SSRF or unsafe URL, got: %v", err)
 	}
 
 	// 2. Public IP

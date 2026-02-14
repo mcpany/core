@@ -2558,6 +2558,12 @@ type ParameterSchema struct {
 	xxx_hidden_Type         ParameterType          `protobuf:"varint,3,opt,name=type,enum=mcpany.config.v1.ParameterType"`
 	xxx_hidden_IsRequired   bool                   `protobuf:"varint,4,opt,name=is_required"`
 	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value"`
+	xxx_hidden_Pattern      *string                `protobuf:"bytes,6,opt,name=pattern"`
+	xxx_hidden_MinLength    int32                  `protobuf:"varint,7,opt,name=min_length"`
+	xxx_hidden_MaxLength    int32                  `protobuf:"varint,8,opt,name=max_length"`
+	xxx_hidden_Minimum      float64                `protobuf:"fixed64,9,opt,name=minimum"`
+	xxx_hidden_Maximum      float64                `protobuf:"fixed64,10,opt,name=maximum"`
+	xxx_hidden_Enum         []string               `protobuf:"bytes,11,rep,name=enum"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -2632,28 +2638,102 @@ func (x *ParameterSchema) GetDefaultValue() *structpb.Value {
 	return nil
 }
 
+func (x *ParameterSchema) GetPattern() string {
+	if x != nil {
+		if x.xxx_hidden_Pattern != nil {
+			return *x.xxx_hidden_Pattern
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ParameterSchema) GetMinLength() int32 {
+	if x != nil {
+		return x.xxx_hidden_MinLength
+	}
+	return 0
+}
+
+func (x *ParameterSchema) GetMaxLength() int32 {
+	if x != nil {
+		return x.xxx_hidden_MaxLength
+	}
+	return 0
+}
+
+func (x *ParameterSchema) GetMinimum() float64 {
+	if x != nil {
+		return x.xxx_hidden_Minimum
+	}
+	return 0
+}
+
+func (x *ParameterSchema) GetMaximum() float64 {
+	if x != nil {
+		return x.xxx_hidden_Maximum
+	}
+	return 0
+}
+
+func (x *ParameterSchema) GetEnum() []string {
+	if x != nil {
+		return x.xxx_hidden_Enum
+	}
+	return nil
+}
+
 func (x *ParameterSchema) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
 }
 
 func (x *ParameterSchema) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
 }
 
 func (x *ParameterSchema) SetType(v ParameterType) {
 	x.xxx_hidden_Type = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 11)
 }
 
 func (x *ParameterSchema) SetIsRequired(v bool) {
 	x.xxx_hidden_IsRequired = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 11)
 }
 
 func (x *ParameterSchema) SetDefaultValue(v *structpb.Value) {
 	x.xxx_hidden_DefaultValue = v
+}
+
+func (x *ParameterSchema) SetPattern(v string) {
+	x.xxx_hidden_Pattern = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 11)
+}
+
+func (x *ParameterSchema) SetMinLength(v int32) {
+	x.xxx_hidden_MinLength = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 11)
+}
+
+func (x *ParameterSchema) SetMaxLength(v int32) {
+	x.xxx_hidden_MaxLength = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 11)
+}
+
+func (x *ParameterSchema) SetMinimum(v float64) {
+	x.xxx_hidden_Minimum = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 11)
+}
+
+func (x *ParameterSchema) SetMaximum(v float64) {
+	x.xxx_hidden_Maximum = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
+}
+
+func (x *ParameterSchema) SetEnum(v []string) {
+	x.xxx_hidden_Enum = v
 }
 
 func (x *ParameterSchema) HasName() bool {
@@ -2691,6 +2771,41 @@ func (x *ParameterSchema) HasDefaultValue() bool {
 	return x.xxx_hidden_DefaultValue != nil
 }
 
+func (x *ParameterSchema) HasPattern() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *ParameterSchema) HasMinLength() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *ParameterSchema) HasMaxLength() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *ParameterSchema) HasMinimum() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *ParameterSchema) HasMaximum() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
 func (x *ParameterSchema) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -2715,6 +2830,31 @@ func (x *ParameterSchema) ClearDefaultValue() {
 	x.xxx_hidden_DefaultValue = nil
 }
 
+func (x *ParameterSchema) ClearPattern() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Pattern = nil
+}
+
+func (x *ParameterSchema) ClearMinLength() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_MinLength = 0
+}
+
+func (x *ParameterSchema) ClearMaxLength() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_MaxLength = 0
+}
+
+func (x *ParameterSchema) ClearMinimum() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Minimum = 0
+}
+
+func (x *ParameterSchema) ClearMaximum() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_Maximum = 0
+}
+
 type ParameterSchema_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2728,6 +2868,19 @@ type ParameterSchema_builder struct {
 	IsRequired *bool
 	// The default value of the parameter.
 	DefaultValue *structpb.Value
+	// Validation rules
+	// The regex pattern for STRING types.
+	Pattern *string
+	// The minimum length for STRING types.
+	MinLength *int32
+	// The maximum length for STRING types.
+	MaxLength *int32
+	// The minimum value for NUMBER/INTEGER types.
+	Minimum *float64
+	// The maximum value for NUMBER/INTEGER types.
+	Maximum *float64
+	// The allowed values for STRING types.
+	Enum []string
 }
 
 func (b0 ParameterSchema_builder) Build() *ParameterSchema {
@@ -2735,22 +2888,43 @@ func (b0 ParameterSchema_builder) Build() *ParameterSchema {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.Type != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 11)
 		x.xxx_hidden_Type = *b.Type
 	}
 	if b.IsRequired != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 11)
 		x.xxx_hidden_IsRequired = *b.IsRequired
 	}
 	x.xxx_hidden_DefaultValue = b.DefaultValue
+	if b.Pattern != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 11)
+		x.xxx_hidden_Pattern = b.Pattern
+	}
+	if b.MinLength != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 11)
+		x.xxx_hidden_MinLength = *b.MinLength
+	}
+	if b.MaxLength != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 11)
+		x.xxx_hidden_MaxLength = *b.MaxLength
+	}
+	if b.Minimum != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 11)
+		x.xxx_hidden_Minimum = *b.Minimum
+	}
+	if b.Maximum != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
+		x.xxx_hidden_Maximum = *b.Maximum
+	}
+	x.xxx_hidden_Enum = b.Enum
 	return m0
 }
 
@@ -4190,13 +4364,24 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x0fparameter_order\x18\x03 \x03(\tR\x0fparameter_order\x123\n" +
 	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
 	"\finput_schema\x18\x05 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
-	"\routput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xdc\x01\n" +
+	"\routput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xfe\x02\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
 	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12 \n" +
 	"\vis_required\x18\x04 \x01(\bR\vis_required\x12<\n" +
-	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\"\xb0\x01\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\x12\x18\n" +
+	"\apattern\x18\x06 \x01(\tR\apattern\x12\x1e\n" +
+	"\n" +
+	"min_length\x18\a \x01(\x05R\n" +
+	"min_length\x12\x1e\n" +
+	"\n" +
+	"max_length\x18\b \x01(\x05R\n" +
+	"max_length\x12\x18\n" +
+	"\aminimum\x18\t \x01(\x01R\aminimum\x12\x18\n" +
+	"\amaximum\x18\n" +
+	" \x01(\x01R\amaximum\x12\x12\n" +
+	"\x04enum\x18\v \x03(\tR\x04enum\"\xb0\x01\n" +
 	"\x14HttpParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
 	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\x12&\n" +
