@@ -242,8 +242,8 @@ prepare:
 				exit 1; \
 			fi; \
 			if ! test -f "$$VENV_DIR/.installed"; then \
-				$(PYTHON_EXEC) -m pip install --upgrade pip; \
-				$(PYTHON_EXEC) -m pip install -r requirements.txt; \
+				($(PYTHON_EXEC) -m pip install --upgrade pip; \
+				$(PYTHON_EXEC) -m pip install -r requirements.txt) || echo "Warning: pip install failed"; \
 				touch "$$VENV_DIR/.installed"; \
 			fi; \
 			mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
@@ -264,14 +264,14 @@ prepare:
 	@if command -v npm >/dev/null 2>&1; then \
 		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
-			(cd tests/integration/upstream && npm install) || true; \
-			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
+			((cd tests/integration/upstream && npm install) && \
+			(if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
 				echo "CI detected, installing Playwright with system dependencies..."; \
-				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
+				(cd tests/integration/upstream && npx playwright install --with-deps); \
 			else \
 				echo "Installing Playwright browsers (skipping system deps)..."; \
-				(cd tests/integration/upstream && npx playwright install) || true; \
-			fi; \
+				(cd tests/integration/upstream && npx playwright install); \
+			fi)) || echo "Warning: npm install or playwright install failed, continuing..."; \
 		else \
 			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
 		fi; \
@@ -344,7 +344,7 @@ prepare:
 		fi) || echo "Warning: golangci-lint installation failed. Continuing..."; \
 	fi
 	@echo "Downloading go modules..." && \
-	go mod download
+	(go mod download || echo "Warning: go mod download failed, continuing...")
 	@echo "Preparation complete."
 
 
