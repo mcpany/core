@@ -28,6 +28,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+/**
+ * Steps in the bulk import wizard.
+ */
 export enum WizardStep {
     INPUT = "input",
     VALIDATION = "validation",
@@ -54,6 +57,12 @@ interface ImportResult {
     error?: string;
 }
 
+/**
+ * BulkImportWizard component.
+ * Allows users to import multiple services from a JSON config or URL with validation and selection.
+ * @param props - Component props.
+ * @returns The BulkImportWizard component.
+ */
 export function BulkImportWizard({ onImportSuccess, onCancel }: BulkImportWizardProps) {
     const [step, setStep] = useState<WizardStep>(WizardStep.INPUT);
     const [inputType, setInputType] = useState<"json" | "file" | "url">("json");
