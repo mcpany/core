@@ -28,39 +28,18 @@ type UpstreamAuthenticator interface {
 	Authenticate(req *http.Request) error
 }
 
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
+// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the provided configuration.
 //
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
+// Summary: Creates an authenticator for upstream services.
+//
+// It supports API key, bearer token, and basic authentication, handling environment variable substitution.
 //
 // Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
+//   - authConfig: *configv1.Authentication. The authentication configuration.
 //
 // Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
-//
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
-//
-// Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
+//   - UpstreamAuthenticator: The created authenticator, or nil if no auth is configured.
+//   - error: An error if the configuration is invalid.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil

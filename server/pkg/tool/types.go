@@ -71,16 +71,22 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
+	// Summary: Retrieves the protobuf tool definition.
+	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
+	//
+	// Summary: Retrieves the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Summary: Executes the tool.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The execution context.
@@ -91,6 +97,8 @@ type Tool interface {
 	//   - error: An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Summary: Retrieves the cache configuration.
 	//
 	// Returns:
 	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
@@ -150,6 +158,8 @@ type ExecutionRequest struct {
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
+	// Summary: Retrieves a tool by name.
+	//
 	// Parameters:
 	//   - toolName: The name of the tool to retrieve.
 	//
@@ -159,6 +169,8 @@ type ServiceRegistry interface {
 	GetTool(toolName string) (Tool, bool)
 
 	// GetServiceInfo retrieves metadata for a service.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: The unique identifier of the service.
@@ -3596,7 +3608,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr
 		}
 
 		if u.Scheme == "" || u.Host == "" {
