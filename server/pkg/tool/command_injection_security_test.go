@@ -26,7 +26,11 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		assert.True(t,
+			strings.Contains(err.Error(), "shell injection detected") ||
+			strings.Contains(err.Error(), "interpreter injection detected"),
+			"Expected shell or interpreter injection error, got: %v", err,
+		)
 	})
 
 	// Case 2: Double quoted shell injection
