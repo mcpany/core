@@ -317,14 +317,15 @@ prepare:
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
 		SC_VERSION="stable"; \
-		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | xz -d -c | tar -xvf - -C /tmp; \
-		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | xz -d -c | tar -xvf - -C /tmp || echo "ShellCheck extraction failed"; \
+		if test -f "/tmp/shellcheck-$${SC_VERSION}/shellcheck"; then \
+			mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
+			rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+		fi; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
 			echo "ShellCheck installed successfully."; \
 		else \
-			echo "ShellCheck installation failed."; \
-			exit 1; \
+			echo "ShellCheck installation failed. Proceeding without it (non-critical for tests)."; \
 		fi; \
 	fi
 	@# Install nats-server

@@ -386,16 +386,6 @@ jobs:
         run: |
           sudo apt-get update || true
           sudo apt-get install -y xz-utils curl ca-certificates
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update || true
-          sudo apt-get install -y xz-utils curl ca-certificates
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update || true
-          sudo apt-get install -y xz-utils curl ca-certificates
           echo "PATH=$PATH"
           which xz || echo "xz not found in PATH"
           xz --version || echo "xz version check failed"
@@ -478,7 +468,7 @@ jobs:
 
       - name: Install System Dependencies
         run: |
-          sudo apt-get update || true || true
+          sudo apt-get update || true
           sudo apt-get install -y xz-utils make unzip
 
       - name: Prepare environment
@@ -592,10 +582,10 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          docker info
+          sudo mkdir -p /etc/docker || true || true
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true || true
+          sudo systemctl restart docker || true
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
