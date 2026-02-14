@@ -53,7 +53,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -105,7 +105,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Prepare environment
         run: make prepare
@@ -139,7 +139,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -259,7 +259,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -405,7 +405,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -558,7 +558,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -669,7 +669,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make curl unzip
+          sudo apt-get install -y make curl unzip ca-certificates build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
