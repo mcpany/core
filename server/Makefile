@@ -312,8 +312,7 @@ prepare:
 	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
-	@chmod +x tools/install_shellcheck.sh
-	@./tools/install_shellcheck.sh "$(SHELLCHECK_BIN)"
+	@bash tools/install_shellcheck.sh "$(SHELLCHECK_BIN)" || echo "Warning: ShellCheck install script failed, continuing..."
 	@# Install nats-server
 	@echo "Checking for nats-server..."
 	@if test -f "$(NATS_SERVER_BIN)"; then \
