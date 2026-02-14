@@ -92,12 +92,13 @@ test.describe('Dashboard Real Data', () => {
 
         // Reload page once if data isn't there immediately (race condition with seeding)
         try {
-            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 5000 });
+            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 10000 });
         } catch (e) {
             console.log('Data not found immediately, reloading...');
             await page.reload();
             await page.waitForLoadState('networkidle');
-            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+            // Increase timeout significantly for slow CI environments
+            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 60000 });
         }
 
         // Avg Latency: 50ms

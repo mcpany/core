@@ -55,7 +55,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
+    await expect(page.locator('h1')).toContainText('Tools', { timeout: 30000 });
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 

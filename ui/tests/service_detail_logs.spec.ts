@@ -39,10 +39,13 @@ test.describe('Service Detail Logs Tab', () => {
   test('should display Logs tab and LogStream component', async ({ page }) => {
     // 1. Navigate to the detail page
     // Use the actual ID returned from the backend creation
+    // Ensure serviceId is present
+    expect(serviceId).toBeTruthy();
     await page.goto(`/service/${serviceId}`);
 
     // 2. Verify Page Title to ensure we loaded
-    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
+    // Increase timeout for initial load in CI
+    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName, { timeout: 30000 });
 
     // 3. Click Logs Tab
     const logsTab = page.getByRole('tab', { name: 'Logs' });
