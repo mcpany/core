@@ -14,6 +14,8 @@
 
 FROM mirror.gcr.io/library/node:24-alpine
 WORKDIR /app
+# Install build dependencies for native modules (especially for arm64)
+RUN apk add --no-cache python3 make g++
 RUN npm install -g @modelcontextprotocol/server-everything@latest
 
 # Add the bin directory to the PATH
