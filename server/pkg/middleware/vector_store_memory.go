@@ -64,11 +64,15 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 		entries = entries[1:]
 	}
 
+	// ⚡ BOLT: Normalize vector before storage to avoid Sqrt/Div in Search loop
+	// Randomized Selection from Top 5 High-Impact Targets
+	normalizedVector, norm := normalize(vector)
+
 	entry := &VectorEntry{
-		Vector:    vector,
+		Vector:    normalizedVector,
 		Result:    result,
 		ExpiresAt: time.Now().Add(ttl),
-		Norm:      vectorNorm(vector),
+		Norm:      norm,
 	}
 	s.items[key] = append(entries, entry)
 	return nil
@@ -97,13 +101,16 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	now := time.Now()
 	var bestResult any
 	var bestScore float32 = -1.0
-	queryNorm := vectorNorm(query)
+
+	// Normalize query once
+	normalizedQuery, _ := normalize(query)
 
 	for _, entry := range entries {
 		if now.After(entry.ExpiresAt) {
 			continue
 		}
-		score := cosineSimilarityOptimized(query, entry.Vector, queryNorm, entry.Norm)
+		// Since both vectors are normalized, dot product == cosine similarity
+		score := dotProduct(normalizedQuery, entry.Vector)
 		if score > bestScore {
 			bestScore = score
 			bestResult = entry.Result
@@ -156,17 +163,35 @@ func vectorNorm(v []float32) float32 {
 	return float32(math.Sqrt(float64(sum)))
 }
 
-func cosineSimilarityOptimized(a, b []float32, normA, normB float32) float32 {
+func normalize(v []float32) ([]float32, float32) {
+	norm := vectorNorm(v)
+	if norm == 0 {
+		// Return copy to avoid side effects if caller modifies result
+		// or if we decide to normalize in place later
+		// For now, return original slice reference if unchanged?
+		// Safest is to return a copy if we modify, but if we don't modify, original is fine.
+		// Let's return the original reference if norm is 0 to avoid alloc.
+		return v, 0
+	}
+
+	normalized := make([]float32, len(v))
+	invNorm := 1.0 / norm
+	for i, x := range v {
+		normalized[i] = x * invNorm
+	}
+	return normalized, norm
+}
+
+func dotProduct(a, b []float32) float32 {
 	if len(a) != len(b) || len(a) == 0 {
 		return 0
 	}
-	if normA == 0 || normB == 0 {
-		return 0
-	}
 
-	var dotProduct float32
-	for i := range a {
-		dotProduct += a[i] * b[i]
+	var sum float32
+	// ⚡ BOLT: Simple dot product loop without bounds checking in loop if possible
+	// Go compiler does eliminate bounds checks for `range`.
+	for i, v := range a {
+		sum += v * b[i]
 	}
-	return dotProduct / (normA * normB)
+	return sum
 }
