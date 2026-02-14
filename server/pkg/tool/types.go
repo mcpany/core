@@ -1945,7 +1945,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
-			if strings.Contains(arg, "ext::") {
+			// Use case-insensitive check to prevent bypass via "EXT::" or mixed case
+			if strings.Contains(strings.ToLower(arg), "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
 			}
 		}
@@ -2280,7 +2281,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// Sentinel Security Update: Block git ext:: protocol
 	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
-			if strings.Contains(arg, "ext::") {
+			// Use case-insensitive check
+			if strings.Contains(strings.ToLower(arg), "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
 			}
 		}
@@ -2958,6 +2960,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+//nolint:gocyclo // Complexity due to state machine for comment stripping
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
@@ -3596,7 +3599,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr // If parsing fails, it's likely not a valid URL for SSRF check
 		}
 
 		if u.Scheme == "" || u.Host == "" {

@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool_test
 
 import (
@@ -77,7 +80,9 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	// Expectation: Failure (Secure) due to SSRF protection
 	assert.Error(t, err, "Should fail due to SSRF protection")
 	if err != nil {
-		assert.Contains(t, err.Error(), "potential SSRF detected")
+		// Can be caught by either validateSafePathAndInjection ("unsafe url argument") or checkForSSRF ("potential SSRF detected")
+		isUnsafe := strings.Contains(err.Error(), "unsafe url argument") || strings.Contains(err.Error(), "potential SSRF detected")
+		assert.True(t, isUnsafe, "Error should indicate unsafe URL or SSRF: %v", err)
 	}
 
 	// 2. Public IP
@@ -97,7 +102,8 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	_, errIP := targetTool.Execute(ctx, reqIP)
 	assert.Error(t, errIP)
 	if errIP != nil {
-		assert.Contains(t, errIP.Error(), "potential SSRF detected")
+		isUnsafe := strings.Contains(errIP.Error(), "unsafe url argument") || strings.Contains(errIP.Error(), "potential SSRF detected")
+		assert.True(t, isUnsafe, "Error should indicate unsafe URL or SSRF: %v", errIP)
 	}
 
 	// 4. Localhost string
@@ -108,6 +114,7 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	_, errLocalhost := targetTool.Execute(ctx, reqLocalhost)
 	assert.Error(t, errLocalhost)
 	if errLocalhost != nil {
-		assert.Contains(t, errLocalhost.Error(), "potential SSRF detected")
+		isUnsafe := strings.Contains(errLocalhost.Error(), "unsafe url argument") || strings.Contains(errLocalhost.Error(), "potential SSRF detected")
+		assert.True(t, isUnsafe, "Error should indicate unsafe URL or SSRF: %v", errLocalhost)
 	}
 }
