@@ -35,6 +35,9 @@ COPY . .
 # Build the Go application
 ARG TARGETOS
 ARG TARGETARCH
+# Remove go.work to ensure we use go.mod replacement correctly
+RUN rm -f go.work go.work.sum
+
 # CGO_ENABLED=1 is required for go-sqlite3
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
