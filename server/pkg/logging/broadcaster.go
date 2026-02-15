@@ -10,7 +10,7 @@ import (
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
 	mu          sync.RWMutex
-	subscribers map[chan []byte]struct{}
+	subscribers []chan []byte
 	history     [][]byte
 	head        int
 	full        bool
@@ -27,9 +27,8 @@ var (
 // Returns the result.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
-		subscribers: make(map[chan []byte]struct{}),
-		history:     make([][]byte, 1000),
-		limit:       1000,
+		history: make([][]byte, 1000),
+		limit:   1000,
 	}
 }
 
@@ -39,8 +38,9 @@ func NewBroadcaster() *Broadcaster {
 func (b *Broadcaster) Subscribe() chan []byte {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+
 	ch := make(chan []byte, 100)
-	b.subscribers[ch] = struct{}{}
+	b.subscribers = append(b.subscribers, ch)
 	return ch
 }
 
@@ -49,8 +49,9 @@ func (b *Broadcaster) Subscribe() chan []byte {
 func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+
 	ch := make(chan []byte, 100)
-	b.subscribers[ch] = struct{}{}
+	b.subscribers = append(b.subscribers, ch)
 
 	count := b.limit
 	if !b.full {
@@ -85,9 +86,17 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	if _, ok := b.subscribers[ch]; ok {
-		delete(b.subscribers, ch)
-		close(ch)
+
+	for i, sub := range b.subscribers {
+		if sub == ch {
+			// Fast remove from slice (order doesn't matter)
+			// Swap with last element and shrink slice
+			lastIdx := len(b.subscribers) - 1
+			b.subscribers[i] = b.subscribers[lastIdx]
+			b.subscribers = b.subscribers[:lastIdx]
+			close(ch)
+			return
+		}
 	}
 }
 
@@ -99,9 +108,8 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	msgCopy := make([]byte, len(msg))
 	copy(msgCopy, msg)
 
+	// 1. Update history (Exclusive Lock)
 	b.mu.Lock()
-	defer b.mu.Unlock()
-
 	// ⚡ BOLT: Ring Buffer Optimization
 	// Randomized Selection from Top 5 High-Impact Targets
 	b.history[b.head] = msgCopy
@@ -110,10 +118,19 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 		b.head = 0
 		b.full = true
 	}
+	b.mu.Unlock()
 
-	for ch := range b.subscribers {
+	// 2. Iterate subscribers (Shared Lock)
+	// This allows multiple Broadcast calls to proceed in parallel, reducing contention.
+	// It also prevents Unsubscribe from closing channels while we are iterating.
+	// ⚡ BOLT: Optimized concurrent broadcasting using RLock.
+	// Randomized Selection from Top 5 High-Impact Targets
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+
+	for _, ch := range b.subscribers {
 		select {
-		case ch <- msg:
+		case ch <- msgCopy:
 		default:
 			// Drop message if channel is full
 		}
