@@ -81,6 +81,15 @@ func TestToolListFiltering(t *testing.T) {
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
+
 	tm := server.ToolManager().(*tool.Manager)
 
 	// Add a test tool
@@ -161,6 +170,15 @@ func TestToolListFilteringServiceId(t *testing.T) {
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
+
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
 
 	tm := server.ToolManager().(*tool.Manager)
 
@@ -263,6 +281,15 @@ func TestServer_CallTool(t *testing.T) {
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
+
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
 
 	tm := server.ToolManager().(*tool.Manager)
 
@@ -387,6 +414,15 @@ func TestServer_Prompts(t *testing.T) {
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
+
 	// Add a test prompt
 	promptManager.AddPrompt(&testPrompt{
 		NameValue: "test-prompt",
@@ -464,6 +500,15 @@ func TestServer_Resources(t *testing.T) {
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
+
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
 
 	// Add a test resource
 	resourceManager.AddResource(&testResource{
@@ -676,6 +721,15 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
 
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
+
 	// Create client-server connection
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
@@ -724,6 +778,15 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
+
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
 
 	// Create a client and a server, but don't add any tools to the underlying mcp.Server.
 	// This will cause the default ListTools implementation to return an error.
@@ -778,6 +841,15 @@ func TestToolListFilteringConversionError(t *testing.T) {
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
+
+	// Inject Admin Context for testing
+	server.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
 
 	tm := server.ToolManager().(*tool.Manager)
 

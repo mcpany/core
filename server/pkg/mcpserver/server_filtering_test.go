@@ -188,6 +188,9 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager)
 	ctx := context.Background()
+	// Inject Admin Context for testing default access
+	ctx = auth.ContextWithUser(ctx, "system-admin")
+	ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 
 	server, err := mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)
@@ -268,6 +271,9 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager)
 	ctx := context.Background()
+	// Inject Admin Context for testing default access
+	ctx = auth.ContextWithUser(ctx, "system-admin")
+	ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 
 	server, err := mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, nil, busProvider, false)
 	require.NoError(t, err)

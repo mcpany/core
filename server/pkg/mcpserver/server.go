@@ -350,9 +350,14 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 	) (mcp.Result, error) {
 		if method == consts.MethodToolsList {
 			profileID, _ := auth.ProfileIDFromContext(ctx)
-			// ⚡ Bolt Optimization: Use cached MCP tools list if no profile filtering is required
-			// to avoid N allocations and conversions.
 			if profileID == "" {
+				// Sentinel Security Update: Block access if no profile is selected AND user is not admin.
+				if !checkAdminAccess(ctx) {
+					// Return empty list to prevent leaking tools to non-admin users without profile
+					return &mcp.ListToolsResult{Tools: []*mcp.Tool{}}, nil
+				}
+				// ⚡ Bolt Optimization: Use cached MCP tools list if no profile filtering is required
+				// to avoid N allocations and conversions.
 				return &mcp.ListToolsResult{Tools: s.toolManager.ListMCPTools()}, nil
 			}
 
@@ -471,7 +476,12 @@ func (s *Server) GetPrompt(
 	}
 
 	profileID, _ := auth.ProfileIDFromContext(ctx)
-	if profileID != "" {
+	if profileID == "" {
+		if !checkAdminAccess(ctx) {
+			logging.GetLogger().Warn("Access denied to prompt: no profile and not admin", "promptName", req.Params.Name)
+			return nil, fmt.Errorf("access denied to prompt %q: profile required", req.Params.Name)
+		}
+	} else {
 		serviceID := p.Service()
 		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 			logging.GetLogger().Warn("Access denied to prompt by profile", "promptName", req.Params.Name, "profileID", profileID)
@@ -540,7 +550,12 @@ func (s *Server) ReadResource(
 	}
 
 	profileID, _ := auth.ProfileIDFromContext(ctx)
-	if profileID != "" {
+	if profileID == "" {
+		if !checkAdminAccess(ctx) {
+			logging.GetLogger().Warn("Access denied to resource: no profile and not admin", "resourceURI", req.Params.URI)
+			return nil, fmt.Errorf("access denied to resource %q: profile required", req.Params.URI)
+		}
+	} else {
 		serviceID := r.Service()
 		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 			logging.GetLogger().Warn("Access denied to resource by profile", "resourceURI", req.Params.URI, "profileID", profileID)
@@ -667,7 +682,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	profileID, _ := auth.ProfileIDFromContext(ctx)
-	if profileID != "" && serviceID != "" {
+	if profileID == "" {
+		if !checkAdminAccess(ctx) {
+			logging.GetLogger().Warn("Access denied to tool: no profile and not admin", "toolName", req.ToolName)
+			return nil, fmt.Errorf("access denied to tool %q: profile required", req.ToolName)
+		}
+	} else if serviceID != "" {
 		if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 			logging.GetLogger().Warn("Access denied to tool by profile", "toolName", req.ToolName, "profileID", profileID)
 			return nil, fmt.Errorf("access denied to tool %q", req.ToolName)
@@ -1065,10 +1085,16 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodResourcesList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+			if profileID == "" {
+				if !checkAdminAccess(ctx) {
+					return &mcp.ListResourcesResult{Resources: []*mcp.Resource{}}, nil
+				}
+			}
+
 			managedResources := s.resourceManager.ListResources()
 			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
 			if profileID != "" {
@@ -1106,10 +1132,16 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodPromptsList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+			if profileID == "" {
+				if !checkAdminAccess(ctx) {
+					return &mcp.ListPromptsResult{Prompts: []*mcp.Prompt{}}, nil
+				}
+			}
+
 			managedPrompts := s.promptManager.ListPrompts()
 			refreshedPrompts := make([]*mcp.Prompt, 0, len(managedPrompts))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
 			if profileID != "" {
@@ -1138,4 +1170,15 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 		}
 		return next(ctx, method, req)
 	}
+}
+
+func checkAdminAccess(ctx context.Context) bool {
+	roles, _ := auth.RolesFromContext(ctx)
+	for _, r := range roles {
+		if r == "admin" {
+			return true
+		}
+	}
+	userID, _ := auth.UserFromContext(ctx)
+	return userID == "system-admin"
 }

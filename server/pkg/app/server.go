@@ -1294,6 +1294,17 @@ func setup(fs afero.Fs) (afero.Fs, error) {
 func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
 	log.Info("Starting in stdio mode")
+
+	// Inject Admin Context via Middleware to ensure it applies to all requests.
+	// This ensures that CLI users (who are implicitly admins) bypass profile restrictions.
+	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			ctx = auth.ContextWithUser(ctx, "system-admin")
+			ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+			return next(ctx, method, req)
+		}
+	})
+
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
 }
 
