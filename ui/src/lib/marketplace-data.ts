@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-
+/**
+ * MarketplaceItemConfig defines the execution parameters for a marketplace item.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
@@ -13,7 +13,7 @@ export interface MarketplaceItemConfig {
 }
 
 /**
- * EnvVarDefinition type definition.
+ * EnvVarDefinition describes an environment variable required by a marketplace tool.
  */
 export interface EnvVarDefinition {
   name: string;
@@ -25,7 +25,7 @@ export interface EnvVarDefinition {
 }
 
 /**
- * MarketplaceItem type definition.
+ * MarketplaceItem represents a tool or service available in the marketplace catalog.
  */
 export interface MarketplaceItem {
   id: string;
@@ -36,7 +36,7 @@ export interface MarketplaceItem {
 }
 
 /**
- * The MARKETPLACE_ITEMS const.
+ * MARKETPLACE_ITEMS is the catalog of available services that can be installed.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {

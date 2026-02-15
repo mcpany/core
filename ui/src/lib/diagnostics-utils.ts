@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * DiagnosticResult represents the outcome of analyzing a connection error.
+ * It provides a user-friendly categorization and suggested fix.
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;

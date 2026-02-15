@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Tool defines the interface for a server-side tool that can be executed.
+ */
 export interface Tool {
   name: string;
   description: string;
@@ -11,8 +14,8 @@ export interface Tool {
 }
 
 /**
- * BuiltInTools contains the definitions and implementations of standard tools
- * provided by the server, such as calculator, echo, and system info.
+ * BuiltInTools is a collection of standard tools provided by the server,
+ * including utilities for calculation, echoing messages, and system information.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {

@@ -5,20 +5,33 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Mock implementation of the gRPC web client for testing purposes.
+ */
 export class GrpcWebImpl {
+    /**
+     * Creates a new instance of the mock gRPC web client.
+     */
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * Mock implementation of the Registration Service Client.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Creates a new instance of the mock Registration Service Client.
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * Mock implementation of the GetService method.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
 /**
- * UpstreamServiceConfig type definition.
+ * Configuration for an upstream service, defining how MCP Any connects to backend systems.
  */
 export interface UpstreamServiceConfig {
     id?: string;
@@ -37,7 +50,7 @@ export interface UpstreamServiceConfig {
 }
 
 /**
- * ToolDefinition type definition.
+ * Defines a tool exposed by an upstream service or the core server.
  */
 export interface ToolDefinition {
     name: string;
@@ -45,7 +58,7 @@ export interface ToolDefinition {
 }
 
 /**
- * ResourceDefinition type definition.
+ * Defines a resource exposed by an upstream service.
  */
 export interface ResourceDefinition {
     uri: string;
@@ -55,7 +68,7 @@ export interface ResourceDefinition {
 }
 
 /**
- * PromptDefinition type definition.
+ * Defines a prompt template exposed by an upstream service.
  */
 export interface PromptDefinition {
     name: string;
@@ -63,7 +76,7 @@ export interface PromptDefinition {
 }
 
 /**
- * Credential type definition.
+ * Represents a credential used for authentication.
  */
 export interface Credential {
     id?: string;
@@ -71,21 +84,21 @@ export interface Credential {
 }
 
 /**
- * Authentication type definition.
+ * Defines authentication settings for a service.
  */
 export interface Authentication {
     [key: string]: any;
 }
 
 /**
- * ListServicesResponse type definition.
+ * Response payload for listing available services.
  */
 export type ListServicesResponse = any;
 /**
- * GetServiceResponse type definition.
+ * Response payload for retrieving a specific service configuration.
  */
 export type GetServiceResponse = any;
 /**
- * GetServiceStatusResponse type definition.
+ * Response payload for retrieving the status of a service.
  */
 export type GetServiceStatusResponse = any;

@@ -94,7 +94,7 @@ Follow these steps to get up and running with MCP Any immediately.
 
 4.  **Run with an example configuration:**
     ```bash
-    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ./build/bin/server run --config-path marketplace/catalog/wttr.in/config.yaml
     ```
 
 ### Hello World
@@ -184,6 +184,21 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+
+## 6. Troubleshooting
+
+Common issues and solutions when running MCP Any.
+
+*   **Port already in use**: The server defaults to port `50050`. If this port is occupied, use `MCPANY_MCP_LISTEN_ADDRESS` to change it.
+    ```bash
+    export MCPANY_MCP_LISTEN_ADDRESS=localhost:50051
+    ./build/bin/server run ...
+    ```
+*   **Configuration errors**: Use the `validate` command to check your configuration file against the schema and connection checks.
+    ```bash
+    ./build/bin/server validate --config-path your-config.yaml
+    ```
+*   **Missing Dependencies**: If `make prepare` fails, ensure you have `curl`, `unzip`, and `git` installed.
 
 ## License
 
