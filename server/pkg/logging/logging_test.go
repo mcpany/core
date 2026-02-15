@@ -353,3 +353,28 @@ func TestRedaction(t *testing.T) {
 		})
 	}
 }
+
+func TestBroadcaster_Correctness_MsgCopy(t *testing.T) {
+	broadcaster := NewBroadcaster()
+	ch := broadcaster.Subscribe()
+
+	msg := []byte("original")
+
+	// Broadcast uses the buffer
+	broadcaster.Broadcast(msg)
+
+	// Mutate original buffer immediately after broadcast
+	// If Broadcaster sends the original slice, the receiver might see the mutation
+	// depending on timing. In this test, we can't easily force the race,
+	// but we can check if the received message is a different backing array.
+
+	received := <-ch
+
+	// Check if they share the same backing array
+	// Note: cap might differ, but if they share memory, modifying one affects other.
+	msg[0] = 'M'
+
+	if received[0] == 'M' {
+		t.Errorf("Received message was mutated! Broadcaster is sharing memory unsafeley.")
+	}
+}
