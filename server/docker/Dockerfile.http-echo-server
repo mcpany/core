@@ -1,6 +1,9 @@
 # Stage 1: Build the Go application
 FROM golang:1.24-alpine AS builder
 
+# Install build tools just in case
+RUN apk add --no-cache build-base
+
 WORKDIR /app
 
 # Copy injected root dependencies
