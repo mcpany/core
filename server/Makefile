@@ -265,12 +265,16 @@ prepare:
 		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
 			(cd tests/integration/upstream && npm install) || true; \
-			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
-				echo "CI detected, installing Playwright with system dependencies..."; \
-				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
+			if [ -z "$(SKIP_PLAYWRIGHT)" ]; then \
+				if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
+					echo "CI detected, installing Playwright with system dependencies..."; \
+					(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
+				else \
+					echo "Installing Playwright browsers (skipping system deps)..."; \
+					(cd tests/integration/upstream && npx playwright install) || true; \
+				fi; \
 			else \
-				echo "Installing Playwright browsers (skipping system deps)..."; \
-				(cd tests/integration/upstream && npx playwright install) || true; \
+				echo "Skipping Playwright installation (SKIP_PLAYWRIGHT is set)"; \
 			fi; \
 		else \
 			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
