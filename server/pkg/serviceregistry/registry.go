@@ -354,11 +354,14 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	if !ok {
 		return nil, false
 	}
-	// ⚡ BOLT: Shallow copy to avoid expensive proto.Clone and StripSecretsFromService
+	// ⚡ BOLT: Clone from pre-stripped cache.
+	// We MUST use proto.Clone because copying a protobuf message by value (shallow copy)
+	// copies internal state (sync.Mutex, etc.) which is unsafe and can cause panics or race conditions.
+	// Although this still allocates, it avoids the expensive StripSecretsFromService traversal on every read.
 	// Randomized Selection from Top 5 High-Impact Targets
-	shallow := *serviceConfig
-	r.injectRuntimeInfo(&shallow)
-	return &shallow, true
+	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
+	r.injectRuntimeInfo(cloned)
+	return cloned, true
 }
 
 // UnregisterService removes a service from the registry.
