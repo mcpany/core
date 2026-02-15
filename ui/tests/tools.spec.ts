@@ -104,6 +104,8 @@ test.describe('Tool Exploration', () => {
 
         // Use regex for filtering row as well
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
+        // Ensure the row is visible before clicking
+        await expect(toolRow).toBeVisible({ timeout: 10000 });
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
