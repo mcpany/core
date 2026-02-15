@@ -131,7 +131,11 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if pidof systemd >/dev/null; then
+            sudo systemctl restart docker
+          else
+            echo "Systemd not running, skipping docker restart"
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +255,11 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if pidof systemd >/dev/null; then
+            sudo systemctl restart docker
+          else
+            echo "Systemd not running, skipping docker restart"
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -524,7 +532,11 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          if pidof systemd >/dev/null; then
+            sudo systemctl restart docker
+          else
+            echo "Systemd not running, skipping docker restart"
+          fi
           docker info
 
       - name: Set up Go
@@ -640,7 +652,11 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if pidof systemd >/dev/null; then
+            sudo systemctl restart docker
+          else
+            echo "Systemd not running, skipping docker restart"
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -728,7 +744,11 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if pidof systemd >/dev/null; then
+            sudo systemctl restart docker
+          else
+            echo "Systemd not running, skipping docker restart"
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go

@@ -538,12 +538,14 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 
 	services := make([]*config.UpstreamServiceConfig, 0, len(r.strippedServiceConfigs))
 	for _, service := range r.strippedServiceConfigs {
-		// ⚡ BOLT: Shallow copy to avoid expensive proto.Clone and StripSecretsFromService.
-		// Safe because injectRuntimeInfo only sets top-level fields (LastError, ToolCount) on the copy.
+		// ⚡ BOLT: Clone from pre-stripped cache.
+		// We MUST use proto.Clone because copying a protobuf message by value (shallow copy)
+		// copies internal state (sync.Mutex, etc.) which is unsafe and can cause panics or race conditions.
+		// Although this still allocates, it avoids the expensive StripSecretsFromService traversal on every read.
 		// Randomized Selection from Top 5 High-Impact Targets
-		shallow := *service
-		r.injectRuntimeInfo(&shallow)
-		services = append(services, &shallow)
+		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
+		r.injectRuntimeInfo(cloned)
+		services = append(services, cloned)
 	}
 	return services, nil
 }
