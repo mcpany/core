@@ -25,10 +25,10 @@ const (
 	StateHalfOpen
 )
 
+// Summary: Prevents cascading failures by stopping requests to failing services.
+//
 // CircuitBreaker implements the circuit breaker pattern. It prevents the
 // application from performing operations that are likely to fail.
-//
-// Summary: Prevents cascading failures by stopping requests to failing services.
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
@@ -40,9 +40,9 @@ type CircuitBreaker struct {
 	config *configv1.CircuitBreakerConfig
 }
 
-// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
-//
 // Summary: Initializes a new CircuitBreaker.
+//
+// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
 //
 // Parameters:
 //   - config: *configv1.CircuitBreakerConfig. The configuration settings for the circuit breaker.
@@ -56,10 +56,9 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	}
 }
 
-// Execute runs the provided work function protected by the circuit breaker.
-//
 // Summary: Executes a function with circuit breaker protection.
 //
+// Execute runs the provided work function protected by the circuit breaker.
 // If the circuit breaker is open, it returns a CircuitBreakerOpenError immediately.
 // If the work function fails, it tracks the failure and may trip the breaker.
 //
@@ -223,14 +222,14 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 	}
 }
 
-// CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
-//
 // Summary: Error indicating the circuit is open.
+//
+// CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 type CircuitBreakerOpenError struct{}
 
-// Error returns the error message for a CircuitBreakerOpenError.
-//
 // Summary: Returns the error message.
+//
+// Error returns the error message for a CircuitBreakerOpenError.
 //
 // Returns:
 //   - string: The error message.

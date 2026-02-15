@@ -39,14 +39,14 @@ type RateLimitMiddleware struct {
 	strategies map[configv1.RateLimitConfig_Storage]RateLimitStrategy
 }
 
-// Option defines a functional option for RateLimitMiddleware.
-//
 // Summary: Functional option for configuration.
+//
+// Option defines a functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
-// WithTokenizer sets a custom tokenizer for the middleware.
-//
 // Summary: Configures a custom tokenizer.
+//
+// WithTokenizer sets a custom tokenizer for the middleware.
 //
 // Parameters:
 //   - t: tokenizer.Tokenizer. The tokenizer to use.
@@ -59,9 +59,9 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
-//
 // Summary: Initializes a new RateLimitMiddleware.
+//
+// NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
 // Parameters:
 //   - toolManager: tool.ManagerInterface. The tool manager to look up tool configurations.
@@ -91,10 +91,9 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
-//
 // Summary: Enforces rate limits on tool execution requests.
 //
+// Execute executes the rate limiting middleware.
 // It checks both service-level and tool-level rate limits.
 //
 // Parameters:

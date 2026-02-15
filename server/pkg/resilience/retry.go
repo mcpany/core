@@ -13,17 +13,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Retry implements a retry policy for failed operations.
-//
 // Summary: Implements exponential backoff retry logic.
+//
+// Retry implements a retry policy for failed operations.
 type Retry struct {
 	config *configv1.RetryConfig
 }
 
-// NewRetry creates a new Retry instance with the given configuration.
-//
 // Summary: Initializes a new Retry policy.
 //
+// NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
 //
 // Parameters:
@@ -46,10 +45,10 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 	}
 }
 
+// Summary: Executes a function with retry logic.
+//
 // Execute runs the provided work function, retrying it if it fails according
 // to the configured policy.
-//
-// Summary: Executes a function with retry logic.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the operation.

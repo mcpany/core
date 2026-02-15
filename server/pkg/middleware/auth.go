@@ -15,11 +15,10 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// AuthMiddleware creates an MCP middleware for handling authentication. It is
-// intended to inspect incoming requests and use the provided `AuthManager` to
-// verify credentials before passing the request to the next handler.
-//
 // Summary: MCP Middleware for request authentication.
+//
+// AuthMiddleware creates an MCP middleware for handling authentication.
+// It inspects incoming requests and uses the provided AuthManager to verify credentials.
 //
 // Parameters:
 //   - authManager: *auth.Manager. The authentication manager.

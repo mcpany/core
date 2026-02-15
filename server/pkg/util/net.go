@@ -50,10 +50,9 @@ type SafeDialer struct {
 	Dialer NetDialer
 }
 
-// NewSafeDialer creates a new SafeDialer with strict default security settings.
-//
 // Summary: Initializes a SafeDialer with secure defaults.
 //
+// NewSafeDialer creates a new SafeDialer with strict default security settings.
 // By default, it blocks all non-public IP addresses (loopback, private, link-local).
 //
 // Returns:
@@ -66,10 +65,9 @@ func NewSafeDialer() *SafeDialer {
 	}
 }
 
-// DialContext establishes a network connection to the given address while enforcing egress policies.
-//
 // Summary: Dials a network address securely.
 //
+// DialContext establishes a network connection to the given address while enforcing egress policies.
 // It resolves the host's IP addresses and verifies them against the allowed list before connecting.
 //
 // Parameters:
@@ -140,10 +138,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 	return nil, firstErr
 }
 
-// SafeDialContext creates a connection to the given address with strict SSRF protection.
-//
 // Summary: Dials an address with default security protections.
 //
+// SafeDialContext creates a connection to the given address with strict SSRF protection.
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
 //
 // Parameters:
@@ -158,10 +155,9 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
-// NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
-//
 // Summary: Creates a secure HTTP client.
 //
+// NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 // It uses a custom Transport backed by SafeDialer.
 //
 // Configuration is loaded from environment variables:
@@ -188,10 +184,9 @@ func NewSafeHTTPClient() *http.Client {
 	}
 }
 
-// CheckConnection verifies if a TCP connection can be established to the given address.
-//
 // Summary: Checks TCP connectivity to a host.
 //
+// CheckConnection verifies if a TCP connection can be established to the given address.
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
@@ -260,10 +255,9 @@ func CheckConnection(ctx context.Context, address string) error {
 	return nil
 }
 
-// ListenWithRetry attempts to listen on the given address with retries.
-//
 // Summary: Binds to a port with retry logic.
 //
+// ListenWithRetry attempts to listen on the given address with retries.
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //
