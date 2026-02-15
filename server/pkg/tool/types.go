@@ -46,6 +46,7 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+	gitCommand          = "git"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -1943,7 +1944,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2267,7 +2268,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -2947,6 +2948,35 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+func getCommentFeatures(language string) (bool, bool, bool) {
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		return true, false, false
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		return false, true, true
+	case "php":
+		return true, true, true
+	default:
+		// Default to strict: strip all known comment types if unsure
+		return true, true, true
+	}
+}
+
+func shouldStartComment(char, nextChar byte, supportsHash, supportsSlash, supportsBlock bool) (line bool, block bool, skipNext bool) {
+	if supportsHash && char == '#' {
+		return true, false, false
+	}
+	if (supportsSlash || supportsBlock) && char == '/' {
+		if supportsSlash && nextChar == '/' {
+			return true, false, true
+		}
+		if supportsBlock && nextChar == '*' {
+			return false, true, true
+		}
+	}
+	return false, false, false
+}
+
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
@@ -2958,27 +2988,7 @@ func stripInterpreterComments(val, language string) string {
 	inBacktick := false
 	escaped := false
 
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		supportsHash = true
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		supportsSlash = true
-		supportsBlock = true
-	case "php":
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	}
+	supportsHash, supportsSlash, supportsBlock := getCommentFeatures(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
@@ -3033,21 +3043,24 @@ func stripInterpreterComments(val, language string) string {
 		}
 
 		// Not in quotes, check for comments
-		if supportsHash && char == '#' {
+		var nextChar byte
+		if i+1 < len(val) {
+			nextChar = val[i+1]
+		}
+		isLine, isBlock, skip := shouldStartComment(char, nextChar, supportsHash, supportsSlash, supportsBlock)
+		if isLine {
 			inLineComment = true
+			if skip {
+				i++
+			}
 			continue
 		}
-		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
-			if supportsSlash && val[i+1] == '/' {
-				inLineComment = true
+		if isBlock {
+			inBlockComment = true
+			if skip {
 				i++
-				continue
 			}
-			if supportsBlock && val[i+1] == '*' {
-				inBlockComment = true
-				i++
-				continue
-			}
+			continue
 		}
 
 		// Skip backslash (line continuation outside quotes)
@@ -3594,7 +3607,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == gitCommand {
 		return true
 	}
 
