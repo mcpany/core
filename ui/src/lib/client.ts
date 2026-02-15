@@ -1440,6 +1440,37 @@ export const apiClient = {
     // User Management
 
     /**
+     * Gets the current user's preferences.
+     * @returns A promise that resolves to the user preferences map.
+     */
+    getUserPreferences: async (): Promise<Record<string, string>> => {
+        const res = await fetchWithAuth('/api/v1/user/preferences');
+        if (!res.ok) {
+            // Treat 404 or 401 gracefully? No, let the caller handle errors or return empty default?
+            // If API returns 404 (e.g. user not found), we might want to return empty.
+            // But handler logic returns 404 only if user really not found.
+            // Let's throw for now so UI knows something is wrong.
+            throw new Error('Failed to fetch user preferences');
+        }
+        return res.json();
+    },
+
+    /**
+     * Updates the current user's preferences.
+     * @param preferences The preferences map to update (merged with existing).
+     * @returns A promise that resolves to the updated preferences.
+     */
+    updateUserPreferences: async (preferences: Record<string, string>) => {
+        const res = await fetchWithAuth('/api/v1/user/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(preferences)
+        });
+        if (!res.ok) throw new Error('Failed to update user preferences');
+        return res.json();
+    },
+
+    /**
      * Lists all users.
      * @returns A promise that resolves to a list of users.
      */

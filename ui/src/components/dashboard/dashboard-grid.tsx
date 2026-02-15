@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -69,49 +70,65 @@ export function DashboardGrid() {
 
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
+
+        const loadLayout = async () => {
+            // Try loading from backend first
             try {
-                const parsed = JSON.parse(saved);
-
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    interface LegacyWidget {
-                        id: string;
-                        title: string;
-                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
-                        hidden?: boolean;
-                    }
-                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                        instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
-                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                        hidden: w.hidden ?? false
-                    }));
-
-                    // Filter out any invalid types
-                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
-                        setWidgets(DEFAULT_LAYOUT);
-                    } else {
-                        setWidgets(validMigrated);
-                    }
-                } else {
-                    // Case 2: Already in new format
+                const prefs = await apiClient.getUserPreferences();
+                if (prefs.dashboard_layout) {
+                    const parsed = JSON.parse(prefs.dashboard_layout);
                     setWidgets(parsed);
+                    return;
                 }
             } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+                console.warn("Failed to load user preferences from backend", e);
+            }
+
+            // Fallback to localStorage
+            const saved = localStorage.getItem("dashboard-layout");
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+
+                    // Migration Logic
+                    // Case 1: Legacy format (DashboardWidget[]) where id matches type
+                    if (parsed.length > 0 && !parsed[0].instanceId) {
+                        interface LegacyWidget {
+                            id: string;
+                            title: string;
+                            type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+                            hidden?: boolean;
+                        }
+                        const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
+                            instanceId: crypto.randomUUID(),
+                            type: w.id, // In legacy, id was effectively the type
+                            title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                            size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                            hidden: w.hidden ?? false
+                        }));
+
+                        // Filter out any invalid types
+                        const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
+
+                        if (validMigrated.length === 0) {
+                            setWidgets(DEFAULT_LAYOUT);
+                        } else {
+                            setWidgets(validMigrated);
+                        }
+                    } else {
+                        // Case 2: Already in new format
+                        setWidgets(parsed);
+                    }
+                } catch (e) {
+                    console.error("Failed to load dashboard layout", e);
+                    setWidgets(DEFAULT_LAYOUT);
+                }
+            } else {
                 setWidgets(DEFAULT_LAYOUT);
             }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
-        }
+        };
+
+        loadLayout();
     }, []);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
@@ -139,8 +156,17 @@ export function DashboardGrid() {
             return;
         }
 
-        const timer = setTimeout(() => {
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
+        const timer = setTimeout(async () => {
+            const layoutJson = JSON.stringify(widgets);
+            // Save to localStorage as backup/cache
+            localStorage.setItem("dashboard-layout", layoutJson);
+
+            // Save to backend
+            try {
+                await apiClient.updateUserPreferences({ dashboard_layout: layoutJson });
+            } catch (e) {
+                console.error("Failed to save user preferences to backend", e);
+            }
         }, 500);
 
         return () => clearTimeout(timer);
