@@ -316,6 +316,10 @@ prepare:
 		echo "ShellCheck is already installed."; \
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
+		if ! command -v xz >/dev/null 2>&1; then \
+			echo "xz-utils not found. Installing..."; \
+			apt-get update && apt-get install -y xz-utils; \
+		fi; \
 		SC_VERSION="stable"; \
 		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" -o /tmp/shellcheck.tar.xz; \
 		tar -xJvf /tmp/shellcheck.tar.xz -C /tmp; \

@@ -131,7 +131,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not present (e.g. in some containers)
+          if pidof systemd; then
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl"
+          elif command -v service; then
+            sudo service docker restart || echo "Failed to restart docker via service"
+          else
+            echo "Cannot restart docker (no systemd or service command), mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +258,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not present (e.g. in some containers)
+          if pidof systemd; then
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl"
+          elif command -v service; then
+            sudo service docker restart || echo "Failed to restart docker via service"
+          else
+            echo "Cannot restart docker (no systemd or service command), mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -524,7 +538,14 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not present (e.g. in some containers)
+          if pidof systemd; then
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl"
+          elif command -v service; then
+            sudo service docker restart || echo "Failed to restart docker via service"
+          else
+            echo "Cannot restart docker (no systemd or service command), mirrors might not be applied."
+          fi
           docker info
 
       - name: Set up Go
@@ -640,7 +661,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not present (e.g. in some containers)
+          if pidof systemd; then
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl"
+          elif command -v service; then
+            sudo service docker restart || echo "Failed to restart docker via service"
+          else
+            echo "Cannot restart docker (no systemd or service command), mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -728,7 +756,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if systemd is not present (e.g. in some containers)
+          if pidof systemd; then
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl"
+          elif command -v service; then
+            sudo service docker restart || echo "Failed to restart docker via service"
+          else
+            echo "Cannot restart docker (no systemd or service command), mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
