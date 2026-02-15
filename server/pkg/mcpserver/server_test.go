@@ -113,7 +113,9 @@ func TestToolListFiltering(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
 	// Connect server and client
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role to allow listing tools without profile (legacy test behavior)
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -200,7 +202,9 @@ func TestToolListFilteringServiceId(t *testing.T) {
 		},
 	}
 
-	serverSession, err := server.Server().Connect(ctx, serverTransport, serverOpts)
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, serverOpts)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -302,7 +306,9 @@ func TestServer_CallTool(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
 	// Connect server and client
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -397,7 +403,9 @@ func TestServer_Prompts(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
 	// Connect server and client
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -475,7 +483,9 @@ func TestServer_Resources(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
 	// Connect server and client
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -619,7 +629,8 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	_ = server.ListTools()
 	assert.True(t, mockTM.listToolsCalled)
 
-	_, _ = server.CallTool(ctx, &tool.ExecutionRequest{})
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	_, _ = server.CallTool(adminCtx, &tool.ExecutionRequest{})
 	assert.True(t, mockTM.executeToolCalled)
 
 	server.SetMCPServer(nil)
@@ -679,7 +690,10 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	// Create client-server connection
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -729,7 +743,10 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	// This will cause the default ListTools implementation to return an error.
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -807,7 +824,9 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
@@ -1106,19 +1125,12 @@ func TestServer_MiddlewareChain(t *testing.T) {
 
 	// 2. ToolListFilteringMiddleware
 
-	// Case A: No Profile -> Should see ALL tools?
-	// Logic says: "if hasProfile { ... } else { check? }"
-	// Wait, code: "if hasProfile { ... }". Loop iterates all tools.
-	// If !hasProfile, it appends ALL of them.
-	// So "global" (no auth) sees everything?
-	// The implementation assumes if no profile context, we skip filtering.
-	// This might be correct for legacy or admin.
-
+	// Case A: No Profile -> Should see 0 tools (Fail Closed)
 	res, err = server.ToolListFilteringMiddleware(next)(ctx, consts.MethodToolsList, &mcp.ListToolsRequest{})
 	require.NoError(t, err)
 	lRes, ok := res.(*mcp.ListToolsResult)
 	require.True(t, ok)
-	assert.Len(t, lRes.Tools, 3, "No profile should see all 3 tools")
+	assert.Len(t, lRes.Tools, 0, "No profile should see 0 tools")
 
 	// Case B: Profile "p1"
 	// Should see:

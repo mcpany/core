@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -343,10 +344,27 @@ func (s *Server) routerMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 }
 
 func (s *Server) checkAdminAccess(ctx context.Context) bool {
+	// Try getting roles directly from context (e.g. from tests or middleware if propagated)
 	roles, ok := auth.RolesFromContext(ctx)
+	if !ok {
+		// Fallback: If using MCP SDK HTTP handler, the request context might be stored in the session context
+		// or we might need to retrieve the original request to get its context.
+		// However, the standard middleware stack injects the request into the context using HTTPRequestContextKey.
+		// If the SDK creates a new context for the session but copies values (which it might not), we check.
+		// If it doesn't, we might need to rely on the fact that for stateless HTTP (JSON-RPC),
+		// the handler might be running in the request scope.
+		// But for SSE, it's a long-lived connection.
+
+		// Attempt to recover roles from the HTTP Request if present in context
+		if req, ok := ctx.Value(middleware.HTTPRequestContextKey).(*http.Request); ok {
+			roles, ok = auth.RolesFromContext(req.Context())
+		}
+	}
+
 	if !ok {
 		return false
 	}
+
 	for _, role := range roles {
 		if role == "admin" {
 			return true

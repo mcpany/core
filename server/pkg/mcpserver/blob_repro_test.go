@@ -90,7 +90,9 @@ func TestServer_CallTool_Blob_ByteSlice_Repro(t *testing.T) {
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)

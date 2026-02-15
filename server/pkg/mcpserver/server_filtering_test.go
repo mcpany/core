@@ -196,10 +196,18 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 		return &mcp.CallToolResult{}, nil
 	}
 
-	// 1. No Profile -> Should see ALL resources
+	// 1. No Profile -> Should see 0 resources (Fail Closed)
 	res, err := server.ResourceListFilteringMiddleware(next)(ctx, consts.MethodResourcesList, &mcp.ListResourcesRequest{})
 	require.NoError(t, err)
 	lRes, ok := res.(*mcp.ListResourcesResult)
+	require.True(t, ok)
+	assert.Len(t, lRes.Resources, 0)
+
+	// 1b. No Profile but Admin -> Should see ALL resources
+	ctxAdmin := auth.ContextWithRoles(ctx, []string{"admin"})
+	res, err = server.ResourceListFilteringMiddleware(next)(ctxAdmin, consts.MethodResourcesList, &mcp.ListResourcesRequest{})
+	require.NoError(t, err)
+	lRes, ok = res.(*mcp.ListResourcesResult)
 	require.True(t, ok)
 	assert.Len(t, lRes.Resources, 3)
 
@@ -276,10 +284,18 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 		return &mcp.CallToolResult{}, nil
 	}
 
-	// 1. No Profile -> Should see ALL prompts
+	// 1. No Profile -> Should see 0 prompts (Fail Closed)
 	res, err := server.PromptListFilteringMiddleware(next)(ctx, consts.MethodPromptsList, &mcp.ListPromptsRequest{})
 	require.NoError(t, err)
 	lRes, ok := res.(*mcp.ListPromptsResult)
+	require.True(t, ok)
+	assert.Len(t, lRes.Prompts, 0)
+
+	// 1b. No Profile but Admin -> Should see ALL prompts
+	ctxAdmin := auth.ContextWithRoles(ctx, []string{"admin"})
+	res, err = server.PromptListFilteringMiddleware(next)(ctxAdmin, consts.MethodPromptsList, &mcp.ListPromptsRequest{})
+	require.NoError(t, err)
+	lRes, ok = res.(*mcp.ListPromptsResult)
 	require.True(t, ok)
 	assert.Len(t, lRes.Prompts, 3)
 

@@ -139,7 +139,9 @@ func TestSamplingSupport(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
 	// Connect server and client
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	// Inject Admin role for access
+	adminCtx := auth.ContextWithRoles(ctx, []string{"admin"})
+	serverSession, err := server.Server().Connect(adminCtx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 
