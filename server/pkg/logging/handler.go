@@ -138,6 +138,19 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 
 	data, err := json.Marshal(entry)
 	if err != nil {
+		// Fallback: Try to broadcast an error entry to avoid silent loss of logs
+		errorEntry := LogEntry{
+			ID:        entry.ID,
+			Timestamp: entry.Timestamp,
+			Level:     "ERROR",
+			Message:   "Failed to marshal log entry: " + err.Error(),
+			Source:    "logging.BroadcastHandler",
+		}
+		// Best effort
+		if errorData, e := json.Marshal(errorEntry); e == nil {
+			h.broadcaster.Broadcast(errorData)
+		}
+		// Return the original error to be compliant with the Handler interface
 		return err
 	}
 

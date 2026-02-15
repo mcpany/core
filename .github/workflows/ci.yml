@@ -131,7 +131,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Could not restart docker. Registry mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +257,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Could not restart docker. Registry mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -534,7 +546,13 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Could not restart docker. Registry mirrors might not be applied."
+          fi
           docker info
 
       - name: Set up Go
@@ -650,7 +668,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Could not restart docker. Registry mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -738,7 +762,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart
+          else
+            echo "Could not restart docker. Registry mirrors might not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
