@@ -447,6 +447,8 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 			return ctx, fmt.Errorf("unauthorized")
 		}
 		ctx = ContextWithAPIKey(ctx, receivedKey)
+		// Global API key implies admin access
+		ctx = ContextWithRoles(ctx, []string{"admin"})
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {

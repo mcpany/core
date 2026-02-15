@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -131,7 +131,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart
+          else
+            echo "Cannot restart docker (no systemctl or service command found). Skipping..."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +257,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart
+          else
+            echo "Cannot restart docker (no systemctl or service command found). Skipping..."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -524,7 +536,13 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart
+          else
+            echo "Cannot restart docker (no systemctl or service command found). Skipping..."
+          fi
           docker info
 
       - name: Set up Go
@@ -640,7 +658,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart
+          else
+            echo "Cannot restart docker (no systemctl or service command found). Skipping..."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -728,7 +752,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          if command -v systemctl >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null 2>&1; then
+            sudo service docker restart
+          else
+            echo "Cannot restart docker (no systemctl or service command found). Skipping..."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go

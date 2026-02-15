@@ -71,6 +71,13 @@ func TestAPISecurity_RBAC(t *testing.T) {
 			roles:         nil,
 			wantStatus:    http.StatusForbidden,
 		},
+		{
+			name:          "Credential Create - Admin Role",
+			method:        http.MethodPost,
+			directHandler: app.createCredentialHandler,
+			roles:         []string{"admin"},
+			wantStatus:    http.StatusCreated,
+		},
 	}
 
 	for _, tt := range tests {
