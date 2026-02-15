@@ -18,7 +18,20 @@ import (
 )
 
 // InitiateOAuth starts the OAuth2 flow for a given service or credential.
-// It returns the authorization URL and the state parameter.
+//
+// Summary: Initiates the OAuth2 authorization flow.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - userID: string. The user ID (unused).
+//   - serviceID: string. The service ID to authenticate against.
+//   - credentialID: string. The credential ID to use (if applicable).
+//   - redirectURL: string. The callback URL.
+//
+// Returns:
+//   - string: The authorization URL.
+//   - string: The state parameter.
+//   - error: An error if initiation fails.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -118,6 +131,19 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 }
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
+//
+// Summary: Exchanges the OAuth2 code for tokens.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - userID: string. The user ID.
+//   - serviceID: string. The service ID.
+//   - credentialID: string. The credential ID.
+//   - code: string. The authorization code.
+//   - redirectURL: string. The callback URL.
+//
+// Returns:
+//   - error: An error if the exchange fails.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

@@ -25,12 +25,12 @@ type OAuth2Authenticator struct {
 // validating ID tokens.
 //
 // Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+//   - ctx: context.Context. The context for the OIDC provider initialization.
+//   - config: *OAuth2Config. The OAuth2 configuration, including the issuer URL and client ID.
 //
 // Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
+//   - *OAuth2Authenticator: A new OAuth2Authenticator.
+//   - error: An error if the OIDC provider cannot be initialized.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -64,12 +64,12 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // claims against the OIDC provider.
 //
 // Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+//   - ctx: context.Context. The request context.
+//   - r: *http.Request. The HTTP request to authenticate.
 //
 // Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
+//   - context.Context: The context with the user's identity (email) on success.
+//   - error: An error if authentication fails.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

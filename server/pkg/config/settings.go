@@ -64,10 +64,14 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 
 // Load initializes the global settings from the command line and config files.
 //
-// Parameters:
+// Summary: Loads settings from CLI flags and configuration files.
 //
-//	cmd: The cobra command containing flags.
-//	fs: The file system interface for reading config files.
+// Parameters:
+//   - cmd: *cobra.Command. The cobra command containing flags.
+//   - fs: afero.Fs. The file system interface for reading config files.
+//
+// Returns:
+//   - error: An error if loading fails.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -245,14 +249,26 @@ func (s *Settings) APIKey() string {
 
 // SetAPIKey sets the Global API key.
 //
-// key is the key.
+// Summary: Updates the global API key.
+//
+// Parameters:
+//   - key: string. The new API key.
+//
+// Returns:
+//   None.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
 
 // SetMiddlewares sets the middlewares for the global settings.
 //
-// middlewares is the middlewares.
+// Summary: Updates the global middleware configuration.
+//
+// Parameters:
+//   - middlewares: []*configv1.Middleware. The list of middlewares to set.
+//
+// Returns:
+//   None.
 func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 	s.proto.SetMiddlewares(middlewares)
 }
@@ -342,7 +358,13 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 
 // SetDlp sets the DLP configuration.
 //
-// dlp is the dlp.
+// Summary: Updates the DLP configuration.
+//
+// Parameters:
+//   - dlp: *configv1.DLPConfig. The new DLP configuration.
+//
+// Returns:
+//   None.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }

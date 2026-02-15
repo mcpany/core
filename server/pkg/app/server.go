@@ -1376,12 +1376,12 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 // health check.
 //
 // Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
+//   - timeout: time.Duration. The maximum duration to wait for the health check.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
+//   - error: nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
@@ -1399,12 +1399,12 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // health check.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing the health check's lifecycle.
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
+//   - ctx: context.Context. The context for managing the health check's lifecycle.
+//   - out: io.Writer. The writer to which the success message will be written.
+//   - addr: string. The address (host:port) on which the server is running.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
+//   - error: nil if the server is healthy (i.e., responds with a 200 OK), or an
 //     error if the health check fails for any reason (e.g., connection error,
 //     non-200 status code).
 func HealthCheckWithContext(

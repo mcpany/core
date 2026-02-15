@@ -16,6 +16,11 @@ type TemporaryToolManager struct {
 }
 
 // NewTemporaryToolManager creates a new TemporaryToolManager.
+//
+// Summary: Initializes a new TemporaryToolManager.
+//
+// Returns:
+//   - *TemporaryToolManager: The initialized manager.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),

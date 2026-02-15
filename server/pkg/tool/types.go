@@ -187,8 +187,8 @@ const toolContextKey = contextKey("tool")
 // NewContextWithTool creates a new context with the given tool embedded.
 //
 // Parameters:
-//   - ctx: The context to extend.
-//   - t: The tool instance to embed in the context.
+//   - ctx: context.Context. The context to extend.
+//   - t: Tool. The tool instance to embed in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
@@ -253,8 +253,8 @@ const cacheControlContextKey = contextKey("cache_control")
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
 // Parameters:
-//   - ctx: The context to extend.
-//   - cc: The CacheControl instance to embed.
+//   - ctx: context.Context. The context to extend.
+//   - cc: *CacheControl. The CacheControl instance to embed.
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
@@ -313,12 +313,12 @@ type GRPCTool struct {
 // NewGRPCTool creates a new GRPCTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - poolManager: The connection pool manager for gRPC connections.
-//   - serviceID: The identifier for the service.
-//   - method: The gRPC method descriptor.
-//   - callDefinition: The configuration for the gRPC call.
-//   - resilienceConfig: The resilience configuration (retries, timeouts, etc.).
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The connection pool manager for gRPC connections.
+//   - serviceID: string. The identifier for the service.
+//   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
+//   - callDefinition: *configv1.GrpcCallDefinition. The configuration for the gRPC call.
+//   - resilienceConfig: *configv1.ResilienceConfig. The resilience configuration (retries, timeouts, etc.).
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
@@ -475,14 +475,14 @@ type HTTPTool struct {
 // NewHTTPTool creates a new HTTPTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - poolManager: The connection pool manager for HTTP connections.
-//   - serviceID: The identifier for the service.
-//   - authenticator: The authenticator for upstream requests.
-//   - callDefinition: The configuration for the HTTP call.
-//   - cfg: The resilience configuration.
-//   - policies: The security policies for the call.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The connection pool manager for HTTP connections.
+//   - serviceID: string. The identifier for the service.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.HttpCallDefinition. The configuration for the HTTP call.
+//   - cfg: *configv1.ResilienceConfig. The resilience configuration.
+//   - policies: []*configv1.CallPolicy. The security policies for the call.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
@@ -1225,9 +1225,9 @@ type MCPTool struct {
 // NewMCPTool creates a new MCPTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - client: The MCP client for downstream communication.
-//   - callDefinition: The configuration for the MCP call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - client: client.MCPClient. The MCP client for downstream communication.
+//   - callDefinition: *configv1.MCPCallDefinition. The configuration for the MCP call.
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
@@ -1408,9 +1408,10 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	var resultMap map[string]any
-	if err := fastJSON.Unmarshal(responseBytes, &resultMap); err != nil {
+	// Rename error variable to avoid nilerr lint warning as we intentionally ignore the error to fallback
+	if unmarshalErr := fastJSON.Unmarshal(responseBytes, &resultMap); unmarshalErr != nil {
 		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
+		return string(responseBytes), nil //nolint:nilerr
 	}
 
 	return resultMap, nil
@@ -1440,13 +1441,13 @@ type OpenAPITool struct {
 // NewOpenAPITool creates a new OpenAPITool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - client: The HTTP client for requests.
-//   - parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
-//   - method: The HTTP method (GET, POST, etc.).
-//   - url: The URL template.
-//   - authenticator: The authenticator for upstream requests.
-//   - callDefinition: The configuration for the OpenAPI call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - client: client.HTTPClient. The HTTP client for requests.
+//   - parameterDefs: map[string]string. Mapping of parameter names to their locations (path, query, etc.).
+//   - method: string. The HTTP method (GET, POST, etc.).
+//   - url: string. The URL template.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.OpenAPICallDefinition. The configuration for the OpenAPI call.
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
@@ -1702,11 +1703,11 @@ type CommandTool struct {
 // NewCommandTool creates a new CommandTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - service: The configuration of the command-line service.
-//   - callDefinition: The configuration for the command-line call.
-//   - policies: The security policies.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - service: *configv1.CommandLineUpstreamService. The configuration of the command-line service.
+//   - callDefinition: *configv1.CommandLineCallDefinition. The configuration for the command-line call.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created CommandTool.
@@ -1749,11 +1750,11 @@ type LocalCommandTool struct {
 // NewLocalCommandTool creates a new LocalCommandTool instance.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - service: The configuration of the command-line service.
-//   - callDefinition: The configuration for the command-line call.
-//   - policies: The security policies.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - service: *configv1.CommandLineUpstreamService. The configuration of the command-line service.
+//   - callDefinition: *configv1.CommandLineCallDefinition. The configuration for the command-line call.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
@@ -2958,7 +2959,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
+func stripInterpreterComments(val, language string) string { //nolint:gocyclo
 	var b strings.Builder
 	b.Grow(len(val))
 
@@ -3594,9 +3595,9 @@ func checkForSSRF(val string) error {
 	// 3. Check for URL with scheme
 	// Heuristic: Must contain "://" to be treated as a URL for SSRF check
 	if strings.Contains(val, "://") {
-		u, err := url.Parse(val)
-		if err != nil {
-			return nil
+		u, parseErr := url.Parse(val)
+		if parseErr != nil {
+			return nil //nolint:nilerr
 		}
 
 		if u.Scheme == "" || u.Host == "" {

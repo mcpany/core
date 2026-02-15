@@ -22,8 +22,13 @@ type PerRPCCredentials struct {
 // NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an
 // UpstreamAuthenticator. It returns nil if the provided authenticator is nil.
 //
-// authenticator is the upstream authenticator to be used for generating gRPC
-// request metadata.
+// Summary: Creates gRPC credentials from an upstream authenticator.
+//
+// Parameters:
+//   - authenticator: UpstreamAuthenticator. The authenticator to use.
+//
+// Returns:
+//   - credentials.PerRPCCredentials: The gRPC credentials implementation.
 func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRPCCredentials {
 	if authenticator == nil {
 		return nil
@@ -35,8 +40,15 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 // request. It uses the wrapped UpstreamAuthenticator to generate the necessary
 // headers and transforms them into gRPC metadata.
 //
-// ctx is the context for the request.
-// uri is the URI of the gRPC service being called.
+// Summary: Generates gRPC metadata for authentication.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - _: ...string. The URI of the gRPC service (unused).
+//
+// Returns:
+//   - map[string]string: The metadata map.
+//   - error: An error if authentication fails.
 func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string) (map[string]string, error) {
 	if c.authenticator == nil {
 		return nil, nil
@@ -64,6 +76,11 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 // RequireTransportSecurity indicates whether a secure transport (e.g., TLS) is
 // required for the credentials. This implementation returns false, but should be
 // updated if TLS is enabled for the gRPC connection.
+//
+// Summary: Checks if transport security is required.
+//
+// Returns:
+//   - bool: True if TLS is required, false otherwise.
 func (c *PerRPCCredentials) RequireTransportSecurity() bool {
 	// This should be true if TLS is enabled for the gRPC connection.
 	// For now, returning false to align with the current insecure setup.

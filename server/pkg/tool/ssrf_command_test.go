@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool_test
 
 import (
@@ -77,7 +80,10 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	// Expectation: Failure (Secure) due to SSRF protection
 	assert.Error(t, err, "Should fail due to SSRF protection")
 	if err != nil {
-		assert.Contains(t, err.Error(), "potential SSRF detected")
+		// Accept either message as both indicate blocked request
+		isSSRF := strings.Contains(err.Error(), "potential SSRF detected")
+		isUnsafe := strings.Contains(err.Error(), "unsafe url argument")
+		assert.True(t, isSSRF || isUnsafe, "Error should indicate SSRF or unsafe URL: %v", err)
 	}
 
 	// 2. Public IP

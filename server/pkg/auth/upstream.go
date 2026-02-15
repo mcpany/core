@@ -55,12 +55,12 @@ type UpstreamAuthenticator interface {
 // fields), an error is returned.
 //
 // Parameters:
-//   - authConfig: The configuration that specifies the authentication method
+//   - authConfig: *configv1.Authentication. The configuration that specifies the authentication method
 //     and its parameters.
 //
 // Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
+//   - UpstreamAuthenticator: An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
+//   - error: An error if the configuration is invalid.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil

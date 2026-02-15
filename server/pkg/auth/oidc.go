@@ -32,11 +32,15 @@ type OIDCProvider struct {
 
 // NewOIDCProvider creates a new OIDCProvider.
 //
-// ctx is the context for the request.
-// config holds the configuration settings.
+// Summary: Initializes a new OIDCProvider.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - config: OIDCConfig. The configuration settings.
+//
+// Returns:
+//   - *OIDCProvider: The initialized OIDC provider.
+//   - error: An error if the operation fails.
 func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, error) {
 	provider, err := oidc.NewProvider(ctx, config.Issuer)
 	if err != nil {
@@ -63,8 +67,14 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 
 // HandleLogin initiates the OIDC login flow.
 //
-// w is the HTTP response writer.
-// r is the HTTP request.
+// Summary: Handles the login endpoint for OIDC.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//   None.
 func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	state, err := generateRandomState()
 	if err != nil {
@@ -89,8 +99,14 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 // HandleCallback handles the OIDC provider callback.
 //
-// w is the HTTP response writer.
-// r is the HTTP request.
+// Summary: Handles the OIDC callback endpoint.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The HTTP response writer.
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//   None.
 func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	stateCookie, err := r.Cookie("oauth_state")
 	if err != nil {
