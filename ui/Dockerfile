@@ -24,6 +24,25 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
+# Install protoc to generate TypeScript definitions
+RUN apt-get update && apt-get install -y curl unzip && \
+    curl -sSL "https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protoc-33.1-linux-aarch_64.zip" -o protoc.zip && \
+    unzip -o protoc.zip -d /usr/local && \
+    rm protoc.zip
+
+# Generate TypeScript protos
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/proto \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
+# Fix Google imports in generated files (matching Makefile logic)
+RUN if [ -d "google" ]; then mv google /proto/; fi && \
+    if [ -f "/proto/google/protobuf/struct.ts" ]; then sed -i 's/map((e) => e)/map((e: any) => e)/g' /proto/google/protobuf/struct.ts; fi && \
+    find /proto -name "*.ts" -exec sed -i 's|\.\./\.\./\.\./google|\.\./\.\./google|g' {} +
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
