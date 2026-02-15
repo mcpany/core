@@ -73,6 +73,8 @@ type Server struct {
 
 // Server returns the underlying *mcp.Server instance.
 //
+// Summary: Returns the underlying MCP server instance.
+//
 // It provides access to the core MCP server functionality, which can be used for advanced
 // configurations or direct interaction with the MCP server.
 //
@@ -88,6 +90,8 @@ func (s *Server) Server() *mcp.Server {
 }
 
 // NewServer creates and initializes a new MCP Any Server.
+//
+// Summary: Creates and initializes a new MCP Any Server.
 //
 // It sets up the necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for request processing,
@@ -401,6 +405,8 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 
 // ListPrompts handles the "prompts/list" MCP request.
 //
+// Summary: Handles the "prompts/list" MCP request.
+//
 // It retrieves the list of available prompts from the PromptManager, converts them to the MCP format,
 // and returns them to the client.
 //
@@ -640,6 +646,8 @@ func (s *Server) ListTools() []tool.Tool {
 }
 
 // CallTool executes a tool with the provided request.
+//
+// Summary: Executes a tool with the provided request.
 //
 // It handles the execution of the tool, including logging, metrics collection, and profile-based
 // access control.

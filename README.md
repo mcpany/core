@@ -3,7 +3,7 @@
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-## 1. Elevator Pitch
+## 1. Project Identity
 
 **What is this project?**
 
@@ -13,56 +13,7 @@
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
-## 2. Architecture
-
-**High-Level Overview**
-
-MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
-
-**Core Components:**
-
-1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
-2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration.
-3.  **Upstream Adapters**: Specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
-    *   **HTTP**: Proxies requests to REST/JSON APIs with powerful parameter mapping and transformation templates.
-    *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
-    *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
-    *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
-4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration Store]
-        Registry -->|Policy| Auth[Authentication & Policy Engine]
-    end
-
-    subgraph "Upstream Adapters"
-        Registry -->|Interface| Upstream[Upstream Interface]
-        Upstream -->|Impl| HTTP[HTTP Adapter]
-        Upstream -->|Impl| GRPC[gRPC Adapter]
-        Upstream -->|Impl| CMD[Command Adapter]
-        Upstream -->|Impl| FS[Filesystem Adapter]
-    end
-
-    subgraph "Upstream Services"
-        HTTP -->|REST| ServiceB[REST API]
-        GRPC -->|gRPC| ServiceA[gRPC Service]
-        CMD -->|Exec| ServiceD[Local Command]
-        FS -->|IO| ServiceE[Filesystem]
-    end
-```
-
-**Design Patterns:**
-
-*   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
-*   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
-*   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
-
-## 3. Getting Started
+## 2. Quick Start
 
 Follow these steps to get up and running with MCP Any immediately.
 
@@ -119,7 +70,7 @@ Ask your agent:
 
 The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
-## 4. Development
+## 3. Developer Workflow
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
@@ -150,6 +101,55 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 ```bash
 make gen
 ```
+
+## 4. Architecture
+
+**High-Level Overview**
+
+MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
+
+**Core Components:**
+
+1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
+2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration.
+3.  **Upstream Adapters**: Specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
+    *   **HTTP**: Proxies requests to REST/JSON APIs with powerful parameter mapping and transformation templates.
+    *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
+    *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
+    *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
+4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration Store]
+        Registry -->|Policy| Auth[Authentication & Policy Engine]
+    end
+
+    subgraph "Upstream Adapters"
+        Registry -->|Interface| Upstream[Upstream Interface]
+        Upstream -->|Impl| HTTP[HTTP Adapter]
+        Upstream -->|Impl| GRPC[gRPC Adapter]
+        Upstream -->|Impl| CMD[Command Adapter]
+        Upstream -->|Impl| FS[Filesystem Adapter]
+    end
+
+    subgraph "Upstream Services"
+        HTTP -->|REST| ServiceB[REST API]
+        GRPC -->|gRPC| ServiceA[gRPC Service]
+        CMD -->|Exec| ServiceD[Local Command]
+        FS -->|IO| ServiceE[Filesystem]
+    end
+```
+
+**Design Patterns:**
+
+*   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
+*   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
+*   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
 
 ## 5. Configuration
 
