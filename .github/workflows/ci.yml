@@ -131,7 +131,8 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker, but don't fail if we are in a container without systemd
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker (likely running in a container without systemd). Skipping mirror configuration apply."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +252,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker. Skipping mirror configuration apply."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -538,7 +539,7 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker. Skipping mirror configuration apply."
           docker info
 
       - name: Set up Go
@@ -654,7 +655,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker. Skipping mirror configuration apply."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -742,7 +743,7 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          sudo systemctl restart docker || echo "Warning: Failed to restart docker. Skipping mirror configuration apply."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
