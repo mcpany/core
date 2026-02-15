@@ -24,6 +24,29 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
+# Install dependencies for protobuf generation
+RUN apt-get update && apt-get install -y protobuf-compiler curl unzip
+
+# Download external protos (googleapis and grpc-gateway) required for generation
+RUN curl -sSL -o /tmp/googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q /tmp/googleapis.zip -d /tmp/ && \
+    mv /tmp/googleapis-master /tmp/googleapis
+
+RUN curl -sSL -o /tmp/grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/v2.27.3.zip && \
+    unzip -q /tmp/grpc-gateway.zip -d /tmp/ && \
+    mv /tmp/grpc-gateway-2.27.3 /tmp/grpc-gateway
+
+# Generate TypeScript protobuf files
+# We use the installed protoc and the ts-proto plugin from node_modules
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/proto \
+    --proto_path=/tmp/grpc-gateway \
+    --proto_path=/tmp/googleapis \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
