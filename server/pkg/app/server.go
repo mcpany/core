@@ -2163,21 +2163,29 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// We unwrap authMiddleware here to allow public access to the UI shell (index.html)
+	// so that the client-side router can handle login flow.
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
 		}
 
-		// UI Routing for root path
-		if r.URL.Path == "/" && uiPath != "" {
-			http.ServeFile(w, r, filepath.Join(uiPath, "index.html"))
-			return
+		// UI Routing for root path and SPA routes (GET/HEAD only)
+		// We serve index.html for any GET request that accepts text/html, to support SPA routing.
+		if uiPath != "" && (r.Method == http.MethodGet || r.Method == http.MethodHead) {
+			// Basic heuristic: if it looks like a browser navigation and isn't an API call, serve UI.
+			// We already handle /api/ and /ui/ prefixes separately, so anything reaching here is a candidate.
+			if r.URL.Path == "/" || strings.Contains(r.Header.Get("Accept"), "text/html") {
+				http.ServeFile(w, r, filepath.Join(uiPath, "index.html"))
+				return
+			}
 		}
 
-		// Fallback to JSON-RPC handler (for API calls at root or SSE)
-		httpHandler.ServeHTTP(w, r)
-	})))
+		// Fallback to JSON-RPC handler (for API calls at root or SSE).
+		// We MUST enforce authentication here as this accesses the core MCP server.
+		authMiddleware(httpHandler).ServeHTTP(w, r)
+	}))
 
 	var httpLis net.Listener
 
