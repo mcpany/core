@@ -26,7 +26,7 @@ RUN ln -s /app/node_modules /proto/node_modules
 
 # Install protoc to generate typescript files
 RUN apt-get update && apt-get install -y curl unzip
-RUN curl -sSL "https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip" -o protoc.zip && \
+RUN curl -sSL "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip" -o protoc.zip && \
     unzip protoc.zip -d /usr/local && \
     rm protoc.zip
 
