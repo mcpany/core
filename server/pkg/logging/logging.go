@@ -19,6 +19,13 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+
+	// currentOutput stores the io.Writer used for logging, allowing reconfiguration.
+	currentOutput io.Writer = os.Stderr
+	// currentLogFilePath stores the path to the log file, allowing reconfiguration.
+	currentLogFilePath string
+	// currentLogFileHandle tracks the open file to avoid FD leaks on reconfiguration.
+	currentLogFileHandle *os.File
 )
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
@@ -29,6 +36,10 @@ func ForTestsOnlyResetLogger() {
 	defer mu.Unlock()
 	once = sync.Once{}
 	defaultLogger.Store(nil)
+	if currentLogFileHandle != nil {
+		_ = currentLogFileHandle.Close()
+		currentLogFileHandle = nil
+	}
 }
 
 // Init initializes the application's global logger with a specific log level
@@ -50,63 +61,100 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
+		currentOutput = output
+		currentLogFilePath = logFilePath
+
 		fmtStr := "text"
 		if len(format) > 0 {
 			fmtStr = format[0]
 		}
 
-		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
-		// Randomized Selection from Top 5 High-Impact Targets
-		opts := &slog.HandlerOptions{
-			Level:     level,
-			AddSource: level == slog.LevelDebug,
-			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-				if util.IsSensitiveKey(a.Key) {
-					return slog.String(a.Key, "[REDACTED]")
-				}
-				return a
-			},
+		logger, fileHandle := configure(level, output, logFilePath, fmtStr)
+		if fileHandle != nil {
+			currentLogFileHandle = fileHandle
 		}
-
-		var handlers []slog.Handler
-
-		// 1. Main Output (Stderr/Stdout)
-		var mainHandler slog.Handler
-		if fmtStr == "json" {
-			output = &RedactingWriter{w: output}
-			mainHandler = slog.NewJSONHandler(output, opts)
-		} else {
-			mainHandler = slog.NewTextHandler(output, opts)
-		}
-		handlers = append(handlers, mainHandler)
-
-		// 2. File Output (JSON only, for hydration)
-		if logFilePath != "" {
-			// Ensure file can be opened/created
-			// We use O_APPEND to preserve logs across restarts (until rotation logic is added)
-			f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				// Fallback: log to main output that we failed to open log file
-				// Use a temporary logger since defaultLogger is not set yet
-				// Actually we can't log easily yet. Just ignore or print to stderr?
-				// Best effort.
-				_ = err // prevent empty block lint error
-			} else {
-				// Use JSON handler for file to ensure hydration works
-				fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
-				handlers = append(handlers, fileHandler)
-			}
-		}
-
-		// 3. Broadcast Handler (WebSocket)
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
-		handlers = append(handlers, broadcastHandler)
-
-		teeHandler := NewTeeHandler(handlers...)
-
-		defaultLogger.Store(slog.New(teeHandler))
+		defaultLogger.Store(logger)
 	})
-	// Init complete
+}
+
+// Reconfigure allows updating the logger configuration at runtime.
+// It uses the originally provided output writer and log file path.
+//
+// Summary: Reconfigures the global logger.
+//
+// Parameters:
+//   - level: slog.Level. The new log level.
+//   - format: string. The new log format ("json" or "text").
+func Reconfigure(level slog.Level, format string) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	logger, fileHandle := configure(level, currentOutput, currentLogFilePath, format)
+
+	// Close old file handle to prevent FD leaks
+	if currentLogFileHandle != nil {
+		_ = currentLogFileHandle.Close()
+	}
+	currentLogFileHandle = fileHandle
+
+	defaultLogger.Store(logger)
+}
+
+// configure creates a new logger with the specified settings.
+func configure(level slog.Level, output io.Writer, logFilePath string, fmtStr string) (*slog.Logger, *os.File) {
+	// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
+	// Randomized Selection from Top 5 High-Impact Targets
+	opts := &slog.HandlerOptions{
+		Level:     level,
+		AddSource: level == slog.LevelDebug,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if util.IsSensitiveKey(a.Key) {
+				return slog.String(a.Key, "[REDACTED]")
+			}
+			return a
+		},
+	}
+
+	var handlers []slog.Handler
+
+	// 1. Main Output (Stderr/Stdout)
+	var mainHandler slog.Handler
+	if fmtStr == "json" {
+		output = &RedactingWriter{w: output}
+		mainHandler = slog.NewJSONHandler(output, opts)
+	} else {
+		mainHandler = slog.NewTextHandler(output, opts)
+	}
+	handlers = append(handlers, mainHandler)
+
+	var fileHandle *os.File
+
+	// 2. File Output (JSON only, for hydration)
+	if logFilePath != "" {
+		// Ensure file can be opened/created
+		// We use O_APPEND to preserve logs across restarts (until rotation logic is added)
+		f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			// Fallback: log to main output that we failed to open log file
+			// Use a temporary logger since defaultLogger is not set yet
+			// Actually we can't log easily yet. Just ignore or print to stderr?
+			// Best effort.
+			_ = err // prevent empty block lint error
+		} else {
+			// Use JSON handler for file to ensure hydration works
+			fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
+			handlers = append(handlers, fileHandler)
+			fileHandle = f
+		}
+	}
+
+	// 3. Broadcast Handler (WebSocket)
+	broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
+	handlers = append(handlers, broadcastHandler)
+
+	teeHandler := NewTeeHandler(handlers...)
+
+	return slog.New(teeHandler), fileHandle
 }
 
 // GetLogger returns the shared global logger instance. If the logger has not yet

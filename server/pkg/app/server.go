@@ -77,7 +77,11 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const authMiddlewareName = "auth"
+const (
+	authMiddlewareName = "auth"
+	logFormatJSON      = "json"
+	logFormatText      = "text"
+)
 
 var healthCheckClient = &http.Client{
 	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
@@ -977,6 +981,24 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	if a.SettingsManager != nil {
 		a.SettingsManager.Update(cfg.GetGlobalSettings(), a.explicitAPIKey)
+	}
+
+	// Hot Reload Logging Configuration
+	// We check if the new config has logging settings and update the logger accordingly.
+	if gs := cfg.GetGlobalSettings(); gs != nil {
+		newLevel := logging.ToSlogLevel(gs.GetLogLevel())
+		formatEnum := gs.GetLogFormat()
+		var formatStr string
+		switch formatEnum {
+		case config_v1.GlobalSettings_LOG_FORMAT_JSON:
+			formatStr = logFormatJSON
+		default:
+			formatStr = logFormatText
+		}
+		logging.Reconfigure(newLevel, formatStr)
+		// Update local logger reference to the new one
+		log = logging.GetLogger()
+		log.Info("Updated logging configuration", "level", newLevel, "format", formatStr)
 	}
 
 	// Update Health Alerts
