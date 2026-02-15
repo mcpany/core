@@ -1410,7 +1410,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	var resultMap map[string]any
 	if err := fastJSON.Unmarshal(responseBytes, &resultMap); err != nil {
 		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
+		return string(responseBytes), nil //nolint:nilerr
 	}
 
 	return resultMap, nil
@@ -2958,120 +2958,153 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+// stripInterpreterComments removes comments from a string based on the language.
+//
+// This function aims to reduce complexity by delegating tasks to helper functions
+// and structs.
 func stripInterpreterComments(val, language string) string {
+	state := &parserState{
+		supportsHash:  false,
+		supportsSlash: false,
+		supportsBlock: false,
+	}
+
+	state.configureForLanguage(language)
+
 	var b strings.Builder
 	b.Grow(len(val))
-
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		supportsHash = true
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		supportsSlash = true
-		supportsBlock = true
-	case "php":
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	}
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
 
-		if inLineComment {
+		// Handle active comments
+		if state.inLineComment {
 			if char == '\n' {
-				inLineComment = false
+				state.inLineComment = false
 				b.WriteByte(char)
 			}
 			continue
 		}
-		if inBlockComment {
+		if state.inBlockComment {
 			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
-				inBlockComment = false
+				state.inBlockComment = false
 				i++
 			}
 			continue
 		}
 
-		if escaped {
-			escaped = false
+		// Handle escapes
+		if state.escaped {
+			state.escaped = false
 			b.WriteByte(char)
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
+		// Handle quotes
+		if state.handleQuotes(char) {
+			if state.isQuoted() {
+				if char == '\\' {
+					state.escaped = true
+				}
+			}
 			b.WriteByte(char)
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if state.isQuoted() {
 			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
-				b.WriteByte(char)
-				continue
+				state.escaped = true
 			}
 			b.WriteByte(char)
 			continue
 		}
 
-		// Not in quotes, check for comments
-		if supportsHash && char == '#' {
-			inLineComment = true
+		// Check for new comments
+		if state.checkForComments(char, i, val) {
+			if state.inBlockComment {
+				i++ // Skip the next char as we consumed it for /*
+			} else if state.inLineComment && val[i+1] == '/' { // Check if it was // that triggered it
+				i++ // Skip the next char
+			}
 			continue
-		}
-		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
-			if supportsSlash && val[i+1] == '/' {
-				inLineComment = true
-				i++
-				continue
-			}
-			if supportsBlock && val[i+1] == '*' {
-				inBlockComment = true
-				i++
-				continue
-			}
 		}
 
 		// Skip backslash (line continuation outside quotes)
 		if char == '\\' {
-			// If followed by newline, it's a line continuation. Strip it.
-			// If not, it's just a backslash. Strip it anyway for safety?
-			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
 			continue
 		}
 
 		b.WriteByte(char)
 	}
 	return b.String()
+}
+
+type parserState struct {
+	inLineComment  bool
+	inBlockComment bool
+	inSingle       bool
+	inDouble       bool
+	inBacktick     bool
+	escaped        bool
+	supportsHash   bool
+	supportsSlash  bool
+	supportsBlock  bool
+}
+
+func (s *parserState) configureForLanguage(language string) {
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		s.supportsHash = true
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		s.supportsSlash = true
+		s.supportsBlock = true
+	case "php":
+		s.supportsHash = true
+		s.supportsSlash = true
+		s.supportsBlock = true
+	default:
+		s.supportsHash = true
+		s.supportsSlash = true
+		s.supportsBlock = true
+	}
+}
+
+func (s *parserState) handleQuotes(char byte) bool {
+	if char == '\'' && !s.inDouble && !s.inBacktick {
+		s.inSingle = !s.inSingle
+		return true
+	}
+	if char == '"' && !s.inSingle && !s.inBacktick {
+		s.inDouble = !s.inDouble
+		return true
+	}
+	if char == '`' && !s.inSingle && !s.inDouble {
+		s.inBacktick = !s.inBacktick
+		return true
+	}
+	return false
+}
+
+func (s *parserState) isQuoted() bool {
+	return s.inSingle || s.inDouble || s.inBacktick
+}
+
+func (s *parserState) checkForComments(char byte, index int, val string) bool {
+	if s.supportsHash && char == '#' {
+		s.inLineComment = true
+		return true
+	}
+	if (s.supportsSlash || s.supportsBlock) && char == '/' && index+1 < len(val) {
+		if s.supportsSlash && val[index+1] == '/' {
+			s.inLineComment = true
+			return true
+		}
+		if s.supportsBlock && val[index+1] == '*' {
+			s.inBlockComment = true
+			return true
+		}
+	}
+	return false
 }
 
 func checkInterpreterFunctionCalls(val, language string) error {
@@ -3596,7 +3629,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr // Ignore parse errors, treat as non-URL
 		}
 
 		if u.Scheme == "" || u.Host == "" {
