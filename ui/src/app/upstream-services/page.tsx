@@ -24,7 +24,7 @@ import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
-import { BulkServiceImport } from "@/components/services/bulk-service-import";
+import { BulkImportWizard } from "@/components/services/bulk-import-wizard";
 import {
     Dialog,
     DialogContent,
@@ -47,6 +47,7 @@ export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
   const [configuringTemplate, setConfiguringTemplate] = useState<ServiceTemplate | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -407,22 +408,22 @@ export default function ServicesPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Upstream Services</h1>
         <div className="flex items-center gap-2">
-            <Dialog>
+            <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline">
                         <Download className="mr-2 h-4 w-4" /> Bulk Import
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-xl">
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Bulk Service Import</DialogTitle>
                         <DialogDescription>
-                            Import multiple services at once from a JSON configuration.
+                            Import multiple services from JSON, YAML, or URL.
                         </DialogDescription>
                     </DialogHeader>
-                    <BulkServiceImport
+                    <BulkImportWizard
                         onImportSuccess={() => fetchServices()}
-                        onCancel={() => {}}
+                        onCancel={() => setIsBulkImportOpen(false)}
                     />
                 </DialogContent>
             </Dialog>
