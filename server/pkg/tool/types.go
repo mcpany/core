@@ -3564,10 +3564,67 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		}
 	}
 
+	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
+	if err := checkForDangerousSchemes(val); err != nil {
+		return err
+	}
+	// Also check decoded value for dangerous schemes
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForDangerousSchemes(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
 	// Sentinel Security Update: Detect SSRF attempts in command arguments
 	// We check for URLs, IP addresses, and localhost references.
 	if err := checkForSSRF(val); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func checkForDangerousSchemes(val string) error {
+	// Check for "scheme:..." pattern. Scheme must be at start.
+	// We look for the first colon.
+	idx := strings.Index(val, ":")
+	if idx == -1 {
+		return nil
+	}
+
+	// Extract scheme and convert to lower case
+	scheme := strings.ToLower(val[:idx])
+
+	// Validate scheme characters (alpha, digit, +, -, .) to prevent false positives on random colons
+	for _, r := range scheme {
+		if !((r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '+' || r == '-' || r == '.') {
+			return nil // Not a valid scheme pattern, likely just text with a colon
+		}
+	}
+
+	// Blocklist of dangerous schemes used for LFI, RCE, or SSRF in various tools
+	dangerous := map[string]bool{
+		// Generic / Interpreter
+		"file": true, "gopher": true, "expect": true, "php": true,
+		"zip": true, "jar": true, "war": true,
+
+		// ImageMagick (convert, mogrify, identify, etc.)
+		"mvg": true, "msl": true, "vid": true, "ephemeral": true,
+		"label": true, "text": true, "info": true, "pango": true,
+		"caption": true, "plasma": true, "xc": true, "inline": true,
+		"gradient": true, "pattern": true, "tile": true, "read": true,
+
+		// FFmpeg
+		"concat": true, "subfile": true, "crypto": true, "data": true,
+		"hls": true, "http": false, "https": false, // explicitly allowed (handled by IsSafeURL if :// present)
+		"ftp": true, "rtmp": true, "rtsp": true,
+
+		// Git
+		"ext": true, // Block git ext::
+	}
+
+	if dangerous[scheme] {
+		return fmt.Errorf("dangerous scheme detected: %s", scheme)
 	}
 
 	return nil
