@@ -59,9 +59,9 @@ func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]b
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 
-	// Apply Login Rate Limit: 10 RPS with a burst of 20.
+	// Apply Login Rate Limit: 25 RPS with a burst of 50.
 	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
-	loginRateLimiter := middleware.NewHTTPRateLimitMiddleware(10, 20, middleware.WithTrustProxy(trustProxy))
+	loginRateLimiter := middleware.NewHTTPRateLimitMiddleware(25, 50, middleware.WithTrustProxy(trustProxy))
 
 	mux.HandleFunc("/services", a.handleServices(store))
 	mux.HandleFunc("/services/validate", a.handleServiceValidate())
