@@ -146,6 +146,13 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+
+	// Authorization: Only admins can manage credentials
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	ctx := r.Context()
 	var cred configv1.Credential
 
@@ -189,6 +196,13 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+
+	// Authorization: Only admins can manage credentials
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	if len(pathParts) < 2 {
 		writeError(w, fmt.Errorf("id is required"))
@@ -229,6 +243,13 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+
+	// Authorization: Only admins can manage credentials
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	if len(pathParts) < 2 {
 		writeError(w, fmt.Errorf("id is required"))

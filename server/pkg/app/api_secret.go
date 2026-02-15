@@ -11,6 +11,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -72,6 +73,19 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+
+	// Authorization: Only admins can manage secrets
+	// Secrets are sensitive and can be used to escalate privileges or access resources.
+	// We might consider allowing users to manage their own secrets in the future,
+	// but currently secrets are global.
+	// Note: We use auth.NewRBACEnforcer() to check the role.
+	// This requires that the auth middleware has populated the context with roles.
+	// If auth is disabled (dev mode without API key), the middleware grants admin role, so this check passes.
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	ctx := r.Context()
 	var secret configv1.Secret
 
@@ -116,6 +130,12 @@ func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	if len(pathParts) < 4 {
 		writeError(w, fmt.Errorf("id is required"))
@@ -138,6 +158,12 @@ func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	// /api/v1/secrets/:id/reveal -> ["api", "v1", "secrets", "id", "reveal"]
 	if len(pathParts) < 5 || pathParts[4] != "reveal" {

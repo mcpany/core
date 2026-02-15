@@ -171,6 +171,11 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 		case http.MethodGet:
 			a.handleListServices(w, r, store)
 		case http.MethodPost:
+			// Authorization: Only admins can create services
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			a.handleCreateService(w, r, store)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -492,6 +497,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 		}
 
 		if len(parts) == 2 && parts[1] == "restart" {
+			// Restart requires admin privileges as it affects availability
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			a.handleServiceRestart(w, r, name, store)
 			return
 		}
@@ -518,6 +528,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write(b)
 		case http.MethodPut:
+			// Authorization: Only admins can update services
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			var svc configv1.UpstreamServiceConfig
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
@@ -562,6 +577,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 		case http.MethodDelete:
+			// Authorization: Only admins can delete services
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			if err := store.DeleteService(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -673,6 +693,11 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(b)
 
 		case http.MethodPost:
+			// Authorization: Only admins can update global settings
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			var settings configv1.GlobalSettings
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
@@ -988,6 +1013,11 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Authorization: Only admins can create profiles
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			var profile configv1.ProfileDefinition
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
@@ -1073,6 +1103,11 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
+			// Authorization: Only admins can update profiles
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			var profile configv1.ProfileDefinition
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
@@ -1096,6 +1131,11 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
+			// Authorization: Only admins can delete profiles
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			if err := store.DeleteProfile(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete profile", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -1137,6 +1177,11 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Authorization: Only admins can create collections
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			var collection configv1.Collection
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
@@ -1221,6 +1266,11 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
+			// Authorization: Only admins can update collections
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			var collection configv1.Collection
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
@@ -1241,6 +1291,11 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
+			// Authorization: Only admins can delete collections
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
 			if err := store.DeleteServiceCollection(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete collection", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -1257,6 +1312,12 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Authorization: Only admins can apply collections (create services)
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
