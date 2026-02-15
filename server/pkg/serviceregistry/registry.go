@@ -97,9 +97,10 @@ type ServiceRegistryInterface interface { //nolint:revive
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
 type ServiceRegistry struct {
-	mu              sync.RWMutex
-	serviceConfigs  map[string]*config.UpstreamServiceConfig
-	serviceInfo     map[string]*tool.ServiceInfo
+	mu                     sync.RWMutex
+	serviceConfigs         map[string]*config.UpstreamServiceConfig
+	strippedServiceConfigs map[string]*config.UpstreamServiceConfig
+	serviceInfo            map[string]*tool.ServiceInfo
 	serviceErrors   map[string]string
 	healthErrors    map[string]string
 	upstreams       map[string]upstream.Upstream
@@ -123,9 +124,10 @@ type ServiceRegistry struct {
 //   - *ServiceRegistry: A pointer to the newly created ServiceRegistry.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
-		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
-		serviceInfo:     make(map[string]*tool.ServiceInfo),
-		serviceErrors:   make(map[string]string),
+		serviceConfigs:         make(map[string]*config.UpstreamServiceConfig),
+		strippedServiceConfigs: make(map[string]*config.UpstreamServiceConfig),
+		serviceInfo:            make(map[string]*tool.ServiceInfo),
+		serviceErrors:          make(map[string]string),
 		healthErrors:    make(map[string]string),
 		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
@@ -182,6 +184,13 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 	// Register the config and clear error
 	r.serviceConfigs[serviceID] = serviceConfig
+
+	// ⚡ BOLT: Cache stripped config to optimize GetAllServices
+	// Randomized Selection from Top 5 High-Impact Targets
+	if cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig); cloned != nil {
+		util.StripSecretsFromService(cloned)
+		r.strippedServiceConfigs[serviceID] = cloned
+	}
 	delete(r.serviceErrors, serviceID)
 
 	u, err := r.factory.NewUpstream(serviceConfig)
@@ -341,14 +350,15 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	serviceConfig, ok := r.serviceConfigs[serviceID]
+	serviceConfig, ok := r.strippedServiceConfigs[serviceID]
 	if !ok {
 		return nil, false
 	}
-	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
-	util.StripSecretsFromService(cloned)
-	r.injectRuntimeInfo(cloned)
-	return cloned, true
+	// ⚡ BOLT: Shallow copy to avoid expensive proto.Clone and StripSecretsFromService
+	// Randomized Selection from Top 5 High-Impact Targets
+	shallow := *serviceConfig
+	r.injectRuntimeInfo(&shallow)
+	return &shallow, true
 }
 
 // UnregisterService removes a service from the registry.
@@ -390,6 +400,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	}
 
 	delete(r.serviceConfigs, serviceID)
+	delete(r.strippedServiceConfigs, serviceID)
 	delete(r.serviceInfo, serviceID)
 	delete(r.serviceErrors, serviceID)
 	r.toolManager.ClearToolsForService(serviceID)
@@ -525,12 +536,13 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	services := make([]*config.UpstreamServiceConfig, 0, len(r.serviceConfigs))
-	for _, service := range r.serviceConfigs {
-		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
-		util.StripSecretsFromService(cloned)
-		r.injectRuntimeInfo(cloned)
-		services = append(services, cloned)
+	services := make([]*config.UpstreamServiceConfig, 0, len(r.strippedServiceConfigs))
+	for _, service := range r.strippedServiceConfigs {
+		// ⚡ BOLT: Shallow copy to avoid expensive proto.Clone and StripSecretsFromService
+		// Randomized Selection from Top 5 High-Impact Targets
+		shallow := *service
+		r.injectRuntimeInfo(&shallow)
+		services = append(services, &shallow)
 	}
 	return services, nil
 }
