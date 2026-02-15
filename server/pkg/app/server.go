@@ -1951,6 +1951,9 @@ func (a *Application) runServerMode(
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
+	// Register User Preferences Endpoint
+	mux.Handle("/api/v1/user/preferences", authMiddleware(a.handleUserPreferences(store)))
+
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
 	// Wait, we need to handle assets specifically.

@@ -150,10 +150,17 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 		gs.SetProfileDefinitions(current)
 	}
 
-	// 4. Build final ServerConfig
+	// 4. Collect Users
+	users := make([]*configv1.User, 0, len(s.users))
+	for _, u := range s.users {
+		users = append(users, proto.Clone(u).(*configv1.User))
+	}
+
+	// 5. Build final ServerConfig
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: upstreamServices,
 		GlobalSettings:   gs,
+		Users:            users,
 	}.Build()
 
 	return cfg, nil
