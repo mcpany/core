@@ -2958,16 +2958,60 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+// quoteState tracks the quoting state for comment stripping
+type quoteState struct {
+	inSingle   bool
+	inDouble   bool
+	inBacktick bool
+	escaped    bool
+}
+
+// update updates the quote state based on the current character
+// Returns true if the character was written (part of a string or escaped), false otherwise
+func (qs *quoteState) update(char byte, b *strings.Builder) bool {
+	if qs.escaped {
+		qs.escaped = false
+		b.WriteByte(char)
+		return true
+	}
+
+	if char == '\'' && !qs.inDouble && !qs.inBacktick {
+		qs.inSingle = !qs.inSingle
+		b.WriteByte(char)
+		return true
+	}
+	if char == '"' && !qs.inSingle && !qs.inBacktick {
+		qs.inDouble = !qs.inDouble
+		b.WriteByte(char)
+		return true
+	}
+	if char == '`' && !qs.inSingle && !qs.inDouble {
+		qs.inBacktick = !qs.inBacktick
+		b.WriteByte(char)
+		return true
+	}
+
+	if qs.inSingle || qs.inDouble || qs.inBacktick {
+		if char == '\\' {
+			qs.escaped = true
+			// Write escape char to preserve string content (e.g. \n)
+			b.WriteByte(char)
+			return true
+		}
+		b.WriteByte(char)
+		return true
+	}
+
+	return false
+}
+
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
 	inLineComment := false  // # or //
 	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
+	qs := &quoteState{}
 
 	// Determine comment style
 	supportsHash := false
@@ -3009,37 +3053,8 @@ func stripInterpreterComments(val, language string) string {
 			continue
 		}
 
-		if escaped {
-			escaped = false
-			b.WriteByte(char)
-			continue
-		}
-
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			b.WriteByte(char)
-			continue
-		}
-
-		if inSingle || inDouble || inBacktick {
-			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
-				b.WriteByte(char)
-				continue
-			}
-			b.WriteByte(char)
+		// Delegate quote handling to helper struct
+		if qs.update(char, &b) {
 			continue
 		}
 

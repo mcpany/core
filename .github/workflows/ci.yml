@@ -50,6 +50,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -133,6 +138,11 @@ jobs:
 
           sudo systemctl restart docker || sudo service docker restart || echo "Docker restart failed, proceeding anyway..."
           docker info # Verify the mirrors are listed
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -253,6 +263,11 @@ jobs:
 
           sudo systemctl restart docker || sudo service docker restart || echo "Docker restart failed, proceeding anyway..."
           docker info # Verify the mirrors are listed
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -524,8 +539,13 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          sudo systemctl restart docker || sudo service docker restart || echo "Docker restart failed, proceeding anyway..."
           docker info
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -643,6 +663,11 @@ jobs:
           sudo systemctl restart docker || sudo service docker restart || echo "Docker restart failed, proceeding anyway..."
           docker info # Verify the mirrors are listed
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -731,6 +756,11 @@ jobs:
           sudo systemctl restart docker || sudo service docker restart || echo "Docker restart failed, proceeding anyway..."
           docker info # Verify the mirrors are listed
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -786,6 +816,11 @@ jobs:
       #          swap-storage: true
       #
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Detect Architecture
         id: detect-arch
