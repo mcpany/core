@@ -42,13 +42,17 @@ RUN ln -s /app/node_modules /app/proto/node_modules
 # Generate TS protos (since they are not in the build context in CI)
 # We set --proto_path=/app so that imports starting with "proto/..." are resolved correctly.
 # For example, "proto/config/v1/profile.proto" resolves to "/app/proto/config/v1/profile.proto".
-RUN find proto -name "*.proto" -exec protoc \
-    --proto_path=/app \
-    --proto_path=/usr/local/include \
-    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/app \
-    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
-    {} +
+# Using a shell loop instead of find -exec for better control and debugging
+RUN for file in $(find proto -name "*.proto"); do \
+      echo "Compiling $file..."; \
+      protoc \
+        --proto_path=/app \
+        --proto_path=/usr/local/include \
+        --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+        --ts_proto_out=/app \
+        --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+        "$file"; \
+    done
 
 # Fix relative imports in generated files to point to local google protos (if any generated)
 # This matches the behavior in the root Makefile
