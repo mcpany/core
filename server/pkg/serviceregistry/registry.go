@@ -353,10 +353,10 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	if !ok {
 		return nil, false
 	}
-	// ⚡ BOLT: Optimization - Use cached stripped config with shallow copy.
-	cloned := *serviceConfig
-	r.injectRuntimeInfo(&cloned)
-	return &cloned, true
+	// ⚡ BOLT: Optimization - Use cached stripped config with proto.Clone.
+	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
+	r.injectRuntimeInfo(cloned)
+	return cloned, true
 }
 
 // UnregisterService removes a service from the registry.
@@ -535,15 +535,14 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	defer r.mu.RUnlock()
 
 	services := make([]*config.UpstreamServiceConfig, 0, len(r.safeServiceConfigs))
-	// ⚡ BOLT: Optimization - Use cached stripped config with shallow copy.
+	// ⚡ BOLT: Optimization - Use cached stripped config with proto.Clone.
+	// While less efficient than shallow copy, it avoids risks with internal proto state.
 	// Randomized Selection from Top 5 High-Impact Targets
 	for _, service := range r.safeServiceConfigs {
-		// Use a shallow copy to inject runtime info without affecting the cache.
-		// Note: injectRuntimeInfo MUST NOT modify nested pointer fields.
-		// It only sets LastError and ToolCount which are fields on the UpstreamServiceConfig struct.
-		cloned := *service
-		r.injectRuntimeInfo(&cloned)
-		services = append(services, &cloned)
+		// Clone to inject runtime info safely without affecting the cache.
+		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
+		r.injectRuntimeInfo(cloned)
+		services = append(services, cloned)
 	}
 	return services, nil
 }
