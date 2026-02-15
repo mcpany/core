@@ -69,79 +69,97 @@ export function DashboardGrid() {
 
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
 
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    interface LegacyWidget {
-                        id: string;
-                        title: string;
-                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
-                        hidden?: boolean;
-                    }
-                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                        instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
-                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                        hidden: w.hidden ?? false
-                    }));
-
-                    // Filter out any invalid types
-                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
-                        setWidgets(DEFAULT_LAYOUT);
-                    } else {
-                        setWidgets(validMigrated);
-                    }
-                } else {
-                    // Case 2: Already in new format
-                    setWidgets(parsed);
+        // Fetch from API
+        fetch('/api/v1/user/preferences')
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    // Not logged in or unauthorized, fallback to local storage or defaults
+                    console.warn("Unauthorized to fetch preferences, falling back to local storage");
+                    throw new Error("Unauthorized");
                 }
-            } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+                if (!res.ok) throw new Error("Failed to fetch preferences");
+                return res.json();
+            })
+            .then(prefs => {
+                if (prefs && prefs.dashboard_layout) {
+                     try {
+                        const parsed = JSON.parse(prefs.dashboard_layout);
+                        // Validate and migrate if needed
+                        const migrated = migrateWidgets(parsed);
+                        if (migrated.length > 0) {
+                            setWidgets(migrated);
+                            return;
+                        }
+                     } catch (e) {
+                        console.error("Failed to parse dashboard layout from API", e);
+                     }
+                }
+
+                // Fallback: Try localStorage (migration path)
+                const saved = localStorage.getItem("dashboard-layout");
+                if (saved) {
+                     try {
+                        const parsed = JSON.parse(saved);
+                        const migrated = migrateWidgets(parsed);
+                         if (migrated.length > 0) {
+                            setWidgets(migrated);
+                            // We will save it to cloud in the effect hook below automatically
+                            return;
+                         }
+                     } catch (e) {
+                        console.error("Failed to parse dashboard layout from localStorage", e);
+                     }
+                }
+
+                // Final fallback: Default layout
                 setWidgets(DEFAULT_LAYOUT);
-            }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
-        }
+            })
+            .catch(err => {
+                console.error("Error loading preferences", err);
+                // On error (e.g. network), fallback to localStorage
+                 const saved = localStorage.getItem("dashboard-layout");
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        const migrated = migrateWidgets(parsed);
+                        if (migrated.length > 0) {
+                            setWidgets(migrated);
+                            return;
+                        }
+                    } catch { /* ignore */ }
+                }
+                setWidgets(DEFAULT_LAYOUT);
+            });
     }, []);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
     };
 
-    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
+    // ⚡ BOLT: Debounce API calls and localStorage writes
     // Randomized Selection from Top 5 High-Impact Targets
     const isFirstRun = useRef(true);
     useEffect(() => {
         if (!isMounted) return;
 
         // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
-        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
-        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
-        // But for initial load, widgets is [].
-
-        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
         if (isFirstRun.current) {
             isFirstRun.current = false;
-            // If widgets are empty on first run, it's likely the initial state.
-            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
-            // But `isMounted` gate likely delays this enough.
             return;
         }
 
         const timer = setTimeout(() => {
+            // Persist to Backend
+            fetch('/api/v1/user/preferences', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dashboard_layout: JSON.stringify(widgets) })
+            }).catch(err => console.error("Failed to save dashboard layout to backend", err));
+
+            // Persist to LocalStorage (as cache/offline backup)
             localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+        }, 1000); // Increased debounce to 1s to reduce API spam
 
         return () => clearTimeout(timer);
     }, [widgets, isMounted]);
@@ -217,11 +235,6 @@ export function DashboardGrid() {
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
-                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
-                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
-                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
-                    Let's keep the popover for recovering hidden widgets.
-                */}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="h-8 border-dashed">
@@ -349,4 +362,30 @@ export function DashboardGrid() {
             )}
         </div>
     );
+}
+
+function migrateWidgets(parsed: any[]): WidgetInstance[] {
+    if (!Array.isArray(parsed)) return [];
+
+    // Case 1: Legacy format (DashboardWidget[]) where id matches type
+    if (parsed.length > 0 && !parsed[0].instanceId) {
+        interface LegacyWidget {
+            id: string;
+            title: string;
+            type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+            hidden?: boolean;
+        }
+        const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
+            instanceId: crypto.randomUUID(),
+            type: w.id, // In legacy, id was effectively the type
+            title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+            size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+            hidden: w.hidden ?? false
+        }));
+        return migrated.filter(w => getWidgetDefinition(w.type));
+    }
+
+    // Case 2: Already in new format
+    // Filter out invalid types just in case
+    return parsed.filter(w => w.instanceId && getWidgetDefinition(w.type));
 }

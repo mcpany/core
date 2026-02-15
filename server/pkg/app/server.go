@@ -1984,6 +1984,18 @@ func (a *Application) runServerMode(
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
 
+	// User Preferences API
+	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.HandleGetUserPreferences(w, r)
+		case http.MethodPost:
+			a.HandleUpdateUserPreferences(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
 		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
