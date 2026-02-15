@@ -1875,7 +1875,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Filter undefined parameters from inputs to prevent mass assignment/pollution
 	filterInputs(inputs, t.allowedParams)
-	filterInputs(inputs, t.allowedParams)
 
 	args := []string{}
 	if len(t.sandboxArgs) > 0 {
@@ -2210,11 +2209,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Filter undefined parameters from inputs to prevent mass assignment/pollution
-	for k := range inputs {
-		if !t.allowedParams[k] {
-			delete(inputs, k)
-		}
-	}
+	filterInputs(inputs, t.allowedParams)
 
 	args := []string{}
 	if t.callDefinition.GetArgs() != nil {

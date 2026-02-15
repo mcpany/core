@@ -129,9 +129,9 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          (sudo systemctl restart docker || sudo service docker restart) || echo "Could not restart docker, skipping..."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -249,9 +249,9 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          (sudo systemctl restart docker || sudo service docker restart) || echo "Could not restart docker, skipping..."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -528,9 +528,13 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          docker info
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
+
+          (sudo systemctl restart docker || sudo service docker restart) || echo "Could not restart docker, skipping..."
+          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -643,9 +647,9 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          (sudo systemctl restart docker || sudo service docker restart) || echo "Could not restart docker, skipping..."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -730,9 +734,10 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
-          sudo systemctl restart docker
+          (sudo systemctl restart docker || sudo service docker restart) || echo "Could not restart docker, skipping..."
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
