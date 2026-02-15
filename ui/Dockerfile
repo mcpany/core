@@ -20,9 +20,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
-COPY proto/ /proto/
+COPY proto/ /app/proto/
 # Symlink node_modules so proto files can find dependencies
-RUN ln -s /app/node_modules /proto/node_modules
+RUN ln -s /app/node_modules /app/proto/node_modules
 
 # Install dependencies for protobuf generation
 RUN apt-get update && apt-get install -y curl unzip
@@ -49,12 +49,14 @@ RUN curl -sSL -o /tmp/grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-ga
 
 # Generate TypeScript protobuf files
 # We use the installed protoc and the ts-proto plugin from node_modules
-RUN find /proto -name "*.proto" -exec protoc \
-    --proto_path=/proto \
+# We set --proto_path to both /app/proto (to resolve source files) and /app (to resolve imports like "proto/config/...")
+RUN find /app/proto -name "*.proto" -exec protoc \
+    --proto_path=/app/proto \
+    --proto_path=/app \
     --proto_path=/tmp/grpc-gateway \
     --proto_path=/tmp/googleapis \
     --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/proto \
+    --ts_proto_out=/app/proto \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 
