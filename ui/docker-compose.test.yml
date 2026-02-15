@@ -37,6 +37,7 @@ services:
       - MCPANY_LOG_LEVEL=info
       - BACKEND_URL=http://server:50050
       - BASE_URL=http://localhost:9002
+      - TEST_PORT=9002
       - NEXT_PUBLIC_API_URL=http://server:50050
       - MCPANY_API_KEY=test-token
       - NEXT_PUBLIC_MCPANY_API_KEY=test-token
