@@ -6,6 +6,32 @@
 import { test, expect } from '@playwright/test';
 
 test('Live Trace Inspector and Replay Flow', async ({ page }) => {
+  // Mock Tools API to ensure calculate_sum exists for Smart Replay
+  await page.route('**/api/v1/tools', async route => {
+    await route.fulfill({
+      json: {
+        tools: [
+          {
+            name: 'calculate_sum',
+            description: 'Calculates the sum of two numbers',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                a: { type: 'number' },
+                b: { type: 'number' }
+              },
+              required: ['a', 'b']
+            }
+          }
+        ]
+      }
+    });
+  });
+
+  // Mock other endpoints to prevent errors
+  await page.route('**/api/v1/doctor', async route => route.fulfill({ json: { status: 'healthy' } }));
+  await page.route('**/api/v1/topology', async route => route.fulfill({ json: {} }));
+
   // Navigate to traces page
   // Mock traces API
   await page.route('/api/traces', async route => {
