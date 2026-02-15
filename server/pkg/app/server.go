@@ -1915,6 +1915,18 @@ func (a *Application) runServerMode(
 		}
 	})))
 
+	// User Preferences API
+	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.HandleGetUserPreferences(w, r)
+		case http.MethodPost:
+			a.HandleUpdateUserPreferences(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	mux.Handle("/api/v1/secrets/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check for /reveal
 		if strings.HasSuffix(r.URL.Path, "/reveal") {
