@@ -3093,6 +3093,20 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
+	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
+	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
+	dangerousKeywords := []string{
+		"system", "exec", "popen", "eval",
+		"spawn", "fork",
+		"import", "require",
+		"subprocess", "child_process", "os", "sys",
+		"open", "read", "write",
+	}
+
+	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+		return err
+	}
+
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
 	b.Grow(len(val))
@@ -3102,14 +3116,6 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		}
 	}
 	cleanVal := strings.ToLower(b.String())
-
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
-		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
-	}
 
 	for _, kw := range dangerousKeywords {
 		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
@@ -3125,6 +3131,137 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 	if strings.Contains(cleanVal, "__import__") {
 		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
+	}
+	return nil
+}
+
+func checkUnquotedKeywords(val string, keywords []string) error {
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	var wordBuilder strings.Builder
+	lastChar := rune(0) // Last non-whitespace char before current word
+	lastWord := ""      // Last word seen before current word (separated only by whitespace)
+
+	for _, char := range val {
+		if escaped {
+			escaped = false
+			continue
+		}
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		// Quote handling
+		if char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			// Treat quotes as delimiters
+			if inSingle { // Entered quote
+				if wordBuilder.Len() > 0 {
+					word := wordBuilder.String()
+					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+						return err
+					}
+					lastWord = word
+					wordBuilder.Reset()
+				}
+			}
+			// When exiting quote, we don't update lastWord because quoted string is not a word
+			// But we should update lastChar to the quote
+			if !inSingle {
+				lastChar = char
+				lastWord = ""
+			}
+			continue
+		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			if inDouble { // Entered quote
+				if wordBuilder.Len() > 0 {
+					word := wordBuilder.String()
+					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+						return err
+					}
+					lastWord = word
+					wordBuilder.Reset()
+				}
+			}
+			if !inDouble {
+				lastChar = char
+				lastWord = ""
+			}
+			continue
+		}
+		if char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			if inBacktick { // Entered quote
+				if wordBuilder.Len() > 0 {
+					word := wordBuilder.String()
+					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+						return err
+					}
+					lastWord = word
+					wordBuilder.Reset()
+				}
+			}
+			if !inBacktick {
+				lastChar = char
+				lastWord = ""
+			}
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			continue
+		}
+
+		if char < 128 && isWordChar(byte(char)) {
+			wordBuilder.WriteByte(byte(char))
+		} else {
+			// Delimiter (including non-ASCII characters)
+			if wordBuilder.Len() > 0 {
+				word := wordBuilder.String()
+				if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					return err
+				}
+				lastWord = word
+				wordBuilder.Reset()
+			}
+
+			if !unicode.IsSpace(char) {
+				lastChar = char
+				lastWord = "" // Clear lastWord if we hit a non-space delimiter
+			}
+		}
+	}
+
+	// Check last word
+	if wordBuilder.Len() > 0 {
+		word := wordBuilder.String()
+		if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkKeyword(word string, keywords []string, lastChar rune, lastWord string) error {
+	// Check if word is dangerous keyword
+	for _, kw := range keywords {
+		if word == kw {
+			// Allow $var, @var, %var, ->method
+			if lastChar == '$' || lastChar == '@' || lastChar == '%' || lastChar == '>' {
+				return nil
+			}
+			// Allow sub open, package open, use open
+			if lastWord == "sub" || lastWord == "package" || lastWord == "use" || lastWord == "class" {
+				return nil
+			}
+			return fmt.Errorf("interpreter injection detected: dangerous keyword %q found (unquoted)", kw)
+		}
 	}
 	return nil
 }
