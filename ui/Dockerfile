@@ -49,16 +49,18 @@ RUN curl -sSL -o /tmp/grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-ga
 
 # Generate TypeScript protobuf files
 # We use the installed protoc and the ts-proto plugin from node_modules
-# We set --proto_path to both /app/proto (to resolve source files) and /app (to resolve imports like "proto/config/...")
-RUN find /app/proto -name "*.proto" -exec protoc \
-    --proto_path=/app/proto \
-    --proto_path=/app \
+# We set --proto_path to . (to resolve source files relative to /app/proto) and .. (to resolve imports like "proto/config/..." relative to /app)
+WORKDIR /app/proto
+RUN find . -name "*.proto" -exec protoc \
+    --proto_path=. \
+    --proto_path=.. \
     --proto_path=/tmp/grpc-gateway \
     --proto_path=/tmp/googleapis \
-    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/app/proto \
+    --plugin=protoc-gen-ts_proto=../node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=. \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
+WORKDIR /app
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
