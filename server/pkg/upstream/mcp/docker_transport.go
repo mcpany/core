@@ -47,7 +47,10 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 
 // DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
+//
+// Summary: Transport connection to a Dockerized MCP service.
 type DockerTransport struct {
+	// StdioConfig is the configuration for the stdio connection.
 	StdioConfig *configv1.McpStdioConnection
 }
 

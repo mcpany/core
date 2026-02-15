@@ -28,37 +28,63 @@ import (
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
+//
+// Summary: Container for extracted MCP annotations.
 type ParsedMcpAnnotations struct {
-	Tools     []McpTool
-	Prompts   []McpPrompt
+	// Tools is a list of extracted tool definitions.
+	Tools []McpTool
+	// Prompts is a list of extracted prompt definitions.
+	Prompts []McpPrompt
+	// Resources is a list of extracted resource definitions.
 	Resources []McpResource
 }
 
 // McpTool represents the information extracted from a gRPC method that has been
 // annotated as an MCP tool.
+//
+// Summary: Metadata for an MCP tool extracted from protobuf.
 type McpTool struct {
-	Name            string
-	Description     string
-	ServiceName     string
-	MethodName      string
-	FullMethodName  string // e.g., /package.ServiceName/MethodName
-	RequestType     string // Fully qualified name
-	ResponseType    string // Fully qualified name
-	RequestFields   []McpField
-	ResponseFields  []McpField
-	ReadOnlyHint    bool
+	// Name is the name of the tool.
+	Name string
+	// Description is the description of the tool.
+	Description string
+	// ServiceName is the name of the gRPC service.
+	ServiceName string
+	// MethodName is the name of the gRPC method.
+	MethodName string
+	// FullMethodName is the fully qualified name of the method (e.g., /package.ServiceName/MethodName).
+	FullMethodName string
+	// RequestType is the fully qualified name of the request message type.
+	RequestType string
+	// ResponseType is the fully qualified name of the response message type.
+	ResponseType string
+	// RequestFields is a list of fields in the request message.
+	RequestFields []McpField
+	// ResponseFields is a list of fields in the response message.
+	ResponseFields []McpField
+	// ReadOnlyHint indicates if the tool is read-only.
+	ReadOnlyHint bool
+	// DestructiveHint indicates if the tool is destructive.
 	DestructiveHint bool
-	IdempotentHint  bool
-	OpenWorldHint   bool
+	// IdempotentHint indicates if the tool is idempotent.
+	IdempotentHint bool
+	// OpenWorldHint indicates if the tool has side effects outside the system.
+	OpenWorldHint bool
 }
 
 // McpField represents a field within a protobuf message, including its name,
 // description, type, and whether it is repeated.
+//
+// Summary: Metadata for a protobuf message field.
 type McpField struct {
-	Name        string
+	// Name is the name of the field.
+	Name string
+	// Description is the description of the field.
 	Description string
-	Type        string
-	IsRepeated  bool
+	// Type is the protobuf type of the field.
+	Type string
+	// IsRepeated indicates if the field is a repeated field (list).
+	IsRepeated bool
 }
 
 // GetName returns the name of the McpField.
@@ -305,22 +331,37 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
+//
+// Summary: Metadata for an MCP prompt extracted from protobuf.
 type McpPrompt struct {
-	Name           string
-	Description    string
-	Template       string
-	ServiceName    string
-	MethodName     string
+	// Name is the name of the prompt.
+	Name string
+	// Description is the description of the prompt.
+	Description string
+	// Template is the prompt template string.
+	Template string
+	// ServiceName is the name of the gRPC service.
+	ServiceName string
+	// MethodName is the name of the gRPC method.
+	MethodName string
+	// FullMethodName is the fully qualified name of the method.
 	FullMethodName string
-	RequestType    string
-	ResponseType   string
+	// RequestType is the fully qualified name of the request message type.
+	RequestType string
+	// ResponseType is the fully qualified name of the response message type.
+	ResponseType string
 }
 
 // McpResource represents a protobuf message that has been annotated as an MCP
 // resource.
+//
+// Summary: Metadata for an MCP resource extracted from protobuf.
 type McpResource struct {
-	Name        string
+	// Name is the name of the resource.
+	Name string
+	// Description is the description of the resource.
 	Description string
+	// MessageType is the fully qualified name of the protobuf message type representing the resource.
 	MessageType string
 }
 
@@ -513,12 +554,16 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 }
 
 // ExtractMcpDefinitions iterates through a FileDescriptorSet, parsing any MCP
-// (Model Context Protocol) options found in service methods and messages. It
-// extracts definitions for tools, prompts, and resources.
+// (Model Context Protocol) options found in service methods and messages.
 //
-// fds is the FileDescriptorSet to be parsed.
-// It returns a ParsedMcpAnnotations struct containing the extracted information
-// or an error if the parsing fails.
+// Summary: Extracts MCP definitions (tools, prompts, resources) from protobuf descriptors.
+//
+// Parameters:
+//   - fds: The FileDescriptorSet to parse.
+//
+// Returns:
+//   - *ParsedMcpAnnotations: A struct containing the extracted information.
+//   - error: An error if the parsing fails.
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

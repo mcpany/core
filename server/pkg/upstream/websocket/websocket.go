@@ -80,6 +80,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
+// Summary: Initializes a new WebSocket upstream.
+//
 // Parameters:
 //   - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //

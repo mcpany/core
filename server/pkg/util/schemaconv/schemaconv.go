@@ -151,6 +151,8 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 }
 
 // ConfigParameter an interface for config parameter schemas.
+//
+// Summary: Interface for types that provide a parameter schema.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -160,6 +162,8 @@ type ConfigParameter interface {
 }
 
 // McpFieldParameter an interface for McpField parameter schemas.
+//
+// Summary: Interface for types that provide MCP field metadata.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

@@ -39,12 +39,20 @@ func (e *transportError) Error() string {
 
 // BundleDockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
+//
+// Summary: Transport connection to a Dockerized MCP bundle.
 type BundleDockerTransport struct {
-	Image      string
-	Command    string
-	Args       []string
-	Env        []string
-	Mounts     []mount.Mount
+	// Image is the Docker image to run.
+	Image string
+	// Command is the command to run in the container.
+	Command string
+	// Args are the arguments for the command.
+	Args []string
+	// Env is the list of environment variables.
+	Env []string
+	// Mounts is the list of volume mounts.
+	Mounts []mount.Mount
+	// WorkingDir is the working directory inside the container.
 	WorkingDir string
 
 	// dockerClientFactory allows injecting a custom docker client for testing.

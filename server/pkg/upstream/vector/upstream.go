@@ -182,26 +182,57 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
+//
+// Summary: Abstract interface for vector database operations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
-	// It accepts a context, a query vector, the number of results to return (topK),
-	// a metadata filter, and a namespace.
-	// It returns a map containing the search results or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - vector: The query vector.
+	//   - topK: The number of results to return.
+	//   - filter: A metadata filter map.
+	//   - namespace: The namespace to query.
+	//
+	// Returns:
+	//   - map[string]interface{}: The search results.
+	//   - error: An error if the query fails.
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Upsert inserts or updates vectors in the database.
-	// It accepts a context, a list of vectors (each as a map), and a namespace.
-	// It returns a map containing the operation result (e.g., upserted count) or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - vectors: A list of vectors to upsert (each as a map).
+	//   - namespace: The namespace to upsert into.
+	//
+	// Returns:
+	//   - map[string]interface{}: The operation result (e.g., count).
+	//   - error: An error if the upsert fails.
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Delete removes vectors from the database.
-	// It accepts a context, a list of IDs to delete, a namespace, and an optional metadata filter.
-	// It returns a map containing the operation result or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - ids: A list of IDs to delete.
+	//   - namespace: The namespace to delete from.
+	//   - filter: An optional metadata filter.
+	//
+	// Returns:
+	//   - map[string]interface{}: The operation result.
+	//   - error: An error if the delete fails.
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
 
 	// DescribeIndexStats retrieves statistics about the vector index.
-	// It accepts a context and an optional metadata filter.
-	// It returns a map containing the index statistics or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - filter: An optional metadata filter.
+	//
+	// Returns:
+	//   - map[string]interface{}: The index statistics.
+	//   - error: An error if the operation fails.
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 

@@ -15,8 +15,11 @@ import (
 )
 
 // ToolReconciler reconciles a Tool object
+//
+// Summary: Controller for managing Tool resources.
 type ToolReconciler struct {
 	client.Client
+	// Scheme is the scheme used by the controller.
 	Scheme *runtime.Scheme
 }
 

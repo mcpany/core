@@ -71,8 +71,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
-// poolManager is the connection pool manager, though it is not currently used
-// by the WebRTC upstream as connections are transient.
+// Summary: Initializes a new WebRTC upstream.
+//
+// Parameters:
+//   - poolManager: The connection pool manager (not currently used for WebRTC).
+//
+// Returns:
+//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

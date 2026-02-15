@@ -40,21 +40,28 @@ type ToolStatus struct {
 // +kubebuilder:subresource:status
 
 // Tool is the Schema for the tools API
+//
+// Summary: Represents a Tool resource in Kubernetes.
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ToolSpec   `json:"spec,omitempty"`
+	// Spec defines the desired state of Tool
+	Spec ToolSpec `json:"spec,omitempty"`
+	// Status defines the observed state of Tool
 	Status ToolStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
 // ToolList contains a list of Tool
+//
+// Summary: A list of Tool resources.
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Tool `json:"items"`
+	// Items is the list of Tools.
+	Items []Tool `json:"items"`
 }
 
 func init() {

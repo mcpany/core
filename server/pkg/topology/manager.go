@@ -37,54 +37,91 @@ type Manager struct {
 }
 
 // SessionStats contains statistics about a topology session.
+//
+// Summary: Statistics for a specific client session.
 type SessionStats struct {
-	ID             string
-	Metadata       map[string]string
-	LastActive     time.Time
-	RequestCount   int64
-	TotalLatency   time.Duration
-	ErrorCount     int64
-	ServiceCounts  map[string]int64         // Per service request count
-	ServiceErrors  map[string]int64         // Per service error count
+	// ID is the unique identifier for the session.
+	ID string
+	// Metadata contains arbitrary metadata associated with the session (e.g., User-Agent).
+	Metadata map[string]string
+	// LastActive is the timestamp of the last activity in this session.
+	LastActive time.Time
+	// RequestCount is the total number of requests made in this session.
+	RequestCount int64
+	// TotalLatency is the accumulated latency of all requests in this session.
+	TotalLatency time.Duration
+	// ErrorCount is the total number of errors encountered in this session.
+	ErrorCount int64
+	// ServiceCounts maps service IDs to the number of requests made to that service.
+	ServiceCounts map[string]int64 // Per service request count
+	// ServiceErrors maps service IDs to the number of errors encountered for that service.
+	ServiceErrors map[string]int64 // Per service error count
+	// ServiceLatency maps service IDs to the accumulated latency for that service.
 	ServiceLatency map[string]time.Duration // Per service latency
 }
 
 // Stats aggregated metrics.
+//
+// Summary: Aggregated metrics for the topology.
 type Stats struct {
+	// TotalRequests is the total number of requests tracked.
 	TotalRequests int64
-	AvgLatency    time.Duration
-	ErrorRate     float64
+	// AvgLatency is the average latency per request.
+	AvgLatency time.Duration
+	// ErrorRate is the ratio of errors to total requests (0.0 to 1.0).
+	ErrorRate float64
 }
 
 // MinuteStats tracks stats for a single minute.
+//
+// Summary: Traffic statistics bucketed by minute.
 type MinuteStats struct {
-	Requests     int64
-	Errors       int64
-	Latency      int64 // Total latency in ms
+	// Requests is the total number of requests in this minute.
+	Requests int64
+	// Errors is the total number of errors in this minute.
+	Errors int64
+	// Latency is the total latency in milliseconds for this minute.
+	Latency int64 // Total latency in ms
+	// ServiceStats breaks down statistics by service ID.
 	ServiceStats map[string]*ServiceTrafficStats
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
+//
+// Summary: Traffic statistics for a specific service.
 type ServiceTrafficStats struct {
+	// Requests is the number of requests to the service.
 	Requests int64
-	Errors   int64
-	Latency  int64
+	// Errors is the number of errors from the service.
+	Errors int64
+	// Latency is the total latency for the service in milliseconds.
+	Latency int64
 }
 
 // TrafficPoint represents a data point for the traffic chart.
+//
+// Summary: A single data point for time-series visualization.
 type TrafficPoint struct {
-	Time    string `json:"time"`
-	Total   int64  `json:"requests"` // mapped to "requests" for UI
-	Errors  int64  `json:"errors"`
-	Latency int64  `json:"latency"`
+	// Time is the formatted time string (e.g., "15:04").
+	Time string `json:"time"`
+	// Total is the total number of requests.
+	Total int64 `json:"requests"` // mapped to "requests" for UI
+	// Errors is the total number of errors.
+	Errors int64 `json:"errors"`
+	// Latency is the average latency in milliseconds.
+	Latency int64 `json:"latency"`
 }
 
 // NewManager creates a new Topology Manager.
 //
-// registry is the registry.
-// tm is the tm.
+// Summary: Initializes a new topology manager.
 //
-// Returns the result.
+// Parameters:
+//   - registry: The service registry interface for looking up services.
+//   - tm: The tool manager interface for looking up tools.
+//
+// Returns:
+//   - *Manager: A new instance of the Topology Manager.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),

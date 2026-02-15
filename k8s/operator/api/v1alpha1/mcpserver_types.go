@@ -32,21 +32,28 @@ type MCPServerStatus struct {
 // +kubebuilder:subresource:status
 
 // MCPServer is the Schema for the mcpservers API
+//
+// Summary: Represents an MCPServer resource in Kubernetes.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MCPServerSpec   `json:"spec,omitempty"`
+	// Spec defines the desired state of MCPServer
+	Spec MCPServerSpec `json:"spec,omitempty"`
+	// Status defines the observed state of MCPServer
 	Status MCPServerStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
 // MCPServerList contains a list of MCPServer
+//
+// Summary: A list of MCPServer resources.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MCPServer `json:"items"`
+	// Items is the list of MCPServers.
+	Items []MCPServer `json:"items"`
 }
 
 func init() {

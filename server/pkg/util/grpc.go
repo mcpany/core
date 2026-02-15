@@ -10,8 +10,11 @@ import (
 )
 
 // WrappedServerStream is a wrapper around grpc.ServerStream that allows modifying the context.
+//
+// Summary: A gRPC server stream wrapper for context injection.
 type WrappedServerStream struct {
 	grpc.ServerStream
+	// Ctx is the overridden context.
 	Ctx context.Context
 }
 

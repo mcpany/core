@@ -41,17 +41,22 @@ func (p *poolWithChecker[T]) Close() error {
 	return p.Pool.Close()
 }
 
-// NewGrpcPool creates a new connection pool for gRPC clients. It configures the
-// pool with a factory function that establishes new gRPC connections with the
-// specified address, dialer, and credentials.
+// NewGrpcPool creates a new connection pool for gRPC clients.
 //
-// minSize is the initial number of connections to create.
-// maxSize is the maximum number of connections the pool can hold.
-// idleTimeout is the duration after which an idle connection may be closed (not currently implemented).
-// address is the target address of the gRPC service.
-// dialer is an optional custom dialer for creating network connections.
-// creds is the per-RPC credentials to be used for authentication.
-// It returns a new gRPC client pool or an error if the pool cannot be created.
+// Summary: Creates a managed pool of gRPC connections.
+//
+// Parameters:
+//   - minSize: The initial and minimum number of connections.
+//   - maxSize: The maximum number of connections.
+//   - idleTimeout: The duration after which an idle connection may be closed.
+//   - dialer: An optional custom dialer function.
+//   - creds: The per-RPC credentials for authentication.
+//   - config: The upstream service configuration.
+//   - disableHealthCheck: Whether to disable health checks for the pool.
+//
+// Returns:
+//   - pool.Pool[*client.GrpcClientWrapper]: The created pool.
+//   - error: An error if the pool cannot be created.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

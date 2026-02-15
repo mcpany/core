@@ -20,8 +20,11 @@ import (
 )
 
 // MCPServerReconciler reconciles a MCPServer object
+//
+// Summary: Controller for managing MCPServer resources.
 type MCPServerReconciler struct {
 	client.Client
+	// Scheme is the scheme used by the controller.
 	Scheme *runtime.Scheme
 }
 
