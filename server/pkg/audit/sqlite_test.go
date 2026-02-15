@@ -20,7 +20,7 @@ import (
 
 func TestEnsureColumn_Validation(t *testing.T) {
 	// Create a temporary database file
-	f, err := os.CreateTemp("", "audit_validation_*.db")
+	f, err := os.CreateTemp("", "audit_validation_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -56,7 +56,7 @@ func TestEnsureColumn_Validation(t *testing.T) {
 
 func TestSQLiteAuditStore(t *testing.T) {
 	// Create a temporary database file
-	f, err := os.CreateTemp("", "audit_test_*.db")
+	f, err := os.CreateTemp("", "audit_test_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -116,7 +116,7 @@ func TestSQLiteAuditStore(t *testing.T) {
 
 func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
 	// Create a temporary database file
-	f, err := os.CreateTemp("", "audit_tamper_*.db")
+	f, err := os.CreateTemp("", "audit_tamper_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -174,7 +174,7 @@ func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
 
 func TestSQLiteAuditStore_Migration(t *testing.T) {
 	// Create a temporary database file
-	f, err := os.CreateTemp("", "audit_migration_*.db")
+	f, err := os.CreateTemp("", "audit_migration_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -248,7 +248,7 @@ func TestComputeHash_Collision(t *testing.T) {
 }
 func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 	// Create a temporary database file
-	f, err := os.CreateTemp("", "audit_compat_*.db")
+	f, err := os.CreateTemp("", "audit_compat_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -336,7 +336,7 @@ func TestNewSQLiteAuditStore_EdgeCases(t *testing.T) {
 	})
 
 	t.Run("verify empty db", func(t *testing.T) {
-		f, err := os.CreateTemp("", "audit_empty_*.db")
+		f, err := os.CreateTemp("", "audit_empty_*.dat")
 		require.NoError(t, err)
 		dbPath := f.Name()
 		f.Close()
@@ -366,7 +366,7 @@ func TestEnsureColumns_Failure(t *testing.T) {
 	// Hard to do atomically.
 
 	// Alternative: Create a table with a conflicting column type?
-	f, err := os.CreateTemp("", "audit_col_fail_*.db")
+	f, err := os.CreateTemp("", "audit_col_fail_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -398,7 +398,7 @@ func TestEnsureColumns_Failure(t *testing.T) {
 }
 
 func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
-	f, err := os.CreateTemp("", "audit_write_fail_*.db")
+	f, err := os.CreateTemp("", "audit_write_fail_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -425,7 +425,7 @@ func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
 }
 
 func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
-	f, err := os.CreateTemp("", "audit_verify_fail_*.db")
+	f, err := os.CreateTemp("", "audit_verify_fail_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -450,7 +450,7 @@ func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
 
 func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
 	// Tests writing with complex arguments and results (nil, non-nil, etc.)
-	f, err := os.CreateTemp("", "audit_complex_*.db")
+	f, err := os.CreateTemp("", "audit_complex_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -488,7 +488,7 @@ func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
 }
 
 func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
-	f, err := os.CreateTemp("", "audit_integrity_*.db")
+	f, err := os.CreateTemp("", "audit_integrity_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -525,7 +525,7 @@ func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
 
 func TestEnsureColumns_AlreadyExists(t *testing.T) {
 	// Test that ensureColumns doesn't fail if columns already exist
-	f, err := os.CreateTemp("", "audit_exists_*.db")
+	f, err := os.CreateTemp("", "audit_exists_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -551,7 +551,7 @@ func TestEnsureColumns_AlreadyExists(t *testing.T) {
 }
 
 func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
-	f, err := os.CreateTemp("", "audit_concurrent_*.db")
+	f, err := os.CreateTemp("", "audit_concurrent_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()
@@ -590,7 +590,7 @@ func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
 
 func TestSQLiteAuditStore_Read(t *testing.T) {
 	// Create a temporary database file
-	f, err := os.CreateTemp("", "audit_read_*.db")
+	f, err := os.CreateTemp("", "audit_read_*.dat")
 	require.NoError(t, err)
 	dbPath := f.Name()
 	f.Close()

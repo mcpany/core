@@ -821,6 +821,11 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil
 		}
 
+		// Mock IsSensitivePath because .pem files are blocked by default
+		oldIsSensitive := validation.IsSensitivePath
+		defer func() { validation.IsSensitivePath = oldIsSensitive }()
+		validation.IsSensitivePath = func(path string) error { return nil }
+
 		mtls := configv1.Authentication_builder{
 			Mtls: configv1.MTLSAuth_builder{
 				ClientCertPath: proto.String("cert.pem"),

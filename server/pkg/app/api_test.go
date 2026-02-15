@@ -1132,7 +1132,7 @@ func TestHandleAuditExport(t *testing.T) {
 	app, _ := setupApiTestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 
-	dbPath := "./audit_test_export.db"
+	dbPath := "./audit_test_export.dat"
 	defer os.Remove(dbPath)
 
 	sqliteStore, err := audit.NewSQLiteAuditStore(dbPath)
@@ -1606,7 +1606,7 @@ upstream_services:
 
 func TestSecretLeak(t *testing.T) {
 	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_secrets.db")
+	dbPath := filepath.Join(tempDir, "test_secrets.dat")
 	db, _ := sqlite.NewDB(dbPath)
 	defer db.Close()
 	store := sqlite.NewStore(db)

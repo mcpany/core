@@ -10,7 +10,7 @@ Manage the MCP ecosystem from any device. The UI is fully responsive, adapting l
 ### 1. Adaptive Layouts
 On smaller screens:
 - **Sidebar**: Collapses into a hamburger menu.
-- **Tables**: Transform into card views or scrollable lists.
+- **Tables**: Optimize display by hiding non-essential columns.
 - **Graphs**: Network graph simplifies touch interactions.
 
 ![Mobile Dashboard](screenshots/mobile_dashboard.png)
