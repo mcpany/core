@@ -2962,116 +2962,129 @@ func getCommentFeatures(language string) (bool, bool, bool) {
 	}
 }
 
-func shouldStartComment(char, nextChar byte, supportsHash, supportsSlash, supportsBlock bool) (line bool, block bool, skipNext bool) {
-	if supportsHash && char == '#' {
-		return true, false, false
+type commentStripper struct {
+	inLineComment  bool
+	inBlockComment bool
+	inSingle       bool
+	inDouble       bool
+	inBacktick     bool
+	escaped        bool
+	supportsHash   bool
+	supportsSlash  bool
+	supportsBlock  bool
+}
+
+func newCommentStripper(language string) *commentStripper {
+	h, s, b := getCommentFeatures(language)
+	return &commentStripper{
+		supportsHash:  h,
+		supportsSlash: s,
+		supportsBlock: b,
 	}
-	if (supportsSlash || supportsBlock) && char == '/' {
-		if supportsSlash && nextChar == '/' {
-			return true, false, true
+}
+
+func (s *commentStripper) process(char, nextChar byte) (write bool, skipNext bool) {
+	if s.inLineComment {
+		if char == '\n' {
+			s.inLineComment = false
+			return true, false
 		}
-		if supportsBlock && nextChar == '*' {
-			return false, true, true
+		return false, false
+	}
+	if s.inBlockComment {
+		if char == '*' && nextChar == '/' {
+			s.inBlockComment = false
+			return false, true
+		}
+		return false, false
+	}
+
+	if s.escaped {
+		s.escaped = false
+		return true, false
+	}
+
+	// Handle quotes
+	if s.handleQuotes(char) {
+		return true, false
+	}
+
+	// If inside quotes, handle escape char
+	if s.inSingle || s.inDouble || s.inBacktick {
+		if char == '\\' {
+			s.escaped = true
+			return true, false
+		}
+		return true, false
+	}
+
+	// Not in quotes, check for comments
+	if s.handleComments(char, nextChar) {
+		return false, s.inBlockComment || (s.inLineComment && s.supportsSlash && char == '/')
+	}
+
+	// Skip backslash (line continuation outside quotes)
+	if char == '\\' {
+		return false, false
+	}
+
+	return true, false
+}
+
+func (s *commentStripper) handleQuotes(char byte) bool {
+	if char == '\'' && !s.inDouble && !s.inBacktick {
+		s.inSingle = !s.inSingle
+		return true
+	}
+	if char == '"' && !s.inSingle && !s.inBacktick {
+		s.inDouble = !s.inDouble
+		return true
+	}
+	if char == '`' && !s.inSingle && !s.inDouble {
+		s.inBacktick = !s.inBacktick
+		return true
+	}
+	return false
+}
+
+func (s *commentStripper) handleComments(char, nextChar byte) bool {
+	if s.supportsHash && char == '#' {
+		s.inLineComment = true
+		return true
+	}
+	if (s.supportsSlash || s.supportsBlock) && char == '/' {
+		if s.supportsSlash && nextChar == '/' {
+			s.inLineComment = true
+			return true
+		}
+		if s.supportsBlock && nextChar == '*' {
+			s.inBlockComment = true
+			return true
 		}
 	}
-	return false, false, false
+	return false
 }
 
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	supportsHash, supportsSlash, supportsBlock := getCommentFeatures(language)
+	s := newCommentStripper(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
-
-		if inLineComment {
-			if char == '\n' {
-				inLineComment = false
-				b.WriteByte(char)
-			}
-			continue
-		}
-		if inBlockComment {
-			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
-				inBlockComment = false
-				i++
-			}
-			continue
-		}
-
-		if escaped {
-			escaped = false
-			b.WriteByte(char)
-			continue
-		}
-
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			b.WriteByte(char)
-			continue
-		}
-
-		if inSingle || inDouble || inBacktick {
-			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
-				b.WriteByte(char)
-				continue
-			}
-			b.WriteByte(char)
-			continue
-		}
-
-		// Not in quotes, check for comments
 		var nextChar byte
 		if i+1 < len(val) {
 			nextChar = val[i+1]
 		}
-		isLine, isBlock, skip := shouldStartComment(char, nextChar, supportsHash, supportsSlash, supportsBlock)
-		if isLine {
-			inLineComment = true
-			if skip {
-				i++
-			}
-			continue
-		}
-		if isBlock {
-			inBlockComment = true
-			if skip {
-				i++
-			}
-			continue
-		}
 
-		// Skip backslash (line continuation outside quotes)
-		if char == '\\' {
-			// If followed by newline, it's a line continuation. Strip it.
-			// If not, it's just a backslash. Strip it anyway for safety?
-			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
-			continue
+		write, skip := s.process(char, nextChar)
+		if write {
+			b.WriteByte(char)
 		}
-
-		b.WriteByte(char)
+		if skip {
+			i++
+		}
 	}
 	return b.String()
 }
