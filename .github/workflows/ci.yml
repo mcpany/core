@@ -204,6 +204,11 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+      - name: Install make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
@@ -351,6 +356,11 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+
+      - name: Install make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Prepare environment
         run: make prepare
@@ -607,6 +617,11 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+      - name: Install make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Prepare environment
         run: make prepare
 
@@ -819,6 +834,11 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Install make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Test UI
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
@@ -901,6 +921,11 @@ jobs:
       - name: Load Docker Images already loaded above
         run: |
           echo "Images already loaded in previous step."
+
+      - name: Install make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Run K8s E2E Tests
         run: |

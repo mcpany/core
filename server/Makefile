@@ -134,7 +134,13 @@ prepare:
 	@if command -v apt-get >/dev/null 2>&1; then \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v xz >/dev/null 2>&1; then \
 			echo "Installing missing dependencies: curl, unzip, xz-utils..."; \
-			apt-get update && apt-get install -y curl unzip xz-utils; \
+			if [ "$$(id -u)" -eq 0 ]; then \
+				apt-get update && apt-get install -y curl unzip xz-utils; \
+			elif command -v sudo >/dev/null 2>&1; then \
+				sudo apt-get update && sudo apt-get install -y curl unzip xz-utils; \
+			else \
+				echo "Warning: Missing dependencies and not running as root/sudo not available. Installation may fail."; \
+			fi; \
 		fi; \
 	fi
 	@# Check if protoc is installed

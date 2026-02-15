@@ -19,6 +19,8 @@ export async function cleanupServices(requestContext?: APIRequestContext) {
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
+    // Give backend a moment to process async deletion if needed
+    await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 export async function seedServices(requestContext?: APIRequestContext) {
@@ -287,6 +289,9 @@ export async function cleanupCollection(name: string, requestContext?: APIReques
     } catch (e) {
         console.log(`Failed to cleanup collection ${name}: ${e}`);
     }
+    // Give backend a moment to process async deletion if needed
+    // This helps avoid race conditions where a subsequent test tries to create a service immediately
+    await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 export async function cleanupTemplates(requestContext?: APIRequestContext) {
