@@ -36,6 +36,7 @@ RUN curl -sSL "https://github.com/protocolbuffers/protobuf/releases/download/v25
 # We output to / so that /proto/config/... matches the source structure and tsconfig mapping
 RUN find /proto -name "*.proto" -exec protoc \
     --proto_path=/ \
+    --proto_path=/usr/local/include \
     --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=/ \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
