@@ -8,6 +8,8 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -22,9 +24,27 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
+
+	// Mock the external API to ensure reliability (Real Data Policy: reliability over external dependencies)
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/translate/yoda.json" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{
+				"success": {"total": 1},
+				"contents": {
+					"translated": "Lost a planet, Master Obi-Wan has.",
+					"text": "Master Obi-Wan has lost a planet.",
+					"translation": "yoda"
+				}
+			}`))
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockServer.Close()
 
 	t.Log("INFO: Starting E2E Test Scenario for Fun Translations Server...")
 	t.Parallel()
@@ -35,7 +55,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 
 	// --- 2. Register Fun Translations Server with MCPANY ---
 	const funTranslationsServiceID = "e2e_funtranslations"
-	funTranslationsServiceEndpoint := "https://api.funtranslations.com"
+	funTranslationsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", funTranslationsServiceID, funTranslationsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
