@@ -8,3 +8,4 @@ build/
 
 # Explicitly ignore the massive upstream integration test artifacts
 tests/integration/upstream
+!.build-context/
