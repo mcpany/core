@@ -93,6 +93,7 @@ jobs:
           gh pr list \
             --repo ${{ github.repository }} \
             --search "state:open updated:<$DATE_THRESHOLD" \
+            --limit 1000 \
             --json number,updatedAt,url \
             --jq '.[] | .number' | \
           while read pr_number; do
