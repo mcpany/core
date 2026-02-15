@@ -57,7 +57,7 @@ export interface ServiceTemplate {
 }
 
 // Helper to map snake_case config to camelCase UpstreamServiceConfig
-const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
+export const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
     ...s,
     connectionPool: s.connection_pool,
     httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
