@@ -39,9 +39,10 @@ RUN ARCH=$(uname -m) && \
     rm -rf /tmp/protoc /tmp/protoc.zip
 
 # Download external protos (googleapis and grpc-gateway) required for generation
-RUN curl -sSL -o /tmp/googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+# Pinning googleapis to a specific commit for reproducibility (Jan 28, 2025)
+RUN curl -sSL -o /tmp/googleapis.zip https://github.com/googleapis/googleapis/archive/5c3258273648a3070d90d984df9fa3260d840004.zip && \
     unzip -q /tmp/googleapis.zip -d /tmp/ && \
-    mv /tmp/googleapis-master /tmp/googleapis
+    mv /tmp/googleapis-5c3258273648a3070d90d984df9fa3260d840004 /tmp/googleapis
 
 RUN curl -sSL -o /tmp/grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/v2.27.3.zip && \
     unzip -q /tmp/grpc-gateway.zip -d /tmp/ && \
