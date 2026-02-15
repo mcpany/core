@@ -143,5 +143,12 @@ func TestSentinel_GitExtProtocol(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
-	assert.Contains(t, err.Error(), "git ext:: protocol is not allowed")
+	// We now catch this earlier with the dangerous scheme check
+	// "dangerous scheme detected: ext" OR "git ext:: protocol is not allowed"
+	if err != nil {
+		isExt := assert.Contains(t, err.Error(), "dangerous scheme detected: ext")
+		if !isExt {
+			assert.Contains(t, err.Error(), "git ext:: protocol is not allowed")
+		}
+	}
 }

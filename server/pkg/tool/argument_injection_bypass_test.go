@@ -35,7 +35,7 @@ func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateSafePathAndInjection(tt.input, tt.isDocker)
+			err := validateSafePathAndInjection(tt.input, tt.isDocker, "generic-tool")
 			assert.Error(t, err, "Should block input: %q", tt.input)
 		})
 	}
