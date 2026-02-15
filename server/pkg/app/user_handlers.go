@@ -24,8 +24,11 @@ func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Re
 
 	user, err := a.Storage.GetUser(ctx, userID)
 	if err != nil {
-		logging.GetLogger().Error("Failed to get user", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		// If user retrieval fails, it might be due to user not existing in DB yet (even if auth passed).
+		// We treat this as "no preferences" rather than an error to prevent UI breakage.
+		logging.GetLogger().Warn("Failed to get user for preferences, treating as empty", "user_id", userID, "error", err)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte("{}"))
 		return
 	}
 
