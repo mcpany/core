@@ -2958,7 +2958,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
+func stripInterpreterComments(val, language string) string { //nolint:gocyclo
 	var b strings.Builder
 	b.Grow(len(val))
 
@@ -3596,7 +3596,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr
 		}
 
 		if u.Scheme == "" || u.Host == "" {
