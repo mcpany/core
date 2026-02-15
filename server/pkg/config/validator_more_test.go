@@ -44,6 +44,13 @@ func TestValidate_MoreServices(t *testing.T) {
 	validation.SetAllowedPaths([]string{os.TempDir()})
 	defer validation.SetAllowedPaths(nil)
 
+	// Mock IsSensitivePath to allow .pem files in this test
+	oldIsSensitive := validation.IsSensitivePath
+	defer func() { validation.IsSensitivePath = oldIsSensitive }()
+	validation.IsSensitivePath = func(path string) error {
+		return nil
+	}
+
 	tests := []struct {
 		name                string
 		config              *configv1.McpAnyServerConfig

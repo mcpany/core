@@ -249,10 +249,12 @@ func validateStdioArgs(ctx context.Context, command string, args []string, worki
 		}
 
 		// This is likely the script file.
-		// We only validate it if it looks like a file (has an extension).
-		// This avoids validating things like "install" or module names.
+		// We validate it if it looks like a file (has an extension OR contains path separators).
+		// This avoids validating things like "install" or module names which are typically single words.
+		// We check for both forward and backward slashes to be robust across platforms.
 		ext := filepath.Ext(arg)
-		if ext == "" {
+		isPath := strings.Contains(arg, "/") || strings.Contains(arg, "\\")
+		if ext == "" && !isPath {
 			continue
 		}
 
