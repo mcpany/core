@@ -1,9 +1,7 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 // Package main implements the Standard Webhook Sidecar for MCP Any.
 // It provides built-in handlers for common tasks like Markdown conversion,
 // text truncation, and pagination.
+
 package main
 
 import (

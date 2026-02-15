@@ -1,7 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 // Package memory provides in-memory implementations of the bus interface.
+
 package memory
 
 import (
