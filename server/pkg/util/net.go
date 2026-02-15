@@ -189,15 +189,18 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: Checks TCP connectivity to a host.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the connection attempt.
-//   - address (string): The target address (URL or host:port).
+//   - ctx: context.Context. The context for the connection attempt.
+//   - address: string. The target address (URL or host:port).
 //
 // Returns:
-//   - (error): nil if the connection succeeded, or an error if it failed.
+//   - error: nil if the connection succeeded, or an error if it failed.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -257,18 +260,21 @@ func CheckConnection(ctx context.Context, address string) error {
 	return nil
 }
 
-// ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+// ListenWithRetry attempts to listen on the given address with retries.
+//
+// Summary: Binds to a port with retry logic.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the listen operation.
-//   - network (string): The network type (e.g., "tcp").
-//   - address (string): The address to listen on.
+//   - ctx: context.Context. The context for the listen operation.
+//   - network: string. The network type (e.g., "tcp").
+//   - address: string. The address to listen on.
 //
 // Returns:
-//   - (net.Listener): The successfully bound listener.
-//   - (error): An error if binding fails after all retries.
+//   - net.Listener: The successfully bound listener.
+//   - error: An error if binding fails after all retries.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

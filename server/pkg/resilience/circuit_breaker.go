@@ -27,6 +27,8 @@ const (
 
 // CircuitBreaker implements the circuit breaker pattern. It prevents the
 // application from performing operations that are likely to fail.
+//
+// Summary: Prevents cascading failures by stopping requests to failing services.
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
@@ -40,9 +42,13 @@ type CircuitBreaker struct {
 
 // NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
 //
-// config holds the configuration settings.
+// Summary: Initializes a new CircuitBreaker.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.CircuitBreakerConfig. The configuration settings for the circuit breaker.
+//
+// Returns:
+//   - *CircuitBreaker: The initialized circuit breaker instance.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -50,9 +56,22 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	}
 }
 
-// Execute runs the provided work function. If the circuit breaker is open, it
-// returns a CircuitBreakerOpenError immediately. If the work function fails,
-// it tracks the failure and may trip the breaker.
+// Execute runs the provided work function protected by the circuit breaker.
+//
+// Summary: Executes a function with circuit breaker protection.
+//
+// If the circuit breaker is open, it returns a CircuitBreakerOpenError immediately.
+// If the work function fails, it tracks the failure and may trip the breaker.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - work: func(context.Context) error. The function to execute.
+//
+// Returns:
+//   - error: An error if the circuit is open or if the work function fails.
+//
+// Throws/Errors:
+//   - *CircuitBreakerOpenError: If the circuit is open.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -205,11 +224,16 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 }
 
 // CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
+//
+// Summary: Error indicating the circuit is open.
 type CircuitBreakerOpenError struct{}
 
 // Error returns the error message for a CircuitBreakerOpenError.
 //
-// Returns the result.
+// Summary: Returns the error message.
+//
+// Returns:
+//   - string: The error message.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }
