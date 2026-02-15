@@ -119,7 +119,13 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
             headers.set('X-API-Key', apiKey);
         }
     }
-    return fetch(input, { ...init, headers });
+
+    let url = input;
+    if (typeof input === 'string' && input.startsWith('/')) {
+        url = `${getBaseUrl()}${input}`;
+    }
+
+    return fetch(url, { ...init, headers });
 };
 
 /**

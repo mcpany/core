@@ -77,14 +77,14 @@ export function CollectionDetailsDialog({
                                         {service.commandLineService
                                             ? `Command: ${service.commandLineService.command}`
                                             : service.httpService
-                                                ? `URL: ${service.httpService.url}`
+                                                ? `URL: ${service.httpService.address}`
                                                 : "Configuration Template"}
                                     </CardDescription>
-                                    {service.tools && service.tools.length > 0 && (
+                                    {(service.httpService?.tools?.length || service.commandLineService?.tools?.length || service.mcpService?.tools?.length) ? (
                                         <div className="mt-2 text-xs text-muted-foreground">
-                                            Tools: {service.tools.map(t => t.name).join(", ")}
+                                            Tools: {(service.httpService?.tools || service.commandLineService?.tools || service.mcpService?.tools || []).map(t => t.name).join(", ")}
                                         </div>
-                                    )}
+                                    ) : null}
                                 </CardContent>
                             </Card>
                         ))}

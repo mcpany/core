@@ -22,7 +22,6 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -52,9 +51,6 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 				}.Build(),
 			}.Build(),
 		},
-		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String("{\"text\": \"{{.input.text}}\"}"),
-		}.Build(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -95,13 +91,15 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	serviceID, _ := util.SanitizeServiceName(funTranslationsServiceID)
 	sanitizedToolName, _ := util.SanitizeToolName("translateToYoda")
 	toolName := serviceID + "." + sanitizedToolName
-	text := `{"text": "Hello, how are you?"}`
+
+	args := map[string]string{"text": "Hello, how are you?"}
+	argsBytes, _ := json.Marshal(args)
 
 	const maxRetries = 3
 	var res *mcp.CallToolResult
 
 	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(text)})
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(argsBytes)})
 		if err == nil {
 			break // Success
 		}
@@ -111,8 +109,8 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
-		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
+		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") || strings.Contains(err.Error(), "upstream HTTP request failed with status 401") {
+			t.Skipf("Skipping test due to rate limiting or auth from api.funtranslations.com: %v", err)
 		}
 
 		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
@@ -130,6 +128,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
+	t.Logf("Received response text: %s", textContent.Text)
 	var funTranslationsResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
