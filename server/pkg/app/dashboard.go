@@ -11,6 +11,9 @@ import (
 )
 
 // Metric represents a single dashboard metric to be displayed in the UI.
+//
+// Summary: Dashboard metric data structure.
+//
 // It contains the label, value, trend direction, and other visual metadata.
 type Metric struct {
 	// Label is the primary text description of the metric (e.g., "Total Requests").
@@ -27,6 +30,12 @@ type Metric struct {
 	SubLabel string `json:"subLabel"`
 }
 
+// handleDashboardMetrics returns the main dashboard metrics.
+//
+// Summary: Retrieves aggregated dashboard metrics.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
 func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {

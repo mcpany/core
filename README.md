@@ -123,21 +123,20 @@ The agent will use the `wttr.in` tool exposed by MCP Any to fetch the data.
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
-### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing.
-```bash
-make test
-```
+### Verification
 
-### Linting
-We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
-*   **Protocol:** We check for breaking changes in `.proto` files.
+We practice proactive testing and strict verification to ensure "Gold Standard" quality.
 
-To run linters:
-```bash
-make lint
-```
+*   **Test:** Run all unit and integration tests to ensure code correctness.
+    ```bash
+    make test
+    ```
+
+*   **Lint:** Enforce **100% documentation coverage** and strict style guides.
+    ```bash
+    make lint
+    ```
+    We use `golangci-lint` with `revive` to enforce GoDoc standards and checking for breaking changes in `.proto` files.
 
 ### Building
 Compile the server binary and UI assets.

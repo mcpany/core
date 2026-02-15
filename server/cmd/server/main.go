@@ -77,10 +77,14 @@ func loadEnv(cmd *cobra.Command) error {
 
 // newRootCmd creates and configures the main command for the application.
 //
-// Summary: Creates the root command hierarchy.
+// Summary: Creates the root command hierarchy and subcommands (run, version, etc.).
 //
 // Returns:
 //   - *cobra.Command: The configured root command.
+//
+// Side Effects:
+//   - Registers command-line flags.
+//   - Configures global application settings via cobra and viper.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,

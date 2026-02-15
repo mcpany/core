@@ -2958,6 +2958,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+//nolint:gocyclo // Complexity is high due to multi-language support, but logic is linear.
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
@@ -3596,7 +3597,7 @@ func checkForSSRF(val string) error {
 	if strings.Contains(val, "://") {
 		u, err := url.Parse(val)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr // Parsing failure implies it's likely not a workable URL for SSRF
 		}
 
 		if u.Scheme == "" || u.Host == "" {
