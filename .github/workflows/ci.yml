@@ -199,9 +199,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Install dependencies
@@ -320,9 +320,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Download Server Image
@@ -437,8 +437,8 @@ jobs:
 
       - name: Prepare environment
         run: |
-          # Verify prepare success
-          make prepare
+          # Generate protobuf files (Go and TS) as they are needed for builds
+          make gen
           ls -R build/env/bin || echo "build/env/bin empty or missing"
 
       - name: Build and Save Images
@@ -628,9 +628,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Install dependencies
@@ -724,9 +724,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Install dependencies
