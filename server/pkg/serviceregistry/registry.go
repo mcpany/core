@@ -538,7 +538,8 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 
 	services := make([]*config.UpstreamServiceConfig, 0, len(r.strippedServiceConfigs))
 	for _, service := range r.strippedServiceConfigs {
-		// ⚡ BOLT: Shallow copy to avoid expensive proto.Clone and StripSecretsFromService
+		// ⚡ BOLT: Shallow copy to avoid expensive proto.Clone and StripSecretsFromService.
+		// Safe because injectRuntimeInfo only sets top-level fields (LastError, ToolCount) on the copy.
 		// Randomized Selection from Top 5 High-Impact Targets
 		shallow := *service
 		r.injectRuntimeInfo(&shallow)
