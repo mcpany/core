@@ -806,7 +806,10 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 
 		// Mock file existence
 		osStat = func(name string) (os.FileInfo, error) {
-			return nil, nil // Exists
+			if name == "cert.pem" || name == "key.pem" || name == "ca.pem" {
+				return nil, nil // Exists
+			}
+			return nil, os.ErrNotExist
 		}
 
 		// Mock validation.IsSecurePath since it checks real FS for absolute paths if needed or uses logic we can't easily bypass
