@@ -297,6 +297,8 @@ type PostCallHook interface {
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
+//
+// Summary: Tool implementation for gRPC services.
 type GRPCTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -310,6 +312,8 @@ type GRPCTool struct {
 }
 
 // NewGRPCTool creates a new GRPCTool instance.
+//
+// Summary: Initializes a GRPCTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -441,6 +445,8 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
 // It constructs and sends an HTTP request based on the tool definition and
 // input, handling parameter mapping, authentication, and transformations.
+//
+// Summary: Tool implementation for HTTP services.
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -472,6 +478,8 @@ type HTTPTool struct {
 }
 
 // NewHTTPTool creates a new HTTPTool instance.
+//
+// Summary: Initializes a HTTPTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1207,6 +1215,8 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service. It acts as a proxy, forwarding the tool call to the
 // downstream MCP service.
+//
+// Summary: Tool implementation for MCP proxy services.
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1222,6 +1232,8 @@ type MCPTool struct {
 }
 
 // NewMCPTool creates a new MCPTool instance.
+//
+// Summary: Initializes a MCPTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1418,6 +1430,8 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 // OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
 // specification. It constructs and sends an HTTP request based on the OpenAPI
 // operation definition.
+//
+// Summary: Tool implementation for OpenAPI services.
 type OpenAPITool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1437,6 +1451,8 @@ type OpenAPITool struct {
 }
 
 // NewOpenAPITool creates a new OpenAPITool instance.
+//
+// Summary: Initializes a OpenAPITool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1686,6 +1702,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // CommandTool implements the Tool interface for a tool that is executed as a
 // local command-line process. It maps tool inputs to command-line arguments and
 // environment variables.
+//
+// Summary: Tool implementation for command-line services.
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -1699,6 +1717,8 @@ type CommandTool struct {
 }
 
 // NewCommandTool creates a new CommandTool instance.
+//
+// Summary: Initializes a CommandTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1733,6 +1753,8 @@ func NewCommandTool(
 // LocalCommandTool implements the Tool interface for a tool that is executed as a
 // local command-line process. It maps tool inputs to command-line arguments and
 // environment variables.
+//
+// Summary: Tool implementation for local command-line services.
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -1746,6 +1768,8 @@ type LocalCommandTool struct {
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
+//
+// Summary: Initializes a LocalCommandTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.

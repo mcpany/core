@@ -33,6 +33,7 @@ import (
 var (
 	// Version is set at build time.
 	Version              = "dev"
+	// appRunner is the application runner instance.
 	appRunner app.Runner = app.NewApplication()
 )
 
@@ -81,6 +82,10 @@ func loadEnv(cmd *cobra.Command) error {
 //
 // Returns:
 //   - *cobra.Command: The configured root command.
+//
+// Side Effects:
+//   - Initializes the root command and its subcommands.
+//   - Configures flags and environment variable loading.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,

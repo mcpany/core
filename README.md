@@ -17,7 +17,7 @@ Traditional MCP adoption often requires writing a separate server binary for eve
 
 **High-Level Overview**
 
-MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
+MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for high performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
 
 **Core Components:**
 
@@ -64,7 +64,7 @@ graph TD
 
 ## 3. Getting Started
 
-Follow these steps to get up and running with MCP Any immediately.
+Follow these steps to get up and running with MCP Any in minutes.
 
 ### Prerequisites
 

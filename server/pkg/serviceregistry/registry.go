@@ -24,6 +24,8 @@ import (
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
+// Summary: Interface for service registry.
+//
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 type ServiceRegistryInterface interface { //nolint:revive
@@ -111,6 +113,8 @@ type ServiceRegistry struct {
 }
 
 // New creates and initializes a new ServiceRegistry.
+//
+// Summary: Creates a new ServiceRegistry.
 //
 // Parameters:
 //   - factory: factory.Factory. The factory used to create upstream connections.
