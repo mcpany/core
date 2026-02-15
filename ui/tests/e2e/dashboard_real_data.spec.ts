@@ -89,6 +89,13 @@ test.describe('Dashboard Real Data', () => {
         // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
         const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
+
+        // Wait for metrics API response to ensure data is actually returned
+        // This confirms backend is serving data, even if UI rendering is delayed
+        await page.waitForResponse(resp => resp.url().includes('/dashboard/metrics') && resp.status() === 200, { timeout: 30000 }).catch(() => {
+             console.log("Metrics API response timeout - proceeding to check UI");
+        });
+
         // Wait for value to be non-loading state ("--")
         await expect(totalRequestsLocator).not.toHaveText('--', { timeout: 30000 });
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
