@@ -92,8 +92,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make xz-utils
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz
+          fi
 
       - name: Prepare environment
         run: make prepare
@@ -123,6 +126,14 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -249,6 +260,14 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -514,6 +533,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz
+          fi
+
       - name: Configure Docker Registry Mirrors
         run: |
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
@@ -633,6 +660,14 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
