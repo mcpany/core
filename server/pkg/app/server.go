@@ -1951,6 +1951,18 @@ func (a *Application) runServerMode(
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
+	// User Preferences
+	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.handleGetUserPreferences(w, r)
+		case http.MethodPost:
+			a.handleUpdateUserPreferences(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
 	// Wait, we need to handle assets specifically.
