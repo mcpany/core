@@ -140,6 +140,7 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
+          sudo chmod 755 /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
@@ -564,6 +565,7 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           sudo mkdir -p /etc/docker
+          sudo chmod 755 /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
@@ -695,6 +697,7 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
+          sudo chmod 755 /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
