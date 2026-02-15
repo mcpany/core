@@ -43,12 +43,67 @@ jobs:
               - '!docs/**'
               - '!LICENSE'
 
-  lint:
+  codegen:
     needs: changes
+    if: ${{ needs.changes.outputs.src == 'true' }}
+    runs-on: oci-runner
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Cache Tools
+        uses: actions/cache@v4
+        with:
+          path: build/env/bin
+          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}-
+            ${{ runner.os }}-build-env-bin-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl unzip
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+
+      - name: Prepare environment
+        run: make prepare
+
+      - name: Generate Protos
+        run: make gen
+
+      - name: Archive Generated Protos
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-protos
+          path: |
+            proto/
+            server/pkg/**/*.pb.go
+          retention-days: 1
+
+  lint:
+    needs: [changes, codegen]
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -105,31 +160,25 @@ jobs:
   unit-test:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
+    needs: [changes, codegen]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
-
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
 
       - name: Configure Docker Registry Mirrors
         continue-on-error: true
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          # We use || true to prevent failure if systemctl is not available or we are in a restricted container.
           sudo bash -c 'mkdir -p /etc/docker && echo "{\"registry-mirrors\": [\"https://mirror.gcr.io\"]}" > /etc/docker/daemon.json' || true
           sudo systemctl restart docker || true
           docker info # Verify the mirrors are listed
@@ -139,15 +188,6 @@ jobs:
         with:
           go-version: "1.24"
           cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -199,10 +239,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}-
+            ${{ runner.os }}-build-env-bin-
 
       - name: Install dependencies
         run: |
@@ -378,7 +418,7 @@ jobs:
 
   build-images:
     name: Build Docker Images (${{ matrix.platform }})
-    needs: changes
+    needs: [changes, codegen]
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -403,6 +443,13 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -414,32 +461,16 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+      # Python/Node removed from here as we don't need them for pure docker builds if we have artifacts,
+      # EXCEPT if Makefile uses them. `make build-docker` calls `prepare-docker-context`.
+      # `prepare-docker-context` just copies files.
+      # `make -C server build-docker` -> server/Makefile.
+      # It doesn't seem to need python/node.
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y make curl unzip
-
-      - name: Prepare environment
-        run: |
-          # Generate protobuf files (Go and TS) as they are needed for builds
-          make gen
-          ls -R build/env/bin || echo "build/env/bin empty or missing"
 
       - name: Build and Save Images
         run: |
@@ -537,12 +568,18 @@ jobs:
   e2e-sequential:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 60
-    needs: [build-images]
+    needs: [build-images, codegen]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
 
       - name: Configure Docker Registry Mirrors
         continue-on-error: true
@@ -565,6 +602,7 @@ jobs:
           python-version: "3.13"
           cache: "pip"
 
+      # Install Python deps because e2e tests might use python scripts (e.g. timeserver patch)
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt
 
@@ -574,12 +612,6 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: Detect Architecture
         id: detect-arch
@@ -623,15 +655,14 @@ jobs:
             docker load -i "$f"
           done
 
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}-
+            ${{ runner.os }}-build-env-bin-
 
       - name: Install dependencies
         run: |
@@ -643,6 +674,9 @@ jobs:
 
       - name: run sequential e2e
         run: |
+          # Ensure gen is not run again
+          mkdir -p build
+          touch build/all.protoset
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
@@ -656,13 +690,19 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
+    needs: [changes, codegen]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
 
       - name: Configure Docker Registry Mirrors
         continue-on-error: true
@@ -678,15 +718,6 @@ jobs:
         with:
           go-version: "1.24"
           cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -714,20 +745,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile', 'server/Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}-
+            ${{ runner.os }}-build-env-bin-
 
       - name: Install dependencies
         run: |
@@ -802,7 +827,7 @@ jobs:
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-images]
+    needs: [build-images, codegen]
     strategy:
       fail-fast: false
       matrix:
@@ -820,6 +845,12 @@ jobs:
       #          swap-storage: true
       #
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
 
       - name: Detect Architecture
         id: detect-arch
@@ -860,9 +891,15 @@ jobs:
   k8s-e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-images]
+    needs: [build-images, codegen]
     steps:
       - uses: actions/checkout@v5
+
+      - name: Download Generated Protos
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-protos
+          path: .
 
       - name: Set up Go
         uses: actions/setup-go@v6
