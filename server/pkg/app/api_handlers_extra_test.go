@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/spf13/afero"
@@ -320,18 +321,24 @@ func TestHandleCreateService_SaveError(t *testing.T) {
 
 func TestHandleSecrets_SaveError(t *testing.T) {
 	app, store := setupApiTestApp()
+	// Must set app.Storage to mockStore because createSecretHandler uses app.Storage, not a passed arg
 	mockStore := &MockStorage{Storage: store, failSave: true}
-	handler := app.handleSecrets(mockStore)
+	app.Storage = mockStore
 
 	secret := configv1.Secret_builder{
 		Name:  proto.String("my-secret"),
+		Key:   proto.String("MY_SECRET_KEY"),
 		Id:    proto.String("my-secret-id"),
 		Value: proto.String("super-secret"),
 	}.Build()
 	body, _ := protojson.Marshal(secret)
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(body))
+	// Inject admin role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	app.createSecretHandler(w, req)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }

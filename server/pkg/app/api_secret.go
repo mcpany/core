@@ -5,13 +5,13 @@ package app
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -75,12 +75,6 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// Authorization: Only admins can manage secrets
-	// Secrets are sensitive and can be used to escalate privileges or access resources.
-	// We might consider allowing users to manage their own secrets in the future,
-	// but currently secrets are global.
-	// Note: We use auth.NewRBACEnforcer() to check the role.
-	// This requires that the auth middleware has populated the context with roles.
-	// If auth is disabled (dev mode without API key), the middleware grants admin role, so this check passes.
 	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
@@ -89,12 +83,10 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 	ctx := r.Context()
 	var secret configv1.Secret
 
-	body, err := io.ReadAll(r.Body)
+	body, err := readBodyWithLimit(w, r, 1048576)
 	if err != nil {
-		writeError(w, fmt.Errorf("failed to read body: %w", err))
 		return
 	}
-	defer func() { _ = r.Body.Close() }()
 
 	if err := protojson.Unmarshal(body, &secret); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
@@ -122,6 +114,52 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 
 	sanitizeSecret(&secret)
 	writeJSON(w, http.StatusCreated, &secret)
+}
+
+// updateSecretHandler updates a secret.
+func (a *Application) updateSecretHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		writeError(w, fmt.Errorf("method not allowed"))
+		return
+	}
+
+	if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	if len(pathParts) < 4 {
+		writeError(w, fmt.Errorf("id is required"))
+		return
+	}
+	id := pathParts[3]
+
+	ctx := r.Context()
+	var secret configv1.Secret
+
+	body, err := readBodyWithLimit(w, r, 1048576)
+	if err != nil {
+		return
+	}
+
+	if err := protojson.Unmarshal(body, &secret); err != nil {
+		writeError(w, fmt.Errorf("invalid request body: %w", err))
+		return
+	}
+
+	// Force ID match
+	secret.SetId(id)
+	if secret.GetName() == "" {
+		secret.SetName(id)
+	}
+
+	if err := a.Storage.SaveSecret(ctx, &secret); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{})
 }
 
 // deleteSecretHandler deletes a secret.
@@ -165,7 +203,6 @@ func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-	// /api/v1/secrets/:id/reveal -> ["api", "v1", "secrets", "id", "reveal"]
 	if len(pathParts) < 5 || pathParts[4] != "reveal" {
 		writeError(w, fmt.Errorf("invalid path"))
 		return
@@ -183,10 +220,13 @@ func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Log access
+	user, _ := auth.UserFromContext(r.Context())
+	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
+
 	// Update last used
 	secret.SetLastUsed(time.Now().Format(time.RFC3339))
 	if err := a.Storage.SaveSecret(ctx, secret); err != nil {
-		// Log error but proceed?
 		fmt.Printf("Failed to update last used for secret %s: %v\n", id, err)
 	}
 

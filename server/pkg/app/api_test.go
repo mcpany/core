@@ -354,22 +354,37 @@ func TestHandleResources_Detailed(t *testing.T) {
 }
 
 func TestHandleSecrets_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
-	handler := app.handleSecrets(store)
+	app, _ := setupApiTestApp()
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			app.listSecretsHandler(w, r)
+		case http.MethodPost:
+			app.createSecretHandler(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 
 	// Test POST
 	secret := configv1.Secret_builder{
 		Name:  proto.String("my-secret"),
+		Key:   proto.String("MY_SECRET_KEY"),
 		Id:    proto.String("my-secret-id"),
 		Value: proto.String("super-secret"),
 	}.Build()
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(secret)
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(body))
+	// Inject admin role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
-	if w.Code != http.StatusOK {
-		t.Errorf("Expected 200 OK, got %d", w.Code)
+	// StatusCreated (201) expected now
+	if w.Code != http.StatusCreated {
+		t.Errorf("Expected 201 Created, got %d", w.Code)
 	}
 
 	// Test GET
@@ -387,10 +402,26 @@ func TestHandleSecrets_Detailed(t *testing.T) {
 
 func TestHandleSecretDetail_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
-	handler := app.handleSecretDetail(store)
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/reveal") {
+			app.revealSecretHandler(w, r)
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			app.getSecretHandler(w, r)
+		case http.MethodPut:
+			app.updateSecretHandler(w, r)
+		case http.MethodDelete:
+			app.deleteSecretHandler(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 
 	secret := configv1.Secret_builder{
 		Id:    proto.String("sec-123"),
+		Key:   proto.String("MY_SECRET_KEY"),
 		Name:  proto.String("my-secret"),
 		Value: proto.String("super-secret"),
 	}.Build()
@@ -409,6 +440,10 @@ func TestHandleSecretDetail_Detailed(t *testing.T) {
 
 	// Test DELETE
 	req = httptest.NewRequest(http.MethodDelete, "/secrets/sec-123", nil)
+	// Inject admin role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusNoContent {
@@ -838,13 +873,17 @@ func TestHandleCollectionDetail_LargeBody(t *testing.T) {
 }
 
 func TestHandleSecrets_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, _ := setupApiTestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(largeBody))
+	// Inject admin
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 
-	handler := app.handleSecrets(store)
+	handler := http.HandlerFunc(app.createSecretHandler)
 	handler.ServeHTTP(w, req)
 
 	if w.Code != http.StatusRequestEntityTooLarge && w.Code != http.StatusBadRequest {
@@ -1615,7 +1654,13 @@ func TestSecretLeak(t *testing.T) {
 	app.fs = afero.NewMemMapFs()
 
 	handler := app.createAPIHandler(store)
-	ts := httptest.NewServer(handler)
+	// Wrap handler to inject admin role for testing creation
+	adminHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := auth.ContextWithRoles(r.Context(), []string{"admin"})
+		handler.ServeHTTP(w, r.WithContext(ctx))
+	})
+
+	ts := httptest.NewServer(adminHandler)
 	defer ts.Close()
 
 	secretID := "sensitive-secret-123"

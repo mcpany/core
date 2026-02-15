@@ -132,9 +132,9 @@ jobs:
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if command -v systemctl >/dev/null 2>&1; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl, ignoring..."
           elif command -v service >/dev/null 2>&1; then
-            sudo service docker restart
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring..."
           else
             echo "Cannot restart docker (no systemctl or service command found). Skipping..."
           fi
@@ -258,9 +258,9 @@ jobs:
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if command -v systemctl >/dev/null 2>&1; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl, ignoring..."
           elif command -v service >/dev/null 2>&1; then
-            sudo service docker restart
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring..."
           else
             echo "Cannot restart docker (no systemctl or service command found). Skipping..."
           fi
@@ -537,9 +537,9 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
           if command -v systemctl >/dev/null 2>&1; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl, ignoring..."
           elif command -v service >/dev/null 2>&1; then
-            sudo service docker restart
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring..."
           else
             echo "Cannot restart docker (no systemctl or service command found). Skipping..."
           fi
@@ -659,9 +659,9 @@ jobs:
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if command -v systemctl >/dev/null 2>&1; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl, ignoring..."
           elif command -v service >/dev/null 2>&1; then
-            sudo service docker restart
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring..."
           else
             echo "Cannot restart docker (no systemctl or service command found). Skipping..."
           fi
@@ -753,9 +753,9 @@ jobs:
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
           if command -v systemctl >/dev/null 2>&1; then
-            sudo systemctl restart docker
+            sudo systemctl restart docker || echo "Failed to restart docker via systemctl, ignoring..."
           elif command -v service >/dev/null 2>&1; then
-            sudo service docker restart
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring..."
           else
             echo "Cannot restart docker (no systemctl or service command found). Skipping..."
           fi
