@@ -273,6 +273,8 @@ func init() {
 
 // TrueStr is a string constant representing the boolean value true.
 // It is used for consistent string comparisons and parsing of boolean-like strings.
+//
+// Summary: Constant for "true" string.
 const TrueStr = "true"
 
 // GenerateUUID creates a new random (version 4) UUID.
