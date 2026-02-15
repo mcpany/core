@@ -1546,6 +1546,9 @@ func (a *Application) runServerMode(
 
 	mux := http.NewServeMux()
 
+	rbacMiddleware := middleware.NewRBACMiddleware()
+	adminOnly := rbacMiddleware.RequireRole("admin")
+
 	// UI Handler
 	// We prioritize serving from build directories (./ui/out, ./ui/dist).
 	// If only ./ui exists, we check if it contains source code (package.json) and block it if so.
@@ -1603,15 +1606,17 @@ func (a *Application) runServerMode(
 	// Moving mux.Handle("/", ...) down is safer.
 
 	// API Routes for Configuration Management
-	// Protected by auth middleware
+	// Protected by auth middleware and RBAC (Admin only)
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
-	mux.Handle("/api/v1/", authMiddleware(apiHandler))
+	mux.Handle("/api/v1/", authMiddleware(adminOnly(apiHandler)))
 
 	// Topology API is now handled by apiHandler via api.go
 
 	// Catalog API
-	// Expose via REST for UI
-	mux.Handle("/api/v1/catalog/services", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Expose via REST for UI. This endpoint lists services, which might be considered sensitive,
+	// but is required for the UI to function. If the UI is used by non-admins, this might need relaxed permissions.
+	// For now, we enforce admin to be safe, as it exposes infrastructure details.
+	mux.Handle("/api/v1/catalog/services", authMiddleware(adminOnly(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -1625,7 +1630,7 @@ func (a *Application) runServerMode(
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
-	})))
+	}))))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
@@ -1873,7 +1878,7 @@ func (a *Application) runServerMode(
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
-	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/metrics", authMiddleware(adminOnly(metrics.Handler())))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
@@ -1949,7 +1954,7 @@ func (a *Application) runServerMode(
 	// mux.Handle("/api/v1/skills/create", authMiddleware(a.handleCreateSkill())) // Replaced by gRPC Gateway
 
 	// Register Config Validation Endpoint
-	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
+	mux.Handle("/api/v1/config/validate", authMiddleware(adminOnly(http.HandlerFunc(rest.ValidateConfigHandler))))
 
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
@@ -1982,11 +1987,11 @@ func (a *Application) runServerMode(
 		}
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
-	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
+	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(adminOnly(a.handleDebugSeedTraffic())))
 
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
-		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
+		mux.Handle("/debug/entries", authMiddleware(adminOnly(standardMiddlewares.Debugger.APIHandler())))
 	}
 
 	httpBindAddress := bindAddress
@@ -2163,7 +2168,8 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// We apply Admin RBAC only to the JSON-RPC/API part, not the UI serving.
+	rootHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
@@ -2176,8 +2182,11 @@ func (a *Application) runServerMode(
 		}
 
 		// Fallback to JSON-RPC handler (for API calls at root or SSE)
-		httpHandler.ServeHTTP(w, r)
-	})))
+		// This is the critical security fix: Enforce Admin RBAC for the global JSON-RPC endpoint.
+		// Regular users must use /mcp/u/... to get profile-scoped access.
+		adminOnly(httpHandler).ServeHTTP(w, r)
+	})
+	mux.Handle("/", authMiddleware(rootHandler))
 
 	var httpLis net.Listener
 
