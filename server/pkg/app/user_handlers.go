@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -59,8 +60,10 @@ func (a *Application) HandleUpdateUserPreferences(w http.ResponseWriter, r *http
 		return
 	}
 
+	// Limit request body to 1MB to prevent DoS
+	limitReader := io.LimitReader(r.Body, 1024*1024)
 	var prefs map[string]string
-	if err := json.NewDecoder(r.Body).Decode(&prefs); err != nil {
+	if err := json.NewDecoder(limitReader).Decode(&prefs); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -70,7 +73,9 @@ func (a *Application) HandleUpdateUserPreferences(w http.ResponseWriter, r *http
 	if err != nil || user == nil {
 		// User not found in storage. Create it.
 		// We MUST copy existing auth config from AuthManager if available, otherwise the user loses access
-		// because DB user overrides Config user.
+		// because DB user overrides Config user in some storage implementations.
+		// TODO: This creates a divergence between Config and DB user records.
+		// Ideally preferences should be stored separately or merged dynamically.
 		logging.GetLogger().Info("Creating user in storage for preferences", "user_id", userID)
 
 		newUser := configv1.User_builder{
@@ -83,29 +88,12 @@ func (a *Application) HandleUpdateUserPreferences(w http.ResponseWriter, r *http
 			newUser.SetRoles(existingUser.GetRoles())
 			newUser.SetProfileIds(existingUser.GetProfileIds())
 		}
-		// If user is not in AuthManager either (e.g. implicit system-admin), we create a minimal user.
-		// Implicit system-admin has no Auth config (uses global key) and implicit roles.
-		// So storing just ID and Preferences is fine for system-admin.
 
 		if err := a.Storage.CreateUser(ctx, newUser); err != nil {
 			logging.GetLogger().Error("Failed to create user for preferences", "error", err)
 			http.Error(w, "Failed to save preferences", http.StatusInternalServerError)
 			return
 		}
-
-		// We also need to update AuthManager immediately so the change is reflected without restart?
-		// AuthManager.SetUsers overwrites everything.
-		// Ideally we should update AuthManager too.
-		// But SetUsers takes a list.
-		// We can't easily update single user in AuthManager.
-		// However, AuthManager.GetUser returns a pointer?
-		// "u, ok := am.users[id]" returns pointer.
-		// If we modify it in place?
-		// "am.users" is protected by RWMutex.
-		// We shouldn't modify it directly without lock.
-		// For now, persistence is enough. On restart it loads.
-		// But for the current session, we want the preferences to be available via GetUserPreferences?
-		// HandleGetUserPreferences checks DB first. So it's fine.
 	} else {
 		// User exists in DB. Update preferences.
 		user.SetPreferences(prefs)

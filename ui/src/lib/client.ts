@@ -1209,7 +1209,8 @@ export const apiClient = {
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) return [];
-        return res.json();
+        const json = await res.json();
+        return Array.isArray(json) ? json : [];
     },
 
     /**
@@ -1222,7 +1223,8 @@ export const apiClient = {
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) return [];
-        return res.json();
+        const json = await res.json();
+        return Array.isArray(json) ? json : [];
     },
 
 
