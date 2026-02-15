@@ -87,17 +87,20 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         }
     ];
 
-    for (const svc of services) {
-        try {
-            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-            if (!res.ok()) {
-                const text = await res.text();
-                throw new Error(`${res.status()} ${text}`);
-            }
-        } catch (e) {
-            console.log(`Failed to seed service ${svc.name}: ${e}`);
-            throw e;
+    try {
+        const res = await context.post('/api/v1/debug/seed', {
+            data: {
+                services: services
+            },
+            headers: HEADERS
+        });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`${res.status()} ${text}`);
         }
+    } catch (e) {
+        console.log(`Failed to seed services: ${e}`);
+        throw e;
     }
 };
 
