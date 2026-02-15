@@ -25,7 +25,18 @@ COPY proto/ /proto/
 RUN ln -s /app/node_modules /proto/node_modules
 
 # Install dependencies for protobuf generation
-RUN apt-get update && apt-get install -y protobuf-compiler curl unzip
+RUN apt-get update && apt-get install -y curl unzip
+
+# Install protoc manually (apt version is too old for edition="2023")
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then PB_ARCH="x86_64"; \
+    elif [ "$ARCH" = "aarch64" ]; then PB_ARCH="aarch_64"; \
+    else echo "Unsupported arch: $ARCH"; exit 1; fi && \
+    curl -sSL -o /tmp/protoc.zip "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-${PB_ARCH}.zip" && \
+    unzip -q /tmp/protoc.zip -d /tmp/protoc && \
+    mv /tmp/protoc/bin/protoc /usr/local/bin/ && \
+    mv /tmp/protoc/include/* /usr/local/include/ && \
+    rm -rf /tmp/protoc /tmp/protoc.zip
 
 # Download external protos (googleapis and grpc-gateway) required for generation
 RUN curl -sSL -o /tmp/googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
