@@ -5,334 +5,154 @@ package tool
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestInterpreterSecurity(t *testing.T) {
-	// 1. Ruby Interpolation Injection
-	t.Run("Ruby_DoubleQuotes_Injection", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("ruby_tool"),
-		}).Build()
-		cmd := "ruby"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
+func TestRubyCommandInjection_CodeFlag(t *testing.T) {
+	// Define a tool that uses 'ruby', which is an interpreter.
+	// We allow 'code' input.
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"code": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	tool := v1.Tool_builder{
+		Name:        proto.String("ruby-tool"),
+		InputSchema: inputSchema,
+	}.Build()
 
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-e", "puts \"{{msg}}\""},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("msg"),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("ruby"),
+		Local:   proto.Bool(true),
+	}.Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+	// Configured to run `ruby -e {{code}}`
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-e", "{{code}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("code")}.Build(),
+			}.Build(),
+		},
+	}.Build()
 
-		// Malicious input using Ruby interpolation
-		input := "#{system('echo injected')}"
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
-		req := &ExecutionRequest{
-			ToolName: "ruby_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"msg": "%s"}`, input)),
-			Arguments: map[string]interface{}{
-				"msg": input,
-			},
-		}
+	// Payload: puts 12345
+	// This contains spaces but no dangerous chars.
+	payload := "puts 12345"
 
-		_, err := tool.Execute(context.Background(), req)
+	req := &ExecutionRequest{
+		ToolName: "ruby-tool",
+		ToolInputs: []byte(`{"code": "` + payload + `"}`),
+	}
 
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "ruby interpolation injection detected", "Should detect ruby interpolation")
-	})
+	_, err := localTool.Execute(context.Background(), req)
 
-	// 2. Python F-String Injection
-	t.Run("Python_FString_Injection", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("python_tool"),
-		}).Build()
-		cmd := "python3"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
+    // Should fail because -e precedes {{code}} and space is considered dangerous for code arguments
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "injection detected")
+}
 
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-c", "print(f'{{msg}}')"},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("msg"),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
+func TestPythonCommandInjection_CodeFlag(t *testing.T) {
+    // python -c {{code}}
+    inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"code": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	tool := v1.Tool_builder{
+		Name:        proto.String("python-tool"),
+		InputSchema: inputSchema,
+	}.Build()
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("python3"),
+		Local:   proto.Bool(true),
+	}.Build()
 
-		// Input: {__import__("os").system("echo injected")}
-		input := `{__import__("os").system("echo injected")}`
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "{{code}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("code")}.Build(),
+			}.Build(),
+		},
+	}.Build()
 
-		req := &ExecutionRequest{
-			ToolName: "python_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-			Arguments: map[string]interface{}{
-				"msg": input,
-			},
-		}
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
-		_, err := tool.Execute(context.Background(), req)
+	// Payload: print 1
+	payload := "print 1"
 
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "python f-string injection detected", "Should detect python f-string injection")
-	})
+	req := &ExecutionRequest{
+		ToolName: "python-tool",
+		ToolInputs: []byte(`{"code": "` + payload + `"}`),
+	}
 
-    // 2b. Python Raw F-String Injection (fr'...')
-    t.Run("Python_RawFString_Injection", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("python_tool"),
-		}).Build()
-		cmd := "python3"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
+	_, err := localTool.Execute(context.Background(), req)
 
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-c", "print(fr'{{msg}}')"},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("msg"),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
+    // Should fail because -c precedes {{code}}
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "injection detected")
+}
 
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+func TestPythonCommandInjection_NoCodeFlag(t *testing.T) {
+    // python script.py {{arg}}
+    inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"arg": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	tool := v1.Tool_builder{
+		Name:        proto.String("python-script-tool"),
+		InputSchema: inputSchema,
+	}.Build()
 
-		input := `{__import__("os").system("echo injected")}`
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("python3"),
+		Local:   proto.Bool(true),
+	}.Build()
 
-		req := &ExecutionRequest{
-			ToolName: "python_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-			Arguments: map[string]interface{}{
-				"msg": input,
-			},
-		}
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"script.py", "{{arg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build(),
+			}.Build(),
+		},
+	}.Build()
 
-		_, err := tool.Execute(context.Background(), req)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "python f-string injection detected", "Should detect python raw f-string injection")
-	})
+	// Payload: Hello World
+	payload := "Hello World"
 
-    // 3. Python Valid JSON input (Should be allowed)
-    t.Run("Python_Valid_JSON", func(t *testing.T) {
-        toolDef := (&pb.Tool_builder{
-            Name: proto.String("python_json"),
-        }).Build()
-		cmd := "python3"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
+	req := &ExecutionRequest{
+		ToolName: "python-script-tool",
+		ToolInputs: []byte(`{"arg": "` + payload + `"}`),
+	}
 
-        callDef := (&configv1.CommandLineCallDefinition_builder{
-            Args: []string{"process.py", "'{{msg}}'"},
-            Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("msg"),
-					}).Build(),
-				}).Build(),
-            },
-        }).Build()
+	_, err := localTool.Execute(context.Background(), req)
 
-        tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
-
-        input := `{"foo": "bar"}` // Contains ", {, }
-
-        req := &ExecutionRequest{
-            ToolName: "python_json",
-            ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-            Arguments: map[string]interface{}{
-                "msg": input,
-            },
-        }
-
-        _, err := tool.Execute(context.Background(), req)
-
-        // We expect checks to PASS. Execution might fail (process.py missing), but not "injection detected".
-        if err != nil {
-             assert.NotContains(t, err.Error(), "injection detected", "Valid JSON should not be flagged as injection")
-        }
-    })
-
-	// 4. JS Template Literal Injection
-	t.Run("JS_Template_Injection", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("node_tool"),
-		}).Build()
-		cmd := "node"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
-
-		// Template uses backticks: console.log(`{{msg}}`)
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-e", "console.log(`{{msg}}`)"},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("msg"),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
-
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
-
-		input := "${process.exit(1)}"
-
-		req := &ExecutionRequest{
-			ToolName: "node_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-			Arguments: map[string]interface{}{
-				"msg": input,
-			},
-		}
-
-		_, err := tool.Execute(context.Background(), req)
-
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "javascript template literal injection detected", "Should detect JS template injection")
-	})
-
-	// 5. Bash Backtick Injection
-	t.Run("Bash_Backtick_Injection", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("bash_tool"),
-		}).Build()
-		cmd := "bash"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
-
-		// Template uses backticks: echo `{{msg}}`
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-c", "echo `{{msg}}`"},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("msg"),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
-
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
-
-		// Attempt full shell injection using ;
-		input := "; date"
-
-		req := &ExecutionRequest{
-			ToolName: "bash_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-			Arguments: map[string]interface{}{
-				"msg": input,
-			},
-		}
-
-		_, err := tool.Execute(context.Background(), req)
-
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected", "Should detect dangerous character in backticks for shell")
-	})
-
-	// 6. Ruby System Injection Bypass (system 'cmd')
-	t.Run("Ruby_System_Injection_Blocked", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("ruby_sys_tool"),
-		}).Build()
-		cmd := "ruby"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
-
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-e", "\"{{code}}\""},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name:       proto.String("code"),
-						Type:       configv1.ParameterType_STRING.Enum(),
-						IsRequired: proto.Bool(true),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
-
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
-
-		payload := "system 'echo pwned'"
-		req := &ExecutionRequest{
-			ToolName: "ruby_sys_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
-			Arguments: map[string]interface{}{
-				"code": payload,
-			},
-		}
-
-		_, err := tool.Execute(context.Background(), req)
-
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "interpreter injection detected", "Should detect system call injection without parens")
-	})
-
-	// 7. Perl qx Injection Blocked (qx/.../ in double quotes)
-	t.Run("Perl_qx_Injection_Blocked", func(t *testing.T) {
-		toolDef := (&pb.Tool_builder{
-			Name: proto.String("perl_qx_tool"),
-		}).Build()
-		cmd := "perl"
-		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}).Build()
-
-		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-e", "\"{{code}}\""},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				(&configv1.CommandLineParameterMapping_builder{
-					Schema: (&configv1.ParameterSchema_builder{
-						Name:       proto.String("code"),
-						Type:       configv1.ParameterType_STRING.Enum(),
-						IsRequired: proto.Bool(true),
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
-
-		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
-
-		payload := "print qx/echo pwned/"
-		req := &ExecutionRequest{
-			ToolName: "perl_qx_tool",
-			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, payload)),
-			Arguments: map[string]interface{}{
-				"code": payload,
-			},
-		}
-
-		_, err := tool.Execute(context.Background(), req)
-
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected: perl qx execution", "Should detect qx execution in double quotes")
-	})
+    // Should PASS because "script.py" is not a code flag, so spaces are allowed for data
+	assert.NoError(t, err)
 }

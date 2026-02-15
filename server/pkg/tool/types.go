@@ -1891,7 +1891,23 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						// Check if this argument is being used as code
+						isCode := false
+						// Check previous argument for code flag (e.g. -c, -e)
+						if i > 0 && isCodeFlag(args[i-1]) {
+							isCode = true
+						}
+						// Check if current argument starts with code flag (e.g. -c{{code}})
+						if startsWithCodeFlag(arg) {
+							isCode = true
+						}
+
+						shouldBlockSpaces := isShell(cmd)
+						if isInterpreter(cmd) && isCode {
+							shouldBlockSpaces = true
+						}
+
+						if err := checkForShellInjection(val, arg, placeholder, cmd, shouldBlockSpaces); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -3675,4 +3691,19 @@ func checkForDangerousSchemes(val string) error {
 	}
 
 	return nil
+}
+func isCodeFlag(arg string) bool {
+	arg = strings.Trim(arg, "\"'")
+	return arg == "-c" || arg == "-e" || arg == "-E" || arg == "-r" || arg == "-R" || arg == "--eval" || arg == "--process-code"
+}
+
+func startsWithCodeFlag(arg string) bool {
+	arg = strings.Trim(arg, "\"'")
+	flags := []string{"-c", "-e", "-E", "-r", "-R", "--eval", "--process-code"}
+	for _, f := range flags {
+		if strings.HasPrefix(arg, f) {
+			return true
+		}
+	}
+	return false
 }
