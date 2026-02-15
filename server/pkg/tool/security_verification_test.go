@@ -71,6 +71,6 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	// 4. Assert that the execution is BLOCKED
 	assert.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "file: scheme detected")
-	assert.Contains(t, err.Error(), "local file access is not allowed")
+	// Sentinel Security Update: Now blocked by dangerous scheme check first
+	assert.Contains(t, err.Error(), "dangerous input scheme detected: file")
 }

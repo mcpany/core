@@ -68,7 +68,7 @@ func TestLocalCommandTool_SSRF_Prevention(t *testing.T) {
 	}{
 		{"Unsafe URL", "http://unsafe.local", true, "unsafe url"},
 		{"Unsafe URL Uppercase", "HTTP://unsafe.local", true, "unsafe url"},
-		{"Unsupported Scheme", "ftp://example.com", true, "unsafe url"}, // Checks error wrapping
+		{"Unsupported Scheme", "ftp://example.com", true, "dangerous input scheme"}, // Checks error wrapping
 		{"Safe URL", "http://example.com", false, ""},
 	}
 

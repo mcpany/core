@@ -77,7 +77,11 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	// Expectation: Failure (Secure) due to SSRF protection
 	assert.Error(t, err, "Should fail due to SSRF protection")
 	if err != nil {
-		assert.Contains(t, err.Error(), "potential SSRF detected")
+		// Can return "potential SSRF detected" OR "unsafe url argument"
+		msg := err.Error()
+		if !strings.Contains(msg, "potential SSRF detected") && !strings.Contains(msg, "unsafe url argument") {
+			t.Errorf("Unexpected error message: %s", msg)
+		}
 	}
 
 	// 2. Public IP
@@ -97,7 +101,10 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	_, errIP := targetTool.Execute(ctx, reqIP)
 	assert.Error(t, errIP)
 	if errIP != nil {
-		assert.Contains(t, errIP.Error(), "potential SSRF detected")
+		msg := errIP.Error()
+		if !strings.Contains(msg, "potential SSRF detected") && !strings.Contains(msg, "unsafe url argument") {
+			t.Errorf("Unexpected error message: %s", msg)
+		}
 	}
 
 	// 4. Localhost string
@@ -108,6 +115,9 @@ func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
 	_, errLocalhost := targetTool.Execute(ctx, reqLocalhost)
 	assert.Error(t, errLocalhost)
 	if errLocalhost != nil {
-		assert.Contains(t, errLocalhost.Error(), "potential SSRF detected")
+		msg := errLocalhost.Error()
+		if !strings.Contains(msg, "potential SSRF detected") && !strings.Contains(msg, "unsafe url argument") {
+			t.Errorf("Unexpected error message: %s", msg)
+		}
 	}
 }

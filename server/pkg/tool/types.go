@@ -3523,6 +3523,12 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
+	// Sentinel Security Update: Block dangerous schemes and pseudo-protocols
+	// This prevents abuse of tools like ImageMagick (label:, mvg:), FFmpeg (concat:), etc.
+	if err := checkForDangerousSchemes(val); err != nil {
+		return err
+	}
+
 	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
 	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
 	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
@@ -3570,6 +3576,29 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 		return err
 	}
 
+	return nil
+}
+
+var dangerousSchemes = []string{
+	// ImageMagick / GraphicsMagick
+	"ephemeral", "msl", "mvg", "label", "vid", "text", "info", "inline", "plasma", "xc", "matte",
+	// FFmpeg / AVConv
+	"concat", "subfile", "crypto", "data", "hls", "dash", "rtmp", "rtsp",
+	// PHP
+	"php", "phar", "expect", "glob",
+	// Java
+	"jar", "war", "ear",
+	// Other dangerous protocols
+	"gopher", "dict", "ldap", "tftp", "ftp", "sftp", "file",
+}
+
+func checkForDangerousSchemes(val string) error {
+	valLower := strings.ToLower(val)
+	for _, scheme := range dangerousSchemes {
+		if strings.HasPrefix(valLower, scheme+":") {
+			return fmt.Errorf("dangerous input scheme detected: %s", scheme)
+		}
+	}
 	return nil
 }
 
