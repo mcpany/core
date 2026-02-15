@@ -117,108 +117,133 @@ const nodeTypes = {
  * Visualizes the stack configuration as a graph.
  */
 export function StackGraph({ yamlContent }: StackGraphProps) {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-    const { services, error } = useMemo(() => {
-        try {
-            const parsed = jsyaml.load(yamlContent) as any;
-            if (!parsed || typeof parsed !== 'object') {
-                return { services: [], error: null };
-            }
-
-            const rawServices = parsed.services || {};
-            let serviceList: ParsedService[] = [];
-
-            const processService = (key: string, val: any): ParsedService => {
-                 const env = val.environment || val.env || {};
-                 const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
-                 const ports = val.ports || [];
-                 const dependsOn = val.depends_on || [];
-
-                 let type: ParsedService['type'] = "unknown";
-                 if (val.mcp_service) {
-                     type = "image";
-                     if (val.mcp_service.stdio_connection) {
-                         val.image = val.mcp_service.stdio_connection.container_image;
-                         val.command = val.mcp_service.stdio_connection.command;
-                     } else if (val.mcp_service.bundle_connection) {
-                         val.image = val.mcp_service.bundle_connection.container_image;
-                     }
-                 } else if (val.image) type = "image";
-                 else if (val.command) type = "command";
-
-                 return {
-                     name: val.name || key,
-                     image: val.image,
-                     command: val.command,
-                     envCount,
-                     ports,
-                     type,
-                     dependsOn: Array.isArray(dependsOn) ? dependsOn : Object.keys(dependsOn)
-                 };
-            };
-
-            if (Array.isArray(rawServices)) {
-                serviceList = rawServices.map((val: any) => processService(val.name || "unknown", val));
-            } else {
-                serviceList = Object.entries(rawServices).map(([key, val]: [string, any]) => processService(key, val));
-            }
-
-            return { services: serviceList, error: null };
-        } catch (e: any) {
-            return { services: [], error: e.message };
-        }
-    }, [yamlContent]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+    const [status, setStatus] = React.useState<{ loading: boolean; error: string | null; hasServices: boolean }>({
+        loading: true,
+        error: null,
+        hasServices: false,
+    });
 
     useEffect(() => {
-        if (error || services.length === 0) {
-            setNodes([]);
-            setEdges([]);
-            return;
-        }
+        setStatus((prev) => ({ ...prev, loading: true, error: null }));
 
-        const newNodes: Node[] = services.map((svc) => ({
-            id: svc.name,
-            type: 'service',
-            data: { ...svc },
-            position: { x: 0, y: 0 }, // Initial position, will be layouted
-        }));
+        // ⚡ BOLT: Offloaded expensive YAML parsing and Dagre layout to async effects to unblock main thread rendering.
+        // Randomized Selection from Top 5 High-Impact Targets
+        const timer = setTimeout(() => {
+            try {
+                const parsed = jsyaml.load(yamlContent) as any;
+                if (!parsed || typeof parsed !== 'object') {
+                    setNodes([]);
+                    setEdges([]);
+                    setStatus({ loading: false, error: null, hasServices: false });
+                    return;
+                }
 
-        const newEdges: Edge[] = [];
-        services.forEach((svc) => {
-            if (svc.dependsOn) {
-                svc.dependsOn.forEach((dep) => {
-                    // Check if dependency exists
-                    if (services.some(s => s.name === dep)) {
-                        newEdges.push({
-                            id: `${svc.name}-${dep}`,
-                            source: dep, // Dependency is source (must start first)
-                            target: svc.name,
-                            animated: true,
+                const rawServices = parsed.services || {};
+                let serviceList: ParsedService[] = [];
+
+                const processService = (key: string, val: any): ParsedService => {
+                    const env = val.environment || val.env || {};
+                    const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
+                    const ports = val.ports || [];
+                    const dependsOn = val.depends_on || [];
+
+                    let type: ParsedService['type'] = "unknown";
+                    if (val.mcp_service) {
+                        type = "image";
+                        if (val.mcp_service.stdio_connection) {
+                            val.image = val.mcp_service.stdio_connection.container_image;
+                            val.command = val.mcp_service.stdio_connection.command;
+                        } else if (val.mcp_service.bundle_connection) {
+                            val.image = val.mcp_service.bundle_connection.container_image;
+                        }
+                    } else if (val.image) type = "image";
+                    else if (val.command) type = "command";
+
+                    return {
+                        name: val.name || key,
+                        image: val.image,
+                        command: val.command,
+                        envCount,
+                        ports,
+                        type,
+                        dependsOn: Array.isArray(dependsOn) ? dependsOn : Object.keys(dependsOn)
+                    };
+                };
+
+                if (Array.isArray(rawServices)) {
+                    serviceList = rawServices.map((val: any) => processService(val.name || "unknown", val));
+                } else {
+                    serviceList = Object.entries(rawServices).map(([key, val]: [string, any]) => processService(key, val));
+                }
+
+                if (serviceList.length === 0) {
+                    setNodes([]);
+                    setEdges([]);
+                    setStatus({ loading: false, error: null, hasServices: false });
+                    return;
+                }
+
+                const newNodes: Node[] = serviceList.map((svc) => ({
+                    id: svc.name,
+                    type: 'service',
+                    data: { ...svc },
+                    position: { x: 0, y: 0 }, // Initial position, will be layouted
+                }));
+
+                const newEdges: Edge[] = [];
+                serviceList.forEach((svc) => {
+                    if (svc.dependsOn) {
+                        svc.dependsOn.forEach((dep) => {
+                            // Check if dependency exists
+                            if (serviceList.some(s => s.name === dep)) {
+                                newEdges.push({
+                                    id: `${svc.name}-${dep}`,
+                                    source: dep, // Dependency is source (must start first)
+                                    target: svc.name,
+                                    animated: true,
+                                });
+                            }
                         });
                     }
                 });
+
+                const layouted = getLayoutedElements(newNodes, newEdges);
+                setNodes(layouted.nodes);
+                setEdges(layouted.edges);
+                setStatus({ loading: false, error: null, hasServices: true });
+
+            } catch (e: any) {
+                setNodes([]);
+                setEdges([]);
+                setStatus({ loading: false, error: e.message, hasServices: false });
             }
-        });
+        }, 0);
 
-        const layouted = getLayoutedElements(newNodes, newEdges);
-        setNodes(layouted.nodes);
-        setEdges(layouted.edges);
+        return () => clearTimeout(timer);
+    }, [yamlContent, setNodes, setEdges]);
 
-    }, [services, error, setNodes, setEdges]);
-
-    if (error) {
-         return (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4 gap-2 bg-red-50/10">
-                <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
-                <p className="text-xs text-destructive font-medium text-center">YAML Syntax Error</p>
-                <p className="text-[10px] font-mono opacity-75 max-w-[200px] break-all text-center">{error}</p>
+    if (status.loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4 gap-2">
+                <Box className="h-8 w-8 opacity-20 animate-pulse" />
+                <p className="text-xs">Processing stack...</p>
             </div>
         );
     }
 
-    if (services.length === 0) {
+    if (status.error) {
+         return (
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4 gap-2 bg-red-50/10">
+                <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
+                <p className="text-xs text-destructive font-medium text-center">YAML Syntax Error</p>
+                <p className="text-[10px] font-mono opacity-75 max-w-[200px] break-all text-center">{status.error}</p>
+            </div>
+        );
+    }
+
+    if (!status.hasServices) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4 gap-2">
                 <Box className="h-8 w-8 opacity-20" />
