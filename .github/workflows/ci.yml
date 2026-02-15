@@ -104,7 +104,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -238,6 +238,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      MCPANY_ENABLE_DEBUG_API: "true"
     steps:
       # - name: Free Disk Space (Ubuntu)
       #   uses: jlumbroso/free-disk-space@main
@@ -365,8 +366,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make xz-utils
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -533,6 +533,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      MCPANY_ENABLE_DEBUG_API: "true"
     steps:
       - uses: actions/checkout@v5
 
@@ -626,6 +627,10 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y make xz-utils
+
       - name: Prepare environment
         run: make prepare
 
@@ -649,6 +654,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      MCPANY_ENABLE_DEBUG_API: "true"
     steps:
       - uses: actions/checkout@v5
 
@@ -720,6 +726,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -798,6 +808,8 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1/2, 2/2]
+    env:
+      MCPANY_ENABLE_DEBUG_API: "true"
     steps:
       #      - name: Free Disk Space (Ubuntu)
       #        uses: jlumbroso/free-disk-space@main
@@ -843,6 +855,10 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Test UI
         run: |
