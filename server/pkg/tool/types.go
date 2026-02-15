@@ -1876,6 +1876,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
+	commandName := t.service.GetCommand()
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -1883,7 +1885,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -1918,7 +1920,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
@@ -1999,7 +2001,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
@@ -2204,6 +2206,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
+	commandName := t.service.GetCommand()
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -2211,15 +2215,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForLocalFileAccess(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
+					// Use validateSafePathAndInjection which now centralizes all checks
+					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -2254,15 +2251,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						// Use validateSafePathAndInjection which now centralizes all checks
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -3519,7 +3509,7 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
-func validateSafePathAndInjection(val string, isDocker bool) error {
+func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
@@ -3565,13 +3555,17 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	}
 
 	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
-	if err := checkForDangerousSchemes(val); err != nil {
-		return err
-	}
-	// Also check decoded value for dangerous schemes
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForDangerousSchemes(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
+	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
+	// Blocking them for generic tools (like echo) causes false positives (usability regression).
+	if isVulnerableToSchemes(commandName) {
+		if err := checkForDangerousSchemes(val); err != nil {
+			return err
+		}
+		// Also check decoded value for dangerous schemes
+		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+			if err := checkForDangerousSchemes(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
 		}
 	}
 
@@ -3582,6 +3576,40 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	}
 
 	return nil
+}
+
+func isVulnerableToSchemes(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+
+	// ImageMagick tools
+	magickTools := []string{
+		"convert", "mogrify", "identify", "composite", "compare", "stream",
+		"montage", "display", "animate", "import", "conjure", "magick",
+	}
+	for _, tool := range magickTools {
+		if base == tool {
+			return true
+		}
+	}
+
+	// FFmpeg tools
+	ffmpegTools := []string{"ffmpeg", "ffprobe", "ffplay"}
+	for _, tool := range ffmpegTools {
+		if base == tool {
+			return true
+		}
+	}
+
+	// Git
+	if base == "git" {
+		return true
+	}
+
+	// Interpreters (PHP, Expect) are handled by checkForShellInjection but
+	// if they are used as the main command, we might want to be extra careful.
+	// For now, let's stick to the ones that process "magic" files/URIs.
+
+	return false
 }
 
 func checkForDangerousSchemes(val string) error {
