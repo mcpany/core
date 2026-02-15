@@ -33,8 +33,19 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 
 			// Special handling for tool calls
 			if method == consts.MethodToolsCall {
-				if r, ok := req.(*mcp.CallToolRequest); ok {
+				if r, ok := req.(*mcp.CallToolRequest); ok && r.Params != nil {
 					// We expect tool names to be prefixed with the service ID (e.g. "service.tool")
+					// Optimization: Use strings.Cut to avoid allocating a slice.
+					if before, _, found := strings.Cut(r.Params.Name, "."); found {
+						serviceID = before
+					}
+				}
+			}
+
+			// Special handling for prompts/get
+			if method == consts.MethodPromptsGet {
+				if r, ok := req.(*mcp.GetPromptRequest); ok && r.Params != nil {
+					// We expect prompt names to be prefixed with the service ID (e.g. "service.prompt")
 					// Optimization: Use strings.Cut to avoid allocating a slice.
 					if before, _, found := strings.Cut(r.Params.Name, "."); found {
 						serviceID = before
