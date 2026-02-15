@@ -685,6 +685,50 @@ type WebsocketEchoServerInfo struct {
 	CleanupFunc func()
 }
 
+// MockServerInfo contains information about a running mock HTTP server.
+type MockServerInfo struct {
+	URL         string
+	CleanupFunc func()
+}
+
+// StartMockHTTPServer starts a mock HTTP server with a given handler.
+//
+// t is the t.
+// handler is the handler.
+//
+// Returns the result.
+func StartMockHTTPServer(t *testing.T, handler http.Handler) *MockServerInfo {
+	t.Helper()
+
+	port := FindFreePort(t)
+	addr := net.JoinHostPort(loopbackIP, strconv.Itoa(port))
+
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
+	go func() {
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			t.Logf("Mock HTTP server ListenAndServe error: %v", err)
+		}
+	}()
+
+	WaitForTCPPort(t, port, 5*time.Second)
+
+	return &MockServerInfo{
+		URL: "http://" + addr,
+		CleanupFunc: func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := server.Shutdown(ctx); err != nil {
+				t.Logf("Mock HTTP server shutdown error: %v", err)
+			}
+		},
+	}
+}
+
 // StartWebsocketEchoServer starts a mock WebSocket echo server.
 //
 // t is the t.

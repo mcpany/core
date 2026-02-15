@@ -8,6 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -22,12 +23,24 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
+	// Replaced flaky public API call with local mock server
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
 	t.Parallel()
+
+	// --- Start Mock Server ---
+	mockServer := integration.StartMockHTTPServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/fact" && r.Method == "GET" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"fact": "Cats are cool", "length": 13}`))
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer mockServer.CleanupFunc()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
@@ -35,7 +48,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	// --- 2. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
+	catFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

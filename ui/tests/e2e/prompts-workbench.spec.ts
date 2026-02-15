@@ -7,22 +7,23 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Prompts Workbench', () => {
-  test.fixme('should load prompts list and allow selection', async ({ page }) => { // Flaky in Docker/Kind environment
-    // Mock the prompts API to ensure consistent state
-    await page.route('**/api/v1/prompts', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                prompts: [
-                    {
-                        name: "test-prompt",
-                        description: "A test prompt",
-                        arguments: [{ name: "arg1", description: "An argument" }]
+  test('should load prompts list and allow selection', async ({ page, request }) => {
+    // Seed real backend with data containing prompts
+    await request.post('/api/v1/debug/seed', {
+        headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' },
+        data: {
+            services: [
+                {
+                    name: "weather-service",
+                    command_line_service: {
+                        command: "echo",
+                        prompts: [{ name: "summarize_text", description: "Summarize text" }],
+                        tools: [{ name: "get_weather", description: "Get current weather", call_id: "get_weather" }],
+                        calls: { get_weather: { args: ['{"weather": "sunny"}'] } }
                     }
-                ]
-            })
-        });
+                }
+            ]
+        }
     });
 
     // Navigate to prompts page

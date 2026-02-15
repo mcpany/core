@@ -8,39 +8,30 @@ import { test, expect } from '@playwright/test';
 test.describe('Services Feature', () => {
   const services: any[] = [
     {
+        id: "payment-gateway",
         name: "Payment Gateway",
-        type: "http",
-        address: "https://stripe.com",
-        status: "up",
         version: "v1.2.0",
-        enabled: true
+        disable: false,
+        http_service: {
+            address: "https://stripe.com"
+        }
     },
     {
+        id: "user-service",
         name: "User Service",
-        type: "grpc",
-        address: "localhost:50051",
-        status: "up",
         version: "v1.0",
-        enabled: true
+        disable: false,
+        grpc_service: {
+            address: "localhost:50051"
+        }
     }
   ];
 
-  test.beforeEach(async ({ page }) => {
-    // page.on('request', request => console.log('>>', request.method(), request.url()));
-
-    // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
+  test.beforeEach(async ({ page, request }) => {
+    // Seed real backend with data
+    await request.post('/api/v1/debug/seed', {
+      headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' },
+      data: { services }
     });
 
     await page.goto('/upstream-services');

@@ -8,56 +8,23 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock API responses
-    await page.route('/api/v1/services', async route => {
-      if (route.request().method() === 'GET') {
-          await route.fulfill({ json: [] });
-      } else if (route.request().method() === 'POST') {
-          await route.fulfill({ json: { status: 'success' } });
-      } else {
-        await route.continue();
+  test.beforeEach(async ({ page, request }) => {
+    // Seed real backend with data
+    await request.post('/api/v1/debug/seed', {
+      headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' },
+      data: {
+        credentials: [
+          {
+            id: 'cred-1',
+            name: 'Test Credential',
+            authentication: {
+              api_key: {
+                value: { plain_text: 'test-secret-value' }
+              }
+            }
+          }
+        ]
       }
-    });
-
-    await page.route('/api/v1/marketplace/official', async route => {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
-    });
-
-    await page.route('/api/v1/marketplace/public', async route => {
-        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
-    });
-
-    await page.route('/api/v1/credentials', async route => {
-        await route.fulfill({ json: [{ id: 'cred-1', name: 'Test Credential' }] });
-    });
-
-    // Mock Templates API
-    const templates: any[] = [];
-    await page.route('/api/v1/templates', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: templates });
-        } else if (route.request().method() === 'POST') {
-             const data = await route.request().postDataJSON();
-             templates.push({ ...data, id: `tpl-${Date.now()}` });
-             await route.fulfill({ json: {} });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route('/api/v1/templates/*', async route => {
-        if (route.request().method() === 'DELETE') {
-             // Basic mock
-             await route.fulfill({ json: {} });
-        } else {
-             await route.continue();
-        }
-    });
-
-    // Mock Auth Test
-    await page.route('/api/v1/debug/auth-test', async route => {
-        await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
     });
   });
 
@@ -73,7 +40,8 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // 3. Step 1: Service Type
     await expect(page.getByText('Service Type')).toBeVisible();
     await page.getByRole('combobox').click();
-    await page.getByRole('option', { name: 'PostgreSQL Database' }).click();
+    // Use exact name from backend seeds.go
+    await page.getByRole('option', { name: 'PostgreSQL', exact: true }).click();
     await page.click('button:has-text("Next")');
 
     // 4. Step 2: Parameters
@@ -81,7 +49,8 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
     // Check for parameter input existence and edit it
     // Using specific locator to avoid strict mode violations if multiple inputs exist
-    const paramInput = page.locator('input[value="postgresql://user:password@localhost:5432/dbname"]');
+    // The value comes from the default in seeds.go
+    const paramInput = page.locator('input[value="postgresql://postgres:postgres@localhost:5432/postgres"]');
     await expect(paramInput).toBeVisible();
     await paramInput.fill('postgresql://test:test@localhost:5432/testdb');
 
@@ -110,7 +79,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // Verify "Test Only" alert is present
     await expect(page.getByText('Test Connection Only')).toBeVisible();
 
-    // Verify we can see the credential we mocked
+    // Verify we can see the credential we mocked (seeded)
     await page.getByRole('combobox').click();
     await expect(page.getByRole('option', { name: 'Test Credential' })).toBeVisible();
     // Select Test Credential
@@ -118,13 +87,13 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
     // Helper: Test Connection
     await page.getByRole('button', { name: 'Test Connection' }).click();
-    // Expect success message (toast or alert or status)
+    // Expect success message
     await expect(page.getByText('Connection verification successful')).toBeVisible();
 
     await page.click('button:has-text("Next")');
 
     // 7. Step 5: Review
-    await expect(page.getByText('Review & Finish')).toBeVisible(); // Title is "5. Review & Finish" in create-config-wizard.tsx
+    await expect(page.getByText('Review & Finish')).toBeVisible();
     // Check if JSON contains our changes
     await expect(page.getByText('"MAX_CONNECTIONS"')).toBeVisible();
     await expect(page.getByText('"100"')).toBeVisible();
@@ -146,15 +115,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(nameInput).toBeVisible();
     await nameInput.fill(uniqueName);
 
-    // Mock the register service call
-    const registerPromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/services') && response.status() === 200
-    );
-
     await page.click('button:has-text("Create Instance")');
-    await registerPromise;
 
-    // Verify toast or closing of dialog
-    await expect(page.getByRole('dialog', { name: 'Instantiate Service' })).toBeHidden();
+    // Verify toast or closing of dialog - wait for service registration
+    await expect(page.getByRole('dialog', { name: 'Instantiate Service' })).toBeHidden({timeout: 10000});
   });
 });
