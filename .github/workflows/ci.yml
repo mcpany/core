@@ -50,6 +50,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz build-base
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -889,6 +897,14 @@ jobs:
       #          swap-storage: true
       #
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz build-base
+          fi
 
       - name: Detect Architecture
         id: detect-arch
