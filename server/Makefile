@@ -130,6 +130,13 @@ prepare:
 	@echo "Preparing development environment..."
 	@mkdir -p $(LOCAL_BIN_DIR)
 	@mkdir -p $(TOOL_INSTALL_DIR)
+	@# Check for common dependencies (CI/Debian/Ubuntu)
+	@if command -v apt-get >/dev/null 2>&1; then \
+		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v xz >/dev/null 2>&1; then \
+			echo "Installing missing dependencies: curl, unzip, xz-utils..."; \
+			apt-get update && apt-get install -y curl unzip xz-utils; \
+		fi; \
+	fi
 	@# Check if protoc is installed
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \

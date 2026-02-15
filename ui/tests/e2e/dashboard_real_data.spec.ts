@@ -77,19 +77,17 @@ test.describe('Dashboard Real Data', () => {
         // The endpoint returns points. The UI sums them up.
         // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
         // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        // Or simpler: find the value card.
-        // The card structure: Header "Total Requests", Content: "6,000"
-        // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
+        // The value is in a div with class text-2xl, the change is in a p (paragraph)
+        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').locator('.text-2xl');
 
         await expect(page.locator('text=Total Requests')).toBeVisible();
         // Wait for data to load (it starts at 0 or empty)
-        await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden(); // Ensure no error text is shown if that was a thing?
-        // Just wait for non-zero requests
+        await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden();
+
         // We expect around 6,000.
-        // Use a more specific locator to debug and allow for potential data propagation delay
-        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+        // Ensure it's not 0 (initial state might be 0)
+        await expect(totalRequestsLocator).not.toHaveText("0", { timeout: 30000 });
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();

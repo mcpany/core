@@ -9,8 +9,24 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
-export const seedServices = async (requestContext?: APIRequestContext) => {
+export async function cleanupServices(requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
+        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
+        await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup services: ${e}`);
+    }
+}
+
+export async function seedServices(requestContext?: APIRequestContext) {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
+    // Cleanup first to avoid conflicts
+    await cleanupServices(context);
+
     const services = [
         {
             id: "svc_01",
@@ -99,10 +115,20 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             throw e;
         }
     }
-};
+}
 
-export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
+export async function seedCollection(name: string, requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
+    // Cleanup first
+    try {
+        await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
+        // Also cleanup implicitly created services
+        await context.delete(`/api/v1/services/weather-service`, { headers: HEADERS });
+    } catch (e) {
+        // Ignore cleanup errors
+    }
+
     const collection = {
         name: name,
         services: [
@@ -137,9 +163,9 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
         console.log(`Failed to seed collection ${name}: ${e}`);
         throw e;
     }
-};
+}
 
-export const seedTraffic = async (requestContext?: APIRequestContext) => {
+export async function seedTraffic(requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [
         { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
@@ -149,9 +175,9 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
-};
+}
 
-export const seedTemplates = async (requestContext?: APIRequestContext) => {
+export async function seedTemplates(requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const templates = [
         {
@@ -217,9 +243,9 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
             console.log(`Failed to seed template ${tmpl.name}: ${e}`);
         }
     }
-};
+}
 
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+export async function seedWebhooks(requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
 
     // Seed global webhook
@@ -252,30 +278,18 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
             console.log(`Failed to seed alert ${alert.name}: ${e}`);
         }
     }
-};
+}
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup services: ${e}`);
-    }
-};
-
-export const cleanupCollection = async (name: string, requestContext?: APIRequestContext) => {
+export async function cleanupCollection(name: string, requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup collection ${name}: ${e}`);
     }
-};
+}
 
-export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
+export async function cleanupTemplates(requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const ids = ["google-calendar", "github", "linear"];
     for (const id of ids) {
@@ -285,9 +299,9 @@ export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
             console.log(`Failed to cleanup template ${id}: ${e}`);
         }
     }
-};
+}
 
-export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
+export async function cleanupWebhooks(requestContext?: APIRequestContext) {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     // Cleanup global webhook (set to empty)
     try {
@@ -301,9 +315,18 @@ export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
     } catch (e) {
         console.log(`Failed to cleanup alert rule: ${e}`);
     }
-};
+}
 
-export const seedUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
+export async function cleanupUser(requestContext?: APIRequestContext, username: string = "admin") {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup user: ${e}`);
+    }
+}
+
+export async function seedUser(requestContext?: APIRequestContext, username: string = "admin") {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
         id: username,
@@ -329,13 +352,4 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         console.log(`Failed to seed user: ${e}`);
         throw e;
     }
-};
-
-export const cleanupUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup user: ${e}`);
-    }
-};
+}
