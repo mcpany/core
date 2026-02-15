@@ -147,6 +147,7 @@ jobs:
             pr_info=$(gh pr list \
               --repo ${{ github.repository }} \
               --head "$branch_name" \
+              --limit 1000 \
               --state open \
               --json number,updatedAt,isDraft \
               --jq '.[0]')

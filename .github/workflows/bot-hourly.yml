@@ -87,6 +87,7 @@ jobs:
             --repo ${{ github.repository }} \
             --base main \
             --search "is:pr is:open author:@me sort:updated-desc" \
+            --limit 1000 \
             --json number \
             --jq '.[].number' | \
           while read pr_number; do
