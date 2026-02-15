@@ -100,8 +100,6 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	copy(msgCopy, msg)
 
 	b.mu.Lock()
-	defer b.mu.Unlock()
-
 	// ⚡ BOLT: Ring Buffer Optimization
 	// Randomized Selection from Top 5 High-Impact Targets
 	b.history[b.head] = msgCopy
@@ -110,10 +108,17 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 		b.head = 0
 		b.full = true
 	}
+	b.mu.Unlock()
+
+	// ⚡ BOLT: Split lock optimization.
+	// We use a Read Lock for broadcasting to allow multiple concurrent broadcasters
+	// while ensuring safety against Unsubscribe (which needs Write Lock).
+	b.mu.RLock()
+	defer b.mu.RUnlock()
 
 	for ch := range b.subscribers {
 		select {
-		case ch <- msg:
+		case ch <- msgCopy:
 		default:
 			// Drop message if channel is full
 		}
