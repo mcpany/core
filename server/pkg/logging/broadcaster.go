@@ -9,12 +9,14 @@ import (
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
-	mu          sync.RWMutex
-	subscribers map[chan []byte]struct{}
-	history     [][]byte
-	head        int
-	full        bool
-	limit       int
+	mu               sync.RWMutex
+	subscribers      map[chan []byte]struct{}
+	subscribersSlice []chan []byte // Optimization: slice for fast iteration
+
+	history [][]byte
+	head    int
+	full    bool
+	limit   int
 }
 
 var (
@@ -27,9 +29,19 @@ var (
 // Returns the result.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
-		subscribers: make(map[chan []byte]struct{}),
-		history:     make([][]byte, 1000),
-		limit:       1000,
+		subscribers:      make(map[chan []byte]struct{}),
+		subscribersSlice: make([]chan []byte, 0),
+		history:          make([][]byte, 1000),
+		limit:            1000,
+	}
+}
+
+// rebuildSlice updates the slice of subscribers from the map.
+// Must be called with b.mu locked.
+func (b *Broadcaster) rebuildSlice() {
+	b.subscribersSlice = make([]chan []byte, 0, len(b.subscribers))
+	for ch := range b.subscribers {
+		b.subscribersSlice = append(b.subscribersSlice, ch)
 	}
 }
 
@@ -41,6 +53,7 @@ func (b *Broadcaster) Subscribe() chan []byte {
 	defer b.mu.Unlock()
 	ch := make(chan []byte, 100)
 	b.subscribers[ch] = struct{}{}
+	b.rebuildSlice()
 	return ch
 }
 
@@ -51,6 +64,7 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 	defer b.mu.Unlock()
 	ch := make(chan []byte, 100)
 	b.subscribers[ch] = struct{}{}
+	b.rebuildSlice()
 
 	count := b.limit
 	if !b.full {
@@ -87,6 +101,7 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	defer b.mu.Unlock()
 	if _, ok := b.subscribers[ch]; ok {
 		delete(b.subscribers, ch)
+		b.rebuildSlice()
 		close(ch)
 	}
 }
@@ -111,9 +126,12 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 		b.full = true
 	}
 
-	for ch := range b.subscribers {
+	// ⚡ BOLT: Broadcast Optimization
+	// Use a pre-built slice (rebuilt on Subscribe/Unsubscribe) for faster iteration (O(N) slice vs O(N) map).
+	// Randomized Selection from Top 5 High-Impact Targets
+	for _, ch := range b.subscribersSlice {
 		select {
-		case ch <- msg:
+		case ch <- msgCopy:
 		default:
 			// Drop message if channel is full
 		}
