@@ -1,40 +1,46 @@
-# Truth Reconciliation Audit Report
+# Audit Report: Truth Reconciliation
 
 ## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
+A "Truth Reconciliation Audit" was performed on the `mcpany/core` repository to verify synchronization between Documentation, Codebase, and Product Roadmap. A sample of 10 distinct features (5 UI, 5 Server) was selected and verified.
 
-All discrepancies have been remediated.
+**Result:** All 10 sampled features are **fully implemented** and **consistent** with their documentation and the roadmap. No "Roadmap Debt" (missing features) or "Documentation Drift" (outdated docs) was found in the sample.
+
+However, during the "Code Quality" phase of the audit, existing linting issues and invalid CI configuration were identified and remediated to meet the "Exit Criteria" (`make lint` passing).
 
 ## Verification Matrix
 
-| Document Name | Status | Action Taken | Evidence |
+| Document | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
+| `ui/docs/features/browser_connectivity_check.md` | ✅ Verified | None | Implemented in `ui/src/components/diagnostics/connection-diagnostic.tsx`. Verified `no-cors` fetch logic. |
+| `ui/docs/features/native_file_upload_playground.md` | ✅ Verified | None | Implemented in `ui/src/components/playground/schema-form.tsx` and `file-input.tsx`. Handles `contentEncoding: base64`. |
+| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Implemented in `ui/src/components/logs/log-stream.tsx`. JSON auto-detection and expansion logic exists. |
+| `ui/docs/features/server-health-history.md` | ✅ Verified | None | Implemented in `ui/src/hooks/use-service-health-history.ts` and backend `server/pkg/health/history.go`. |
+| `ui/docs/features/tool_search_bar.md` | ✅ Verified | None | Implemented in `ui/src/app/tools/page.tsx`. Client-side filtering by name/description confirmed. |
+| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Implemented in `server/pkg/middleware/context_optimizer.go`. Truncation logic and default config confirmed. |
+| `server/docs/features/config_validator.md` | ✅ Verified | None | Implemented in `server/pkg/api/rest/handler.go`. Endpoint `/api/v1/config/validate` exists. |
+| `server/docs/features/health-checks.md` | ✅ Verified | None | Implemented in `server/pkg/health/health.go`. Supports HTTP, gRPC, WebSocket, etc. |
+| `server/docs/features/hot_reload.md` | ✅ Verified | None | Implemented in `server/pkg/config/watcher.go`. File watcher logic hooked into main server loop. |
+| `server/docs/features/transformation.md` | ✅ Verified | None | Implemented in `server/pkg/transformer/parser.go`. JQ and JSONPath support confirmed. |
 
 ## Remediation Log
 
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
+While the features were correct, the codebase failed the **Code Quality** check (`make lint`). The following fixes were applied:
 
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
+### 1. Refactoring `server/pkg/tool/types.go`
+-   **Issue:** High cyclomatic complexity (36 > 30) in `stripInterpreterComments` function.
+-   **Action:** Refactored the function by extracting helper methods (`getCommentSupport`, `commentStripState.handleQuotes`) and state management struct.
+-   **Issue:** Repeated string literal `"git"` (3 occurrences).
+-   **Action:** Introduced `const gitCommand = "git"` and replaced literals.
+
+### 2. Fixing CI Configuration `.github/workflows/ci.yml`
+-   **Issue:** Invalid YAML due to duplicate `if` key in `lint` job.
+-   **Action:** Removed the redundant `if: false` key which was effectively disabling the lint job in CI (likely accidentally).
+
+## Exit Criteria Status
+
+*   `make test`: **Partial**. Unit tests for modified code (`server/pkg/tool/...`) passed. Full E2E tests were skipped due to sandbox environment limitations (Docker overlayfs issues).
+*   `make lint`: **Pass**. All linters (golangci-lint, check-yaml, etc.) are passing.
 
 ## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+This report contains no PII, secrets, or internal IPs.
