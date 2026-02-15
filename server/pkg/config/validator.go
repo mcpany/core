@@ -249,10 +249,14 @@ func validateStdioArgs(ctx context.Context, command string, args []string, worki
 		}
 
 		// This is likely the script file.
-		// We only validate it if it looks like a file (has an extension).
-		// This avoids validating things like "install" or module names.
+		// We only validate it if it looks like a file:
+		// 1. Has an extension (e.g. script.py)
+		// 2. Is a path (absolute or contains separators) (e.g. /tmp/script, ./script)
+		// We SKIP bare words (e.g. "install", "run", "status") to avoid breaking subcommands for tools like go, git, npm.
 		ext := filepath.Ext(arg)
-		if ext == "" {
+		isPath := filepath.IsAbs(arg) || strings.Contains(arg, string(os.PathSeparator)) || strings.Contains(arg, "/")
+
+		if ext == "" && !isPath {
 			continue
 		}
 
