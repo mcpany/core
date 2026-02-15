@@ -317,9 +317,10 @@ prepare:
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
 		SC_VERSION="stable"; \
-		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" -o /tmp/shellcheck.tar.xz; \
+		tar -xJvf /tmp/shellcheck.tar.xz -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+		rm -rf "/tmp/shellcheck-$${SC_VERSION}" /tmp/shellcheck.tar.xz; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
 			echo "ShellCheck installed successfully."; \
 		else \
