@@ -31,7 +31,9 @@ test.describe('MCP Any UI E2E Tests', () => {
       await page.click('button[type="submit"]');
 
       // Wait for redirect to home page and verify
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+      // In Docker/CI environments, the URL might be http://localhost:PORT/ or http://127.0.0.1:PORT/
+      // Use regex to be flexible about the origin
+      await expect(page).toHaveURL(/^(http:\/\/[^\/]+\/)$/, { timeout: 15000 });
   });
 
   test.afterEach(async ({ request }) => {

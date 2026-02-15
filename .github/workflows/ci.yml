@@ -131,8 +131,17 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          # Try to restart docker if systemd is available, otherwise just print info
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+             sudo systemctl restart docker
+          else
+             echo "Systemd not available, skipping docker restart. Mirror config might require manual reload if daemon is already running."
+             # Attempt to reload if pid exists?
+             # For containerized runners, we might not be able to restart it easily.
+             # Just printing info to see if config is picked up if it was a fresh start or volume mount.
+          fi
+
+          docker info || true # Verify the mirrors are listed, don't fail if docker is not responsive yet
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -251,8 +260,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+             sudo systemctl restart docker
+          else
+             echo "Systemd not available, skipping docker restart."
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -506,8 +520,12 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          docker info
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+             sudo systemctl restart docker
+          else
+             echo "Systemd not available, skipping docker restart."
+          fi
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -622,8 +640,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+             sudo systemctl restart docker
+          else
+             echo "Systemd not available, skipping docker restart."
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -710,8 +733,13 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+             sudo systemctl restart docker
+          else
+             echo "Systemd not available, skipping docker restart."
+          fi
+
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
