@@ -149,6 +149,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	// Auth (OAuth)
 	mux.Handle("/auth/login", loginRateLimiter.Handler(http.HandlerFunc(a.handleLogin)))
+	mux.HandleFunc("/auth/me", a.handleAuthMe(store))
 	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 

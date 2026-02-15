@@ -387,6 +387,8 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 
 func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
 	deadline := time.Now().Add(timeout)
+	var lastErr error
+	var lastStatus int
 	for time.Now().Before(deadline) {
 		//nolint:gosec // G107: Url is constructed internally in test
 		resp, err := http.Get(url)
@@ -395,10 +397,13 @@ func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.D
 			if resp.StatusCode == expectedStatus {
 				return
 			}
+			lastStatus = resp.StatusCode
+		} else {
+			lastErr = err
 		}
 		time.Sleep(1 * time.Second)
 	}
-	t.Fatalf("Failed to verify endpoint %s within %v", url, timeout)
+	t.Fatalf("Failed to verify endpoint %s within %v. Last error: %v, Last status: %d", url, timeout, lastErr, lastStatus)
 }
 
 func verifyPrometheusMetric(t *testing.T, url string, expectedTarget string) {

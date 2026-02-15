@@ -9,6 +9,8 @@ import (
 	"net/http"
 
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/storage"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // handleInitiateOAuth handles the request to initiate an OAuth2 flow.
@@ -104,4 +106,38 @@ func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request
 	// Helper to send success response
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(`{"status": "success"}`))
+}
+
+// handleAuthMe returns the currently authenticated user.
+// GET /auth/me
+func (a *Application) handleAuthMe(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		userID, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		user, err := store.GetUser(r.Context(), userID)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to get user: %v", err), http.StatusInternalServerError)
+			return
+		}
+		if user == nil {
+			http.Error(w, "user not found", http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		// Use util.SanitizeUser to remove secrets
+		sanitized := util.SanitizeUser(user)
+		if err := json.NewEncoder(w).Encode(sanitized); err != nil {
+			http.Error(w, "failed to encode user", http.StatusInternalServerError)
+		}
+	}
 }

@@ -1440,6 +1440,36 @@ export const apiClient = {
     // User Management
 
     /**
+     * Gets the currently authenticated user.
+     * @returns A promise that resolves to the current user.
+     */
+    getMe: async () => {
+        const res = await fetchWithAuth('/api/v1/auth/me');
+        if (!res.ok) throw new Error('Failed to fetch current user');
+        const data = await res.json();
+        return {
+            id: data.id,
+            name: data.name || data.id, // Fallback if name is missing
+            email: data.email,
+            avatar: data.avatar,
+            role: data.role || 'viewer', // Default role if not present
+            roles: data.roles || [],
+            profileIds: data.profile_ids || [],
+            authentication: data.authentication ? {
+                apiKey: data.authentication.api_key ? {
+                    paramName: data.authentication.api_key.param_name,
+                    in: data.authentication.api_key.in,
+                    verificationValue: data.authentication.api_key.verification_value
+                } : undefined,
+                basicAuth: data.authentication.basic_auth ? {
+                    username: data.authentication.basic_auth.username,
+                    passwordHash: data.authentication.basic_auth.password_hash
+                } : undefined
+            } : undefined
+        };
+    },
+
+    /**
      * Lists all users.
      * @returns A promise that resolves to a list of users.
      */

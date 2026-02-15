@@ -85,15 +85,14 @@ upstream_services:
     port := "50055"
     if useLocal {
         // Update config to use fixed port
-        config1 = strings.ReplaceAll(config1, "127.0.0.1:0", "127.0.0.1:"+port)
+        config1 = strings.ReplaceAll(config1, "127.0.0.1:0", "0.0.0.0:"+port)
         os.WriteFile(configPath, []byte(config1), 0644)
 
         serverBin := filepath.Join(rootDir, "build/bin/server")
-        cmd = exec.Command(serverBin, "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
+        cmd = exec.Command(serverBin, "run", "--config-path", configPath, "--debug", "--api-key", "test-key", "--db-path", filepath.Join(configDir, "db1.sqlite"))
         // Redirect output for debugging
-        // logFile, _ := os.Create(filepath.Join(configDir, "server.log"))
-        // cmd.Stdout = logFile
-        // cmd.Stderr = logFile
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
         err = cmd.Start()
         require.NoError(t, err)
 
@@ -145,8 +144,8 @@ upstream_services:
 	// Local process restart is just killing and starting again
     // Update config
     // We use a new port to avoid TIME_WAIT issues
-    port2 := "50056"
-    config2 := strings.Replace(config1, "127.0.0.1:"+port, "127.0.0.1:"+port2, 1)
+    port2 := "50058"
+    config2 := strings.Replace(config1, "0.0.0.0:"+port, "0.0.0.0:"+port2, 1)
 	config2 = strings.Replace(config2, "enabled: true", "enabled: true\n        \"second-service\":\n          enabled: true", 1) + fmt.Sprintf(`
   - id: "second-service"
     name: "Second Service"
@@ -164,12 +163,15 @@ upstream_services:
         cmd.Process.Kill()
         cmd.Wait()
         // time.Sleep(1 * time.Second) // No wait needed if new port
-        cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
+        cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key", "--db-path", filepath.Join(configDir, "db2.sqlite"))
         cmd.Env = os.Environ()
+        cmd.Stdout = os.Stdout // Add stdout
         cmd.Stderr = os.Stderr
+        time.Sleep(2 * time.Second) // Wait for previous process to release resources
         if err := cmd.Start(); err != nil {
              t.Fatalf("Failed to restart server: %v", err)
         }
+
         baseURL = fmt.Sprintf("http://127.0.0.1:%s", port2)
     }
 
@@ -199,7 +201,7 @@ upstream_services:
     port3 := "50057"
 	config3 := fmt.Sprintf(`
 global_settings:
-  mcp_listen_address: "127.0.0.1:%s"
+  mcp_listen_address: "0.0.0.0:%s"
 upstream_services:
   - id: "fs-service"
     name: "Filesystem Service"
@@ -218,7 +220,9 @@ upstream_services:
         cmd.Process.Kill()
         cmd.Wait()
         time.Sleep(1 * time.Second)
-        cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
+        cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key", "--db-path", filepath.Join(configDir, "db3.sqlite"))
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
         cmd.Start()
     }
 
