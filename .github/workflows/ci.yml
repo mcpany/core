@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -131,7 +131,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker to apply changes, but don't fail if we can't (e.g. in a container)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring"
+          else
+            echo "No service manager found, skipping docker restart. Mirrors may not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -251,7 +258,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker to apply changes, but don't fail if we can't (e.g. in a container)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring"
+          else
+            echo "No service manager found, skipping docker restart. Mirrors may not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -524,7 +538,15 @@ jobs:
         run: |
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+
+          # Try to restart docker to apply changes, but don't fail if we can't (e.g. in a container)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring"
+          else
+            echo "No service manager found, skipping docker restart. Mirrors may not be applied."
+          fi
           docker info
 
       - name: Set up Go
@@ -640,7 +662,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker to apply changes, but don't fail if we can't (e.g. in a container)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring"
+          else
+            echo "No service manager found, skipping docker restart. Mirrors may not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
@@ -728,7 +757,14 @@ jobs:
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          sudo systemctl restart docker
+          # Try to restart docker to apply changes, but don't fail if we can't (e.g. in a container)
+          if command -v systemctl >/dev/null && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl restart docker
+          elif command -v service >/dev/null; then
+            sudo service docker restart || echo "Failed to restart docker via service, ignoring"
+          else
+            echo "No service manager found, skipping docker restart. Mirrors may not be applied."
+          fi
           docker info # Verify the mirrors are listed
 
       - name: Set up Go
