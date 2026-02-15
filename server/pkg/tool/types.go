@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -1878,6 +1879,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	commandName := t.service.GetCommand()
 
+	// Detect if we are running in eval mode (e.g. perl -e, python -c) based on static args
+	isEval := detectEvalMode(commandName, args)
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -1885,13 +1889,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker, commandName, isEval); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd), isEval); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -1920,13 +1924,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName, isEval); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						cmd := t.service.GetCommand()
 						if isShellCommand(cmd) {
-							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
+							// For 'args' array, we don't have a template context per se, but we treat it as potentially interpreted
+							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd), isEval); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2001,7 +2006,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName, isEval); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
@@ -2208,6 +2213,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	commandName := t.service.GetCommand()
 
+	// Detect if we are running in eval mode (e.g. perl -e, python -c) based on static args
+	isEval := detectEvalMode(commandName, args)
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -2216,13 +2224,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
 					// Use validateSafePathAndInjection which now centralizes all checks
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker, commandName, isEval); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd), isEval); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2252,7 +2260,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						// Use validateSafePathAndInjection which now centralizes all checks
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName, isEval); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2853,7 +2861,7 @@ func isShell(cmd string) bool {
 	return false
 }
 
-func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool) error {
+func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool, isEval bool) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
@@ -2866,7 +2874,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Sentinel Security Update: Interpreter Injection Protection
 	// Check if the main command is an interpreter
 	if isInterpreter(command) {
-		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+		if err := checkInterpreterInjection(val, template, base, quoteLevel, isEval); err != nil {
 			return err
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
@@ -2887,7 +2895,10 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
-			if err := checkInterpreterInjection(val, template, argBase, quoteLevel); err != nil {
+			// Argument interpreter injection (e.g. bash -c "python ...")
+			// We assume isEval=false for nested interpreters unless we parse flags, which is hard.
+			// But checkInterpreterInjection checks general syntax.
+			if err := checkInterpreterInjection(val, template, argBase, quoteLevel, false); err != nil {
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
@@ -3129,7 +3140,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	return nil
 }
 
-func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+func checkInterpreterInjection(val, template, base string, quoteLevel int, isEval bool) error {
 	if err := checkTarInjection(val, base); err != nil {
 		return err
 	}
@@ -3139,7 +3150,7 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
-	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
+	if err := checkNodePerlPhpInjection(val, base, quoteLevel, isEval); err != nil {
 		return err
 	}
 	if err := checkAwkInjection(val, base); err != nil {
@@ -3258,7 +3269,7 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
-func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
+func checkNodePerlPhpInjection(val, base string, quoteLevel int, isEval bool) error {
 	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
@@ -3288,6 +3299,21 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 			// Blocking "qx" is aggressive but necessary for strict security on Perl input.
 			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
 				return fmt.Errorf("shell injection detected: perl qx execution")
+			}
+		}
+
+		// Sentinel Security Update: Eval Mode Strict Checks
+		// If we are in eval mode (perl -e ...), inputs are treated as code.
+		// We must strictly block dangerous function calls in UNQUOTED contexts (Level 0) where
+		// checkInterpreterFunctionCalls might be bypassed (e.g. exec q/ls/).
+		// If the input is quoted (Level 1 or 2), standard quote escaping checks are sufficient to prevent
+		// breaking out of the string, and checkInterpreterFunctionCalls handles interpolation attacks.
+		if isEval && quoteLevel == 0 {
+			// Block dangerous keywords globally in the input using regex to respect word boundaries.
+			// We block exec, system, open, syscall, eval.
+			re := regexp.MustCompile(`\b(exec|system|open|syscall|eval)\b`)
+			if re.MatchString(strings.ToLower(val)) {
+				return fmt.Errorf("perl eval injection detected: dangerous keyword found in input")
 			}
 		}
 
@@ -3375,6 +3401,39 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+func detectEvalMode(command string, args []string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	for _, arg := range args {
+		if strings.HasPrefix(base, "perl") {
+			// Perl: -e, -E. Also matches -pe, -ne, -le, etc.
+			// Flags must start with - and contain e or E.
+			// To be safe, we check for -e or -E specifically or combined flags.
+			// Short flags: -pe, -ne, -pie.
+			if strings.HasPrefix(arg, "-") && !strings.HasPrefix(arg, "--") && (strings.Contains(arg, "e") || strings.Contains(arg, "E")) {
+				return true
+			}
+		}
+		if strings.HasPrefix(base, "python") && arg == "-c" {
+			return true
+		}
+		if strings.HasPrefix(base, "ruby") {
+			if strings.HasPrefix(arg, "-") && !strings.HasPrefix(arg, "--") && strings.Contains(arg, "e") {
+				return true
+			}
+		}
+		if (base == "node" || base == "nodejs" || base == "bun" || base == "deno") && (arg == "-e" || arg == "--eval") {
+			return true
+		}
+		if strings.HasPrefix(base, "php") && (arg == "-r" || arg == "--run") {
+			return true
+		}
+		if (base == "bash" || base == "sh" || base == "zsh") && arg == "-c" {
+			return true
+		}
+	}
+	return false
 }
 
 func isInterpreter(command string) bool {
@@ -3534,7 +3593,7 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
-func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
+func validateSafePathAndInjection(val string, isDocker bool, commandName string, isEval bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
