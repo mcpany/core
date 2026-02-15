@@ -190,8 +190,12 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 
 		if len(w.buf.data) > 0 {
 			_, err := w.writer.Write(w.buf.data)
-			byteBufferPool.Put(w.buf) // Return to pool
-			w.buf = nil               // Release reference
+			// ⚡ BOLT: Cap pool buffer size to prevent memory leaks.
+			// Randomized Selection from Top 5 High-Impact Targets
+			if cap(w.buf.data) <= 65536 {
+				byteBufferPool.Put(w.buf)
+			}
+			w.buf = nil // Release reference
 			return err
 		}
 		return nil
@@ -200,11 +204,37 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	w.ResponseWriter.WriteHeader(w.code)
 	if len(w.buf.data) > 0 {
 		_, err := w.ResponseWriter.Write(w.buf.data)
-		byteBufferPool.Put(w.buf) // Return to pool
+		// ⚡ BOLT: Cap pool buffer size to prevent memory leaks.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if cap(w.buf.data) <= 65536 {
+			byteBufferPool.Put(w.buf)
+		}
 		w.buf = nil
 		return err
 	}
 	return nil
+}
+
+// ⚡ BOLT: Implemented Flush to support streaming responses (e.g. SSE).
+// Randomized Selection from Top 5 High-Impact Targets
+// Flush implements the http.Flusher interface.
+func (w *gzipResponseWriter) Flush() {
+	// If we haven't written headers yet, we are still buffering.
+	// Force flush the buffer to start gzip stream (even if small).
+	// This ensures that explicit Flush calls are respected.
+	if !w.headerWritten {
+		_ = w.flushBuffer(true)
+	}
+
+	// Now flush the gzip writer if active
+	if w.writer != nil {
+		_ = w.writer.Flush()
+	}
+
+	// Finally, flush the underlying ResponseWriter
+	if f, ok := w.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
+	}
 }
 
 // Close closes the gzip writer and returns it to the pool.
@@ -231,7 +261,11 @@ func (w *gzipResponseWriter) Close() {
 
 	// In case flushBuffer didn't run or didn't clear buf
 	if w.buf != nil {
-		byteBufferPool.Put(w.buf)
+		// ⚡ BOLT: Cap pool buffer size to prevent memory leaks.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if cap(w.buf.data) <= 65536 {
+			byteBufferPool.Put(w.buf)
+		}
 		w.buf = nil
 	}
 }
