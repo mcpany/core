@@ -66,6 +66,41 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     return { nodes: layoutedNodes, edges };
 };
 
+// Helper function to check if node data is effectively equal
+function isDataEqual(a: any, b: any): boolean {
+    if (a === b) return true;
+    if (!a || !b) return false;
+
+    // Check basic fields
+    if (a.label !== b.label) return false;
+    if (a.type !== b.type) return false;
+    if (a.status !== b.status) return false;
+
+    // Check metrics
+    const metricsA = a.metrics || {};
+    const metricsB = b.metrics || {};
+
+    if (metricsA.qps !== metricsB.qps) return false;
+    if (metricsA.latencyMs !== metricsB.latencyMs) return false;
+    if (metricsA.errorRate !== metricsB.errorRate) return false;
+
+    // Check metadata (shallow comparison for now, assuming simple key-values)
+    const metaA = a.metadata || {};
+    const metaB = b.metadata || {};
+
+    const keysA = Object.keys(metaA);
+    const keysB = Object.keys(metaB);
+
+    if (keysA.length !== keysB.length) return false;
+
+    for (const key of keysA) {
+        if (metaA[key] !== metaB[key]) return false;
+    }
+
+    return true;
+}
+
+
 /**
  * Hook to fetch and manage network topology data.
  *
@@ -185,6 +220,12 @@ export function useNetworkTopology() {
                 const nodesWithOldPositions = newNodes.map(node => {
                     const oldNode = currentNodesMap.get(node.id);
                     if (oldNode) {
+                        // ⚡ BOLT: Optimized node reconciliation to prevent unnecessary re-renders.
+                        // Randomized Selection from Top 5 High-Impact Targets.
+                        if (isDataEqual(oldNode.data, node.data)) {
+                            return oldNode;
+                        }
+
                         return {
                             ...node,
                             position: oldNode.position,
