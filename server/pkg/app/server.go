@@ -2350,6 +2350,36 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			}
 
 			if authenticated {
+				// Sentinel Security: Enforce Admin Role for global endpoints
+				// Unless the endpoint is specifically exempted (like /mcp/u/ which has its own auth).
+				// But /mcp/u/ is NOT wrapped by this middleware in the mux because it is registered via HandleFunc on mux directly,
+				// and this middleware is applied to specific handlers or wrapped manually.
+				// However, createAuthMiddleware IS used to wrap the root handler "/" and "/api/v1/".
+				// So we enforce admin role here to prevent privilege escalation via the root endpoint.
+
+				// Check for 'admin' role
+				roles, ok := auth.RolesFromContext(ctx)
+				hasAdmin := false
+				if ok {
+					for _, r := range roles {
+						if r == "admin" {
+							hasAdmin = true
+							break
+						}
+					}
+				}
+
+				if !hasAdmin {
+					// Check if this is a path that allows non-admin access?
+					// Currently, only /mcp/u/ allows non-admin, but it doesn't use this middleware instance (it handles auth internally).
+					// /auth/login is exempted above.
+					// So everything protected by this middleware instance SHOULD be admin-only.
+					user, _ := auth.UserFromContext(ctx)
+					logging.GetLogger().Warn("Forbidden: Global access requires admin role", "user", user, "path", r.URL.Path)
+					http.Error(w, "Forbidden: Admin role required", http.StatusForbidden)
+					return
+				}
+
 				next.ServeHTTP(w, r.WithContext(ctx))
 				return
 			}
