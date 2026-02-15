@@ -826,6 +826,50 @@ export const apiClient = {
     },
 
     /**
+     * Creates a new prompt.
+     * @param prompt The prompt definition to create.
+     * @returns A promise that resolves when the prompt is created.
+     */
+    createPrompt: async (prompt: PromptDefinition) => {
+        const res = await fetchWithAuth('/api/v1/prompts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prompt)
+        });
+        if (!res.ok) throw new Error(`Failed to create prompt: ${await res.text()}`);
+        return res.json();
+    },
+
+    /**
+     * Updates an existing prompt.
+     * @param name The name of the prompt to update.
+     * @param prompt The updated prompt definition.
+     * @returns A promise that resolves when the prompt is updated.
+     */
+    updatePrompt: async (name: string, prompt: PromptDefinition) => {
+        const res = await fetchWithAuth(`/api/v1/prompts/${name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prompt)
+        });
+        if (!res.ok) throw new Error(`Failed to update prompt: ${await res.text()}`);
+        return res.json();
+    },
+
+    /**
+     * Deletes a prompt.
+     * @param name The name of the prompt to delete.
+     * @returns A promise that resolves when the prompt is deleted.
+     */
+    deletePrompt: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/prompts/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error(`Failed to delete prompt: ${await res.text()}`);
+        return res.json();
+    },
+
+    /**
      * Sets the status (enabled/disabled) of a prompt.
      * @param name The name of the prompt.
      * @param enabled True to enable the prompt, false to disable it.

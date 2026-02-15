@@ -85,8 +85,30 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())
 
-	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
+	mux.HandleFunc("/prompts", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.handlePrompts()(w, r)
+		case http.MethodPost:
+			a.handleCreatePrompt(store)(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+	mux.HandleFunc("/prompts/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/execute") {
+			a.handlePromptExecute()(w, r)
+			return
+		}
+		switch r.Method {
+		case http.MethodPut:
+			a.handleUpdatePrompt(store)(w, r)
+		case http.MethodDelete:
+			a.handleDeletePrompt(store)(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())

@@ -411,6 +411,11 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
+	// Ensure User Library exists (idempotent)
+	if err := a.ensureUserLibraryService(opts.Ctx, storageStore); err != nil {
+		log.Error("Failed to ensure user library service", "error", err)
+	}
+
 	// Determine config sources
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
