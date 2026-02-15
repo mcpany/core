@@ -207,6 +207,32 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	return nil
 }
 
+// ⚡ BOLT: Implemented Flush to support streaming (e.g. SSE) via gzip middleware.
+// Randomized Selection from Top 5 High-Impact Targets
+// Flush implements the http.Flusher interface.
+// It flushes the underlying gzip writer and the response writer.
+func (w *gzipResponseWriter) Flush() {
+	// If we have a gzip writer, flush it first to push compressed data to the underlying writer.
+	if w.writer != nil {
+		_ = w.writer.Flush()
+	} else {
+		// If we are still buffering, we must flush the buffer now to ensure data reaches the client.
+		// This forces the response to be gzipped (since we are in this middleware).
+		// Note: This commits the headers and Content-Encoding: gzip.
+		// even if buffer is empty, flushing implies headers should be sent.
+		_ = w.flushBuffer(true)
+		// Now flush the newly created gzip writer
+		if w.writer != nil {
+			_ = w.writer.Flush()
+		}
+	}
+
+	// Flush the underlying ResponseWriter if it supports it.
+	if f, ok := w.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
+	}
+}
+
 // Close closes the gzip writer and returns it to the pool.
 // It ensures that any buffered data is flushed to the underlying writer.
 func (w *gzipResponseWriter) Close() {
@@ -214,6 +240,8 @@ func (w *gzipResponseWriter) Close() {
 		_ = w.writer.Close()
 		w.pool.Put(w.writer)
 		w.writer = nil
+		// Note: We do not return w.buf here because flushBuffer(true) already did it.
+		// However, if flushBuffer failed or something weird happened, w.buf might be nil.
 		return
 	}
 
