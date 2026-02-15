@@ -404,19 +404,24 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 
 	i := 0
 	for i < len(b) {
-		// Look for '$'
-		if b[i] != '$' {
-			buf.WriteByte(b[i])
-			i++
-			continue
+		// ⚡ BOLT: Optimized scanning using IndexByte to skip byte-by-byte loop.
+		// Randomized Selection from Top 5 High-Impact Targets
+		nextDollar := bytes.IndexByte(b[i:], '$')
+		if nextDollar == -1 {
+			buf.Write(b[i:])
+			break
 		}
+
+		// Write everything before the dollar sign
+		buf.Write(b[i : i+nextDollar])
+		i += nextDollar
 
 		// Found '$', check next char
 		if i+1 >= len(b) {
 			// Trailing '$', just write it
-			buf.WriteByte(b[i])
+			buf.WriteByte('$')
 			i++
-			continue
+			break
 		}
 
 		// Case 1: ${...}
