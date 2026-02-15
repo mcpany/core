@@ -124,6 +124,11 @@ jobs:
 
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
@@ -250,6 +255,11 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -534,6 +544,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Configure Docker Registry Mirrors
         run: |
           sudo mkdir -p /etc/docker
@@ -654,6 +669,11 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -961,6 +981,11 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Install gh CLI
         run: |
           install_dependencies() {
