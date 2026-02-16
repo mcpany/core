@@ -46,6 +46,10 @@ interface ServiceImportItem {
     selected: boolean;
 }
 
+/**
+ * BulkServiceImport provides a wizard for importing multiple services at once.
+ * It supports JSON/YAML input or URL import, validating services before registration.
+ */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {
     const [step, setStep] = useState<"input" | "review" | "import">("input");
 
