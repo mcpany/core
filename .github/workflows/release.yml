@@ -514,7 +514,6 @@ jobs:
 
       - name: Push images and create manifest
         if: github.event_name != 'pull_request'
-        working-directory: /tmp/digests-ui
         run: |
           VERSION="${{ needs.setup.outputs.version }}"
           IS_RELEASE="${{ needs.setup.outputs.is_release }}"

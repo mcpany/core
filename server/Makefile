@@ -668,7 +668,7 @@ docker-build-ui:
 docker-smoke-test-ui:
 ifdef HAS_DOCKER
 	@echo "Building UI Docker image..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
+	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ..
 	@echo "Running UI smoke test..."
 	@chmod +x tests/smoke_test_ui.sh
 	@./tests/smoke_test_ui.sh mcpany-ui 3333
