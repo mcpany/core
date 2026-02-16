@@ -837,7 +837,7 @@ jobs:
           ./server/tests/smoke_test.sh mcpany/server:latest
 
   ui-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     timeout-minutes: 20
     needs: [build-images]
     strategy:
@@ -895,7 +895,7 @@ jobs:
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
   k8s-e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     timeout-minutes: 20
     needs: [build-images]
     steps:
