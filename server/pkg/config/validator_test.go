@@ -5,6 +5,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -817,6 +818,16 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 		validation.IsSecurePath = func(path string) error {
 			if path == "/etc/cert.pem" {
 				return assert.AnError
+			}
+			return nil
+		}
+
+		// Mock validation.IsAllowedPath to avoid "IsSensitivePath" blocking .pem files during test
+		oldIsAllowed := validation.IsAllowedPath
+		defer func() { validation.IsAllowedPath = oldIsAllowed }()
+		validation.IsAllowedPath = func(path string) error {
+			if path == "/etc/cert.pem" {
+				return fmt.Errorf("not a secure path")
 			}
 			return nil
 		}

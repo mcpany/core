@@ -124,7 +124,7 @@ The agent will use the `get_weather` tool exposed by MCP Any (configured in `con
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
 ### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing.
+Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
 make test
 ```
