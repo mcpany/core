@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, CommandLineUpstreamService } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -62,7 +62,7 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
     connectionPool: s.connection_pool,
     httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
     grpcService: s.grpc_service,
-    commandLineService: s.command_line_service,
+    commandLineService: s.command_line_service ? CommandLineUpstreamService.fromJSON(s.command_line_service) : undefined,
     mcpService: s.mcp_service,
     upstreamAuth: s.upstream_auth,
     preCallHooks: s.pre_call_hooks,
@@ -441,12 +441,7 @@ export const apiClient = {
             payload.grpc_service = { address: config.grpcService.address };
         }
         if (config.commandLineService) {
-            payload.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env,
-                env: config.commandLineService.env
-            };
+            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
@@ -529,10 +524,7 @@ export const apiClient = {
             payload.grpc_service = { address: config.grpcService.address };
         }
         if (config.commandLineService) {
-            payload.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-            };
+            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
@@ -628,12 +620,7 @@ export const apiClient = {
             payload.grpc_service = { address: config.grpcService.address };
         }
         if (config.commandLineService) {
-            payload.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-                env: config.commandLineService.env,
-                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
-            };
+            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
