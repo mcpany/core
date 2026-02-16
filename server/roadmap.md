@@ -1,43 +1,11 @@
 # Server Roadmap
 
-## 1. Completed Features
-
-- **Interactive Doctor Resilience**
-  - **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
-- **Pre-flight Command Validation**
-  - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
-- **Actionable Configuration Errors**
-  - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
-- **Environment Variable Fuzzy Matching**
-  - **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY'?").
-- **RegEx Environment Variable Validation**
-  - **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
-- **Async Tool Loading**
-  - **Description**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup.
-- **Preset Service Gallery**
-  - **Description**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI. Implemented via example configurations in `server/examples/popular_services`.
-- **HTTP Upstream Env Validation**
-  - **Description**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers).
-- **Tool Poisoning Mitigation**
-  - **Description**: Integrity checks for tool definitions to prevent "Rug Pull" attacks. Implemented via SHA256 hashing of tool definitions.
-- **Local LLM "One-Click" Connect**
-  - **Description**: Auto-detection and template-based connection to local inference servers. Supports Ollama via `/api/tags` discovery.
-- **Tool "Dry Run" Mode**
-  - **Description**: Allows tools to validate inputs and return a preview of side effects without executing them. Supported in the common tool execution lifecycle.
-- **Smart Retry Policies**
-  - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
-- **Service Dependency Graph**
-  - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
-- **Runtime Health Visibility**
-  - **Description**: Exposed real-time service health status (`last_error`) and tool counts in the API, enabling the UI to show error badges for failing upstreams instantly.
-- **Port Conflict Hints**
-  - **Description**: Detects "Address already in use" errors during server startup and suggests using `--json-rpc-port` or `--grpc-port` flags to resolve the conflict.
-- **Whitespace URL Validation**
-  - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
-- **gRPC Health Checks**
-  - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
-- **Context Optimizer Middleware**
-  - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
+*   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for tool calls.
+*   **[Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).
+*   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
+*   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
+*   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
 
 ## 2. Updated Roadmap
 
@@ -47,15 +15,19 @@
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
 
-| Rank | Feature Name                | Why it matters                                                                                                                         | Difficulty |
-| :--- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| 1    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
-| 2    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
-| 3    | **Service Health History**  | **Observability**: Store historical health check results to visualize availability trends (uptime graphs).                             | Medium     |
-| 4    | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks.      | High       |
-| 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
-| 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
-| 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
+| Rank | Feature Name | Why it matters | Difficulty |
+| :--- | :--- | :--- | :--- |
+| **P0** | **Policy Firewall** | **Security:** Critical for "Zero Trust" agent execution. | High |
+| **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent actions. | High |
+| **P1** | **Recursive Context** | **Usability:** Solves subagent configuration pain. | Medium |
+| **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent hallucinations. | Medium |
+| 1 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
+| 2 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
+| 3 | **Service Health History** | **Observability**: Store historical health check results to visualize availability trends (uptime graphs). | Medium |
+| 4 | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks. | High |
+| 3 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
+| 4 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
+| 5 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
 
 | 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
@@ -138,6 +110,45 @@ These features represent the next logical steps for the product, focusing on Ent
 | 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
+
+## 1. Completed Features
+
+- **Interactive Doctor Resilience**
+  - **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
+- **Pre-flight Command Validation**
+  - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
+- **Actionable Configuration Errors**
+  - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
+- **Environment Variable Fuzzy Matching**
+  - **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY'?").
+- **RegEx Environment Variable Validation**
+  - **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
+- **Async Tool Loading**
+  - **Description**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup.
+- **Preset Service Gallery**
+  - **Description**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI. Implemented via example configurations in `server/examples/popular_services`.
+- **HTTP Upstream Env Validation**
+  - **Description**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers).
+- **Tool Poisoning Mitigation**
+  - **Description**: Integrity checks for tool definitions to prevent "Rug Pull" attacks. Implemented via SHA256 hashing of tool definitions.
+- **Local LLM "One-Click" Connect**
+  - **Description**: Auto-detection and template-based connection to local inference servers. Supports Ollama via `/api/tags` discovery.
+- **Tool "Dry Run" Mode**
+  - **Description**: Allows tools to validate inputs and return a preview of side effects without executing them. Supported in the common tool execution lifecycle.
+- **Smart Retry Policies**
+  - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
+- **Service Dependency Graph**
+  - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Runtime Health Visibility**
+  - **Description**: Exposed real-time service health status (`last_error`) and tool counts in the API, enabling the UI to show error badges for failing upstreams instantly.
+- **Port Conflict Hints**
+  - **Description**: Detects "Address already in use" errors during server startup and suggests using `--json-rpc-port` or `--grpc-port` flags to resolve the conflict.
+- **Whitespace URL Validation**
+  - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
+- **gRPC Health Checks**
+  - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
+- **Context Optimizer Middleware**
+  - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
 
 ## 3. Codebase Health
 
