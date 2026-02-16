@@ -61,3 +61,50 @@ func TestValidate_Security_StdioArgs_NoExtension_Block(t *testing.T) {
 		assert.Contains(t, errors[0].Error(), "is not allowed")
 	}
 }
+
+func TestValidate_Security_StdioArgs_NoExt_ButPath_Block(t *testing.T) {
+	// This test ensures that arguments with path separators (but no extension) are treated as paths and validated.
+
+	// 1. Create a directory OUTSIDE the current working directory.
+	tempDir, err := os.MkdirTemp("", "mcpany-repro-outside-path")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	// 2. Create a script there.
+	scriptPath := filepath.Join(tempDir, "myscript")
+	err = os.WriteFile(scriptPath, []byte("echo hi"), 0755)
+	require.NoError(t, err)
+
+	// 3. Configure service using the absolute path (which has separators)
+	// Even though it has no extension, the presence of separators should trigger validation.
+	jsonConfig := `{
+		"upstream_services": [
+			{
+				"name": "test-service-path-check",
+				"mcp_service": {
+					"stdio_connection": {
+						"command": "bash",
+						"args": ["` + scriptPath + `"]
+					}
+				}
+			}
+		]
+	}`
+
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(jsonConfig), cfg))
+
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		return "/bin/bash", nil
+	}
+
+	errors := Validate(context.Background(), cfg, Server)
+
+	assert.NotEmpty(t, errors, "Expected validation error for absolute path without extension")
+	if len(errors) > 0 {
+		assert.Contains(t, errors[0].Error(), "file path")
+		assert.Contains(t, errors[0].Error(), "is not allowed")
+	}
+}
