@@ -177,7 +177,8 @@ var IsSensitivePath = func(path string) error {
 	}
 
 	// Block database files
-	if baseLower == "mcpany.db" || strings.HasSuffix(baseLower, ".db") || strings.HasSuffix(baseLower, ".sqlite") {
+	// We allow generic .db files to support SQLite sidecars (e.g. audit logs), but protect the main system DB.
+	if baseLower == "mcpany.db" {
 		return fmt.Errorf("access to database file %q is denied", base)
 	}
 

@@ -51,6 +51,8 @@ const (
 	HealthStatusUnhealthy = "unhealthy"
 )
 
+const commandGit = "git"
+
 var (
 	metricGrpcRequestError   = []string{"grpc", "request", "error"}
 	metricGrpcRequestSuccess = []string{"grpc", "request", "success"}
@@ -2046,7 +2048,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == commandGit {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2381,7 +2383,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == commandGit {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -3061,120 +3063,133 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
+type parserState struct {
+	inLineComment  bool
+	inBlockComment bool
+	inSingle       bool
+	inDouble       bool
+	inBacktick     bool
+	escaped        bool
+}
+
+type commentStyle struct {
+	supportsHash  bool
+	supportsSlash bool
+	supportsBlock bool
+}
+
+func getCommentStyle(language string) commentStyle {
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		return commentStyle{supportsHash: true}
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		return commentStyle{supportsSlash: true, supportsBlock: true}
+	case "php":
+		return commentStyle{supportsHash: true, supportsSlash: true, supportsBlock: true}
+	default:
+		// Default to strict: strip all known comment types if unsure
+		return commentStyle{supportsHash: true, supportsSlash: true, supportsBlock: true}
+	}
+}
+
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		supportsHash = true
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		supportsSlash = true
-		supportsBlock = true
-	case "php":
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	}
+	state := parserState{}
+	style := getCommentStyle(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
 
-		if inLineComment {
+		// Handle active comments
+		if state.inLineComment {
 			if char == '\n' {
-				inLineComment = false
+				state.inLineComment = false
 				b.WriteByte(char)
 			}
 			continue
 		}
-		if inBlockComment {
+		if state.inBlockComment {
 			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
-				inBlockComment = false
+				state.inBlockComment = false
 				i++
 			}
 			continue
 		}
 
-		if escaped {
-			escaped = false
+		// Handle escape sequences
+		if state.escaped {
+			state.escaped = false
 			b.WriteByte(char)
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
+		// Handle quotes
+		if updateQuoteState(&state, char) {
 			b.WriteByte(char)
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		// If inside quotes, write char and handle escapes
+		if state.inSingle || state.inDouble || state.inBacktick {
 			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
-				b.WriteByte(char)
-				continue
+				state.escaped = true
 			}
 			b.WriteByte(char)
 			continue
 		}
 
-		// Not in quotes, check for comments
-		if supportsHash && char == '#' {
-			inLineComment = true
+		// Not in quotes, check for comments start
+		if checkCommentStart(&state, style, char, val, &i) {
 			continue
-		}
-		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
-			if supportsSlash && val[i+1] == '/' {
-				inLineComment = true
-				i++
-				continue
-			}
-			if supportsBlock && val[i+1] == '*' {
-				inBlockComment = true
-				i++
-				continue
-			}
 		}
 
 		// Skip backslash (line continuation outside quotes)
 		if char == '\\' {
-			// If followed by newline, it's a line continuation. Strip it.
-			// If not, it's just a backslash. Strip it anyway for safety?
-			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
 			continue
 		}
 
 		b.WriteByte(char)
 	}
 	return b.String()
+}
+
+func updateQuoteState(state *parserState, char byte) bool {
+	if char == '\'' && !state.inDouble && !state.inBacktick {
+		state.inSingle = !state.inSingle
+		return true
+	}
+	if char == '"' && !state.inSingle && !state.inBacktick {
+		state.inDouble = !state.inDouble
+		return true
+	}
+	if char == '`' && !state.inSingle && !state.inDouble {
+		state.inBacktick = !state.inBacktick
+		return true
+	}
+	return false
+}
+
+func checkCommentStart(state *parserState, style commentStyle, char byte, val string, idx *int) bool {
+	if style.supportsHash && char == '#' {
+		state.inLineComment = true
+		return true
+	}
+	if (style.supportsSlash || style.supportsBlock) && char == '/' && *idx+1 < len(val) {
+		nextChar := val[*idx+1]
+		if style.supportsSlash && nextChar == '/' {
+			state.inLineComment = true
+			*idx++
+			return true
+		}
+		if style.supportsBlock && nextChar == '*' {
+			state.inBlockComment = true
+			*idx++
+			return true
+		}
+	}
+	return false
 }
 
 func checkInterpreterFunctionCalls(val, language string) error {
@@ -3224,85 +3239,46 @@ func checkInterpreterFunctionCalls(val, language string) error {
 }
 
 func checkUnquotedKeywords(val string, keywords []string) error {
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
+	state := parserState{}
 	var wordBuilder strings.Builder
 	lastChar := rune(0) // Last non-whitespace char before current word
 	lastWord := ""      // Last word seen before current word (separated only by whitespace)
 
 	for _, char := range val {
-		if escaped {
-			escaped = false
+		if state.escaped {
+			state.escaped = false
 			continue
 		}
 		if char == '\\' {
-			escaped = true
+			state.escaped = true
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			// Treat quotes as delimiters
-			if inSingle { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-						return err
-					}
-					lastWord = word
-					wordBuilder.Reset()
+		// Handle quotes state
+		entered, exited := updateQuoteStateAndDetectTransition(&state, byte(char))
+
+		if entered {
+			// Treat quotes as delimiters - check word accumulated so far
+			if wordBuilder.Len() > 0 {
+				word := wordBuilder.String()
+				if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					return err
 				}
+				lastWord = word
+				wordBuilder.Reset()
 			}
+			continue
+		}
+
+		if exited {
 			// When exiting quote, we don't update lastWord because quoted string is not a word
 			// But we should update lastChar to the quote
-			if !inSingle {
-				lastChar = char
-				lastWord = ""
-			}
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-						return err
-					}
-					lastWord = word
-					wordBuilder.Reset()
-				}
-			}
-			if !inDouble {
-				lastChar = char
-				lastWord = ""
-			}
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-						return err
-					}
-					lastWord = word
-					wordBuilder.Reset()
-				}
-			}
-			if !inBacktick {
-				lastChar = char
-				lastWord = ""
-			}
+			lastChar = char
+			lastWord = ""
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if state.inSingle || state.inDouble || state.inBacktick {
 			continue
 		}
 
@@ -3336,6 +3312,23 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		}
 	}
 	return nil
+}
+
+// updateQuoteStateAndDetectTransition updates the parser state based on char and returns whether we entered or exited a quote.
+func updateQuoteStateAndDetectTransition(state *parserState, char byte) (entered, exited bool) {
+	if char == '\'' && !state.inDouble && !state.inBacktick {
+		state.inSingle = !state.inSingle
+		return state.inSingle, !state.inSingle
+	}
+	if char == '"' && !state.inSingle && !state.inBacktick {
+		state.inDouble = !state.inDouble
+		return state.inDouble, !state.inDouble
+	}
+	if char == '`' && !state.inSingle && !state.inDouble {
+		state.inBacktick = !state.inBacktick
+		return state.inBacktick, !state.inBacktick
+	}
+	return false, false
 }
 
 func checkKeyword(word string, keywords []string, lastChar rune, lastWord string) error {
@@ -3876,7 +3869,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == commandGit {
 		return true
 	}
 
