@@ -31,6 +31,7 @@ func TestPortConflict(t *testing.T) {
 		JSONRPCPort:     portStr, // Use the conflicting port
 		GRPCPort:        "",
 		ShutdownTimeout: 100 * time.Millisecond,
+		DBPath:          t.TempDir() + "/test.db",
 	}
 
 	// We expect Run to fail
