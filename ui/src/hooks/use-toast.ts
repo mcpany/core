@@ -148,8 +148,17 @@ type Toast = Omit<ToasterToast, "id">
 /**
  * Dispatches a new toast notification.
  *
- * @param props - The properties for the toast notification (title, description, etc.).
- * @returns An object containing the toast ID, and functions to dismiss or update it.
+ * @remarks
+ * Creates a new toast notification and dispatches it to the toast store.
+ * The toast will be displayed by the Toaster component.
+ *
+ * @param props - Toast. The properties for the toast notification (title, description, etc.).
+ *
+ * @returns { id: string, dismiss: () => void, update: (props: ToasterToast) => void }
+ *          An object containing the toast ID, and functions to dismiss or update it.
+ *
+ * @sideeffects
+ * - Modifies the global toast state which triggers re-renders.
  */
 function toast({ ...props }: Toast) {
   const id = genId()
@@ -183,12 +192,17 @@ function toast({ ...props }: Toast) {
 /**
  * Hook to manage toast notifications.
  *
- * Provides access to the current list of toasts and functions to add or dismiss them.
+ * @remarks
+ * Provides access to the current list of active toasts and functions to add or dismiss them.
+ * It subscribes to the global toast state and updates when new toasts are added or removed.
  *
  * @returns An object containing:
- *          - toasts: The list of active toasts.
+ *          - toasts: ToasterToast[]. The list of active toasts.
  *          - toast: Function to add a new toast.
  *          - dismiss: Function to dismiss a toast by ID.
+ *
+ * @sideeffects
+ * - Subscribes to the global `listeners` array on mount.
  */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)

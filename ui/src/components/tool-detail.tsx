@@ -19,10 +19,18 @@ import { SchemaVisualizer } from "./schema-visualizer";
 /**
  * Displays details of a specific tool within a service.
  *
+ * @remarks
+ * Fetches and displays comprehensive information about a tool, including its definition,
+ * input schema (visualized), and usage metrics. It handles loading and error states.
+ *
  * @param props - The component props.
- * @param props.serviceId - The ID of the service containing the tool.
- * @param props.toolName - The name of the tool to display.
- * @returns The rendered tool detail card, or null/error state.
+ * @param props.serviceId - string. The unique identifier of the upstream service.
+ * @param props.toolName - string. The name of the tool to display.
+ *
+ * @returns JSX.Element | null - The rendered tool detail card.
+ *
+ * @sideeffects
+ * - Fetches service details (`getService`) and status (`getServiceStatus`) on mount.
  */
 export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolName: string }) {
   const [tool, setTool] = useState<ToolDefinition | null>(null);

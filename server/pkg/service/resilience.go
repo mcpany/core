@@ -17,11 +17,18 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// UnaryClientInterceptor returns a new unary client interceptor that retries calls.
+// UnaryClientInterceptor creates a gRPC unary client interceptor that enables retry logic.
 //
-// retryConfig is the retryConfig.
+// Summary: Returns a gRPC interceptor for retrying failed unary calls.
 //
-// Returns the result.
+// It wraps the gRPC call with exponential backoff retry logic based on the provided configuration.
+// Retries are attempted for transient errors (ResourceExhausted, Unavailable, Internal).
+//
+// Parameters:
+//   - retryConfig: *configv1.RetryConfig. The configuration defining retry behavior (max retries, backoff intervals).
+//
+// Returns:
+//   - grpc.UnaryClientInterceptor: The interceptor function to be used in gRPC dial options.
 func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		b := newBackoff(ctx, retryConfig)
@@ -53,6 +60,16 @@ func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientI
 	}
 }
 
+// newBackoff creates a backoff strategy from the config.
+//
+// Summary: Creates a configured exponential backoff strategy.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the backoff.
+//   - retryConfig: *configv1.RetryConfig. The retry configuration.
+//
+// Returns:
+//   - backoff.BackOff: The initialized backoff strategy.
 func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.BackOff {
 	if retryConfig == nil {
 		return &backoff.StopBackOff{}
@@ -78,6 +95,15 @@ func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.
 	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retries)), ctx) //nolint:gosec // safe cast
 }
 
+// isRetryable checks if the error code warrants a retry.
+//
+// Summary: Determines if an error is transient and retryable.
+//
+// Parameters:
+//   - err: error. The error returned by the gRPC call.
+//
+// Returns:
+//   - bool: True if the error is retryable, false otherwise.
 func isRetryable(err error) bool {
 	if err == nil {
 		return false

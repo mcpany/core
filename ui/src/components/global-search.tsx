@@ -45,7 +45,17 @@ import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
 /**
  * Global search component that provides quick access to navigation, tools, services, and actions.
- * It is triggered by a keyboard shortcut (Cmd/Ctrl+K) or by clicking the search button.
+ *
+ * @remarks
+ * This component renders a button that triggers a command palette dialog.
+ * It allows users to search for services, tools, resources, and prompts, as well as perform
+ * system actions like reloading the window or toggling the theme.
+ *
+ * @returns JSX.Element. The rendered Global Search button and dialog.
+ *
+ * @sideeffects
+ * - Fetches initial data (services, tools, etc.) when opened.
+ * - Subscribes to keyboard shortcuts (Cmd/Ctrl+K).
  */
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)

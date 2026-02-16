@@ -329,7 +329,12 @@ export const apiClient = {
     /**
      * Lists services from the dynamic catalog.
      *
-     * @returns A promise that resolves to a list of catalog services.
+     * Summary: Retrieves all services available in the dynamic service catalog.
+     *
+     * @returns Promise<UpstreamServiceConfig[]>. A list of service configurations from the catalog.
+     * @throws {Error} If the fetch operation fails.
+     *
+     * Side Effects: Makes a GET request to `/api/v1/catalog/services`.
      */
     listCatalog: async () => {
         const res = await fetchWithAuth('/api/v1/catalog/services');

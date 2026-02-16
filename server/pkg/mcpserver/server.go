@@ -978,8 +978,13 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 	}, nil
 }
 
-// LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
-// its JSON content only when logged.
+// LazyRedact is a byte slice wrapper for lazy JSON redaction in logs.
+//
+// Summary: Wraps a byte slice to perform JSON redaction only when the value is logged.
+//
+// This type implements the slog.LogValuer interface, ensuring that sensitive information
+// within the JSON byte slice is redacted before being written to the log output.
+// It avoids the performance cost of redaction if the log level is not enabled.
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
@@ -988,8 +993,12 @@ func (l LazyRedact) LogValue() slog.Value {
 }
 
 // LazyLogResult wraps a tool execution result for efficient logging.
-// It avoids expensive serialization of large payloads (e.g. images, huge text)
-// and lazily computes the string representation only when logging is enabled.
+//
+// Summary: Optimizes logging of tool execution results.
+//
+// It wraps the result of a tool call and implements slog.LogValuer to provide a summary
+// or redacted view of the result only when logging is required. This avoids expensive
+// serialization or processing of large payloads (e.g., base64 images) when debug logging is disabled.
 type LazyLogResult struct {
 	Value any
 }
