@@ -277,6 +277,22 @@ func init() {
 // Summary: Constant for "true" string.
 const TrueStr = "true"
 
+// IsEnvTrue checks if an environment variable is set to a truthy value.
+// It uses strconv.ParseBool, so it accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.
+//
+// Summary: robustly checks boolean environment variables.
+func IsEnvTrue(key string) bool {
+	val := os.Getenv(key)
+	if val == "" {
+		return false
+	}
+	b, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+	return b
+}
+
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Summary: Generates a random UUID.
