@@ -6,6 +6,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('User Guide Walkthrough', () => {
+  test.beforeEach(async ({ page }) => {
+    // Mock user preferences to ensure dashboard loads default layout immediately
+    await page.route('**/api/v1/user/preferences', async route => {
+      await route.fulfill({ status: 404 });
+    });
+  });
+
   test('Dashboard loads key metrics', async ({ page }) => {
     // Mock the stats endpoint
     await page.route('**/api/v1/dashboard/metrics', async route => {

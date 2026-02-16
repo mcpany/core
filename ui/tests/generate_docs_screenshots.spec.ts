@@ -132,6 +132,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock User Preferences (Layout)
+     await page.route('**/api/v1/user/preferences', async route => {
+         await route.fulfill({ status: 404 });
+     });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
