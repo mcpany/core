@@ -130,12 +130,13 @@ test.describe('User Guide Walkthrough', () => {
   });
 
   test('Connection Diagnostic Tool', async ({ page }) => {
+    const mockServiceUrl = process.env.MOCK_SERVICE_URL || 'http://localhost:8080';
     // Mock services response to ensure at least one service exists
     await page.route('**/api/v1/services', async route => {
       const json = [{
         name: 'mock-service',
         id: 'mock-service-id',
-        http_service: { address: 'http://localhost:8080' },
+        http_service: { address: mockServiceUrl },
         disable: false
       }];
       await route.fulfill({ json });
@@ -147,7 +148,7 @@ test.describe('User Guide Walkthrough', () => {
             service: {
                 name: 'mock-service',
                 id: 'mock-service-id',
-                http_service: { address: 'http://localhost:8080' },
+                http_service: { address: mockServiceUrl },
                 disable: false,
                 version: '1.0.0'
             }

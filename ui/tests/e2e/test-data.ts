@@ -8,6 +8,7 @@ import { request, APIRequestContext } from '@playwright/test';
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
+const MOCK_SERVICE_URL = process.env.MOCK_SERVICE_URL || 'http://localhost:8080';
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
@@ -52,7 +53,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: MOCK_SERVICE_URL,
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
