@@ -38,6 +38,16 @@
   - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
 - **Context Optimizer Middleware**
   - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+- **Service Health History**
+  - **Description**: Tracks and visualizes service health status over time (In-Memory).
+- **Rate Limiting**
+  - **Description**: Policy enforcement for requests per second with burst support, backed by memory or Redis.
+- **Hot Configuration Reload**
+  - **Description**: Dynamically reloads configuration changes without server restart.
+- **Prompt Definitions**
+  - **Description**: Support for defining prompts in configuration and exposing them via MCP `prompts/list`.
+- **WebRTC Transport**
+  - **Description**: Support for WebRTC-based upstream connections and health checks.
 
 ## 2. Updated Roadmap
 
@@ -51,7 +61,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | :--- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
 | 1    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
 | 2    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
-| 3    | **Service Health History**  | **Observability**: Store historical health check results to visualize availability trends (uptime graphs).                             | Medium     |
+| 3    | **Persistent Health History**| **Observability**: Persist health check results to database/disk to retain history across restarts and analyze long-term trends.      | Medium     |
 | 4    | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks.      | High       |
 | 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
