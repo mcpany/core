@@ -115,4 +115,25 @@ describe("SequenceDiagram", () => {
       expect(screen.getByText("Call sub-tool")).toBeInTheDocument();
       expect(screen.getByText("Access weather-service")).toBeInTheDocument();
   });
+
+  it("calculates X coordinates correctly (Optimization Verification)", () => {
+    const { container } = render(<SequenceDiagram trace={mockTrace} />);
+
+    // Check lines for participants
+    // Client (index 0): x = 100
+    // MCP Core (index 1): x = 350
+    // test-tool (index 2): x = 600
+
+    // Select all vertical lines (lifelines)
+    // They have y1=80 and y2 large.
+    const lines = container.querySelectorAll("line");
+    // We expect 3 vertical lines + interaction lines.
+    // Vertical lines are the ones with strokeDasharray="6 6"
+    const verticalLines = Array.from(lines).filter(l => l.getAttribute("stroke-dasharray") === "6 6");
+
+    expect(verticalLines).toHaveLength(3);
+    expect(verticalLines[0]).toHaveAttribute("x1", "100");
+    expect(verticalLines[1]).toHaveAttribute("x1", "350");
+    expect(verticalLines[2]).toHaveAttribute("x1", "600");
+  });
 });

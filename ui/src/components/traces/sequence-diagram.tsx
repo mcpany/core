@@ -160,9 +160,18 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const svgWidth = Math.max(800, paddingX * 2 + (participants.length - 1) * colWidth);
   const startY = 80;
 
+  // ⚡ BOLT: Pre-calculate X coordinates for O(1) lookup during rendering.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const participantXMap = useMemo(() => {
+    const map = new Map<string, number>();
+    participants.forEach((p, idx) => {
+      map.set(p.id, paddingX + idx * colWidth);
+    });
+    return map;
+  }, [participants, paddingX, colWidth]);
+
   const getX = (id: string) => {
-    const idx = participants.findIndex((p) => p.id === id);
-    return paddingX + idx * colWidth;
+    return participantXMap.get(id) ?? 0;
   };
 
   return (
