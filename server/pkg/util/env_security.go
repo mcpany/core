@@ -9,8 +9,9 @@ import (
 	"strings"
 )
 
-// IsEnvVarAllowed checks if an environment variable is allowed to be accessed
-// by the configuration system.
+// IsEnvVarAllowed checks if an environment variable is allowed to be accessed by the configuration system.
+//
+// Summary: Validates environment variable access against security policies.
 //
 // Security Policy:
 // 1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
@@ -19,10 +20,14 @@ import (
 // 3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
 //
 // Parameters:
-//   - name: The name of the environment variable to check.
+//   - name: string. The name of the environment variable to check.
 //
 // Returns:
 //   - bool: True if the environment variable is allowed, false otherwise.
+//
+// Side Effects:
+//   - Reads environment variables `MCPANY_ALLOWED_ENV` and `MCPANY_STRICT_ENV_MODE`.
+//   - May log warnings to the default logger.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

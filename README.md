@@ -134,6 +134,13 @@ We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
+**Documentation Standards:**
+We enforce a **Gold Standard** for documentation. Every public symbol must have a structured docstring including:
+*   **Summary**: A concise action statement.
+*   **Parameters**: Detailed description of inputs.
+*   **Returns**: Description of outputs.
+*   **Side Effects**: Note on external interactions.
+
 To run linters:
 ```bash
 make lint
@@ -171,6 +178,16 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+
+### Security & Advanced Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MCPANY_ALLOWED_ENV` | Comma-separated list of allowed env vars for config references | All Blocked (except allowlist) |
+| `MCPANY_STRICT_ENV_MODE` | Enable strict environment variable blocking | `false` |
+| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow upstream connections to loopback addresses | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow upstream connections to private networks | `false` |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow dangerous local IP connections (for testing) | `false` |
 
 ### Required Secrets
 

@@ -46,6 +46,15 @@ interface ServiceImportItem {
     selected: boolean;
 }
 
+/**
+ * BulkServiceImport provides a wizard for importing multiple services.
+ *
+ * Summary: UI component for bulk importing services from JSON/URL/File.
+ *
+ * Props:
+ *  - onImportSuccess: Callback function triggered after successful import.
+ *  - onCancel: Callback function triggered when the user cancels the operation.
+ */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {
     const [step, setStep] = useState<"input" | "review" | "import">("input");
 

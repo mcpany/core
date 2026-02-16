@@ -25,9 +25,11 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Summary: Creates a new configuration file watcher.
+//
 // Returns:
-//   - A pointer to a new Watcher.
-//   - An error if the watcher creation fails.
+//   - *Watcher: A pointer to a new Watcher.
+//   - error: An error if the watcher creation fails.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -42,12 +44,17 @@ func NewWatcher() (*Watcher, error) {
 
 // Watch starts monitoring the specified configuration paths.
 //
+// Summary: Monitors configuration files for changes.
+//
 // Parameters:
-//   - paths: A slice of file or directory paths to watch.
-//   - reloadFunc: The function to call when a change is detected.
+//   - paths: []string. A slice of file or directory paths to watch.
+//   - reloadFunc: func(). The function to call when a change is detected.
 //
 // Returns:
-//   - An error if watching fails.
+//   - error: An error if watching fails.
+//
+// Side Effects:
+//   - Starts a goroutine to monitor file system events.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -161,6 +168,14 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close stops the file watcher and releases resources.
+//
+// Summary: Stops the file watcher.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Closes the fsnotify watcher and internal channels.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

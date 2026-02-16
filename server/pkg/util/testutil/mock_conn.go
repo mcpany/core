@@ -20,8 +20,10 @@ type MockClientConn struct {
 
 // NewMockClientConn creates a new mock client connection.
 //
+// Summary: Creates a mock gRPC client connection for testing.
+//
 // Parameters:
-//   - t: The testing instance.
+//   - t: *testing.T. The testing instance.
 //
 // Returns:
 //   - *MockClientConn: A new mock client connection.
@@ -34,21 +36,25 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 
 // SetClient sets a mock client for a given type.
 //
+// Summary: Registers a mock client for a specific method.
+//
 // Parameters:
-//   - method: The method to mock.
-//   - client: The mock client implementation.
+//   - method: string. The method to mock.
+//   - client: interface{}. The mock client implementation.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
 	m.clients[method] = client
 }
 
 // Invoke is a mock implementation of the Invoke method.
 //
+// Summary: Mock implementation of gRPC Invoke.
+//
 // Parameters:
-//   - ctx: The context for the call.
-//   - method: The method being invoked.
-//   - args: The arguments for the method.
-//   - reply: The reply structure to fill.
-//   - opts: The call options.
+//   - ctx: context.Context. The context for the call.
+//   - method: string. The method being invoked.
+//   - args: interface{}. The arguments for the method.
+//   - reply: interface{}. The reply structure to fill.
+//   - opts: ...grpc.CallOption. The call options.
 //
 // Returns:
 //   - error: An error if the invocation fails.
@@ -59,11 +65,13 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 
 // NewStream is a mock implementation of the NewStream method.
 //
+// Summary: Mock implementation of gRPC NewStream.
+//
 // Parameters:
-//   - ctx: The context for the stream.
-//   - desc: The stream description.
-//   - method: The method being called.
-//   - opts: The call options.
+//   - ctx: context.Context. The context for the stream.
+//   - desc: *grpc.StreamDesc. The stream description.
+//   - method: string. The method being called.
+//   - opts: ...grpc.CallOption. The call options.
 //
 // Returns:
 //   - grpc.ClientStream: The client stream.
