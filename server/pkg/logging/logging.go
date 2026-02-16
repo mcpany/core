@@ -19,7 +19,15 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+	dbHandler     *DBHandler
 )
+
+// SetLogStore sets the store for the DB handler.
+func SetLogStore(store LogStore) {
+	if dbHandler != nil {
+		dbHandler.SetStore(store)
+	}
+}
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
@@ -101,6 +109,11 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 		// 3. Broadcast Handler (WebSocket)
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
 		handlers = append(handlers, broadcastHandler)
+
+		// 4. DB Handler (Persistent Storage)
+		// We initialize it with nil store, allowing it to be configured later via SetLogStore
+		dbHandler = NewDBHandler(nil, level)
+		handlers = append(handlers, dbHandler)
 
 		teeHandler := NewTeeHandler(handlers...)
 

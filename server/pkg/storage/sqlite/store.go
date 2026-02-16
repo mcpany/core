@@ -6,10 +6,12 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -284,6 +286,73 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// Logs
+
+// SaveLog saves a log entry.
+func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	metadataBytes, err := json.Marshal(entry.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+
+	query := `
+	INSERT INTO logs (id, timestamp, level, source, message, metadata, created_at)
+	VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+	`
+	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataBytes))
+	if err != nil {
+		return fmt.Errorf("failed to save log: %w", err)
+	}
+	return nil
+}
+
+// ListLogs lists logs based on filters.
+// filters: limit, offset, level, source, search
+func (s *Store) ListLogs(ctx context.Context, limit, offset int, level, source, search string) ([]*logging.LogEntry, error) {
+	query := "SELECT id, timestamp, level, source, message, metadata FROM logs WHERE 1=1"
+	var args []any
+
+	if level != "" && level != "ALL" {
+		query += " AND level = ?"
+		args = append(args, level)
+	}
+	if source != "" && source != "ALL" {
+		query += " AND source = ?"
+		args = append(args, source)
+	}
+	if search != "" {
+		query += " AND (message LIKE ? OR source LIKE ?)"
+		pattern := "%" + search + "%"
+		args = append(args, pattern, pattern)
+	}
+
+	query += " ORDER BY timestamp DESC LIMIT ? OFFSET ?"
+	args = append(args, limit, offset)
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query logs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []*logging.LogEntry
+	for rows.Next() {
+		var entry logging.LogEntry
+		var metadataJSON string
+		if err := rows.Scan(&entry.ID, &entry.Timestamp, &entry.Level, &entry.Source, &entry.Message, &metadataJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan log: %w", err)
+		}
+		if metadataJSON != "" {
+			_ = json.Unmarshal([]byte(metadataJSON), &entry.Metadata)
+		}
+		logs = append(logs, &entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating logs: %w", err)
+	}
+	return logs, nil
 }
 
 // GetService retrieves an upstream service configuration by name.

@@ -14,6 +14,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// LogStore interface for persisting logs.
+type LogStore interface {
+	SaveLog(ctx context.Context, entry *LogEntry) error
+}
+
 // LogEntry is the structure for logs sent over WebSocket.
 // It matches the frontend expectation.
 type LogEntry struct {
@@ -237,6 +242,181 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 		handlers[i] = handler.WithAttrs(attrs)
 	}
 	return NewTeeHandler(handlers...)
+}
+
+// DBHandler implements slog.Handler and writes logs to a LogStore.
+type DBHandler struct {
+	store  LogStore
+	attrs  []slog.Attr
+	groups []string
+	mu     sync.Mutex
+	level  slog.Level
+	ch     chan *LogEntry
+}
+
+// NewDBHandler creates a new DBHandler.
+func NewDBHandler(store LogStore, level slog.Level) *DBHandler {
+	h := &DBHandler{
+		store: store,
+		level: level,
+		ch:    make(chan *LogEntry, 1000), // Buffer
+	}
+	// Start worker
+	go h.worker()
+	return h
+}
+
+// SetStore updates the store.
+func (h *DBHandler) SetStore(store LogStore) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.store = store
+}
+
+func (h *DBHandler) worker() {
+	for entry := range h.ch {
+		h.mu.Lock()
+		store := h.store
+		h.mu.Unlock()
+
+		if store != nil {
+			// Use background context for async save
+			_ = store.SaveLog(context.Background(), entry)
+		}
+	}
+}
+
+// Enabled returns true if the level is greater than or equal to the handler's level.
+func (h *DBHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return level >= h.level
+}
+
+// Handle handles the log record.
+func (h *DBHandler) Handle(_ context.Context, r slog.Record) error {
+	entry := LogEntry{
+		ID:        uuid.New().String(),
+		Timestamp: r.Time.UTC().Format(time.RFC3339), // Store as UTC for consistent sorting
+		Level:     r.Level.String(),
+		Message:   r.Message,
+		Metadata:  make(map[string]any),
+	}
+
+	// Reuse logic from BroadcastHandler manually or extract it?
+	// For simplicity, duplicating the attribute merging logic here.
+	mergeAttr := func(root map[string]any, groups []string, a slog.Attr) {
+		targetMap := root
+		for _, g := range groups {
+			if _, ok := targetMap[g]; !ok {
+				targetMap[g] = make(map[string]any)
+			}
+			if m, ok := targetMap[g].(map[string]any); ok {
+				targetMap = m
+			} else {
+				m := make(map[string]any)
+				targetMap[g] = m
+				targetMap = m
+			}
+		}
+		targetMap[a.Key] = a.Value.Any()
+	}
+
+	for _, a := range h.attrs {
+		mergeAttr(entry.Metadata, nil, a)
+	}
+
+	r.Attrs(func(a slog.Attr) bool {
+		mergeAttr(entry.Metadata, h.groups, a)
+		return true
+	})
+
+	if tool, ok := entry.Metadata["toolName"].(string); ok && tool != "" {
+		entry.Source = tool
+	} else if src, ok := entry.Metadata["source"].(string); ok && src != "" {
+		entry.Source = src
+	} else if comp, ok := entry.Metadata["component"].(string); ok && comp != "" {
+		entry.Source = comp
+	}
+
+	if entry.Source == "" && r.PC != 0 {
+		fs := runtime.CallersFrames([]uintptr{r.PC})
+		f, _ := fs.Next()
+		entry.Source = f.Function
+	}
+
+	// Non-blocking send
+	select {
+	case h.ch <- &entry:
+	default:
+		// Drop if full
+	}
+	return nil
+}
+
+// WithAttrs returns a new handler with the given attributes.
+func (h *DBHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	newAttrs := make([]slog.Attr, len(h.attrs)+len(attrs))
+	copy(newAttrs, h.attrs)
+	copy(newAttrs[len(h.attrs):], attrs)
+
+	// Note: We return a new handler but it shares the channel and worker!
+	// Wait, if we return a new handler, Handle() will be called on the new handler.
+	// We want to reuse the worker/channel.
+	// So we pass the same `ch` and `store` (by ref?).
+	// `store` can be updated on the original handler, but clones need to see it too?
+	// If `store` is updated in `SetStore` on the *original* handler, how do clones see it?
+	// `SetStore` should likely update a shared state object or the clones must share the pointer to store wrapper.
+	// But `store` is an interface.
+	// Actually `NewDBHandler` returns `*DBHandler`.
+	// `WithAttrs` returns `slog.Handler` (interface).
+	// If `WithAttrs` creates a NEW struct `&DBHandler{...}`, `SetStore` on the OLD struct won't affect new ones unless they share state.
+	// The `ch` is shared (reference type). The `worker` reads from `ch`.
+	// The `worker` is running on the original handler context? No, `go h.worker()` binds to `h`.
+	// If `WithAttrs` creates a NEW `DBHandler` and sends to `h.ch`, the worker (bound to original `h`) reads it.
+	// The worker uses `h.store`.
+	// So as long as we send to the SAME channel, and the worker (on the original instance) processes it, it works!
+	// And the new handler doesn't need a worker.
+	// BUT `Handle` on the NEW handler sends to `ch`.
+	// So we just need to copy `ch` reference.
+	// What about `store`? The new handler's `Handle` method doesn't use `store` directly, it sends to `ch`.
+	// Correct. `Handle` uses `ch`. `worker` uses `store`.
+	// So we only need to ensure `worker` is running and has access to `store`.
+	// The worker is started in `NewDBHandler`.
+	// `WithAttrs` creates a new `DBHandler` sharing `ch`. It does NOT start a new worker.
+	// The `store` field in the NEW handler is irrelevant if `Handle` only writes to `ch`.
+	// However, `SetStore` updates `h.store`.
+	// We only call `SetStore` on the global handler (root).
+	// The worker is attached to the root handler (via closure or method receiver).
+	// Yes, `go h.worker()` captures the `h` pointer.
+	// So updating `h.store` works.
+
+	return &DBHandler{
+		store:  h.store, // Copied but unused in Handle
+		ch:     h.ch,    // Shared channel
+		attrs:  newAttrs,
+		groups: h.groups,
+		level:  h.level,
+	}
+}
+
+// WithGroup returns a new handler with the given group.
+func (h *DBHandler) WithGroup(name string) slog.Handler {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	newGroups := make([]string, len(h.groups)+1)
+	copy(newGroups, h.groups)
+	newGroups[len(h.groups)] = name
+
+	return &DBHandler{
+		store:  h.store,
+		ch:     h.ch,
+		attrs:  h.attrs,
+		groups: newGroups,
+		level:  h.level,
+	}
 }
 
 // WithGroup returns a new TeeHandler with the group applied to all handlers.

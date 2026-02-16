@@ -411,6 +411,11 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
+	// Wire up persistent logging
+	if logStore, ok := storageStore.(logging.LogStore); ok {
+		logging.SetLogStore(logStore)
+	}
+
 	// Determine config sources
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)

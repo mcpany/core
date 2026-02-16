@@ -27,6 +27,7 @@ import dynamic from "next/dynamic";
 // By loading it client-side only (ssr: false), we ensure stability in the K8s container.
 const Virtuoso = dynamic(() => import("react-virtuoso").then((m) => m.Virtuoso), { ssr: false });
 
+import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -263,10 +264,41 @@ export function LogStream({ source }: { source?: string }) {
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
   // without triggering a reconnection or having a stale closure.
   const isPausedRef = React.useRef(isPaused)
+  // Deduplication Set
+  const logIdsRef = React.useRef<Set<string>>(new Set())
 
   React.useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  // Initial load from persistent storage
+  React.useEffect(() => {
+    apiClient.listLogs({ limit: 1000 }).then((history) => {
+        if (!history || history.length === 0) return;
+
+        setLogs(prev => {
+            const newLogs = [...prev];
+            // History is ordered by timestamp DESC (newest first).
+            // We reverse to get chronological order for display.
+            const chronHistory = [...history].reverse();
+
+            chronHistory.forEach((log: any) => {
+                if (!logIdsRef.current.has(log.id)) {
+                    logIdsRef.current.add(log.id);
+                    // Hydrate computed fields
+                    log.formattedTime = timeFormatter
+                      ? timeFormatter.format(new Date(log.timestamp))
+                      : new Date(log.timestamp).toLocaleTimeString();
+                    log.searchStr = (log.message + " " + (log.source || "")).toLowerCase();
+                    newLogs.push(log);
+                }
+            });
+
+            // Resort by timestamp
+            return newLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        });
+    }).catch(err => console.error("Failed to load historical logs", err));
+  }, []);
 
   const searchParams = useSearchParams()
   // Use prop source if provided, otherwise fallback to URL param or "ALL"
@@ -340,6 +372,11 @@ export function LogStream({ source }: { source?: string }) {
 
         try {
           const newLog: LogEntry = JSON.parse(event.data)
+
+          // Deduplicate
+          if (logIdsRef.current.has(newLog.id)) return
+          logIdsRef.current.add(newLog.id)
+
           // Pre-compute search string
           newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
           // Optimization: Pre-compute formatted time to avoid expensive Date parsing during render.
@@ -414,7 +451,10 @@ export function LogStream({ source }: { source?: string }) {
     })
   }, [logs, filterLevel, filterSource, deferredSearchQuery])
 
-  const clearLogs = () => setLogs([])
+  const clearLogs = () => {
+      setLogs([]);
+      logIdsRef.current.clear();
+  }
 
   const downloadLogs = () => {
     const content = logs.map(l => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')
