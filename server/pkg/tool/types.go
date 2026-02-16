@@ -46,7 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-	gitCommand          = "git"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -1960,7 +1959,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
+	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2284,7 +2283,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
+	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -2964,143 +2963,118 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func getCommentFeatures(language string) (bool, bool, bool) {
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		return true, false, false
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		return false, true, true
-	case "php":
-		return true, true, true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		return true, true, true
-	}
-}
-
-type commentStripper struct {
-	inLineComment  bool
-	inBlockComment bool
-	inSingle       bool
-	inDouble       bool
-	inBacktick     bool
-	escaped        bool
-	supportsHash   bool
-	supportsSlash  bool
-	supportsBlock  bool
-}
-
-func newCommentStripper(language string) *commentStripper {
-	h, s, b := getCommentFeatures(language)
-	return &commentStripper{
-		supportsHash:  h,
-		supportsSlash: s,
-		supportsBlock: b,
-	}
-}
-
-func (s *commentStripper) process(char, nextChar byte) (write bool, skipNext bool) {
-	if s.inLineComment {
-		if char == '\n' {
-			s.inLineComment = false
-			return true, false
-		}
-		return false, false
-	}
-	if s.inBlockComment {
-		if char == '*' && nextChar == '/' {
-			s.inBlockComment = false
-			return false, true
-		}
-		return false, false
-	}
-
-	if s.escaped {
-		s.escaped = false
-		return true, false
-	}
-
-	// Handle quotes
-	if s.handleQuotes(char) {
-		return true, false
-	}
-
-	// If inside quotes, handle escape char
-	if s.inSingle || s.inDouble || s.inBacktick {
-		if char == '\\' {
-			s.escaped = true
-			return true, false
-		}
-		return true, false
-	}
-
-	// Not in quotes, check for comments
-	if s.handleComments(char, nextChar) {
-		return false, s.inBlockComment || (s.inLineComment && s.supportsSlash && char == '/')
-	}
-
-	// Skip backslash (line continuation outside quotes)
-	if char == '\\' {
-		return false, false
-	}
-
-	return true, false
-}
-
-func (s *commentStripper) handleQuotes(char byte) bool {
-	if char == '\'' && !s.inDouble && !s.inBacktick {
-		s.inSingle = !s.inSingle
-		return true
-	}
-	if char == '"' && !s.inSingle && !s.inBacktick {
-		s.inDouble = !s.inDouble
-		return true
-	}
-	if char == '`' && !s.inSingle && !s.inDouble {
-		s.inBacktick = !s.inBacktick
-		return true
-	}
-	return false
-}
-
-func (s *commentStripper) handleComments(char, nextChar byte) bool {
-	if s.supportsHash && char == '#' {
-		s.inLineComment = true
-		return true
-	}
-	if (s.supportsSlash || s.supportsBlock) && char == '/' {
-		if s.supportsSlash && nextChar == '/' {
-			s.inLineComment = true
-			return true
-		}
-		if s.supportsBlock && nextChar == '*' {
-			s.inBlockComment = true
-			return true
-		}
-	}
-	return false
-}
-
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
-	s := newCommentStripper(language)
+	inLineComment := false  // # or //
+	inBlockComment := false // /* ... */
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	// Determine comment style
+	supportsHash := false
+	supportsSlash := false
+	supportsBlock := false
+
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		supportsHash = true
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		supportsSlash = true
+		supportsBlock = true
+	case "php":
+		supportsHash = true
+		supportsSlash = true
+		supportsBlock = true
+	default:
+		// Default to strict: strip all known comment types if unsure
+		supportsHash = true
+		supportsSlash = true
+		supportsBlock = true
+	}
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
-		var nextChar byte
-		if i+1 < len(val) {
-			nextChar = val[i+1]
+
+		if inLineComment {
+			if char == '\n' {
+				inLineComment = false
+				b.WriteByte(char)
+			}
+			continue
+		}
+		if inBlockComment {
+			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
+				inBlockComment = false
+				i++
+			}
+			continue
 		}
 
-		write, skip := s.process(char, nextChar)
-		if write {
+		if escaped {
+			escaped = false
 			b.WriteByte(char)
+			continue
 		}
-		if skip {
-			i++
+
+		// Quote handling
+		if char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			b.WriteByte(char)
+			continue
 		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			b.WriteByte(char)
+			continue
+		}
+		if char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			b.WriteByte(char)
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			if char == '\\' {
+				escaped = true
+				// Write escape char to preserve string content (e.g. \n)
+				b.WriteByte(char)
+				continue
+			}
+			b.WriteByte(char)
+			continue
+		}
+
+		// Not in quotes, check for comments
+		if supportsHash && char == '#' {
+			inLineComment = true
+			continue
+		}
+		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
+			if supportsSlash && val[i+1] == '/' {
+				inLineComment = true
+				i++
+				continue
+			}
+			if supportsBlock && val[i+1] == '*' {
+				inBlockComment = true
+				i++
+				continue
+			}
+		}
+
+		// Skip backslash (line continuation outside quotes)
+		if char == '\\' {
+			// If followed by newline, it's a line continuation. Strip it.
+			// If not, it's just a backslash. Strip it anyway for safety?
+			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
+			continue
+		}
+
+		b.WriteByte(char)
 	}
 	return b.String()
 }
@@ -3636,7 +3610,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == gitCommand {
+	if base == "git" {
 		return true
 	}
 
@@ -3692,11 +3666,15 @@ func checkForDangerousSchemes(val string) error {
 
 	return nil
 }
+
+// isCodeFlag checks if the argument is a known flag that indicates the next argument is code/script to be executed.
+// This is used to apply stricter validation (blocking spaces) for code arguments in interpreters.
 func isCodeFlag(arg string) bool {
 	arg = strings.Trim(arg, "\"'")
 	return arg == "-c" || arg == "-e" || arg == "-E" || arg == "-r" || arg == "-R" || arg == "--eval" || arg == "--process-code"
 }
 
+// startsWithCodeFlag checks if the argument starts with a known code flag (e.g. "-e'print 1'").
 func startsWithCodeFlag(arg string) bool {
 	arg = strings.Trim(arg, "\"'")
 	flags := []string{"-c", "-e", "-E", "-r", "-R", "--eval", "--process-code"}
