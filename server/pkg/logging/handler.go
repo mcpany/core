@@ -32,6 +32,19 @@ type BroadcastHandler struct {
 	groups      []string
 	mu          sync.Mutex
 	level       slog.Level
+	queue       chan LogEntry
+}
+
+// processQueue processes the log queue.
+// It is intended to run as a background goroutine.
+func (h *BroadcastHandler) processQueue() {
+	for entry := range h.queue {
+		data, err := json.Marshal(entry)
+		if err != nil {
+			continue
+		}
+		h.broadcaster.Broadcast(data)
+	}
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
@@ -41,10 +54,15 @@ type BroadcastHandler struct {
 //
 // Returns the result.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
-	return &BroadcastHandler{
+	// ⚡ BOLT: Buffered channel for async logging to avoid blocking main thread.
+	// Randomized Selection from Top 5 High-Impact Targets
+	h := &BroadcastHandler{
 		broadcaster: broadcaster,
 		level:       level,
+		queue:       make(chan LogEntry, 1000),
 	}
+	go h.processQueue()
+	return h
 }
 
 // Enabled returns true if the level is greater than or equal to the handler's level.
@@ -128,12 +146,14 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		entry.Source = f.Function
 	}
 
-	data, err := json.Marshal(entry)
-	if err != nil {
-		return err
+	// ⚡ BOLT: Non-blocking send to avoid stalling the application.
+	// Randomized Selection from Top 5 High-Impact Targets
+	select {
+	case h.queue <- entry:
+	default:
+		// Drop log if queue is full to preserve system stability
 	}
 
-	h.broadcaster.Broadcast(data)
 	return nil
 }
 
@@ -155,6 +175,7 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 		attrs:       newAttrs,
 		groups:      h.groups,
 		level:       h.level,
+		queue:       h.queue,
 	}
 }
 
@@ -176,6 +197,7 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 		attrs:       h.attrs,
 		groups:      newGroups,
 		level:       h.level,
+		queue:       h.queue,
 	}
 }
 
