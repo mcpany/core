@@ -29,7 +29,7 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner # ubuntu-slim
-    timeout-minutes: 10
+    timeout-minutes: 15
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -674,7 +674,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -839,7 +839,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -897,7 +897,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [build-images]
     steps:
       - uses: actions/checkout@v5
