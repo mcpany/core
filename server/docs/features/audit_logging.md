@@ -92,7 +92,7 @@ global_settings:
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
-**Note on Webhook Performance:** The webhook storage makes a synchronous HTTP call for every audit log entry. To prevent slowing down tool execution, a short timeout (3 seconds) is applied. Ensure your webhook endpoint is performant.
+**Note on Performance:** Webhook, Splunk, and Datadog storage backends use asynchronous batching. Audit logs are queued and sent in batches (e.g., every 10 entries or 1 second) to minimize impact on tool execution latency.
 
 ## Log Format
 

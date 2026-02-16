@@ -1,10 +1,12 @@
 # Webhooks
 
-**Status:** Implemented
+**Status:** Prototype / Planned
 
 ## Goal
 
 Set up external notifications for system events. Webhooks allow you to integrate MCP Any with third-party systems like Slack, PagerDuty, or custom pipelines.
+
+> **Note:** The UI for dynamic webhook management is currently a prototype. Backend support for dynamically registering webhooks via the API is coming in a future release (see Roadmap). Currently, you can configure Audit Logging webhooks via `config.yaml`.
 
 ## Usage Guide
 

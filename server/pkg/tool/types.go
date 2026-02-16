@@ -49,6 +49,8 @@ const (
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
+
+	gitCommand = "git"
 )
 
 var (
@@ -1943,7 +1945,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2267,7 +2269,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -2948,103 +2950,54 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func stripInterpreterComments(val, language string) string {
+	supportsHash, supportsSlash, supportsBlock := determineCommentSupport(language)
+
 	var b strings.Builder
 	b.Grow(len(val))
 
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		supportsHash = true
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		supportsSlash = true
-		supportsBlock = true
-	case "php":
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		supportsHash = true
-		supportsSlash = true
-		supportsBlock = true
-	}
+	state := &stripState{}
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
 
-		if inLineComment {
+		if state.inLineComment {
 			if char == '\n' {
-				inLineComment = false
+				state.inLineComment = false
 				b.WriteByte(char)
 			}
 			continue
 		}
-		if inBlockComment {
+		if state.inBlockComment {
 			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
-				inBlockComment = false
+				state.inBlockComment = false
 				i++
 			}
 			continue
 		}
 
-		if escaped {
-			escaped = false
+		if state.escaped {
+			state.escaped = false
 			b.WriteByte(char)
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			b.WriteByte(char)
-			continue
-		}
-
-		if inSingle || inDouble || inBacktick {
-			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
-				b.WriteByte(char)
-				continue
-			}
-			b.WriteByte(char)
+		if handleQuotes(state, char, &b) {
 			continue
 		}
 
 		// Not in quotes, check for comments
 		if supportsHash && char == '#' {
-			inLineComment = true
+			state.inLineComment = true
 			continue
 		}
 		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
 			if supportsSlash && val[i+1] == '/' {
-				inLineComment = true
+				state.inLineComment = true
 				i++
 				continue
 			}
 			if supportsBlock && val[i+1] == '*' {
-				inBlockComment = true
+				state.inBlockComment = true
 				i++
 				continue
 			}
@@ -3061,6 +3014,60 @@ func stripInterpreterComments(val, language string) string {
 		b.WriteByte(char)
 	}
 	return b.String()
+}
+
+type stripState struct {
+	inLineComment  bool
+	inBlockComment bool
+	inSingle       bool
+	inDouble       bool
+	inBacktick     bool
+	escaped        bool
+}
+
+func determineCommentSupport(language string) (bool, bool, bool) {
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		return true, false, false
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		return false, true, true
+	case "php":
+		return true, true, true
+	default:
+		// Default to strict: strip all known comment types if unsure
+		return true, true, true
+	}
+}
+
+func handleQuotes(state *stripState, char byte, b *strings.Builder) bool {
+	// Quote handling
+	if char == '\'' && !state.inDouble && !state.inBacktick {
+		state.inSingle = !state.inSingle
+		b.WriteByte(char)
+		return true
+	}
+	if char == '"' && !state.inSingle && !state.inBacktick {
+		state.inDouble = !state.inDouble
+		b.WriteByte(char)
+		return true
+	}
+	if char == '`' && !state.inSingle && !state.inDouble {
+		state.inBacktick = !state.inBacktick
+		b.WriteByte(char)
+		return true
+	}
+
+	if state.inSingle || state.inDouble || state.inBacktick {
+		if char == '\\' {
+			state.escaped = true
+			// Write escape char to preserve string content (e.g. \n)
+			b.WriteByte(char)
+			return true
+		}
+		b.WriteByte(char)
+		return true
+	}
+	return false
 }
 
 func checkInterpreterFunctionCalls(val, language string) error {
@@ -3594,7 +3601,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == gitCommand {
 		return true
 	}
 
