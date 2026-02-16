@@ -24,12 +24,17 @@ import (
 //   - r: *http.Request. The HTTP request containing the configuration in the body.
 //
 // Returns:
-//   None.
+//   - None.
 //
-// Throws/Errors:
-//   - 405 Method Not Allowed: If method is not POST.
-//   - 400 Bad Request: If body is invalid.
-//   - 500 Internal Server Error: If response encoding fails.
+// Errors:
+//   - Returns 405 Method Not Allowed if method is not POST.
+//   - Returns 400 Bad Request if body is invalid or content is missing.
+//   - Returns 200 OK with validation errors if configuration is invalid.
+//   - Returns 500 Internal Server Error if response encoding fails.
+//
+// Side Effects:
+//   - Reads the request body.
+//   - Writes JSON response to the response writer.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")

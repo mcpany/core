@@ -24,3 +24,51 @@ Instead of writing code to create a new MCP server, users should be able to:
 -   **Safety Policies**: We allow users to block dangerous operations (e.g. `DELETE`) or restrict access to specific URLs.
 -   **Upstream Authentication**: We handle API keys, Bearer tokens, and mTLS so the AI doesn't have to see them.
 -   **Multi-User & Multi-Profile**: We support complex multi-tenancy use cases.
+
+## Documentation Gold Standard
+
+All code must adhere to the **Gold Standard** for documentation. Undocumented code is considered broken.
+
+### Go (GoDoc)
+Every exported function, type, and variable must have a docstring with the following structure:
+*   **Summary:** A concise, one-line action statement.
+*   **Parameters:** Name, Type, and a meaningful description.
+*   **Returns:** Type and description of the output.
+*   **Errors:** Explicitly list exceptions or error states.
+*   **Side Effects:** Note if it modifies global state, writes to DB, or makes network calls.
+
+Example:
+```go
+// CalculateTax calculates the user's tax liability.
+//
+// Summary: Calculates tax liability based on income.
+//
+// Parameters:
+//   - income: float64. The total annual income.
+//
+// Returns:
+//   - float64: The calculated tax.
+//   - error: Returns error if income is negative.
+//
+// Errors:
+//   - Returns ErrInvalidIncome if income is negative.
+//
+// Side Effects:
+//   - None.
+func CalculateTax(income float64) (float64, error)
+```
+
+### TypeScript (JSDoc/TSDoc)
+Follow a similar structure using JSDoc tags:
+```typescript
+/**
+ * Calculates the user's tax liability.
+ *
+ * @param income - The total annual income.
+ * @returns The calculated tax liability.
+ * @throws {Error} If income is negative.
+ * @remarks
+ * Side Effects: None.
+ */
+export function calculateTax(income: number): number
+```

@@ -29,6 +29,13 @@ type Upstream interface {
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if the underlying connection cannot be closed gracefully.
+	//
+	// Side Effects:
+	//   - Closes network connections.
+	//   - Releases resources associated with the upstream.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
@@ -49,6 +56,15 @@ type Upstream interface {
 	//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 	//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 	//   - error: An error if registration fails.
+	//
+	// Errors:
+	//   - Returns error if connection to upstream fails.
+	//   - Returns error if authentication fails.
+	//   - Returns error if capability discovery fails.
+	//
+	// Side Effects:
+	//   - Establishes network connection to upstream.
+	//   - Modifies tool, prompt, and resource managers by registering new capabilities.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
@@ -73,5 +89,11 @@ type HealthChecker interface {
 	//
 	// Returns:
 	//   - error: nil if healthy, error if unhealthy.
+	//
+	// Errors:
+	//   - Returns error if the service is unreachable or unhealthy.
+	//
+	// Side Effects:
+	//   - Performs network requests (e.g., ping, health endpoint call).
 	CheckHealth(ctx context.Context) error
 }

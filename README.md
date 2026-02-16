@@ -5,30 +5,25 @@
 
 ## 1. Elevator Pitch
 
-**What is this project?**
-
 **MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
 **Why does it exist?**
-
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
 ## 2. Architecture
 
 **High-Level Overview**
-
 MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
 
-**Core Components:**
-
-1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
-2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration.
-3.  **Upstream Adapters**: Specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
-    *   **HTTP**: Proxies requests to REST/JSON APIs with powerful parameter mapping and transformation templates.
-    *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
-    *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
-    *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
-4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
+**Core Components**
+*   **Core Server:** A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
+*   **Service Registry:** The central nervous system. It implements the `ServiceRegistryInterface` to manage the lifecycle, dynamic loading, and health checking of upstream services.
+*   **Upstream Adapters:** specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
+    *   **HTTP:** Proxies requests to REST/JSON APIs with parameter mapping.
+    *   **gRPC:** Uses reflection to invoke methods dynamically.
+    *   **Command:** Safely executes local CLI tools.
+    *   **Filesystem:** Provides secure access to local or remote filesystems.
+*   **Policy Engine & Middleware:** Enforces authentication, rate limiting, and audit logging.
 
 ```mermaid
 graph TD
@@ -56,104 +51,88 @@ graph TD
     end
 ```
 
-**Design Patterns:**
-
-*   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
-*   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
-*   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
+**Design Patterns**
+*   **Adapter Pattern:** The `Upstream` interface abstracts backend protocols.
+*   **Configuration as Code:** Services are defined declaratively in YAML/JSON.
+*   **Gateway/Sidecar:** Deployable as a central gateway or Kubernetes sidecar.
 
 ## 3. Getting Started
 
-Follow these steps to get up and running with MCP Any immediately.
+Follow these steps to go from zero to a running MCP server.
 
 ### Prerequisites
-
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   `make` (for build automation)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   `make` (for automation)
+*   [Docker](https://docs.docker.com/get-docker/) (optional)
 
-### Installation
+### Step-by-Step Instructions
 
-1.  **Clone the repository:**
+1.  **Clone the Repository**
     ```bash
     git clone https://github.com/mcpany/core.git
     cd core
     ```
 
-2.  **Prepare dependencies:**
+2.  **Prepare Dependencies**
     ```bash
     make prepare
     ```
-    This command installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
+    *Installs required tools (protoc, linter) into `build/env/bin`.*
 
-3.  **Build the server:**
+3.  **Build the Server**
     ```bash
     make build
     ```
-    This compiles the source and places the `server` binary in `build/bin/`.
+    *Compiles the source and outputs the binary to `build/bin/server`.*
 
-4.  **Run with an example configuration:**
+4.  **Run with Example Configuration**
     ```bash
     ./build/bin/server run --config-path server/config.minimal.yaml
     ```
 
 ### Hello World
 
-Once the server is running, you can verify its health and connect a client.
+Once running, verify the server is active:
 
-**Verify Health:**
-```bash
-curl http://localhost:50050/health
-```
+1.  **Check Health**
+    ```bash
+    curl http://localhost:50050/health
+    ```
 
-**Connect an AI Client:**
-To connect an AI client (like Claude Desktop or Gemini CLI):
-```bash
-# Example assuming you have a compatible client
-gemini mcp add --transport http --trust mcpany http://localhost:50050
-```
+2.  **Connect an AI Client** (e.g., using a CLI tool)
+    ```bash
+    gemini mcp add --transport http --trust mcpany http://localhost:50050
+    ```
 
-**Try it out:**
-Ask your agent:
-> "What is the weather?"
+3.  **Ask a Question**
+    > "What is the weather?"
 
-The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
+    *The agent will use the `get_weather` tool exposed by the default configuration.*
 
 ## 4. Development
 
-We adhere to a strict development workflow to ensure code quality and maintainability.
+We adhere to strict quality standards. Ensure your environment is set up to run the following commands.
 
-### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
-```bash
-make test
-```
-
-### Linting
-We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
-*   **Protocol:** We check for breaking changes in `.proto` files.
-
-To run linters:
-```bash
-make lint
-```
-
-### Building
-Compile the server binary and UI assets.
-```bash
-make build
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
-```
+*   **Testing:** Run all unit and integration tests.
+    ```bash
+    make test
+    ```
+*   **Linting:** We enforce **100% documentation coverage** and strict style guides.
+    ```bash
+    make lint
+    ```
+*   **Building:** Compile the binary.
+    ```bash
+    make build
+    ```
+*   **Code Generation:** Regenerate Protocol Buffers if `.proto` files change.
+    ```bash
+    make gen
+    ```
 
 ## 5. Configuration
 
-MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
+MCP Any is configured via environment variables and YAML/JSON files.
 
 ### Environment Variables
 
@@ -176,7 +155,7 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 
 ### Required Secrets
 
-Sensitive information (like upstream API keys) must **never** be hardcoded in configuration files. Instead, use environment variable references.
+**Security Warning:** Never hardcode secrets in configuration files. Use environment variable substitution.
 
 **Example Config:**
 ```yaml
@@ -184,8 +163,7 @@ upstreamAuth:
   apiKey:
     value: "${OPENAI_API_KEY}" # References env var
 ```
-
-Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+Ensure `OPENAI_API_KEY` is exported in the server's environment.
 
 ## License
 
