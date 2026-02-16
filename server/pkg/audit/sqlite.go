@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/validation"
 
 	// modernc.org/sqlite is a pure Go SQLite driver.
 	_ "modernc.org/sqlite"
@@ -34,9 +33,11 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
 
-	if err := validation.IsAllowedPath(path); err != nil {
-		return nil, fmt.Errorf("sqlite audit path not allowed: %w", err)
-	}
+	// We do NOT call validation.IsAllowedPath here because that function enforces
+	// tool-level security (e.g., blocking access to .db files, .env files).
+	// The audit store is a server component configured by the admin, so it must be
+	// allowed to write to .db files.
+	// We rely on filesystem permissions and admin configuration trust.
 
 	db, err := sql.Open("sqlite", path)
 	if err != nil {

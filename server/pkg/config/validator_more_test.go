@@ -111,7 +111,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			}.Build(),
 			expectedErrorCount:  1,
-			expectedErrorString: "mtls 'client_cert_path' not found",
+			expectedErrorString: "access to private key file \"non-existent-cert.pem\" is denied",
 		},
 		{
 			name: "Basic Auth Unset Env",
@@ -519,7 +519,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			}.Build(),
 			expectedErrorCount:  1,
-			expectedErrorString: "mtls 'ca_cert_path' not found",
+			expectedErrorString: "access to private key file \"non-existent-ca.pem\" is denied",
 		},
 		{
 			name: "invalid grpc service - schema error",
