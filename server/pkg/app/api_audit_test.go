@@ -6,14 +6,18 @@ package app
 import (
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -111,4 +115,63 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 		app.handleAuditExport(w, req)
 		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 	})
+}
+
+func TestHandleAuditLogs(t *testing.T) {
+	app, _ := setupApiTestApp()
+	app.standardMiddlewares = &middleware.StandardMiddlewares{}
+
+	// Use CWD to ensure path is allowed by validation
+	dbPath := "./audit_test_logs.db"
+	defer os.Remove(dbPath)
+
+	// Allow .db extension for this test as IsSensitivePath blocks it by default
+	originalIsSensitive := validation.IsSensitivePath
+	validation.IsSensitivePath = func(path string) error {
+		if strings.HasSuffix(path, "audit_test_logs.db") {
+			return nil
+		}
+		return originalIsSensitive(path)
+	}
+	defer func() { validation.IsSensitivePath = originalIsSensitive }()
+
+	sqliteStore, err := audit.NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	entry1 := audit.Entry{
+		Timestamp:  time.Now().Add(-1 * time.Hour),
+		ToolName:   "tool-1",
+		UserID:     "user-1",
+		DurationMs: 123,
+		Arguments:  []byte(`{"key":"val"}`),
+	}
+	require.NoError(t, sqliteStore.Write(context.Background(), entry1))
+	sqliteStore.Close()
+
+	storageType := configv1.AuditConfig_STORAGE_TYPE_SQLITE
+	auditCfg := &configv1.AuditConfig{}
+	auditCfg.SetEnabled(true)
+	auditCfg.SetStorageType(storageType)
+	auditCfg.SetOutputPath(dbPath)
+	auditMiddleware, err := middleware.NewAuditMiddleware(auditCfg)
+	require.NoError(t, err)
+	app.standardMiddlewares.Audit = auditMiddleware
+	defer auditMiddleware.Close()
+
+	req, _ := http.NewRequest("GET", "/audit/logs?tool_name=tool-1", nil)
+	rr := httptest.NewRecorder()
+	// Use createAPIHandler to verify routing
+	mux := app.createAPIHandler(app.Storage)
+	mux.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+
+	var resp map[string][]audit.Entry
+	err = json.NewDecoder(rr.Body).Decode(&resp)
+	require.NoError(t, err)
+
+	entries := resp["entries"]
+	assert.Len(t, entries, 1)
+	assert.Equal(t, "tool-1", entries[0].ToolName)
+	assert.Equal(t, "user-1", entries[0].UserID)
 }
