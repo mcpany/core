@@ -27,6 +27,10 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The logging middleware function.
+//
+// Side Effects:
+//   - Emits log lines for request completion/failure.
+//   - Increments request metrics (total, success, error, latency).
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()
