@@ -32,16 +32,48 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
+      - uses: actions/checkout@v4
         with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
+          fetch-depth: 0
+
+      - name: Detect Changes
+        id: filter
+        run: |
+          # Default to true if detection fails
+          CHANGED="true"
+
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # Compare against base branch for PRs
+            BASE="origin/${{ github.base_ref }}"
+            git fetch origin ${{ github.base_ref }} --depth=1 || true
+            CHANGED_FILES=$(git diff --name-only "$BASE" HEAD || echo "ALL")
+          else
+            # Compare against previous commit for Pushes
+            CHANGED_FILES=$(git diff --name-only HEAD^ HEAD || echo "ALL")
+          fi
+
+          # Check if any changed file is NOT ignored (md, txt, docs, LICENSE)
+          # We iterate line by line
+          HAS_SRC_CHANGES="false"
+          if [ "$CHANGED_FILES" == "ALL" ]; then
+            HAS_SRC_CHANGES="true"
+          else
+            while IFS= read -r file; do
+              if [[ -z "$file" ]]; then continue; fi
+              # Skip ignored patterns
+              if [[ "$file" == *.md ]]; then continue; fi
+              if [[ "$file" == *.txt ]]; then continue; fi
+              if [[ "$file" == docs/* ]]; then continue; fi
+              if [[ "$file" == LICENSE ]]; then continue; fi
+
+              # Found a source file change
+              HAS_SRC_CHANGES="true"
+              break
+            done <<< "$CHANGED_FILES"
+          fi
+
+          echo "Detected source changes: $HAS_SRC_CHANGES"
+          echo "src=$HAS_SRC_CHANGES" >> $GITHUB_OUTPUT
 
   lint:
     needs: changes
@@ -1063,76 +1095,51 @@ jobs:
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
       - name: Check Results and Comment
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            // 1. Check for Failures
-            const needs = ${{ toJson(needs) }};
-            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure' || needs[key].result === 'cancelled');
-            const { owner, repo } = context.repo;
-            const run_id = context.runId;
-            const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
-            const pull_number = context.issue.number;
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          NEEDS_JSON: ${{ toJson(needs) }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Install jq if needed
+          if ! command -v jq &> /dev/null; then
+            if command -v apt-get &> /dev/null; then sudo apt-get update && sudo apt-get install -y jq; fi
+            if command -v apk &> /dev/null; then sudo apk add --no-cache jq; fi
+          fi
 
-            if (failedJobNames.length === 0) {
-              console.log('All required jobs passed successfully (or were skipped).');
-              return;
-            }
+          # 1. Check for Failures
+          FAILED_JOBS=$(echo "$NEEDS_JSON" | jq -r 'to_entries[] | select(.value.result == "failure" or .value.result == "cancelled") | .key')
 
-            // 2. Prepare Comment Logic (only if PR)
-            if (pull_number) {
-              let failuresDetails = [];
-              try {
-                // We use github.rest instead of github.actions for v7 compat if needed, but octokit is global
-                // List jobs to find step failures
-                const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
-                  owner,
-                  repo,
-                  run_id,
-                });
-                const failedJobs = jobsResponse.data.jobs.filter(job => job.conclusion === 'failure');
+          if [ -z "$FAILED_JOBS" ]; then
+            echo "All required jobs passed successfully (or were skipped)."
+            exit 0
+          fi
 
-                for (const job of failedJobs) {
-                   const failedSteps = job.steps
-                     .filter(step => step.conclusion === 'failure')
-                     .map(step => step.name)
-                     .join(', ');
-                   const msg = failedSteps ? `${job.name}: Failed at step(s) "${failedSteps}"` : `${job.name}: Failed`;
-                   failuresDetails.push(msg);
-                }
-              } catch (e) {
-                console.log('Error fetching job details:', e);
-                failuresDetails = failedJobNames.map(name => `${name}: Failed`);
-              }
+          echo "Failed jobs: $FAILED_JOBS"
 
-              const list = failuresDetails.map(detail => `- **${detail}**`).join('\n');
-              const agentPrompt = `
-              Please investigate the failures above.
-              1. Check the [Action logs](${run_url}) for the specific error messages (e.g., failed tests, lint errors, build issues).
-              2. Analyze the root cause.
-              3. Apply fixes to the codebase.
-              `;
+          # 2. Prepare Comment Logic (only if PR)
+          if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
+            LIST=""
+            for job in $FAILED_JOBS; do
+              LIST="$LIST\n- **$job**"
+            done
 
-              const body = `❌ **CI Checks Failed**
+            AGENT_PROMPT="
+            Please investigate the failures above.
+            1. Check the [Action logs]($RUN_URL) for the specific error messages.
+            2. Analyze the root cause.
+            3. Apply fixes to the codebase.
+            "
 
-              The following GitHub Actions checks failed in this run:
-              ${list}
+            BODY="❌ **CI Checks Failed**\n\nThe following GitHub Actions checks failed in this run:$LIST\n\n---\n$AGENT_PROMPT"
 
-              ---
-              ${agentPrompt}
-              `;
+            # Post comment using gh
+            echo -e "$BODY" | gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file - || echo "Failed to post comment"
+          else
+            echo "Not a PR or PR number missing, skipping failure comment."
+          fi
 
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pull_number,
-                body
-              });
-            } else {
-              console.log('Not a PR, skipping failure comment.');
-            }
-
-            // 3. Fail the workflow
-            const msg = 'The following required jobs did not pass: ' + failedJobNames.join(', ');
-            core.setFailed(msg);
+          # 3. Fail the workflow
+          echo "The following required jobs did not pass: $FAILED_JOBS"
+          exit 1
