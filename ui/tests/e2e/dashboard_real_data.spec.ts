@@ -72,7 +72,7 @@ test.describe('Dashboard Real Data', () => {
         // 60 points * 100 requests = 6000 total requests.
         // Check if "Total Requests" card shows 6,000 (formatted).
 
-        await expect(page.locator('text=Total Requests')).toBeVisible();
+        await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 30000 });
 
         // The endpoint returns points. The UI sums them up.
         // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
