@@ -6,6 +6,11 @@
 import { test, expect } from '@playwright/test';
 
 test('dashboard network topology widget', async ({ page }) => {
+  // Mock user preferences to ensure dashboard loads default layout immediately
+  await page.route('**/api/v1/user/preferences', async route => {
+    await route.fulfill({ status: 404 });
+  });
+
   // Go to dashboard
   await page.goto('/');
 

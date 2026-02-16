@@ -11,6 +11,12 @@ test.describe('Dashboard Real Data', () => {
 
     test.beforeEach(async ({ request, page }) => {
         await seedUser(request, "e2e-admin");
+
+        // Mock user preferences to ensure dashboard loads default layout immediately
+        await page.route('**/api/v1/user/preferences', async route => {
+            await route.fulfill({ status: 404 });
+        });
+
         // Login
         await page.goto('/login');
         await page.waitForLoadState('networkidle');

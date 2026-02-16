@@ -9,6 +9,13 @@ test.describe('Service Detail Logs Tab', () => {
   const serviceName = 'e2e-logs-test-service';
   let serviceId = '';
 
+  test.beforeEach(async ({ page }) => {
+    // Mock user preferences to ensure dashboard loads default layout immediately
+    await page.route('**/api/v1/user/preferences', async route => {
+        await route.fulfill({ status: 404 });
+    });
+  });
+
   test.beforeAll(async ({ request }) => {
     // Seed the database with a test service
     const response = await request.post('/api/v1/services', {

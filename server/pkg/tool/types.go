@@ -60,6 +60,8 @@ var (
 	metricHTTPRequestLatency = []string{"http", "request", "latency"}
 )
 
+const gitCommand = "git"
+
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
@@ -2046,7 +2048,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2381,7 +2383,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -3061,17 +3063,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
-	var b strings.Builder
-	b.Grow(len(val))
-
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
+func getCommentSupport(language string) (bool, bool, bool) {
 	// Determine comment style
 	supportsHash := false
 	supportsSlash := false
@@ -3093,6 +3085,21 @@ func stripInterpreterComments(val, language string) string {
 		supportsSlash = true
 		supportsBlock = true
 	}
+	return supportsHash, supportsSlash, supportsBlock
+}
+
+func stripInterpreterComments(val, language string) string {
+	var b strings.Builder
+	b.Grow(len(val))
+
+	inLineComment := false  // # or //
+	inBlockComment := false // /* ... */
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	supportsHash, supportsSlash, supportsBlock := getCommentSupport(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
@@ -3223,6 +3230,16 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	return nil
 }
 
+func checkWordAndReset(wb *strings.Builder, keywords []string, lastChar rune, lastWord *string) error {
+	word := wb.String()
+	wb.Reset()
+	if err := checkKeyword(word, keywords, lastChar, *lastWord); err != nil {
+		return err
+	}
+	*lastWord = word
+	return nil
+}
+
 func checkUnquotedKeywords(val string, keywords []string) error {
 	inSingle := false
 	inDouble := false
@@ -3249,12 +3266,9 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			// Treat quotes as delimiters
 			if inSingle { // Entered quote
 				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
 						return err
 					}
-					lastWord = word
-					wordBuilder.Reset()
 				}
 			}
 			// When exiting quote, we don't update lastWord because quoted string is not a word
@@ -3269,12 +3283,9 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			inDouble = !inDouble
 			if inDouble { // Entered quote
 				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
 						return err
 					}
-					lastWord = word
-					wordBuilder.Reset()
 				}
 			}
 			if !inDouble {
@@ -3287,12 +3298,9 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			inBacktick = !inBacktick
 			if inBacktick { // Entered quote
 				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
 						return err
 					}
-					lastWord = word
-					wordBuilder.Reset()
 				}
 			}
 			if !inBacktick {
@@ -3313,12 +3321,9 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			// Non-ASCII characters cannot be part of the dangerous keywords we check (which are ASCII only).
 			// We treat them as delimiters to ensure we correctly isolate potential keywords.
 			if wordBuilder.Len() > 0 {
-				word := wordBuilder.String()
-				if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+				if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
 					return err
 				}
-				lastWord = word
-				wordBuilder.Reset()
 			}
 
 			if !unicode.IsSpace(char) {
@@ -3330,8 +3335,7 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 
 	// Check last word
 	if wordBuilder.Len() > 0 {
-		word := wordBuilder.String()
-		if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+		if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
 			return err
 		}
 	}
@@ -3868,7 +3872,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == gitCommand {
 		return true
 	}
 
