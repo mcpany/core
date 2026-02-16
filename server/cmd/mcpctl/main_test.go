@@ -44,10 +44,10 @@ func TestDoctorCmd_Offline(t *testing.T) {
 func TestDoctorCmd_Online(t *testing.T) {
 	// Mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/health" {
+		if r.URL.Path == "/healthz" {
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("OK"))
-		} else if r.URL.Path == "/doctor" {
+		} else if r.URL.Path == "/api/v1/doctor" {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`{"status":"healthy","checks":{"internet":{"status":"ok"}}}`))
@@ -117,7 +117,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 	// 2. Server returns 500 on doctor
 	t.Run("Doctor 500", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == "/health" {
+			if r.URL.Path == "/healthz" {
 				w.WriteHeader(http.StatusOK)
 			} else {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -137,7 +137,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 	// 3. Doctor returns invalid JSON
 	t.Run("Doctor Invalid JSON", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == "/health" {
+			if r.URL.Path == "/healthz" {
 				w.WriteHeader(http.StatusOK)
 			} else {
 				w.WriteHeader(http.StatusOK)
@@ -158,7 +158,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
     // 4. Doctor returns degraded status
 	t.Run("Doctor Degraded", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == "/health" {
+			if r.URL.Path == "/healthz" {
 				w.WriteHeader(http.StatusOK)
 			} else {
                 w.Header().Set("Content-Type", "application/json")

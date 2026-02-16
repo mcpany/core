@@ -103,8 +103,8 @@ func newDoctorCmd() *cobra.Command {
 				Timeout: 2 * time.Second,
 			}
 
-			// Check /health
-			req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/health", nil)
+			// Check /healthz
+			req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/healthz", nil)
 			if err != nil {
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "FAILED")
 				return fmt.Errorf("failed to create request: %w", err)
@@ -127,7 +127,7 @@ func newDoctorCmd() *cobra.Command {
 
 			// 3. Check Deep Health (/doctor endpoint)
 			_, _ = fmt.Fprint(cmd.OutOrStdout(), "[ ] Checking System Health... ")
-			req, err = http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/doctor", nil)
+			req, err = http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/api/v1/doctor", nil)
 			if err != nil {
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "WARNING")
 				return fmt.Errorf("failed to create request: %w", err)
