@@ -6,6 +6,7 @@ package worker
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime/debug"
 	"sync"
@@ -139,26 +140,32 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				Error:               err,
 			}
 			if err != nil {
-				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
-				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
+				if errors.Is(err, serviceregistry.ErrServiceAlreadyRegistered) {
+					log.Info("Service already registered, skipping retry", "service", req.Config.GetName())
+					// Do not retry, do not increment error metric (or increment a specific one?)
+					// We treat this as "done".
+				} else {
+					log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
+					metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
 
-				// Schedule a retry
-				// Simple fixed delay for now. In a robust system, we would track retry counts and apply backoff.
-				// Since we don't have a place to store retry count in the request without modifying proto,
-				// we just retry indefinitely every X seconds (configured via retryDelay) until success or cancellation.
-				retryDelay := w.retryDelay
-				log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay)
+					// Schedule a retry
+					// Simple fixed delay for now. In a robust system, we would track retry counts and apply backoff.
+					// Since we don't have a place to store retry count in the request without modifying proto,
+					// we just retry indefinitely every X seconds (configured via retryDelay) until success or cancellation.
+					retryDelay := w.retryDelay
+					log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay)
 
-				go func() {
-					select {
-					case <-ctx.Done():
-						return
-					case <-time.After(retryDelay):
-						if err := requestBus.Publish(ctx, "request", req); err != nil {
-							log.Error("Failed to publish retry request", "service", req.Config.GetName(), "error", err)
+					go func() {
+						select {
+						case <-ctx.Done():
+							return
+						case <-time.After(retryDelay):
+							if err := requestBus.Publish(ctx, "request", req); err != nil {
+								log.Error("Failed to publish retry request", "service", req.Config.GetName(), "error", err)
+							}
 						}
-					}
-				}()
+					}()
+				}
 			} else {
 				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)

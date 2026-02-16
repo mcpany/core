@@ -240,7 +240,7 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.Error(t, err, "Second registration with the same name should fail")
-	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+	assert.ErrorIs(t, err, ErrServiceAlreadyRegistered)
 }
 
 func TestServiceRegistry_UnregisterService(t *testing.T) {

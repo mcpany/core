@@ -6,6 +6,7 @@ package serviceregistry
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -21,6 +22,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/proto"
 )
+
+// ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
+var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
@@ -181,7 +185,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		// If it's NOT in upstreams, it means it failed previously, so we allow re-registration (retry).
 		if _, isActive := r.upstreams[serviceID]; isActive {
 			r.mu.Unlock()
-			return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+			return "", nil, nil, fmt.Errorf("%w: %q", ErrServiceAlreadyRegistered, serviceConfig.GetName())
 		}
 		// Proceed to overwrite the config and try again
 	}
