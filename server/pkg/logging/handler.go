@@ -55,7 +55,8 @@ func (h *BroadcastHandler) processQueue() {
 // Returns the result.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
 	// ⚡ BOLT: Buffered channel for async logging to avoid blocking main thread.
-	// Randomized Selection from Top 5 High-Impact Targets
+	// Randomized Selection from Top 5 High-Impact Targets.
+	// We use a buffer size of 1000 to handle bursty traffic without dropping logs immediately.
 	h := &BroadcastHandler{
 		broadcaster: broadcaster,
 		level:       level,
