@@ -2,14 +2,29 @@
 
 ## Status: Active Development
 
-### Planned Features
+### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P1] Tool Playground & Explorer**:
+  - [ ] Auto-generated forms from Tool JSON Schemas.
+  - [ ] "Execute" button with history and result visualization.
+  - [ ] "Copy as Curl/Python" code generation.
+- [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
+- [ ] **[P1] Interactive Debugger**:
+  - [ ] Breakpoint management for tool calls.
+  - [ ] Variable inspection and modification during "Paused" state.
+- [ ] **[P2] Plugin Marketplace**: In-app browser to discover, install, and configure community MCP servers.
+- [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
+- [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
+- [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+
+### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
   - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
   - [x] Service Duplication: One-click cloning of existing services.
   - [x] Service Export: Download service configuration as JSON.
-  - Import external services via gRPC auto-discovery or OpenAPI specs.
-  - Export and share service configurations.
+  - [ ] Import external services via gRPC auto-discovery or OpenAPI specs.
+  - [ ] Export and share service configurations.
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
   - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
@@ -37,8 +52,6 @@
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
 - [x] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
 - [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
-- [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
-- [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
 - [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
