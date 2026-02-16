@@ -249,10 +249,12 @@ func validateStdioArgs(ctx context.Context, command string, args []string, worki
 		}
 
 		// This is likely the script file.
-		// We only validate it if it looks like a file (has an extension).
-		// This avoids validating things like "install" or module names.
+		// We only validate it if it looks like a file (has an extension) OR is a path (contains separators).
+		// This avoids validating things like "install" or module names, but ensures
+		// that anything looking like a path (relative or absolute) is validated.
 		ext := filepath.Ext(arg)
-		if ext == "" {
+		isPath := strings.ContainsAny(arg, `/\`)
+		if ext == "" && !isPath {
 			continue
 		}
 
@@ -1132,7 +1134,9 @@ func validateMtlsAuth(ctx context.Context, mtls *configv1.MTLSAuth) error {
 				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
 			}
 		} else {
-			if err := validation.IsAllowedPath(path); err != nil {
+			// We use IsAllowedLocation instead of IsAllowedPath because MTLS certificates/keys
+			// are sensitive files (often .pem or .key) which IsAllowedPath blocks.
+			if err := validation.IsAllowedLocation(path); err != nil {
 				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
 			}
 		}

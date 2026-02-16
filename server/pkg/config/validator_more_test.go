@@ -819,6 +819,17 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	}
 	defer func() { validation.IsAllowedPath = originalIsAllowedPath }()
 
+	// Mock IsAllowedLocation
+	originalIsAllowedLocation := validation.IsAllowedLocation
+	validation.IsAllowedLocation = func(path string) error {
+		if path == "insecure.pem" || path == insecurePath {
+			return fmt.Errorf("mock insecure path")
+		}
+		// All other paths are secure
+		return nil
+	}
+	defer func() { validation.IsAllowedLocation = originalIsAllowedLocation }()
+
 	// Mock osStat
 	originalOsStat := osStat
 	osStat = func(name string) (os.FileInfo, error) {

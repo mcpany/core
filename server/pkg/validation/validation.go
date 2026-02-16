@@ -208,7 +208,26 @@ var IsAllowedPath = func(path string) error {
 		return err
 	}
 
-	// 3. Resolve to absolute path
+	// 3. Check Location (shared logic, sensitiveCheck=true)
+	return checkLocation(path, true)
+}
+
+// IsAllowedLocation checks if a given file path is allowed (inside CWD or AllowedPaths)
+// and does not contain any path traversal sequences ("../").
+// Unlike IsAllowedPath, it does NOT check for sensitive files (like .pem), making it suitable for
+// configuration fields that expect sensitive files (e.g., TLS certificates).
+var IsAllowedLocation = func(path string) error {
+	// 1. Basic security check (no .. in the path string itself)
+	if err := IsSecurePath(path); err != nil {
+		return err
+	}
+
+	// 2. Check Location (shared logic, sensitiveCheck=false)
+	return checkLocation(path, false)
+}
+
+func checkLocation(path string, checkSensitive bool) error {
+	// Resolve to absolute path
 	absPath, err := filepath.Abs(path)
 	if err != nil {
 		return fmt.Errorf("failed to resolve absolute path: %w", err)
@@ -253,9 +272,11 @@ var IsAllowedPath = func(path string) error {
 		}
 	}
 
-	// 4. Check for sensitive files again (on resolved path)
-	if err := IsSensitivePath(realPath); err != nil {
-		return fmt.Errorf("resolved path %q points to sensitive file: %w", realPath, err)
+	// Check for sensitive files again (on resolved path) if requested
+	if checkSensitive {
+		if err := IsSensitivePath(realPath); err != nil {
+			return fmt.Errorf("resolved path %q points to sensitive file: %w", realPath, err)
+		}
 	}
 
 	// Helper to check if child is inside parent
@@ -273,7 +294,7 @@ var IsAllowedPath = func(path string) error {
 		return !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."
 	}
 
-	// 3. Check if inside CWD
+	// Check if inside CWD
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory: %w", err)
@@ -283,7 +304,7 @@ var IsAllowedPath = func(path string) error {
 		return nil
 	}
 
-	// 4. Check Allowed Paths
+	// Check Allowed Paths
 	for _, allowedDir := range allowedPaths {
 		allowedDir = strings.TrimSpace(allowedDir)
 		if allowedDir == "" {
