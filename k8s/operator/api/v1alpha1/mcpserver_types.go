@@ -7,7 +7,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// MCPServerSpec defines the desired state of MCPServer
+// MCPServerSpec defines the desired state of MCPServer.
+//
+// Summary: Specification for MCPServer resource.
+//
 // +kubebuilder:object:generate=true
 type MCPServerSpec struct {
 	// Replicas is the number of replicas for the server
@@ -21,7 +24,10 @@ type MCPServerSpec struct {
 	ConfigMap string `json:"configMap"`
 }
 
-// MCPServerStatus defines the observed state of MCPServer
+// MCPServerStatus defines the observed state of MCPServer.
+//
+// Summary: Status of MCPServer resource.
+//
 // +kubebuilder:object:generate=true
 type MCPServerStatus struct {
 	// AvailableReplicas is the number of available replicas
@@ -31,7 +37,9 @@ type MCPServerStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// MCPServer is the Schema for the mcpservers API
+// MCPServer is the Schema for the mcpservers API.
+//
+// Summary: MCPServer resource definition.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -42,7 +50,9 @@ type MCPServer struct {
 
 // +kubebuilder:object:root=true
 
-// MCPServerList contains a list of MCPServer
+// MCPServerList contains a list of MCPServer.
+//
+// Summary: List of MCPServer resources.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

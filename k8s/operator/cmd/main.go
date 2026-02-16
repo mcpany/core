@@ -36,6 +36,9 @@ func init() {
 	//+kubebuilder:scaffold:scheme
 }
 
+// main is the entry point for the MCP Operator.
+//
+// Summary: Entry point for the application.
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
