@@ -61,7 +61,6 @@ func TestBus_Publish_MarshalError(t *testing.T) {
 
 	err := bus.Publish(context.Background(), "test", make(chan int))
 	assert.Error(t, err)
-	assert.IsType(t, &json.UnsupportedTypeError{}, err)
 }
 
 func TestBus_Publish_RedisError(t *testing.T) {

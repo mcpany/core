@@ -6,13 +6,15 @@ package redis
 
 import (
 	"context"
-	"encoding/json"
 	"sync"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/redis/go-redis/v9"
 )
+
+var jsonAPI = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Bus is a Redis-backed implementation of the Bus interface.
 type Bus[T any] struct {
@@ -66,7 +68,7 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // Returns:
 //   - error: An error if marshaling or publishing fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
-	payload, err := json.Marshal(msg)
+	payload, err := jsonAPI.Marshal(msg)
 	if err != nil {
 		return err
 	}
@@ -113,7 +115,9 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 					return
 				}
 				var message T
-				err := json.Unmarshal([]byte(msg.Payload), &message)
+				// ⚡ BOLT: Optimized JSON unmarshalling using json-iterator and zero-copy string decoding.
+				// Randomized Selection from Top 5 High-Impact Targets
+				err := jsonAPI.UnmarshalFromString(msg.Payload, &message)
 				if err != nil {
 					log.Error("Failed to unmarshal message", "error", err)
 					continue
