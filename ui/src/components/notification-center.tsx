@@ -19,6 +19,11 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 
+/**
+ * NotificationCenter component.
+ * Displays a bell icon with a badge for unread alerts and a popover list of alerts.
+ * Allows dismissing individual alerts or all at once.
+ */
 export function NotificationCenter() {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [isOpen, setIsOpen] = useState(false);
