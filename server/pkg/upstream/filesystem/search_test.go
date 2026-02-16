@@ -32,6 +32,9 @@ func (m *mockProvider) Close() error {
 }
 
 func TestSearchFilesTool(t *testing.T) {
+	// Tests the functionality of the searchFilesTool including regex matching,
+	// exclusions, security checks, and resource limits.
+
 	// Helper to setup and execute the tool
 	setupAndExec := func(ctx context.Context, args map[string]interface{}, setup func(fs afero.Fs)) (map[string]interface{}, error) {
 		fs := afero.NewMemMapFs()
