@@ -160,10 +160,17 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const svgWidth = Math.max(800, paddingX * 2 + (participants.length - 1) * colWidth);
   const startY = 80;
 
-  const getX = (id: string) => {
-    const idx = participants.findIndex((p) => p.id === id);
-    return paddingX + idx * colWidth;
-  };
+  // ⚡ BOLT: Optimized coordinate lookup to O(1) using a Map.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const participantXMap = useMemo(() => {
+    const map = new Map<string, number>();
+    participants.forEach((p, idx) => {
+      map.set(p.id, paddingX + idx * colWidth);
+    });
+    return map;
+  }, [participants, paddingX, colWidth]);
+
+  const getX = (id: string) => participantXMap.get(id) ?? 0;
 
   return (
     <div className="w-full flex flex-col items-center py-8 select-none">
