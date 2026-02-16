@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { AlertCircle, Upload, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { apiClient } from "@/lib/client";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
