@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 import { seedServices, seedUser, cleanupServices, cleanupUser } from './test-data';
 
-test('Agent Skills', () => {
+test.describe('Agent Skills', () => {
   test.beforeEach(async ({ page, request }) => {
     await seedServices(request);
     await seedUser(request, "e2e-admin");
