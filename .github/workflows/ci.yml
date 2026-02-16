@@ -30,18 +30,9 @@ jobs:
   changes:
     runs-on: oci-runner # ubuntu-slim
     outputs:
-      src: ${{ steps.filter.outputs.src }}
+      src: "true"
     steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
+      - run: echo "Forcing src=true to bypass dorny/paths-filter download failure"
 
   lint:
     needs: changes
@@ -999,19 +990,17 @@ jobs:
       - name: Install gh CLI
         run: |
           install_dependencies() {
-            if ! command -v curl &> /dev/null; then
-              echo "curl not found. Installing..."
-              if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
-              elif command -v apk &> /dev/null; then
-                sudo apk add --no-cache curl ca-certificates
-              elif command -v yum &> /dev/null; then
-                sudo yum install -y curl ca-certificates
-              elif command -v dnf &> /dev/null; then
-                sudo dnf install -y curl ca-certificates
-              else
-                echo "Could not find package manager to install curl. Trying to proceed..."
-              fi
+            echo "Installing dependencies..."
+            if command -v apt-get &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y curl ca-certificates python3
+            elif command -v apk &> /dev/null; then
+              sudo apk add --no-cache curl ca-certificates python3
+            elif command -v yum &> /dev/null; then
+              sudo yum install -y curl ca-certificates python3
+            elif command -v dnf &> /dev/null; then
+              sudo dnf install -y curl ca-certificates python3
+            else
+              echo "Could not find package manager. Hoping python3 and curl are present..."
             fi
           }
 
@@ -1063,76 +1052,65 @@ jobs:
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
       - name: Check Results and Comment
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            // 1. Check for Failures
-            const needs = ${{ toJson(needs) }};
-            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure' || needs[key].result === 'cancelled');
-            const { owner, repo } = context.repo;
-            const run_id = context.runId;
-            const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
-            const pull_number = context.issue.number;
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEEDS_JSON: ${{ toJson(needs) }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 <<EOF
+          import os
+          import json
+          import subprocess
+          import sys
 
-            if (failedJobNames.length === 0) {
-              console.log('All required jobs passed successfully (or were skipped).');
-              return;
-            }
+          needs_json = os.environ.get("NEEDS_JSON", "{}")
+          try:
+              needs = json.loads(needs_json)
+          except Exception as e:
+              print(f"Error parsing NEEDS_JSON: {e}")
+              sys.exit(1)
 
-            // 2. Prepare Comment Logic (only if PR)
-            if (pull_number) {
-              let failuresDetails = [];
-              try {
-                // We use github.rest instead of github.actions for v7 compat if needed, but octokit is global
-                // List jobs to find step failures
-                const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
-                  owner,
-                  repo,
-                  run_id,
-                });
-                const failedJobs = jobsResponse.data.jobs.filter(job => job.conclusion === 'failure');
+          failed_jobs = [k for k, v in needs.items() if v.get("result") in ["failure", "cancelled"]]
 
-                for (const job of failedJobs) {
-                   const failedSteps = job.steps
-                     .filter(step => step.conclusion === 'failure')
-                     .map(step => step.name)
-                     .join(', ');
-                   const msg = failedSteps ? `${job.name}: Failed at step(s) "${failedSteps}"` : `${job.name}: Failed`;
-                   failuresDetails.push(msg);
-                }
-              } catch (e) {
-                console.log('Error fetching job details:', e);
-                failuresDetails = failedJobNames.map(name => `${name}: Failed`);
-              }
+          if not failed_jobs:
+              print("All required jobs passed successfully.")
+              sys.exit(0)
 
-              const list = failuresDetails.map(detail => `- **${detail}**`).join('\n');
-              const agentPrompt = `
-              Please investigate the failures above.
-              1. Check the [Action logs](${run_url}) for the specific error messages (e.g., failed tests, lint errors, build issues).
-              2. Analyze the root cause.
-              3. Apply fixes to the codebase.
-              `;
+          print(f"Failed jobs: {failed_jobs}")
 
-              const body = `❌ **CI Checks Failed**
+          pr_url = os.environ.get("PR_URL")
+          repo = os.environ.get("REPO")
+          run_id = os.environ.get("RUN_ID")
 
-              The following GitHub Actions checks failed in this run:
-              ${list}
+          if pr_url:
+              try:
+                  # Fetch failed jobs details using gh cli
+                  cmd = ["gh", "run", "view", run_id, "--repo", repo, "--json", "jobs"]
+                  res = subprocess.run(cmd, capture_output=True, text=True)
 
-              ---
-              ${agentPrompt}
-              `;
+                  details = []
+                  if res.returncode == 0:
+                      run_data = json.loads(res.stdout)
+                      jobs = run_data.get("jobs", [])
+                      for job in jobs:
+                          if job.get("conclusion") == "failure":
+                              steps = job.get("steps", [])
+                              failed_steps = [s.get("name") for s in steps if s.get("conclusion") == "failure"]
+                              step_str = ", ".join(failed_steps)
+                              msg = f"{job['name']}: Failed at step(s) \"{step_str}\"" if failed_steps else f"{job['name']}: Failed"
+                              details.append(f"- **{msg}**")
 
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pull_number,
-                body
-              });
-            } else {
-              console.log('Not a PR, skipping failure comment.');
-            }
+                  if not details:
+                      details = [f"- **{name}: Failed**" for name in failed_jobs]
 
-            // 3. Fail the workflow
-            const msg = 'The following required jobs did not pass: ' + failedJobNames.join(', ');
-            core.setFailed(msg);
+                  body = "❌ **CI Checks Failed**\n\nThe following GitHub Actions checks failed in this run:\n" + "\n".join(details)
+                  body += f"\n\n---\n[View Logs](https://github.com/{repo}/actions/runs/{run_id})"
+
+                  subprocess.run(["gh", "pr", "comment", pr_url, "--body", body], check=False)
+              except Exception as e:
+                  print(f"Failed to post comment: {e}")
+
+          sys.exit(1)
+          EOF
