@@ -49,6 +49,8 @@ const (
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
+
+	gitCommand = "git"
 )
 
 var (
@@ -2046,7 +2048,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2381,7 +2383,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -3061,7 +3063,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
+func stripInterpreterComments(val, language string) string { //nolint:gocyclo
 	var b strings.Builder
 	b.Grow(len(val))
 
@@ -3223,7 +3225,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	return nil
 }
 
-func checkUnquotedKeywords(val string, keywords []string) error {
+func checkUnquotedKeywords(val string, keywords []string) error { //nolint:gocyclo
 	inSingle := false
 	inDouble := false
 	inBacktick := false
@@ -3847,7 +3849,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == gitCommand {
 		return true
 	}
 
