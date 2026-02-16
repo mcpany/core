@@ -30,7 +30,7 @@ func TestNewDB_Success(t *testing.T) {
 	_, err = os.Stat(dbPath)
 	assert.NoError(t, err, "Database file should exist")
 
-	// Verify default Pragma configuration (WAL mode for performance)
+	// Verify default Pragma configuration
 	var journalMode string
 	err = db.QueryRow("PRAGMA journal_mode;").Scan(&journalMode)
 	require.NoError(t, err)
