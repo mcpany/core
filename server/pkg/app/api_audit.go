@@ -5,12 +5,77 @@ package app
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/audit"
 )
+
+// handleAuditLogs handles requests to list audit logs.
+func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	filter := audit.Filter{}
+	if start := r.URL.Query().Get("start_time"); start != "" {
+		if t, err := time.Parse(time.RFC3339, start); err == nil {
+			filter.StartTime = &t
+		} else {
+			http.Error(w, "invalid start_time format", http.StatusBadRequest)
+			return
+		}
+	}
+	if end := r.URL.Query().Get("end_time"); end != "" {
+		if t, err := time.Parse(time.RFC3339, end); err == nil {
+			filter.EndTime = &t
+		} else {
+			http.Error(w, "invalid end_time format", http.StatusBadRequest)
+			return
+		}
+	}
+	filter.ToolName = r.URL.Query().Get("tool_name")
+	filter.UserID = r.URL.Query().Get("user_id")
+	filter.ProfileID = r.URL.Query().Get("profile_id")
+
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if limit, err := strconv.Atoi(limitStr); err == nil {
+			filter.Limit = limit
+		} else {
+			http.Error(w, "invalid limit format", http.StatusBadRequest)
+			return
+		}
+	}
+	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
+		if offset, err := strconv.Atoi(offsetStr); err == nil {
+			filter.Offset = offset
+		} else {
+			http.Error(w, "invalid offset format", http.StatusBadRequest)
+			return
+		}
+	}
+
+	// Get the audit store from standard middlewares
+	if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+		http.Error(w, "Audit store not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	entries, err := a.standardMiddlewares.Audit.Read(r.Context(), filter)
+	if err != nil {
+		http.Error(w, "Failed to read audit logs: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(map[string]any{"entries": entries}); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
 
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
