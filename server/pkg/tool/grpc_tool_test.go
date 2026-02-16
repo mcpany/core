@@ -47,6 +47,10 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 		// Fallback to absolute path in container
 		path = "/app/build/all.protoset"
 		if _, err := os.Stat(path); os.IsNotExist(err) {
+			// Try finding relative to CWD (e.g. if running from root)
+			path = "build/all.protoset"
+		}
+		if _, err := os.Stat(path); os.IsNotExist(err) {
 			// Debugging info for CI failure
 			cwd, _ := os.Getwd()
 			t.Logf("Current working directory: %s", cwd)
