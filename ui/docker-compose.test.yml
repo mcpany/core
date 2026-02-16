@@ -21,7 +21,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     volumes:
       - ${HOST_WORKSPACE_ROOT:-..}/server/config.minimal.yaml:/app/config.minimal.yaml
     networks:

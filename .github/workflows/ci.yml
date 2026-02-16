@@ -964,7 +964,7 @@ jobs:
         run: |
           cd ui
           npm install
-          sudo npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
