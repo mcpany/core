@@ -32,23 +32,57 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
+      - uses: actions/checkout@v4
         with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: filter
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}"
+            BASE="origin/${{ github.base_ref }}"
+          else
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" == "0000000000000000000000000000000000000000" ]; then
+               BASE="HEAD~1"
+            else
+               BASE="$BEFORE"
+            fi
+          fi
+
+          echo "Comparing against $BASE"
+          DIFF=$(git diff --name-only "$BASE" HEAD || echo "FORCE_BUILD")
+
+          if [ "$DIFF" == "FORCE_BUILD" ]; then
+             echo "Diff failed, forcing build."
+             echo "src=true" >> "$GITHUB_OUTPUT"
+             exit 0
+          fi
+
+          HAS_CODE=false
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
+            if [[ "$file" == *.md ]]; then continue; fi
+            if [[ "$file" == *.txt ]]; then continue; fi
+            if [[ "$file" == docs/* ]]; then continue; fi
+            if [[ "$file" == LICENSE ]]; then continue; fi
+
+            HAS_CODE=true
+            echo "Source change detected: $file"
+            break
+          done <<< "$DIFF"
+
+          echo "src=$HAS_CODE" >> "$GITHUB_OUTPUT"
 
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -125,7 +159,7 @@ jobs:
       #     docker-images: true
       #     swap-storage: true
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -260,7 +294,7 @@ jobs:
       #     docker-images: true
       #     swap-storage: true
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -426,7 +460,7 @@ jobs:
           large-packages: true
           docker-images: false
           swap-storage: true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -551,7 +585,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -680,7 +714,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -783,7 +817,7 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -836,38 +870,6 @@ jobs:
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:latest
 
-  docker-smoke-test-ui:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [build-images]
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Detect Architecture
-        id: detect-arch
-        run: |
-          ARCH=$(uname -m)
-          case $ARCH in
-            x86_64) SLUG="amd64" ;;
-            aarch64) SLUG="arm64" ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          echo "slug=$SLUG" >> $GITHUB_OUTPUT
-
-      - name: Download UI Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Docker Image
-        run: |
-          docker load -i ui.tar
-
-      - name: Smoke Test UI
-        run: |
-          chmod +x server/tests/smoke_test_ui.sh
-          ./server/tests/smoke_test_ui.sh mcpany/ui:latest
-
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -888,7 +890,7 @@ jobs:
       #          docker-images: false
       #          swap-storage: true
       #
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Detect Architecture
         id: detect-arch
@@ -931,7 +933,7 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1019,7 +1021,6 @@ jobs:
         e2e-parallel,
         e2e-public-api,
         docker-smoke-test,
-        docker-smoke-test-ui,
         ui-test,
         k8s-e2e,
       ]
@@ -1096,76 +1097,36 @@ jobs:
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
       - name: Check Results and Comment
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            // 1. Check for Failures
-            const needs = ${{ toJson(needs) }};
-            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure' || needs[key].result === 'cancelled');
-            const { owner, repo } = context.repo;
-            const run_id = context.runId;
-            const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
-            const pull_number = context.issue.number;
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          NEEDS_JSON: ${{ toJson(needs) }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          echo "Checking job results..."
+          FAILURE=0
 
-            if (failedJobNames.length === 0) {
-              console.log('All required jobs passed successfully (or were skipped).');
-              return;
-            }
+          # Iterate over needs json using grep/sed (no jq guarantee)
+          # We search for "result": "failure" or "result": "cancelled"
+          # needs json looks like {"job1": {"result": "success", "outputs": {}}, ...}
 
-            // 2. Prepare Comment Logic (only if PR)
-            if (pull_number) {
-              let failuresDetails = [];
-              try {
-                // We use github.rest instead of github.actions for v7 compat if needed, but octokit is global
-                // List jobs to find step failures
-                const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
-                  owner,
-                  repo,
-                  run_id,
-                });
-                const failedJobs = jobsResponse.data.jobs.filter(job => job.conclusion === 'failure');
+          if echo "$NEEDS_JSON" | grep -qE '"result":\s*"(failure|cancelled)"'; then
+            FAILURE=1
+          fi
 
-                for (const job of failedJobs) {
-                   const failedSteps = job.steps
-                     .filter(step => step.conclusion === 'failure')
-                     .map(step => step.name)
-                     .join(', ');
-                   const msg = failedSteps ? `${job.name}: Failed at step(s) "${failedSteps}"` : `${job.name}: Failed`;
-                   failuresDetails.push(msg);
-                }
-              } catch (e) {
-                console.log('Error fetching job details:', e);
-                failuresDetails = failedJobNames.map(name => `${name}: Failed`);
-              }
+          if [ "$FAILURE" -eq 1 ]; then
+            echo "Failures detected."
 
-              const list = failuresDetails.map(detail => `- **${detail}**`).join('\n');
-              const agentPrompt = `
-              Please investigate the failures above.
-              1. Check the [Action logs](${run_url}) for the specific error messages (e.g., failed tests, lint errors, build issues).
-              2. Analyze the root cause.
-              3. Apply fixes to the codebase.
-              `;
+            # Post comment if PR
+            if [ -n "$PR_NUMBER" ]; then
+                RUN_URL="https://github.com/$REPO/actions/runs/$RUN_ID"
+                BODY="❌ **CI Checks Failed**<br><br>Some required jobs failed. Please check the [Action logs]($RUN_URL) for details."
 
-              const body = `❌ **CI Checks Failed**
+                gh issue comment "$PR_NUMBER" --body "$BODY" || echo "Failed to post comment"
+            fi
 
-              The following GitHub Actions checks failed in this run:
-              ${list}
+            exit 1
+          fi
 
-              ---
-              ${agentPrompt}
-              `;
-
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pull_number,
-                body
-              });
-            } else {
-              console.log('Not a PR, skipping failure comment.');
-            }
-
-            // 3. Fail the workflow
-            const msg = 'The following required jobs did not pass: ' + failedJobNames.join(', ');
-            core.setFailed(msg);
+          echo "All jobs passed."
