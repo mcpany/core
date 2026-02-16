@@ -3371,10 +3371,10 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 	}
 
 	// Sentinel Security Update:
-	// Block leading pipe | to prevent open("|cmd") injection.
-	// This works in single quotes (level 2) as well, because open('|cmd') executes cmd.
-	// It works in double quotes (level 1) and backticks (level 3) too.
-	// We check for levels 1, 2, 3. Level 0 is blocked by unquoted checks.
+	// Block leading pipe | to prevent open("|cmd") injection (the "Magic Open" vulnerability).
+	// In Ruby, open() treats strings starting with '|' as commands to execute, even if the string
+	// is quoted (single or double). This check prevents RCE when user input is interpolated into open().
+	// We check for levels 1 (double), 2 (single), and 3 (backtick). Level 0 is blocked by unquoted checks.
 	if quoteLevel >= 1 && quoteLevel <= 3 {
 		if strings.HasPrefix(strings.TrimSpace(val), "|") {
 			return fmt.Errorf("ruby open injection detected: value starts with '|'")
