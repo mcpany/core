@@ -20,7 +20,8 @@ const TEMPLATES = [
                 command: '',
                 env: {},
                 workingDirectory: ''
-            }
+            },
+            openapiService: undefined
         },
         params: {}
     },
@@ -34,7 +35,8 @@ const TEMPLATES = [
                 env: {
                     "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
                 }
-            }
+            },
+            openapiService: undefined
         },
         params: {
             "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
@@ -50,11 +52,27 @@ const TEMPLATES = [
                 env: {
                     "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
                 }
-            }
+            },
+            openapiService: undefined
         },
         params: {
             "ALLOWED_PATH": "/home/user"
         }
+    },
+    {
+        id: 'openapi',
+        name: 'OpenAPI / Swagger Import',
+        description: 'Import tools from an OpenAPI specification.',
+        config: {
+            openapiService: {
+                address: "",
+                specUrl: "",
+                specContent: "",
+                tools: []
+            },
+            commandLineService: undefined
+        },
+        params: {}
     }
 ];
 

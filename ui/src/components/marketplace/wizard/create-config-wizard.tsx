@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { WizardProvider, useWizard, WizardStep } from './wizard-context';
 import { StepServiceType } from './steps/step-service-type';
 import { StepParameters } from './steps/step-parameters';
+import { StepOpenAPI } from './steps/step-openapi';
 import { StepWebhooks } from './steps/step-webhooks';
 import { StepAuth } from './steps/step-auth';
 import { StepReview } from './steps/step-review';
@@ -32,14 +33,18 @@ import { useToast } from "@/hooks/use-toast";
  */
 function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => void, onCancel: () => void }) {
     const { state, nextStep, prevStep, validateStep } = useWizard();
-    const { currentStep: step } = state;
+    const { currentStep: step, config } = state;
     const { toast } = useToast();
 
 
     const renderStep = () => {
         switch (step) {
             case WizardStep.SERVICE_TYPE: return <StepServiceType />;
-            case WizardStep.PARAMETERS: return <StepParameters />;
+            case WizardStep.PARAMETERS:
+                if (config.openapiService) {
+                    return <StepOpenAPI />;
+                }
+                return <StepParameters />;
             case WizardStep.WEBHOOKS: return <StepWebhooks />;
             case WizardStep.AUTH: return <StepAuth />;
             case WizardStep.REVIEW: return <StepReview onComplete={onComplete} />;
@@ -50,7 +55,11 @@ function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => 
     const getStepTitle = () => {
         switch (step) {
             case WizardStep.SERVICE_TYPE: return "1. Select Service Type";
-            case WizardStep.PARAMETERS: return "2. Configure Parameters";
+            case WizardStep.PARAMETERS:
+                 if (config.openapiService) {
+                     return "2. Configure OpenAPI Specification";
+                 }
+                 return "2. Configure Parameters";
             case WizardStep.WEBHOOKS: return "3. Webhooks & Transformers";
             case WizardStep.AUTH: return "4. Authentication";
             case WizardStep.REVIEW: return "5. Review & Finish";
