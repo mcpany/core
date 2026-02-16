@@ -192,12 +192,20 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	// Invalidate cache
 	m.cache = nil
 
+	if err := validateName(skillName); err != nil {
+		return err
+	}
+
 	// validate path to prevent traversal and ensure it is relative
 	if err := validation.IsSecureRelativePath(relPath); err != nil {
 		return fmt.Errorf("invalid asset path: %w", err)
 	}
 
 	cleanPath := filepath.Clean(relPath)
+	// Prevent overwriting the skill definition file
+	if cleanPath == SkillFileName {
+		return fmt.Errorf("cannot overwrite skill definition file via asset upload")
+	}
 	skillDir := filepath.Join(m.rootDir, skillName)
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", skillName)
