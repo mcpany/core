@@ -38,4 +38,6 @@ func TestLocalProvider_RootSlashBug(t *testing.T) {
 	if err == nil {
 		assert.NotEmpty(t, resolved)
 	}
+
+	// Added comment to trigger CI retry due to infrastructure failure
 }
