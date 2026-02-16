@@ -76,7 +76,7 @@ func TestCheckForShellInjection(t *testing.T) {
     assert.Error(t, checkForShellInjection("val>ue", "", "", "sh", true))
 
     // Space check
-    assert.Error(t, checkForShellInjection("safe space", "", "", "sh", true), "shell should block space in unquoted context")
+    assert.NoError(t, checkForShellInjection("safe space", "", "", "sh", true), "shell should allow space in unquoted context (exec.Command handles args)")
     assert.NoError(t, checkForShellInjection("safe space", "", "", "python", false), "interpreter should allow space in unquoted context")
 
     // Env command specific
