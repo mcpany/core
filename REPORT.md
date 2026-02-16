@@ -1,40 +1,38 @@
 # Truth Reconciliation Audit Report
 
 ## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
+This report details the findings of the "Truth Reconciliation Audit" performed on the MCP Any project. The audit compared 10 sampled documentation files against the codebase and the project roadmap.
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
-
-All discrepancies have been remediated.
+**Overall Health:** 80% (8/10 features verified as correct).
+**Discrepancies Found:** 2 (1 Documentation Drift, 1 Roadmap Debt).
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
+| `server/docs/features/rate-limiting/README.md` | ✅ Correct | Verified | `server/pkg/middleware/ratelimit.go` implements token bucket and Redis support. |
+| `server/docs/features/dynamic_registration.md` | ⚠️ Doc Drift | **Remediate** | Doc is missing configuration examples. Code exists in `server/pkg/upstream/openapi`. |
+| `server/docs/features/audit_logging.md` | ✅ Correct | Verified | `server/pkg/audit/` contains implementations for File, Webhook, Splunk, Datadog. |
+| `server/docs/features/wasm.md` | ❌ Roadmap Debt | **Remediate** | Doc claims WASM support (experimental), but code is a mock (`server/pkg/wasm/runtime.go`). Roadmap lists as P0. |
+| `server/docs/features/message_bus.md` | ✅ Correct | Verified | `server/pkg/bus/` contains NATS and Kafka implementations. |
+| `ui/docs/features/playground.md` | ✅ Correct | Verified | `ui/src/components/playground/` implements sidebar, form, history, JSON mode. |
+| `ui/docs/features/dashboard.md` | ✅ Correct | Verified | `ui/src/components/dashboard/` implements widgets and grid layout. |
+| `ui/docs/features/stack-composer.md` | ✅ Correct | Verified | `ui/src/components/stacks/` implements palette and visualizer. |
+| `ui/docs/features/marketplace.md` | ✅ Correct | Verified | `ui/src/components/marketplace/` and `share-collection-dialog.tsx` implement features. |
+| `ui/docs/features/secrets.md` | ✅ Correct | Verified | `ui/src/app/secrets/` and `ui/src/components/settings/secrets-manager.tsx` exist. |
 
 ## Remediation Log
 
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
+### 1. Dynamic Registration (Doc Drift)
+**Issue:** The documentation mentions "Dynamic Tool Registration" but lacks specific configuration instructions for OpenAPI, gRPC, and GraphQL.
+**Action:** Update `server/docs/features/dynamic_registration.md` to include concrete configuration examples based on the code in `server/pkg/upstream/openapi`.
 
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
+### 2. WASM Plugins (Roadmap Debt)
+**Issue:** The Roadmap lists "WASM Sandboxing" as a P0 priority. The documentation describes a WASM plugin system, but the implementation is a mock.
+**Action:** Engineer the solution.
+- Integrate `wazero` (Zero dependency WebAssembly runtime for Go).
+- Implement `server/pkg/wasm/runtime.go` to actually load and execute WASM modules.
+- Add unit tests to verify WASM execution.
 
 ## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+No PII, secrets, or internal IPs were found in this report.

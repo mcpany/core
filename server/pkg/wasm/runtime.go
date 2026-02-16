@@ -7,6 +7,9 @@ package wasm
 import (
 	"context"
 	"fmt"
+
+	"github.com/tetratelabs/wazero"
+	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
 // Runtime defines the interface for a WASM plugin runtime.
@@ -48,6 +51,71 @@ type Plugin interface {
 	// Returns:
 	//   - error: An error if the operation fails.
 	Close() error
+}
+
+// WazeroRuntime implements Runtime using wazero.
+type WazeroRuntime struct {
+	runtime wazero.Runtime
+}
+
+// NewWazeroRuntime creates a new WazeroRuntime.
+func NewWazeroRuntime(ctx context.Context) (*WazeroRuntime, error) {
+	r := wazero.NewRuntime(ctx)
+	// Instantiate WASI to support modules that use it
+	if _, err := wasi_snapshot_preview1.Instantiate(ctx, r); err != nil {
+		r.Close(ctx)
+		return nil, fmt.Errorf("failed to instantiate WASI: %w", err)
+	}
+	return &WazeroRuntime{runtime: r}, nil
+}
+
+func (r *WazeroRuntime) LoadPlugin(ctx context.Context, bytecode []byte) (Plugin, error) {
+	compiled, err := r.runtime.CompileModule(ctx, bytecode)
+	if err != nil {
+		return nil, fmt.Errorf("failed to compile module: %w", err)
+	}
+	return &WazeroPlugin{runtime: r.runtime, compiled: compiled}, nil
+}
+
+func (r *WazeroRuntime) Close() error {
+	return r.runtime.Close(context.Background())
+}
+
+type WazeroPlugin struct {
+	runtime  wazero.Runtime
+	compiled wazero.CompiledModule
+}
+
+func (p *WazeroPlugin) Execute(ctx context.Context, function string, _ ...[]byte) ([]byte, error) {
+	// Instantiate the module for this execution (sandboxing)
+	modConfig := wazero.NewModuleConfig().WithStdout(nil).WithStderr(nil)
+	mod, err := p.runtime.InstantiateModule(ctx, p.compiled, modConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to instantiate module: %w", err)
+	}
+	defer mod.Close(ctx)
+
+	fn := mod.ExportedFunction(function)
+	if fn == nil {
+		return nil, fmt.Errorf("function %s not exported", function)
+	}
+
+	// Simple execution: call with no arguments for now (basic support)
+	// TODO: Implement complex ABI for passing []byte args and return values.
+	results, err := fn.Call(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("execution failed: %w", err)
+	}
+
+	if len(results) > 0 {
+		return []byte(fmt.Sprintf("%d", results[0])), nil
+	}
+
+	return []byte("success"), nil
+}
+
+func (p *WazeroPlugin) Close() error {
+	return p.compiled.Close(context.Background())
 }
 
 // MockRuntime is a placeholder implementation.
