@@ -53,7 +53,7 @@ test.describe('Tool Exploration', () => {
 
                 await page.reload();
                 // Wait for network idle and a small buffer
-                await page.waitForLoadState('networkidle');
+                await page.waitForLoadState('domcontentloaded');
                 await page.waitForTimeout(2000);
             }
         }
@@ -96,7 +96,8 @@ test.describe('Tool Exploration', () => {
                 break;
             } catch (e) {
                 await page.reload();
-                await page.waitForLoadState('networkidle');
+                await page.waitForLoadState('domcontentloaded');
+                await page.waitForLoadState('domcontentloaded');
                 await page.waitForTimeout(1000);
             }
         }

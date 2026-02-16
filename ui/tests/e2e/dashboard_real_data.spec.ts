@@ -13,7 +13,7 @@ test.describe('Dashboard Real Data', () => {
         await seedUser(request, "e2e-admin");
         // Login
         await page.goto('/login');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await page.fill('input[name="username"]', 'e2e-admin');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
