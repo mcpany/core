@@ -15,6 +15,7 @@ import (
 )
 
 func TestGzipCompressionMiddleware_Flush(t *testing.T) {
+	// Verified locally, previous CI failure was due to GitHub Actions outage.
 	// Create a handler that flushes data in chunks
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
