@@ -47,7 +47,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
-    if: false
     steps:
       - uses: actions/checkout@v5
 
