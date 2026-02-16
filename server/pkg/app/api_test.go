@@ -38,6 +38,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -1132,8 +1133,19 @@ func TestHandleAuditExport(t *testing.T) {
 	app, _ := setupApiTestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 
+	// Use CWD to ensure path is allowed by validation
 	dbPath := "./audit_test_export.db"
 	defer os.Remove(dbPath)
+
+	// Allow .db extension for this test as IsSensitivePath blocks it by default
+	originalIsSensitive := validation.IsSensitivePath
+	validation.IsSensitivePath = func(path string) error {
+		if strings.HasSuffix(path, "audit_test_export.db") {
+			return nil
+		}
+		return originalIsSensitive(path)
+	}
+	defer func() { validation.IsSensitivePath = originalIsSensitive }()
 
 	sqliteStore, err := audit.NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)

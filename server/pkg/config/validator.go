@@ -24,6 +24,8 @@ import (
 )
 
 // BinaryType defines the type of the binary being validated.
+//
+// Summary: Enumeration of binary types for validation context.
 type BinaryType int
 
 const (
@@ -41,6 +43,8 @@ const (
 )
 
 // AuthValidationContext defines the context for authentication validation.
+//
+// Summary: Enumeration of authentication validation contexts.
 type AuthValidationContext int
 
 const (
@@ -68,6 +72,8 @@ var (
 )
 
 // ValidationError encapsulates a validation error for a specific service.
+//
+// Summary: Represents a configuration validation error.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -75,7 +81,10 @@ type ValidationError struct {
 
 // Error returns the formatted error message.
 //
-// Returns the result.
+// Summary: Formats the validation error as a string.
+//
+// Returns:
+//   - string: The error message.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
