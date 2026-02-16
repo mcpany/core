@@ -1607,6 +1607,18 @@ func (a *Application) runServerMode(
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
+	// User Preferences
+	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.HandleGetUserPreferences(w, r)
+		case http.MethodPost:
+			a.HandleUpdateUserPreferences(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	// Topology API is now handled by apiHandler via api.go
 
 	// Catalog API
