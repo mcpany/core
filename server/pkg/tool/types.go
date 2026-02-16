@@ -3092,7 +3092,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		if strings.Contains(cleanVal, kw+"(") ||
 			strings.Contains(cleanVal, kw+"'") ||
 			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
+			strings.Contains(cleanVal, kw+"`") ||
+			strings.Contains(cleanVal, kw+".") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
 		}
 	}
