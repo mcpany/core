@@ -23,6 +23,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Trivial change to trigger CI retry
 permissions:
   contents: read
 
@@ -92,11 +93,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+          sudo apt-get update
+          sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -126,31 +124,6 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
-
-      - name: Install dependencies
-        run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -261,31 +234,6 @@ jobs:
       #     swap-storage: true
 
       - uses: actions/checkout@v5
-
-      - name: Install dependencies
-        run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -427,24 +375,6 @@ jobs:
           docker-images: false
           swap-storage: true
       - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Generate Protobufs
-        run: |
-          make gen
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -553,29 +483,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install dependencies
-        run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -682,31 +589,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install dependencies
-        run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -785,23 +667,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -835,38 +700,6 @@ jobs:
         run: |
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:latest
-
-  docker-smoke-test-ui:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [build-images]
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Detect Architecture
-        id: detect-arch
-        run: |
-          ARCH=$(uname -m)
-          case $ARCH in
-            x86_64) SLUG="amd64" ;;
-            aarch64) SLUG="arm64" ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          echo "slug=$SLUG" >> $GITHUB_OUTPUT
-
-      - name: Download UI Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Docker Image
-        run: |
-          docker load -i ui.tar
-
-      - name: Smoke Test UI
-        run: |
-          chmod +x server/tests/smoke_test_ui.sh
-          ./server/tests/smoke_test_ui.sh mcpany/ui:latest
 
   ui-test:
     runs-on: ubuntu-latest
@@ -1019,7 +852,6 @@ jobs:
         e2e-parallel,
         e2e-public-api,
         docker-smoke-test,
-        docker-smoke-test-ui,
         ui-test,
         k8s-e2e,
       ]

@@ -121,11 +121,6 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		log.Warn("Store/Storage does not support saving defaults.")
 	}
 
-	// Initialize Service Templates
-	if err := a.seedTemplates(ctx, store); err != nil {
-		log.Error("Failed to seed service templates", "error", err)
-	}
-
 	// Initialize Admin User
 	if err := a.initializeAdminUser(ctx, store); err != nil {
 		log.Error("Failed to initialize admin user", "error", err)
@@ -190,32 +185,5 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 
 	logging.GetLogger().Info("Default admin user created successfully.", "username", username)
-	return nil
-}
-
-func (a *Application) seedTemplates(ctx context.Context, store config.Store) error {
-	s, ok := store.(storage.Storage)
-	if !ok {
-		return nil
-	}
-
-	// Check if templates already exist
-	templates, err := s.ListServiceTemplates(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to list templates: %w", err)
-	}
-
-	if len(templates) > 0 {
-		return nil
-	}
-
-	logging.GetLogger().Info("Seeding builtin service templates...", "count", len(BuiltinServiceTemplates))
-
-	for _, t := range BuiltinServiceTemplates {
-		if err := s.SaveServiceTemplate(ctx, t); err != nil {
-			return fmt.Errorf("failed to save template %s: %w", t.GetId(), err)
-		}
-	}
-
 	return nil
 }

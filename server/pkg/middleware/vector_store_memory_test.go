@@ -111,28 +111,21 @@ func TestVectorMath(t *testing.T) {
 	v := []float32{3.0, 4.0}
 	assert.Equal(t, float32(5.0), vectorNorm(v))
 
-	// normalize
-	normV, n := normalize(v)
-	assert.Equal(t, float32(5.0), n)
-	assert.Equal(t, []float32{0.6, 0.8}, normV)
-
-	// normalize zero vector
-	zeroV := []float32{0.0, 0.0}
-	normZero, nZero := normalize(zeroV)
-	assert.Equal(t, float32(0.0), nZero)
-	assert.Equal(t, zeroV, normZero)
-
-	// dotProduct (assuming normalized inputs for cosine similarity equivalent)
+	// cosineSimilarityOptimized
 	v1 := []float32{1.0, 0.0}
 	v2 := []float32{1.0, 0.0}
-	assert.Equal(t, float32(1.0), dotProduct(v1, v2))
+	norm1 := vectorNorm(v1)
+	norm2 := vectorNorm(v2)
+	assert.Equal(t, float32(1.0), cosineSimilarityOptimized(v1, v2, norm1, norm2))
 
 	v3 := []float32{0.0, 1.0}
-	assert.Equal(t, float32(0.0), dotProduct(v1, v3))
+	norm3 := vectorNorm(v3)
+	assert.Equal(t, float32(0.0), cosineSimilarityOptimized(v1, v3, norm1, norm3))
 
 	// Edge cases
-	assert.Equal(t, float32(0.0), dotProduct([]float32{}, []float32{}))
-	assert.Equal(t, float32(0.0), dotProduct(v1, []float32{1.0})) // Length mismatch
+	assert.Equal(t, float32(0.0), cosineSimilarityOptimized([]float32{}, []float32{}, 0, 0))
+	assert.Equal(t, float32(0.0), cosineSimilarityOptimized(v1, []float32{1.0}, norm1, 1.0)) // Length mismatch
+	assert.Equal(t, float32(0.0), cosineSimilarityOptimized(v1, v2, 0, norm2)) // Zero norm
 }
 
 func TestSimpleVectorStore_Concurrency(t *testing.T) {

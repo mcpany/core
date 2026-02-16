@@ -1903,34 +1903,6 @@ func (a *Application) runServerMode(
 	mux.Handle("/auth/oauth/initiate", authMiddleware(http.HandlerFunc(a.handleInitiateOAuth)))
 	mux.Handle("/auth/oauth/callback", authMiddleware(http.HandlerFunc(a.handleOAuthCallback)))
 
-	// Secrets API
-	mux.Handle("/api/v1/secrets", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			a.listSecretsHandler(w, r)
-		case http.MethodPost:
-			a.createSecretHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})))
-
-	mux.Handle("/api/v1/secrets/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Check for /reveal
-		if strings.HasSuffix(r.URL.Path, "/reveal") {
-			a.revealSecretHandler(w, r)
-			return
-		}
-		switch r.Method {
-		case http.MethodGet:
-			a.getSecretHandler(w, r)
-		case http.MethodDelete:
-			a.deleteSecretHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})))
-
 	// Credentials API
 	// Note: Standard mux doesn't handle methods nicely, so we route by path and check method in handler.
 	// We route /credentials to list (GET) and create (POST)

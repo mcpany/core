@@ -30,11 +30,6 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
-//
-// Summary: Filesystem upstream service implementation.
-//
-// It provides tools for interacting with various filesystem backends (local,
-// S3, GCS, etc.) as defined in the service configuration.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -43,10 +38,7 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
-// Summary: Initializes a new filesystem upstream.
-//
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -55,17 +47,9 @@ func NewUpstream() upstream.Upstream {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Summary: Shuts down the filesystem upstream.
+// _ is an unused parameter.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the shutdown operation (currently unused).
-//
-// Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Closes all registered filesystem providers.
+// Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -81,26 +65,17 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// Summary: Registers a filesystem service and its tools.
+// ctx is the context for the request.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// _ is an unused parameter.
+// _ is an unused parameter.
+// _ is an unused parameter.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the registration process.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration for the upstream service.
-//   - toolManager: tool.ManagerInterface. The manager where discovered tools will be registered.
-//   - _ prompt.ManagerInterface: Unused prompt manager.
-//   - _ resource.ManagerInterface: Unused resource manager.
-//   - _ bool: Unused reload flag.
-//
-// Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of registered tool definitions.
-//   - []*configv1.ResourceDefinition: Always nil.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Creates a filesystem provider.
-//   - Starts a health checker.
-//   - Registers tools with the tool manager.
+// Returns the result.
+// Returns the result.
+// Returns the result.
+// Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -217,16 +192,7 @@ type fsCallable struct {
 }
 
 // Call executes the filesystem tool with the provided request arguments.
-//
-// Summary: Executes a filesystem tool.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
-//
-// Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+// It returns the result of the tool execution or an error.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

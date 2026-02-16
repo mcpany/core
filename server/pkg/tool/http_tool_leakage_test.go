@@ -93,7 +93,7 @@ func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
 		// Check that the secret is NOT present
 		assert.NotContains(t, logOutput, "super_secret_value", "Log should NOT contain secret value")
 		// Check that it IS redacted (URL encoded)
-		assert.Contains(t, logOutput, "api_key=[REDACTED]", "Log should contain redacted secret")
+		assert.Contains(t, logOutput, "api_key=%5BREDACTED%5D", "Log should contain redacted secret")
 	} else {
 		t.Logf("Full Log Output:\n%s", logOutput)
 	}

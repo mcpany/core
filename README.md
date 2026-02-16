@@ -22,12 +22,8 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
 **Core Components:**
 
 1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
-2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration.
-3.  **Upstream Adapters**: Specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
-    *   **HTTP**: Proxies requests to REST/JSON APIs with powerful parameter mapping and transformation templates.
-    *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
-    *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
-    *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
+2.  **Service Registry**: A dynamic module that loads tool definitions from configuration files (local or remote/DB), supporting hot-reloading.
+3.  **Adapters**: Specialized modules that translate MCP tool execution requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
 
 ```mermaid
@@ -40,26 +36,18 @@ graph TD
         Registry -->|Policy| Auth[Authentication & Policy Engine]
     end
 
-    subgraph "Upstream Adapters"
-        Registry -->|Interface| Upstream[Upstream Interface]
-        Upstream -->|Impl| HTTP[HTTP Adapter]
-        Upstream -->|Impl| GRPC[gRPC Adapter]
-        Upstream -->|Impl| CMD[Command Adapter]
-        Upstream -->|Impl| FS[Filesystem Adapter]
-    end
-
     subgraph "Upstream Services"
-        HTTP -->|REST| ServiceB[REST API]
-        GRPC -->|gRPC| ServiceA[gRPC Service]
-        CMD -->|Exec| ServiceD[Local Command]
-        FS -->|IO| ServiceE[Filesystem]
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
     end
 ```
 
 **Design Patterns:**
 
-*   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
-*   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
+*   **Adapter Pattern**: Seamlessly translates MCP requests to various upstream protocols.
+*   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
 
 ## 3. Getting Started

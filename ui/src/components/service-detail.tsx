@@ -13,7 +13,7 @@ import { UpstreamServiceConfig, ToolDefinition, PromptDefinition, ResourceDefini
 import { apiClient } from "@/lib/client";
 import { OAuthStatusBanner } from './oauth-status-banner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp, Shield, Terminal } from "lucide-react";
+import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp, Shield } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 import { Switch } from "@/components/ui/switch";
@@ -29,7 +29,6 @@ import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
 import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
 import { PolicyEditor } from "@/components/safety/policy-editor";
 import { CallPolicy } from "@proto/config/v1/upstream_service";
-import { LogStream } from "@/components/logs/log-stream";
 
 /**
  * DefinitionsTable component.
@@ -347,10 +346,9 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="configuration"><Settings className="mr-2" />Configuration</TabsTrigger>
-                <TabsTrigger value="logs"><Terminal className="mr-2"/>Logs</TabsTrigger>
                 <TabsTrigger value="metrics"><TrendingUp className="mr-2"/>Metrics</TabsTrigger>
                 <TabsTrigger value="safety"><Shield className="mr-2"/>Safety</TabsTrigger>
             </TabsList>
@@ -409,9 +407,6 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
                 )}
 
                 <FileConfigCard service={service} />
-            </TabsContent>
-            <TabsContent value="logs" className="mt-4 h-[600px] border rounded-md">
-                <LogStream source={service.name} />
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">
                 <MetricsCard serviceId={serviceId} />

@@ -27,64 +27,9 @@ export function useTraces(options: UseTracesOptions = {}) {
     const isMountedRef = useRef(true);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // ⚡ BOLT: Buffer for batched updates to avoid main thread blocking
-    // Randomized Selection from Top 5 High-Impact Targets
-    const bufferRef = useRef<Trace[]>([]);
-
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
-
-    // ⚡ BOLT: Flush buffer periodically
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (bufferRef.current.length === 0) return;
-
-            // Take current buffer and clear it immediately
-            const buffer = bufferRef.current;
-            bufferRef.current = [];
-
-            setTraces((prev) => {
-                // ⚡ BOLT: Batched updates logic
-
-                // 1. Deduplicate buffer (last write wins)
-                const updatesMap = new Map<string, Trace>();
-                for (const t of buffer) {
-                    updatesMap.set(t.id, t);
-                }
-
-                // 2. Identify existing IDs for O(1) lookup
-                const existingIds = new Set(prev.map(t => t.id));
-
-                // 3. Separate new inserts from updates
-                const inserts: Trace[] = [];
-                const updatesForExisting = new Map<string, Trace>();
-
-                for (const t of updatesMap.values()) {
-                    if (existingIds.has(t.id)) {
-                        updatesForExisting.set(t.id, t);
-                    } else {
-                        inserts.push(t);
-                    }
-                }
-
-                // 4. Apply updates in-place to preserve order of existing items
-                const nextTraces = prev.map(t => {
-                    if (updatesForExisting.has(t.id)) {
-                        return updatesForExisting.get(t.id)!;
-                    }
-                    return t;
-                });
-
-                // 5. Prepend new inserts (newest first).
-                // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
-            });
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const connect = () => {
         if (!isMountedRef.current) return;
@@ -119,8 +64,16 @@ export function useTraces(options: UseTracesOptions = {}) {
             if (isPausedRef.current) return;
             try {
                 const trace: Trace = JSON.parse(event.data);
-                // ⚡ BOLT: Push to buffer instead of updating state directly
-                bufferRef.current.push(trace);
+                setTraces((prev) => {
+                    // Deduplicate by ID
+                    const index = prev.findIndex(t => t.id === trace.id);
+                    if (index !== -1) {
+                        const newTraces = [...prev];
+                        newTraces[index] = trace;
+                        return newTraces;
+                    }
+                    return [trace, ...prev];
+                });
             } catch (e) {
                 console.error("Failed to parse trace", e);
             }

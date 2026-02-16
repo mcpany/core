@@ -46,7 +46,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-	gitCommand          = "git"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -458,7 +457,6 @@ type HTTPTool struct {
 	policies          []*CompiledCallPolicy
 	callID            string
 	allowedParams     map[string]bool
-	secretParams      map[string]bool
 
 	// Cached fields for performance
 	initError            error
@@ -504,13 +502,6 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		resilienceManager: resilience.NewManager(cfg),
 		callID:            callID,
 		allowedParams:     make(map[string]bool, len(callDefinition.GetParameters())),
-		secretParams:      make(map[string]bool),
-	}
-
-	for _, param := range callDefinition.GetParameters() {
-		if param.GetSecret() != nil {
-			t.secretParams[param.GetSchema().GetName()] = true
-		}
 	}
 
 	compiled, err := CompileCallPolicies(policies)
@@ -650,7 +641,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	inputs, urlString, redactedURLString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
+	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -730,8 +721,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			bodyBytes = util.RedactJSON(bodyBytes)
 			bodyStr := string(bodyBytes)
 
-			// Sentinel Security Update: Redact secrets from URL in logs using pre-calculated redacted URL
-			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", redactedURLString)
+			// Sentinel Security Update: Redact secrets from URL in logs
+			logURL := t.redactURL(httpReq.URL)
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", logURL)
 
 			// Truncate body for the returned error message to prevent leaking large stack traces or extensive details to the user/LLM.
 			// We keep enough to likely identify the issue (e.g. "invalid argument").
@@ -805,12 +797,6 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 
 func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader) {
 	// Log headers
-	// Note: We use httpReq.URL.Path here which might contain secrets.
-	// However, logRequest is only called if debug logging is enabled.
-	// Debug logging assumes trusted access to logs.
-	// The critical fix is for error logging which might be more exposed or monitored.
-	// Ideally we should pass redacted URL here too, but it requires changing signature.
-	// Given debug constraint, we accept this risk for now, but note it.
 	var headerBuf bytes.Buffer
 	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
 	headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
@@ -835,7 +821,7 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 }
 
-func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, string, bool, error) {
+func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, bool, error) {
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
@@ -847,7 +833,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
-			return nil, "", "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
+			return nil, "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
 
@@ -862,57 +848,37 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
-		return nil, "", "", false, err
+		return nil, "", false, err
 	}
 	inputsModified = inputsModified || filtered
 
 	var pathBuf strings.Builder
-	var redactedPathBuf strings.Builder
-
 	for _, seg := range t.pathSegments {
 		if seg.isParam {
 			if val, ok := pathReplacements[seg.value]; ok {
 				pathBuf.WriteString(val)
-				if t.secretParams[seg.value] {
-					redactedPathBuf.WriteString(redactedPlaceholder)
-				} else {
-					redactedPathBuf.WriteString(val)
-				}
 			} else {
 				pathBuf.WriteString("{{" + seg.value + "}}")
-				redactedPathBuf.WriteString("{{" + seg.value + "}}")
 			}
 		} else {
 			pathBuf.WriteString(seg.value)
-			redactedPathBuf.WriteString(seg.value)
 		}
 	}
 	pathStr := pathBuf.String()
-	redactedPathStr := redactedPathBuf.String()
 
 	var queryBuf strings.Builder
-	var redactedQueryBuf strings.Builder
-
 	for _, seg := range t.querySegments {
 		if seg.isParam {
 			if val, ok := queryReplacements[seg.value]; ok {
 				queryBuf.WriteString(val)
-				if t.secretParams[seg.value] {
-					redactedQueryBuf.WriteString(redactedPlaceholder)
-				} else {
-					redactedQueryBuf.WriteString(val)
-				}
 			} else {
 				queryBuf.WriteString("{{" + seg.value + "}}")
-				redactedQueryBuf.WriteString("{{" + seg.value + "}}")
 			}
 		} else {
 			queryBuf.WriteString(seg.value)
-			redactedQueryBuf.WriteString(seg.value)
 		}
 	}
 	queryStr := queryBuf.String()
-	redactedQueryStr := redactedQueryBuf.String()
 
 	// Clean the path to resolve . and .. and //
 	// We do this on the encoded string to treat %2F as opaque characters
@@ -927,48 +893,28 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		pathStr += "/"
 	}
 
-	// Also clean redacted path to look consistent (though redaction might break structure, usually it's fine)
-	hadTrailingSlashRedacted := strings.HasSuffix(redactedPathStr, "/")
-	redactedPathStr = cleanPathPreserveDoubleSlash(redactedPathStr)
-	if hadTrailingSlashRedacted && (redactedPathStr != "/" || wasRootDoubleSlash) {
-		redactedPathStr += "/"
-	}
-
 	// Reconstruct URL string manually to avoid re-encoding
-	buildURL := func(pStr, qStr string, redactUser bool) string {
-		var buf strings.Builder
-		if t.cachedURL.Scheme != "" {
-			buf.WriteString(t.cachedURL.Scheme)
-			buf.WriteString("://")
-		}
-		if t.cachedURL.User != nil {
-			if redactUser {
-				if t.cachedURL.User.Username() != "" {
-					buf.WriteString(t.cachedURL.User.Username())
-					buf.WriteString(":" + redactedPlaceholder)
-					buf.WriteString("@")
-				}
-			} else {
-				buf.WriteString(t.cachedURL.User.String())
-				buf.WriteString("@")
-			}
-		}
-		buf.WriteString(t.cachedURL.Host)
-		if pStr != "" && !strings.HasPrefix(pStr, "/") {
-			buf.WriteString("/")
-		}
-		buf.WriteString(pStr)
-		if qStr != "" {
-			buf.WriteString("?")
-			buf.WriteString(qStr)
-		}
-		return buf.String()
+	var buf strings.Builder
+	if t.cachedURL.Scheme != "" {
+		buf.WriteString(t.cachedURL.Scheme)
+		buf.WriteString("://")
 	}
+	if t.cachedURL.User != nil {
+		buf.WriteString(t.cachedURL.User.String())
+		buf.WriteString("@")
+	}
+	buf.WriteString(t.cachedURL.Host)
+	if pathStr != "" && !strings.HasPrefix(pathStr, "/") {
+		buf.WriteString("/")
+	}
+	buf.WriteString(pathStr)
+	if queryStr != "" {
+		buf.WriteString("?")
+		buf.WriteString(queryStr)
+	}
+	urlString := buf.String()
 
-	urlString := buildURL(pathStr, queryStr, false)
-	redactedURLString := buildURL(redactedPathStr, redactedQueryStr, true)
-
-	return inputs, urlString, redactedURLString, inputsModified, nil
+	return inputs, urlString, inputsModified, nil
 }
 
 func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
@@ -1204,6 +1150,36 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
+// redactURL removes sensitive query parameters from the URL for logging.
+func (t *HTTPTool) redactURL(u *url.URL) string {
+	// Check if we have any secret parameters mapped
+	hasSecretParams := false
+	for _, param := range t.parameters {
+		if param.GetSecret() != nil {
+			hasSecretParams = true
+			break
+		}
+	}
+
+	if !hasSecretParams {
+		return u.String()
+	}
+
+	// Create a copy of the URL to avoid modifying the original
+	redactedURL := *u
+	q := redactedURL.Query()
+
+	for _, param := range t.parameters {
+		if param.GetSecret() != nil {
+			name := param.GetSchema().GetName()
+			if q.Has(name) {
+				q.Set(name, redactedPlaceholder)
+			}
+		}
+	}
+	redactedURL.RawQuery = q.Encode()
+	return redactedURL.String()
+}
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service. It acts as a proxy, forwarding the tool call to the
@@ -1876,8 +1852,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
-	commandName := t.service.GetCommand()
-
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -1885,7 +1859,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -1920,7 +1894,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
@@ -1944,7 +1918,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
+	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2001,7 +1975,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
@@ -2114,16 +2088,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		status = consts.CommandStatusError
 	}
 
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
-	redactor := util.NewSecretRedactor(secrets)
-
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          redactor.Redact(stdoutBuf.String()),
-		"stderr":          redactor.Redact(stderrBuf.String()),
-		"combined_output": redactor.Redact(combinedBuf.String()),
+		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
+		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
+		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
@@ -2206,8 +2176,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
-	commandName := t.service.GetCommand()
-
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -2215,8 +2183,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					// Use validateSafePathAndInjection which now centralizes all checks
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					if !isDocker {
+						if err := checkForLocalFileAccess(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -2251,8 +2226,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						// Use validateSafePathAndInjection which now centralizes all checks
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if !isDocker {
+							if err := checkForLocalFileAccess(argStr); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2268,7 +2250,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
+	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -2455,16 +2437,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		status = consts.CommandStatusError
 	}
 
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
-	redactor := util.NewSecretRedactor(secrets)
-
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          redactor.Redact(stdoutBuf.String()),
-		"stderr":          redactor.Redact(stderrBuf.String()),
-		"combined_output": redactor.Redact(combinedBuf.String()),
+		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
+		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
+		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
@@ -2873,7 +2851,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
 		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val, base); err != nil {
+			if err := checkInterpreterFunctionCalls(val); err != nil {
 				return err
 			}
 		}
@@ -2892,7 +2870,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			}
 			// Also check function calls for the detected interpreter context
 			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
+				if err := checkInterpreterFunctionCalls(val); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -2948,151 +2926,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func getCommentFeatures(language string) (bool, bool, bool) {
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		return true, false, false
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		return false, true, true
-	case "php":
-		return true, true, true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		return true, true, true
-	}
-}
-
-type commentStripper struct {
-	inLineComment  bool
-	inBlockComment bool
-	inSingle       bool
-	inDouble       bool
-	inBacktick     bool
-	escaped        bool
-	supportsHash   bool
-	supportsSlash  bool
-	supportsBlock  bool
-}
-
-func newCommentStripper(language string) *commentStripper {
-	h, s, b := getCommentFeatures(language)
-	return &commentStripper{
-		supportsHash:  h,
-		supportsSlash: s,
-		supportsBlock: b,
-	}
-}
-
-func (s *commentStripper) process(char, nextChar byte) (write bool, skipNext bool) {
-	if s.inLineComment {
-		if char == '\n' {
-			s.inLineComment = false
-			return true, false
-		}
-		return false, false
-	}
-	if s.inBlockComment {
-		if char == '*' && nextChar == '/' {
-			s.inBlockComment = false
-			return false, true
-		}
-		return false, false
-	}
-
-	if s.escaped {
-		s.escaped = false
-		return true, false
-	}
-
-	// Handle quotes
-	if s.handleQuotes(char) {
-		return true, false
-	}
-
-	// If inside quotes, handle escape char
-	if s.inSingle || s.inDouble || s.inBacktick {
-		if char == '\\' {
-			s.escaped = true
-			return true, false
-		}
-		return true, false
-	}
-
-	// Not in quotes, check for comments
-	if s.handleComments(char, nextChar) {
-		return false, s.inBlockComment || (s.inLineComment && s.supportsSlash && char == '/')
-	}
-
-	// Skip backslash (line continuation outside quotes)
-	if char == '\\' {
-		return false, false
-	}
-
-	return true, false
-}
-
-func (s *commentStripper) handleQuotes(char byte) bool {
-	if char == '\'' && !s.inDouble && !s.inBacktick {
-		s.inSingle = !s.inSingle
-		return true
-	}
-	if char == '"' && !s.inSingle && !s.inBacktick {
-		s.inDouble = !s.inDouble
-		return true
-	}
-	if char == '`' && !s.inSingle && !s.inDouble {
-		s.inBacktick = !s.inBacktick
-		return true
-	}
-	return false
-}
-
-func (s *commentStripper) handleComments(char, nextChar byte) bool {
-	if s.supportsHash && char == '#' {
-		s.inLineComment = true
-		return true
-	}
-	if (s.supportsSlash || s.supportsBlock) && char == '/' {
-		if s.supportsSlash && nextChar == '/' {
-			s.inLineComment = true
-			return true
-		}
-		if s.supportsBlock && nextChar == '*' {
-			s.inBlockComment = true
-			return true
-		}
-	}
-	return false
-}
-
-func stripInterpreterComments(val, language string) string {
-	var b strings.Builder
-	b.Grow(len(val))
-
-	s := newCommentStripper(language)
-
-	for i := 0; i < len(val); i++ {
-		char := val[i]
-		var nextChar byte
-		if i+1 < len(val) {
-			nextChar = val[i+1]
-		}
-
-		write, skip := s.process(char, nextChar)
-		if write {
-			b.WriteByte(char)
-		}
-		if skip {
-			i++
-		}
-	}
-	return b.String()
-}
-
-func checkInterpreterFunctionCalls(val, language string) error {
-	// Strip comments and line continuations first
-	val = stripInterpreterComments(val, language)
-
+func checkInterpreterFunctionCalls(val string) error {
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
 	b.Grow(len(val))
@@ -3130,9 +2964,6 @@ func checkInterpreterFunctionCalls(val, language string) error {
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
-	if err := checkTarInjection(val, base); err != nil {
-		return err
-	}
 	if err := checkPythonInjection(val, template, base); err != nil {
 		return err
 	}
@@ -3144,78 +2975,6 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	}
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
-	}
-	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
-		return err
-	}
-	return nil
-}
-
-func checkTarInjection(val, base string) error {
-	// Tar Injection Check
-	// Block RCE via --checkpoint-action and --to-command flags by detecting execution directives
-	// inside flag values.
-	isTar := base == "tar" || base == "gtar" || base == "bsdtar"
-	if isTar {
-		valLower := strings.ToLower(val)
-		// Check for execution directives commonly used in --checkpoint-action and --to-command
-		if strings.Contains(valLower, "exec=") || strings.Contains(valLower, "command=") {
-			return fmt.Errorf("tar injection detected: value contains execution directive")
-		}
-		// Also block checkpoint-action keyword itself if it somehow appears in value
-		if strings.Contains(valLower, "checkpoint-action") {
-			return fmt.Errorf("tar injection detected: value contains 'checkpoint-action'")
-		}
-	}
-	return nil
-}
-
-func checkSQLInjection(val, base string, quoteLevel int) error {
-	// SQL Injection Check
-	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
-	// we must prevent SQL injection by blocking SQL keywords.
-	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
-	if isSQL && quoteLevel == 0 {
-		// Block common SQL keywords and comment markers
-		// We check for keywords surrounded by word boundaries or at start/end of string.
-		// val is user input, e.g. "1 OR 1=1"
-		upperVal := strings.ToUpper(val)
-		keywords := []string{
-			"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
-			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
-			"--",
-		}
-
-		// Helper to check word boundary
-		isBoundary := func(r byte) bool {
-			return !isWordChar(r)
-		}
-
-		for _, kw := range keywords {
-			if kw == "--" {
-				if strings.Contains(upperVal, "--") {
-					return fmt.Errorf("SQL injection detected: value contains '--'")
-				}
-				continue
-			}
-
-			idx := strings.Index(upperVal, kw)
-			for idx != -1 {
-				// Check boundaries
-				startOk := idx == 0 || isBoundary(upperVal[idx-1])
-				endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
-
-				if startOk && endOk {
-					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
-				}
-				// Find next occurrence
-				nextIdx := strings.Index(upperVal[idx+1:], kw)
-				if nextIdx == -1 {
-					break
-				}
-				idx += 1 + nextIdx
-			}
-		}
 	}
 	return nil
 }
@@ -3407,7 +3166,6 @@ func isInterpreter(command string) bool {
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
-		"tar", "gtar", "bsdtar",
 	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
@@ -3534,18 +3292,9 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
-func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
+func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
-
-	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
-	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
-	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
-	if strings.Contains(val, "://") {
-		if err := validation.IsSafeURL(val); err != nil {
-			return fmt.Errorf("unsafe url argument: %w", err)
-		}
-	}
 
 	if err := checkForPathTraversal(val); err != nil {
 		return err
@@ -3578,101 +3327,5 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
-
-	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
-	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
-	// Blocking them for generic tools (like echo) causes false positives (usability regression).
-	if isVulnerableToSchemes(commandName) {
-		if err := checkForDangerousSchemes(val); err != nil {
-			return err
-		}
-		// Also check decoded value for dangerous schemes
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForDangerousSchemes(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func isVulnerableToSchemes(command string) bool {
-	base := strings.ToLower(filepath.Base(command))
-
-	// ImageMagick tools
-	magickTools := []string{
-		"convert", "mogrify", "identify", "composite", "compare", "stream",
-		"montage", "display", "animate", "import", "conjure", "magick",
-	}
-	for _, tool := range magickTools {
-		if base == tool {
-			return true
-		}
-	}
-
-	// FFmpeg tools
-	ffmpegTools := []string{"ffmpeg", "ffprobe", "ffplay"}
-	for _, tool := range ffmpegTools {
-		if base == tool {
-			return true
-		}
-	}
-
-	// Git
-	if base == gitCommand {
-		return true
-	}
-
-	// Interpreters (PHP, Expect) are handled by checkForShellInjection but
-	// if they are used as the main command, we might want to be extra careful.
-	// For now, let's stick to the ones that process "magic" files/URIs.
-
-	return false
-}
-
-func checkForDangerousSchemes(val string) error {
-	// Check for "scheme:..." pattern. Scheme must be at start.
-	// We look for the first colon.
-	idx := strings.Index(val, ":")
-	if idx == -1 {
-		return nil
-	}
-
-	// Extract scheme and convert to lower case
-	scheme := strings.ToLower(val[:idx])
-
-	// Validate scheme characters (alpha, digit, +, -, .) to prevent false positives on random colons
-	for _, r := range scheme {
-		if !((r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '+' || r == '-' || r == '.') {
-			return nil // Not a valid scheme pattern, likely just text with a colon
-		}
-	}
-
-	// Blocklist of dangerous schemes used for LFI, RCE, or SSRF in various tools
-	dangerous := map[string]bool{
-		// Generic / Interpreter
-		"file": true, "gopher": true, "expect": true, "php": true,
-		"zip": true, "jar": true, "war": true,
-
-		// ImageMagick (convert, mogrify, identify, etc.)
-		"mvg": true, "msl": true, "vid": true, "ephemeral": true,
-		"label": true, "text": true, "info": true, "pango": true,
-		"caption": true, "plasma": true, "xc": true, "inline": true,
-		"gradient": true, "pattern": true, "tile": true, "read": true,
-
-		// FFmpeg
-		"concat": true, "subfile": true, "crypto": true, "data": true,
-		"hls": true, "http": false, "https": false, // explicitly allowed (handled by IsSafeURL if :// present)
-		"ftp": true, "rtmp": true, "rtsp": true,
-
-		// Git
-		"ext": true, // Block git ext::
-	}
-
-	if dangerous[scheme] {
-		return fmt.Errorf("dangerous scheme detected: %s", scheme)
-	}
-
 	return nil
 }

@@ -590,17 +590,23 @@ func RedactDSN(dsn string) string {
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
-// SecretRedactor handles redaction of secrets from text.
-// It is optimized to pre-process the list of secrets once and reuse the configuration.
-type SecretRedactor struct {
-	replacer *strings.Replacer
-}
+// RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
+//
+// Parameters:
+//   - text: string. The text to redact.
+//   - secrets: []string. A list of secret values to redact from the text.
+//
+// Returns:
+//   - string: The redacted text.
+func RedactSecrets(text string, secrets []string) string {
+	if text == "" || len(secrets) == 0 {
+		return text
+	}
 
-// NewSecretRedactor creates a new SecretRedactor with the given secrets.
-// It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
-func NewSecretRedactor(secrets []string) *SecretRedactor {
-	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
+	// ⚡ BOLT: Optimization - Use strings.Replacer for O(T) replacement instead of O(S*T).
 	// Randomized Selection from Top 5 High-Impact Targets
+	// We sort secrets by length descending to ensure longer matches are prioritized
+	// (e.g. "accesstoken" is redacted before "token").
 
 	// Filter valid secrets and deduplicate
 	seen := make(map[string]bool)
@@ -613,11 +619,10 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 	}
 
 	if len(validSecrets) == 0 {
-		return &SecretRedactor{replacer: nil}
+		return text
 	}
 
-	// Sort by length descending to ensure longer matches are prioritized
-	// (e.g. "accesstoken" is redacted before "token").
+	// Sort by length descending to handle substring matches correctly
 	sort.Slice(validSecrets, func(i, j int) bool {
 		return len(validSecrets[i]) > len(validSecrets[j])
 	})
@@ -628,28 +633,5 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 		args = append(args, s, redactedPlaceholder)
 	}
 
-	return &SecretRedactor{
-		replacer: strings.NewReplacer(args...),
-	}
-}
-
-// Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
-func (r *SecretRedactor) Redact(text string) string {
-	if text == "" || r.replacer == nil {
-		return text
-	}
-	return r.replacer.Replace(text)
-}
-
-// RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
-//
-// Parameters:
-//   - text: string. The text to redact.
-//   - secrets: []string. A list of secret values to redact from the text.
-//
-// Returns:
-//   - string: The redacted text.
-func RedactSecrets(text string, secrets []string) string {
-	// Use the new struct-based implementation for consistency.
-	return NewSecretRedactor(secrets).Redact(text)
+	return strings.NewReplacer(args...).Replace(text)
 }

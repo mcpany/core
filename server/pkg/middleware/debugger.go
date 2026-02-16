@@ -222,8 +222,8 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			Path:            r.URL.Path,
 			Status:          blw.status,
 			Duration:        duration,
-			RequestHeaders:  redactHeaders(r.Header),
-			ResponseHeaders: redactHeaders(blw.Header()),
+			RequestHeaders:  r.Header,
+			ResponseHeaders: blw.Header(),
 			RequestBody:     reqBody,
 			ResponseBody:    respBody,
 		}
@@ -273,23 +273,4 @@ func (d *Debugger) APIHandler() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(d.Entries())
 	}
-}
-
-var sensitiveHeaders = map[string]struct{}{
-	"Authorization": {},
-	"Cookie":        {},
-	"Set-Cookie":    {},
-	"X-Api-Key":     {},
-}
-
-func redactHeaders(headers http.Header) http.Header {
-	newHeaders := make(http.Header)
-	for k, v := range headers {
-		if _, ok := sensitiveHeaders[http.CanonicalHeaderKey(k)]; ok {
-			newHeaders[k] = []string{"[REDACTED]"}
-		} else {
-			newHeaders[k] = v
-		}
-	}
-	return newHeaders
 }

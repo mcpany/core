@@ -87,7 +87,6 @@ jobs:
             --repo ${{ github.repository }} \
             --base main \
             --search "is:pr is:open author:@me sort:updated-desc" \
-            --limit 1000 \
             --json number \
             --jq '.[].number' | \
           while read pr_number; do
@@ -99,7 +98,7 @@ jobs:
             success=false
 
             while [ $retry_count -lt $max_retries ]; do
-              if gh pr merge $pr_number --squash --auto --repo ${{ github.repository }}; then
+              if gh pr merge $pr_number --squash --repo ${{ github.repository }}; then
                 success=true
                 echo "Successfully merged PR #$pr_number"
                 break

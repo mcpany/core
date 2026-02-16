@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	armonmetrics "github.com/armon/go-metrics"
@@ -223,18 +222,10 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 	// e.g. "myservice:service:ip:1.2.3.4"
 	// e.g. "myservice:tool:myTool:ip:1.2.3.4"
 
-	// ⚡ BOLT: Optimization to reduce allocations in hot path.
-	// Randomized Selection from Top 5 High-Impact Targets
-	var sb strings.Builder
-	sb.Grow(len(serviceID) + len(limitScopeKey) + len(partitionKey) + 2)
-	sb.WriteString(serviceID)
-	sb.WriteString(":")
-	sb.WriteString(limitScopeKey)
+	cacheKey := serviceID + ":" + limitScopeKey
 	if partitionKey != "" {
-		sb.WriteString(":")
-		sb.WriteString(partitionKey)
+		cacheKey = cacheKey + ":" + partitionKey
 	}
-	cacheKey := sb.String()
 
 	storageType := config.GetStorage()
 	strategy, ok := m.strategies[storageType]

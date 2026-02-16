@@ -26,7 +26,6 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 type Redactor struct {
-	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
 }
 
@@ -42,38 +41,17 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	}
 
 	// Separate custom patterns from default ones for optimized processing
-	var validPatterns []string
-	var individualPatterns []*regexp.Regexp
-
+	var customPatterns []*regexp.Regexp
 	for _, p := range config.GetCustomPatterns() {
 		if r, err := regexp.Compile(p); err == nil {
-			// Wrap in non-capturing group to isolate alternatives
-			validPatterns = append(validPatterns, "(?:"+p+")")
-			individualPatterns = append(individualPatterns, r)
+			customPatterns = append(customPatterns, r)
 		} else if log != nil {
 			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
-	var combined *regexp.Regexp
-	if len(validPatterns) > 0 {
-		// ⚡ BOLT: Combined multiple regex patterns into a single pass for O(1) execution overhead relative to pattern count.
-		// Randomized Selection from Top 5 High-Impact Targets
-		combinedStr := strings.Join(validPatterns, "|")
-		var err error
-		combined, err = regexp.Compile(combinedStr)
-		if err != nil {
-			if log != nil {
-				// This can happen if patterns contain duplicate named capture groups across different patterns
-				log.Warn("Failed to compile combined DLP pattern, falling back to individual checks", "error", err)
-			}
-			combined = nil
-		}
-	}
-
 	return &Redactor{
-		customPattern:  combined,
-		customPatterns: individualPatterns,
+		customPatterns: customPatterns,
 	}
 }
 
@@ -97,7 +75,7 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		// If we have no custom patterns, we can skip unmarshaling if the raw bytes
 		// (including quotes) don't contain indicators of PII: '@', digits, or escapes.
 		// This avoids expensive json.Unmarshal for the vast majority of safe strings.
-		if r.customPattern == nil && len(r.customPatterns) == 0 {
+		if len(r.customPatterns) == 0 {
 			hasIndicator := false
 			// Check for '@' and '\' first using optimized SIMD scan
 			if bytes.IndexByte(raw, '@') != -1 || bytes.IndexByte(raw, '\\') != -1 {
@@ -192,12 +170,8 @@ func (r *Redactor) RedactString(s string) string {
 	}
 
 	// Always run custom patterns as we don't know their characteristics
-	if r.customPattern != nil {
-		res = r.customPattern.ReplaceAllString(res, redactedStr)
-	} else {
-		for _, p := range r.customPatterns {
-			res = p.ReplaceAllString(res, redactedStr)
-		}
+	for _, p := range r.customPatterns {
+		res = p.ReplaceAllString(res, redactedStr)
 	}
 	return res
 }
