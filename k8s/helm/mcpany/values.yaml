@@ -40,6 +40,11 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# Environment variables to pass to the mcpany server
+env: {}
+  # MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: "true"
+  # MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
+
 service:
   type: ClusterIP
   jsonrpcPort: 50050
