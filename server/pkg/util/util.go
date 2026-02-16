@@ -277,6 +277,15 @@ func init() {
 // Summary: Constant for "true" string.
 const TrueStr = "true"
 
+// IsEnvTrue checks if an environment variable is set to a truthy value.
+// It handles "true", "1", and quoted variants, case-insensitive.
+//
+// Summary: Robust boolean environment variable check.
+func IsEnvTrue(key string) bool {
+	val := strings.TrimSpace(strings.ToLower(os.Getenv(key)))
+	return val == "true" || val == "1" || val == "\"true\"" || val == "'true'"
+}
+
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Summary: Generates a random UUID.
