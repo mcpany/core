@@ -3333,12 +3333,10 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
-	// Sentinel Security Update: Space is only dangerous for Shells, not for Interpreters when using exec.Command
+	// Sentinel Security Update: Block common shell metacharacters.
+	// Note: We do NOT block space (' ') because CommandTool uses exec.Command which handles arguments separately.
+	// Blocking space would prevent valid arguments like 'hello world' or JSON payloads.
 	dangerousChars := ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
-	if isShell {
-		dangerousChars += " "
-	}
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
