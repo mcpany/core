@@ -1132,7 +1132,7 @@ func TestHandleAuditExport(t *testing.T) {
 	app, _ := setupApiTestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 
-	dbPath := "./audit_test_export.db"
+	dbPath := "./audit_test_export.dat"
 	defer os.Remove(dbPath)
 
 	sqliteStore, err := audit.NewSQLiteAuditStore(dbPath)
@@ -1209,6 +1209,11 @@ func TestHandleInitiateOAuth(t *testing.T) {
 }
 
 func TestHandleLogsWS(t *testing.T) {
+	// Isolate GlobalBroadcaster for this test to avoid pollution from other tests running in parallel
+	originalBroadcaster := logging.GlobalBroadcaster
+	logging.GlobalBroadcaster = logging.NewBroadcaster()
+	defer func() { logging.GlobalBroadcaster = originalBroadcaster }()
+
 	app := &Application{}
 	handler := app.handleLogsWS()
 	ts := httptest.NewServer(handler)

@@ -162,7 +162,11 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+		if [ -f "./ui/package-lock.json" ]; then \
+			cd ui && npm ci --prefer-offline --no-audit; \
+		else \
+			cd ui && npm install --prefer-offline --no-audit; \
+		fi; \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \

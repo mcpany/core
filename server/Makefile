@@ -348,7 +348,9 @@ prepare:
 		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
 		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		for i in 1 2 3; do \
+			curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5 && break || sleep 5; \
+		done; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
