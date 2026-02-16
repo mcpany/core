@@ -181,11 +181,13 @@ func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, boo
 
 // skipWhitespace returns the index of the first non-whitespace character starting from start.
 func skipWhitespace(input []byte, start int) int {
+	// ⚡ BOLT: Optimized whitespace skipping using lookup table to reduce branching.
+	// Randomized Selection from Top 5 High-Impact Targets
 	i := start
 	n := len(input)
 	for i < n {
 		c := input[i]
-		if c == ' ' || c == '\n' || c == '\t' || c == '\r' {
+		if isJSONWhitespace[c] {
 			i++
 			continue
 		}
