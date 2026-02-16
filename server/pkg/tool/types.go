@@ -3403,10 +3403,17 @@ func checkTarInjection(val, base string) error {
 
 func checkSQLInjection(val, base string, quoteLevel int) error {
 	// SQL Injection Check
-	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
+	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0) or double quoted (Level 1),
 	// we must prevent SQL injection by blocking SQL keywords.
 	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
-	if isSQL && quoteLevel == 0 {
+	if isSQL && quoteLevel <= 1 {
+		// Sentinel Security Update: Block single quotes inside double-quoted or unquoted SQL arguments.
+		// Single quotes are used to delimit strings in SQL. Injecting them allows breaking out of string literals
+		// and injecting malicious SQL commands.
+		if strings.Contains(val, "'") {
+			return fmt.Errorf("SQL injection detected: value contains single quote")
+		}
+
 		// Block common SQL keywords and comment markers
 		// We check for keywords surrounded by word boundaries or at start/end of string.
 		// val is user input, e.g. "1 OR 1=1"
