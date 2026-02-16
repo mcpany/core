@@ -396,3 +396,44 @@ upstream_services:
 	// Expect the new helpful error message
 	assert.Contains(t, err.Error(), "without a 'service_config' wrapper")
 }
+
+func TestApplySortedEnvVars(t *testing.T) {
+	m := make(map[string]interface{})
+	// Mock proto message - using GlobalSettings is easiest
+	v := configv1.GlobalSettings_builder{}.Build()
+
+	// Pre-sorted environment variables
+	sortedEnv := []string{
+		"IGNORE_THIS=foo",
+		"MCPANY__GLOBAL_SETTINGS__API_KEY=test-key",
+		"MCPANY__GLOBAL_SETTINGS__LOG_LEVEL=debug",
+		"MCPANY__UNRELATED=bar",
+	}
+
+	applySortedEnvVars(m, sortedEnv, v)
+
+	// Verify map population
+	gs, ok := m["global_settings"].(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "test-key", gs["api_key"])
+	assert.Equal(t, "debug", gs["log_level"])
+}
+
+func TestApplySortedEnvVars_ListHandling(t *testing.T) {
+	m := make(map[string]interface{})
+	// User has a repeated field ProfileIds
+	v := configv1.User_builder{}.Build()
+
+	sortedEnvValid := []string{
+		`MCPANY__PROFILE_IDS=["a","b","c"]`,
+	}
+	// We need to initialize the proto message for type inspection inside applySortedEnvVars (resolveEnvValue)
+	// resolveEnvValue uses 'v' to check types.
+	applySortedEnvVars(m, sortedEnvValid, v)
+
+	// Expect slice
+	pids, ok := m["profile_ids"].([]interface{})
+	require.True(t, ok)
+	assert.Len(t, pids, 3)
+	assert.Equal(t, "a", pids[0])
+}
