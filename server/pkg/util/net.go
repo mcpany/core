@@ -165,6 +165,7 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // It uses a custom Transport backed by SafeDialer.
 //
 // Configuration is loaded from environment variables:
+//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow all local connections (loopback, private).
 //   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
 //
@@ -172,6 +173,10 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
 	}
