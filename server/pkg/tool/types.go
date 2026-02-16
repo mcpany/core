@@ -3359,16 +3359,28 @@ func checkPythonInjection(val, template, base string) error {
 }
 
 func checkRubyInjection(val, base string, quoteLevel int) error {
+	if !strings.HasPrefix(base, "ruby") {
+		return nil
+	}
+
 	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
+	if quoteLevel == 1 || quoteLevel == 3 { // Double Quoted or Backticked
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
-		// Block leading pipe | to prevent open("|cmd") injection
+	}
+
+	// Sentinel Security Update:
+	// Block leading pipe | to prevent open("|cmd") injection.
+	// This works in single quotes (level 2) as well, because open('|cmd') executes cmd.
+	// It works in double quotes (level 1) and backticks (level 3) too.
+	// We check for levels 1, 2, 3. Level 0 is blocked by unquoted checks.
+	if quoteLevel >= 1 && quoteLevel <= 3 {
 		if strings.HasPrefix(strings.TrimSpace(val), "|") {
 			return fmt.Errorf("ruby open injection detected: value starts with '|'")
 		}
 	}
+
 	return nil
 }
 
@@ -3408,6 +3420,15 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		if quoteLevel == 1 || quoteLevel == 3 {
 			if strings.Contains(val, "@{") {
 				return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
+			}
+		}
+
+		// Sentinel Security Update:
+		// Block leading pipe | to prevent open(FH, "|cmd") injection in Perl.
+		// This works in single quotes (level 2) as well.
+		if quoteLevel >= 1 && quoteLevel <= 3 {
+			if strings.HasPrefix(strings.TrimSpace(val), "|") {
+				return fmt.Errorf("perl open injection detected: value starts with '|'")
 			}
 		}
 	}
