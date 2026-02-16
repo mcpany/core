@@ -24,6 +24,7 @@ export default defineConfig({
       '@proto/config/v1/tool': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
       '@proto/config/v1/resource': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
       '@proto/config/v1/prompt': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/config/v1/call': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
       '@proto/admin/v1/admin': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
     },
   },
