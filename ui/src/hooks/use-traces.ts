@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Trace } from "@/types/trace";
 
 interface UseTracesOptions {
@@ -18,7 +18,14 @@ interface UseTracesOptions {
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
 export function useTraces(options: UseTracesOptions = {}) {
-    const [traces, setTraces] = useState<Trace[]>([]);
+    // ⚡ BOLT: Switched to Map for O(1) updates and efficient deduplication.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const [traceMap, setTraceMap] = useState<Map<string, Trace>>(new Map());
+
+    // Derived state: Convert map to array and reverse for newest-first display.
+    // This is still O(N) but avoids the O(N) deduplication steps in the update loop.
+    const traces = useMemo(() => Array.from(traceMap.values()).reverse(), [traceMap]);
+
     const [loading, setLoading] = useState(true);
     const [isConnected, setIsConnected] = useState(false);
     const [isPaused, setIsPaused] = useState(options.initialPaused || false);
@@ -44,42 +51,22 @@ export function useTraces(options: UseTracesOptions = {}) {
             const buffer = bufferRef.current;
             bufferRef.current = [];
 
-            setTraces((prev) => {
-                // ⚡ BOLT: Batched updates logic
+            setTraceMap((prev) => {
+                // Optimization: Map cloning is O(N) but faster than multiple array allocs.
+                // V8 optimizes Map cloning.
+                const next = new Map(prev);
 
-                // 1. Deduplicate buffer (last write wins)
-                const updatesMap = new Map<string, Trace>();
                 for (const t of buffer) {
-                    updatesMap.set(t.id, t);
+                    // Map preserves insertion order for new keys.
+                    // For existing keys, it updates value in-place without moving key.
+                    // This means:
+                    // - New traces (from buffer) are appended to the end of the Map.
+                    // - Updated traces (from buffer) stay in their original position.
+                    // When we reverse the array later, new traces appear at the top,
+                    // and updated traces stay where they were relative to others.
+                    next.set(t.id, t);
                 }
-
-                // 2. Identify existing IDs for O(1) lookup
-                const existingIds = new Set(prev.map(t => t.id));
-
-                // 3. Separate new inserts from updates
-                const inserts: Trace[] = [];
-                const updatesForExisting = new Map<string, Trace>();
-
-                for (const t of updatesMap.values()) {
-                    if (existingIds.has(t.id)) {
-                        updatesForExisting.set(t.id, t);
-                    } else {
-                        inserts.push(t);
-                    }
-                }
-
-                // 4. Apply updates in-place to preserve order of existing items
-                const nextTraces = prev.map(t => {
-                    if (updatesForExisting.has(t.id)) {
-                        return updatesForExisting.get(t.id)!;
-                    }
-                    return t;
-                });
-
-                // 5. Prepend new inserts (newest first).
-                // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                return next;
             });
         }, 100);
 
@@ -157,10 +144,10 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
     }, []);
 
-    const clearTraces = () => setTraces([]);
+    const clearTraces = () => setTraceMap(new Map());
 
     const refresh = () => {
-        setTraces([]);
+        setTraceMap(new Map());
         connect();
     };
 
