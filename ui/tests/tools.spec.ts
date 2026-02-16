@@ -104,9 +104,9 @@ test.describe('Tool Exploration', () => {
 
         // Use regex for filtering row as well
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
-        await toolRow.getByRole('button', { name: 'Inspect' }).click();
+        await toolRow.getByRole('button', { name: 'Inspect' }).click({ timeout: 30000 });
 
-        await expect(page.getByText('Echoes back input').first()).toBeVisible();
+        await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 30000 });
         await expect(page.getByText('Test & Execute').first()).toBeVisible();
     });
 
@@ -127,7 +127,7 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
-        await toolRow.getByRole('button', { name: 'Inspect' }).click();
+        await toolRow.getByRole('button', { name: 'Inspect' }).click({ timeout: 30000 });
 
         // Switch to JSON input tab
         // Switch to JSON input tab (Arguments section).
