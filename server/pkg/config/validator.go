@@ -820,8 +820,14 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 			}
 
 			if stdioConn.GetWorkingDirectory() != "" {
-				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
-					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
+				if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+					if err := validation.IsSecurePath(stdioConn.GetWorkingDirectory()); err != nil {
+						return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
+					}
+				} else {
+					if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
+						return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
+					}
 				}
 				if err := validateDirectoryExists(ctx, stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection working_directory validation failed: %w", err)
@@ -837,8 +843,14 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 		if bundleConn.GetBundlePath() == "" {
 			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
 		}
-		if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
-			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
+		if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+			if err := validation.IsSecurePath(bundleConn.GetBundlePath()); err != nil {
+				return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
+			}
+		} else {
+			if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
+				return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
+			}
 		}
 		if err := validateSecretMap(ctx, bundleConn.GetEnv()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
