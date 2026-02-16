@@ -980,6 +980,7 @@ jobs:
 
   ci-success:
     runs-on: oci-runner # ubuntu-slim
+    timeout-minutes: 10
     needs:
       [
         build-images,
