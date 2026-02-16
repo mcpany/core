@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -52,17 +53,10 @@ func TestOperatorE2E(t *testing.T) {
 		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
-	// 4. Get a free port for the host side of NodePort
-	hostPort, err := getFreePort()
-	if err != nil {
-		t.Fatalf("Failed to get free port: %v", err)
-	}
-	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
-
-	// 5. Create Kind Cluster
+	// 5. Create Kind Cluster with random host port
 	t.Logf("Creating Kind cluster %s...", clusterName)
-	// Generate temporary kind config with port mapping
-	kindConfigContent := fmt.Sprintf(`kind: Cluster
+	// Generate temporary kind config with port mapping (hostPort: 0 means random)
+	kindConfigContent := `kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
   ipFamily: ipv4
@@ -70,18 +64,37 @@ nodes:
 - role: control-plane
   extraPortMappings:
   - containerPort: 30000
-    hostPort: %d
+    hostPort: 0
     listenAddress: "0.0.0.0"
     protocol: TCP
-`, hostPort)
+`
 	tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
 	if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "5m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
+
+	// Resolve the assigned host port
+	// "docker port mcp-e2e-control-plane 30000" returns "0.0.0.0:32768"
+	out, err := exec.CommandContext(ctx, "docker", "port", clusterName+"-control-plane", "30000").Output()
+	if err != nil {
+		t.Fatalf("Failed to get mapped port: %v", err)
+	}
+	portStr := strings.TrimSpace(string(out))
+	// Parse port from "0.0.0.0:32768" or "127.0.0.1:32768"
+	parts := strings.Split(portStr, ":")
+	if len(parts) < 2 {
+		t.Fatalf("Invalid port output: %s", portStr)
+	}
+	hostPortStr := parts[len(parts)-1]
+	hostPort, err := strconv.Atoi(hostPortStr)
+	if err != nil {
+		t.Fatalf("Failed to parse port %s: %v", hostPortStr, err)
+	}
+	t.Logf("Resolved host port %d for UI access", hostPort)
 
 	// 6. Build Images (Locally)
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
