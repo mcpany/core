@@ -108,26 +108,20 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	msgCopy := make([]byte, len(msg))
 	copy(msgCopy, msg)
 
-	// 1. Update history (Exclusive Lock)
-	b.mu.Lock()
-	// ⚡ BOLT: Ring Buffer Optimization
+	// ⚡ BOLT: Optimization - Use slice for subscribers but hold exclusive Lock to ensure ordering.
 	// Randomized Selection from Top 5 High-Impact Targets
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	// Update history
 	b.history[b.head] = msgCopy
 	b.head++
 	if b.head >= b.limit {
 		b.head = 0
 		b.full = true
 	}
-	b.mu.Unlock()
 
-	// 2. Iterate subscribers (Shared Lock)
-	// This allows multiple Broadcast calls to proceed in parallel, reducing contention.
-	// It also prevents Unsubscribe from closing channels while we are iterating.
-	// ⚡ BOLT: Optimized concurrent broadcasting using RLock.
-	// Randomized Selection from Top 5 High-Impact Targets
-	b.mu.RLock()
-	defer b.mu.RUnlock()
-
+	// Broadcast to subscribers
 	for _, ch := range b.subscribers {
 		select {
 		case ch <- msgCopy:
