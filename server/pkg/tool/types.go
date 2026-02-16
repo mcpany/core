@@ -3360,11 +3360,16 @@ func checkPythonInjection(val, template, base string) error {
 
 func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Ruby: #{...} works in double quotes AND backticks
-	if strings.HasPrefix(base, "ruby") && (quoteLevel == 1 || quoteLevel == 3) { // Double Quoted or Backticked
-		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+	if strings.HasPrefix(base, "ruby") {
+		if quoteLevel == 1 || quoteLevel == 3 { // Double Quoted or Backticked
+			if strings.Contains(val, "#{") {
+				return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+			}
 		}
+
 		// Block leading pipe | to prevent open("|cmd") injection
+		// This applies to ALL contexts (unquoted, single, double, backtick) because
+		// Ruby's open() executes commands if the string starts with |, regardless of how the string was constructed.
 		if strings.HasPrefix(strings.TrimSpace(val), "|") {
 			return fmt.Errorf("ruby open injection detected: value starts with '|'")
 		}
