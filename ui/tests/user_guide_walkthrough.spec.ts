@@ -18,6 +18,11 @@ test.describe('User Guide Walkthrough', () => {
         });
     });
 
+    // Mock other dashboard endpoints to ensure stability
+    await page.route('**/api/v1/dashboard/health', async route => await route.fulfill({ json: [] }));
+    await page.route('**/api/v1/dashboard/top-tools', async route => await route.fulfill({ json: [] }));
+    await page.route('**/api/v1/dashboard/traffic**', async route => await route.fulfill({ json: [] }));
+
     await page.goto('/');
     // Check for "Total Requests" card
     // Increased timeout to 30s to handle slow CI environments

@@ -104,6 +104,8 @@ test.describe('OAuth Flow Integration', () => {
     await expect(page.getByText('Select Credential for Testing')).toBeVisible({ timeout: 15 * 1000 });
 
     await page.getByRole('combobox').click({ force: true });
+    // Wait for the dropdown (listbox) to be visible to avoid flaky clicks
+    await expect(page.getByRole('listbox')).toBeVisible({ timeout: 5000 });
     await page.getByRole('option', { name: 'GitHub OAuth' }).click({ force: true });
 
     await page.getByRole('button', { name: 'Connect with OAuth' }).click({ force: true });
