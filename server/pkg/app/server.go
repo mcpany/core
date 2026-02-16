@@ -2306,7 +2306,7 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			r = r.WithContext(ctx)
 			apiKey := a.SettingsManager.GetAPIKey()
 			requestKey := r.Header.Get("X-API-Key")
-			logging.GetLogger().Info("DEBUG: AuthMiddleware details", "configured_key", apiKey, "request_key", requestKey, "path", r.URL.Path)
+			logging.GetLogger().Debug("AuthMiddleware details", "configured_key_present", apiKey != "", "request_key_present", requestKey != "", "path", r.URL.Path)
 			authenticated := false
 
 			// 1. Check Global API Key
@@ -2350,36 +2350,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			}
 
 			if authenticated {
-				// Sentinel Security: Enforce Admin Role for global endpoints
-				// Unless the endpoint is specifically exempted (like /mcp/u/ which has its own auth).
-				// But /mcp/u/ is NOT wrapped by this middleware in the mux because it is registered via HandleFunc on mux directly,
-				// and this middleware is applied to specific handlers or wrapped manually.
-				// However, createAuthMiddleware IS used to wrap the root handler "/" and "/api/v1/".
-				// So we enforce admin role here to prevent privilege escalation via the root endpoint.
-
-				// Check for 'admin' role
-				roles, ok := auth.RolesFromContext(ctx)
-				hasAdmin := false
-				if ok {
-					for _, r := range roles {
-						if r == "admin" {
-							hasAdmin = true
-							break
-						}
-					}
-				}
-
-				if !hasAdmin {
-					// Check if this is a path that allows non-admin access?
-					// Currently, only /mcp/u/ allows non-admin, but it doesn't use this middleware instance (it handles auth internally).
-					// /auth/login is exempted above.
-					// So everything protected by this middleware instance SHOULD be admin-only.
-					user, _ := auth.UserFromContext(ctx)
-					logging.GetLogger().Warn("Forbidden: Global access requires admin role", "user", user, "path", r.URL.Path)
-					http.Error(w, "Forbidden: Admin role required", http.StatusForbidden)
-					return
-				}
-
 				next.ServeHTTP(w, r.WithContext(ctx))
 				return
 			}
@@ -2415,6 +2385,48 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+// handleRoot returns the handler for the root path ("/") which serves both the UI and the JSON-RPC endpoint.
+// It includes security checks to prevent privilege escalation on the JSON-RPC endpoint.
+func (a *Application) handleRoot(next http.Handler, wrappedGrpc *grpcweb.WrappedGrpcServer, uiPath string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
+			wrappedGrpc.ServeHTTP(w, r)
+			return
+		}
+
+		// UI Routing for root path (GET only for index.html)
+		// We allow non-admins to access the UI shell so they can login.
+		if r.URL.Path == "/" && uiPath != "" && r.Method == http.MethodGet {
+			http.ServeFile(w, r, filepath.Join(uiPath, "index.html"))
+			return
+		}
+
+		// Fallback to JSON-RPC handler (for API calls at root or SSE)
+		// Sentinel Security: Enforce Admin Role for global JSON-RPC endpoint
+		// This prevents non-admin users (e.g. guests) from executing tools via the root endpoint,
+		// bypassing profile restrictions.
+		roles, ok := auth.RolesFromContext(r.Context())
+		hasAdmin := false
+		if ok {
+			for _, r := range roles {
+				if r == "admin" {
+					hasAdmin = true
+					break
+				}
+			}
+		}
+
+		if !hasAdmin {
+			user, _ := auth.UserFromContext(r.Context())
+			logging.GetLogger().Warn("Forbidden: Global JSON-RPC access requires admin role", "user", user, "path", r.URL.Path)
+			http.Error(w, "Forbidden: Admin role required for global endpoint", http.StatusForbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // HTTPRequestContextMiddleware injects the HTTP request into the context.
