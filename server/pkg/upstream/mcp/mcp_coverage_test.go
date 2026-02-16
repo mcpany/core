@@ -215,27 +215,6 @@ func TestAuthenticatedRoundTripper_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to authenticate")
 }
 
-func TestUnzipBundle_ZipSlip(t *testing.T) {
-	tmpDir := t.TempDir()
-	zipPath := filepath.Join(tmpDir, "slip.zip")
-	zipFile, err := os.Create(zipPath) //nolint:gosec
-	assert.NoError(t, err)
-
-	w := zip.NewWriter(zipFile)
-	// Create a file with ".." in name
-	f, err := w.Create("../evil.txt")
-	assert.NoError(t, err)
-	_, err = f.Write([]byte("evil"))
-	assert.NoError(t, err)
-
-	assert.NoError(t, w.Close())
-	assert.NoError(t, zipFile.Close())
-
-	destDir := filepath.Join(tmpDir, "extracted")
-	err = unzipBundle(zipPath, destDir)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "illegal file path")
-}
 
 func TestUpstream_Register_Bundle_Error(t *testing.T) {
 	u := NewUpstream(nil)

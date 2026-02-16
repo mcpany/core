@@ -229,7 +229,12 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	return u.processMCPItems(ctx, serviceID, listToolsResult, bundleConn, bundleConn, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
-func unzipBundle(src, dest string) error {
+type unzipOptions struct {
+	MaxTotalSize int64
+	MaxFileSize  int64
+}
+
+func unzipBundle(src, dest string, opts ...unzipOptions) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
@@ -252,7 +257,17 @@ func unzipBundle(src, dest string) error {
 	}
 
 	var totalBytes int64
-	const maxTotalSize = 5 * 1024 * 1024 * 1024 // 5GB
+	maxTotalSize := int64(5 * 1024 * 1024 * 1024) // 5GB default
+	maxFileSize := int64(1 * 1024 * 1024 * 1024)  // 1GB default
+
+	if len(opts) > 0 {
+		if opts[0].MaxTotalSize > 0 {
+			maxTotalSize = opts[0].MaxTotalSize
+		}
+		if opts[0].MaxFileSize > 0 {
+			maxFileSize = opts[0].MaxFileSize
+		}
+	}
 
 	for _, f := range r.File {
 		// Join path and resolve absolute path
@@ -287,9 +302,7 @@ func unzipBundle(src, dest string) error {
 			return err
 		}
 
-		// Mitigate G110: Decompression bomb. Limit max file size to 1GB.
-		const maxFileSize = 1 * 1024 * 1024 * 1024 // 1GB
-
+		// Mitigate G110: Decompression bomb.
 		// Use io.LimitReader to prevent reading more than maxFileSize.
 		// We read up to maxFileSize bytes.
 		n, err := io.Copy(outFile, io.LimitReader(rc, maxFileSize))
