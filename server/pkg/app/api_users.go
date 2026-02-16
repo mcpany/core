@@ -19,6 +19,15 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// handleUsers returns an HTTP handler for listing and creating users.
+//
+// Summary: Manages the collection of users.
+//
+// Parameters:
+//   - store: storage.Storage. The storage interface for user persistence.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Authorization: Only admins can list or create users
@@ -116,6 +125,15 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleUserDetail returns an HTTP handler for managing a specific user.
+//
+// Summary: Manages a single user resource (get, update, delete).
+//
+// Parameters:
+//   - store: storage.Storage. The storage interface.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/users/")
@@ -224,7 +242,16 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 }
 
 // hashUserPassword hashes the user's password if it is provided in plain text.
-// It handles the case where the password is "REDACTED" by fetching the existing user and restoring the hash.
+//
+// Summary: Hashes the user's password or restores the existing hash if redacted.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - user: *configv1.User. The user object containing the password to hash.
+//   - store: storage.Storage. The storage to fetch the existing user from.
+//
+// Returns:
+//   - error: An error if hashing or fetching fails.
 func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage) error {
 	if user.GetAuthentication() != nil && user.GetAuthentication().GetBasicAuth() != nil {
 		basicAuth := user.GetAuthentication().GetBasicAuth()

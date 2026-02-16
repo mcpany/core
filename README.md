@@ -124,7 +124,7 @@ The agent will use the `get_weather` tool exposed by MCP Any (configured in `con
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
 ### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing.
+Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
 make test
 ```
@@ -171,6 +171,8 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+| `MCPANY_ALLOWED_ENV` | Comma-separated list of allowed env vars for config expansion | Empty |
+| `MCPANY_STRICT_ENV_MODE` | Block all env vars unless whitelisted | `false` |
 
 ### Required Secrets
 
