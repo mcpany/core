@@ -85,6 +85,15 @@ type ConfigurableEngine interface {
 	// Parameters:
 	//   - ignore: bool. True to ignore environment variables.
 	SetIgnoreEnv(ignore bool)
+
+	// SetPrecomputedEnv provides a pre-sorted list of environment variables.
+	// This optimization avoids repeated os.Environ() calls and sorting for each file.
+	//
+	// Summary: Sets the precomputed environment variables.
+	//
+	// Parameters:
+	//   - env: []string. A sorted slice of environment variables.
+	SetPrecomputedEnv(env []string)
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
@@ -115,6 +124,7 @@ func NewEngine(path string) (Engine, error) {
 type yamlEngine struct {
 	skipValidation bool
 	ignoreEnv      bool
+	precomputedEnv []string
 }
 
 // SetSkipValidation sets whether to skip schema validation.
@@ -125,6 +135,11 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // SetIgnoreEnv sets whether to ignore environment variables.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
+}
+
+// SetPrecomputedEnv sets the precomputed environment variables.
+func (e *yamlEngine) SetPrecomputedEnv(env []string) {
+	e.precomputedEnv = env
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
@@ -155,7 +170,13 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 	if !e.ignoreEnv {
 		// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 		// This allows overriding any configuration value using environment variables.
-		applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
+		// ⚡ BOLT: Optimization - use precomputed environment variables if available
+		// to avoid repeated os.Environ() calls and sorting for each file.
+		if e.precomputedEnv != nil {
+			applySortedEnvVars(yamlMap, e.precomputedEnv, v)
+		} else {
+			applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
+		}
 
 		// Apply --set overrides: section.key=value or section[idx].key=value
 		applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
@@ -660,6 +681,12 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 		return nil, fmt.Errorf("failed to collect config file paths: %w", err)
 	}
 
+	// ⚡ BOLT: Optimization - Pre-fetch and sort environment variables once.
+	// This avoids allocating and sorting the environment slice for every configuration file.
+	// Randomized Selection from Top 5 High-Impact Targets
+	env := os.Environ()
+	sort.Strings(env)
+
 	for _, path := range filePaths {
 		var b []byte
 		var err error
@@ -698,6 +725,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 
 		if configurable, ok := engine.(ConfigurableEngine); ok {
 			configurable.SetSkipValidation(s.skipValidation)
+			configurable.SetPrecomputedEnv(env)
 		}
 
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
@@ -849,7 +877,12 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.M
 	sortedEnv := make([]string, len(environ))
 	copy(sortedEnv, environ)
 	sort.Strings(sortedEnv)
+	applySortedEnvVars(m, sortedEnv, v)
+}
 
+// applySortedEnvVars applies environment variables from a sorted slice.
+// It assumes the input slice is already sorted and does not copy it.
+func applySortedEnvVars(m map[string]interface{}, sortedEnv []string, v proto.Message) {
 	for _, env := range sortedEnv {
 		if !strings.HasPrefix(env, "MCPANY__") {
 			continue
