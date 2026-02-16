@@ -20,6 +20,19 @@ export class Seeder {
 
     async registerService(config: UpstreamServiceConfig) {
         console.log(`Seeding service: ${config.name} (${config.id})`);
+
+        // Pre-cleanup: Try to unregister if it exists to ensure clean state
+        // This handles cases where a previous test run crashed without cleanup
+        const id = config.id || config.name;
+        if (id) {
+            try {
+                await apiClient.unregisterService(id);
+                console.log(`Pre-cleaned service: ${id}`);
+            } catch (e) {
+                // Ignore 404s or other errors during pre-cleanup
+            }
+        }
+
         try {
             // Ensure ID is set for deterministic cleanup
             if (!config.id) {
