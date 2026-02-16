@@ -34,13 +34,17 @@ export function ToolFailureRateWidget() {
         const fetchStats = async () => {
             try {
                 const stats = await apiClient.getToolFailures(serviceId);
-                const mapped = stats.map(s => ({
-                    name: s.name,
-                    service: s.serviceId,
-                    failureRate: s.failureRate,
-                    totalCalls: s.totalCalls
-                }));
-                setTools(mapped);
+                if (Array.isArray(stats)) {
+                    const mapped = stats.map(s => ({
+                        name: s.name,
+                        service: s.serviceId,
+                        failureRate: s.failureRate,
+                        totalCalls: s.totalCalls
+                    }));
+                    setTools(mapped);
+                } else {
+                    setTools([]);
+                }
             } catch (error) {
                 console.error("Failed to fetch tool failure rates", error);
             } finally {

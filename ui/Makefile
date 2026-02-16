@@ -21,7 +21,7 @@ endif
 
 # Run lint
 lint:
-	npm run lint
+	npx eslint .
 
 
 TIMESTAMP := $(shell date +%s)
