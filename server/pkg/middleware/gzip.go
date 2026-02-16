@@ -190,8 +190,10 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 
 		if len(w.buf.data) > 0 {
 			_, err := w.writer.Write(w.buf.data)
-			byteBufferPool.Put(w.buf) // Return to pool
-			w.buf = nil               // Release reference
+			if cap(w.buf.data) <= 65536 {
+				byteBufferPool.Put(w.buf) // Return to pool
+			}
+			w.buf = nil // Release reference
 			return err
 		}
 		return nil
@@ -200,11 +202,35 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 	w.ResponseWriter.WriteHeader(w.code)
 	if len(w.buf.data) > 0 {
 		_, err := w.ResponseWriter.Write(w.buf.data)
-		byteBufferPool.Put(w.buf) // Return to pool
+		if cap(w.buf.data) <= 65536 {
+			byteBufferPool.Put(w.buf) // Return to pool
+		}
 		w.buf = nil
 		return err
 	}
 	return nil
+}
+
+// Flush flushes the data to the underlying writer.
+// This implements http.Flusher interface.
+func (w *gzipResponseWriter) Flush() {
+	// If we are already compressing, flush the gzip writer.
+	// This pushes data through to the underlying ResponseWriter.
+	if w.writer != nil {
+		_ = w.writer.Flush()
+	} else if w.buf != nil && len(w.buf.data) > 0 {
+		// ⚡ BOLT: Force flush buffer to enable streaming for small payloads.
+		// Randomized Selection from Top 5 High-Impact Targets.
+		_ = w.flushBuffer(true)
+		if w.writer != nil {
+			_ = w.writer.Flush()
+		}
+	}
+
+	// Flush the underlying ResponseWriter if supported
+	if f, ok := w.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
+	}
 }
 
 // Close closes the gzip writer and returns it to the pool.
@@ -231,7 +257,11 @@ func (w *gzipResponseWriter) Close() {
 
 	// In case flushBuffer didn't run or didn't clear buf
 	if w.buf != nil {
-		byteBufferPool.Put(w.buf)
+		// ⚡ BOLT: Prevent memory leak by not returning huge buffers to the pool.
+		// Randomized Selection from Top 5 High-Impact Targets.
+		if cap(w.buf.data) <= 65536 { // 64KB limit
+			byteBufferPool.Put(w.buf)
+		}
 		w.buf = nil
 	}
 }
