@@ -189,6 +189,16 @@ var IsSensitivePath = func(path string) error {
 		return fmt.Errorf("access to private key file %q is denied", base)
 	}
 
+	// Block sensitive directories
+	if baseLower == ".ssh" || baseLower == ".aws" || baseLower == ".kube" {
+		return fmt.Errorf("access to sensitive directory %q is denied", base)
+	}
+
+	// Block shell configuration files
+	if baseLower == ".bashrc" || baseLower == ".bash_profile" || baseLower == ".zshrc" || baseLower == ".profile" {
+		return fmt.Errorf("access to shell configuration file %q is denied", base)
+	}
+
 	return nil
 }
 

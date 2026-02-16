@@ -29,7 +29,6 @@ import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { SourceEditor } from "@/components/services/editor/source-editor";
 import { HttpToolManager } from "@/components/services/editor/http-tool-manager";
-import { CmdToolManager } from "@/components/services/editor/cmd-tool-manager";
 import yaml from "js-yaml";
 
 interface ServiceEditorProps {
@@ -172,7 +171,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                         <TabsList className="bg-transparent">
                             <TabsTrigger value="general">General</TabsTrigger>
                             <TabsTrigger value="connection">Connection</TabsTrigger>
-                            {(getType() === 'http' || getType() === 'cmd') && <TabsTrigger value="tools">Tools</TabsTrigger>}
+                            {getType() === 'http' && <TabsTrigger value="tools">Tools</TabsTrigger>}
                             <TabsTrigger value="auth">Authentication</TabsTrigger>
                             <TabsTrigger value="policies">Policies</TabsTrigger>
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
@@ -410,12 +409,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                         {service.httpService && (
                             <TabsContent value="tools" className="space-y-4 mt-0">
                                 <HttpToolManager service={service} onChange={onChange} />
-                            </TabsContent>
-                        )}
-
-                        {service.commandLineService && (
-                            <TabsContent value="tools" className="space-y-4 mt-0">
-                                <CmdToolManager service={service} onChange={onChange} />
                             </TabsContent>
                         )}
 

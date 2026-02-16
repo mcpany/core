@@ -230,7 +230,13 @@ func (p *LocalProvider) checkPathSecurity(targetPathCanonical, realRootCanonical
 	}
 
 	// Double check strict prefix as defense in depth (handling trailing slash behavior)
-	if !strings.HasPrefix(targetPathCanonical, realRootCanonical+string(os.PathSeparator)) && targetPathCanonical != realRootCanonical {
+	// Ensure root path ends with separator for prefix check, unless it is already root (e.g. "/")
+	rootWithSlash := realRootCanonical
+	if !strings.HasSuffix(rootWithSlash, string(os.PathSeparator)) {
+		rootWithSlash += string(os.PathSeparator)
+	}
+
+	if !strings.HasPrefix(targetPathCanonical, rootWithSlash) && targetPathCanonical != realRootCanonical {
 		return fmt.Errorf("access denied: path traversal detected (prefix check)")
 	}
 
