@@ -46,6 +46,14 @@ interface ServiceImportItem {
     selected: boolean;
 }
 
+/**
+ * BulkServiceImport component.
+ * Allows importing services from JSON, YAML, or URL sources.
+ *
+ * @param props - Component properties.
+ * @param props.onImportSuccess - Callback fired when import completes successfully.
+ * @param props.onCancel - Callback fired when the user cancels the operation.
+ */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {
     const [step, setStep] = useState<"input" | "review" | "import">("input");
 
