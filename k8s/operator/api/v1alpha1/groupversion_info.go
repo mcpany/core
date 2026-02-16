@@ -11,12 +11,18 @@ import (
 )
 
 var (
-	// GroupVersion is group version used to register these objects
+	// GroupVersion is group version used to register these objects.
+	//
+	// Summary: GroupVersion for the v1alpha1 API.
 	GroupVersion = schema.GroupVersion{Group: "mcp.any", Version: "v1alpha1"}
 
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
+	// SchemeBuilder is used to add go types to the GroupVersionKind scheme.
+	//
+	// Summary: SchemeBuilder for the v1alpha1 API.
 	SchemeBuilder = &scheme.Builder{GroupVersion: GroupVersion}
 
 	// AddToScheme adds the types in this group-version to the given scheme.
+	//
+	// Summary: Registers types with the scheme.
 	AddToScheme = SchemeBuilder.AddToScheme
 )

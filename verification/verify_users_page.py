@@ -4,6 +4,14 @@
 from playwright.sync_api import sync_playwright
 
 def verify_users_page():
+    """Verifies the functionality of the Users page by performing login and navigation.
+
+    This function launches a headless browser, logs into the application, navigates to the Users page,
+    takes a screenshot of the list, opens the 'Add User' sheet, fills a form field, and takes another screenshot.
+
+    Raises:
+        PlaywrightError: If any interaction with the browser fails.
+    """
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()

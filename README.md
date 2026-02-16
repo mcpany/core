@@ -56,6 +56,16 @@ graph TD
     end
 ```
 
+**Request Flow:**
+
+1.  **Client Request:** An AI agent (e.g., Claude) sends a JSON-RPC request (e.g., `tools/call`) to the MCP Any Core Server.
+2.  **Authentication:** The server verifies the request's API Key or Session Token.
+3.  **Policy Check:** The Policy Engine evaluates the request against active Profiles and DLP rules. Blocked requests are rejected immediately.
+4.  **Routing:** The Service Registry resolves the requested tool to a specific Upstream Adapter.
+5.  **Adaptation:** The Upstream Adapter transforms the MCP request into the target protocol (e.g., constructs an HTTP request or gRPC message).
+6.  **Execution:** The adapter communicates with the upstream service.
+7.  **Response Transformation:** The upstream response is received, transformed back into MCP format (e.g., `CallToolResult`), and returned to the client.
+
 **Design Patterns:**
 
 *   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
@@ -170,6 +180,8 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
 | `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
 | `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
+| `MCPANY_DB_DSN` | DSN for the database connection (if using non-SQLite) | Empty |
+| `MCPANY_DB_DRIVER` | Database driver (e.g., `sqlite3`, `postgres`) | `sqlite3` |
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
 | `MCPANY_ALLOWED_ENV` | Comma-separated list of allowed env vars for config expansion | Empty |
 | `MCPANY_STRICT_ENV_MODE` | Block all env vars unless whitelisted | `false` |
