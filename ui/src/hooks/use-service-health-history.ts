@@ -4,50 +4,16 @@
  */
 
 import { useState, useEffect } from "react";
+import { apiClient, ServiceHealth, HealthHistoryPoint } from "@/lib/client";
 
-/**
- * ServiceStatus represents the possible health states of a service.
- */
-export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
-
-/**
- * ServiceHealth describes the current health information of a service.
- */
-export interface ServiceHealth {
-  /** The unique identifier of the service. */
-  id: string;
-  /** The display name of the service. */
-  name: string;
-  /** The current status of the service. */
-  status: ServiceStatus;
-  /** The latency of the service check. */
-  latency: string;
-  /** The uptime duration of the service. */
-  uptime: string;
-  /** An optional message providing more details about the status. */
-  message?: string;
-}
-
-/**
- * HealthHistoryPoint represents a single data point in the health history of a service.
- */
-export interface HealthHistoryPoint {
-  /** The timestamp of the health check in milliseconds. */
-  timestamp: number;
-  /** The status of the service at that time. */
-  status: ServiceStatus;
-}
+// Re-export types for consumers
+export type { ServiceHealth, HealthHistoryPoint };
 
 /**
  * ServiceHistory maps service IDs to their list of historical health points.
  */
 export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
-}
-
-interface HealthResponse {
-  services: ServiceHealth[];
-  history: ServiceHistory;
 }
 
 /**
@@ -64,14 +30,10 @@ export function useServiceHealthHistory() {
   useEffect(() => {
     async function fetchHealth() {
       try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data: HealthResponse = await res.json();
-
-          // Backend returns history keyed by ID
-          setServices(data.services || []);
-          setHistory(data.history || {});
-        }
+        const data = await apiClient.getDashboardHealth();
+        // Backend returns history keyed by ID
+        setServices(data.services || []);
+        setHistory(data.history || {});
       } catch (error) {
         console.warn("Failed to fetch health data", error);
       } finally {
