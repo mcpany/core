@@ -61,6 +61,7 @@ func (m *mockTool) MCPTool() *mcp.Tool {
 }
 
 func TestToolListFiltering(t *testing.T) {
+	// Setup test environment
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
