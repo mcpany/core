@@ -22,6 +22,7 @@ import (
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey
+	ClientID   string
 }
 
 // NewMockOAuth2Server creates a new mock OAuth2 server.
@@ -77,11 +78,16 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	mux.HandleFunc("/token", func(w http.ResponseWriter, _ *http.Request) {
 		// Mock Token Endpoint
 		w.Header().Set("Content-Type", "application/json")
+		aud := mock.ClientID
+		if aud == "" {
+			aud = "mock_client"
+		}
 		token := mock.NewIDToken(t, jwt.MapClaims{
-			"iss": server.URL,
-			"sub": "mock_user",
-			"aud": "mock_client",
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   server.URL,
+			"sub":   "mock_user",
+			"email": "test@example.com",
+			"aud":   aud,
+			"exp":   time.Now().Add(time.Hour).Unix(),
 		})
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"access_token": token,
