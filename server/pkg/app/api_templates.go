@@ -65,7 +65,7 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 				return
 			}
 
-			// Sanitize input to prevent XSS
+			// Sanitize input to prevent XSS (Stored XSS mitigation)
 			tmpl.SetName(html.EscapeString(tmpl.GetName()))
 			tmpl.SetDescription(html.EscapeString(tmpl.GetDescription()))
 			tmpl.SetIcon(html.EscapeString(tmpl.GetIcon()))
