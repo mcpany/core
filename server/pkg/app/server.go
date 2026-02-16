@@ -1653,51 +1653,43 @@ func (a *Application) runServerMode(
 
 		// Dynamic User Lookup
 		user, ok := a.AuthManager.GetUser(uid)
-		if !ok {
-			http.Error(w, "User not found", http.StatusNotFound)
-			return
-		}
+		// SECURITY: Do NOT return "User not found" yet to prevent user enumeration via status codes.
+		// We must attempt authentication first. If authentication fails, we return Unauthorized.
+		// If authentication succeeds (e.g. global admin), THEN we can reveal that the user is missing.
 
 		// Authentication Logic with Priority:
-		// 1. Profile Authentication
-		// 2. User Authentication
-		// 3. Global Authentication
-		// If a higher priority mechanism is configured, it MUST be satisfied. Lower priority checks are skipped.
-
-		// Resolve the specific profile config from the user's allowed profiles
-		// We need to find the profile config to check if it has an API Key.
-		// The user object only has profile IDs.
-		// We need to look up the profile definition.
-		// Profile definitions are inside UpstreamServiceConfigs.
-		// BUT, we are in the multi-user handler which routes to *any* service.
-		// Wait, the profile is conceptual here?
-		// The routing is /mcp/u/{uid}/profile/{profileId}
-		// The `profileId` corresponds to a profile defined in ONE OR MORE upstream services.
-		// Does a "Profile" exist independently?
-		// In `config.proto`, `UpstreamServiceConfig` has `repeated Profile profiles`.
-		// `Profile` has `id` and `api_key`.
-		// Since a profile ID can be shared across services (e.g. "prod"), which `api_key` do we use?
-		// If multiple services define "prod", do they share the same API key?
-		// Assumption: If "prod" is defined in multiple places, they should logically share the key or we pick one.
-		// Better approach: We iterate over all services to find the profile definition.
-
-		// 1. Profile Auth - REMOVED (Per-profile ingress auth is no longer supported in this refactor)
-		var isAuthenticated bool
+		// 1. Profile Auth - REMOVED
 		// 2. User Auth
-		if user.GetAuthentication() != nil {
+		// 3. Global Auth
+
+		var isAuthenticated bool
+
+		// 2. User Auth
+		// Only attempt if user exists and has auth configured
+		if ok && user.GetAuthentication() != nil {
 			if err := auth.ValidateAuthentication(ctx, user.GetAuthentication(), r); err == nil {
 				isAuthenticated = true
 			} else {
-				// User auth configured but failed
-				http.Error(w, "Unauthorized (User)", http.StatusUnauthorized)
+				// User auth configured but failed.
+				// We do NOT return immediately, we might fall through to global auth?
+				// Typically, if User Auth is present, it is required.
+				// However, if we return 401 here immediately, we distinguish between "User exists + bad pass" (401)
+				// and "User does not exist" -> Fallthrough -> Global Auth -> "No Global Auth" -> 403/404?
+				// To prevent enumeration, we must ensure the behavior is consistent.
+				// If we fail here, we return 401.
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
-		} else {
-			// 3. Global Auth
+		}
+
+		// 3. Global Auth (Fallback if User Auth not used or User not found)
+		if !isAuthenticated {
+			// If User Auth was attempted and failed, we already returned 401 above.
+			// So we are here only if User Auth was NOT attempted (User missing OR User has no auth config).
+
 			apiKey := a.SettingsManager.GetAPIKey()
 			if apiKey != "" {
-				// Manual check for global key since it's a string, or wrap it.
-				// We'll just do manual check to match existing behavior logic.
+				// Manual check for global key
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
@@ -1708,23 +1700,23 @@ func (a *Application) runServerMode(
 
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
-					// Note: We don't inject API Key/Roles/User into ctx here because
-					// the context is reset later (around line 1715) with r.Context().
-					// The logic below (lines 1715+) reconstructs the context based on the target user (uid).
-					// If Global Auth is used, we currently allow access to the target profile
-					// but do not carry over "system-admin" identity or "admin" roles.
 				} else {
-					// Global auth configured but failed
-					http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
+					// Global auth configured but failed.
+					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}
 			} else {
-				// No auth configured at any level
+				// No Global Auth configured.
+				// If User Auth was NOT attempted (e.g. user missing), and no Global Auth,
+				// we fall into "No Auth Configured" logic.
+
 				// Sentinel Security: Enforce private network access if no auth is configured.
 				ip := util.GetClientIP(r, trustProxy)
 				if !util.IsPrivateIP(net.ParseIP(ip)) {
 					logging.GetLogger().Warn("Blocked public internet request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+					// We return Unauthorized (401) instead of Forbidden (403) to match the User Auth failure case,
+					// reducing information leakage about user existence vs configuration state.
+					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}
 				isAuthenticated = true
@@ -1732,8 +1724,13 @@ func (a *Application) runServerMode(
 		}
 
 		if !isAuthenticated {
-			// Should be unreachable if logic covers all cases, but safety net
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Authentication passed. Now we can check if user exists.
+		if !ok {
+			http.Error(w, "User not found", http.StatusNotFound)
 			return
 		}
 
