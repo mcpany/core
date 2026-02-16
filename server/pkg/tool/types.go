@@ -23,6 +23,7 @@ import (
 	"unicode"
 
 	jsoniter "github.com/json-iterator/go"
+	"golang.org/x/text/unicode/norm"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -3184,6 +3185,10 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
+	// Sentinel Security Update: Normalize to NFKC to prevent Unicode obfuscation (e.g. fullwidth characters)
+	// This ensures that ｓｙｓｔｅｍ becomes system before keyword checks.
+	val = norm.NFKC.String(val)
+
 	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
 	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
 	dangerousKeywords := []string{
@@ -3228,6 +3233,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 //nolint:gocyclo
 func checkUnquotedKeywords(val string, keywords []string) error {
+	// Normalize to NFKC to handle Unicode obfuscation if not already done
+	val = norm.NFKC.String(val)
+
 	inSingle := false
 	inDouble := false
 	inBacktick := false
