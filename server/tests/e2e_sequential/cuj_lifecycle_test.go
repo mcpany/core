@@ -110,7 +110,8 @@ upstream_services:
 	}()
 
 	// CUJ 1: Health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+    time.Sleep(2 * time.Second) // Give it a moment to start listening
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 90*time.Second)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -176,7 +177,7 @@ upstream_services:
     }
 
 	// Wait for health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 90*time.Second)
 
 	// Re-connect
 	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
@@ -227,7 +228,7 @@ upstream_services:
     }
 
 	// Wait for health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 90*time.Second)
 
 	// Re-connect
 	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}

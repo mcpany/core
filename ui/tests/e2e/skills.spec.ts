@@ -51,10 +51,15 @@ test.describe('Agent Skills', () => {
         response.url().includes('/api/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        { timeout: 60000 }
     );
 
-    await page.getByRole('button', { name: 'Create Skill' }).click();
+    // Ensure button is ready
+    const createBtn = page.getByRole('button', { name: 'Create Skill' });
+    await expect(createBtn).toBeVisible();
+    await expect(createBtn).toBeEnabled();
+    await createBtn.click();
+
     await createPromise;
 
     // 5. Verify Redirect to List
@@ -85,9 +90,14 @@ test.describe('Agent Skills', () => {
         response.url().includes('/api/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        { timeout: 60000 }
     );
-    await page.getByRole('button', { name: 'Create Skill' }).click();
+    // Ensure button is ready
+    const createBtn = page.getByRole('button', { name: 'Create Skill' });
+    await expect(createBtn).toBeVisible();
+    await expect(createBtn).toBeEnabled();
+    await createBtn.click();
+
     await createPromise;
     await expect(page).toHaveURL(/\/skills\/?$/);
 

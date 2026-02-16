@@ -104,8 +104,14 @@ test.describe('Tool Exploration', () => {
         await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
         // Use regex for filtering row as well
+        // Wait for the row to be attached and visible before filtering to avoid race
+        await expect(page.locator('tr').filter({ hasText: /echo_tool/ })).toBeVisible({ timeout: 10000 });
         const toolRow = page.locator('tr').filter({ hasText: /echo_tool/ });
-        await toolRow.getByRole('button', { name: 'Inspect' }).click();
+
+        // Ensure button is visible before click
+        const inspectButton = toolRow.getByRole('button', { name: 'Inspect' });
+        await expect(inspectButton).toBeVisible();
+        await inspectButton.click();
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible();
         await expect(page.getByText('Test & Execute').first()).toBeVisible();
