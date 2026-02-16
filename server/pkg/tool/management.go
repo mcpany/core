@@ -24,6 +24,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ToolExecutionTimeout is the maximum duration to wait for a tool execution result.
+// It is a variable to allow overriding in tests.
+var ToolExecutionTimeout = 60 * time.Second
+
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server.
 //
@@ -251,7 +255,7 @@ func NewManager(bus *bus.Provider) *Manager {
 //
 // Parameters:
 //   - enabled: []string. A list of names of the currently active profiles.
-//   - defs: []*configv1.ProfileDefinition. The definitions of all available profiles.
+//   - defs: []*configv1.ProfileDefinition. The detailed definitions of the profiles.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -952,7 +956,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 				}, nil
 			case <-ctx.Done():
 				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-			case <-time.After(60 * time.Second): // Safety timeout
+			case <-time.After(ToolExecutionTimeout): // Safety timeout
 				return nil, fmt.Errorf(
 					"timed out waiting for tool execution result for tool %s",
 					req.Params.Name,
