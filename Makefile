@@ -191,7 +191,8 @@ gen: clean-protos prepare-proto
 		fi; \
 		echo "Standard TypeScript Protobuf generation complete."; \
 	else \
-		echo "Warning: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. Skipping TypeScript generation."; \
+		echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TypeScript generation cannot proceed."; \
+		exit 1; \
 	fi
 
 update-screenshots:

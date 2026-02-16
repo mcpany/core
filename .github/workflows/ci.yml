@@ -1029,7 +1029,7 @@ jobs:
 
             mkdir -p /tmp/gh-install
             if command -v curl &> /dev/null; then
-              curl -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+              curl --retry 5 --retry-connrefused --retry-max-time 60 -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
             elif command -v wget &> /dev/null; then
               wget -qO- https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
             else
