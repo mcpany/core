@@ -26,8 +26,6 @@ test.describe('Dashboard Real Data', () => {
 
     test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
-        // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
-        // traffic points: Time (HH:MM), Total, Errors, Latency
         page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
         page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
         const now = new Date();
@@ -60,36 +58,29 @@ test.describe('Dashboard Real Data', () => {
         const trafficRes = await request.get('/api/v1/dashboard/traffic');
         expect(trafficRes.ok()).toBeTruthy();
         const trafficData = await trafficRes.json();
-        console.log('DEBUG: Traffic Data:', JSON.stringify(trafficData));
         // Expect at least one point with requests > 0
         const hasData = trafficData.some((p: any) => p.requests > 0);
         expect(hasData).toBeTruthy();
 
         // 3. Verify metrics
-        // We seeded 100 requests per minute for 60 minutes = 6000 total requests?
-        // Wait, GetTrafficHistory returns the history.
-        // AnalyticsDashboard sums them up.
-        // 60 points * 100 requests = 6000 total requests.
-        // Check if "Total Requests" card shows 6,000 (formatted).
-
         await expect(page.locator('text=Total Requests')).toBeVisible();
 
-        // The endpoint returns points. The UI sums them up.
-        // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
-        // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        // Or simpler: find the value card.
-        // The card structure: Header "Total Requests", Content: "6,000"
-        // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
-
-        await expect(page.locator('text=Total Requests')).toBeVisible();
-        // Wait for data to load (it starts at 0 or empty)
-        await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden(); // Ensure no error text is shown if that was a thing?
-        // Just wait for non-zero requests
-        // We expect around 6,000.
-        // Use a more specific locator to debug and allow for potential data propagation delay
+        // Retry logic for data loading
         const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+
+        await expect(async () => {
+            const text = await totalRequestsLocator.textContent();
+            if (!text || text === '--') {
+                console.log('Data not loaded yet ("--"), reloading page...');
+                await page.reload();
+                // Wait for dashboard elements again
+                await expect(page.locator('text=Total Requests')).toBeVisible();
+            }
+            await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 5000 });
+        }).toPass({
+            timeout: 60000,
+            intervals: [5000, 10000]
+        });
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();

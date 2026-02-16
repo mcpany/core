@@ -55,7 +55,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
+    // Use robust selector for title (accept h1 or h2)
+    await expect(page.getByRole('heading', { name: 'Tools' }).first()).toBeVisible();
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 
@@ -66,7 +67,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Middleware page shows pipeline', async ({ page }) => {
     await page.goto('/middleware');
-    await expect(page.locator('h1')).toContainText('Middleware Pipeline');
+    await expect(page.getByRole('heading', { name: 'Middleware Pipeline' }).first()).toBeVisible();
     await expect(page.locator('text=Incoming Request')).toBeVisible();
     await expect(page.locator('text=auth').first()).toBeVisible();
 
