@@ -925,30 +925,6 @@ export const apiClient = {
         });
     },
 
-    /**
-     * Initiates an OAuth flow for a specific service.
-     * @param serviceId The ID of the service (e.g. "google_calendar").
-     * @param credentialId The ID of the credential to bind (usually same as service name for now).
-     * @param redirectUrl The URL to redirect back to after auth.
-     * @returns The authorization URL to redirect the user to.
-     */
-    initiateOAuth: async (serviceId: string, credentialId: string, redirectUrl: string) => {
-        const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                service_id: serviceId,
-                credential_id: credentialId,
-                redirect_url: redirectUrl
-            })
-        });
-        if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(`Failed to initiate OAuth: ${txt}`);
-        }
-        return res.json(); // { authorization_url: "...", state: "..." }
-    },
-
     // Profiles
 
     /**
@@ -1596,7 +1572,7 @@ export const apiClient = {
         if (serviceID) payload.service_id = serviceID;
         if (credentialID) payload.credential_id = credentialID;
 
-        const res = await fetchWithAuth('/auth/oauth/initiate', {
+        const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -1621,7 +1597,7 @@ export const apiClient = {
         if (serviceID) payload.service_id = serviceID;
         if (credentialID) payload.credential_id = credentialID;
 
-        const res = await fetchWithAuth('/auth/oauth/callback', {
+        const res = await fetchWithAuth('/api/v1/auth/oauth/callback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
