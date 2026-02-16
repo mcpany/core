@@ -114,6 +114,40 @@ graph TD
     end
 ```
 
+## Configuration
+
+MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MCPANY_MCP_LISTEN_ADDRESS` | MCP server's bind address (host:port) | `50050` |
+| `MCPANY_CONFIG_PATH` | Comma-separated paths to config files/dirs | `[]` |
+| `MCPANY_METRICS_LISTEN_ADDRESS` | Address to expose Prometheus metrics | Disabled |
+| `MCPANY_GRPC_PORT` | Port for the gRPC registration server | Disabled |
+| `MCPANY_STDIO` | Enable stdio mode for JSON-RPC communication | `false` |
+| `MCPANY_DEBUG` | Enable debug logging | `false` |
+| `MCPANY_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
+| `MCPANY_LOG_FORMAT` | Log format (text, json) | `text` |
+| `MCPANY_API_KEY` | Master API key for securing the server | Empty (No Auth) |
+| `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
+| `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
+
+### Required Secrets
+
+Sensitive information (like upstream API keys) must **never** be hardcoded in configuration files. Instead, use environment variable references.
+
+**Example Config:**
+```yaml
+upstreamAuth:
+  apiKey:
+    value: "${OPENAI_API_KEY}" # References env var
+```
+
+Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+
 ## License
 
 This project is licensed under the terms of the [Apache 2.0 License](LICENSE).
