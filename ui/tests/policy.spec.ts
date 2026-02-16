@@ -106,7 +106,7 @@ test.describe('Policy Editor', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // 11. Verify Toast
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    await expect(page.getByText('Service Updated', { exact: true })).toBeVisible();
 
     // 12. Verify Backend Persistence
     // Reload page
