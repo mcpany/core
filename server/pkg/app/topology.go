@@ -12,6 +12,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// handleTopology returns an HTTP handler for the topology API.
+//
+// Summary: Returns the current service topology graph.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTopology() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

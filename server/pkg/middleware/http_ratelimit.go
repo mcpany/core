@@ -14,6 +14,8 @@ import (
 )
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
+//
+// Summary: Middleware for rate limiting HTTP requests based on IP address.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -22,10 +24,19 @@ type HTTPRateLimitMiddleware struct {
 }
 
 // HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
+//
+// Summary: Functional option type for configuring the middleware.
 type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
 // WithTrustProxy enables trusting the X-Forwarded-For header.
-// This should only be used when the server is behind a trusted reverse proxy.
+//
+// Summary: Configures the middleware to trust the X-Forwarded-For header.
+//
+// Parameters:
+//   - trust: bool. Whether to trust the proxy headers.
+//
+// Returns:
+//   - HTTPRateLimitOption: The configuration option.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -34,13 +45,15 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
 //
+// Summary: Initializes a new HTTP rate limit middleware.
+//
 // Parameters:
-//   - rps: Requests per second allowed per IP.
-//   - burst: Maximum burst size allowed per IP.
-//   - opts: Optional configuration options.
+//   - rps: float64. Requests per second allowed per IP.
+//   - burst: int. Maximum burst size allowed per IP.
+//   - opts: ...HTTPRateLimitOption. Optional configuration options.
 //
 // Returns:
-//   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
+//   - *HTTPRateLimitMiddleware: The initialized middleware instance.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -65,11 +78,13 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 
 // Handler wraps an http.Handler with rate limiting.
 //
+// Summary: Returns a handler that enforces rate limiting.
+//
 // Parameters:
-//   - next: The next http.Handler in the chain.
+//   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-//   - http.Handler: An http.Handler that enforces rate limiting.
+//   - http.Handler: The wrapped handler.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)
