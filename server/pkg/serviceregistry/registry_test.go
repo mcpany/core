@@ -234,13 +234,49 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
 	require.NoError(t, err, "First registration should succeed")
 
-	// Attempt to register another service with the same name
+	// Attempt to register another service with the same name AND IDENTICAL config
+	// This should now succeed (idempotent)
 	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
-	require.Error(t, err, "Second registration with the same name should fail")
-	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+	require.NoError(t, err, "Second registration with identical config should succeed (idempotent)")
+}
+
+func TestServiceRegistry_RegisterService_DuplicateName_DifferentConfig(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+
+	serviceConfig1 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080"),
+		}.Build(),
+	}.Build()
+	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err, "First registration should succeed")
+
+	// Attempt to register another service with the same name BUT DIFFERENT config
+	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:9090"),
+		}.Build(),
+	}.Build()
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.Error(t, err, "Second registration with different config should fail")
+	assert.Contains(t, err.Error(), `service with name "test-service" already registered with different configuration`)
 }
 
 func TestServiceRegistry_UnregisterService(t *testing.T) {
@@ -503,9 +539,12 @@ func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *te
 	_, ok := tm.GetTool("tool1")
 	assert.True(t, ok, "Tool should be present after first registration")
 
-	// Attempt to register another service with the same name
+	// Attempt to register another service with the same name but different config (to force conflict)
 	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:9090"),
+		}.Build(),
 	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.Error(t, err, "Second registration with the same name should fail")
