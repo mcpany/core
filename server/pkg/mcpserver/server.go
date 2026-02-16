@@ -350,6 +350,7 @@ func (s *Server) checkAdminAccess(ctx context.Context) bool {
 		// Fallback: If using MCP SDK HTTP handler, the request context might be stored in the session context
 		// or we might need to retrieve the original request to get its context.
 		// However, the standard middleware stack injects the request into the context using HTTPRequestContextKey.
+		// This fallback is crucial for proper context propagation in certain SDK handler scenarios.
 		// If the SDK creates a new context for the session but copies values (which it might not), we check.
 		// If it doesn't, we might need to rely on the fact that for stateless HTTP (JSON-RPC),
 		// the handler might be running in the request scope.
