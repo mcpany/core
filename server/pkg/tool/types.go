@@ -1608,7 +1608,7 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo // Legacy logic
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -1942,7 +1942,7 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo // Legacy logic
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2287,7 +2287,7 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo // Legacy logic
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -3063,7 +3063,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-//nolint:gocyclo
+//nolint:gocyclo // Legacy logic
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
@@ -3226,7 +3226,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	return nil
 }
 
-//nolint:gocyclo
+//nolint:gocyclo // Legacy logic
 func checkUnquotedKeywords(val string, keywords []string) error {
 	inSingle := false
 	inDouble := false
