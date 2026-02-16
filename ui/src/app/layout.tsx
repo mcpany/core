@@ -20,6 +20,7 @@ import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context
 import { ServiceHealthProvider } from "@/contexts/service-health-context"
 import { SystemStatusBanner } from "@/components/system-status-banner"
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { NotificationCenter } from "@/components/notification-center";
 
 /**
  * Metadata for the application.
@@ -84,6 +85,7 @@ export default function RootLayout({
                          <div className="flex items-center gap-2">
                              <ConnectClientButton />
                              <GlobalSearch />
+                             <NotificationCenter />
                              <ThemeToggle />
                          </div>
                      </div>

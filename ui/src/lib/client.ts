@@ -210,6 +210,19 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+/**
+ * Alert definition.
+ */
+export interface Alert {
+    id: string;
+    title: string;
+    message: string;
+    severity: "info" | "warning" | "critical" | "error";
+    status: "active" | "acknowledged" | "resolved";
+    service: string;
+    source: string;
+    timestamp: string;
+}
 
 /**
  * Metric definition for dashboard.
@@ -1129,7 +1142,7 @@ export const apiClient = {
      * Lists all alerts.
      * @returns A promise that resolves to a list of alerts.
      */
-    listAlerts: async () => {
+    listAlerts: async (): Promise<Alert[]> => {
         const res = await fetchWithAuth('/api/v1/alerts');
         if (!res.ok) throw new Error('Failed to fetch alerts');
         return res.json();
