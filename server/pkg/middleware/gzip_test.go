@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"bytes"
 	"compress/gzip"
 	"io"
 	"net/http"
@@ -129,4 +130,73 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 			t.Error("Expected no Content-Encoding for empty response")
 		}
 	})
+
+	t.Run("Flush Support", func(t *testing.T) {
+		// Custom mock to capture flush state
+		mock := &mockFlusher{
+			header: make(http.Header),
+		}
+
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/event-stream")
+			w.Write([]byte("data: part1\n\n"))
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			} else {
+				t.Error("ResponseWriter does not implement http.Flusher")
+			}
+			w.Write([]byte("data: part2\n\n"))
+		})
+
+		gzipHandler := GzipCompressionMiddleware(handler)
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Accept-Encoding", "gzip")
+
+		gzipHandler.ServeHTTP(mock, req)
+
+		// Check if flushed content was compressed
+		if len(mock.flushedSnapshots) == 0 {
+			t.Error("Expected Flush to be called")
+		} else {
+			// First snapshot should have compressed data
+			// Note: We can't easily decompress partial gzip stream without framing hack,
+			// but we can check if it's not empty and has gzip header
+			firstFlush := mock.flushedSnapshots[0]
+			if len(firstFlush) == 0 {
+				t.Error("Expected data to be written before flush")
+			}
+			// Check for Gzip magic bytes
+			if len(firstFlush) > 2 && firstFlush[0] == 0x1f && firstFlush[1] == 0x8b {
+				// Good
+			} else {
+				t.Errorf("Expected gzip header in flushed data, got: %x", firstFlush)
+			}
+		}
+	})
+}
+
+type mockFlusher struct {
+	header           http.Header
+	body             bytes.Buffer
+	flushedSnapshots [][]byte
+	code             int
+}
+
+func (m *mockFlusher) Header() http.Header {
+	return m.header
+}
+
+func (m *mockFlusher) Write(b []byte) (int, error) {
+	return m.body.Write(b)
+}
+
+func (m *mockFlusher) WriteHeader(statusCode int) {
+	m.code = statusCode
+}
+
+func (m *mockFlusher) Flush() {
+	// Snapshot current body
+	snapshot := make([]byte, m.body.Len())
+	copy(snapshot, m.body.Bytes())
+	m.flushedSnapshots = append(m.flushedSnapshots, snapshot)
 }
