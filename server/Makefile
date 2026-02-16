@@ -151,7 +151,7 @@ prepare:
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+		if curl -sSL --retry 5 --retry-connrefused --retry-delay 5 "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
 			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
 			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
@@ -204,7 +204,7 @@ prepare:
 	@# Download grpc-gateway source for protos
 	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \
-		curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
+		curl -sSL --retry 5 --retry-connrefused --retry-delay 5 -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
 		unzip -q grpc-gateway.zip -d $(BUILD_DIR); \
 		GRPC_GATEWAY_VER_NO_V=$$(echo "$(GRPC_GATEWAY_VERSION)" | sed 's/v//'); \
 		mv $(BUILD_DIR)/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(BUILD_DIR)/grpc-gateway; \
@@ -213,7 +213,7 @@ prepare:
 	@# Download googleapis
 	@if ! test -d "$(BUILD_DIR)/googleapis"; then \
 		echo "Downloading googleapis..."; \
-		curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
+		curl -sSL --retry 5 --retry-connrefused --retry-delay 5 -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
 		unzip -q googleapis.zip -d $(BUILD_DIR); \
 		mv $(BUILD_DIR)/googleapis-master $(BUILD_DIR)/googleapis; \
 		rm googleapis.zip; \
@@ -293,7 +293,7 @@ prepare:
 		HELM_TARBALL="helm-$(HELM_VERSION)-$${OS}-$${ARCH}.tar.gz"; \
 		HELM_DOWNLOAD_URL="$(HELM_DOWNLOAD_URL_BASE)/$${HELM_TARBALL}"; \
 		echo "Downloading Helm from $${HELM_DOWNLOAD_URL}..."; \
-		if curl -sSL "$${HELM_DOWNLOAD_URL}" -o "/tmp/$${HELM_TARBALL}"; then \
+		if curl -sSL --retry 5 --retry-connrefused --retry-delay 5 "$${HELM_DOWNLOAD_URL}" -o "/tmp/$${HELM_TARBALL}"; then \
 			echo "Unpacking to $(TOOL_INSTALL_DIR)..."; \
 			tar -zxvf "/tmp/$${HELM_TARBALL}" -C "/tmp"; \
 			mv "/tmp/$${OS}-$${ARCH}/helm" "$(HELM_BIN)"; \
@@ -317,7 +317,7 @@ prepare:
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
 		SC_VERSION="stable"; \
-		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		curl -sSL --retry 5 --retry-connrefused --retry-delay 5 "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
 		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
 		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
@@ -348,7 +348,7 @@ prepare:
 		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
 		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		curl -sSfL --retry 5 --retry-connrefused --retry-delay 5 https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
@@ -668,7 +668,7 @@ docker-build-ui:
 docker-smoke-test-ui:
 ifdef HAS_DOCKER
 	@echo "Building UI Docker image..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ..
+	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
 	@echo "Running UI smoke test..."
 	@chmod +x tests/smoke_test_ui.sh
 	@./tests/smoke_test_ui.sh mcpany-ui 3333
