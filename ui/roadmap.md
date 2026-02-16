@@ -84,3 +84,5 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **Inter-Agent Bus Monitor**: Visual dashboard to monitor and audit communications between agents on the Zero Trust Bus.
+- [ ] **Context Inheritance Visualizer**: Tool to view and manage the hierarchy of inherited context blocks across different profiles and agents.

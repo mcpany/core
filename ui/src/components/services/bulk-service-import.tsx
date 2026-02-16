@@ -46,6 +46,9 @@ interface ServiceImportItem {
     selected: boolean;
 }
 
+/**
+ * BulkServiceImport provides a multi-step wizard to import multiple services from JSON, file upload, or URL.
+ */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {
     const [step, setStep] = useState<"input" | "review" | "import">("input");
 

@@ -43,6 +43,10 @@
 
 ### Status: Active Development
 
+- [ ] **Zero Trust Inter-Agent Bus**: Implementation of isolated, authenticated communication channels for agent swarms using named pipes or Docker-bound sockets.
+- [ ] **Standardized Context Inheritance**: Development of a policy-driven context management layer to facilitate state sharing across specialized agent profiles.
+- [ ] **MCP 2025-06-18 Spec Compliance**: Updating the server to support structured tool outputs and OAuth Resource Server classification.
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
