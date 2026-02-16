@@ -3370,6 +3370,7 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 		// Block leading pipe | to prevent open("|cmd") injection
 		// This applies to ALL contexts (unquoted, single, double, backtick) because
 		// Ruby's open() executes commands if the string starts with |, regardless of how the string was constructed.
+		// By checking this globally for Ruby commands, we prevent RCE even if the argument is single-quoted in the shell.
 		if strings.HasPrefix(strings.TrimSpace(val), "|") {
 			return fmt.Errorf("ruby open injection detected: value starts with '|'")
 		}
