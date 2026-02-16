@@ -3489,8 +3489,12 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 	// is quoted (single or double). This check prevents RCE when user input is interpolated into open().
 	// We check for levels 1 (double), 2 (single), and 3 (backtick). Level 0 is blocked by unquoted checks.
 	if quoteLevel >= 1 && quoteLevel <= 3 {
-		if strings.HasPrefix(strings.TrimSpace(val), "|") {
+		trimmed := strings.TrimSpace(val)
+		if strings.HasPrefix(trimmed, "|") {
 			return fmt.Errorf("ruby open injection detected: value starts with '|'")
+		}
+		if strings.HasSuffix(trimmed, "|") {
+			return fmt.Errorf("ruby open injection detected: value ends with '|'")
 		}
 	}
 
@@ -3540,8 +3544,12 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		// Block leading pipe | to prevent open(FH, "|cmd") injection in Perl.
 		// This works in single quotes (level 2) as well.
 		if quoteLevel >= 1 && quoteLevel <= 3 {
-			if strings.HasPrefix(strings.TrimSpace(val), "|") {
+			trimmed := strings.TrimSpace(val)
+			if strings.HasPrefix(trimmed, "|") {
 				return fmt.Errorf("perl open injection detected: value starts with '|'")
+			}
+			if strings.HasSuffix(trimmed, "|") {
+				return fmt.Errorf("perl open injection detected: value ends with '|'")
 			}
 		}
 	}
