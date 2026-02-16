@@ -8,6 +8,18 @@ import (
 	"math"
 )
 
+// jsonWhitespaceTable is a lookup table for fast whitespace checking.
+// We define it here to ensure it's available for skipWhitespace even if redact_fast.go
+// is not initialized yet or if build tags exclude it (though they are in the same package).
+var jsonWhitespaceTable [256]bool
+
+func init() {
+	jsonWhitespaceTable[' '] = true
+	jsonWhitespaceTable['\t'] = true
+	jsonWhitespaceTable['\n'] = true
+	jsonWhitespaceTable['\r'] = true
+}
+
 // WalkJSONStrings visits every string value in the JSON input.
 //
 // Summary: Walks through a JSON bytes slice and applies a visitor function to all string values.
@@ -187,7 +199,7 @@ func skipWhitespace(input []byte, start int) int {
 	n := len(input)
 	for i < n {
 		c := input[i]
-		if isJSONWhitespace[c] {
+		if jsonWhitespaceTable[c] {
 			i++
 			continue
 		}
