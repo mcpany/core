@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -46,7 +47,6 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
-	gitCommand          = "git"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -1876,8 +1876,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
-	commandName := t.service.GetCommand()
-
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -1885,7 +1883,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -1920,7 +1918,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
@@ -1944,7 +1942,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
+	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2001,7 +1999,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
@@ -2206,8 +2204,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// Determine execution environment early for validation
 	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 
-	commandName := t.service.GetCommand()
-
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -2215,8 +2211,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					// Use validateSafePathAndInjection which now centralizes all checks
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					if !isDocker {
+						if err := checkForLocalFileAccess(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -2251,8 +2254,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						// Use validateSafePathAndInjection which now centralizes all checks
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if !isDocker {
+							if err := checkForLocalFileAccess(argStr); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2268,7 +2278,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
+	if filepath.Base(t.service.GetCommand()) == "git" {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -2948,143 +2958,118 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func getCommentFeatures(language string) (bool, bool, bool) {
-	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
-		return true, false, false
-	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
-		return false, true, true
-	case "php":
-		return true, true, true
-	default:
-		// Default to strict: strip all known comment types if unsure
-		return true, true, true
-	}
-}
-
-type commentStripper struct {
-	inLineComment  bool
-	inBlockComment bool
-	inSingle       bool
-	inDouble       bool
-	inBacktick     bool
-	escaped        bool
-	supportsHash   bool
-	supportsSlash  bool
-	supportsBlock  bool
-}
-
-func newCommentStripper(language string) *commentStripper {
-	h, s, b := getCommentFeatures(language)
-	return &commentStripper{
-		supportsHash:  h,
-		supportsSlash: s,
-		supportsBlock: b,
-	}
-}
-
-func (s *commentStripper) process(char, nextChar byte) (write bool, skipNext bool) {
-	if s.inLineComment {
-		if char == '\n' {
-			s.inLineComment = false
-			return true, false
-		}
-		return false, false
-	}
-	if s.inBlockComment {
-		if char == '*' && nextChar == '/' {
-			s.inBlockComment = false
-			return false, true
-		}
-		return false, false
-	}
-
-	if s.escaped {
-		s.escaped = false
-		return true, false
-	}
-
-	// Handle quotes
-	if s.handleQuotes(char) {
-		return true, false
-	}
-
-	// If inside quotes, handle escape char
-	if s.inSingle || s.inDouble || s.inBacktick {
-		if char == '\\' {
-			s.escaped = true
-			return true, false
-		}
-		return true, false
-	}
-
-	// Not in quotes, check for comments
-	if s.handleComments(char, nextChar) {
-		return false, s.inBlockComment || (s.inLineComment && s.supportsSlash && char == '/')
-	}
-
-	// Skip backslash (line continuation outside quotes)
-	if char == '\\' {
-		return false, false
-	}
-
-	return true, false
-}
-
-func (s *commentStripper) handleQuotes(char byte) bool {
-	if char == '\'' && !s.inDouble && !s.inBacktick {
-		s.inSingle = !s.inSingle
-		return true
-	}
-	if char == '"' && !s.inSingle && !s.inBacktick {
-		s.inDouble = !s.inDouble
-		return true
-	}
-	if char == '`' && !s.inSingle && !s.inDouble {
-		s.inBacktick = !s.inBacktick
-		return true
-	}
-	return false
-}
-
-func (s *commentStripper) handleComments(char, nextChar byte) bool {
-	if s.supportsHash && char == '#' {
-		s.inLineComment = true
-		return true
-	}
-	if (s.supportsSlash || s.supportsBlock) && char == '/' {
-		if s.supportsSlash && nextChar == '/' {
-			s.inLineComment = true
-			return true
-		}
-		if s.supportsBlock && nextChar == '*' {
-			s.inBlockComment = true
-			return true
-		}
-	}
-	return false
-}
-
 func stripInterpreterComments(val, language string) string {
 	var b strings.Builder
 	b.Grow(len(val))
 
-	s := newCommentStripper(language)
+	inLineComment := false  // # or //
+	inBlockComment := false // /* ... */
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	// Determine comment style
+	supportsHash := false
+	supportsSlash := false
+	supportsBlock := false
+
+	switch language {
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		supportsHash = true
+	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
+		supportsSlash = true
+		supportsBlock = true
+	case "php":
+		supportsHash = true
+		supportsSlash = true
+		supportsBlock = true
+	default:
+		// Default to strict: strip all known comment types if unsure
+		supportsHash = true
+		supportsSlash = true
+		supportsBlock = true
+	}
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
-		var nextChar byte
-		if i+1 < len(val) {
-			nextChar = val[i+1]
+
+		if inLineComment {
+			if char == '\n' {
+				inLineComment = false
+				b.WriteByte(char)
+			}
+			continue
+		}
+		if inBlockComment {
+			if char == '*' && i+1 < len(val) && val[i+1] == '/' {
+				inBlockComment = false
+				i++
+			}
+			continue
 		}
 
-		write, skip := s.process(char, nextChar)
-		if write {
+		if escaped {
+			escaped = false
 			b.WriteByte(char)
+			continue
 		}
-		if skip {
-			i++
+
+		// Quote handling
+		if char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			b.WriteByte(char)
+			continue
 		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			b.WriteByte(char)
+			continue
+		}
+		if char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			b.WriteByte(char)
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			if char == '\\' {
+				escaped = true
+				// Write escape char to preserve string content (e.g. \n)
+				b.WriteByte(char)
+				continue
+			}
+			b.WriteByte(char)
+			continue
+		}
+
+		// Not in quotes, check for comments
+		if supportsHash && char == '#' {
+			inLineComment = true
+			continue
+		}
+		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
+			if supportsSlash && val[i+1] == '/' {
+				inLineComment = true
+				i++
+				continue
+			}
+			if supportsBlock && val[i+1] == '*' {
+				inBlockComment = true
+				i++
+				continue
+			}
+		}
+
+		// Skip backslash (line continuation outside quotes)
+		if char == '\\' {
+			// If followed by newline, it's a line continuation. Strip it.
+			// If not, it's just a backslash. Strip it anyway for safety?
+			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
+			continue
+		}
+
+		b.WriteByte(char)
 	}
 	return b.String()
 }
@@ -3534,7 +3519,7 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
-func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
+func validateSafePathAndInjection(val string, isDocker bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
@@ -3579,99 +3564,50 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
-	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
-	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
-	// Blocking them for generic tools (like echo) causes false positives (usability regression).
-	if isVulnerableToSchemes(commandName) {
-		if err := checkForDangerousSchemes(val); err != nil {
-			return err
-		}
-		// Also check decoded value for dangerous schemes
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForDangerousSchemes(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
-			}
-		}
+	// Sentinel Security Update: Detect SSRF attempts in command arguments
+	// We check for URLs, IP addresses, and localhost references.
+	if err := checkForSSRF(val); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func isVulnerableToSchemes(command string) bool {
-	base := strings.ToLower(filepath.Base(command))
-
-	// ImageMagick tools
-	magickTools := []string{
-		"convert", "mogrify", "identify", "composite", "compare", "stream",
-		"montage", "display", "animate", "import", "conjure", "magick",
+func checkForSSRF(val string) error {
+	// 1. Check for "localhost" explicitly
+	if strings.EqualFold(val, "localhost") {
+		return fmt.Errorf("potential SSRF detected: localhost is not allowed")
 	}
-	for _, tool := range magickTools {
-		if base == tool {
-			return true
+
+	// 2. Check for raw IP address
+	if ip := net.ParseIP(val); ip != nil {
+		// Reuse validation.IsSafeURL logic by constructing a URL.
+		// This ensures consistent blocking of loopback/private IPs.
+		// We use http scheme to pass the scheme check.
+		checkURL := "http://" + val
+		if err := validation.IsSafeURL(checkURL); err != nil {
+			return fmt.Errorf("potential SSRF detected: %w", err)
 		}
-	}
-
-	// FFmpeg tools
-	ffmpegTools := []string{"ffmpeg", "ffprobe", "ffplay"}
-	for _, tool := range ffmpegTools {
-		if base == tool {
-			return true
-		}
-	}
-
-	// Git
-	if base == gitCommand {
-		return true
-	}
-
-	// Interpreters (PHP, Expect) are handled by checkForShellInjection but
-	// if they are used as the main command, we might want to be extra careful.
-	// For now, let's stick to the ones that process "magic" files/URIs.
-
-	return false
-}
-
-func checkForDangerousSchemes(val string) error {
-	// Check for "scheme:..." pattern. Scheme must be at start.
-	// We look for the first colon.
-	idx := strings.Index(val, ":")
-	if idx == -1 {
 		return nil
 	}
 
-	// Extract scheme and convert to lower case
-	scheme := strings.ToLower(val[:idx])
-
-	// Validate scheme characters (alpha, digit, +, -, .) to prevent false positives on random colons
-	for _, r := range scheme {
-		if !((r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '+' || r == '-' || r == '.') {
-			return nil // Not a valid scheme pattern, likely just text with a colon
+	// 3. Check for URL with scheme
+	// Heuristic: Must contain "://" to be treated as a URL for SSRF check
+	if strings.Contains(val, "://") {
+		u, err := url.Parse(val)
+		if err != nil {
+			return nil
 		}
-	}
 
-	// Blocklist of dangerous schemes used for LFI, RCE, or SSRF in various tools
-	dangerous := map[string]bool{
-		// Generic / Interpreter
-		"file": true, "gopher": true, "expect": true, "php": true,
-		"zip": true, "jar": true, "war": true,
+		if u.Scheme == "" || u.Host == "" {
+			return nil
+		}
 
-		// ImageMagick (convert, mogrify, identify, etc.)
-		"mvg": true, "msl": true, "vid": true, "ephemeral": true,
-		"label": true, "text": true, "info": true, "pango": true,
-		"caption": true, "plasma": true, "xc": true, "inline": true,
-		"gradient": true, "pattern": true, "tile": true, "read": true,
-
-		// FFmpeg
-		"concat": true, "subfile": true, "crypto": true, "data": true,
-		"hls": true, "http": false, "https": false, // explicitly allowed (handled by IsSafeURL if :// present)
-		"ftp": true, "rtmp": true, "rtsp": true,
-
-		// Git
-		"ext": true, // Block git ext::
-	}
-
-	if dangerous[scheme] {
-		return fmt.Errorf("dangerous scheme detected: %s", scheme)
+		// Check host against allowlist/blocklist logic
+		checkURL := "http://" + u.Host
+		if err := validation.IsSafeURL(checkURL); err != nil {
+			return fmt.Errorf("potential SSRF detected: %w", err)
+		}
 	}
 
 	return nil

@@ -93,7 +93,6 @@ jobs:
           gh pr list \
             --repo ${{ github.repository }} \
             --search "state:open updated:<$DATE_THRESHOLD" \
-            --limit 1000 \
             --json number,updatedAt,url \
             --jq '.[] | .number' | \
           while read pr_number; do
@@ -147,7 +146,6 @@ jobs:
             pr_info=$(gh pr list \
               --repo ${{ github.repository }} \
               --head "$branch_name" \
-              --limit 1000 \
               --state open \
               --json number,updatedAt,isDraft \
               --jq '.[0]')

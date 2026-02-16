@@ -31,10 +31,12 @@ RUN apt-get update && apt-get install -y curl unzip && \
     rm protoc.zip
 
 # Generate TypeScript protos
+# We use --proto_path=/ so that imports like "proto/config/v1/foo.proto" resolve correctly
+# since we mounted the proto directory to /proto.
 RUN find /proto -name "*.proto" -exec protoc \
-    --proto_path=/proto \
+    --proto_path=/ \
     --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=/proto \
+    --ts_proto_out=/ \
     --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
     {} +
 

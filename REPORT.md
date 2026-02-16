@@ -1,45 +1,40 @@
-# Audit Report
+# Truth Reconciliation Audit Report
 
-## 1. Executive Summary
+## Executive Summary
+This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
 
-This report details the results of the "Truth Reconciliation Audit" performed on the MCP Any project. The audit verified 10 distinct features across the UI and Server codebases against the Project Roadmap and Documentation.
+**Overall Health:** 80% (8/10 files verified correct)
+**Discrepancies Found:** 2
+- **Code Defect:** 1 (Context Optimizer)
+- **Doc Drift:** 1 (Admin API)
 
-**Health Status:**
-- **Documentation Accuracy:** 100% (10/10 features matched documentation)
-- **Roadmap Alignment:** 100% (10/10 features aligned with roadmap)
-- **Code Integrity:** High (All sampled features implemented; minor linting issues fixed)
+All discrepancies have been remediated.
 
-All 10 sampled features were found to be correctly implemented and documented. No remediation actions were required for the features themselves. However, during the verification process, linting issues in `server/pkg/tool/types.go` were identified and resolved to ensure codebase quality.
-
-## 2. Verification Matrix
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/browser_connectivity_check.md` | ✅ Verified | None | Implemented in `ui/src/components/diagnostics/connection-diagnostic.tsx` |
-| `ui/docs/features/native_file_upload_playground.md` | ✅ Verified | None | Implemented in `ui/src/components/playground/schema-form.tsx` (using `FileInput`) |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Implemented in `ui/src/components/logs/log-stream.tsx` (`LogRow`, `JsonViewer`) |
-| `ui/docs/features/server-health-history.md` | ✅ Verified | None | Implemented in `ui/src/hooks/use-service-health-history.ts` and backend API |
-| `ui/docs/features/tool_search_bar.md` | ✅ Verified | None | Implemented in `ui/src/components/tools/smart-tool-search.tsx` |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Implemented in `server/pkg/middleware/context_optimizer.go` |
-| `server/docs/features/config_validator.md` | ✅ Verified | None | Implemented in `server/pkg/config/validator.go` |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Implemented in `server/pkg/health/health.go` and `doctor.go` |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Implemented in `server/pkg/config/watcher.go` |
-| `server/docs/features/transformation.md` | ✅ Verified | None | Implemented in `server/pkg/transformer/` (`transformer.go`, `parser.go` with JQ/JSONPath) |
+| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
+| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
+| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
+| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
+| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
+| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
+| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
+| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
+| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
+| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
 
-## 3. Remediation Log
+## Remediation Log
 
-While no discrepancies were found in the sampled features, the following improvements were made to the codebase to satisfy strict quality standards:
+### 1. Context Optimizer (Code Defect)
+- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
+- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
+- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
 
-*   **File:** `server/pkg/tool/types.go`
-    *   **Issue:** `goconst` lint error (repeated string "git") and `gocyclo` error (high cyclomatic complexity in `stripInterpreterComments`).
-    *   **Action:**
-        *   Introduced `const gitCommand = "git"`.
-        *   Refactored `stripInterpreterComments` by extracting `getCommentFeatures` and `shouldStartComment` helper functions to reduce complexity.
-    *   **Result:** `make lint` now passes successfully.
+### 2. Admin API (Doc Drift)
+- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
+- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
 
-## 4. Security Scrub
-
-This report has been sanitized.
-- **PII:** None.
-- **Secrets:** None.
-- **Internal IPs:** None.
+## Security Scrub
+- No PII, secrets, or internal IPs were found in the report or the codebase during verification.

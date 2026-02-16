@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"unicode/utf8"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -280,35 +281,41 @@ func paginateRecursive(data any, page, pageSize int) any {
 			return "Error: Input too large"
 		}
 
+		runesCount := utf8.RuneCountInString(v)
 		start := (page - 1) * pageSize
+
+		if start >= runesCount {
+			return fmt.Sprintf("Page %d (empty). Total length: %d", page, runesCount)
+		}
+
 		end := start + pageSize
+		if end > runesCount {
+			end = runesCount
+		}
 
-		// ⚡ BOLT: Optimized single-pass pagination.
-		// Randomized Selection from Top 5 High-Impact Targets.
+		// Find byte offsets
+		startByte := 0
+		endByte := 0
 
-		startByte := len(v)
-		endByte := len(v)
-		totalRunes := 0
-
+		// Optimization: iterate runes without allocating []rune
+		count := 0
 		for i := range v {
-			if totalRunes == start {
+			if count == start {
 				startByte = i
 			}
-			if totalRunes == end {
+			if count == end {
 				endByte = i
+				break
 			}
-			totalRunes++
+			count++
 		}
 
-		if start >= totalRunes {
-			return fmt.Sprintf("Page %d (empty). Total length: %d", page, totalRunes)
+		if endByte == 0 && end == runesCount {
+			endByte = len(v)
 		}
-
-		// Calculate total pages
-		totalPages := (totalRunes + pageSize - 1) / pageSize
 
 		chunk := v[startByte:endByte]
-		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, totalPages, chunk, totalRunes)
+		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (runesCount+pageSize-1)/pageSize, chunk, runesCount)
 
 	case map[string]any:
 		for k, val := range v {
