@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -3093,15 +3094,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
-	// Normalize value to detect obfuscation (e.g. system ( ) )
-	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
-		if !unicode.IsSpace(r) {
-			b.WriteRune(r)
-		}
-	}
-	cleanVal := strings.ToLower(b.String())
+	// Note: We use the original stripped value (preserving whitespace) for regex matching
+	// to correctly handle word boundaries and avoid false positives (e.g. pos.x matching os.).
 
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
@@ -3109,22 +3103,35 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"getattr", "setattr", "delattr",
 	}
 
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+	// Build regex pattern: (?i)\b(kw1|kw2|...)\s*[\(\.'"`]
+	// \b ensures we match whole words (avoids pos.x matching os).
+	// \s* allows optional whitespace.
+	// [\(\.'"`] matches the delimiter that indicates a function call, property access, or string arg.
+	var patternBuilder strings.Builder
+	patternBuilder.WriteString(`(?i)\b(`)
+	for i, kw := range dangerousKeywords {
+		if i > 0 {
+			patternBuilder.WriteString("|")
 		}
+		patternBuilder.WriteString(regexp.QuoteMeta(kw))
+	}
+	patternBuilder.WriteString(`)\s*[\(\.'"` + "`" + `]`)
+
+	// Cache the regex? In a real scenario yes, but here we build it dynamically to support dynamic lists if needed.
+	// For now, compilation is fast enough for this list size.
+	re := regexp.MustCompile(patternBuilder.String())
+
+	if match := re.FindString(val); match != "" {
+		return fmt.Errorf("interpreter injection detected: value contains dangerous pattern %q", match)
 	}
 
-	if strings.Contains(cleanVal, "__import__") {
-		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
+	if strings.Contains(val, "__import__") ||
+		strings.Contains(val, "__builtins__") ||
+		strings.Contains(val, "__globals__") {
+		return fmt.Errorf("interpreter injection detected: value contains dangerous builtin")
 	}
 	return nil
 }

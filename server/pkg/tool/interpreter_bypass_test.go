@@ -42,6 +42,25 @@ func TestInterpreterFunctionCalls_BypassAttempts(t *testing.T) {
 		// Valid code
 		{"Valid Python", "print('hello')", "python", false},
 		{"Valid Python with div", "x = 10 / 2", "python", false},
+
+		// Method Chaining and Property Access Bypasses (Should be BLOCKED)
+		{"Python subprocess.call", "subprocess.call(['ls'])", "python", true},
+		{"Python os.system method", "os.system('ls')", "python", true},
+		{"Python sys.modules", "sys.modules['os']", "python", true},
+
+		// Builtin Function Bypasses (Should be BLOCKED)
+		{"Python getattr", "getattr(__builtins__, 'open')", "python", true},
+		{"Python setattr", "setattr(obj, 'x', 1)", "python", true},
+		{"Python delattr", "delattr(obj, 'x')", "python", true},
+		{"Python __import__", "__import__('os')", "python", true},
+		{"Python __builtins__", "print(__builtins__)", "python", true},
+		{"Python __globals__", "print(__globals__)", "python", true},
+
+		// False Positives - Variable names ending in keywords (Should NOT be blocked)
+		{"Variable pos.x (ending in os)", "pos.x = 10", "python", false},
+		{"Variable thread.start() (ending in read)", "thread.start()", "python", false},
+		{"Function cosmos() (ending in os)", "cosmos()", "python", false},
+		{"String with keyword text (quoted)", "print('system is down')", "python", false},
 	}
 
 	for _, tc := range cases {
