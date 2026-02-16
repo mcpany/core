@@ -57,21 +57,28 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	defer b.mu.RUnlock()
 
 	if subs, ok := b.subscribers[topic]; ok {
+		var wg sync.WaitGroup
 		for id, ch := range subs {
-			// ⚡ BOLT: Fix memory leak by using time.NewTimer instead of time.After.
-			// Randomized Selection from Top 5 High-Impact Targets
-			timer := time.NewTimer(b.publishTimeout)
-			select {
-			case ch <- msg:
-				if !timer.Stop() {
-					<-timer.C
+			wg.Add(1)
+			go func(id uintptr, ch chan T) {
+				defer wg.Done()
+
+				// ⚡ BOLT: Parallelized publish to avoid head-of-line blocking.
+				// Randomized Selection from Top 5 High-Impact Targets
+				timer := time.NewTimer(b.publishTimeout)
+				defer timer.Stop()
+
+				select {
+				case ch <- msg:
+					// Success
+				case <-timer.C:
+					// It's important to have a logging strategy for dropped messages.
+					log := logging.GetLogger()
+					log.Warn("Message dropped on topic", "topic", topic, "subscriber_id", id, "timeout", b.publishTimeout)
 				}
-			case <-timer.C:
-				// It's important to have a logging strategy for dropped messages.
-				log := logging.GetLogger()
-				log.Warn("Message dropped on topic", "topic", topic, "subscriber_id", id, "timeout", b.publishTimeout)
-			}
+			}(id, ch)
 		}
+		wg.Wait()
 	}
 	return nil
 }
