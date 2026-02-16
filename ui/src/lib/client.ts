@@ -11,13 +11,15 @@
 // NOTE: Adjusted to point to local Next.js API routes for this UI overhaul task
 // In a real deployment, these might be /api/v1/... proxied to backend
 
-import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
-import { ProfileDefinition } from '@proto/config/v1/config';
-import { ToolDefinition } from '@proto/config/v1/tool';
-import { ResourceDefinition } from '@proto/config/v1/resource';
-import { PromptDefinition } from '@proto/config/v1/prompt';
-import { Credential, Authentication } from '@proto/config/v1/auth';
+// Use relative imports for generated protos to support execution in environments
+// where tsconfig aliases (like @proto) might not be fully resolved (e.g. some CI setups).
+import { GrpcWebImpl, RegistrationServiceClientImpl } from '../../../proto/api/v1/registration';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '../../../proto/config/v1/upstream_service';
+import { ProfileDefinition } from '../../../proto/config/v1/config';
+import { ToolDefinition } from '../../../proto/config/v1/tool';
+import { ResourceDefinition } from '../../../proto/config/v1/resource';
+import { PromptDefinition } from '../../../proto/config/v1/prompt';
+import { Credential, Authentication } from '../../../proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -41,7 +43,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
  * ServiceTemplate defines a template for an upstream service.

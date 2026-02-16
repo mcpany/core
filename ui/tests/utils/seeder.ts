@@ -11,16 +11,18 @@ export class Seeder {
         throw new Error('Service config must have a name or id');
     }
 
+    // Always attempt to delete first to ensure clean state
+    // We ignore errors here because the service might not exist
     try {
-        // Try to get the service to see if it exists
-        await apiClient.getService(serviceName);
-        console.log(`Service ${serviceName} exists, deleting...`);
+        console.log(`[Seeder] Ensuring ${serviceName} is clean...`);
         await apiClient.unregisterService(serviceName);
+        // Small delay to allow backend to propagate deletion if async
+        await new Promise(r => setTimeout(r, 500));
     } catch (e) {
-        // Service likely doesn't exist or error, proceed
+        // Ignore delete errors
     }
 
-    console.log(`Registering service ${serviceName}...`);
+    console.log(`[Seeder] Registering service ${serviceName}...`);
     return await apiClient.registerService(config);
   }
 
@@ -28,19 +30,18 @@ export class Seeder {
    * Cleans up all registered services.
    */
   static async cleanup() {
-      console.log('Cleaning up all services...');
+      console.log('[Seeder] Cleaning up all services...');
       try {
           const services = await apiClient.listServices();
           for (const s of services) {
               const name = s.name || s.id;
               if (name) {
-                  console.log(`Deleting service ${name}...`);
+                  console.log(`[Seeder] Deleting service ${name}...`);
                   await apiClient.unregisterService(name);
               }
           }
       } catch (e) {
-          console.error("Cleanup failed:", e);
-          // Don't throw to avoid failing tests during teardown
+          console.error("[Seeder] Cleanup failed:", e);
       }
   }
 }

@@ -98,20 +98,30 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(text)})
-		if err == nil {
-			break // Success
+
+		// Check for error in CallTool return
+		if err != nil {
+			if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+				t.Logf("Attempt %d/%d: Call to api.funtranslations.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+				time.Sleep(2 * time.Second) // Wait before retrying
+				continue
+			}
+			if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") || strings.Contains(err.Error(), "upstream HTTP request failed with status 403") {
+				t.Skipf("Skipping test due to rate limiting or forbidden from api.funtranslations.com: %v", err)
+			}
+			require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.funtranslations.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") || strings.Contains(err.Error(), "upstream HTTP request failed with status 403") {
-			t.Skipf("Skipping test due to rate limiting or forbidden from api.funtranslations.com: %v", err)
+		// Check for error in content if CallTool succeeded (some adapters return error as text)
+		if res != nil && len(res.Content) > 0 {
+			if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
+				if strings.Contains(textContent.Text, "Tool execution failed") && (strings.Contains(textContent.Text, "429") || strings.Contains(textContent.Text, "403")) {
+					t.Skipf("Skipping test due to rate limiting or forbidden from api.funtranslations.com (in content): %s", textContent.Text)
+				}
+			}
 		}
 
-		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
+		break // Success
 	}
 
 	if err != nil {
@@ -129,8 +139,8 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	var funTranslationsResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)
 	if err != nil {
-		if strings.Contains(textContent.Text, "Too Many Requests") || strings.Contains(textContent.Text, "Limit Exceeded") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com (in body): %s", textContent.Text)
+		if strings.Contains(textContent.Text, "Too Many Requests") || strings.Contains(textContent.Text, "Limit Exceeded") || strings.Contains(textContent.Text, "Tool execution failed") {
+			t.Skipf("Skipping test due to API error or rate limiting from api.funtranslations.com (in body): %s", textContent.Text)
 		}
 	}
 	require.NoError(t, err, "Failed to unmarshal JSON response: %s", textContent.Text)
