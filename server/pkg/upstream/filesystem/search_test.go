@@ -157,8 +157,9 @@ func TestSearchFilesTool(t *testing.T) {
 		_, searchTool, createFile := setup(t)
 		createFile("/data/cancel.txt", "match")
 
+		// Create a context that is cancelled immediately to simulate a timeout or user cancellation
 		ctx, cancel := context.WithCancel(context.Background())
-		cancel() // Cancel immediately
+		cancel()
 
 		_, err := searchTool.Handler(ctx, map[string]interface{}{
 			"path":    "/data",
