@@ -1606,17 +1606,19 @@ func (a *Application) runServerMode(
 	// Moving mux.Handle("/", ...) down is safer.
 
 	// API Routes for Configuration Management
-	// Protected by auth middleware and RBAC (Admin only)
+	// Protected by auth middleware
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
-	mux.Handle("/api/v1/", authMiddleware(adminOnly(apiHandler)))
+	// Note: We do NOT enforce adminOnly here globally because /api/v1/ also serves
+	// endpoints required for the UI (e.g. user profile, catalog, status) for regular users.
+	// RBAC should be enforced at the handler level for specific sensitive resources.
+	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
 	// Topology API is now handled by apiHandler via api.go
 
 	// Catalog API
-	// Expose via REST for UI. This endpoint lists services, which might be considered sensitive,
-	// but is required for the UI to function. If the UI is used by non-admins, this might need relaxed permissions.
-	// For now, we enforce admin to be safe, as it exposes infrastructure details.
-	mux.Handle("/api/v1/catalog/services", authMiddleware(adminOnly(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Expose via REST for UI. This endpoint lists services.
+	// We allow authenticated users to list services.
+	mux.Handle("/api/v1/catalog/services", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -1630,7 +1632,7 @@ func (a *Application) runServerMode(
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
-	}))))
+	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
