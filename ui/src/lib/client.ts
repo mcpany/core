@@ -288,7 +288,10 @@ export const apiClient = {
     /**
      * Lists services from the dynamic catalog.
      *
+     * Summary: Fetches available services from the catalog.
+     *
      * @returns A promise that resolves to a list of catalog services.
+     * @throws {Error} If the request fails.
      */
     listCatalog: async () => {
         const res = await fetchWithAuth('/api/v1/catalog/services');
@@ -709,7 +712,11 @@ export const apiClient = {
 
     /**
      * Lists all available tools.
+     *
+     * Summary: Fetches all registered tools.
+     *
      * @returns A promise that resolves to a list of tools.
+     * @throws {Error} If the request fails.
      */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
@@ -728,9 +735,13 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
+     *
+     * Summary: Runs a specific tool.
+     *
      * @param request The execution request (tool name, arguments, etc.).
      * @param dryRun If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
+     * @throws {Error} If execution fails.
      */
     executeTool: async (request: any, dryRun?: boolean) => {
         try {
@@ -780,7 +791,11 @@ export const apiClient = {
 
     /**
      * Lists all available resources.
+     *
+     * Summary: Fetches all registered resources.
+     *
      * @returns A promise that resolves to a list of resources.
+     * @throws {Error} If the request fails.
      */
     listResources: async () => {
         const res = await fetchWithAuth('/api/v1/resources');
@@ -790,8 +805,12 @@ export const apiClient = {
 
     /**
      * Reads the content of a resource.
+     *
+     * Summary: Fetches the content of a specific resource.
+     *
      * @param uri The URI of the resource to read.
      * @returns A promise that resolves to the resource content.
+     * @throws {Error} If the request fails.
      */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
@@ -817,7 +836,11 @@ export const apiClient = {
 
     /**
      * Lists all available prompts.
+     *
+     * Summary: Fetches all registered prompts.
+     *
      * @returns A promise that resolves to a list of prompts.
+     * @throws {Error} If the request fails.
      */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
@@ -842,9 +865,13 @@ export const apiClient = {
 
     /**
      * Executes a prompt with the given arguments.
+     *
+     * Summary: Runs a specific prompt.
+     *
      * @param name The name of the prompt.
      * @param args The arguments for the prompt.
      * @returns A promise that resolves to the prompt execution result.
+     * @throws {Error} If execution fails.
      */
     executePrompt: async (name: string, args: Record<string, string>) => {
         const res = await fetchWithAuth('/api/v1/prompts/execute', {
@@ -860,7 +887,13 @@ export const apiClient = {
 
     /**
      * Returns a list of available service templates for the wizard.
+     *
+     * Summary: Fetches available service templates.
+     *
      * Fetches from the backend /api/v1/templates endpoint.
+     *
+     * @returns A promise that resolves to a list of templates.
+     * @throws {Error} If the request fails.
      */
     getServiceTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
@@ -1810,8 +1843,12 @@ export const apiClient = {
 
     /**
      * Lists audit logs.
+     *
+     * Summary: Fetches audit logs with optional filtering.
+     *
      * @param filters The filters for the audit logs.
      * @returns A promise that resolves to the list of audit logs.
+     * @throws {Error} If the request fails.
      */
     listAuditLogs: async (filters: {
         start_time?: string;

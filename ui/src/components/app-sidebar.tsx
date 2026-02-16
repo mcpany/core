@@ -189,7 +189,8 @@ const configItems = [
 
 /**
  * The main application sidebar.
- * Displays navigation links and user profile menu.
+ *
+ * Summary: Displays navigation links and user profile menu.
  *
  * @returns {JSX.Element} The rendered sidebar component.
  */

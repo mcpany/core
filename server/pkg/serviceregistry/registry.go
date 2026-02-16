@@ -29,7 +29,7 @@ import (
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
-	// It establishes the connection to the upstream service and discovers its capabilities.
+	// Summary: Registers a new upstream service and discovers its capabilities.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The registration context.
@@ -44,7 +44,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// UnregisterService removes a service from the registry.
 	//
-	// It gracefully shuts down the upstream connection and cleans up associated resources.
+	// Summary: Removes a service from the registry.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the unregistration.
@@ -56,12 +56,16 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetAllServices returns a list of all currently registered services.
 	//
+	// Summary: Lists all currently registered services.
+	//
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if retrieval fails (unlikely for in-memory registry).
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
+	//
+	// Summary: Retrieves metadata for a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
@@ -73,6 +77,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceConfig returns the configuration for a given service ID.
 	//
+	// Summary: Retrieves configuration for a service.
+	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	//
@@ -82,6 +88,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 
 	// GetServiceError returns the last known registration or health error for a service.
+	//
+	// Summary: Retrieves the last known error for a service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
