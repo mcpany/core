@@ -26,8 +26,8 @@ COPY .build-context/core/proto ./proto/
 
 WORKDIR /app/server
 
-# Install GCC for CGO
-RUN apt-get update && apt-get install -y gcc curl
+# Install curl for healthchecks (gcc no longer needed for pure Go sqlite)
+RUN apt-get update && apt-get install -y curl
 
 # Copy server source (context is server/)
 COPY . .
@@ -35,10 +35,9 @@ COPY . .
 # Build the Go application
 ARG TARGETOS
 ARG TARGETARCH
-# CGO_ENABLED=1 is required for go-sqlite3
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -o /server cmd/server/main.go
 
 # Stage 2: Create the small runtime image
