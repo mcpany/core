@@ -156,8 +156,14 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 }
 
 func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.Collection) error {
-	if isGitHubURL(collection.GetHttpUrl()) {
-		g, err := m.newGitHub(ctx, collection.GetHttpUrl())
+	url := collection.GetHttpUrl()
+	if url == "" {
+		m.log.Warn("Skipping collection with empty URL", "name", collection.GetName())
+		return nil
+	}
+
+	if isGitHubURL(url) {
+		g, err := m.newGitHub(ctx, url)
 		if err != nil {
 			return fmt.Errorf("failed to parse github url: %w", err)
 		}
@@ -199,7 +205,7 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 		return nil
 	}
 
-	return m.loadFromURL(ctx, collection.GetHttpUrl(), collection)
+	return m.loadFromURL(ctx, url, collection)
 }
 
 func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, collection *configv1.Collection) error {
