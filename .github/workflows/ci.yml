@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # ubuntu-slim
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -978,7 +978,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # ubuntu-slim
     needs:
       [
         build-images,
@@ -1029,9 +1029,9 @@ jobs:
 
             mkdir -p /tmp/gh-install
             if command -v curl &> /dev/null; then
-              curl -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+              curl -fsSL --retry 5 --retry-delay 5 https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
             elif command -v wget &> /dev/null; then
-              wget -qO- https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+              wget -qO- --tries=5 --waitretry=5 https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
             else
               echo "Neither curl nor wget found. Cannot install gh."
               exit 1
