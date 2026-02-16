@@ -45,7 +45,10 @@ var (
 
 // GlobalSettings returns the singleton instance of the global settings.
 //
-// Returns the result.
+// Summary: Retrieves the singleton GlobalSettings instance.
+//
+// Returns:
+//   - *Settings: The global settings instance.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
@@ -57,7 +60,10 @@ func GlobalSettings() *Settings {
 
 // ToProto returns the underlying GlobalSettings protobuf message.
 //
-// Returns the result.
+// Summary: Retrieves the underlying protobuf message.
+//
+// Returns:
+//   - *configv1.GlobalSettings: The protobuf representation.
 func (s *Settings) ToProto() *configv1.GlobalSettings {
 	return s.proto
 }
@@ -162,7 +168,10 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 
 // LogFormat returns the current log format as a protobuf enum.
 //
-// Returns the result.
+// Summary: Retrieves the configured log format.
+//
+// Returns:
+//   - configv1.GlobalSettings_LogFormat: The log format.
 func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 	format := viper.GetString("log-format")
 	key := "LOG_FORMAT_" + strings.ToUpper(format)
@@ -174,68 +183,100 @@ func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 
 // GRPCPort returns the gRPC port.
 //
-// Returns the result.
+// Summary: Retrieves the configured gRPC port.
+//
+// Returns:
+//   - string: The gRPC port.
 func (s *Settings) GRPCPort() string {
 	return s.grpcPort
 }
 
 // MCPListenAddress returns the MCP listen address.
 //
-// Returns the result.
+// Summary: Retrieves the MCP listen address.
+//
+// Returns:
+//   - string: The listen address.
 func (s *Settings) MCPListenAddress() string {
 	return s.proto.GetMcpListenAddress()
 }
 
 // MetricsListenAddress returns the metrics listen address.
 //
-// Returns the result.
+// Summary: Retrieves the metrics listen address.
+//
+// Returns:
+//   - string: The metrics listen address.
 func (s *Settings) MetricsListenAddress() string {
 	return viper.GetString("metrics-listen-address")
 }
 
 // Stdio returns whether stdio mode is enabled.
 //
-// Returns true if successful.
+// Summary: Checks if stdio mode is enabled.
+//
+// Returns:
+//   - bool: True if stdio mode is enabled.
 func (s *Settings) Stdio() bool {
 	return s.stdio
 }
 
 // ConfigPaths returns the paths to the configuration files.
 //
-// Returns the result.
+// Summary: Retrieves the configuration file paths.
+//
+// Returns:
+//   - []string: The list of config paths.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
 }
 
 // IsDebug returns whether debug mode is enabled.
 //
-// Returns true if successful.
+// Summary: Checks if debug mode is enabled.
+//
+// Returns:
+//   - bool: True if debug mode is enabled.
 func (s *Settings) IsDebug() bool {
 	return s.debug
 }
 
 // LogFile returns the path to the log file.
 //
-// Returns the result.
+// Summary: Retrieves the log file path.
+//
+// Returns:
+//   - string: The log file path.
 func (s *Settings) LogFile() string {
 	return s.logFile
 }
 
 // PersistentLog returns the path to the persistent log file used for hydration.
+//
+// Summary: Retrieves the persistent log file path.
+//
+// Returns:
+//   - string: The persistent log file path.
 func (s *Settings) PersistentLog() string {
 	return s.persistentLog
 }
 
 // ShutdownTimeout returns the graceful shutdown timeout.
 //
-// Returns the result.
+// Summary: Retrieves the shutdown timeout.
+//
+// Returns:
+//   - time.Duration: The shutdown timeout.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
 }
 
 // APIKey returns the API key for the server.
 //
-// Returns the result.
+// Summary: Retrieves the API key.
+//
+// Returns:
+//   - string: The API key.
 func (s *Settings) APIKey() string {
 	if s.proto.GetApiKey() != "" {
 		return s.proto.GetApiKey()

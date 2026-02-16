@@ -288,6 +288,8 @@ export const apiClient = {
     /**
      * Lists services from the dynamic catalog.
      *
+     * Summary: Retrieves services from the catalog.
+     *
      * @returns A promise that resolves to a list of catalog services.
      */
     listCatalog: async () => {
@@ -373,6 +375,9 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
+     *
+     * Summary: Updates the status of a service.
+     *
      * @param name The name of the service.
      * @param disable True to disable the service, false to enable it.
      * @returns A promise that resolves to the updated service status.
@@ -389,6 +394,9 @@ export const apiClient = {
 
     /**
      * Gets the status of a service.
+     *
+     * Summary: Retrieves the status of a service.
+     *
      * @param name The name of the service.
      * @returns A promise that resolves to the service status.
      */
@@ -400,6 +408,9 @@ export const apiClient = {
 
     /**
      * Restarts a service.
+     *
+     * Summary: Triggers a restart of a service.
+     *
      * @param name The name of the service to restart.
      * @returns A promise that resolves when the service is restarted.
      */
@@ -507,6 +518,9 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
+     *
+     * Summary: Updates an existing upstream service configuration.
+     *
      * @param config The updated configuration of the service.
      * @returns A promise that resolves to the updated service configuration.
      */
@@ -593,6 +607,9 @@ export const apiClient = {
 
     /**
      * Unregisters (deletes) an upstream service.
+     *
+     * Summary: Deletes a service configuration.
+     *
      * @param id The ID of the service to unregister.
      * @returns A promise that resolves when the service is unregistered.
      */
@@ -606,6 +623,9 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
+     *
+     * Summary: Validates a service configuration against the schema.
+     *
      * @param config The service configuration to validate.
      * @returns A promise that resolves to the validation result.
      */
@@ -709,6 +729,9 @@ export const apiClient = {
 
     /**
      * Lists all available tools.
+     *
+     * Summary: Retrieves all registered tools.
+     *
      * @returns A promise that resolves to a list of tools.
      */
     listTools: async () => {
@@ -728,6 +751,9 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
+     *
+     * Summary: Executes a specific tool.
+     *
      * @param request The execution request (tool name, arguments, etc.).
      * @param dryRun If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
@@ -764,6 +790,9 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a tool.
+     *
+     * Summary: Updates the status of a tool.
+     *
      * @param name The name of the tool.
      * @param disabled True to disable the tool, false to enable it.
      * @returns A promise that resolves to the updated tool status.
@@ -780,6 +809,9 @@ export const apiClient = {
 
     /**
      * Lists all available resources.
+     *
+     * Summary: Retrieves all registered resources.
+     *
      * @returns A promise that resolves to a list of resources.
      */
     listResources: async () => {
@@ -790,6 +822,9 @@ export const apiClient = {
 
     /**
      * Reads the content of a resource.
+     *
+     * Summary: Retrieves the content of a resource.
+     *
      * @param uri The URI of the resource to read.
      * @returns A promise that resolves to the resource content.
      */
@@ -801,6 +836,9 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a resource.
+     *
+     * Summary: Updates the status of a resource.
+     *
      * @param uri The URI of the resource.
      * @param disabled True to disable the resource, false to enable it.
      * @returns A promise that resolves to the updated resource status.
@@ -817,6 +855,9 @@ export const apiClient = {
 
     /**
      * Lists all available prompts.
+     *
+     * Summary: Retrieves all registered prompts.
+     *
      * @returns A promise that resolves to a list of prompts.
      */
     listPrompts: async () => {
@@ -827,6 +868,9 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a prompt.
+     *
+     * Summary: Updates the status of a prompt.
+     *
      * @param name The name of the prompt.
      * @param enabled True to enable the prompt, false to disable it.
      * @returns A promise that resolves to the updated prompt status.
@@ -842,6 +886,9 @@ export const apiClient = {
 
     /**
      * Executes a prompt with the given arguments.
+     *
+     * Summary: Executes a specific prompt.
+     *
      * @param name The name of the prompt.
      * @param args The arguments for the prompt.
      * @returns A promise that resolves to the prompt execution result.
@@ -861,6 +908,8 @@ export const apiClient = {
     /**
      * Returns a list of available service templates for the wizard.
      * Fetches from the backend /api/v1/templates endpoint.
+     *
+     * Summary: Retrieves service templates.
      */
     getServiceTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
@@ -927,6 +976,9 @@ export const apiClient = {
 
     /**
      * Initiates an OAuth flow for a specific service.
+     *
+     * Summary: Starts an OAuth flow.
+     *
      * @param serviceId The ID of the service (e.g. "google_calendar").
      * @param credentialId The ID of the credential to bind (usually same as service name for now).
      * @param redirectUrl The URL to redirect back to after auth.
@@ -953,6 +1005,9 @@ export const apiClient = {
 
     /**
      * Creates a new profile.
+     *
+     * Summary: Creates a new user profile.
+     *
      * @param profileData The profile configuration.
      */
     createProfile: async (profileData: any) => {
@@ -967,6 +1022,9 @@ export const apiClient = {
 
     /**
      * Updates an existing profile.
+     *
+     * Summary: Updates a user profile.
+     *
      * @param profileData The profile configuration.
      */
     updateProfile: async (profileData: any) => {
@@ -981,6 +1039,9 @@ export const apiClient = {
 
     /**
     * Deletes a profile.
+    *
+    * Summary: Deletes a user profile.
+    *
     * @param name The name of the profile to delete.
     */
     deleteProfile: async (name: string) => {
@@ -993,6 +1054,8 @@ export const apiClient = {
 
     /**
      * Lists all profiles.
+     *
+     * Summary: Retrieves all user profiles.
      */
     listProfiles: async () => {
         const res = await fetchWithAuth('/api/v1/profiles');
@@ -1008,6 +1071,9 @@ export const apiClient = {
 
     /**
      * Lists all stored secrets.
+     *
+     * Summary: Retrieves all secrets.
+     *
      * @returns A promise that resolves to a list of secrets.
      */
     listSecrets: async () => {
@@ -1019,6 +1085,9 @@ export const apiClient = {
 
     /**
      * Reveals a secret value.
+     *
+     * Summary: Reveals the value of a secret.
+     *
      * @param id The ID of the secret to reveal.
      * @returns A promise that resolves to the secret value.
      */
@@ -1032,6 +1101,9 @@ export const apiClient = {
 
     /**
      * Saves a secret.
+     *
+     * Summary: Saves or updates a secret.
+     *
      * @param secret The secret definition to save.
      * @returns A promise that resolves to the saved secret.
      */
@@ -1047,6 +1119,9 @@ export const apiClient = {
 
     /**
      * Deletes a secret.
+     *
+     * Summary: Deletes a secret.
+     *
      * @param id The ID of the secret to delete.
      * @returns A promise that resolves when the secret is deleted.
      */
@@ -1078,6 +1153,9 @@ export const apiClient = {
 
     /**
      * Saves the global server settings.
+     *
+     * Summary: Updates the global configuration settings.
+     *
      * @param settings The settings to save.
      * @returns A promise that resolves when the settings are saved.
      */
@@ -1092,6 +1170,9 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
+     *
+     * Summary: Retrieves traffic metrics for the dashboard.
+     *
      * @param serviceId Optional service ID to filter by.
      * @param timeRange Optional time range to filter by (e.g. "1h", "24h").
      * @returns A promise that resolves to the traffic history points.
@@ -1111,6 +1192,9 @@ export const apiClient = {
 
     /**
      * Gets the top used tools.
+     *
+     * Summary: Retrieves the most frequently used tools.
+     *
      * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the top tools stats.
      */
@@ -1127,6 +1211,9 @@ export const apiClient = {
 
     /**
      * Lists all alerts.
+     *
+     * Summary: Retrieves all active alerts.
+     *
      * @returns A promise that resolves to a list of alerts.
      */
     listAlerts: async () => {
@@ -1137,6 +1224,9 @@ export const apiClient = {
 
     /**
      * Lists all alert rules.
+     *
+     * Summary: Retrieves all configured alert rules.
+     *
      * @returns A promise that resolves to a list of alert rules.
      */
     listAlertRules: async () => {
@@ -1147,6 +1237,9 @@ export const apiClient = {
 
     /**
      * Creates a new alert rule.
+     *
+     * Summary: Creates a new alert rule.
+     *
      * @param rule The rule to create.
      * @returns A promise that resolves to the created rule.
      */
@@ -1162,6 +1255,9 @@ export const apiClient = {
 
     /**
      * Gets an alert rule by ID.
+     *
+     * Summary: Retrieves a specific alert rule.
+     *
      * @param id The ID of the rule.
      * @returns A promise that resolves to the rule.
      */
@@ -1173,6 +1269,9 @@ export const apiClient = {
 
     /**
      * Updates an alert rule.
+     *
+     * Summary: Updates an existing alert rule.
+     *
      * @param rule The rule to update.
      * @returns A promise that resolves to the updated rule.
      */
@@ -1188,6 +1287,9 @@ export const apiClient = {
 
     /**
      * Deletes an alert rule.
+     *
+     * Summary: Deletes an alert rule.
+     *
      * @param id The ID of the rule to delete.
      * @returns A promise that resolves when the rule is deleted.
      */
@@ -1201,6 +1303,9 @@ export const apiClient = {
 
     /**
      * Gets the tools with highest failure rates.
+     *
+     * Summary: Retrieves failure rate statistics for tools.
+     *
      * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool failure stats.
      */
@@ -1214,6 +1319,9 @@ export const apiClient = {
 
     /**
      * Gets the tool usage analytics.
+     *
+     * Summary: Retrieves usage analytics for tools.
+     *
      * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool usage stats.
      */
@@ -1228,6 +1336,9 @@ export const apiClient = {
 
     /**
      * Gets the system status.
+     *
+     * Summary: Retrieves the system health status.
+     *
      * @returns A promise that resolves to the system status.
      */
     getSystemStatus: async (): Promise<SystemStatus> => {
@@ -1238,6 +1349,9 @@ export const apiClient = {
 
     /**
      * Gets the dashboard metrics.
+     *
+     * Summary: Retrieves overall dashboard metrics.
+     *
      * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the metrics list.
      */
@@ -1251,6 +1365,9 @@ export const apiClient = {
 
     /**
      * Gets the latest execution traces.
+     *
+     * Summary: Retrieves recent execution traces.
+     *
      * @param options Optional parameters.
      * @returns A promise that resolves to the traces list.
      */
@@ -1266,6 +1383,9 @@ export const apiClient = {
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
+     *
+     * Summary: Seeds dummy traffic data for testing.
+     *
      * @param points The traffic points to seed.
      */
     seedTrafficData: async (points: any[]) => {
@@ -1279,6 +1399,9 @@ export const apiClient = {
 
     /**
      * Updates an alert status.
+     *
+     * Summary: Updates the status of a specific alert.
+     *
      * @param id The ID of the alert.
      * @param status The new status.
      * @returns A promise that resolves to the updated alert.
@@ -1295,6 +1418,9 @@ export const apiClient = {
 
     /**
      * Gets the configured global webhook URL for alerts.
+     *
+     * Summary: Retrieves the alert webhook URL.
+     *
      * @returns A promise that resolves to the webhook configuration.
      */
     getWebhookURL: async (): Promise<{ url: string }> => {
@@ -1305,6 +1431,9 @@ export const apiClient = {
 
     /**
      * Saves the configured global webhook URL for alerts.
+     *
+     * Summary: Updates the alert webhook URL.
+     *
      * @param url The webhook URL.
      * @returns A promise that resolves to the updated webhook configuration.
      */
@@ -1322,6 +1451,9 @@ export const apiClient = {
 
     /**
      * Lists all service collections (stacks).
+     *
+     * Summary: Retrieves all stacks.
+     *
      * @returns A promise that resolves to a list of collections.
      */
     listCollections: async () => {
@@ -1332,6 +1464,9 @@ export const apiClient = {
 
     /**
      * Gets a single service collection (stack) by its name.
+     *
+     * Summary: Retrieves a specific stack.
+     *
      * @param name The name of the collection.
      * @returns A promise that resolves to the collection.
      */
@@ -1343,6 +1478,9 @@ export const apiClient = {
 
     /**
      * Saves a service collection (stack).
+     *
+     * Summary: Saves or updates a stack.
+     *
      * @param collection The collection to save.
      * @returns A promise that resolves when the collection is saved.
      */
@@ -1371,6 +1509,9 @@ export const apiClient = {
 
     /**
      * Deletes a service collection (stack).
+     *
+     * Summary: Deletes a stack.
+     *
      * @param name The name of the collection to delete.
      * @returns A promise that resolves when the collection is deleted.
      */
@@ -1384,6 +1525,9 @@ export const apiClient = {
 
     /**
      * Gets the configuration for a stack (Compatibility wrapper).
+     *
+     * Summary: Retrieves stack configuration (alias for getCollection).
+     *
      * @param stackId The ID of the stack.
      * @returns A promise that resolves to the stack configuration.
      */
@@ -1394,6 +1538,9 @@ export const apiClient = {
 
     /**
      * Saves the configuration for a stack (Compatibility wrapper).
+     *
+     * Summary: Saves stack configuration (alias for saveCollection).
+     *
      * @param stackId The ID of the stack.
      * @param config The configuration content (Collection object).
      * @returns A promise that resolves when the config is saved.
@@ -1407,6 +1554,9 @@ export const apiClient = {
 
     /**
      * Gets the stack configuration as YAML.
+     *
+     * Summary: Retrieves stack configuration in YAML format.
+     *
      * @param stackId The ID of the stack.
      * @returns A promise that resolves to the YAML string.
      */
@@ -1418,6 +1568,9 @@ export const apiClient = {
 
     /**
      * Saves the stack configuration from YAML.
+     *
+     * Summary: Saves stack configuration from YAML.
+     *
      * @param stackId The ID of the stack.
      * @param yamlContent The YAML configuration content.
      * @returns A promise that resolves when the config is saved.
@@ -1441,6 +1594,9 @@ export const apiClient = {
 
     /**
      * Lists all users.
+     *
+     * Summary: Retrieves all registered users.
+     *
      * @returns A promise that resolves to a list of users.
      */
     listUsers: async () => {
@@ -1470,6 +1626,9 @@ export const apiClient = {
 
     /**
      * Creates a new user.
+     *
+     * Summary: Creates a new user.
+     *
      * @param user The user object to create.
      * @returns A promise that resolves to the created user.
      */
@@ -1509,6 +1668,9 @@ export const apiClient = {
 
     /**
      * Updates an existing user.
+     *
+     * Summary: Updates an existing user.
+     *
      * @param user The user object to update.
      * @returns A promise that resolves to the updated user.
      */
@@ -1548,6 +1710,9 @@ export const apiClient = {
 
     /**
      * Deletes a user.
+     *
+     * Summary: Deletes a user.
+     *
      * @param id The ID of the user to delete.
      * @returns A promise that resolves when the user is deleted.
      */
@@ -1564,6 +1729,9 @@ export const apiClient = {
 
     /**
      * Initiates an OAuth flow.
+     *
+     * Summary: Starts an OAuth flow.
+     *
      * @param serviceID The ID of the service for which to initiate OAuth.
      * @param redirectURL The URL to redirect to after OAuth completes.
      * @param credentialID Optional credential ID to associate with the token.
@@ -1588,6 +1756,9 @@ export const apiClient = {
 
     /**
      * Handles the OAuth callback.
+     *
+     * Summary: Processes the OAuth callback.
+     *
      * @param serviceID The ID of the service (optional).
      * @param code The OAuth authorization code.
      * @param redirectURL The redirect URL used in the initial request.
@@ -1615,6 +1786,9 @@ export const apiClient = {
 
     /**
      * Lists all stored credentials.
+     *
+     * Summary: Retrieves all credentials.
+     *
      * @returns A promise that resolves to a list of credentials.
      */
     listCredentials: async () => {
@@ -1626,6 +1800,9 @@ export const apiClient = {
 
     /**
      * Saves (creates or updates) a credential.
+     *
+     * Summary: Saves a credential.
+     *
      * @param credential The credential to save.
      * @returns A promise that resolves to the saved credential.
      */
@@ -1636,6 +1813,9 @@ export const apiClient = {
 
     /**
      * Creates a new credential.
+     *
+     * Summary: Creates a new credential.
+     *
      * @param credential The credential to create.
      * @returns A promise that resolves to the created credential.
      */
@@ -1651,6 +1831,9 @@ export const apiClient = {
 
     /**
      * Updates an existing credential.
+     *
+     * Summary: Updates an existing credential.
+     *
      * @param credential The credential to update.
      * @returns A promise that resolves to the updated credential.
      */
@@ -1666,6 +1849,9 @@ export const apiClient = {
 
     /**
      * Deletes a credential.
+     *
+     * Summary: Deletes a credential.
+     *
      * @param id The ID of the credential to delete.
      * @returns A promise that resolves when the credential is deleted.
      */
@@ -1679,6 +1865,9 @@ export const apiClient = {
 
     /**
      * Tests authentication with the provided parameters.
+     *
+     * Summary: Validates authentication credentials.
+     *
      * @param req The authentication test request.
      * @returns A promise that resolves to the test result.
      */
@@ -1696,6 +1885,9 @@ export const apiClient = {
 
     /**
      * Lists all service templates.
+     *
+     * Summary: Retrieves all templates.
+     *
      * @returns A promise that resolves to a list of templates.
      */
     listTemplates: async (): Promise<ServiceTemplate[]> => {
@@ -1724,6 +1916,9 @@ export const apiClient = {
 
     /**
      * Saves a service template.
+     *
+     * Summary: Saves a service template.
+     *
      * @param template The template configuration to save.
      * @returns A promise that resolves to the saved template.
      */
@@ -1783,6 +1978,9 @@ export const apiClient = {
 
     /**
      * Deletes a service template.
+     *
+     * Summary: Deletes a service template.
+     *
      * @param id The ID of the template to delete.
      * @returns A promise that resolves when the template is deleted.
      */
@@ -1798,6 +1996,9 @@ export const apiClient = {
 
     /**
      * Gets the doctor status report.
+     *
+     * Summary: Retrieves the doctor health report.
+     *
      * @returns A promise that resolves to the doctor report.
      */
     getDoctorStatus: async (): Promise<DoctorReport> => {
@@ -1810,6 +2011,9 @@ export const apiClient = {
 
     /**
      * Lists audit logs.
+     *
+     * Summary: Retrieves audit logs.
+     *
      * @param filters The filters for the audit logs.
      * @returns A promise that resolves to the list of audit logs.
      */
