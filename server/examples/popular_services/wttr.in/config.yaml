@@ -1,0 +1,19 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+- name: weather
+  http_service:
+    address: "https://wttr.in"
+    calls:
+    - schema:
+        name: "get_weather"
+        description: "Get weather for a location"
+      endpoint_path: "/{{location}}?format=j1"
+      method: "HTTP_METHOD_GET"
+      parameters:
+      - schema:
+          name: "location"
+          description: "City name"
+          is_required: true
+          type: "STRING"
