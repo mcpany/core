@@ -26,7 +26,7 @@ import (
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - 405 Method Not Allowed: If method is not POST.
 //   - 400 Bad Request: If body is invalid.
 //   - 500 Internal Server Error: If response encoding fails.

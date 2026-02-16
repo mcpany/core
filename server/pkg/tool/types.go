@@ -70,16 +70,22 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
+	// Summary: Retrieves the protobuf tool definition.
+	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
+	//
+	// Summary: Retrieves the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Summary: Executes the tool.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The execution context.
@@ -90,6 +96,8 @@ type Tool interface {
 	//   - error: An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Summary: Retrieves the cache configuration.
 	//
 	// Returns:
 	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
@@ -149,6 +157,8 @@ type ExecutionRequest struct {
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
+	// Summary: Retrieves a tool by name.
+	//
 	// Parameters:
 	//   - toolName: The name of the tool to retrieve.
 	//
@@ -158,6 +168,8 @@ type ServiceRegistry interface {
 	GetTool(toolName string) (Tool, bool)
 
 	// GetServiceInfo retrieves metadata for a service.
+	//
+	// Summary: Retrieves service metadata.
 	//
 	// Parameters:
 	//   - serviceID: The unique identifier of the service.
@@ -169,6 +181,8 @@ type ServiceRegistry interface {
 }
 
 // ExecutionFunc represents the next middleware in the chain.
+//
+// Summary: Middleware execution function type.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.
@@ -184,6 +198,8 @@ type contextKey string
 const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool embedded.
+//
+// Summary: Creates a context with an embedded tool.
 //
 // Parameters:
 //   - ctx: The context to extend.
@@ -215,6 +231,8 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 // Summary: Interface for executing a tool.
 type Callable interface {
 	// Call executes the callable with the given request.
+	//
+	// Summary: Executes the callable.
 	//
 	// Parameters:
 	//   - ctx: The context for the request.
@@ -250,6 +268,8 @@ type CacheControl struct {
 const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
+//
+// Summary: Creates a context with an embedded CacheControl.
 //
 // Parameters:
 //   - ctx: The context to extend.
@@ -311,6 +331,8 @@ type GRPCTool struct {
 
 // NewGRPCTool creates a new GRPCTool instance.
 //
+// Summary: Initializes a new GRPCTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - poolManager: The connection pool manager for gRPC connections.
@@ -335,6 +357,8 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 
 // Tool returns the protobuf definition of the gRPC tool.
 //
+// Summary: Retrieves the protobuf tool definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *GRPCTool) Tool() *v1.Tool {
@@ -342,6 +366,8 @@ func (t *GRPCTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -359,6 +385,8 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the gRPC tool.
+//
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
@@ -472,6 +500,8 @@ type HTTPTool struct {
 }
 
 // NewHTTPTool creates a new HTTPTool instance.
+//
+// Summary: Initializes a new HTTPTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -587,6 +617,8 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 // Tool returns the protobuf definition of the HTTP tool.
 //
+// Summary: Retrieves the protobuf tool definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *HTTPTool) Tool() *v1.Tool {
@@ -594,6 +626,8 @@ func (t *HTTPTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -611,6 +645,8 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the HTTP tool.
+//
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
@@ -1223,6 +1259,8 @@ type MCPTool struct {
 
 // NewMCPTool creates a new MCPTool instance.
 //
+// Summary: Initializes a new MCPTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - client: The MCP client for downstream communication.
@@ -1266,6 +1304,8 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 
 // Tool returns the protobuf definition of the MCP tool.
 //
+// Summary: Retrieves the protobuf tool definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *MCPTool) Tool() *v1.Tool {
@@ -1273,6 +1313,8 @@ func (t *MCPTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -1290,6 +1332,8 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the MCP tool.
+//
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
@@ -1438,6 +1482,8 @@ type OpenAPITool struct {
 
 // NewOpenAPITool creates a new OpenAPITool instance.
 //
+// Summary: Initializes a new OpenAPITool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - client: The HTTP client for requests.
@@ -1489,6 +1535,8 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 
 // Tool returns the protobuf definition of the OpenAPI tool.
 //
+// Summary: Retrieves the protobuf tool definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *OpenAPITool) Tool() *v1.Tool {
@@ -1496,6 +1544,8 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -1513,6 +1563,8 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
+//
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
@@ -1700,6 +1752,8 @@ type CommandTool struct {
 
 // NewCommandTool creates a new CommandTool instance.
 //
+// Summary: Initializes a new CommandTool.
+//
 // Parameters:
 //   - tool: The protobuf definition of the tool.
 //   - service: The configuration of the command-line service.
@@ -1746,6 +1800,8 @@ type LocalCommandTool struct {
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
+//
+// Summary: Initializes a new LocalCommandTool.
 //
 // Parameters:
 //   - tool: The protobuf definition of the tool.
@@ -1800,6 +1856,8 @@ func NewLocalCommandTool(
 
 // Tool returns the protobuf definition of the command-line tool.
 //
+// Summary: Retrieves the protobuf tool definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *LocalCommandTool) Tool() *v1.Tool {
@@ -1807,6 +1865,8 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -1824,6 +1884,8 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
@@ -2134,6 +2196,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 // Tool returns the protobuf definition of the command-line tool.
 //
+// Summary: Retrieves the protobuf tool definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *CommandTool) Tool() *v1.Tool {
@@ -2141,6 +2205,8 @@ func (t *CommandTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -2158,6 +2224,8 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
@@ -2480,6 +2548,8 @@ type threadSafeBuffer struct {
 
 // Write writes bytes to the buffer in a thread-safe manner.
 //
+// Summary: Writes to the buffer thread-safely.
+//
 // Parameters:
 //   - p: The slice of bytes to write.
 //
@@ -2493,6 +2563,8 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 }
 
 // String returns the contents of the buffer as a string in a thread-safe manner.
+//
+// Summary: Retrieves the buffer contents as a string.
 //
 // Returns:
 //   - string: The contents of the buffer.
