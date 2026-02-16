@@ -52,7 +52,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: process.env.CI === 'true' ? "http://ui-http-echo-server:5678" : "http://localhost:8080", // Dummy/Mock
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
