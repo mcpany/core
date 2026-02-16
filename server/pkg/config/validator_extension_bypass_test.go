@@ -39,7 +39,9 @@ func TestValidateStdioArgs_Bypass_NoExtension(t *testing.T) {
 	}
 
 	// Case 4: Bare word / Subcommand (Should be SKIPPED/VALID)
-	// "run" or "status". No ext, no separators.
+	// "run", "install", or "status". No ext, no separators.
+	// This ensures standard CLI tool usage (e.g. `go run`, `npm install`, `git status`)
+	// is not broken by file existence checks on abstract arguments.
 	err = validateStdioArgs(ctx, "go", []string{"run"}, "")
 	if err != nil {
 		t.Errorf("bare word 'run' was CHECKED (Regression!): %v", err)
