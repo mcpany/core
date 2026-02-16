@@ -1892,7 +1892,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, cmd); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -1927,7 +1927,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						// If running a shell, validate that inputs are safe for shell execution
 						cmd := t.service.GetCommand()
 						if isShellCommand(cmd) {
-							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
+							if err := checkForShellInjection(argStr, "", "", cmd); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2223,7 +2223,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, cmd); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2854,7 +2854,7 @@ func isShell(cmd string) bool {
 	return false
 }
 
-func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool) error {
+func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
@@ -2946,7 +2946,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
-	return checkUnquotedInjection(val, command, isShell)
+	return checkUnquotedInjection(val, command)
 }
 
 func stripInterpreterComments(val, language string) string {
@@ -3327,7 +3327,7 @@ func isSafeBacktickLanguage(command string) bool {
 	return false
 }
 
-func checkUnquotedInjection(val, command string, isShell bool) error {
+func checkUnquotedInjection(val, command string) error {
 	// Unquoted (or unknown quoting): strict check
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters

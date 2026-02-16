@@ -58,30 +58,30 @@ func TestCheckForArgumentInjection(t *testing.T) {
 }
 
 func TestCheckForShellInjection(t *testing.T) {
-    assert.Error(t, checkForShellInjection("safe; rm -rf /", "", "", "sh", true))
-    assert.NoError(t, checkForShellInjection("safe", "", "", "sh", true))
+    assert.Error(t, checkForShellInjection("safe; rm -rf /", "", "", "sh"))
+    assert.NoError(t, checkForShellInjection("safe", "", "", "sh"))
 
     // Single quoted context
-    assert.Error(t, checkForShellInjection("break'out", "'{{val}}'", "{{val}}", "sh", true))
-    assert.NoError(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "sh", true))
+    assert.Error(t, checkForShellInjection("break'out", "'{{val}}'", "{{val}}", "sh"))
+    assert.NoError(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "sh"))
 
     // Double quoted context
-    assert.Error(t, checkForShellInjection("break\"out", "\"{{val}}\"", "{{val}}", "sh", true))
-    assert.Error(t, checkForShellInjection("$var", "\"{{val}}\"", "{{val}}", "sh", true))
-    assert.NoError(t, checkForShellInjection("safe space", "\"{{val}}\"", "{{val}}", "sh", true))
+    assert.Error(t, checkForShellInjection("break\"out", "\"{{val}}\"", "{{val}}", "sh"))
+    assert.Error(t, checkForShellInjection("$var", "\"{{val}}\"", "{{val}}", "sh"))
+    assert.NoError(t, checkForShellInjection("safe space", "\"{{val}}\"", "{{val}}", "sh"))
 
     // Extended unquoted
-    assert.Error(t, checkForShellInjection("val|ue", "", "", "sh", true))
-    assert.Error(t, checkForShellInjection("val&ue", "", "", "sh", true))
-    assert.Error(t, checkForShellInjection("val>ue", "", "", "sh", true))
+    assert.Error(t, checkForShellInjection("val|ue", "", "", "sh"))
+    assert.Error(t, checkForShellInjection("val&ue", "", "", "sh"))
+    assert.Error(t, checkForShellInjection("val>ue", "", "", "sh"))
 
     // Space check
-    assert.NoError(t, checkForShellInjection("safe space", "", "", "sh", true), "shell should allow space in unquoted context (exec.Command handles args)")
-    assert.NoError(t, checkForShellInjection("safe space", "", "", "python", false), "interpreter should allow space in unquoted context")
+    assert.NoError(t, checkForShellInjection("safe space", "", "", "sh"), "shell should allow space in unquoted context (exec.Command handles args)")
+    assert.NoError(t, checkForShellInjection("safe space", "", "", "python"), "interpreter should allow space in unquoted context")
 
     // Env command specific
-    assert.Error(t, checkForShellInjection("VAR=val", "", "", "env", true), "env command should block '='")
-    assert.NoError(t, checkForShellInjection("VAR=val", "", "", "sh", true), "sh command should allow '='")
+    assert.Error(t, checkForShellInjection("VAR=val", "", "", "env"), "env command should block '='")
+    assert.NoError(t, checkForShellInjection("VAR=val", "", "", "sh"), "sh command should allow '='")
 }
 
 func TestIsShellCommand(t *testing.T) {
