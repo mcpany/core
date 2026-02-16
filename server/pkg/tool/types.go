@@ -3063,7 +3063,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func getCommentSupport(language string) (bool, bool, bool) {
+func getCommentStyle(language string) (bool, bool, bool) {
 	// Determine comment style
 	supportsHash := false
 	supportsSlash := false
@@ -3099,7 +3099,7 @@ func stripInterpreterComments(val, language string) string {
 	inBacktick := false
 	escaped := false
 
-	supportsHash, supportsSlash, supportsBlock := getCommentSupport(language)
+	supportsHash, supportsSlash, supportsBlock := getCommentStyle(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
@@ -3125,31 +3125,7 @@ func stripInterpreterComments(val, language string) string {
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			b.WriteByte(char)
-			continue
-		}
-
-		if inSingle || inDouble || inBacktick {
-			if char == '\\' {
-				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
-				b.WriteByte(char)
-				continue
-			}
-			b.WriteByte(char)
+		if updateQuoteState(char, &inSingle, &inDouble, &inBacktick, &escaped, &b) {
 			continue
 		}
 
@@ -3182,6 +3158,37 @@ func stripInterpreterComments(val, language string) string {
 		b.WriteByte(char)
 	}
 	return b.String()
+}
+
+func updateQuoteState(char byte, inSingle, inDouble, inBacktick, escaped *bool, b *strings.Builder) bool {
+	// Quote handling
+	if char == '\'' && !*inDouble && !*inBacktick {
+		*inSingle = !*inSingle
+		b.WriteByte(char)
+		return true
+	}
+	if char == '"' && !*inSingle && !*inBacktick {
+		*inDouble = !*inDouble
+		b.WriteByte(char)
+		return true
+	}
+	if char == '`' && !*inSingle && !*inDouble {
+		*inBacktick = !*inBacktick
+		b.WriteByte(char)
+		return true
+	}
+
+	if *inSingle || *inDouble || *inBacktick {
+		if char == '\\' {
+			*escaped = true
+			// Write escape char to preserve string content (e.g. \n)
+			b.WriteByte(char)
+			return true
+		}
+		b.WriteByte(char)
+		return true
+	}
+	return false
 }
 
 func checkInterpreterFunctionCalls(val, language string) error {
@@ -3240,6 +3247,15 @@ func checkWordAndReset(wb *strings.Builder, keywords []string, lastChar rune, la
 	return nil
 }
 
+func processWordBuffer(wb *strings.Builder, keywords []string, lastChar rune, lastWord *string) error {
+	if wb.Len() > 0 {
+		if err := checkWordAndReset(wb, keywords, lastChar, lastWord); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func checkUnquotedKeywords(val string, keywords []string) error {
 	inSingle := false
 	inDouble := false
@@ -3265,10 +3281,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			inSingle = !inSingle
 			// Treat quotes as delimiters
 			if inSingle { // Entered quote
-				if wordBuilder.Len() > 0 {
-					if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
-						return err
-					}
+				if err := processWordBuffer(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
+					return err
 				}
 			}
 			// When exiting quote, we don't update lastWord because quoted string is not a word
@@ -3282,10 +3296,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		if char == '"' && !inSingle && !inBacktick {
 			inDouble = !inDouble
 			if inDouble { // Entered quote
-				if wordBuilder.Len() > 0 {
-					if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
-						return err
-					}
+				if err := processWordBuffer(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
+					return err
 				}
 			}
 			if !inDouble {
@@ -3297,10 +3309,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		if char == '`' && !inSingle && !inDouble {
 			inBacktick = !inBacktick
 			if inBacktick { // Entered quote
-				if wordBuilder.Len() > 0 {
-					if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
-						return err
-					}
+				if err := processWordBuffer(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
+					return err
 				}
 			}
 			if !inBacktick {
@@ -3320,10 +3330,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			// Delimiter (including non-ASCII characters)
 			// Non-ASCII characters cannot be part of the dangerous keywords we check (which are ASCII only).
 			// We treat them as delimiters to ensure we correctly isolate potential keywords.
-			if wordBuilder.Len() > 0 {
-				if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
-					return err
-				}
+			if err := processWordBuffer(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
+				return err
 			}
 
 			if !unicode.IsSpace(char) {
@@ -3334,10 +3342,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	}
 
 	// Check last word
-	if wordBuilder.Len() > 0 {
-		if err := checkWordAndReset(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
-			return err
-		}
+	if err := processWordBuffer(&wordBuilder, keywords, lastChar, &lastWord); err != nil {
+		return err
 	}
 	return nil
 }
