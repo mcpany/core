@@ -242,6 +242,47 @@ export interface SystemStatus {
     security_warnings: string[];
 }
 
+/**
+ * ServiceStatus represents the possible health states of a service.
+ */
+export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
+
+/**
+ * ServiceHealth describes the current health information of a service.
+ */
+export interface ServiceHealth {
+  /** The unique identifier of the service. */
+  id: string;
+  /** The display name of the service. */
+  name: string;
+  /** The current status of the service. */
+  status: ServiceStatus;
+  /** The latency of the service check. */
+  latency: string;
+  /** The uptime duration of the service. */
+  uptime: string;
+  /** An optional message providing more details about the status. */
+  message?: string;
+}
+
+/**
+ * HealthHistoryPoint represents a single data point in the health history of a service.
+ */
+export interface HealthHistoryPoint {
+  /** The timestamp of the health check in milliseconds. */
+  timestamp: number;
+  /** The status of the service at that time. */
+  status: ServiceStatus;
+}
+
+/**
+ * ServiceHealthResponse represents the response for the health dashboard.
+ */
+export interface ServiceHealthResponse {
+  services: ServiceHealth[];
+  history: Record<string, HealthHistoryPoint[]>;
+}
+
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -1237,6 +1278,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the dashboard health status and history.
+     * @returns A promise that resolves to the health response.
+     */
+    getDashboardHealth: async (): Promise<ServiceHealthResponse> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch dashboard health');
+        return res.json();
+    },
+
+    /**
      * Gets the dashboard metrics.
      * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the metrics list.
@@ -1432,377 +1483,6 @@ export const apiClient = {
             const txt = await res.text();
             throw new Error(`Failed to save stack config: ${txt}`);
         }
-        return res.json();
-    },
-
-
-
-    // User Management
-
-    /**
-     * Lists all users.
-     * @returns A promise that resolves to a list of users.
-     */
-    listUsers: async () => {
-        const res = await fetchWithAuth('/api/v1/users');
-        if (!res.ok) throw new Error('Failed to list users');
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : (data.users || []);
-
-        // Map snake_case to camelCase
-        return list.map((u: any) => ({
-            id: u.id,
-            roles: u.roles || [],
-            profileIds: u.profile_ids || [],
-            authentication: u.authentication ? {
-                apiKey: u.authentication.api_key ? {
-                    paramName: u.authentication.api_key.param_name,
-                    in: u.authentication.api_key.in,
-                    verificationValue: u.authentication.api_key.verification_value
-                } : undefined,
-                basicAuth: u.authentication.basic_auth ? {
-                    username: u.authentication.basic_auth.username,
-                    passwordHash: u.authentication.basic_auth.password_hash
-                } : undefined
-            } : undefined
-        }));
-    },
-
-    /**
-     * Creates a new user.
-     * @param user The user object to create.
-     * @returns A promise that resolves to the created user.
-     */
-    createUser: async (user: any) => {
-        // Map camelCase to snake_case
-        const payload: any = {
-            id: user.id,
-            roles: user.roles,
-            profile_ids: user.profileIds
-        };
-
-        if (user.authentication) {
-            payload.authentication = {};
-            if (user.authentication.apiKey) {
-                payload.authentication.api_key = {
-                    param_name: user.authentication.apiKey.paramName,
-                    in: user.authentication.apiKey.in,
-                    verification_value: user.authentication.apiKey.verificationValue
-                };
-            }
-            if (user.authentication.basicAuth) {
-                payload.authentication.basic_auth = {
-                    username: user.authentication.basicAuth.username,
-                    password_hash: user.authentication.basicAuth.passwordHash
-                };
-            }
-        }
-
-        const res = await fetchWithAuth('/api/v1/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: payload })
-        });
-        if (!res.ok) throw new Error('Failed to create user');
-        return res.json();
-    },
-
-    /**
-     * Updates an existing user.
-     * @param user The user object to update.
-     * @returns A promise that resolves to the updated user.
-     */
-    updateUser: async (user: any) => {
-        // Map camelCase to snake_case
-        const payload: any = {
-            id: user.id,
-            roles: user.roles,
-            profile_ids: user.profileIds
-        };
-
-        if (user.authentication) {
-            payload.authentication = {};
-            if (user.authentication.apiKey) {
-                payload.authentication.api_key = {
-                    param_name: user.authentication.apiKey.paramName,
-                    in: user.authentication.apiKey.in,
-                    verification_value: user.authentication.apiKey.verificationValue
-                };
-            }
-            if (user.authentication.basicAuth) {
-                payload.authentication.basic_auth = {
-                    username: user.authentication.basicAuth.username,
-                    password_hash: user.authentication.basicAuth.passwordHash
-                };
-            }
-        }
-
-         const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: payload })
-        });
-        if (!res.ok) throw new Error('Failed to update user');
-        return res.json();
-    },
-
-    /**
-     * Deletes a user.
-     * @param id The ID of the user to delete.
-     * @returns A promise that resolves when the user is deleted.
-     */
-    deleteUser: async (id: string) => {
-        const res = await fetchWithAuth(`/api/v1/users/${id}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete user');
-        return {};
-    },
-
-
-    // OAuth
-
-    /**
-     * Initiates an OAuth flow.
-     * @param serviceID The ID of the service for which to initiate OAuth.
-     * @param redirectURL The URL to redirect to after OAuth completes.
-     * @param credentialID Optional credential ID to associate with the token.
-     * @returns A promise that resolves to the initiation response.
-     */
-    initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
-        const payload: any = { redirect_url: redirectURL };
-        if (serviceID) payload.service_id = serviceID;
-        if (credentialID) payload.credential_id = credentialID;
-
-        const res = await fetchWithAuth('/auth/oauth/initiate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(`Failed to initiate OAuth: ${res.status} ${txt}`);
-        }
-        return res.json();
-    },
-
-    /**
-     * Handles the OAuth callback.
-     * @param serviceID The ID of the service (optional).
-     * @param code The OAuth authorization code.
-     * @param redirectURL The redirect URL used in the initial request.
-     * @param credentialID Optional credential ID.
-     * @returns A promise that resolves to the callback handling result.
-     */
-    handleOAuthCallback: async (serviceID: string | null, code: string, redirectURL: string, credentialID?: string) => {
-        const payload: any = { code, redirect_url: redirectURL };
-        if (serviceID) payload.service_id = serviceID;
-        if (credentialID) payload.credential_id = credentialID;
-
-        const res = await fetchWithAuth('/auth/oauth/callback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!res.ok) {
-            const txt = await res.text();
-            throw new Error(`Failed to handle callback: ${res.status} ${txt}`);
-        }
-        return res.json();
-    },
-
-    // Credentials
-
-    /**
-     * Lists all stored credentials.
-     * @returns A promise that resolves to a list of credentials.
-     */
-    listCredentials: async () => {
-        const res = await fetchWithAuth('/api/v1/credentials');
-        if (!res.ok) throw new Error('Failed to list credentials');
-        const data = await res.json();
-        return Array.isArray(data) ? data : (data.credentials || []);
-    },
-
-    /**
-     * Saves (creates or updates) a credential.
-     * @param credential The credential to save.
-     * @returns A promise that resolves to the saved credential.
-     */
-    saveCredential: async (credential: Credential) => {
-        // ... (logic omitted for brevity, keeping same) ...
-        return apiClient.createCredential(credential);
-    },
-
-    /**
-     * Creates a new credential.
-     * @param credential The credential to create.
-     * @returns A promise that resolves to the created credential.
-     */
-    createCredential: async (credential: Credential) => {
-        const res = await fetchWithAuth('/api/v1/credentials', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credential)
-        });
-        if (!res.ok) throw new Error('Failed to create credential');
-        return res.json();
-    },
-
-    /**
-     * Updates an existing credential.
-     * @param credential The credential to update.
-     * @returns A promise that resolves to the updated credential.
-     */
-    updateCredential: async (credential: Credential) => {
-        const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credential)
-        });
-        if (!res.ok) throw new Error('Failed to update credential');
-        return res.json();
-    },
-
-    /**
-     * Deletes a credential.
-     * @param id The ID of the credential to delete.
-     * @returns A promise that resolves when the credential is deleted.
-     */
-    deleteCredential: async (id: string) => {
-        const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete credential');
-        return {};
-    },
-
-    /**
-     * Tests authentication with the provided parameters.
-     * @param req The authentication test request.
-     * @returns A promise that resolves to the test result.
-     */
-    testAuth: async (req: any) => {
-        const res = await fetchWithAuth('/api/v1/debug/auth-test', {
-            method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req)
-        });
-        // We always return JSON even on error
-        return res.json();
-    },
-
-    // Templates (Backend Persistence)
-
-    /**
-     * Lists all service templates.
-     * @returns A promise that resolves to a list of templates.
-     */
-    listTemplates: async (): Promise<ServiceTemplate[]> => {
-        const res = await fetchWithAuth('/api/v1/templates');
-        if (!res.ok) throw new Error('Failed to fetch templates');
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : [];
-        return list.map((t: any) => {
-            const template: ServiceTemplate = {
-                id: t.id,
-                name: t.name,
-                description: t.description,
-                icon: t.icon,
-                tags: t.tags,
-                serviceConfig: mapUpstreamServiceConfig(t.service_config || {}),
-            };
-            // Infer authType for UI helper
-            if (template.serviceConfig.upstreamAuth?.oauth2) {
-                template.authType = "oauth2";
-            } else if (template.serviceConfig.upstreamAuth?.apiKey) {
-                template.authType = "token";
-            }
-            return template;
-        });
-    },
-
-    /**
-     * Saves a service template.
-     * @param template The template configuration to save.
-     * @returns A promise that resolves to the saved template.
-     */
-    saveTemplate: async (template: UpstreamServiceConfig) => {
-        // Map back to snake_case for saving
-        // Reuse registerService mapping logic essentially but for template endpoint
-        const payload: any = {
-            id: template.id,
-            name: template.name,
-            version: template.version,
-            disable: template.disable,
-            priority: template.priority,
-            load_balancing_strategy: template.loadBalancingStrategy,
-            tags: template.tags,
-        };
-
-        if (template.httpService) {
-            payload.http_service = { address: template.httpService.address };
-        }
-        if (template.grpcService) {
-            payload.grpc_service = { address: template.grpcService.address };
-        }
-        if (template.commandLineService) {
-            payload.command_line_service = {
-                command: template.commandLineService.command,
-                working_directory: template.commandLineService.workingDirectory,
-                env: template.commandLineService.env
-            };
-        }
-        if (template.mcpService) {
-            payload.mcp_service = { ...template.mcpService };
-        }
-        if (template.preCallHooks) {
-            payload.pre_call_hooks = template.preCallHooks;
-        }
-        if (template.postCallHooks) {
-            payload.post_call_hooks = template.postCallHooks;
-        }
-        if (template.toolExportPolicy) {
-            payload.tool_export_policy = template.toolExportPolicy;
-        }
-        if (template.promptExportPolicy) {
-            payload.prompt_export_policy = template.promptExportPolicy;
-        }
-        if (template.resourceExportPolicy) {
-            payload.resource_export_policy = template.resourceExportPolicy;
-        }
-
-        const res = await fetchWithAuth('/api/v1/templates', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Failed to save template');
-        return res.json();
-    },
-
-    /**
-     * Deletes a service template.
-     * @param id The ID of the template to delete.
-     * @returns A promise that resolves when the template is deleted.
-     */
-    deleteTemplate: async (id: string) => {
-        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete template');
-        return {};
-    },
-
-    // System Health
-
-    /**
-     * Gets the doctor status report.
-     * @returns A promise that resolves to the doctor report.
-     */
-    getDoctorStatus: async (): Promise<DoctorReport> => {
-        const res = await fetchWithAuth('/api/v1/doctor');
-        if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
     },
 
