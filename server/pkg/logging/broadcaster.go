@@ -93,7 +93,9 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 			b.subscribers[i] = b.subscribers[last]
 			b.subscribers[last] = nil // Avoid leak
 			b.subscribers = b.subscribers[:last]
-			close(ch)
+			// ⚡ BOLT: Do not close channel to avoid panic in concurrent Broadcast.
+			// The snapshot in Broadcast might still hold this channel.
+			// Garbage collection will handle it.
 			return
 		}
 	}

@@ -148,10 +148,6 @@ func TestBroadcaster(t *testing.T) {
 	b.Unsubscribe(ch1)
 	assert.Len(t, b.subscribers, 1)
 
-	// Ensure ch1 is closed
-	_, ok := <-ch1
-	assert.False(t, ok)
-
 	// Broadcast again, only ch2 should receive
 	msg2 := []byte("test message 2")
 	b.Broadcast(msg2)
