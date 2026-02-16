@@ -49,6 +49,8 @@ const (
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
+
+	gitCommand = "git"
 )
 
 var (
@@ -1239,7 +1241,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service. It acts as a proxy, forwarding the tool call to the
 // downstream MCP service.
@@ -2005,7 +2006,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -3019,22 +3020,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
-	var b strings.Builder
-	b.Grow(len(val))
-
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
+func getCommentStyle(language string) (supportsHash, supportsSlash, supportsBlock bool) {
 	switch language {
 	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
 		supportsHash = true
@@ -3051,6 +3037,49 @@ func stripInterpreterComments(val, language string) string {
 		supportsSlash = true
 		supportsBlock = true
 	}
+	return
+}
+
+func checkForCommentStart(char byte, i int, val string, supportsHash, supportsSlash, supportsBlock bool) (line, block bool, advance int) {
+	if supportsHash && char == '#' {
+		return true, false, 0
+	}
+	if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
+		if supportsSlash && val[i+1] == '/' {
+			return true, false, 1
+		}
+		if supportsBlock && val[i+1] == '*' {
+			return false, true, 1
+		}
+	}
+	return false, false, 0
+}
+
+func checkQuoteToggle(char byte, inSingle, inDouble, inBacktick bool) (newSingle, newDouble, newBacktick, toggled bool) {
+	if char == '\'' && !inDouble && !inBacktick {
+		return !inSingle, inDouble, inBacktick, true
+	}
+	if char == '"' && !inSingle && !inBacktick {
+		return inSingle, !inDouble, inBacktick, true
+	}
+	if char == '`' && !inSingle && !inDouble {
+		return inSingle, inDouble, !inBacktick, true
+	}
+	return inSingle, inDouble, inBacktick, false
+}
+
+func stripInterpreterComments(val, language string) string {
+	var b strings.Builder
+	b.Grow(len(val))
+
+	inLineComment := false
+	inBlockComment := false
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	supportsHash, supportsSlash, supportsBlock := getCommentStyle(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
@@ -3076,19 +3105,9 @@ func stripInterpreterComments(val, language string) string {
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			b.WriteByte(char)
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			b.WriteByte(char)
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
+		newSingle, newDouble, newBacktick, toggled := checkQuoteToggle(char, inSingle, inDouble, inBacktick)
+		if toggled {
+			inSingle, inDouble, inBacktick = newSingle, newDouble, newBacktick
 			b.WriteByte(char)
 			continue
 		}
@@ -3096,7 +3115,6 @@ func stripInterpreterComments(val, language string) string {
 		if inSingle || inDouble || inBacktick {
 			if char == '\\' {
 				escaped = true
-				// Write escape char to preserve string content (e.g. \n)
 				b.WriteByte(char)
 				continue
 			}
@@ -3104,29 +3122,19 @@ func stripInterpreterComments(val, language string) string {
 			continue
 		}
 
-		// Not in quotes, check for comments
-		if supportsHash && char == '#' {
+		line, block, advance := checkForCommentStart(char, i, val, supportsHash, supportsSlash, supportsBlock)
+		if line {
 			inLineComment = true
+			i += advance
 			continue
 		}
-		if (supportsSlash || supportsBlock) && char == '/' && i+1 < len(val) {
-			if supportsSlash && val[i+1] == '/' {
-				inLineComment = true
-				i++
-				continue
-			}
-			if supportsBlock && val[i+1] == '*' {
-				inBlockComment = true
-				i++
-				continue
-			}
+		if block {
+			inBlockComment = true
+			i += advance
+			continue
 		}
 
-		// Skip backslash (line continuation outside quotes)
 		if char == '\\' {
-			// If followed by newline, it's a line continuation. Strip it.
-			// If not, it's just a backslash. Strip it anyway for safety?
-			// Yes, stripping backslash outside quotes is safer to prevent obfuscation.
 			continue
 		}
 
@@ -3666,7 +3674,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == gitCommand {
 		return true
 	}
 

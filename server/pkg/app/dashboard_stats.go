@@ -133,7 +133,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 		}
 
 		// Convert map to slice
-		var stats []ToolUsageStats
+		stats := make([]ToolUsageStats, 0, len(toolCounts))
 		for _, s := range toolCounts {
 			stats = append(stats, *s)
 		}
@@ -294,7 +294,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		}
 
 		// Convert map to slice of ToolFailureStats
-		var stats []ToolFailureStats
+		stats := make([]ToolFailureStats, 0, len(toolStats))
 		for _, s := range toolStats {
 			total := s.Success + s.Error
 			if total == 0 {
@@ -413,7 +413,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 			}
 		}
 
-		var analytics []ToolAnalytics
+		analytics := make([]ToolAnalytics, 0, len(toolStats))
 		for _, s := range toolStats {
 			total := s.Success + s.Error
 			rate := 0.0
