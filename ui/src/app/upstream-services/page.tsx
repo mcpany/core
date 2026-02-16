@@ -47,6 +47,7 @@ export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
   const [configuringTemplate, setConfiguringTemplate] = useState<ServiceTemplate | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -407,12 +408,10 @@ export default function ServicesPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Upstream Services</h1>
         <div className="flex items-center gap-2">
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline">
-                        <Download className="mr-2 h-4 w-4" /> Bulk Import
-                    </Button>
-                </DialogTrigger>
+            <Button variant="outline" onClick={() => setIsBulkImportOpen(true)}>
+                <Download className="mr-2 h-4 w-4" /> Bulk Import
+            </Button>
+            <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
                 <DialogContent className="sm:max-w-xl">
                     <DialogHeader>
                         <DialogTitle>Bulk Service Import</DialogTitle>
@@ -421,8 +420,11 @@ export default function ServicesPage() {
                         </DialogDescription>
                     </DialogHeader>
                     <BulkServiceImport
-                        onImportSuccess={() => fetchServices()}
-                        onCancel={() => {}}
+                        onImportSuccess={() => {
+                            fetchServices();
+                            setIsBulkImportOpen(false);
+                        }}
+                        onCancel={() => setIsBulkImportOpen(false)}
                     />
                 </DialogContent>
             </Dialog>
