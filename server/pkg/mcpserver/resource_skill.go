@@ -31,6 +31,7 @@ type SkillResource struct {
 	mu            sync.RWMutex
 	cachedContent []byte
 	lastModTime   time.Time
+	resolvedPath  string
 }
 
 // Ensure SkillResource implements resource.Resource.
@@ -130,9 +131,31 @@ func (r *SkillResource) Resource() *mcp.Resource {
 
 // resolvePath determines the absolute path to the resource file.
 func (r *SkillResource) resolvePath() (string, error) {
+	// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets
+	// Optimization: Cache resolved path to avoid expensive syscalls (EvalSymlinks, Abs) on every read.
+	r.mu.RLock()
+	if r.resolvedPath != "" {
+		path := r.resolvedPath
+		r.mu.RUnlock()
+		return path, nil
+	}
+	r.mu.RUnlock()
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Double-checked locking
+	if r.resolvedPath != "" {
+		return r.resolvedPath, nil
+	}
+
 	if r.assetPath == "" {
 		// Read main SKILL.md
-		return filepath.Join(r.skill.Path, skill.SkillFileName), nil
+		path := filepath.Join(r.skill.Path, skill.SkillFileName)
+		// We don't cache SKILL.md path because it's just a join, but we could.
+		// For consistency, let's cache it too.
+		r.resolvedPath = path
+		return path, nil
 	}
 
 	// Read asset
@@ -174,6 +197,7 @@ func (r *SkillResource) resolvePath() (string, error) {
 		return "", fmt.Errorf("invalid path: points outside skill directory")
 	}
 
+	r.resolvedPath = realPath
 	return realPath, nil
 }
 
