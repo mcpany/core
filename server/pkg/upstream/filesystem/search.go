@@ -98,11 +98,15 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 					}
 				}
 
-				if info.IsDir() {
-					// Skip hidden directories like .git
-					if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
+				// Skip hidden files and directories like .git
+				if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
+					if info.IsDir() {
 						return filepath.SkipDir
 					}
+					return nil
+				}
+
+				if info.IsDir() {
 					return nil
 				}
 				// Skip large files (e.g., > 10MB)
