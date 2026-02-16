@@ -50,12 +50,29 @@ func TestHandleGetUserPreferences(t *testing.T) {
 		assert.Equal(t, "dark", prefs["theme"])
 	})
 
-	t.Run("System Admin not found in storage", func(t *testing.T) {
+	t.Run("System Admin not found in storage (error)", func(t *testing.T) {
 		ctx := auth.ContextWithUser(context.Background(), "system-admin")
 		req := httptest.NewRequest("GET", "/preferences", nil).WithContext(ctx)
 		w := httptest.NewRecorder()
 
 		mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), assert.AnError).Once()
+
+		app.HandleGetUserPreferences(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var prefs map[string]string
+		err := json.Unmarshal(w.Body.Bytes(), &prefs)
+		require.NoError(t, err)
+		assert.Empty(t, prefs)
+	})
+
+	t.Run("System Admin not found in storage (nil, nil)", func(t *testing.T) {
+		ctx := auth.ContextWithUser(context.Background(), "system-admin")
+		req := httptest.NewRequest("GET", "/preferences", nil).WithContext(ctx)
+		w := httptest.NewRecorder()
+
+		// Simulating SQLite store behavior: return nil, nil
+		mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), nil).Once()
 
 		app.HandleGetUserPreferences(w, req)
 
@@ -101,6 +118,18 @@ func TestHandleGetUserPreferences(t *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 	})
+
+	t.Run("User not found anywhere (nil, nil)", func(t *testing.T) {
+		ctx := auth.ContextWithUser(context.Background(), "unknown-user")
+		req := httptest.NewRequest("GET", "/preferences", nil).WithContext(ctx)
+		w := httptest.NewRecorder()
+
+		mockStore.On("GetUser", mock.Anything, "unknown-user").Return((*configv1.User)(nil), nil).Once()
+
+		app.HandleGetUserPreferences(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
 }
 
 func TestHandleUpdateUserPreferences(t *testing.T) {
@@ -138,7 +167,7 @@ func TestHandleUpdateUserPreferences(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
 	})
 
-	t.Run("Create new system-admin user", func(t *testing.T) {
+	t.Run("Create new system-admin user (error)", func(t *testing.T) {
 		ctx := auth.ContextWithUser(context.Background(), "system-admin")
 		body := bytes.NewBufferString(`{"theme": "blue"}`)
 		req := httptest.NewRequest("POST", "/preferences", body).WithContext(ctx)
@@ -149,6 +178,25 @@ func TestHandleUpdateUserPreferences(t *testing.T) {
 		// Expect CreateUser
 		mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
 			return u.GetId() == "system-admin" && u.GetPreferences()["theme"] == "blue"
+		})).Return(nil).Once()
+
+		app.HandleUpdateUserPreferences(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+
+	t.Run("Create new system-admin user (nil, nil)", func(t *testing.T) {
+		ctx := auth.ContextWithUser(context.Background(), "system-admin")
+		body := bytes.NewBufferString(`{"theme": "red"}`)
+		req := httptest.NewRequest("POST", "/preferences", body).WithContext(ctx)
+		w := httptest.NewRecorder()
+
+		// Simulate nil, nil from GetUser
+		mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), nil).Once()
+
+		// Expect CreateUser
+		mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+			return u.GetId() == "system-admin" && u.GetPreferences()["theme"] == "red"
 		})).Return(nil).Once()
 
 		app.HandleUpdateUserPreferences(w, req)

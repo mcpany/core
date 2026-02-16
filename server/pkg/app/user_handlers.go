@@ -29,7 +29,8 @@ func (a *Application) HandleGetUserPreferences(w http.ResponseWriter, r *http.Re
 	if userID == systemAdminUserID {
 		// Try to fetch from storage first
 		user, err := a.Storage.GetUser(ctx, userID)
-		if err != nil {
+		// Check for nil user explicitly as SQLite store returns nil, nil for not found
+		if err != nil || user == nil {
 			// If not found, return empty preferences
 			// Or check specifically for NotFound error?
 			// Assuming generic error might mean not found or DB error.
@@ -52,7 +53,8 @@ func (a *Application) HandleGetUserPreferences(w http.ResponseWriter, r *http.Re
 	// But Storage is the source of truth for persistent updates.
 
 	user, err := a.Storage.GetUser(ctx, userID)
-	if err != nil {
+	// Check for nil user explicitly as SQLite store returns nil, nil for not found
+	if err != nil || user == nil {
 		// If user is in AuthManager (file config) but not in Storage (DB),
 		// we should return what's in AuthManager (likely empty preferences unless defined in config).
 		if u, found := a.AuthManager.GetUser(userID); found {
@@ -60,7 +62,9 @@ func (a *Application) HandleGetUserPreferences(w http.ResponseWriter, r *http.Re
 			_ = json.NewEncoder(w).Encode(u.GetPreferences())
 			return
 		}
-		log.Error("User not found in storage or auth manager", "user_id", userID, "error", err)
+		if err != nil {
+			log.Error("User not found in storage or auth manager", "user_id", userID, "error", err)
+		}
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
@@ -89,7 +93,8 @@ func (a *Application) HandleUpdateUserPreferences(w http.ResponseWriter, r *http
 
 	// Fetch existing user to merge/update
 	user, err := a.Storage.GetUser(ctx, userID)
-	if err != nil {
+	// Check for nil user explicitly as SQLite store returns nil, nil for not found
+	if err != nil || user == nil {
 		// User not in DB.
 		// If it's system-admin, create it.
 		// If it's a file-config user, we create a DB override/entry for them.
