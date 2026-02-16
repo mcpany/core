@@ -110,11 +110,17 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         switch (step) {
             case WizardStep.SERVICE_TYPE:
                 if (!state.config.name) return { valid: false, error: "Service name is required" };
-                if (!state.config.commandLineService && !state.config.httpService && !state.config.grpcService && !state.config.mcpService) {
+                if (!state.config.commandLineService && !state.config.httpService && !state.config.grpcService && !state.config.mcpService && !state.config.openapiService) {
                      return { valid: false, error: "Service configuration is missing" };
                 }
                 return { valid: true };
             case WizardStep.PARAMETERS:
+                if (state.config.openapiService) {
+                    if (!state.config.openapiService.specUrl && !state.config.openapiService.specContent) {
+                         return { valid: false, error: "Spec URL or Content is required" };
+                    }
+                    return { valid: true };
+                }
                 return { valid: true }; // Parameters are usually optional
             case WizardStep.WEBHOOKS:
                 for (const hook of state.webhooks) {
