@@ -78,21 +78,28 @@ nodes:
 	}
 
 	// Resolve the assigned host port
-	// "docker port mcp-e2e-control-plane 30000" returns "0.0.0.0:32768"
+	// "docker port mcp-e2e-control-plane 30000" returns one or more lines like "0.0.0.0:32768"
 	out, err := exec.CommandContext(ctx, "docker", "port", clusterName+"-control-plane", "30000").Output()
 	if err != nil {
 		t.Fatalf("Failed to get mapped port: %v", err)
 	}
-	portStr := strings.TrimSpace(string(out))
-	// Parse port from "0.0.0.0:32768" or "127.0.0.1:32768"
+	// Take the first line (e.g., IPv4 mapping)
+	portOutput := strings.TrimSpace(string(out))
+	lines := strings.Split(portOutput, "\n")
+	if len(lines) == 0 {
+		t.Fatalf("No port mapping found in output: %q", portOutput)
+	}
+	portStr := strings.TrimSpace(lines[0])
+
+	// Parse port from "0.0.0.0:32768" or "127.0.0.1:32768" or "[::]:32768"
 	parts := strings.Split(portStr, ":")
 	if len(parts) < 2 {
-		t.Fatalf("Invalid port output: %s", portStr)
+		t.Fatalf("Invalid port output line: %s", portStr)
 	}
 	hostPortStr := parts[len(parts)-1]
 	hostPort, err := strconv.Atoi(hostPortStr)
 	if err != nil {
-		t.Fatalf("Failed to parse port %s: %v", hostPortStr, err)
+		t.Fatalf("Failed to parse port %s (from %s): %v", hostPortStr, portStr, err)
 	}
 	t.Logf("Resolved host port %d for UI access", hostPort)
 

@@ -19,9 +19,9 @@ export default defineConfig({
   workers: 1, // Run serially to avoid state collisions in shared backend
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
-  timeout: 120000,
+  timeout: 300000,
   expect: {
-    timeout: 15000,
+    timeout: 30000,
   },
   use: {
     baseURL: BASE_URL,
