@@ -67,8 +67,6 @@ export interface LogEntry {
   message: string
   source?: string
   metadata?: Record<string, unknown>
-  // Optimization: Pre-computed lowercase string search performance
-  searchStr?: string
   // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
   formattedTime?: string
 }
@@ -340,8 +338,6 @@ export function LogStream({ source }: { source?: string }) {
 
         try {
           const newLog: LogEntry = JSON.parse(event.data)
-          // Pre-compute search string
-          newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
           // Optimization: Pre-compute formatted time to avoid expensive Date parsing during render.
           // Uses cached timeFormatter for better performance.
           newLog.formattedTime = timeFormatter
@@ -400,15 +396,12 @@ export function LogStream({ source }: { source?: string }) {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
       const matchesSource = filterSource === "ALL" || log.source === filterSource
 
-      // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
-      let matchesSearch: boolean | undefined
-      if (log.searchStr) {
-        matchesSearch = log.searchStr.includes(lowerSearchQuery)
-      } else {
-        matchesSearch =
-          log.message.toLowerCase().includes(lowerSearchQuery) ||
-          log.source?.toLowerCase().includes(lowerSearchQuery)
-      }
+      // ⚡ BOLT: Optimized memory usage by removing eager search string allocation.
+      // Randomized Selection from Top 5 High-Impact Targets
+      // We calculate matches on demand to avoid O(N) memory overhead for search strings.
+      const matchesSearch =
+        log.message.toLowerCase().includes(lowerSearchQuery) ||
+        log.source?.toLowerCase().includes(lowerSearchQuery)
 
       return matchesLevel && matchesSource && matchesSearch
     })
