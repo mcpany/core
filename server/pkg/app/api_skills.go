@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/skill"
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
@@ -30,6 +31,11 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 		skillName := parts[4]
+
+		if err := skill.ValidateName(skillName); err != nil {
+			http.Error(w, "Invalid skill name", http.StatusBadRequest)
+			return
+		}
 
 		assetPath := r.URL.Query().Get("path")
 		if assetPath == "" {

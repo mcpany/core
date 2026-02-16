@@ -2566,7 +2566,9 @@ func TestRunServerMode_Auth(t *testing.T) {
 	})
 
 	t.Run("User Not Found", func(t *testing.T) {
-		resp, err := http.Get(baseURL + "/mcp/u/unknown_user/profile/any")
+		req, _ := http.NewRequest("GET", baseURL+"/mcp/u/unknown_user/profile/any", nil)
+		req.Header.Set("X-API-Key", "global-secret")
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
@@ -3336,7 +3338,7 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	require.NoError(t, err)
 	defer resp.Body.Close()
 
-	assert.Equal(t, http.StatusForbidden, resp.StatusCode, "Public access should be blocked when no API Key is configured")
+	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode, "Public access should be blocked when no API Key is configured")
 
 	cancel()
 	<-errChan

@@ -108,7 +108,7 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 	// Invalidate cache
 	m.cache = nil
 
-	if err := validateName(skill.Name); err != nil {
+	if err := ValidateName(skill.Name); err != nil {
 		return err
 	}
 
@@ -138,7 +138,7 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	// Invalidate cache
 	m.cache = nil
 
-	if err := validateName(skill.Name); err != nil {
+	if err := ValidateName(skill.Name); err != nil {
 		return err
 	}
 
@@ -191,6 +191,11 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 
 	// Invalidate cache
 	m.cache = nil
+
+	// Verify skill name is valid (prevents traversal)
+	if err := ValidateName(skillName); err != nil {
+		return fmt.Errorf("invalid skill name: %w", err)
+	}
 
 	// validate path to prevent traversal and ensure it is relative
 	if err := validation.IsSecureRelativePath(relPath); err != nil {
@@ -270,7 +275,8 @@ func (m *Manager) writeSkillFile(dir string, skill *Skill) error {
 	return os.WriteFile(filepath.Join(dir, SkillFileName), []byte(content), 0644) //nolint:gosec
 }
 
-func validateName(name string) error {
+// ValidateName checks if the skill name is valid.
+func ValidateName(name string) error {
 	if !validNameRegex.MatchString(name) {
 		return fmt.Errorf("invalid skill name %q: must be 1-64 chars, lowercase alphanumeric and hyphens only", name)
 	}
