@@ -68,6 +68,6 @@ services:
   ui-http-echo-server:
     image: mcpany/http-echo-server:latest
     ports:
-      - "5678:5678"
+      - "127.0.0.1:5678:5678"
     command:
       - "--port=5678"
