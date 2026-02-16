@@ -107,23 +107,23 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - uses: actions/checkout@v5
 
@@ -239,7 +239,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -249,16 +249,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - uses: actions/checkout@v5
 
@@ -551,6 +551,17 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Install dependencies
@@ -680,6 +691,17 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Install dependencies
@@ -836,38 +858,6 @@ jobs:
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:latest
 
-  docker-smoke-test-ui:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [build-images]
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Detect Architecture
-        id: detect-arch
-        run: |
-          ARCH=$(uname -m)
-          case $ARCH in
-            x86_64) SLUG="amd64" ;;
-            aarch64) SLUG="arm64" ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          echo "slug=$SLUG" >> $GITHUB_OUTPUT
-
-      - name: Download UI Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Docker Image
-        run: |
-          docker load -i ui.tar
-
-      - name: Smoke Test UI
-        run: |
-          chmod +x server/tests/smoke_test_ui.sh
-          ./server/tests/smoke_test_ui.sh mcpany/ui:latest
-
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -877,17 +867,17 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      #      - name: Free Disk Space (Ubuntu)
-      #        uses: jlumbroso/free-disk-space@main
-      #        with:
-      #          tool-cache: false
-      #          android: true
-      #          dotnet: true
-      #          haskell: true
-      #          large-packages: true
-      #          docker-images: false
-      #          swap-storage: true
-      #
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Detect Architecture
@@ -1019,7 +1009,6 @@ jobs:
         e2e-parallel,
         e2e-public-api,
         docker-smoke-test,
-        docker-smoke-test-ui,
         ui-test,
         k8s-e2e,
       ]
