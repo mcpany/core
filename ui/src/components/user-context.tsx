@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -36,10 +37,12 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
+  /** Logs in the user with the specified role. */
   login: (role: UserRole) => void;
   /** Logs out the current user. */
   logout: () => void;
+  /** Error message if connection failed. */
+  error?: string;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -54,22 +57,57 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    const initUser = async () => {
+        try {
+            // Verify connection to backend and fetch users
+            // We use listUsers to check if we can talk to the backend
+            // In a real auth flow, this would be getCurrentUser()
+            const users = await apiClient.listUsers();
+
+            const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
+
+            if (users && users.length > 0) {
+                // Use the first user found in backend, or fallback to a default identity
+                // but confirmed by successful API call.
+                // Since the backend users might be service accounts, we might still want to
+                // simulate a "session" user for the UI, but strictly only if backend is reachable.
+                const backendUser = users[0];
+                setUser({
+                    id: backendUser.id,
+                    name: backendUser.id, // Use ID as name for now
+                    email: `${backendUser.id}@mcp-any.io`,
+                    role: storedRole,
+                    avatar: '/avatars/admin.png'
+                });
+            } else {
+                // Backend reachable but no users?
+                // Create a default admin context but verified against backend connectivity
+                setUser({
+                    id: 'admin',
+                    name: 'Admin User',
+                    email: 'admin@mcp-any.io',
+                    role: storedRole,
+                    avatar: '/avatars/admin.png'
+                });
+            }
+        } catch (e: any) {
+            console.error("Failed to connect to backend:", e);
+            setError(e.message || "Failed to connect to backend");
+            // Do not set user if backend is unreachable, enforcement of Real Data Policy
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    initUser();
   }, []);
 
   const login = (role: UserRole) => {
+    // Logic to switch role (simulation for now as we don't have full auth flow)
     const newUser = {
         id: '1',
         name: role === 'admin' ? 'Admin User' : 'Regular User',
@@ -87,7 +125,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout }}>
+    <UserContext.Provider value={{ user, loading, login, logout, error }}>
       {children}
     </UserContext.Provider>
   );

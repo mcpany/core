@@ -22,7 +22,6 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -52,9 +51,6 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 				}.Build(),
 			}.Build(),
 		},
-		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String("{\"text\": \"{{.input.text}}\"}"),
-		}.Build(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -111,8 +107,8 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
-		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
+		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") || strings.Contains(err.Error(), "upstream HTTP request failed with status 403") {
+			t.Skipf("Skipping test due to rate limiting or forbidden from api.funtranslations.com: %v", err)
 		}
 
 		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
@@ -132,7 +128,12 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 
 	var funTranslationsResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)
-	require.NoError(t, err, "Failed to unmarshal JSON response")
+	if err != nil {
+		if strings.Contains(textContent.Text, "Too Many Requests") || strings.Contains(textContent.Text, "Limit Exceeded") {
+			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com (in body): %s", textContent.Text)
+		}
+	}
+	require.NoError(t, err, "Failed to unmarshal JSON response: %s", textContent.Text)
 
 	contents := funTranslationsResponse["contents"].(map[string]interface{})
 	require.NotEmpty(t, contents["translated"], "The translated text should not be empty")

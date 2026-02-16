@@ -119,7 +119,18 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
             headers.set('X-API-Key', apiKey);
         }
     }
-    return fetch(input, { ...init, headers });
+
+    let url = input;
+    if (typeof window === 'undefined' && typeof input === 'string' && input.startsWith('/')) {
+        const baseUrl = getBaseUrl();
+        try {
+            url = new URL(input, baseUrl).toString();
+        } catch (e) {
+            // Ignore if URL construction fails
+        }
+    }
+
+    return fetch(url, { ...init, headers });
 };
 
 /**

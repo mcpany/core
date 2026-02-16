@@ -4,46 +4,40 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { Seeder } from '../utils/seeder';
+import { UpstreamServiceConfig } from '@/lib/client';
 
 test.describe('Services Feature', () => {
-  const services: any[] = [
-    {
-        name: "Payment Gateway",
-        type: "http",
-        address: "https://stripe.com",
-        status: "up",
-        version: "v1.2.0",
-        enabled: true
-    },
-    {
-        name: "User Service",
-        type: "grpc",
-        address: "localhost:50051",
-        status: "up",
-        version: "v1.0",
-        enabled: true
-    }
-  ];
 
   test.beforeEach(async ({ page }) => {
-    // page.on('request', request => console.log('>>', request.method(), request.url()));
+    // Seed the database with initial services
+    const paymentGateway: UpstreamServiceConfig = {
+        name: "Payment Gateway",
+        version: "v1.2.0",
+        disable: false,
+        httpService: { address: "https://stripe.com" },
+        priority: 0,
+        loadBalancingStrategy: 0,
+    };
 
-    // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
-    });
+    const userService: UpstreamServiceConfig = {
+        name: "User Service",
+        version: "v1.0",
+        disable: false,
+        grpcService: { address: "localhost:50051" },
+        priority: 0,
+        loadBalancingStrategy: 0,
+    };
+
+    await Seeder.registerService(paymentGateway);
+    await Seeder.registerService(userService);
 
     await page.goto('/upstream-services');
+  });
+
+  test.afterEach(async () => {
+      // Cleanup seeded data
+      await Seeder.cleanup();
   });
 
   test('should list services, allow toggle, and manage services', async ({ page }) => {
@@ -57,7 +51,11 @@ test.describe('Services Feature', () => {
     const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
     const switchBtn = paymentRow.getByRole('switch');
     await expect(switchBtn).toBeVisible();
+    // Toggle logic: click calls backend.
     await switchBtn.click();
+    // Verify backend state update? Or just UI update.
+    // UI update depends on backend response. If backend works, UI toggles.
+    // We can assume UI reflects backend state after optimistic update or revalidation.
 
     // Register a new service
     await page.getByRole('button', { name: 'Add Service' }).click();
@@ -92,6 +90,7 @@ test.describe('Services Feature', () => {
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
+
   test('should navigate to logs from service list', async ({ page }) => {
     const serviceName = 'Payment Gateway';
     const row = page.locator('tr').filter({ hasText: serviceName });
@@ -108,10 +107,5 @@ test.describe('Services Feature', () => {
 
     // Should navigate to logs page with query param
     await expect(page).toHaveURL(/.*\/logs.*source=Payment/);
-
-    // Verify filter is applied (assuming log-stream uses query param to filter)
-    // We can check if the source dropdown or some indicator reflects the selection
-    // Based on implementation: source query param sets filterSource
-    // await expect(page.getByText('Payment Gateway')).toBeVisible(); // Source selector should show it
   });
 });
