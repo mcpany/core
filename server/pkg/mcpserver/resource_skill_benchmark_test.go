@@ -14,6 +14,7 @@ import (
 
 func BenchmarkSkillResource_Read(b *testing.B) {
 	// This benchmark measures the performance impact of caching the resolved path.
+	// We use a temporary directory to simulate a real filesystem environment.
 	// Setup temporary skill directory
 	tmpDir := b.TempDir()
 	skillDir := filepath.Join(tmpDir, "test-skill")
