@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -50,6 +51,10 @@ func TestHandleTemplates(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(tmpl)
 	req = httptest.NewRequest(http.MethodPost, "/api/v1/service-templates", bytes.NewReader(body))
+	// Inject Admin Role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w = httptest.NewRecorder()
 	app.handleTemplates().ServeHTTP(w, req)
 	assert.Equal(t, http.StatusCreated, w.Code)
@@ -79,6 +84,10 @@ func TestHandleTemplateDetail(t *testing.T) {
 
 	// 1. Test DELETE
 	req := httptest.NewRequest(http.MethodDelete, "/api/v1/service-templates/test-tmpl", nil)
+	// Inject Admin Role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 	app.handleTemplateDetail().ServeHTTP(w, req)
 	assert.Equal(t, http.StatusNoContent, w.Code)
@@ -90,6 +99,10 @@ func TestHandleTemplateDetail(t *testing.T) {
 
 	// 3. Test DELETE Non-Existent (Idempotent, so 204 is acceptable/expected)
 	req = httptest.NewRequest(http.MethodDelete, "/api/v1/service-templates/non-existent", nil)
+	// Inject Admin Role
+	ctx = auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w = httptest.NewRecorder()
 	app.handleTemplateDetail().ServeHTTP(w, req)
 	assert.Equal(t, http.StatusNoContent, w.Code)

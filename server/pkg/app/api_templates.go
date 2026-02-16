@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"html"
 	"io"
 	"net/http"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -43,6 +45,12 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Authorization: Only admins can create templates
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
+
 			// Limit 1MB
 			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var tmpl configv1.ServiceTemplate
@@ -56,6 +64,11 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+
+			// Sanitize input to prevent XSS
+			tmpl.SetName(html.EscapeString(tmpl.GetName()))
+			tmpl.SetDescription(html.EscapeString(tmpl.GetDescription()))
+			tmpl.SetIcon(html.EscapeString(tmpl.GetIcon()))
 
 			if tmpl.GetId() == "" {
 				tmpl.SetId(uuid.New().String())
@@ -115,6 +128,12 @@ func (a *Application) handleTemplateDetail() http.HandlerFunc {
 			_, _ = w.Write(b)
 
 		case http.MethodDelete:
+			// Authorization: Only admins can delete templates
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
+
 			if err := a.Storage.DeleteServiceTemplate(r.Context(), id); err != nil {
 				logging.GetLogger().Error("failed to delete template", "id", id, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
