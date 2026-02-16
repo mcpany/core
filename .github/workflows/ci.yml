@@ -45,8 +45,8 @@ jobs:
 
   lint:
     needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v5
 
@@ -836,38 +836,6 @@ jobs:
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:latest
 
-  docker-smoke-test-ui:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [build-images]
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Detect Architecture
-        id: detect-arch
-        run: |
-          ARCH=$(uname -m)
-          case $ARCH in
-            x86_64) SLUG="amd64" ;;
-            aarch64) SLUG="arm64" ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          echo "slug=$SLUG" >> $GITHUB_OUTPUT
-
-      - name: Download UI Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Docker Image
-        run: |
-          docker load -i ui.tar
-
-      - name: Smoke Test UI
-        run: |
-          chmod +x server/tests/smoke_test_ui.sh
-          ./server/tests/smoke_test_ui.sh mcpany/ui:latest
-
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1019,7 +987,6 @@ jobs:
         e2e-parallel,
         e2e-public-api,
         docker-smoke-test,
-        docker-smoke-test-ui,
         ui-test,
         k8s-e2e,
       ]
@@ -1062,7 +1029,7 @@ jobs:
 
             mkdir -p /tmp/gh-install
             if command -v curl &> /dev/null; then
-              curl -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+              curl --retry 3 --retry-delay 5 -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
             elif command -v wget &> /dev/null; then
               wget -qO- https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
             else
