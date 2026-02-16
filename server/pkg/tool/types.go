@@ -46,6 +46,7 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+	gitCommand          = "git"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -1943,7 +1944,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Sentinel Security Update: Block git ext:: protocol
 	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			// Check for ext:: in arguments (potentially hidden in options or URLs)
 			if strings.Contains(arg, "ext::") {
@@ -2267,7 +2268,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == "git" {
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
 		for _, arg := range args {
 			if strings.Contains(arg, "ext::") {
 				return nil, fmt.Errorf("git ext:: protocol is not allowed")
@@ -2947,22 +2948,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return checkUnquotedInjection(val, command, isShell)
 }
 
-func stripInterpreterComments(val, language string) string {
-	var b strings.Builder
-	b.Grow(len(val))
-
-	inLineComment := false  // # or //
-	inBlockComment := false // /* ... */
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
-	// Determine comment style
-	supportsHash := false
-	supportsSlash := false
-	supportsBlock := false
-
+func getCommentStyle(language string) (supportsHash, supportsSlash, supportsBlock bool) {
 	switch language {
 	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
 		supportsHash = true
@@ -2979,6 +2965,22 @@ func stripInterpreterComments(val, language string) string {
 		supportsSlash = true
 		supportsBlock = true
 	}
+	return
+}
+
+//nolint:gocyclo // State machine loop logic is inherently complex
+func stripInterpreterComments(val, language string) string {
+	var b strings.Builder
+	b.Grow(len(val))
+
+	inLineComment := false  // # or //
+	inBlockComment := false // /* ... */
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	supportsHash, supportsSlash, supportsBlock := getCommentStyle(language)
 
 	for i := 0; i < len(val); i++ {
 		char := val[i]
@@ -3594,7 +3596,7 @@ func isVulnerableToSchemes(command string) bool {
 	}
 
 	// Git
-	if base == "git" {
+	if base == gitCommand {
 		return true
 	}
 
