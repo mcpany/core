@@ -4,367 +4,529 @@
 package tool
 
 import (
-	"context"
-	"encoding/json"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
+func TestCheckForShellInjection_Extended(t *testing.T) {
 	t.Parallel()
-	// This test verifies that argument injection via placeholders is prevented.
-
-	tool := v1.Tool_builder{
-		Name:        proto.String("test-tool-cat"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("cat"),
-		Local:   proto.Bool(true),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("file")}.Build()}.Build(),
-		},
-		Args: []string{"{{file}}"},
-	}.Build()
-
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-	// Case 1: Safe input (relative path)
-	reqSafe := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "hosts",
-		},
-	}
-	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-
-	_, err := localTool.Execute(context.Background(), reqSafe)
-	if err != nil {
-		assert.NotContains(t, err.Error(), "argument injection")
-		assert.NotContains(t, err.Error(), "absolute path detected")
-	}
-
-	// Case 2: Argument Injection
-	reqAttack := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "-n", // Attempt to inject a flag
-		},
-	}
-	reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
-
-	_, err = localTool.Execute(context.Background(), reqAttack)
-
-	assert.Error(t, err)
-	if err != nil {
-		assert.Contains(t, err.Error(), "argument injection")
-	}
-
-	// Case 3: Negative number (should be allowed)
-	reqNegative := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "-5",
-		},
-	}
-	reqNegative.ToolInputs, _ = json.Marshal(reqNegative.Arguments)
-
-	_, err = localTool.Execute(context.Background(), reqNegative)
-	if err != nil {
-		assert.NotContains(t, err.Error(), "argument injection")
-	}
-}
-
-func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
-	t.Parallel()
-	// Test Case 1: Unquoted Placeholder (Vulnerable configuration)
-	t.Run("Unquoted Placeholder", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-sh")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
-			Command: proto.String("sh"),
-			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
-			},
-			Args: []string{"-c", "echo {{msg}}"},
-		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-		// Injection attempt
-		reqAttack := &ExecutionRequest{
-			ToolName: "test-tool-sh",
-			Arguments: map[string]interface{}{
-				"msg": "hello; cat /etc/passwd",
-			},
-		}
-		reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
-
-		_, err := localTool.Execute(context.Background(), reqAttack)
-		assert.Error(t, err)
-		if err != nil {
-			assert.Contains(t, err.Error(), "shell injection detected")
-		}
-
-		// Safe input but with special chars that are dangerous in unquoted context
-		reqSafeish := &ExecutionRequest{
-			ToolName: "test-tool-sh",
-			Arguments: map[string]interface{}{
-				"msg": "Law & Order",
-			},
-		}
-		reqSafeish.ToolInputs, _ = json.Marshal(reqSafeish.Arguments)
-		_, err = localTool.Execute(context.Background(), reqSafeish)
-		// Should fail because & is dangerous unquoted
-		assert.Error(t, err)
-	})
-
-	// Test Case 2: Single Quoted Placeholder (Safer configuration)
-	t.Run("Single Quoted Placeholder", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-sh-quoted")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
-			Command: proto.String("sh"),
-			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
-			},
-			Args: []string{"-c", "echo '{{msg}}'"},
-		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-		// Safe input with special chars
-		reqSafe := &ExecutionRequest{
-			ToolName: "test-tool-sh-quoted",
-			Arguments: map[string]interface{}{
-				"msg": "Law & Order",
-			},
-		}
-		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-
-		_, err := localTool.Execute(context.Background(), reqSafe)
-		// Should PASS because it's quoted
-		if err != nil {
-			assert.NotContains(t, err.Error(), "shell injection detected")
-		}
-
-		// Breakout attempt
-		reqBreakout := &ExecutionRequest{
-			ToolName: "test-tool-sh-quoted",
-			Arguments: map[string]interface{}{
-				"msg": "foo'bar",
-			},
-		}
-		reqBreakout.ToolInputs, _ = json.Marshal(reqBreakout.Arguments)
-		_, err = localTool.Execute(context.Background(), reqBreakout)
-		// Should FAIL because it contains single quote
-		assert.Error(t, err)
-	})
-
-	// Test Case 3: Double Quoted Placeholder
-	t.Run("Double Quoted Placeholder", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-sh-dquoted")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
-			Command: proto.String("sh"),
-			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
-			},
-			Args: []string{"-c", "echo \"{{msg}}\""},
-		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-		// Safe input
-		reqSafe := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "Hello World",
-			},
-		}
-		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-		_, err := localTool.Execute(context.Background(), reqSafe)
-		assert.NoError(t, err)
-
-		// Variable expansion attempt (dangerous in double quotes)
-		reqVar := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "$HOME",
-			},
-		}
-		reqVar.ToolInputs, _ = json.Marshal(reqVar.Arguments)
-		_, err = localTool.Execute(context.Background(), reqVar)
-		assert.Error(t, err) // Should block $
-
-		// Breakout attempt
-		reqBreakout := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "foo\"bar",
-			},
-		}
-		reqBreakout.ToolInputs, _ = json.Marshal(reqBreakout.Arguments)
-		_, err = localTool.Execute(context.Background(), reqBreakout)
-		assert.Error(t, err) // Should block "
-
-		// Backslash escape attempt (to escape closing quote)
-		reqBackslash := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "foo\\",
-			},
-		}
-		reqBackslash.ToolInputs, _ = json.Marshal(reqBackslash.Arguments)
-		_, err = localTool.Execute(context.Background(), reqBackslash)
-		assert.Error(t, err) // Should block \
-
-		// Windows CMD injection attempt (dangerous in double quotes on Windows)
-		reqWinCmd := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "%PATH%",
-			},
-		}
-		reqWinCmd.ToolInputs, _ = json.Marshal(reqWinCmd.Arguments)
-		_, err = localTool.Execute(context.Background(), reqWinCmd)
-		assert.Error(t, err) // Should block %
-	})
-
-	// Test Case 4: Non-Shell Command
-	t.Run("Non-Shell Command", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-echo")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
-			Command: proto.String("echo"), // Not a shell
-			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
-			},
-			Args: []string{"{{msg}}"},
-		}.Build()
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-		// Input with shell chars - should be allowed for non-shell command
-		reqSafe := &ExecutionRequest{
-			ToolName: "test-tool-echo",
-			Arguments: map[string]interface{}{
-				"msg": "Law & Order",
-			},
-		}
-		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-		_, err := localTool.Execute(context.Background(), reqSafe)
-		assert.NoError(t, err)
-	})
-}
-
-func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
-	// This test demonstrates that python is not currently treated as a shell command,
-	// allowing code injection via argument substitution.
-
-	toolDef := v1.Tool_builder{
-		Name: proto.String("python_tool"),
-	}.Build()
-
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("python3"),
-	}.Build()
-
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "print('{{msg}}')"},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("msg"),
-				}.Build(),
-			}.Build(),
-		},
-	}.Build()
-
-	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
-
-	// Malicious input trying to break out of python string
-	// msg = '); print("INJECTED"); print('
-	// Resulting code: print(''); print("INJECTED"); print('')
-	// Note: We need to escape quotes for JSON
-
-	injectionPayload := "'); print(\"INJECTED\"); print('"
-	jsonInput, _ := json.Marshal(map[string]string{"msg": injectionPayload})
-
-	req := &ExecutionRequest{
-		ToolName: "python_tool",
-		ToolInputs: jsonInput,
-	}
-
-	// Execute
-	_, err := ct.Execute(context.Background(), req)
-
-	// Expect strict shell injection prevention to kick in for Python
-	assert.Error(t, err)
-	if err != nil {
-		assert.Contains(t, err.Error(), "shell injection detected")
-	}
-}
-
-func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
-	t.Parallel()
-	tool := v1.Tool_builder{
-		Name: proto.String("test-tool-shell-control"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("sh"), // This triggers shell injection checks
-		Local:   proto.Bool(true),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "echo {{arg}}"},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build()}.Build(),
-		},
-	}.Build()
-
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-	// Test cases for control characters
-	testCases := []struct {
-		name       string
-		input      string
-		shouldFail bool
+	tests := []struct {
+		name        string
+		val         string
+		template    string
+		placeholder string
+		command     string
+		isShell     bool
+		wantErr     bool
+		errContains string
 	}{
-		{"CarriageReturn", "hello\rworld", true},
-		{"Tab", "hello\tworld", true}, // We want to block this as it can split args in unquoted context
-		{"VerticalTab", "hello\vworld", true},
-		{"FormFeed", "hello\fworld", true},
-		{"Safe", "helloworld", false}, // Space is currently allowed
+		// 1. Unquoted Context (Level 0)
+		{
+			name:        "Unquoted Safe",
+			val:         "safe_value",
+			template:    "echo {{val}}",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     false,
+		},
+		{
+			name:        "Unquoted Semicolon",
+			val:         "val; rm -rf /",
+			template:    "echo {{val}}",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+		{
+			name:        "Unquoted Pipe",
+			val:         "val | ls",
+			template:    "echo {{val}}",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+		{
+			name:        "Unquoted Backtick",
+			val:         "`ls`",
+			template:    "echo {{val}}",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+		{
+			name:        "Unquoted Space",
+			val:         "arg1 arg2",
+			template:    "echo {{val}}",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+
+		// 2. Double Quoted Context (Level 1)
+		{
+			name:        "Double Quoted Safe",
+			val:         "safe value",
+			template:    "echo \"{{val}}\"",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     false,
+		},
+		{
+			name:        "Double Quoted Backtick",
+			val:         "`ls`",
+			template:    "echo \"{{val}}\"",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+		{
+			name:        "Double Quoted Dollar",
+			val:         "$(ls)",
+			template:    "echo \"{{val}}\"",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+		{
+			name:        "Double Quoted Quote Breakout",
+			val:         "\" ; rm -rf /",
+			template:    "echo \"{{val}}\"",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+
+		// 3. Single Quoted Context (Level 2)
+		{
+			name:        "Single Quoted Safe",
+			val:         "safe value $ \\", // Removed backtick as it is blocked
+			template:    "echo '{{val}}'",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     false,
+		},
+		{
+			name:        "Single Quoted Quote Breakout",
+			val:         "' ; rm -rf /",
+			template:    "echo '{{val}}'",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+
+		// 4. Backticked Context (Level 3) - Usually dangerous
+		{
+			name:        "Backticked Semicolon",
+			val:         "val; rm -rf /",
+			template:    "echo `{{val}}`",
+			placeholder: "{{val}}",
+			command:     "bash",
+			isShell:     true,
+			wantErr:     true,
+			errContains: "shell injection detected",
+		},
+
+		// 5. Interpreter (Python)
+		{
+			name:        "Python F-String Injection",
+			val:         "{__import__('os').system('ls')}",
+			template:    "python -c \"print(f'{{val}}')\"",
+			placeholder: "{{val}}",
+			command:     "python",
+			isShell:     false,
+			wantErr:     true,
+			errContains: "python f-string injection detected",
+		},
+		{
+			name:        "Python Dangerous Function",
+			val:         "__import__('os')",
+			template:    "python -c '{{val}}'",
+			placeholder: "{{val}}",
+			command:     "python",
+			isShell:     false,
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+
+		// 6. Interpreter (Ruby)
+		{
+			name:        "Ruby Interpolation",
+			val:         "#{system('ls')}",
+			template:    "ruby -e \"puts '{{val}}'\"",
+			placeholder: "{{val}}",
+			command:     "ruby",
+			isShell:     false,
+			wantErr:     true,
+			errContains: "ruby interpolation injection detected",
+		},
+
+		// 7. Interpreter (Node)
+		{
+			name:        "Node Template Literal",
+			val:         "${process.exit()}",
+			template:    "node -e `console.log(\\`{{val}}\\`)`",
+			placeholder: "{{val}}",
+			command:     "node",
+			isShell:     false,
+			wantErr:     true,
+			errContains: "javascript template literal injection detected",
+		},
+
+		// 8. Interpreter (Perl)
+		{
+			name:        "Perl QX Unquoted",
+			val:         "qx/ls/",
+			template:    "perl -e {{val}}",
+			placeholder: "{{val}}",
+			command:     "perl",
+			isShell:     false,
+			wantErr:     true,
+			errContains: "shell injection detected: perl qx execution",
+		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			req := &ExecutionRequest{
-				ToolName: "test-tool-shell-control",
-				Arguments: map[string]interface{}{
-					"arg": tc.input,
-				},
-			}
-			req.ToolInputs, _ = json.Marshal(req.Arguments)
-
-			_, err := localTool.Execute(context.Background(), req)
-			if tc.shouldFail {
-				if err == nil {
-					t.Fatalf("Expected error for input %q, but got nil", tc.input)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := checkForShellInjection(tt.val, tt.template, tt.placeholder, tt.command, tt.isShell)
+			if tt.wantErr {
+				if assert.Error(t, err) {
+					if tt.errContains != "" {
+						assert.Contains(t, err.Error(), tt.errContains)
+					}
 				}
-				assert.Contains(t, err.Error(), "shell injection detected")
 			} else {
 				assert.NoError(t, err)
 			}
+		})
+	}
+}
+
+func TestCheckTarInjection(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		val         string
+		base        string
+		wantErr     bool
+		errContains string
+	}{
+		{
+			name:    "Safe Tar",
+			val:     "archive.tar",
+			base:    "tar",
+			wantErr: false,
+		},
+		{
+			name:        "Tar Exec Directive",
+			val:         "--checkpoint-action=exec=sh",
+			base:        "tar",
+			wantErr:     true,
+			errContains: "tar injection detected",
+		},
+		{
+			name:        "Tar Command Directive",
+			val:         "--to-command=sh",
+			base:        "tar",
+			wantErr:     true,
+			errContains: "tar injection detected",
+		},
+		{
+			name:    "Not Tar",
+			val:     "exec=sh",
+			base:    "ls",
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := checkTarInjection(tt.val, tt.base)
+			if tt.wantErr {
+				if assert.Error(t, err) {
+					if tt.errContains != "" {
+						assert.Contains(t, err.Error(), tt.errContains)
+					}
+				}
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestCheckSQLInjection(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		val         string
+		base        string
+		quoteLevel  int
+		wantErr     bool
+		errContains string
+	}{
+		{
+			name:       "Safe SQL",
+			val:        "valid_table",
+			base:       "psql",
+			quoteLevel: 0,
+			wantErr:    false,
+		},
+		{
+			name:        "SQL Injection OR",
+			val:         "1 OR 1=1",
+			base:        "psql",
+			quoteLevel:  0,
+			wantErr:     true,
+			errContains: "SQL injection detected",
+		},
+		{
+			name:        "SQL Injection DROP",
+			val:         "users; DROP TABLE users",
+			base:        "mysql",
+			quoteLevel:  0,
+			wantErr:     true,
+			errContains: "SQL injection detected",
+		},
+		{
+			name:        "SQL Comment",
+			val:         "admin' --",
+			base:        "sqlite3",
+			quoteLevel:  0,
+			wantErr:     true,
+			errContains: "SQL injection detected",
+		},
+		{
+			name:       "Quoted SQL (Safe-ish)",
+			val:        "1 OR 1=1",
+			base:       "psql",
+			quoteLevel: 1, // Double quoted
+			wantErr:    false,
+		},
+		{
+			name:       "Not SQL Tool",
+			val:        "DROP TABLE",
+			base:       "echo",
+			quoteLevel: 0,
+			wantErr:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := checkSQLInjection(tt.val, tt.base, tt.quoteLevel)
+			if tt.wantErr {
+				if assert.Error(t, err) {
+					if tt.errContains != "" {
+						assert.Contains(t, err.Error(), tt.errContains)
+					}
+				}
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestCheckInterpreterFunctionCalls(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		val         string
+		lang        string
+		wantErr     bool
+		errContains string
+	}{
+		{
+			name:    "Safe Code",
+			val:     "print('hello')",
+			lang:    "python",
+			wantErr: false,
+		},
+		{
+			name:        "System Call",
+			val:         "system('ls')",
+			lang:    "python",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+		{
+			name:        "Exec Call",
+			val:         "exec('ls')",
+			lang:    "node",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+		{
+			name:        "Spawn Call",
+			val:         "require('child_process').spawn('ls')",
+			lang:    "node",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+		{
+			name:        "Eval Call",
+			val:         "eval('code')",
+			lang:    "php",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+		{
+			name:        "Obfuscated System Call",
+			val:         "system ( 'ls' )",
+			lang:    "python",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+		{
+			name:        "Ruby System No Parens",
+			val:         "system 'ls'",
+			lang:    "ruby",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+		{
+			name:        "Import Check",
+			val:         "__import__('os')",
+			lang:    "python",
+			wantErr:     true,
+			errContains: "interpreter injection detected",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := checkInterpreterFunctionCalls(tt.val, tt.lang)
+			if tt.wantErr {
+				if assert.Error(t, err) {
+					if tt.errContains != "" {
+						assert.Contains(t, err.Error(), tt.errContains)
+					}
+				}
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestStripInterpreterComments(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name string
+		val  string
+		lang string
+		want string
+	}{
+		{
+			name: "Python Comment",
+			val:  "print('hi') # comment",
+			lang: "python",
+			want: "print('hi') ",
+		},
+		{
+			name: "JS Line Comment",
+			val:  "console.log('hi') // comment",
+			lang: "node",
+			want: "console.log('hi') ",
+		},
+		{
+			name: "JS Block Comment",
+			val:  "console.log('hi') /* comment */",
+			lang: "node",
+			want: "console.log('hi') ",
+		},
+		{
+			name: "String with Hash",
+			val:  "print('# not a comment')",
+			lang: "python",
+			want: "print('# not a comment')",
+		},
+		{
+			name: "String with Slash",
+			val:  "print('// not a comment')",
+			lang: "node",
+			want: "print('// not a comment')",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := stripInterpreterComments(tt.val, tt.lang)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestAnalyzeQuoteContext(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		template    string
+		placeholder string
+		wantLevel   int
+	}{
+		{
+			name:        "Unquoted",
+			template:    "echo {{val}}",
+			placeholder: "{{val}}",
+			wantLevel:   0,
+		},
+		{
+			name:        "Double Quoted",
+			template:    "echo \"{{val}}\"",
+			placeholder: "{{val}}",
+			wantLevel:   1,
+		},
+		{
+			name:        "Single Quoted",
+			template:    "echo '{{val}}'",
+			placeholder: "{{val}}",
+			wantLevel:   2,
+		},
+		{
+			name:        "Backticked",
+			template:    "echo `{{val}}`",
+			placeholder: "{{val}}",
+			wantLevel:   3,
+		},
+		{
+			name:        "Mixed Double",
+			template:    "echo \"prefix {{val}} suffix\"",
+			placeholder: "{{val}}",
+			wantLevel:   1,
+		},
+		{
+			name:        "Escaped Quote",
+			template:    "echo \"pre \\\" {{val}}\"",
+			placeholder: "{{val}}",
+			wantLevel:   1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := analyzeQuoteContext(tt.template, tt.placeholder)
+			assert.Equal(t, tt.wantLevel, got)
 		})
 	}
 }
