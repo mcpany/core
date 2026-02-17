@@ -3846,6 +3846,48 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
+	// Sentinel Security Update: Block git SCP-style SSH injection
+	// This prevents RCE via injected options in the hostname part of SCP-like URLs.
+	// Pattern: [user@]host:path where host starts with -
+	if filepath.Base(commandName) == gitCommand {
+		if err := checkGitSCPInjection(val); err != nil {
+			return err
+		}
+		// Also check decoded value just in case
+		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+			if err := checkGitSCPInjection(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func checkGitSCPInjection(val string) error {
+	// SCP-style URL must contain a colon separator for host:path
+	colonIdx := strings.Index(val, ":")
+	if colonIdx == -1 {
+		return nil
+	}
+
+	// Extract potential host part
+	// Format: [user@]host:path
+	hostPart := val[:colonIdx]
+	atIdx := strings.LastIndex(hostPart, "@")
+	if atIdx != -1 {
+		hostPart = hostPart[atIdx+1:]
+	}
+
+	// If the host part contains a slash (or backslash on Windows), git treats it as a file path, not an SCP URL.
+	if strings.ContainsAny(hostPart, "/\\") {
+		return nil
+	}
+
+	if strings.HasPrefix(hostPart, "-") {
+		return fmt.Errorf("git scp-style injection detected: hostname starts with '-'")
+	}
+
 	return nil
 }
 
