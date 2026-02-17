@@ -196,6 +196,11 @@ func NewSafeHTTPClient() *http.Client {
 
 		sharedTransport = &http.Transport{
 			DialContext: dialer.DialContext,
+			// ⚡ BOLT: Tune connection pooling for high concurrency.
+			// MaxIdleConnsPerHost defaults to 2, which is too low for shared transport.
+			MaxIdleConns:        100,
+			MaxIdleConnsPerHost: 10,
+			IdleConnTimeout:     90 * time.Second,
 		}
 	})
 
