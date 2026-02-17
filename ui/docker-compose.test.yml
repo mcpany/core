@@ -47,27 +47,16 @@ services:
     command: >
       sh -c "
         mkdir -p test-results .audit playwright-report docs &&
-        # Wait for echo server using node to be safe
+        # Wait for echo server using wget/curl/nc
         echo 'Waiting for ui-http-echo-server...' &&
-        node -e '
-          const http = require("http");
-          const options = { host: "ui-http-echo-server", port: 5678, path: "/health", timeout: 2000 };
-          let retries = 30;
-          const check = () => {
-            const req = http.request(options, (res) => {
-              if (res.statusCode === 200) process.exit(0);
-              else retry();
-            });
-            req.on("error", retry);
-            req.on("timeout", () => { req.destroy(); retry(); });
-            req.end();
-          };
-          const retry = () => {
-            if (retries-- > 0) setTimeout(check, 1000);
-            else process.exit(1);
-          };
-          check();
-        ' &&
+        for i in \$(seq 1 30); do
+          if wget -q --spider http://ui-http-echo-server:5678/health; then
+            echo 'ui-http-echo-server is up!'
+            break
+          fi
+          echo 'Waiting...'
+          sleep 1
+        done &&
         npx playwright test $${PLAYWRIGHT_ARGS}
       "
     volumes:
