@@ -25,7 +25,6 @@ import {
 } from "recharts";
 import {
     ArrowDownRight,
-    ArrowUpRight,
     Activity,
     Clock,
     AlertTriangle,
