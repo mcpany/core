@@ -11,6 +11,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestPerlInjection(t *testing.T) {
@@ -81,31 +82,28 @@ func TestPerlInjection(t *testing.T) {
 }
 
 func TestPerlReadpipeInjection(t *testing.T) {
-	cmdService := &configv1.CommandLineUpstreamService{}
-	cmdService.SetCommand("perl")
+	cmd := "perl"
+	cmdService := configv1.CommandLineUpstreamService_builder{
+		Command: &cmd,
+	}.Build()
 
-	paramSchema := &configv1.ParameterSchema{}
-	paramSchema.SetName("name")
-	paramSchema.SetType(configv1.ParameterType_STRING)
+	paramSchema := configv1.ParameterSchema_builder{
+		Name: proto.String("name"),
+		Type: configv1.ParameterType_STRING.Enum(),
+	}.Build()
 
-	paramMapping := &configv1.CommandLineParameterMapping{}
-	paramMapping.SetSchema(paramSchema)
+	paramMapping := configv1.CommandLineParameterMapping_builder{
+		Schema: paramSchema,
+	}.Build()
 
-	callDef := &configv1.CommandLineCallDefinition{}
-	callDef.SetArgs([]string{"-e", "print '{{name}}'"}) // Unquoted in args substitution if {{name}} replaces it? No, args definition here is string.
-	// Wait, Arg substitution in CommandTool:
-	// args[i] = strings.ReplaceAll(arg, placeholder, val)
-	// So if arg is "-e", "print '{{name}}'", and name is "foo", result is "-e", "print 'foo'".
-	// This is effectively quoted (single quote).
-	// But `checkInterpreterFunctionCalls` checks the value itself against the interpreter context.
-	// And `checkForShellInjection` determines quote level based on the template.
-	// Template is "print '{{name}}'". Placeholder is "{{name}}".
-	// It is inside single quotes. So quoteLevel = 2.
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-e", "print '{{name}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{paramMapping},
+	}.Build()
 
-	callDef.SetParameters([]*configv1.CommandLineParameterMapping{paramMapping})
-
-	toolStruct := &v1.Tool{}
-	toolStruct.SetName("perl_rce")
+	toolStruct := v1.Tool_builder{
+		Name: proto.String("perl_rce"),
+	}.Build()
 
 	tool := NewLocalCommandTool(
 		toolStruct,
@@ -122,8 +120,6 @@ func TestPerlReadpipeInjection(t *testing.T) {
 	// Resulting Perl code: print '' . readpipe('echo INJECTED') . ''
 	// This payload was NOT blocked before because checkInterpreterFunctionCalls was not run for quoteLevel=2 (Single Quoted).
 	// Now it should be blocked.
-	payload := "' . readpipe('echo INJECTED') . '"
-
 	jsonInput := "{\"name\": \"' . readpipe('echo INJECTED') . '\"}"
 
 	req := &ExecutionRequest{

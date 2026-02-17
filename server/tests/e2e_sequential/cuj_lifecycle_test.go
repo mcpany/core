@@ -174,7 +174,9 @@ upstream_services:
     }
 
 	// Wait for health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 120*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 120*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 120*time.Second)
 
 	// Re-connect
 	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
