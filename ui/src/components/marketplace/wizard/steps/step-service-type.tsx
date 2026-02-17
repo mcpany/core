@@ -9,8 +9,27 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
+// Map Registry items to Template format
+const REGISTRY_TEMPLATES = SERVICE_REGISTRY.map(s => ({
+    id: s.id,
+    name: s.name,
+    description: s.description,
+    config: {
+        commandLineService: {
+            command: s.command,
+            env: {},
+            workingDirectory: ''
+        },
+        // We attach the schema string so StepParameters can use it to render a form
+        configurationSchema: JSON.stringify(s.configurationSchema),
+        openapiService: undefined
+    },
+    params: {} // Defaults will be extracted dynamically
+}));
+
+const MANUAL_TEMPLATES = [
     {
         id: 'manual',
         name: 'Manual / Custom',
@@ -21,43 +40,10 @@ const TEMPLATES = [
                 env: {},
                 workingDirectory: ''
             },
-            openapiService: undefined
+            openapiService: undefined,
+            configurationSchema: undefined
         },
         params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
     },
     {
         id: 'openapi',
@@ -70,11 +56,14 @@ const TEMPLATES = [
                 specContent: "",
                 tools: []
             },
-            commandLineService: undefined
+            commandLineService: undefined,
+            configurationSchema: undefined
         },
         params: {}
     }
 ];
+
+const TEMPLATES = [...MANUAL_TEMPLATES, ...REGISTRY_TEMPLATES];
 
 /**
  * StepServiceType component.
@@ -88,10 +77,31 @@ export function StepServiceType() {
     const handleTemplateChange = (val: string) => {
         const template = TEMPLATES.find(t => t.id === val);
         if (template) {
+            let params = { ...(template.params as Record<string, string>) };
+
+            // Extract defaults from schema if present
+            if (template.config.configurationSchema) {
+                try {
+                    const schema = JSON.parse(template.config.configurationSchema);
+                    if (schema.properties) {
+                        Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
+                            if (v.default !== undefined) {
+                                params[k] = String(v.default);
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to parse schema for defaults", e);
+                }
+            }
+
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: params
             });
+
+            // We cast to any because template.config might have extra fields or slight type mismatches
+            // with Partial<UpstreamServiceConfig> but we trust our mapping.
             updateConfig({
                 ...template.config as any,
                 name: config.name || template.name,

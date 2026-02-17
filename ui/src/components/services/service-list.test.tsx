@@ -25,6 +25,7 @@ const mockServices: UpstreamServiceConfig[] = [
     autoDiscoverTool: false,
     configError: "",
     readOnly: false,
+    configurationSchema: "",
     httpService: {
         address: "http://localhost:8080",
         tools: [],
@@ -49,6 +50,7 @@ const mockServices: UpstreamServiceConfig[] = [
     autoDiscoverTool: false,
     configError: "",
     readOnly: false,
+    configurationSchema: "",
     httpService: {
         address: "http://localhost:8081",
         tools: [],

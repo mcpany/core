@@ -1048,6 +1048,30 @@ export const apiClient = {
     // Secrets
 
     /**
+     * Lists all stored credentials.
+     * @returns A promise that resolves to a list of credentials.
+     */
+    listCredentials: async () => {
+        const res = await fetchWithAuth('/api/v1/credentials');
+        if (!res.ok) throw new Error('Failed to fetch credentials');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.credentials || []);
+    },
+
+    /**
+     * Test authentication connectivity.
+     */
+    testAuth: async (params: any) => {
+        const res = await fetchWithAuth('/api/v1/auth/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        });
+        if (!res.ok) throw new Error('Failed to test auth');
+        return res.json();
+    },
+
+    /**
      * Lists all stored secrets.
      * @returns A promise that resolves to a list of secrets.
      */
