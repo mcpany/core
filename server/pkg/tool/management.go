@@ -889,7 +889,6 @@ func (tm *Manager) AddTool(tool Tool) error {
 			mcpTool.InputSchema = tool.Tool().GetInputSchema().AsMap()
 		}
 
-
 		log.Info(
 			"Registering tool with MCP server",
 			"toolName",

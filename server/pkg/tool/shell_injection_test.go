@@ -19,7 +19,7 @@ func TestShellInjection_Regression(t *testing.T) {
 		cmd := "python3"
 		tool := createTestCommandTool(cmd)
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
 		}
 
@@ -34,7 +34,7 @@ func TestShellInjection_Regression(t *testing.T) {
 		cmd := "python3.10"
 		tool := createTestCommandTool(cmd)
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
 		}
 

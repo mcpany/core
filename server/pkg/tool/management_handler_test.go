@@ -10,14 +10,14 @@ import (
 	"testing"
 	"time"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	bus_pb "github.com/mcpany/core/proto/bus"
 )
 
 // MockBus implements bus.Bus[T] for testing.
@@ -92,7 +92,7 @@ func TestToolManager_AsyncHandler_Success(t *testing.T) {
 	requestBus.Subscribe(ctx, "request", func(req *bus.ToolExecutionRequest) {
 		// Echo back result
 		res := &bus.ToolExecutionResult{
-			Result:        json.RawMessage(`{"status": "success"}`),
+			Result: json.RawMessage(`{"status": "success"}`),
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		_ = resultBus.Publish(ctx, req.CorrelationID(), res)
@@ -102,14 +102,14 @@ func TestToolManager_AsyncHandler_Success(t *testing.T) {
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
-    // Connect server and client
+	// Connect server and client
 	serverSession, err := mcpServer.Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
 
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-    defer func() { _ = clientSession.Close() }()
+	defer func() { _ = clientSession.Close() }()
 
 	result, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
 		Name: serviceID + "." + toolName,
@@ -156,10 +156,10 @@ func TestToolManager_AsyncHandler_BusFailure_GetBus(t *testing.T) {
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 
-    serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
-    defer serverSession.Close()
+	serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
+	defer serverSession.Close()
 	clientSession, _ := client.Connect(context.Background(), clientTransport, nil)
-    defer clientSession.Close()
+	defer clientSession.Close()
 
 	_, err := clientSession.CallTool(context.Background(), &mcp.CallToolParams{Name: "s.t"})
 	require.Error(t, err)
@@ -198,10 +198,10 @@ func TestToolManager_AsyncHandler_BusFailure_Publish(t *testing.T) {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-    serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
-    defer serverSession.Close()
+	serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
+	defer serverSession.Close()
 	clientSession, _ := client.Connect(context.Background(), clientTransport, nil)
-    defer clientSession.Close()
+	defer clientSession.Close()
 
 	_, err := clientSession.CallTool(context.Background(), &mcp.CallToolParams{Name: "s.t"})
 	require.Error(t, err)
@@ -232,10 +232,10 @@ func TestToolManager_AsyncHandler_Timeout(t *testing.T) {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-    serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
-    defer serverSession.Close()
+	serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
+	defer serverSession.Close()
 	clientSession, _ := client.Connect(context.Background(), clientTransport, nil)
-    defer clientSession.Close()
+	defer clientSession.Close()
 
 	start := time.Now()
 	_, err := clientSession.CallTool(context.Background(), &mcp.CallToolParams{Name: "s.t"})
@@ -262,10 +262,10 @@ func TestToolManager_AsyncHandler_ContextCancel(t *testing.T) {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-    serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
-    defer serverSession.Close()
+	serverSession, _ := mcpServer.Connect(context.Background(), serverTransport, nil)
+	defer serverSession.Close()
 	clientSession, _ := client.Connect(context.Background(), clientTransport, nil)
-    defer clientSession.Close()
+	defer clientSession.Close()
 
 	// Use very short context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)

@@ -23,9 +23,9 @@ func TestZipSecurity(t *testing.T) {
 		// Note: The template mechanism here mimics argument construction.
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 
-        // We simulate passing a dangerous shell string
+		// We simulate passing a dangerous shell string
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "sh -c 'touch hacked'"}`),
 		}
 
@@ -45,12 +45,12 @@ func TestZipSecurity(t *testing.T) {
 		}
 	})
 
-    // Add rsync check too
-    t.Run("rsync_e_injection", func(t *testing.T) {
+	// Add rsync check too
+	t.Run("rsync_e_injection", func(t *testing.T) {
 		cmd := "rsync"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "sh -c 'touch hacked'"}`),
 		}
 
@@ -70,7 +70,7 @@ func TestZipSecurity(t *testing.T) {
 		cmd := "nmap"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "os.execute('touch hacked')"}`),
 		}
 
@@ -90,7 +90,7 @@ func TestZipSecurity(t *testing.T) {
 		cmd := "tcpdump"
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
-			ToolName: "test",
+			ToolName:   "test",
 			ToolInputs: []byte(`{"input": "sh -c 'touch hacked'"}`),
 		}
 
@@ -105,20 +105,20 @@ func TestZipSecurity(t *testing.T) {
 		}
 	})
 
-    // Test a safe command (not in blacklist) should still pass validation if input is safe
-    t.Run("safe_command_valid_input", func(t *testing.T) {
-        cmd := "echo"
-        tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
-        req := &ExecutionRequest{
-            ToolName: "test",
-            ToolInputs: []byte(`{"input": "hello"}`),
-        }
+	// Test a safe command (not in blacklist) should still pass validation if input is safe
+	t.Run("safe_command_valid_input", func(t *testing.T) {
+		cmd := "echo"
+		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
+		req := &ExecutionRequest{
+			ToolName:   "test",
+			ToolInputs: []byte(`{"input": "hello"}`),
+		}
 
-        _, err := tool.Execute(context.Background(), req)
-        // This might fail with executable not found if echo is not in path or whatever
-        // But it should NOT fail with shell injection
-        if err != nil {
-            assert.NotContains(t, err.Error(), "shell injection detected")
-        }
-    })
+		_, err := tool.Execute(context.Background(), req)
+		// This might fail with executable not found if echo is not in path or whatever
+		// But it should NOT fail with shell injection
+		if err != nil {
+			assert.NotContains(t, err.Error(), "shell injection detected")
+		}
+	})
 }

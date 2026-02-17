@@ -59,9 +59,9 @@ func TestLocalCommandTool_SecurityChecks(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name      string
-		inputs    string
-		wantErr   string
+		name    string
+		inputs  string
+		wantErr string
 	}{
 		{
 			name:    "Path Traversal ..",
@@ -139,9 +139,9 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name      string
-		inputs    string
-		wantErr   string
+		name    string
+		inputs  string
+		wantErr string
 	}{
 		{
 			name:    "Shell Injection ;",
@@ -179,7 +179,7 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 }
 
 func TestLocalCommandTool_ArgsParameter(t *testing.T) {
-    // Test the "args" parameter special handling
+	// Test the "args" parameter special handling
 	svcConfig := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("ls"),
 	}.Build()
@@ -187,29 +187,29 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 
 	// Tool definition must allow args in input schema
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
-	    "type": "object",
-	    "properties": map[string]interface{}{
-	        "args": map[string]interface{}{
-	            "type": "array",
-	            "items": map[string]interface{}{
-	                "type": "string",
-	            },
-	        },
-	    },
+		"type": "object",
+		"properties": map[string]interface{}{
+			"args": map[string]interface{}{
+				"type": "array",
+				"items": map[string]interface{}{
+					"type": "string",
+				},
+			},
+		},
 	})
 
 	toolDef := v1.Tool_builder{
-	    Name: proto.String("ls_tool"),
-	    InputSchema: inputSchema, // Direct assignment of *structpb.Struct
+		Name:        proto.String("ls_tool"),
+		InputSchema: inputSchema, // Direct assignment of *structpb.Struct
 	}.Build()
 
 	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 	ctx := context.Background()
 
 	req := &ExecutionRequest{
-	    ToolName: "ls_tool",
-	    ToolInputs: []byte(`{"args": ["-l", "/tmp"]}`),
-	    DryRun: true,
+		ToolName:   "ls_tool",
+		ToolInputs: []byte(`{"args": ["-l", "/tmp"]}`),
+		DryRun:     true,
 	}
 
 	// This should fail because "-l" triggers argument injection check
@@ -224,32 +224,32 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 }
 
 func TestLocalCommandTool_DockerEnv(t *testing.T) {
-    // Test that checking for absolute path is skipped for Docker
-    svcConfig := configv1.CommandLineUpstreamService_builder{
-        Command: proto.String("ls"),
-        ContainerEnvironment: configv1.ContainerEnvironment_builder{
-            Image: proto.String("ubuntu"),
-        }.Build(),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{
-        Args: []string{"{{path}}"},
-        Parameters: []*configv1.CommandLineParameterMapping{
-            configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build()}.Build(),
-        },
-    }.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("docker_tool")}.Build()
+	// Test that checking for absolute path is skipped for Docker
+	svcConfig := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("ls"),
+		ContainerEnvironment: configv1.ContainerEnvironment_builder{
+			Image: proto.String("ubuntu"),
+		}.Build(),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"{{path}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build()}.Build(),
+		},
+	}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("docker_tool")}.Build()
 
-    cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
-    ctx := context.Background()
+	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
+	ctx := context.Background()
 
-    // Absolute path should be allowed in Docker
-    req := &ExecutionRequest{
-        ToolName: "docker_tool",
-        ToolInputs: []byte(`{"path": "/etc/passwd"}`),
-        DryRun: true,
-    }
-    _, err := cmdTool.Execute(ctx, req)
-    assert.NoError(t, err)
+	// Absolute path should be allowed in Docker
+	req := &ExecutionRequest{
+		ToolName:   "docker_tool",
+		ToolInputs: []byte(`{"path": "/etc/passwd"}`),
+		DryRun:     true,
+	}
+	_, err := cmdTool.Execute(ctx, req)
+	assert.NoError(t, err)
 }
 
 func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpCallDefinition) *HTTPTool {
@@ -267,7 +267,7 @@ func TestHTTPTool_RootDoubleSlash(t *testing.T) {
 	callDef := configv1.HttpCallDefinition_builder{
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build(),
+				Schema:        configv1.ParameterSchema_builder{Name: proto.String("path")}.Build(),
 				DisableEscape: proto.Bool(true),
 			}.Build(),
 		},
@@ -279,9 +279,9 @@ func TestHTTPTool_RootDoubleSlash(t *testing.T) {
 	ctx := context.Background()
 
 	req := &ExecutionRequest{
-		ToolName: "http_tool",
+		ToolName:   "http_tool",
 		ToolInputs: []byte(`{"path": "/"}`), // Becomes http://example.com//
-		DryRun: true,
+		DryRun:     true,
 	}
 
 	res, err := httpTool.Execute(ctx, req)
@@ -424,75 +424,75 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 
 // Mock Executor for JSON protocol
 type mockExecutorForCoverage struct {
-    stdout string
-    stderr string
-    err    error
+	stdout string
+	stderr string
+	err    error
 }
 
 func (m *mockExecutorForCoverage) Execute(ctx context.Context, name string, args []string, dir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
-    return nil, nil, nil, errors.New("not implemented")
+	return nil, nil, nil, errors.New("not implemented")
 }
 
 func (m *mockExecutorForCoverage) ExecuteWithStdIO(ctx context.Context, name string, args []string, dir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
-    // Return pipes
-    prOut, pwOut := io.Pipe()
-    go func() {
-        pwOut.Write([]byte(m.stdout))
-        pwOut.Close()
-    }()
+	// Return pipes
+	prOut, pwOut := io.Pipe()
+	go func() {
+		pwOut.Write([]byte(m.stdout))
+		pwOut.Close()
+	}()
 
-    prErr, pwErr := io.Pipe()
-    go func() {
-        pwErr.Write([]byte(m.stderr))
-        pwErr.Close()
-    }()
+	prErr, pwErr := io.Pipe()
+	go func() {
+		pwErr.Write([]byte(m.stderr))
+		pwErr.Close()
+	}()
 
-    // Stdin
-    prIn, pwIn := io.Pipe()
-    go func() {
-        io.Copy(io.Discard, prIn)
-        prIn.Close()
-    }()
+	// Stdin
+	prIn, pwIn := io.Pipe()
+	go func() {
+		io.Copy(io.Discard, prIn)
+		prIn.Close()
+	}()
 
-    exitChan := make(chan int, 1)
-    exitChan <- 0
-    close(exitChan)
+	exitChan := make(chan int, 1)
+	exitChan <- 0
+	close(exitChan)
 
-    return pwIn, prOut, prErr, exitChan, m.err
+	return pwIn, prOut, prErr, exitChan, m.err
 }
 
 func TestLocalCommandTool_JSONProtocol(t *testing.T) {
-    svcConfig := configv1.CommandLineUpstreamService_builder{
-        Command: proto.String("my-json-tool"),
-        CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{}.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("json_tool")}.Build()
+	svcConfig := configv1.CommandLineUpstreamService_builder{
+		Command:               proto.String("my-json-tool"),
+		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("json_tool")}.Build()
 
-    factory := func(env *configv1.ContainerEnvironment) command.Executor {
-        return &mockExecutorForCoverage{
-            stdout: `{"result": "success"}`,
-            stderr: "",
-        }
-    }
+	factory := func(env *configv1.ContainerEnvironment) command.Executor {
+		return &mockExecutorForCoverage{
+			stdout: `{"result": "success"}`,
+			stderr: "",
+		}
+	}
 
-    ct := &CommandTool{
-        tool: toolDef,
-        service: svcConfig,
-        callDefinition: callDef,
-        executorFactory: factory,
-        callID: "call1",
-    }
+	ct := &CommandTool{
+		tool:            toolDef,
+		service:         svcConfig,
+		callDefinition:  callDef,
+		executorFactory: factory,
+		callID:          "call1",
+	}
 
-    req := &ExecutionRequest{
-        ToolName: "json_tool",
-        ToolInputs: []byte(`{"arg": "val"}`),
-    }
+	req := &ExecutionRequest{
+		ToolName:   "json_tool",
+		ToolInputs: []byte(`{"arg": "val"}`),
+	}
 
-    res, err := ct.Execute(context.Background(), req)
-    require.NoError(t, err)
+	res, err := ct.Execute(context.Background(), req)
+	require.NoError(t, err)
 
-    resMap, ok := res.(map[string]any)
-    require.True(t, ok)
-    assert.Equal(t, "success", resMap["result"])
+	resMap, ok := res.(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "success", resMap["result"])
 }

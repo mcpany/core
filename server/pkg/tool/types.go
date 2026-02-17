@@ -1255,7 +1255,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service.
 //
