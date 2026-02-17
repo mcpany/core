@@ -1268,6 +1268,16 @@ export const apiClient = {
 
 
     /**
+     * Gets the system doctor status.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/system/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
+    },
+
+    /**
      * Gets the system status.
      * @returns A promise that resolves to the system status.
      */
