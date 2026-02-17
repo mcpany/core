@@ -68,4 +68,17 @@ describe('SchemaForm', () => {
         const label = screen.getByText(/Name/);
         expect(label).toContainHTML('<span class="text-destructive">*</span>');
     });
+
+    it('renders error for invalid schema properties', () => {
+        const onChange = vi.fn();
+        const invalidSchema = { type: "object", properties: "invalid" as any };
+        render(<SchemaForm schema={invalidSchema} value={{}} onChange={onChange} />);
+
+        expect(screen.getByText(/Invalid schema/)).toBeInTheDocument();
+    });
+
+    it('renders nothing for null schema', () => {
+        const { container } = render(<SchemaForm schema={null} value={{}} onChange={() => {}} />);
+        expect(container).toBeEmptyDOMElement();
+    });
 });

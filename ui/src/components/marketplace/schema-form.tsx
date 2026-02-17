@@ -24,79 +24,91 @@ interface SchemaFormProps {
  * @returns The rendered component.
  */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
-  if (!schema || !schema.properties) return null;
+  if (!schema) return null;
+
+  if (!schema.properties || typeof schema.properties !== 'object') {
+       if (Object.keys(schema).length > 0) {
+           return <div className="text-destructive text-sm p-2 border border-destructive/50 bg-destructive/10 rounded">Invalid schema: missing or invalid properties.</div>;
+       }
+       return null;
+  }
 
   const handleChange = (key: string, val: string) => {
     onChange({ ...value, [key]: val });
   };
 
-  return (
-    <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
-      {Object.entries(schema.properties).map(([key, prop]: [string, any]) => {
-        const isRequired = schema.required?.includes(key);
-        const description = prop.description || "";
-        const title = prop.title || key;
+  try {
+      return (
+        <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+          {Object.entries(schema.properties).map(([key, prop]: [string, any]) => {
+            const isRequired = schema.required?.includes(key);
+            const description = prop.description || "";
+            const title = prop.title || key;
 
-        // Determine input type
-        let inputType = "text";
-        if (prop.format === "password") {
-            inputType = "password";
-        } else if (
-            key.toLowerCase().includes("token") ||
-            key.toLowerCase().includes("secret") ||
-            key.toLowerCase().includes("key") ||
-            key.toLowerCase().includes("password")
-        ) {
-            inputType = "password";
-        }
+            // Determine input type
+            let inputType = "text";
+            if (prop.format === "password") {
+                inputType = "password";
+            } else if (
+                key.toLowerCase().includes("token") ||
+                key.toLowerCase().includes("secret") ||
+                key.toLowerCase().includes("key") ||
+                key.toLowerCase().includes("password")
+            ) {
+                inputType = "password";
+            }
 
-        return (
-          <div key={key} className="grid gap-2">
-            <Label htmlFor={key} className="flex items-center gap-1">
-              {title} {isRequired && <span className="text-destructive">*</span>}
-            </Label>
+            return (
+              <div key={key} className="grid gap-2">
+                <Label htmlFor={key} className="flex items-center gap-1">
+                  {title} {isRequired && <span className="text-destructive">*</span>}
+                </Label>
 
-            {prop.type === "boolean" ? (
-               <div className="flex items-center space-x-2">
-                <Checkbox
-                    id={key}
-                    checked={value[key] === "true"}
-                    onCheckedChange={(c) => handleChange(key, String(c))}
-                />
-                <label
-                    htmlFor={key}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                    {description || "Enable"}
-                </label>
-               </div>
-            ) : prop.enum ? (
-                <Select value={value[key]} onValueChange={(v) => handleChange(key, v)}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {prop.enum.map((opt: string) => (
-                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            ) : (
-                <Input
-                    id={key}
-                    value={value[key] || ""}
-                    onChange={(e) => handleChange(key, e.target.value)}
-                    placeholder={prop.default || `Enter ${title}`}
-                    type={inputType}
-                />
-            )}
+                {prop.type === "boolean" ? (
+                   <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id={key}
+                        checked={value[key] === "true"}
+                        onCheckedChange={(c) => handleChange(key, String(c))}
+                    />
+                    <label
+                        htmlFor={key}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        {description || "Enable"}
+                    </label>
+                   </div>
+                ) : prop.enum ? (
+                    <Select value={value[key]} onValueChange={(v) => handleChange(key, v)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {prop.enum.map((opt: string) => (
+                                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                ) : (
+                    <Input
+                        id={key}
+                        value={value[key] || ""}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        placeholder={prop.default || `Enter ${title}`}
+                        type={inputType}
+                    />
+                )}
 
-            {prop.type !== "boolean" && description && (
-                <p className="text-xs text-muted-foreground">{description}</p>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
+                {prop.type !== "boolean" && description && (
+                    <p className="text-xs text-muted-foreground">{description}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+  } catch (e) {
+      console.error("SchemaForm render error", e);
+      return <div className="text-destructive text-sm p-2 border border-destructive/50 bg-destructive/10 rounded">Error rendering form definition.</div>;
+  }
 }

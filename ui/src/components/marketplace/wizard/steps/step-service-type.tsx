@@ -9,72 +9,57 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
-    {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
-        config: {
-            commandLineService: {
-                command: '',
-                env: {},
-                workingDirectory: ''
-            },
-            openapiService: undefined
+// Generate TEMPLATES from SERVICE_REGISTRY
+const REGISTRY_TEMPLATES = SERVICE_REGISTRY.map(s => ({
+    id: s.id,
+    name: s.name,
+    description: s.description,
+    config: {
+        commandLineService: {
+            command: s.command,
+            env: {},
+            workingDirectory: ''
         },
-        params: {}
+        configurationSchema: JSON.stringify(s.configurationSchema),
+        openapiService: undefined
     },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
+    params: {} // Defaults will be populated on select
+}));
+
+const MANUAL_TEMPLATE = {
+    id: 'manual',
+    name: 'Manual / Custom',
+    description: 'Configure everything from scratch.',
+    config: {
+        commandLineService: {
+            command: '',
+            env: {},
+            workingDirectory: ''
         },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
+        openapiService: undefined
     },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
+    params: {}
+};
+
+const OPENAPI_TEMPLATE = {
+    id: 'openapi',
+    name: 'OpenAPI / Swagger Import',
+    description: 'Import tools from an OpenAPI specification.',
+    config: {
+        openapiService: {
+            address: "",
+            specUrl: "",
+            specContent: "",
+            tools: []
         },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
+        commandLineService: undefined
     },
-    {
-        id: 'openapi',
-        name: 'OpenAPI / Swagger Import',
-        description: 'Import tools from an OpenAPI specification.',
-        config: {
-            openapiService: {
-                address: "",
-                specUrl: "",
-                specContent: "",
-                tools: []
-            },
-            commandLineService: undefined
-        },
-        params: {}
-    }
-];
+    params: {}
+};
+
+const TEMPLATES = [MANUAL_TEMPLATE, ...REGISTRY_TEMPLATES, OPENAPI_TEMPLATE];
 
 /**
  * StepServiceType component.
@@ -88,9 +73,28 @@ export function StepServiceType() {
     const handleTemplateChange = (val: string) => {
         const template = TEMPLATES.find(t => t.id === val);
         if (template) {
+            // Extract defaults from schema if available
+            let initialParams = { ...template.params } as Record<string, string>;
+            if (template.config.configurationSchema) {
+                try {
+                    const schema = JSON.parse(template.config.configurationSchema);
+                    if (schema.properties) {
+                        Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
+                            if (v.default !== undefined) {
+                                initialParams[k] = String(v.default);
+                            } else if (!initialParams[k]) {
+                                initialParams[k] = ""; // Initialize empty if not present
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to parse schema defaults", e);
+                }
+            }
+
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: initialParams
             });
             updateConfig({
                 ...template.config as any,
