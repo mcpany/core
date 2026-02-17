@@ -200,7 +200,7 @@ func NewSafeHTTPClient() *http.Client {
 			// MaxIdleConnsPerHost defaults to 2, which is too low for shared transport.
 			MaxIdleConns:        100,
 			MaxIdleConnsPerHost: 10,
-			IdleConnTimeout:     90 * time.Second,
+			IdleConnTimeout:     30 * time.Second,
 		}
 	})
 
