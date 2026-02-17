@@ -19,6 +19,7 @@
 
 ### Existing Planned Features
 
+- [x] **Alerts & Incidents Console**: Centralized dashboard for system health alerts and rule management.
 - [ ] **Advanced Service Configuration & Sharing**:
   - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
   - [x] Service Duplication: One-click cloning of existing services.
@@ -80,7 +81,7 @@
 - [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.
 - [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.
-- [ ] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.
+- [x] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.
 - [ ] **Dashboard Filtering**: Allow filtering the dashboard metrics and activity by Service or Time Range.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
 - [x] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
