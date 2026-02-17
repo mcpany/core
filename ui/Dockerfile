@@ -20,9 +20,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
-COPY proto/ /proto/
+
+# Copy proto files to local directory to avoid reliance on parent paths
+COPY proto/ ./proto/
+
 # Symlink node_modules so proto files can find dependencies
-RUN ln -s /app/node_modules /proto/node_modules
+RUN ln -s /app/node_modules ./proto/node_modules
+
+# Update tsconfig to use local proto path (aligns with copied folder)
+RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
