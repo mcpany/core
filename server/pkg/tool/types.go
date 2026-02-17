@@ -3194,6 +3194,21 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"open", "read", "write",
 	}
 
+	if strings.HasPrefix(language, "php") {
+		dangerousKeywords = append(dangerousKeywords,
+			"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
+			"include", "include_once", "require_once", "dl",
+		)
+	}
+
+	if strings.HasPrefix(language, "ruby") || strings.HasPrefix(language, "perl") {
+		dangerousKeywords = append(dangerousKeywords, "syscall")
+	}
+
+	if strings.HasPrefix(language, "ruby") {
+		dangerousKeywords = append(dangerousKeywords, "load")
+	}
+
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
 		return err
 	}
