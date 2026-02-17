@@ -1141,7 +1141,7 @@ func validateMtlsAuth(ctx context.Context, mtls *configv1.MTLSAuth) error {
 				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
 			}
 		} else {
-			if err := validation.IsAllowedPath(path); err != nil {
+			if err := validation.IsAllowedConfPath(path); err != nil {
 				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
 			}
 		}

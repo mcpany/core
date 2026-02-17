@@ -810,14 +810,20 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 
 	// Mock IsAllowedPath
 	originalIsAllowedPath := validation.IsAllowedPath
-	validation.IsAllowedPath = func(path string) error {
+	mockAllowedPath := func(path string) error {
 		if path == "insecure.pem" || path == insecurePath {
 			return fmt.Errorf("mock insecure path")
 		}
 		// All other paths are secure
 		return nil
 	}
+	validation.IsAllowedPath = mockAllowedPath
 	defer func() { validation.IsAllowedPath = originalIsAllowedPath }()
+
+	// Mock IsAllowedConfPath (used by MTLS)
+	originalIsAllowedConfPath := validation.IsAllowedConfPath
+	validation.IsAllowedConfPath = mockAllowedPath
+	defer func() { validation.IsAllowedConfPath = originalIsAllowedConfPath }()
 
 	// Mock osStat
 	originalOsStat := osStat

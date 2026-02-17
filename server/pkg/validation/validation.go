@@ -202,20 +202,19 @@ var IsSensitivePath = func(path string) error {
 	return nil
 }
 
-// IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
-// and does not contain any path traversal sequences ("../").
-// It is a variable to allow mocking in tests.
-//
-// Summary: Checks if a path is within allowed directories.
-var IsAllowedPath = func(path string) error {
+// validatePathInternal contains the core logic for path validation.
+// It checks path security, resolution, containment, and optionally sensitive file checks.
+func validatePathInternal(path string, checkSensitive bool) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
 		return err
 	}
 
 	// 2. Check for sensitive files (on input path)
-	if err := IsSensitivePath(path); err != nil {
-		return err
+	if checkSensitive {
+		if err := IsSensitivePath(path); err != nil {
+			return err
+		}
 	}
 
 	// 3. Resolve to absolute path
@@ -264,8 +263,10 @@ var IsAllowedPath = func(path string) error {
 	}
 
 	// 4. Check for sensitive files again (on resolved path)
-	if err := IsSensitivePath(realPath); err != nil {
-		return fmt.Errorf("resolved path %q points to sensitive file: %w", realPath, err)
+	if checkSensitive {
+		if err := IsSensitivePath(realPath); err != nil {
+			return fmt.Errorf("resolved path %q points to sensitive file: %w", realPath, err)
+		}
 	}
 
 	// Helper to check if child is inside parent
@@ -308,6 +309,15 @@ var IsAllowedPath = func(path string) error {
 	}
 
 	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)", path)
+}
+
+// IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
+// and does not contain any path traversal sequences ("../").
+// It is a variable to allow mocking in tests.
+//
+// Summary: Checks if a path is within allowed directories.
+var IsAllowedPath = func(path string) error {
+	return validatePathInternal(path, true)
 }
 
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
@@ -418,4 +428,12 @@ var FileExists = func(path string) error {
 		return err
 	}
 	return nil
+}
+
+// IsAllowedConfPath checks if a given file path is allowed (inside CWD or AllowedPaths)
+// and does not contain any path traversal sequences ("../").
+// Unlike IsAllowedPath, it does NOT check for sensitive files (IsSensitivePath),
+// allowing access to configuration files like certificates and keys.
+var IsAllowedConfPath = func(path string) error {
+	return validatePathInternal(path, false)
 }
