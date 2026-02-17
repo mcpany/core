@@ -36,8 +36,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             // Use command_line_service to ensure health checks pass in all environments (K8s, Docker)
             // without requiring external network connectivity or specific service names.
             command_line_service: {
-                command: "echo",
-                args: ["user_service_active"],
+                command: "echo user_service_active",
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
@@ -55,8 +54,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             version: "v1.0",
             // Use command_line_service to ensure health checks pass in all environments
             command_line_service: {
-                command: "echo",
-                args: ["math_service_active"],
+                command: "echo math_service_active",
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
