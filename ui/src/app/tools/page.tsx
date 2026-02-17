@@ -194,7 +194,7 @@ export default function ToolsPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+        <h1 className="text-3xl font-bold tracking-tight">Tools</h1>
         <div className="flex items-center space-x-4">
             <SmartToolSearch
                 tools={tools}
