@@ -48,6 +48,8 @@ test.describe('Service Detail Logs Tab', () => {
     // Scoping to main to avoid potential conflicts with other UI elements (e.g. sidebar)
     const logsTab = page.locator('main').getByRole('tab', { name: 'Logs' });
     await expect(logsTab).toBeVisible();
+    // Ensure the tab list is also visible and stable
+    await expect(page.locator('main').getByRole('tablist')).toBeVisible();
     await logsTab.click();
 
     // 4. Verify LogStream is visible
