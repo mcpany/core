@@ -62,11 +62,11 @@ export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");
     const [activeTab, setActiveTab] = useState("overview");
 
-    const [trafficData, setTrafficData] = useState<any[]>([]);
-    const [toolUsageData, setToolUsageData] = useState<any[]>([]);
+    const [trafficData, setTrafficData] = useState<Record<string, unknown>[]>([]);
+    const [toolUsageData, setToolUsageData] = useState<Record<string, unknown>[]>([]);
     const [contextTotal, setContextTotal] = useState<number>(0);
-    const [contextByService, setContextByService] = useState<any[]>([]);
-    const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
+    const [contextByService, setContextByService] = useState<Record<string, unknown>[]>([]);
+    const [heaviestTools, setHeaviestTools] = useState<Record<string, unknown>[]>([]);
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
@@ -84,7 +84,7 @@ export function AnalyticsDashboard() {
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
+                const formattedTools = (topTools || []).map((t: { name: string; count: number }, index: number) => ({
                     name: t.name,
                     value: t.count,
                     color: COLORS[index % COLORS.length]
@@ -151,9 +151,9 @@ export function AnalyticsDashboard() {
             };
         }
 
-        const totalReq = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
-        const avgLat = Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length);
-        const errCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const totalReq = trafficData.reduce((acc, cur) => acc + (Number(cur.requests) || Number(cur.total) || 0), 0);
+        const avgLat = Math.floor(trafficData.reduce((acc, cur) => acc + (Number(cur.latency) || 0), 0) / trafficData.length);
+        const errCount = trafficData.reduce((acc, cur) => acc + (Number(cur.errors) || 0), 0);
         const errRate = totalReq ? ((errCount / totalReq) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
         const durMinutes = trafficData.length;
@@ -328,7 +328,7 @@ export function AnalyticsDashboard() {
                                                 isAnimationActive={false}
                                             >
                                                 {toolUsageData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    <Cell key={`cell-${index}`} fill={entry.color as string} />
                                                 ))}
                                             </Pie>
                                             <Tooltip
@@ -457,7 +457,7 @@ export function AnalyticsDashboard() {
                                                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                             >
                                                 {contextByService.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    <Cell key={`cell-${index}`} fill={entry.color as string} />
                                                 ))}
                                             </Pie>
                                             <Tooltip
@@ -480,14 +480,14 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                  <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool, index) => (
-                                        <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
+                                    {heaviestTools.map((tool) => (
+                                        <div key={tool.name as string} className="flex items-center justify-between border-b pb-2 last:border-0">
                                             <div className="space-y-1">
-                                                <p className="text-sm font-medium leading-none">{tool.name}</p>
-                                                <p className="text-xs text-muted-foreground">{tool.service}</p>
+                                                <p className="text-sm font-medium leading-none">{tool.name as string}</p>
+                                                <p className="text-xs text-muted-foreground">{tool.service as string}</p>
                                             </div>
                                             <div className="font-mono text-sm font-bold text-muted-foreground">
-                                                {formatTokenCount(tool.tokens)}
+                                                {formatTokenCount(tool.tokens as number)}
                                             </div>
                                         </div>
                                     ))}
