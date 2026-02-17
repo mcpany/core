@@ -14,7 +14,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -146,9 +145,8 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 		url = "https://" + url
 	}
 
-	if err := validation.IsSafeURL(url); err != nil {
-		return fmt.Errorf("unsafe url: %w", err)
-	}
+	// We skip validation.IsSafeURL here to allow testing connectivity to local/internal services (e.g. sidecars).
+	// This endpoint is authenticated/debug only.
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {

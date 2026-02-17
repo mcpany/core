@@ -21,6 +21,13 @@ interface CredentialTesterProps {
     credential: Partial<Credential>;
 }
 
+/**
+ * Component to test credential authentication against a target URL.
+ *
+ * @param props - The component props.
+ * @param props.credential - The credential to test.
+ * @returns The rendered credential tester.
+ */
 export function CredentialTester({ credential }: CredentialTesterProps) {
     const [targetUrl, setTargetUrl] = useState("");
     const [method, setMethod] = useState("GET");
