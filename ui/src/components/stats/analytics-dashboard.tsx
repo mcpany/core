@@ -72,6 +72,13 @@ export function AnalyticsDashboard() {
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
 
+    // Stats State
+    const [totalRequests, setTotalRequests] = useState(0);
+    const [avgLatency, setAvgLatency] = useState(0);
+    const [errorRate, setErrorRate] = useState("0.00");
+    const [avgRps, setAvgRps] = useState("0.00");
+
+
     useEffect(() => {
         setIsMounted(true);
         const fetchDashboardData = async () => {
@@ -140,27 +147,37 @@ export function AnalyticsDashboard() {
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
+    useEffect(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
         try {
             if (!Array.isArray(trafficData)) {
-                return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
+                setTotalRequests(0);
+                setAvgLatency(0);
+                setErrorRate("0.00");
+                setAvgRps("0.00");
+                return;
             }
-            const totalRequests = trafficData.reduce((acc, cur) => acc + (cur?.requests || cur?.total || 0), 0);
-            const avgLatency = trafficData.length
+            const reqs = trafficData.reduce((acc, cur) => acc + (cur?.requests || cur?.total || 0), 0);
+            const lat = trafficData.length
                 ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur?.latency || 0), 0) / trafficData.length)
                 : 0;
-            const errorCount = trafficData.reduce((acc, cur) => acc + (cur?.errors || 0), 0);
-            const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
+            const errs = trafficData.reduce((acc, cur) => acc + (cur?.errors || 0), 0);
+            const rate = reqs ? ((errs / reqs) * 100).toFixed(2) : "0.00";
             // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
             const durationMinutes = trafficData.length;
-            const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
+            const rps = (durationMinutes && reqs) ? (reqs / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-            return { totalRequests, avgLatency, errorRate, avgRps };
+            setTotalRequests(reqs);
+            setAvgLatency(lat);
+            setErrorRate(rate);
+            setAvgRps(rps);
         } catch (e) {
             console.error("Failed to calculate traffic stats", e);
-            return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
+            setTotalRequests(0);
+            setAvgLatency(0);
+            setErrorRate("0.00");
+            setAvgRps("0.00");
         }
     }, [trafficData]);
 
