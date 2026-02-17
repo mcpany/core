@@ -520,7 +520,7 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		}
 		buf.Write(expanded)
 	} else {
-		buf.WriteString(val)
+		_, _ = buf.WriteString(val)
 	}
 
 	return j + 1 - startIdx
@@ -569,7 +569,7 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		return j - startIdx
 	}
 
-	buf.WriteString(val)
+	_, _ = buf.WriteString(val)
 	return j - startIdx
 }
 
@@ -1369,13 +1369,13 @@ func splitByCommaIgnoringBraces(s string) []string {
 	for _, r := range s {
 		if escape {
 			escape = false
-			current.WriteRune(r)
+			_, _ = current.WriteRune(r)
 			continue
 		}
 
 		if r == '\\' {
 			escape = true
-			current.WriteRune(r)
+			_, _ = current.WriteRune(r)
 			continue
 		}
 
@@ -1405,7 +1405,7 @@ func splitByCommaIgnoringBraces(s string) []string {
 			parts = append(parts, strings.TrimSpace(current.String()))
 			current.Reset()
 		} else {
-			current.WriteRune(r)
+			_, _ = current.WriteRune(r)
 		}
 	}
 	if current.Len() > 0 {
