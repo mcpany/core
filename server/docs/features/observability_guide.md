@@ -40,6 +40,6 @@ global_settings:
 
 **What is logged?**
 - Actor (User ID / API Key)
-- Action (`tool.execute`, `service.register`)
+- Action (`tool.execute`)
 - Status (Success/Deny/Fail)
 - Metadata (IP, User Agent)
