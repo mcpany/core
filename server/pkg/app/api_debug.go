@@ -10,6 +10,7 @@ import (
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 func (a *Application) handleDebugReset(store storage.Storage) http.HandlerFunc {
@@ -20,7 +21,7 @@ func (a *Application) handleDebugReset(store storage.Storage) http.HandlerFunc {
 		}
 
 		// Security Check: Only allow reset if explicitly enabled
-		if os.Getenv("MCPANY_ENABLE_DEBUG_RESET") != "true" {
+		if os.Getenv("MCPANY_ENABLE_DEBUG_RESET") != util.TrueStr {
 			logging.GetLogger().Warn("Blocked database reset attempt: MCPANY_ENABLE_DEBUG_RESET not set")
 			http.Error(w, "Debug reset is disabled", http.StatusForbidden)
 			return

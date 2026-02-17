@@ -166,6 +166,10 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		logWriter := &slogWriter{log: log, level: slog.LevelError}
 		// Write stderr to both capture buffer and log
 		multiStderr := io.MultiWriter(logWriter, stderrCapture)
+		// Use StdCopy to demultiplex stdout and stderr from the hijacked response.
+		// Note: Playwright or other tools might write to stdout which we use for JSON-RPC.
+		// Any non-JSON output on stdout will corrupt the stream.
+		// Docker's StdCopy separates them correctly based on the protocol.
 		_, err := stdcopy.StdCopy(stdoutWriter, multiStderr, hijackedResp.Reader)
 		if err != nil && err != io.EOF {
 			log.Error("Error demultiplexing docker stream", "error", err)
