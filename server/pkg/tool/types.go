@@ -2987,7 +2987,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3192,6 +3192,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"readpipe", "syscall",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
@@ -3507,9 +3508,17 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
 
-	if isNode && quoteLevel == 3 { // Backtick
-		if strings.Contains(val, "${") {
-			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+	if isNode {
+		// Sentinel Security Update: Block Function constructor
+		// We use checkUnquotedKeywords to ensure we don't flag "myFunction"
+		if err := checkUnquotedKeywords(val, []string{"Function"}); err != nil {
+			return fmt.Errorf("javascript Function constructor injection detected")
+		}
+
+		if quoteLevel == 3 { // Backtick
+			if strings.Contains(val, "${") {
+				return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+			}
 		}
 	}
 	// Perl and PHP interpolate variables in both double quotes and backticks
