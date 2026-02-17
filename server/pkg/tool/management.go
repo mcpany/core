@@ -24,6 +24,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ToolExecutionTimeout is the default timeout for tool execution.
+// It can be modified for testing purposes.
+var ToolExecutionTimeout = 60 * time.Second
+
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server.
 //
@@ -900,7 +904,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 			correlationID := uuid.New().String()
 			resultChan := make(chan *bus.ToolExecutionResult, 1)
 
-			resultBus, err := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
+			resultBus, err := bus.GetBus[*bus.ToolExecutionResult](tm.bus, bus.ToolExecutionResultTopic)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get result bus: %w", err)
 			}
@@ -913,7 +917,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 			)
 			defer unsubscribe()
 
-			requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
+			requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, bus.ToolExecutionRequestTopic)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get request bus: %w", err)
 			}
@@ -952,7 +956,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 				}, nil
 			case <-ctx.Done():
 				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-			case <-time.After(60 * time.Second): // Safety timeout
+			case <-time.After(ToolExecutionTimeout): // Safety timeout
 				return nil, fmt.Errorf(
 					"timed out waiting for tool execution result for tool %s",
 					req.Params.Name,
