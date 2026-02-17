@@ -9,71 +9,41 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
+
+const MANUAL_TEMPLATE = {
+    id: 'manual',
+    name: 'Manual / Custom',
+    description: 'Configure everything from scratch.',
+    config: {
+        commandLineService: {
+            command: '',
+            env: {},
+            workingDirectory: ''
+        },
+        openapiService: undefined,
+        configurationSchema: undefined
+    },
+    params: {}
+};
 
 const TEMPLATES = [
-    {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
+    MANUAL_TEMPLATE,
+    ...SERVICE_REGISTRY.map(s => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
         config: {
             commandLineService: {
-                command: '',
-                env: {},
+                command: s.command,
+                env: {}, // Will be filled from params
                 workingDirectory: ''
             },
-            openapiService: undefined
+            openapiService: undefined,
+            configurationSchema: JSON.stringify(s.configurationSchema)
         },
-        params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
-    },
-    {
-        id: 'openapi',
-        name: 'OpenAPI / Swagger Import',
-        description: 'Import tools from an OpenAPI specification.',
-        config: {
-            openapiService: {
-                address: "",
-                specUrl: "",
-                specContent: "",
-                tools: []
-            },
-            commandLineService: undefined
-        },
-        params: {}
-    }
+        params: {} // Will be filled with defaults dynamically
+    }))
 ];
 
 /**
@@ -88,10 +58,31 @@ export function StepServiceType() {
     const handleTemplateChange = (val: string) => {
         const template = TEMPLATES.find(t => t.id === val);
         if (template) {
+            let initialParams = { ...template.params };
+
+            // Extract defaults from schema if available
+            if (template.config.configurationSchema) {
+                try {
+                    const schema = JSON.parse(template.config.configurationSchema);
+                    if (schema.properties) {
+                         Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
+                            if (v.default !== undefined) {
+                                initialParams[k] = String(v.default);
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to parse schema defaults", e);
+                }
+            }
+
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: initialParams as Record<string, string>
             });
+
+            // Update config name and structure
+            // We use 'as any' because UpstreamServiceConfig type might be strict about undefined fields
             updateConfig({
                 ...template.config as any,
                 name: config.name || template.name,
