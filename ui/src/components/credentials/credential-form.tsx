@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CredentialTester } from "./credential-tester"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -96,9 +97,64 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
   // Watch authType to conditionally render fields
   const authType = form.watch("authType")
+  // Watch form values to update tester
+  const formValues = form.watch();
+
+  // Helper to construct Authentication proto from form values
+  const getAuthConfig = (): Authentication => {
+      const auth: Authentication = {}
+      if (formValues.authType === "api_key") {
+          auth.apiKey = {
+              paramName: formValues.apiKeyParamName || "X-API-Key",
+              in: parseInt(formValues.apiKeyLocation || "0") as APIKeyAuth_Location,
+              value: { plainText: formValues.apiKeyValue || "", validationRegex: "" },
+              verificationValue: ""
+          }
+      } else if (formValues.authType === "bearer_token") {
+           auth.bearerToken = { token: { plainText: formValues.bearerToken || "", validationRegex: "" } }
+      } else if (formValues.authType === "basic_auth") {
+          auth.basicAuth = { username: formValues.basicUsername || "", password: { plainText: formValues.basicPassword || "", validationRegex: "" }, passwordHash: "" }
+      } else if (formValues.authType === "oauth2") {
+           auth.oauth2 = {
+              clientId: { plainText: formValues.oauthClientId || "", validationRegex: "" },
+              clientSecret: { plainText: formValues.oauthClientSecret || "", validationRegex: "" },
+              authorizationUrl: formValues.oauthAuthUrl || "",
+              tokenUrl: formValues.oauthTokenUrl || "",
+              scopes: formValues.oauthScopes || "",
+              issuerUrl: "",
+              audience: "",
+           }
+      }
+      return auth;
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+        // ... (Re-implement logic or rely on getAuthConfig mapping if we align it?
+        // Backend expects camelCase now due to proto change?
+        // Wait, apiClient.createCredential expects Snake Case usually if mapping to proto directly via JSON?
+        // No, `apiClient` implementation in `client.ts` uses `protojson` usually or manual mapping?
+        // Let's check client.ts `createCredential`.
+        // It manually maps if we used manual fetch.
+        // Wait, client.ts `createCredential` snippet:
+        // const payload: any = { ... authentication: auth ... }
+        // where auth is constructed manually.
+        // I should keep the existing manual mapping in onSubmit to be safe for now,
+        // as `getAuthConfig` returns strict proto types which might differ from what `createCredential` expects if it does manual JSON construction.
+        // Actually `client.ts` assumes manual JSON construction in snake_case?
+        // Let's look at `onSubmit` I am replacing.
+        // It constructs `auth.api_key = { param_name: ... }`.
+        // My `getAuthConfig` constructs `auth.apiKey = { paramName: ... }`.
+        // The server expects snake_case for REST?
+        // `createCredentialHandler` uses `protojson.Unmarshal`.
+        // `protojson` accepts BOTH snake_case and camelCase usually if configured, but default is strict?
+        // Standard protojson expects camelCase (lowerCamelCase) by default for JSON mapping of Proto fields!
+        // But the previous code was constructing snake_case!
+        // `auth.api_key = ...`
+        // If the server was working with snake_case, maybe it configured `UnmarshalOptions`?
+        // Let's stick to what was working for `onSubmit` to avoid regression,
+        // but use `getAuthConfig` for `CredentialTester` which expects `Authentication` object (camelCase TS interface).
+
         const auth: any = {}
         if (values.authType === "api_key") {
             auth.api_key = {
@@ -149,84 +205,6 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
         toast({ variant: "destructive", description: "Failed to save credential: " + error.message })
     }
-  }
-
-  async function handleTest() {
-      if (!testUrl) {
-      if (!testUrl) {
-          toast({ variant: "destructive", description: "Please enter a URL to test" })
-          return
-      }
-      }
-      setIsTesting(true)
-      try {
-        // Construct temporary credential from form values to test without saving (or use saved if not changed?)
-        // Better to use form values
-        // Reuse logic from onSubmit
-        const values = form.getValues()
-        const auth: Authentication = {}
-        if (values.authType === "api_key") {
-            auth.apiKey = {
-                paramName: values.apiKeyParamName || "X-API-Key",
-                in: parseInt(values.apiKeyLocation || "0") as APIKeyAuth_Location,
-                value: { plainText: values.apiKeyValue || "", validationRegex: "" },
-                verificationValue: ""
-            }
-        } else if (values.authType === "bearer_token") {
-             auth.bearerToken = { token: { plainText: values.bearerToken || "", validationRegex: "" } }
-        } else if (values.authType === "basic_auth") {
-            auth.basicAuth = { username: values.basicUsername || "", password: { plainText: values.basicPassword || "", validationRegex: "" }, passwordHash: "" }
-        } else if (values.authType === "oauth2") {
-             // For OAuth2, test connection might mean using the stored token?
-             // Or verifying the config?
-             // If we have a token in initialData, we can use it?
-             // But valid test requires a real request.
-             // If we don't have a token, we can't really test "connection" to a protected resource yet.
-             // Maybe warn user?
-             if (initialData?.token?.accessToken) {
-                 // Use the stored token (simulated as Bearer?)
-                 // `testAuth` endpoint likely expects `Authentication` loaded.
-                 // If we send `auth.oauth2` config, `testAuth` might try to use it?
-                 // But `testAuth` probably doesn't handle OAuth flow.
-                 // It checks if `Authenticator` works.
-                 // OAuth2 Authenticator uses `UserToken`?
-                 // If `testAuth` allows passing a UserToken, we could test.
-                 // But `Authentication` proto doesn't hold the token. `Credential` does.
-                 // `testAuth` API handler takes `TestAuthRequest` which likely contains `Authentication`.
-                 // It doesn't seem to take `UserToken`.
-                 // So `testAuth` for OAuth might be tricky without token.
-                 // Let's defer OAuth test logic or just basic config check.
-                 auth.oauth2 = {
-                    clientId: { plainText: values.oauthClientId || "", validationRegex: "" },
-                    clientSecret: { plainText: values.oauthClientSecret || "", validationRegex: "" },
-                    authorizationUrl: values.oauthAuthUrl || "",
-                    tokenUrl: values.oauthTokenUrl || "",
-                    scopes: values.oauthScopes || "",
-                    issuerUrl: "",
-                    audience: "",
-                 }
-             } else {
-                 toast({ description: "OAuth 2.0 requires connecting (getting a token) before testing." })
-                 return
-             }
-        }
-
-        const res = await apiClient.testAuth({
-            authentication: auth, // This might not be enough for OAuth if logic requires Token
-            target_url: testUrl,
-            method: "GET"
-        })
-        if (res.status >= 200 && res.status < 300) {
-            toast({ description: `Test passed: ${res.status} ${res.status_text}` })
-        } else {
-            toast({ variant: "destructive", description: `Test returned: ${res.status} ${res.status_text}` })
-        }
-
-      } catch (error: any) {
-          toast({ variant: "destructive", description: "Test failed: " + error.message })
-      } finally {
-          setIsTesting(false)
-      }
   }
 
   async function handleConnect() {
@@ -477,18 +455,11 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
             </div>
         )}
 
-        <div className="space-y-2 pt-4 border-t">
-            <FormLabel>Test Connection</FormLabel>
-            <div className="flex gap-2">
-                <Input
-                    placeholder="https://api.example.com/test"
-                    value={testUrl}
-                    onChange={(e) => setTestUrl(e.target.value)}
-                />
-                <Button type="button" variant="outline" onClick={handleTest} disabled={isTesting}>
-                    {isTesting ? "Testing..." : "Test"}
-                </Button>
-            </div>
+        <div className="pt-4 border-t">
+            <CredentialTester
+                authConfig={getAuthConfig()}
+                credentialId={initialData?.id}
+            />
         </div>
 
         <div className="flex justify-end gap-2 pt-4">

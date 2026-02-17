@@ -39,6 +39,28 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
     description?: string;
 }
 
+/**
+ * Request payload for testing authentication.
+ */
+export interface TestAuthRequest {
+    credential_id?: string;
+    authentication?: Authentication;
+    user_token?: any; // Using any for UserToken if not exported yet, or try explicit type if available
+    target_url: string;
+    method: string;
+}
+
+/**
+ * Response payload for testing authentication.
+ */
+export interface TestAuthResponse {
+    status: number;
+    status_text: string;
+    headers: Record<string, string>;
+    body: string;
+    error?: string;
+}
+
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
@@ -1513,6 +1535,22 @@ export const apiClient = {
 
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
+        return res.json();
+    },
+
+    // Debug / Test
+
+    /**
+     * Tests authentication against a target URL.
+     * @param request The test request.
+     * @returns A promise that resolves to the test response.
+     */
+    testAuth: async (request: TestAuthRequest): Promise<TestAuthResponse> => {
+        const res = await fetchWithAuth('/debug/auth-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request)
+        });
         return res.json();
     }
 };
