@@ -3194,6 +3194,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		// Sentinel Security Update: Added readpipe (Perl) and syscall to prevent RCE
 		"readpipe", "syscall",
 	}
 
