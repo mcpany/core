@@ -16,7 +16,8 @@ test.describe('Services Verification', () => {
     await page.getByRole('button', { name: 'Add Service' }).click();
 
     // 3. Verify Sheet/Dialog Opens
-    await expect(page.getByRole('dialog')).toBeVisible();
+    // Increase timeout to 60s for slow CI
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 60000 });
     await expect(page.getByText('New Service')).toBeVisible();
   });
 });

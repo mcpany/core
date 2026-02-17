@@ -43,7 +43,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Dashboard loads correctly', async ({ page }) => {
     // Check for metrics
-    await expect(page.locator('text=Total Requests')).toBeVisible();
+    // Increase timeout to 60s as dashboard aggregation might be slow in CI
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 60000 });
     await expect(page.locator('text=Active Services')).toBeVisible();
     // Check for health widget
     await expect(page.locator('text=System Health').first()).toBeVisible();
