@@ -143,8 +143,14 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const now = new Date();
     const timeStr = `${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}`;
+
+    // Seed previous minute as well to ensure data appears even if we cross a minute boundary
+    const prev = new Date(now.getTime() - 60000);
+    const prevTimeStr = `${String(prev.getUTCHours()).padStart(2, '0')}:${String(prev.getUTCMinutes()).padStart(2, '0')}`;
+
     const points = [
-        { time: timeStr, requests: 100, errors: 2, latency: 50 }
+        { time: timeStr, requests: 100, errors: 2, latency: 50 },
+        { time: prevTimeStr, requests: 80, errors: 1, latency: 45 }
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });

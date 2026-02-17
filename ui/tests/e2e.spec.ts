@@ -44,14 +44,16 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
-    // Wait for the traffic data to be loaded to ensure the dashboard has rendered
-    const trafficResponse = await page.waitForResponse(resp =>
-      resp.url().includes('/api/v1/dashboard/traffic') && resp.status() === 200
-    );
-
-    // Optional: Log body if needed for debugging
-    // const body = await trafficResponse.json();
-    // console.log('Traffic Data:', body);
+    // Wait for the traffic data to be loaded AND contain non-zero data
+    // This ensures the seeded data has actually propagated to the read path
+    const trafficResponse = await page.waitForResponse(async resp => {
+      if (resp.url().includes('/api/v1/dashboard/traffic') && resp.status() === 200) {
+        const body = await resp.json();
+        // Check if any point has requests > 0
+        return Array.isArray(body) && body.some((p: any) => p.requests > 0);
+      }
+      return false;
+    }, { timeout: 30000 });
 
     // Check for metrics
     await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 30000 });
