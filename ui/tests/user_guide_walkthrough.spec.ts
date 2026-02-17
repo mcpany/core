@@ -37,7 +37,8 @@ test.describe('User Guide Walkthrough', () => {
     // Check for dialog opens
     await addButton.click();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('Select Service Template')).toBeVisible();
+    // The dialog title is "Select Service Template" in the new wizard flow
+    await expect(page.getByRole('heading', { name: 'Select Service Template' })).toBeVisible();
 
     // Close it
     await page.keyboard.press('Escape');

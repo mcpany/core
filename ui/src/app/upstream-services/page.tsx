@@ -394,13 +394,13 @@ export default function ServicesPage() {
       if (selectedService?.id) return "Edit Service";
       if (selectedService) return "New Service"; // After template selection/config
       if (configuringTemplate) return `Configure ${configuringTemplate.name}`;
-      return "New Service"; // Template selection
+      return "Select Service Template"; // Template selection
   };
 
   const getSheetDescription = () => {
       if (selectedService) return "Configure your upstream service details.";
       if (configuringTemplate) return "Enter the required information to set up this service.";
-      return "Choose a template to start quickly.";
+      return "Choose a template to quickly configure a popular service, or start from scratch.";
   }
 
   return (

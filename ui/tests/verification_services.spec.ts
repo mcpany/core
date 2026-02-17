@@ -18,6 +18,6 @@ test.describe('Services Verification', () => {
     // 3. Verify Sheet/Dialog Opens
     await expect(page.getByRole('dialog')).toBeVisible();
     // The dialog title is "Select Service Template" in the new wizard flow
-    await expect(page.getByText('Select Service Template')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Select Service Template' })).toBeVisible();
   });
 });
