@@ -13,12 +13,15 @@ RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
 
 # Copy the rest of the UI code
 COPY ui/ .
-COPY proto/ /work/proto/
+
+# Ensure proto directory exists and copy contents
+# We create the directory and copy *contents* to avoid ambiguity of 'cp -r dir target' vs 'cp -r dir/* target'
+RUN mkdir -p proto
+COPY proto/ /tmp/proto_source/
+RUN cp -r /tmp/proto_source/* proto/ && rm -rf /tmp/proto_source
+
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /work/ui/node_modules /work/proto/node_modules
-
-# Copy proto contents explicitly to local proto directory to avoid 'cp -r' ambiguity
-RUN mkdir -p proto && cp -r /work/proto/* proto/
 
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json

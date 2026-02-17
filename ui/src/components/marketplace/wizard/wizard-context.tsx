@@ -78,9 +78,12 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         const saved = sessionStorage.getItem('wizard_state');
         if (saved) {
             try {
-                setState(JSON.parse(saved));
+                const parsed = JSON.parse(saved);
+                // Ensure we merge with default state to prevent missing keys if schema evolved
+                setState(prev => ({ ...prev, ...parsed }));
             } catch (e) {
                 console.error("Failed to hydrate wizard state", e);
+                // Fallback to default state is implicit as setState wasn't called or failed
             }
         }
         setIsHydrated(true);
@@ -89,7 +92,11 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     // Persistence
     useEffect(() => {
         if (isHydrated) {
-            sessionStorage.setItem('wizard_state', JSON.stringify(state));
+            try {
+                sessionStorage.setItem('wizard_state', JSON.stringify(state));
+            } catch (e) {
+                console.error("Failed to persist wizard state", e);
+            }
         }
     }, [state, isHydrated]);
 
@@ -123,10 +130,12 @@ export function WizardProvider({ children }: { children: ReactNode }) {
                 }
                 return { valid: true }; // Parameters are usually optional
             case WizardStep.WEBHOOKS:
-                for (const hook of state.webhooks) {
-                     if (hook.webhook && !hook.webhook.url) {
-                         return { valid: false, error: "Webhook URL is required" };
-                     }
+                if (state.webhooks) {
+                    for (const hook of state.webhooks) {
+                        if (hook.webhook && !hook.webhook.url) {
+                            return { valid: false, error: "Webhook URL is required" };
+                        }
+                    }
                 }
                 return { valid: true };
             case WizardStep.AUTH:
@@ -139,17 +148,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     const nextStep = () => {
         const validation = validateStep(state.currentStep);
         if (!validation.valid) {
-            // caller should handle error display, or we throw?
-            // Better to return boolean if possible, but the signature is void.
-            // We'll trust the caller to check validateStep OR we change nextStep signature?
-            // Let's change nextStep to return boolean?
-            // But consumers might expect void.
-            // Let's just return early and let UI handle validation check separately?
-            // Or exposing validateStep is better.
             console.warn("Validation failed:", validation.error);
-            // We won't block here if the UI doesn't check, but we should.
-            // Let's allow movement if we change the nextStep to check it?
-            // Ideally validation is UI concern before calling nextStep.
         }
 
         setState(prev => {

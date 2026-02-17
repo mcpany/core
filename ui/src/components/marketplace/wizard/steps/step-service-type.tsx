@@ -37,6 +37,12 @@ export function StepServiceType() {
 
     const templates = React.useMemo(() => {
         try {
+            // Defensive check for SERVICE_REGISTRY
+            if (!Array.isArray(SERVICE_REGISTRY)) {
+                console.error("SERVICE_REGISTRY is not an array");
+                return [MANUAL_TEMPLATE];
+            }
+
             return [
                 MANUAL_TEMPLATE,
                 ...SERVICE_REGISTRY.map(s => ({
@@ -50,7 +56,7 @@ export function StepServiceType() {
                             workingDirectory: ''
                         },
                         openapiService: undefined,
-                        configurationSchema: JSON.stringify(s.configurationSchema)
+                        configurationSchema: s.configurationSchema ? JSON.stringify(s.configurationSchema) : undefined
                     },
                     params: {} // Will be filled with defaults dynamically
                 }))
@@ -70,9 +76,9 @@ export function StepServiceType() {
             if (template.config.configurationSchema) {
                 try {
                     const schema = JSON.parse(template.config.configurationSchema);
-                    if (schema.properties) {
+                    if (schema && typeof schema === 'object' && schema.properties) {
                          Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
-                            if (v.default !== undefined) {
+                            if (v && v.default !== undefined) {
                                 initialParams[k] = String(v.default);
                             }
                         });

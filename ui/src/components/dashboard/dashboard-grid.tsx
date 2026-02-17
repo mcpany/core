@@ -49,9 +49,12 @@ export interface WidgetInstance {
     hidden?: boolean;
 }
 
+// Simple unique ID generator to avoid crypto dependency issues in some envs
+const generateId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
 // Default widgets for a fresh dashboard
 const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
-    instanceId: crypto.randomUUID(),
+    instanceId: generateId(),
     type: def.type,
     title: def.title,
     size: def.defaultSize,
@@ -79,7 +82,7 @@ export function DashboardGrid() {
                 hidden?: boolean;
             }
             const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                instanceId: crypto.randomUUID(),
+                instanceId: generateId(),
                 type: w.id, // In legacy, id was effectively the type
                 title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
                 size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
@@ -232,7 +235,7 @@ export function DashboardGrid() {
         if (!def) return;
 
         const newWidget: WidgetInstance = {
-            instanceId: crypto.randomUUID(),
+            instanceId: generateId(),
             type: def.type,
             title: def.title,
             size: def.defaultSize,
@@ -254,11 +257,16 @@ export function DashboardGrid() {
     }
 
     const renderWidget = (widget: WidgetInstance) => {
-        const def = getWidgetDefinition(widget.type);
-        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+        try {
+            const def = getWidgetDefinition(widget.type);
+            if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
 
-        const Component = def.component;
-        return <Component />;
+            const Component = def.component;
+            return <Component />;
+        } catch (e) {
+            console.error(`Failed to render widget ${widget.type}`, e);
+            return <div className="p-4 border border-dashed text-destructive">Widget Error</div>;
+        }
     };
 
     const getColSpan = (size: WidgetSize) => {
@@ -274,7 +282,7 @@ export function DashboardGrid() {
     const visibleWidgets = widgets.filter(w => !w.hidden);
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4" suppressHydrationWarning>
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
