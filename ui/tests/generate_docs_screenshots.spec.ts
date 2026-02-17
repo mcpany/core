@@ -246,13 +246,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.goto('/traces');
 
     // Check for the seeded tool
-    await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/echo_tool/i).first()).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces.png'), fullPage: true });
 
     // Click trace
-    await page.getByText('echo_tool').first().click({ force: true });
+    await page.getByText(/echo_tool/i).first().click({ force: true });
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
   });

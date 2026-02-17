@@ -347,8 +347,8 @@ export const seedDocsData = async (requestContext?: APIRequestContext) => {
             id: "postgres-primary",
             name: "Primary DB",
             version: "1.0.0",
-            grpc_service: {
-                address: "postgres:5432"
+            http_service: {
+                address: "http://postgres:5432"
             }
         },
         {
@@ -394,7 +394,7 @@ export const seedTraces = async (requestContext?: APIRequestContext) => {
     // Execute echo tool to generate traces
     // Note: Depends on Echo Service being seeded
     const payload = {
-        name: "echo_tool",
+        name: "EchoService_d3982010.echo_tool",
         input: { echo: "trace_seed" }
     };
     for (let i = 0; i < 3; i++) {
