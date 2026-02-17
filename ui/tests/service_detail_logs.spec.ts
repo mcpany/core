@@ -42,8 +42,11 @@ test.describe('Service Detail Logs Tab', () => {
     await page.goto(`/service/${serviceId}`);
 
     // 2. Verify Page Title to ensure we loaded
-    // CardTitle renders as a div, not a heading, so we search by text
-    await expect(page.getByText(serviceName)).toBeVisible();
+    // CardTitle renders as a div, not a heading. Use exact text match or specific class if needed,
+    // but getByText with exact: true or more context is safer.
+    // The previous loose match was finding the breadcrumb link too.
+    // Let's target the CardTitle specifically if possible, or just be specific about the text content.
+    await expect(page.locator('div').filter({ hasText: serviceName }).first()).toBeVisible();
 
     // 3. Click Logs Tab
     const logsTab = page.getByRole('tab', { name: 'Logs' });

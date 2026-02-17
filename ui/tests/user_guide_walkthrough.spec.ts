@@ -6,7 +6,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('User Guide Walkthrough', () => {
-  test('Dashboard loads key metrics', async ({ page }) => {
+  test('Dashboard loads key metrics', async ({ page, request }) => {
+    // Ensure profile is seeded for backend metric aggregation
+    await request.put('/api/v1/profiles/default', {
+      data: { name: "default", description: "Default profile" },
+      headers: { 'X-API-Key': 'test-token' }
+    });
+
     // Mock the stats endpoint
     await page.route('**/api/v1/dashboard/metrics', async route => {
         await route.fulfill({
