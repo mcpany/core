@@ -9,72 +9,96 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
-    {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
+// Define the type for our wizard templates
+interface WizardTemplate {
+    id: string;
+    name: string;
+    description: string;
+    config: {
+        commandLineService?: {
+            command: string;
+            env: Record<string, any>;
+            workingDirectory: string;
+        };
+        openapiService?: {
+            address: string;
+            specUrl: string;
+            specContent: string;
+            tools: any[];
+        };
+        configurationSchema?: string;
+    };
+    params: Record<string, string>;
+}
+
+// 1. Manual Template
+const MANUAL_TEMPLATE: WizardTemplate = {
+    id: 'manual',
+    name: 'Manual / Custom',
+    description: 'Configure everything from scratch.',
+    config: {
+        commandLineService: {
+            command: '',
+            env: {},
+            workingDirectory: ''
+        },
+        openapiService: undefined,
+        configurationSchema: undefined // Clear schema
+    },
+    params: {}
+};
+
+// 2. OpenAPI Template
+const OPENAPI_TEMPLATE: WizardTemplate = {
+    id: 'openapi',
+    name: 'OpenAPI / Swagger Import',
+    description: 'Import tools from an OpenAPI specification.',
+    config: {
+        openapiService: {
+            address: "",
+            specUrl: "",
+            specContent: "",
+            tools: []
+        },
+        commandLineService: undefined,
+        configurationSchema: undefined // Clear schema
+    },
+    params: {}
+};
+
+// 3. Map Service Registry to Templates
+const REGISTRY_TEMPLATES: WizardTemplate[] = SERVICE_REGISTRY.map(service => {
+    // Extract default params from schema
+    const defaultParams: Record<string, string> = {};
+    if (service.configurationSchema && service.configurationSchema.properties) {
+        Object.entries(service.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
+            if (prop.default !== undefined) {
+                defaultParams[key] = String(prop.default);
+            }
+        });
+    }
+
+    return {
+        id: service.id,
+        name: service.name,
+        description: service.description,
         config: {
             commandLineService: {
-                command: '',
-                env: {},
+                command: service.command,
+                env: {}, // Will be filled from params later
                 workingDirectory: ''
             },
+            configurationSchema: JSON.stringify(service.configurationSchema),
             openapiService: undefined
         },
-        params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
-    },
-    {
-        id: 'openapi',
-        name: 'OpenAPI / Swagger Import',
-        description: 'Import tools from an OpenAPI specification.',
-        config: {
-            openapiService: {
-                address: "",
-                specUrl: "",
-                specContent: "",
-                tools: []
-            },
-            commandLineService: undefined
-        },
-        params: {}
-    }
-];
+        params: defaultParams
+    };
+});
+
+// Combine all templates
+const ALL_TEMPLATES = [MANUAL_TEMPLATE, ...REGISTRY_TEMPLATES, OPENAPI_TEMPLATE];
 
 /**
  * StepServiceType component.
@@ -84,13 +108,12 @@ export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
 
-
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = ALL_TEMPLATES.find(t => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: template.params
             });
             updateConfig({
                 ...template.config as any,
@@ -99,6 +122,7 @@ export function StepServiceType() {
         }
     };
 
+    const selectedTemplate = ALL_TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'));
 
     return (
         <div className="space-y-6">
@@ -120,23 +144,35 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        <SelectItem value="manual">Manual / Custom</SelectItem>
+                        <SelectItem value="openapi">OpenAPI / Swagger Import</SelectItem>
+                        {REGISTRY_TEMPLATES.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <Card className="mt-2 bg-muted/50">
-                    <CardHeader>
-                        <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
-                        </CardTitle>
-                        <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
+
+                {selectedTemplate && (
+                    <Card className="mt-2 bg-muted/50">
+                        <CardHeader>
+                            <CardTitle className="text-base">
+                                {selectedTemplate.name}
+                            </CardTitle>
+                            <CardDescription>
+                                {selectedTemplate.description}
+                            </CardDescription>
+                        </CardHeader>
+                        {selectedTemplate.config.commandLineService?.command && (
+                             <CardContent className="pt-0">
+                                <code className="text-xs bg-muted p-1 rounded break-all">
+                                    {selectedTemplate.config.commandLineService.command}
+                                </code>
+                             </CardContent>
+                        )}
+                    </Card>
+                )}
             </div>
         </div>
     );

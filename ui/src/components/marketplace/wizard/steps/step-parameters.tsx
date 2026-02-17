@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, Info } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { SchemaForm } from '@/components/marketplace/schema-form';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 /**
  * StepParameters component.
@@ -18,6 +20,34 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();
     const { params, config } = state;
+
+    const parsedSchema = useMemo(() => {
+        if (!config.configurationSchema) return null;
+        try {
+            return JSON.parse(config.configurationSchema);
+        } catch (e) {
+            console.error("Failed to parse configuration schema", e);
+            return null;
+        }
+    }, [config.configurationSchema]);
+
+    const handleSchemaChange = (newParams: Record<string, string>) => {
+        updateState({ params: newParams });
+
+        // Sync to config env
+        if (config.commandLineService) {
+            const env: any = { ...config.commandLineService.env };
+            Object.entries(newParams).forEach(([k, v]) => {
+                env[k] = { plainText: v };
+            });
+            updateConfig({
+                commandLineService: {
+                    ...config.commandLineService,
+                    env
+                }
+            });
+        }
+    };
 
     const handleParamChange = (key: string, value: string, newKey?: string) => {
         const newParams = { ...params };
@@ -31,8 +61,6 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
         if (config.commandLineService) {
             const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
@@ -70,6 +98,42 @@ export function StepParameters() {
             });
         }
     };
+
+    if (parsedSchema) {
+        return (
+             <div className="space-y-6">
+                 <Alert className="bg-blue-50/50 border-blue-200">
+                    <Info className="h-4 w-4 text-blue-500" />
+                    <AlertTitle>Smart Configuration</AlertTitle>
+                    <AlertDescription className="text-xs text-blue-700">
+                        This service provides a configuration schema. Please fill in the required fields below.
+                    </AlertDescription>
+                </Alert>
+
+                <SchemaForm
+                    schema={parsedSchema}
+                    value={params}
+                    onChange={handleSchemaChange}
+                />
+
+                <div className="space-y-4 pt-4 border-t">
+                     <h3 className="text-lg font-medium">Command Preview</h3>
+                     <div className="grid gap-2">
+                         <Label>Executable</Label>
+                         <Input
+                            value={config.commandLineService?.command || ''}
+                            readOnly
+                            disabled
+                            className="bg-muted font-mono text-xs"
+                         />
+                         <p className="text-xs text-muted-foreground">
+                            The command is managed by the selected template.
+                         </p>
+                     </div>
+                 </div>
+             </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
