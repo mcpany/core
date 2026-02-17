@@ -62,7 +62,7 @@ services:
       server:
         condition: service_healthy
       ui-http-echo-server:
-        condition: service_started
+        condition: service_healthy
     networks:
       default:
 
@@ -72,3 +72,8 @@ services:
       - "5678:5678"
     command:
       - "--port=5678"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

@@ -161,9 +161,14 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
         { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
     ];
     try {
-        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        const res = await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`Failed to seed traffic: ${res.status()} ${text}`);
+        }
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
+        throw e;
     }
 };
 

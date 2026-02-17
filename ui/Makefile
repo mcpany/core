@@ -22,7 +22,8 @@ endif
 # Run lint
 lint:
 	# Run eslint directly to avoid next lint deprecated warning exit code
-	npx eslint .
+	# Allow warnings to pass CI (max-warnings -1 or similar, but exit 0 on warnings is default for eslint unless --max-warnings is set)
+	npx eslint . --max-warnings=1000
 
 
 TIMESTAMP := $(shell date +%s)
