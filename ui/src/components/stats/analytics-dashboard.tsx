@@ -77,7 +77,7 @@ export function AnalyticsDashboard() {
         const fetchDashboardData = async () => {
             try {
                 const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
-                    apiClient.getDashboardTraffic(),
+                    apiClient.getDashboardTraffic().catch(() => []),
                     apiClient.getTopTools(),
                     apiClient.listTools().catch(() => ({ tools: [] })),
                     apiClient.getToolUsage().catch(() => [])
@@ -144,11 +144,11 @@ export function AnalyticsDashboard() {
     // Randomized Selection from Top 5 High-Impact Targets
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
         const data = Array.isArray(trafficData) ? trafficData : [];
-        const totalRequests = data.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+        const totalRequests = data.reduce((acc, cur) => acc + (cur?.requests || cur?.total || 0), 0);
         const avgLatency = data.length
-            ? Math.floor(data.reduce((acc, cur) => acc + (cur.latency || 0), 0) / data.length)
+            ? Math.floor(data.reduce((acc, cur) => acc + (cur?.latency || 0), 0) / data.length)
             : 0;
-        const errorCount = data.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const errorCount = data.reduce((acc, cur) => acc + (cur?.errors || 0), 0);
         const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
         const durationMinutes = data.length;
