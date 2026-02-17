@@ -91,6 +91,9 @@ test.describe('OAuth Flow Integration', () => {
 
     // Step 1: Type & Template in Wizard
     // The wizard shows "Manual / Custom" in the template selection card by default
+    // Ensure the dialog is visible before interacting
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10000 });
+
     await page.getByPlaceholder('e.g. My Postgres DB').fill('OAuth Test Service');
     await page.getByRole('button', { name: 'Next', exact: true }).click({ force: true });
 
