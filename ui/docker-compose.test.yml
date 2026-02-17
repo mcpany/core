@@ -73,7 +73,7 @@ services:
     command:
       - "--port=5678"
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:5678/health"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:5678/health || exit 1"]
       interval: 2s
       timeout: 2s
-      retries: 5
+      retries: 10

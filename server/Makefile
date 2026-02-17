@@ -458,7 +458,7 @@ else
 	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
-	$(GOLANGCI_LINT_BIN) run --timeout 30m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
+	$(GOLANGCI_LINT_BIN) run --timeout 40m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
 	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
@@ -530,7 +530,11 @@ build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver te
 ifneq ($(SKIP_DOCKER_TESTS),true)
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
+ifneq ($(SKIP_DOCKER_REBUILD),true)
 	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
+else
+	@echo "Skipping actual build due to SKIP_DOCKER_REBUILD=true"
+endif
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
