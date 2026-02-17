@@ -458,7 +458,15 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
         <div className="pt-4 border-t">
             <CredentialTester
                 authConfig={getAuthConfig()}
-                credentialId={initialData?.id}
+                credentialId={(() => {
+                    // Check if any auth fields are dirty
+                    const dirtyFields = Object.keys(form.formState.dirtyFields);
+                    const isAuthDirty = dirtyFields.some(key => key !== 'name');
+                    // If auth fields are clean and we have an ID, pass it to test against stored credential.
+                    // This allows testing existing credentials even if secrets are masked.
+                    // If auth fields are dirty, pass undefined so CredentialTester uses the form values (authConfig).
+                    return (!isAuthDirty && initialData?.id) ? initialData.id : undefined;
+                })()}
             />
         </div>
 

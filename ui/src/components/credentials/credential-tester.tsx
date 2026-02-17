@@ -95,10 +95,10 @@ export function CredentialTester({ authConfig, credentialId, defaultUrl = "" }: 
                 // `if req.CredentialID != "" { ... } else { ... }`
                 // So it prioritizes ID.
 
-                // Fix: Prioritize authConfig (form values) if present, to ensure we test what the user sees/edits.
-                // If we send credential_id, the backend ignores authentication payload.
-                credential_id: authConfig ? undefined : credentialId,
-                authentication: authConfig
+                // If credentialId is provided, use it (and ignore authConfig).
+                // If credentialId is undefined/null, use authConfig (from form).
+                credential_id: credentialId,
+                authentication: credentialId ? undefined : authConfig
             };
 
             const res = await apiClient.testAuth(req);
