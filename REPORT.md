@@ -29,7 +29,7 @@ A comprehensive audit of 10 sampled features was conducted to verify synchroniza
 ### Other Actions
 *   **Lint Fix:** Added missing JSDoc comments to `ui/src/mocks/proto/mock-proto.ts` to resolve `check-ts-doc` lint errors and ensure a clean build state.
 *   **CI Remediation:** Verified local `make lint` passes after the fix to address CI failures.
-*   **CI Tuning:** Increased `golangci-lint` timeout to 30m and Playwright timeouts to 90s/5m to resolve persistent CI timeouts on slow runners.
+*   **CI Tuning:** Increased `golangci-lint` timeout to 60m and enabled diff output for pre-commit to debug/resolve persistent linting timeouts/failures on CI runners.
 
 ## Security Scrub
 *   No PII, secrets, or internal IPs were found or included in this report.
