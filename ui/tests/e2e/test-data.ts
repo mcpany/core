@@ -339,3 +339,69 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         console.log(`Failed to cleanup user: ${e}`);
     }
 };
+
+export const seedDocsData = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const services = [
+        {
+            id: "postgres-primary",
+            name: "Primary DB",
+            version: "1.0.0",
+            grpc_service: {
+                address: "postgres:5432"
+            }
+        },
+        {
+            id: "openai-gateway",
+            name: "OpenAI Gateway",
+            version: "2.1.0",
+            mcp_service: {
+                // Assuming MCP service config
+            }
+        },
+        {
+            id: "broken-service",
+            name: "Legacy API",
+            version: "1.0.0",
+            http_service: {
+                address: "https://api.example.com"
+            }
+        }
+    ];
+
+    for (const svc of services) {
+        try {
+            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed docs service ${svc.name}: ${e}`);
+        }
+    }
+};
+
+export const cleanupDocsData = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/services/Primary DB', { headers: HEADERS });
+        await context.delete('/api/v1/services/OpenAI Gateway', { headers: HEADERS });
+        await context.delete('/api/v1/services/Legacy API', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup docs services: ${e}`);
+    }
+};
+
+export const seedTraces = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    // Execute echo tool to generate traces
+    // Note: Depends on Echo Service being seeded
+    const payload = {
+        name: "echo_tool",
+        input: { echo: "trace_seed" }
+    };
+    for (let i = 0; i < 3; i++) {
+        try {
+            await context.post('/api/v1/execute', { data: payload, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed trace: ${e}`);
+        }
+    }
+};

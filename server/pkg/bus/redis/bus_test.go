@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redismock/v9"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -27,17 +28,27 @@ import (
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
 	redisAddr := os.Getenv("REDIS_ADDR")
-	if redisAddr == "" {
-		redisAddr = "127.0.0.1:6379"
+
+	var client *redis.Client
+
+	if redisAddr != "" {
+		client = redis.NewClient(&redis.Options{
+			Addr: redisAddr,
+		})
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		if _, err := client.Ping(ctx).Result(); err != nil {
+			t.Skipf("Redis at %s is not available: %v", redisAddr, err)
+		}
+	} else {
+		mr, err := miniredis.Run()
+		require.NoError(t, err)
+		t.Cleanup(mr.Close)
+		client = redis.NewClient(&redis.Options{
+			Addr: mr.Addr(),
+		})
 	}
-	client := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
-	})
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-	if _, err := client.Ping(ctx).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
+
 	t.Cleanup(func() {
 		_ = client.Close()
 	})

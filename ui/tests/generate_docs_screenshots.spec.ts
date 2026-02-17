@@ -6,6 +6,7 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
+import { seedDocsData, cleanupDocsData, seedTraffic, seedServices, seedTraces, cleanupServices } from './e2e/test-data';
 
 const DOCS_SCREENSHOTS_DIR = path.resolve(__dirname, '../docs/screenshots');
 
@@ -15,123 +16,22 @@ if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
 
 test.describe('Generate Detailed Docs Screenshots', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Global mocks to ensure consistent state
-    await page.route(/.*\/api\/v1\/services/, async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({
-                json: {
-                    services: [
-                        {
-                            id: 'postgres-primary',
-                            name: 'Primary DB',
-                            type: 'remote',
-                            endpoint: 'grpc://postgres:5432',
-                            status: 'healthy',
-                            uptime: '2d 4h',
-                            version: '1.0.0'
-                        },
-                        {
-                            id: 'openai-gateway',
-                            name: 'OpenAI Gateway',
-                            type: 'mcp',
-                            endpoint: 'http://openai-mcp:8080',
-                            status: 'healthy',
-                            uptime: '5h 30m',
-                            version: '2.1.0'
-                        },
-                        {
-                            id: 'broken-service',
-                            name: 'Legacy API',
-                            type: 'http',
-                            http_service: { address: 'https://api.example.com' },
-                            status: 'unhealthy',
-                            last_error: 'ZodError: Invalid input: expected string, received number',
-                            lastError: 'ZodError: Invalid input: expected string, received number',
-                            tool_count: 0,
-                            version: '1.0.0'
-                        }
-                    ]
-                }
-            });
-        } else {
-            await route.continue();
-        }
+  test.beforeEach(async ({ request, page }) => {
+    await seedDocsData(request);
+    await seedServices(request); // Seed Echo/Math for traces
+    await seedTraffic(request);
+    await seedTraces(request);
+
+    // Simulate login for screenshots
+    await page.addInitScript(() => {
+        localStorage.setItem('mcp_user_role', 'admin');
+        localStorage.setItem('mcp_auth_token', 'test-token');
     });
+  });
 
-    await page.route('**/api/v1/services/postgres-primary', async route => {
-        await route.fulfill({
-            json: {
-                service: {
-                    id: 'postgres-primary',
-                    name: 'Primary DB',
-
-                    type: 'grpc',
-                    grpc_service: { address: 'postgres:5432' },
-                    endpoint: 'grpc://postgres:5432',
-                    status: 'healthy',
-                    config: {
-                         env: { 'DB_PASS': '********' }
-                    }
-                }
-            }
-        });
-    });
-
-     await page.route('**/api/v1/stats', async route => {
-         await route.fulfill({
-             json: {
-                 active_services: 2,
-                 total_requests: 14502,
-                 avg_latency: 45,
-                 error_rate: 0.02,
-                 requests_timeseries: Array.from({length: 20}, (_, i) => ({timestamp: Date.now() - i*60000, count: Math.floor(Math.random() * 100)}))
-             }
-         });
-     });
-
-     // Mock Logs
-     // await page.route('**/api/v1/logs/stream**', async route => {
-     //     // This might be WS, but if HTTP fallback:
-     //     await route.fulfill({ json: [] });
-     // });
-
-     // Mock Health Check to prevent connection error banner
-     await page.route('**/healthz', async route => {
-         await route.fulfill({ status: 200, body: 'ok' });
-     });
-     await page.route('**/api/v1/health', async route => {
-         await route.fulfill({ status: 200, json: { status: 'ok' } });
-     });
-
-     // Mock Doctor (System Status) to prevent banner from showing in screenshots
-     await page.route('**/doctor', async route => {
-         await route.fulfill({
-             status: 200,
-             contentType: 'application/json',
-             body: JSON.stringify({
-                 status: 'healthy',
-                 checks: {},
-                 version: '1.0.0',
-                 uptime_seconds: 3600,
-                 active_connections: 5,
-                 bound_http_port: 8080,
-                 bound_grpc_port: 50051
-             })
-         });
-     });
-
-     // Mock Dashboard Traffic
-     await page.route('**/api/v1/dashboard/traffic', async route => {
-         await route.fulfill({
-             json: Array.from({length: 24}, (_, i) => ({
-                 timestamp: new Date(Date.now() - i * 3600000).toISOString(),
-                 requests: Math.floor(Math.random() * 500) + 100,
-                 errors: Math.floor(Math.random() * 10)
-             })).reverse()
-         });
-     });
-
+  test.afterEach(async ({ request }) => {
+    await cleanupDocsData(request);
+    await cleanupServices(request);
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -342,87 +242,19 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Traces Screenshots', async ({ page }) => {
-    // Mock Traces (UI calls /api/traces, expects direct array with rootSpan)
-    await page.route('**/api/traces*', async route => {
-        const now = Date.now();
-        await route.fulfill({
-            json: [
-                 {
-                     id: 't1',
-                     timestamp: now,
-                     rootSpan: {
-                         id: 's1',
-                         name: 'filesystem.read',
-                         type: 'tool',
-                         startTime: now,
-                         endTime: now + 120,
-                         status: 'success',
-                         input: { path: '/var/log/syslog' },
-                         output: { content: '...' }
-                     },
-                     status: 'success',
-                     totalDuration: 120,
-                     trigger: 'user'
-                 },
-                 {
-                     id: 't2',
-                     timestamp: now - 5000,
-                     rootSpan: {
-                         id: 's2',
-                         name: 'calculator.add',
-                         type: 'tool',
-                         startTime: now - 5000,
-                         endTime: now - 4990,
-                         status: 'error',
-                         errorMessage: 'Division by zero'
-                     },
-                     status: 'error',
-                     totalDuration: 10,
-                     trigger: 'user'
-                 },
-                 {
-                     id: 't3',
-                     timestamp: now - 10000,
-                     rootSpan: {
-                         id: 's3',
-                         name: 'memory.read_graph',
-                         type: 'tool',
-                         status: 'error',
-                         startTime: now - 10000,
-                         endTime: now - 9950,
-                         input: { entities: [{ name: 'test', extra: 'field' }] },
-                         output: { error: 'Schema validation error: properties "extra" not allowed' },
-                         errorMessage: 'Schema validation error: properties "extra" not allowed'
-                     },
-                     status: 'error',
-                     totalDuration: 50,
-                     trigger: 'user'
-                 }
-            ]
-        });
-    });
-
+    // Real traces are seeded by seedTraces (using echo_tool)
     await page.goto('/traces');
-    await expect(page.getByText('filesystem.read').first()).toBeVisible();
+
+    // Check for the seeded tool
+    await expect(page.getByText('echo_tool').first()).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces.png'), fullPage: true });
 
     // Click trace
-    await page.getByText('filesystem.read').first().click({ force: true });
+    await page.getByText('echo_tool').first().click({ force: true });
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
-
-    // Close sheet by reloading (simplest way to reset state in tests without complex interaction)
-    await page.reload();
-    await expect(page.getByText('filesystem.read').first()).toBeVisible();
-    await page.waitForTimeout(1000);
-
-    // Click diagnostics trace
-    await page.getByText('memory.read_graph').first().click({ force: true });
-    await page.waitForTimeout(500);
-    await expect(page.getByText('Diagnostics & Suggestions')).toBeVisible();
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_diagnostics.png'), fullPage: true });
   });
 
   test('Middleware Screenshots', async ({ page }) => {
@@ -446,23 +278,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Network Graph Screenshots', async ({ page }) => {
-      // Mock Topology for Network Graph
-      await page.route('**/api/v1/topology', async route => {
-          await route.fulfill({
-              json: {
-                  nodes: [
-                      { id: 'service-a', type: 'service', label: 'Service A', status: 'healthy' },
-                      { id: 'service-b', type: 'service', label: 'Service B', status: 'degraded' },
-                      { id: 'db-primary', type: 'resource', label: 'Primary DB', status: 'healthy' }
-                  ],
-                  edges: [
-                      { source: 'service-a', target: 'service-b', value: 100 },
-                      { source: 'service-b', target: 'db-primary', value: 50 }
-                  ]
-              }
-          });
-      });
-
+      // Real topology is built from seeded services
       await page.goto('/network');
       await page.waitForTimeout(2000); // Graph rendering
 
@@ -681,36 +497,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Audit Logs Screenshots', async ({ page }) => {
-      // Mock Audit Logs
-      await page.route('**/api/v1/audit/logs*', async route => {
-          await route.fulfill({
-              json: {
-                  entries: [
-                      {
-                          timestamp: new Date().toISOString(),
-                          toolName: 'weather_get',
-                          userId: 'alice',
-                          profileId: 'prod',
-                          arguments: '{"city": "London"}',
-                          result: '{"temperature": 20}',
-                          duration: '150ms',
-                          durationMs: 150
-                      },
-                      {
-                          timestamp: new Date(Date.now() - 60000).toISOString(),
-                          toolName: 'calculator_add',
-                          userId: 'bob',
-                          profileId: 'dev',
-                          arguments: '{"a": 5, "b": 3}',
-                          result: '8',
-                          duration: '10ms',
-                          durationMs: 10
-                      }
-                  ]
-              }
-          });
-      });
-
+      // Audit Logs should contain traces from seedTraces (echo_tool)
       await page.goto('/audit');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
@@ -784,34 +571,16 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Service Inspector Screenshots', async ({ page }) => {
-    // Override the mock to make postgres-primary an HTTP service (editable)
-    await page.route('**/api/v1/services*', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({
-                json: {
-                    services: [
-                        {
-                            id: 'postgres-primary',
-                            name: 'Primary DB',
-                            type: 'http',
-                            httpService: { address: 'https://api.example.com' },
-                            status: 'healthy',
-                            version: '1.0.0'
-                        }
-                    ]
-                }
-            });
-        } else {
-            await route.continue();
-        }
-    });
-
+    // We use "Legacy API" (seeded as broken-service, HTTP) for inspection test
     await page.goto('/upstream-services');
-    await expect(page.getByText('Primary DB')).toBeVisible();
+    await expect(page.getByText('Legacy API')).toBeVisible();
     await page.waitForTimeout(1000);
 
-    // Open Actions Menu for the first service (postgres-primary)
-    await page.getByRole('button', { name: 'Open menu' }).first().click();
+    // Find the row for Legacy API and click its menu
+    // We can use locator filtering
+    const row = page.getByRole('row').filter({ hasText: 'Legacy API' });
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
     await page.getByText('Edit').click();
 
     await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });

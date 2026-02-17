@@ -56,16 +56,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
+    // Check for stored session
+    const storedRole = localStorage.getItem('mcp_user_role') as UserRole;
+    if (storedRole) {
+        setUser({
+            id: '1',
+            name: storedRole === 'admin' ? 'Admin User' : 'User',
+            email: storedRole === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
+            role: storedRole,
+            avatar: storedRole === 'admin' ? '/avatars/admin.png' : undefined
+        });
+    } else {
+        setUser(null);
+    }
     setLoading(false);
   }, []);
 
