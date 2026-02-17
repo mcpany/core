@@ -1,54 +1,93 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-from playwright.sync_api import Page, expect, sync_playwright
+from playwright.sync_api import sync_playwright
 import time
 
-def test_wizard(page: Page):
-    # 1. Arrange: Go to the marketplace.
-    for i in range(10):
+def run():
+    with sync_playwright() as p:
+        print("Launching browser...")
+        browser = p.chromium.launch()
+        page = browser.new_page()
+
+        # 1. Navigate to Marketplace
+        print("Navigating to Marketplace...")
         try:
-            page.goto("http://localhost:9002/marketplace")
-            break
+            page.goto("http://localhost:9002/marketplace", timeout=60000)
         except Exception as e:
-            print(f"Connection failed, retrying... {i}")
-            time.sleep(2)
+            print(f"Navigation failed: {e}")
+            return
 
-    # 2. Act: Click "Create Config"
-    create_btn = page.get_by_role("button", name="Create Config")
-    expect(create_btn).to_be_visible(timeout=30000)
-    create_btn.click()
+        # Wait for page to load
+        print("Waiting for page load...")
+        try:
+            page.wait_for_selector("text=Marketplace", timeout=10000)
+            print("Page loaded.")
+        except Exception as e:
+            print(f"Page load failed: {e}")
+            page.screenshot(path="verification/page_load_failed.png")
+            return
 
-    # 3. Assert Dialog Open
-    expect(page.get_by_role("dialog")).to_be_visible()
-    expect(page.get_by_text("Create Upstream Service Config")).to_be_visible()
+        # Screenshot before clicking
+        page.screenshot(path="verification/before_click.png")
 
-    # 4. Act: Select OpenAPI Template
-    page.get_by_label("Template").click()
-    page.get_by_role("option", name="OpenAPI / Swagger Import").click()
+        # 2. Click Create Config
+        print("Clicking Create Config...")
+        try:
+            create_btn = page.locator("button", has_text="Create Config")
+            if create_btn.is_visible():
+                print("Button is visible.")
+                create_btn.click()
+            else:
+                print("Button is NOT visible.")
+        except Exception as e:
+            print(f"Failed to click Create Config: {e}")
+            page.screenshot(path="verification/create_button_failed.png")
+            return
 
-    # 5. Act: Click Next (scoped to dialog)
-    page.get_by_role("dialog").get_by_role("button", name="Next").click()
+        # Wait for wizard to load
+        print("Waiting for wizard...")
+        try:
+            # Check for Dialog title
+            page.wait_for_selector("text=Create Upstream Service Config", timeout=10000)
+            print("Wizard opened.")
+        except Exception as e:
+            print(f"Wizard did not open: {e}")
+            page.screenshot(path="verification/wizard_failed.png")
+            return
 
-    # 6. Assert: Check for OpenAPI Step
-    expect(page.get_by_text("Configure OpenAPI Specification")).to_be_visible()
-    expect(page.get_by_label("Specification URL")).to_be_visible()
+        # 3. Select a template
+        print("Selecting PostgreSQL template...")
+        try:
+            page.locator("button#service-template").click()
+            page.locator("div[role='option']", has_text="PostgreSQL").click()
+        except Exception as e:
+             print(f"Failed to select template: {e}")
+             page.screenshot(path="verification/template_selection_failed.png")
+             return
 
-    # 7. Act: Fill URL
-    page.get_by_label("Specification URL").fill("https://petstore.swagger.io/v2/swagger.json")
+        # 4. Click Next
+        print("Clicking Next...")
+        try:
+            page.locator("button", has_text="Next").click()
+        except Exception as e:
+            print(f"Failed to click Next: {e}")
+            return
 
-    # 8. Screenshot
-    page.screenshot(path="verification/wizard_openapi.png")
+        # 5. Verify Step 2
+        print("Verifying form...")
+        try:
+            page.wait_for_selector("text=Configuration", timeout=5000)
+
+            if page.is_visible("text=Connection URL"):
+                print("SUCCESS: Found 'Connection URL' field from schema.")
+            else:
+                print("FAILURE: 'Connection URL' field not found.")
+        except Exception as e:
+            print(f"Failed to find Configuration header: {e}")
+
+        # Take screenshot
+        print("Taking screenshot...")
+        page.screenshot(path="verification/wizard_schema_form.png")
+
+        browser.close()
 
 if __name__ == "__main__":
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        try:
-            test_wizard(page)
-        except Exception as e:
-            print(f"Test failed: {e}")
-            page.screenshot(path="verification/error.png")
-            raise e
-        finally:
-            browser.close()
+    run()

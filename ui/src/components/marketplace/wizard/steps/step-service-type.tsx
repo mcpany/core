@@ -5,75 +5,73 @@
 
 import React from 'react';
 import { useWizard } from '../wizard-context';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
+
+// Define the template interface
+interface Template {
+    id: string;
+    name: string;
+    description: string;
+    config: any;
+    params: Record<string, string>;
+}
+
+const MANUAL_TEMPLATE: Template = {
+    id: 'manual',
+    name: 'Manual / Custom',
+    description: 'Configure everything from scratch.',
+    config: {
+        commandLineService: {
+            command: '',
+            env: {},
+            workingDirectory: ''
+        },
+        openapiService: undefined
+    },
+    params: {}
+};
+
+const OPENAPI_TEMPLATE: Template = {
+    id: 'openapi',
+    name: 'OpenAPI / Swagger Import',
+    description: 'Import tools from an OpenAPI specification.',
+    config: {
+        openapiService: {
+            address: "",
+            specUrl: "",
+            specContent: "",
+            tools: []
+        },
+        commandLineService: undefined
+    },
+    params: {}
+};
+
+// Map Service Registry items to templates
+const REGISTRY_TEMPLATES: Template[] = SERVICE_REGISTRY.map(s => ({
+    id: s.id,
+    name: s.name,
+    description: s.description,
+    config: {
+        commandLineService: {
+            command: s.command,
+            env: {}, // Start empty, will be filled by params
+            workingDirectory: ''
+        },
+        configurationSchema: JSON.stringify(s.configurationSchema),
+        openapiService: undefined
+    },
+    params: {} // Defaults will be extracted on selection
+}));
 
 const TEMPLATES = [
-    {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
-        config: {
-            commandLineService: {
-                command: '',
-                env: {},
-                workingDirectory: ''
-            },
-            openapiService: undefined
-        },
-        params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
-    },
-    {
-        id: 'openapi',
-        name: 'OpenAPI / Swagger Import',
-        description: 'Import tools from an OpenAPI specification.',
-        config: {
-            openapiService: {
-                address: "",
-                specUrl: "",
-                specContent: "",
-                tools: []
-            },
-            commandLineService: undefined
-        },
-        params: {}
-    }
+    MANUAL_TEMPLATE,
+    OPENAPI_TEMPLATE,
+    ...REGISTRY_TEMPLATES
 ];
 
 /**
@@ -88,14 +86,47 @@ export function StepServiceType() {
     const handleTemplateChange = (val: string) => {
         const template = TEMPLATES.find(t => t.id === val);
         if (template) {
+            // Extract defaults from schema if available
+            const defaultParams: Record<string, string> = { ...template.params };
+
+            if (template.config.configurationSchema) {
+                try {
+                    const schema = JSON.parse(template.config.configurationSchema);
+                    if (schema && schema.properties) {
+                         Object.entries(schema.properties).forEach(([key, prop]: [string, any]) => {
+                            if (prop.default !== undefined) {
+                                defaultParams[key] = String(prop.default);
+                            } else if (!defaultParams[key]) {
+                                // Initialize empty for required fields to make them visible in params list
+                                defaultParams[key] = "";
+                            }
+                         });
+                    }
+                } catch (e) {
+                    console.error("Failed to parse schema for defaults", e);
+                }
+            }
+
+            // Also set env vars in config based on defaults
+            const env: any = {};
+            Object.entries(defaultParams).forEach(([k, v]) => {
+                 if (v) env[k] = { plainText: v };
+            });
+
+            const newConfig = {
+                ...template.config,
+                name: config.name || template.name,
+            };
+
+            if (newConfig.commandLineService) {
+                newConfig.commandLineService.env = env;
+            }
+
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: defaultParams
             });
-            updateConfig({
-                ...template.config as any,
-                name: config.name || template.name,
-            });
+            updateConfig(newConfig);
         }
     };
 
