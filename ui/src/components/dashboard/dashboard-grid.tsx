@@ -99,6 +99,11 @@ export function DashboardGrid() {
             }
         } else if (Array.isArray(parsed)) {
             // Case 2: Already in new format
+            // If empty, fallback to default (assumes "first load" or "invalid state")
+            // to ensure users see something useful.
+            if (parsed.length === 0) {
+                return DEFAULT_LAYOUT;
+            }
             return parsed;
         }
         return DEFAULT_LAYOUT;
