@@ -85,12 +85,7 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	if _, ok := b.subscribers[ch]; ok {
-		delete(b.subscribers, ch)
-		// ⚡ BOLT: Removed close(ch) to prevent race conditions during concurrent Broadcast.
-		// Randomized Selection from Top 5 High-Impact Targets
-		// The channel will be garbage collected when it becomes unreachable.
-	}
+	delete(b.subscribers, ch)
 }
 
 // Broadcast sends a message to all subscribers.
