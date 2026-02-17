@@ -6,6 +6,8 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Architecture] Managed MCP Bridge:** Local proxy and policy enforcer for remote Managed MCPs (Google/Vertex).
+*   **[State] Cross-Agent Memory Adapter:** Support for CLAUDE.md and other local memory standards.
 
 ## 2. Updated Roadmap
 

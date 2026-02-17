@@ -16,6 +16,8 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **Managed MCP Setup Gallery**: Templates for connecting to Google/Vertex Managed MCPs.
+- [ ] **Memory File Visualizer**: UI to inspect and edit CLAUDE.md memory files.
 
 ### Existing Planned Features
 
