@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "TEST_PORT=$(shuf -i 10000-20000 -n 1) playwright test",
+    "test:unit": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -3,78 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWizard } from '../wizard-context';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
-    {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
-        config: {
-            commandLineService: {
-                command: '',
-                env: {},
-                workingDirectory: ''
-            },
-            openapiService: undefined
-        },
-        params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
-    },
-    {
-        id: 'openapi',
-        name: 'OpenAPI / Swagger Import',
-        description: 'Import tools from an OpenAPI specification.',
-        config: {
-            openapiService: {
-                address: "",
-                specUrl: "",
-                specContent: "",
-                tools: []
-            },
-            commandLineService: undefined
-        },
-        params: {}
-    }
-];
+// Define the structure for internal templates used by the wizard
+interface WizardTemplate {
+    id: string;
+    name: string;
+    description: string;
+    config: any; // Using any for flexibility with UpstreamServiceConfig partials
+    params: Record<string, string>;
+}
 
 /**
  * StepServiceType component.
@@ -84,21 +28,92 @@ export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
 
+    // Merge static templates with dynamic registry items
+    const templates = useMemo<WizardTemplate[]>(() => {
+        const staticTemplates: WizardTemplate[] = [
+            {
+                id: 'manual',
+                name: 'Manual / Custom',
+                description: 'Configure everything from scratch.',
+                config: {
+                    commandLineService: {
+                        command: '',
+                        env: {},
+                        workingDirectory: ''
+                    },
+                    openapiService: undefined,
+                    configurationSchema: ""
+                },
+                params: {}
+            },
+            {
+                id: 'openapi',
+                name: 'OpenAPI / Swagger Import',
+                description: 'Import tools from an OpenAPI specification.',
+                config: {
+                    openapiService: {
+                        address: "",
+                        specUrl: "",
+                        specContent: "",
+                        tools: []
+                    },
+                    commandLineService: undefined,
+                    configurationSchema: ""
+                },
+                params: {}
+            }
+        ];
+
+        const dynamicTemplates: WizardTemplate[] = SERVICE_REGISTRY.map(item => {
+            // Extract default values from schema properties
+            const defaults: Record<string, string> = {};
+            if (item.configurationSchema && item.configurationSchema.properties) {
+                Object.entries(item.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
+                    if (prop.default !== undefined) {
+                        defaults[key] = String(prop.default);
+                    } else {
+                         // Initialize required fields with empty string so they show up in params map
+                         defaults[key] = "";
+                    }
+                });
+            }
+
+            return {
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                config: {
+                    commandLineService: {
+                        command: item.command,
+                        env: {}, // To be populated from params
+                        workingDirectory: ''
+                    },
+                    openapiService: undefined,
+                    // Save schema string for StepParameters to use
+                    configurationSchema: JSON.stringify(item.configurationSchema)
+                },
+                params: defaults
+            };
+        });
+
+        return [...staticTemplates, ...dynamicTemplates];
+    }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = templates.find(t => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: template.params
             });
             updateConfig({
-                ...template.config as any,
+                ...template.config,
                 name: config.name || template.name,
             });
         }
     };
 
+    const selectedTemplate = templates.find(t => t.id === (selectedTemplateId || 'manual'));
 
     return (
         <div className="space-y-6">
@@ -120,7 +135,7 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        {templates.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -130,10 +145,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {selectedTemplate?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {selectedTemplate?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>
