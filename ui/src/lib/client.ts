@@ -1278,6 +1278,15 @@ export const apiClient = {
     },
 
     /**
+     * Run doctor checks.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to run doctor checks');
+        return res.json();
+    },
+
+    /**
      * Gets the dashboard health status and history.
      * @returns A promise that resolves to the health response.
      */
@@ -1366,6 +1375,26 @@ export const apiClient = {
             body: JSON.stringify({ url })
         });
         if (!res.ok) throw new Error('Failed to save webhook URL');
+        return res.json();
+    },
+
+    /**
+     * Tests authentication with a given credential and configuration.
+     * @param request The test request.
+     * @returns A promise that resolves to the test response.
+     */
+    testAuth: async (request: { credential_id: string; service_type: string; service_config: any }) => {
+        const res = await fetchWithAuth('/api/v1/debug/auth-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request)
+        });
+        // The backend might return 200 even if success=false, or error code.
+        // auth_test_endpoint.go sends 200 with {success: false} usually, unless request is bad.
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Auth test failed: ${res.status} ${txt}`);
+        }
         return res.json();
     },
 
