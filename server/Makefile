@@ -643,7 +643,7 @@ endif
 # Target to build all test images
 build-test-images:
 ifndef SKIP_DOCKER_REBUILD
-	@$(MAKE) build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
+	@$(MAKE) build-docker build-http-echo-docker build-cowsay-docker build-everything-docker
 else
 	@echo "Skipping Docker image build (SKIP_DOCKER_REBUILD is set)"
 endif
