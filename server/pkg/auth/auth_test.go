@@ -548,3 +548,46 @@ func TestTrustedHeaderAuthenticator(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestAuthenticate_UserAPIKey(t *testing.T) {
+	authManager := NewManager()
+	require.NotNil(t, authManager)
+
+	// Create a user with API Key auth
+	userID := "service-account-1"
+	apiKey := "mcp_sk_123456"
+	user := configv1.User_builder{
+		Id: proto.String(userID),
+		Authentication: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName:         proto.String("X-API-Key"),
+				VerificationValue: proto.String(apiKey),
+				In:                configv1.APIKeyAuth_HEADER.Enum(),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	authManager.SetUsers([]*configv1.User{user})
+
+	t.Run("successful_authentication", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", apiKey)
+
+		// Authenticate against "any-service" (or empty)
+		ctx, err := authManager.Authenticate(context.Background(), "any-service", req)
+		assert.NoError(t, err)
+
+		// Check if User ID is in context
+		uid, ok := UserFromContext(ctx)
+		assert.True(t, ok)
+		assert.Equal(t, userID, uid)
+	})
+
+	t.Run("failed_authentication_wrong_key", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "wrong-key")
+
+		_, err := authManager.Authenticate(context.Background(), "any-service", req)
+		assert.Error(t, err)
+	})
+}

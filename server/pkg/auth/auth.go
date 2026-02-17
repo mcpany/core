@@ -473,6 +473,11 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 		return ctx, nil
 	}
 
+	// Fallback: Check Global User API Key Auth
+	if ctx, err := am.checkAPIKeyWithUsers(ctx, r); err == nil {
+		return ctx, nil
+	}
+
 	// Fallback: Check Global User Basic Auth
 	if ctx, err := am.checkBasicAuthWithUsers(ctx, r); err == nil {
 		return ctx, nil
@@ -668,4 +673,29 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 
 	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
 	return ctx, fmt.Errorf("invalid credentials")
+}
+
+// checkAPIKeyWithUsers checks if the request provides an API Key matching any of the configured users.
+func (am *Manager) checkAPIKeyWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
+	am.usersMu.RLock()
+	defer am.usersMu.RUnlock()
+
+	for _, user := range am.users {
+		apiKeyAuth := user.GetAuthentication().GetApiKey()
+		if apiKeyAuth != nil {
+			authenticator := NewAPIKeyAuthenticator(apiKeyAuth)
+			if authenticator != nil {
+				// We check if this authenticator accepts the request.
+				if _, err := authenticator.Authenticate(ctx, r); err == nil {
+					ctx = ContextWithUser(ctx, user.GetId())
+					if len(user.GetRoles()) > 0 {
+						ctx = ContextWithRoles(ctx, user.GetRoles())
+					}
+					return ctx, nil
+				}
+			}
+		}
+	}
+
+	return ctx, fmt.Errorf("invalid api key credentials")
 }
