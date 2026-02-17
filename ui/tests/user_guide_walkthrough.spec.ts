@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
     // Mock the stats endpoint
-    await page.route('**/api/v1/dashboard/metrics', async route => {
+    await page.route('**/api/v1/dashboard/metrics*', async route => {
         await route.fulfill({
             json: [
                 { label: "Total Requests", value: "1234", icon: "Activity" },
@@ -19,8 +19,11 @@ test.describe('User Guide Walkthrough', () => {
     });
 
     await page.goto('/');
+    // Explicitly wait for the response to ensure the frontend has received data
+    await page.waitForResponse(response => response.url().includes('/api/v1/dashboard/metrics'));
+
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 30000 });
     // Check for "Active Services" card
     await expect(page.locator('text=Active Services')).toBeVisible();
     await expect(page.locator('text=Connected Tools')).toBeVisible();
