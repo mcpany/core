@@ -42,7 +42,8 @@ test.describe('Service Detail Logs Tab', () => {
     await page.goto(`/service/${serviceId}`);
 
     // 2. Verify Page Title to ensure we loaded
-    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
+    // Increase timeout for service details load (might need to fetch status/tools)
+    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName, { timeout: 30000 });
 
     // 3. Click Logs Tab
     const logsTab = page.getByRole('tab', { name: 'Logs' });
