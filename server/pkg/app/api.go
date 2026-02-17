@@ -80,8 +80,10 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/audit/export", a.handleAuditExport)
 	mux.HandleFunc("/validate", a.handleValidate())
 
+	mux.HandleFunc("/middleware", a.handleMiddleware(store))
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
+	mux.HandleFunc("/debug/reset", a.handleDebugReset(store))
 
 	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())

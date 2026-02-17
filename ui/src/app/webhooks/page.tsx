@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Webhook, Plus, Play, Trash2 } from "lucide-react";
+import { Webhook, Plus, Play, Trash2, Loader2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -23,53 +23,161 @@ import {
     DialogTrigger,
     DialogFooter
 } from "@/components/ui/dialog"
+import { apiClient } from "@/lib/client";
+import { toast } from "sonner";
 
 interface WebhookConfig {
     id: string;
     url: string;
     events: string[];
     active: boolean;
-    lastTriggered?: string;
-    status?: "success" | "failure" | "pending";
+    type: 'alerts' | 'audit';
 }
-
-const INITIAL_WEBHOOKS: WebhookConfig[] = [
-    { id: "wh-1", url: "https://api.example.com/events", events: ["service.registered", "tool.invoked"], active: true, lastTriggered: "2 mins ago", status: "success" },
-    { id: "wh-2", url: "https://hooks.slack.com/...", events: ["error.occurred"], active: true, lastTriggered: "1 day ago", status: "success" },
-];
 
 /**
  * WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
+    const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newUrl, setNewUrl] = useState("");
+    const [newType, setNewType] = useState<'alerts' | 'audit'>('alerts');
+    const [settings, setSettings] = useState<any>(null);
 
-    const toggleWebhook = (id: string) => {
-        setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: !w.active } : w));
+    useEffect(() => {
+        loadWebhooks();
+    }, []);
+
+    const loadWebhooks = async () => {
+        try {
+            const data = await apiClient.getGlobalSettings();
+            setSettings(data);
+            const hooks: WebhookConfig[] = [];
+            if (data.alerts?.webhookUrl) {
+                hooks.push({
+                    id: 'alerts',
+                    url: data.alerts.webhookUrl,
+                    events: ['alerts'],
+                    active: data.alerts.enabled !== false,
+                    type: 'alerts'
+                });
+            }
+            if (data.audit?.webhookUrl) {
+                hooks.push({
+                    id: 'audit',
+                    url: data.audit.webhookUrl,
+                    events: ['audit.log'],
+                    active: data.audit.enabled !== false,
+                    type: 'audit'
+                });
+            }
+            setWebhooks(hooks);
+        } catch (err) {
+            console.error("Failed to load settings", err);
+            toast.error("Failed to load webhook configuration");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const deleteWebhook = (id: string) => {
-        setWebhooks(webhooks.filter(w => w.id !== id));
+    const toggleWebhook = async (id: string) => {
+        const hook = webhooks.find(h => h.id === id);
+        if (!hook || !settings) return;
+
+        const newActive = !hook.active;
+        const newSettings = { ...settings };
+
+        if (hook.type === 'alerts') {
+            if (!newSettings.alerts) newSettings.alerts = {};
+            newSettings.alerts.enabled = newActive;
+        } else if (hook.type === 'audit') {
+            if (!newSettings.audit) newSettings.audit = {};
+            newSettings.audit.enabled = newActive;
+        }
+
+        try {
+            await apiClient.saveGlobalSettings(newSettings);
+            // Optimistic update
+            setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: newActive } : w));
+            setSettings(newSettings);
+            toast.success(`${hook.type} webhook ${newActive ? 'enabled' : 'disabled'}`);
+        } catch (err) {
+            console.error("Failed to save settings", err);
+            toast.error("Failed to update webhook status");
+        }
     };
 
-    const addWebhook = () => {
-        if (!newUrl) return;
-        setWebhooks([...webhooks, {
-            id: `wh-${Date.now()}`,
-            url: newUrl,
-            events: ["all"],
-            active: true
-        }]);
-        setNewUrl("");
-        setIsDialogOpen(false);
+    const deleteWebhook = async (id: string) => {
+        const hook = webhooks.find(h => h.id === id);
+        if (!hook || !settings) return;
+
+        const newSettings = { ...settings };
+        if (hook.type === 'alerts') {
+            if (newSettings.alerts) {
+                newSettings.alerts.webhookUrl = "";
+                newSettings.alerts.enabled = false;
+            }
+        } else if (hook.type === 'audit') {
+            if (newSettings.audit) {
+                newSettings.audit.webhookUrl = "";
+                // Don't disable audit entirely, just clear webhook?
+                // Audit config has storage_type. If it was webhook, we might need to change it?
+                // For now just clear URL.
+            }
+        }
+
+        try {
+            await apiClient.saveGlobalSettings(newSettings);
+            setWebhooks(webhooks.filter(w => w.id !== id));
+            setSettings(newSettings);
+            toast.success("Webhook removed");
+        } catch (err) {
+            console.error("Failed to delete webhook", err);
+            toast.error("Failed to delete webhook");
+        }
+    };
+
+    const addWebhook = async () => {
+        if (!newUrl || !settings) return;
+
+        const newSettings = { ...settings };
+        // Check if already exists
+        if (newType === 'alerts') {
+            if (!newSettings.alerts) newSettings.alerts = {};
+            newSettings.alerts.webhookUrl = newUrl;
+            newSettings.alerts.enabled = true;
+        } else if (newType === 'audit') {
+            if (!newSettings.audit) newSettings.audit = {};
+            newSettings.audit.webhookUrl = newUrl;
+            // newSettings.audit.storageType = "webhook"; // Ideally set storage type
+        }
+
+        try {
+            await apiClient.saveGlobalSettings(newSettings);
+            setNewUrl("");
+            setIsDialogOpen(false);
+            loadWebhooks(); // Reload to reflect changes
+            toast.success("Webhook added");
+        } catch (err) {
+            console.error("Failed to add webhook", err);
+            toast.error("Failed to add webhook");
+        }
     }
 
     const testWebhook = (id: string) => {
-        // Simulate test
-        alert(`Testing webhook ${id}...`);
+        // Trigger test via API if available, or just toast
+        toast.info(`Test event sent to ${id} (simulated)`);
+        // Actual test API call could go here
+    }
+
+    if (loading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
     }
 
     return (
@@ -93,6 +201,25 @@ export default function WebhooksPage() {
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="type" className="text-right">Type</Label>
+                                <div className="col-span-3 flex gap-2">
+                                    <Button
+                                        variant={newType === 'alerts' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => setNewType('alerts')}
+                                    >
+                                        Alerts
+                                    </Button>
+                                    <Button
+                                        variant={newType === 'audit' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => setNewType('audit')}
+                                    >
+                                        Audit Logs
+                                    </Button>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="url" className="text-right">
                                     Payload URL
@@ -122,16 +249,19 @@ export default function WebhooksPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>URL</TableHead>
+                                <TableHead>Type</TableHead>
                                 <TableHead>Events</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Last Triggered</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {webhooks.map((hook) => (
                                 <TableRow key={hook.id}>
-                                    <TableCell className="font-mono text-xs">{hook.url}</TableCell>
+                                    <TableCell className="font-mono text-xs max-w-[200px] truncate" title={hook.url}>{hook.url}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">{hook.type}</Badge>
+                                    </TableCell>
                                     <TableCell>
                                         <div className="flex gap-1 flex-wrap">
                                             {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
@@ -143,13 +273,10 @@ export default function WebhooksPage() {
                                                 checked={hook.active}
                                                 onCheckedChange={() => toggleWebhook(hook.id)}
                                             />
-                                            <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                            <span className={`text-xs ${hook.active ? 'text-green-500' : 'text-muted-foreground'}`}>
                                                 {hook.active ? "Active" : "Inactive"}
                                             </span>
                                         </div>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground text-xs">
-                                        {hook.lastTriggered || "Never"}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
