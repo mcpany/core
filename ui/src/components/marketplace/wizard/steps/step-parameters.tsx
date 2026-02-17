@@ -19,6 +19,7 @@ import { SchemaForm } from '@/components/marketplace/schema-form';
 export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();
     const { params, config } = state;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [parsedSchema, setParsedSchema] = React.useState<any>(null);
 
     React.useEffect(() => {
@@ -38,6 +39,7 @@ export function StepParameters() {
          updateState({ params: newValues });
          // Sync to env
          if (config.commandLineService) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const env: any = {};
             Object.entries(newValues).forEach(([k, v]) => {
                 env[k] = { plainText: v };
@@ -64,6 +66,7 @@ export function StepParameters() {
 
         // Also update config env
         if (config.commandLineService) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
                 env[k] = { plainText: v };
@@ -88,6 +91,7 @@ export function StepParameters() {
         updateState({ params: newParams });
          // Sync with config
          if (config.commandLineService) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
                 env[k] = { plainText: v };

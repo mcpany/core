@@ -1,0 +1,76 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { test, expect } from '@playwright/test';
+
+test.describe('Smart Config Wizard', () => {
+  const serviceName = 'Test Postgres Wizard';
+
+  test.beforeEach(async ({ request }) => {
+    // Cleanup: Ensure service does not exist
+    // Note: This requires the backend to be running and accessible
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => {});
+  });
+
+  test.afterEach(async ({ request }) => {
+    // Cleanup
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => {});
+  });
+
+  test('should verify the full wizard flow for PostgreSQL template', async ({ page }) => {
+    // 1. Navigate to Marketplace
+    await page.goto('/marketplace');
+    await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
+
+    // 2. Open Wizard
+    // Force click to ensure it works even if toasts overlay
+    await page.getByRole('button', { name: 'Create Config' }).click({ force: true });
+
+    // Check if dialog opened
+    await expect(page.getByRole('heading', { name: 'Create Upstream Service Config' })).toBeVisible({ timeout: 10000 });
+
+    // 3. Select Template
+    // The Select trigger usually has the current value or placeholder
+    const templateTrigger = page.locator('button[role="combobox"]');
+    await templateTrigger.click();
+    await page.getByRole('option', { name: 'PostgreSQL' }).click();
+
+    // 4. Set Name
+    await page.getByLabel('Service Name').fill(serviceName);
+
+    // 5. Click Next (Step 1 -> 2)
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // 6. Fill Parameters (Schema Driven)
+    // Wait for the schema form to render
+    await expect(page.getByText('Connection URL')).toBeVisible();
+    await page.getByLabel('Connection URL').fill('postgresql://test:test@localhost:5432/testdb');
+
+    // 7. Click Next (Step 2 -> 3)
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // 8. Click Next (Step 3 -> 4)
+    await expect(page.getByText('3. Webhooks & Transformers')).toBeVisible();
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // 9. Click Next (Step 4 -> 5)
+    await expect(page.getByText('4. Authentication')).toBeVisible();
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // 10. Review & Finish
+    await expect(page.getByText('Review & Finish')).toBeVisible();
+    await expect(page.getByText('"name": "Test Postgres Wizard"')).toBeVisible();
+
+    // Click Finish
+    await page.getByRole('button', { name: 'Finish & Save to Local Marketplace' }).click();
+
+    // 11. Verify Success Toast
+    await expect(page.getByText('Config Saved')).toBeVisible();
+
+    // 12. Verify in "Local Templates" tab
+    await page.getByRole('tab', { name: 'Local' }).click();
+    await expect(page.getByRole('heading', { name: 'Test Postgres Wizard' })).toBeVisible();
+  });
+});

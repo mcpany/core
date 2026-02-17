@@ -9,6 +9,7 @@ export interface ServiceRegistryItem {
   repo: string; // Used for matching against community URLs
   command: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   configurationSchema: Record<string, any>;
 }
 

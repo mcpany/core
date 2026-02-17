@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useWizard } from '../wizard-context';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -79,6 +79,7 @@ export function StepServiceType() {
                 try {
                     const schema = JSON.parse(template.config.configurationSchema);
                     if (schema.properties) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
                             if (v.default !== undefined) {
                                 initialParams[k] = String(v.default);
@@ -97,6 +98,7 @@ export function StepServiceType() {
                 params: initialParams
             });
             updateConfig({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ...template.config as any,
                 name: config.name || template.name,
             });

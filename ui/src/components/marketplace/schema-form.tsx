@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SchemaFormProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: any;
   value: Record<string, string>;
   onChange: (value: Record<string, string>) => void;
@@ -40,6 +41,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
   try {
       return (
         <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {Object.entries(schema.properties).map(([key, prop]: [string, any]) => {
             const isRequired = schema.required?.includes(key);
             const description = prop.description || "";
