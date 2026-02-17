@@ -27,25 +27,6 @@ const MANUAL_TEMPLATE = {
     params: {}
 };
 
-const TEMPLATES = [
-    MANUAL_TEMPLATE,
-    ...SERVICE_REGISTRY.map(s => ({
-        id: s.id,
-        name: s.name,
-        description: s.description,
-        config: {
-            commandLineService: {
-                command: s.command,
-                env: {}, // Will be filled from params
-                workingDirectory: ''
-            },
-            openapiService: undefined,
-            configurationSchema: JSON.stringify(s.configurationSchema)
-        },
-        params: {} // Will be filled with defaults dynamically
-    }))
-];
-
 /**
  * StepServiceType component.
  * @returns The rendered component.
@@ -54,9 +35,34 @@ export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
 
+    const templates = React.useMemo(() => {
+        try {
+            return [
+                MANUAL_TEMPLATE,
+                ...SERVICE_REGISTRY.map(s => ({
+                    id: s.id,
+                    name: s.name,
+                    description: s.description,
+                    config: {
+                        commandLineService: {
+                            command: s.command,
+                            env: {}, // Will be filled from params
+                            workingDirectory: ''
+                        },
+                        openapiService: undefined,
+                        configurationSchema: JSON.stringify(s.configurationSchema)
+                    },
+                    params: {} // Will be filled with defaults dynamically
+                }))
+            ];
+        } catch (e) {
+            console.error("Failed to load templates from registry", e);
+            return [MANUAL_TEMPLATE];
+        }
+    }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = templates.find(t => t.id === val);
         if (template) {
             let initialParams = { ...template.params };
 
@@ -111,7 +117,7 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        {templates.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -121,10 +127,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>
