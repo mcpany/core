@@ -71,7 +71,7 @@ export function DashboardGrid() {
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const migrateLayout = (parsed: any): WidgetInstance[] => {
+    const migrateLayout = (parsed: unknown): WidgetInstance[] => {
         // Migration Logic
         // Case 1: Legacy format (DashboardWidget[]) where id matches type
         if (Array.isArray(parsed) && parsed.length > 0 && !parsed[0].instanceId) {
@@ -81,7 +81,8 @@ export function DashboardGrid() {
                 type: string; // Actually 'wide'|'half' etc in some cases, but mapped
                 hidden?: boolean;
             }
-            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
+            const legacy = parsed as LegacyWidget[];
+            const migrated: WidgetInstance[] = legacy.map((w: LegacyWidget) => ({
                 instanceId: generateId(),
                 type: w.id, // In legacy, id was effectively the type
                 title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
@@ -101,7 +102,7 @@ export function DashboardGrid() {
             }
         } else if (Array.isArray(parsed)) {
             // Case 2: Already in new format
-            return parsed;
+            return parsed as WidgetInstance[];
         }
         return DEFAULT_LAYOUT;
     }

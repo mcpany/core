@@ -22,18 +22,13 @@ COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
 
 # Copy proto files to local directory to avoid reliance on parent paths
-# Use explicit copy and cleanup pattern matching e2e setup
-RUN mkdir -p proto
-COPY proto/ /tmp/proto_source/
-RUN cp -r /tmp/proto_source/* proto/ && rm -rf /tmp/proto_source
-
-# Symlink node_modules so proto files can find dependencies
-RUN ln -s /app/node_modules ./proto/node_modules
+# Explicitly copy proto directory from context to inside image
+COPY proto/ ./proto/
 
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
 
-# Ensure permissions
+# Ensure permissions (just in case)
 RUN chmod -R 777 proto/
 
 # Next.js collects completely anonymous telemetry data about general usage.
