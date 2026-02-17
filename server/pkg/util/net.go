@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -158,6 +159,11 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
+var (
+	sharedSafeTransport *http.Transport
+	transportOnce       sync.Once
+)
+
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.
@@ -172,25 +178,38 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
-	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
-	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+	transportOnce.Do(func() {
+		// ⚡ BOLT: Shared transport for connection pooling.
+		// Randomized Selection from Top 5 High-Impact Targets
+
+		dialer := NewSafeDialer()
+		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+			dialer.AllowLoopback = true
+			dialer.AllowPrivate = true
+		}
+		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+			dialer.AllowLoopback = true
+		}
+		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+			dialer.AllowPrivate = true
+		}
+		// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+
+		sharedSafeTransport = &http.Transport{
+			DialContext: dialer.DialContext,
+		}
+	})
 
 	return &http.Client{
-		Timeout: 10 * time.Second,
-		Transport: &http.Transport{
-			DialContext: dialer.DialContext,
-		},
+		Timeout:   10 * time.Second,
+		Transport: sharedSafeTransport,
 	}
+}
+
+// ResetSafeHTTPClient resets the internal singleton. Strictly for testing.
+func ResetSafeHTTPClient() {
+	transportOnce = sync.Once{}
+	sharedSafeTransport = nil
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.

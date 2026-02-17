@@ -15,6 +15,9 @@ import (
 )
 
 func TestCheckConnection_Coverage(t *testing.T) {
+	ResetSafeHTTPClient()
+	defer ResetSafeHTTPClient()
+
 	// Allow loopback for this test as we are testing connection checks on local listener
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
@@ -51,6 +54,9 @@ func TestCheckConnection_Coverage(t *testing.T) {
 }
 
 func TestSafeDialer_Coverage(t *testing.T) {
+	ResetSafeHTTPClient()
+	defer ResetSafeHTTPClient()
+
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -65,6 +71,7 @@ func TestSafeDialer_Coverage(t *testing.T) {
 
 	// Allow loopback via env
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	ResetSafeHTTPClient() // Reload config
 	client = NewSafeHTTPClient()
 	resp, err := client.Get(ts.URL)
 	assert.NoError(t, err)
@@ -82,6 +89,9 @@ func TestSafeDialer_Coverage(t *testing.T) {
 }
 
 func TestCheckConnection_NoPort(t *testing.T) {
+	ResetSafeHTTPClient()
+	defer ResetSafeHTTPClient()
+
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// Mocking CheckConnection's behavior for no port is hard because it defaults to 80.
