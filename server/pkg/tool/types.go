@@ -3194,7 +3194,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
-		"Function", // Block Function constructor in JS
+		"Function", // Block Function constructor in JS/TS
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
