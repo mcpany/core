@@ -147,11 +147,11 @@ export function AnalyticsDashboard() {
             if (!Array.isArray(trafficData)) {
                 return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
             }
-            const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+            const totalRequests = trafficData.reduce((acc, cur) => acc + (cur?.requests || cur?.total || 0), 0);
             const avgLatency = trafficData.length
-                ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+                ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur?.latency || 0), 0) / trafficData.length)
                 : 0;
-            const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+            const errorCount = trafficData.reduce((acc, cur) => acc + (cur?.errors || 0), 0);
             const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
             // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
             const durationMinutes = trafficData.length;
