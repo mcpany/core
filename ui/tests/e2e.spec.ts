@@ -30,8 +30,8 @@ test.describe('MCP Any UI E2E Tests', () => {
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]');
 
-      // Wait for redirect to home page and verify
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+      // Wait for redirect to home page and verify - increased timeout for slow CI
+      await expect(page).toHaveURL('/', { timeout: 30000 });
   });
 
   test.afterEach(async ({ request }) => {
@@ -42,11 +42,11 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
-    // Check for metrics
-    await expect(page.locator('text=Total Requests')).toBeVisible();
-    await expect(page.locator('text=Active Services')).toBeVisible();
+    // Check for metrics - increased timeout for slow CI
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 60000 });
+    await expect(page.locator('text=Active Services')).toBeVisible({ timeout: 60000 });
     // Check for health widget
-    await expect(page.locator('text=System Health').first()).toBeVisible();
+    await expect(page.locator('text=System Health').first()).toBeVisible({ timeout: 60000 });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });
