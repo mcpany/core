@@ -37,6 +37,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional description for the service (used in UI templates).
      */
     description?: string;
+    /**
+     * The JSON schema for the service configuration.
+     */
+    configurationSchema?: string;
 }
 
 // Re-export generated types
@@ -1544,7 +1548,7 @@ export const apiClient = {
                 spec_url: config.openapiService.specUrl,
                 spec_content: config.openapiService.specContent
             } : undefined,
-            // Add other fields as needed for the template payload
+            configuration_schema: config.configurationSchema,
         };
 
         const res = await fetchWithAuth('/api/v1/templates', {

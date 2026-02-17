@@ -88,6 +88,15 @@ export function StepServiceType() {
                         });
 
                     await Promise.all(seedPromises);
+
+                    // Also ensure default profile exists to prevent backend warnings/errors
+                    try {
+                        await apiClient.createProfile({ id: 'default', name: 'default', description: 'Default Profile' });
+                        console.log("Seeded default profile.");
+                    } catch (e) {
+                        // Profile likely exists or API not ready, ignore
+                    }
+
                     // Fetch again
                     templates = await apiClient.getServiceTemplates();
                 }
