@@ -3,14 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWizard } from '../wizard-context';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
+const BUILTIN_TEMPLATES = [
     {
         id: 'manual',
         name: 'Manual / Custom',
@@ -24,40 +25,6 @@ const TEMPLATES = [
             openapiService: undefined
         },
         params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
     },
     {
         id: 'openapi',
@@ -84,9 +51,42 @@ export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
 
+    const templates = useMemo(() => {
+        const registryTemplates = SERVICE_REGISTRY.map(s => {
+             // Extract defaults from schema
+             const defaults: Record<string, string> = {};
+             if (s.configurationSchema && s.configurationSchema.properties) {
+                 Object.entries(s.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
+                     if (prop.default !== undefined) {
+                         defaults[key] = String(prop.default);
+                     } else {
+                         defaults[key] = ""; // Initialize with empty string for controlled inputs
+                     }
+                 });
+             }
+
+            return {
+                id: s.id,
+                name: s.name,
+                description: s.description,
+                config: {
+                    commandLineService: {
+                        command: s.command,
+                        env: {}, // Will be populated from params
+                        workingDirectory: ''
+                    },
+                    openapiService: undefined,
+                    configurationSchema: JSON.stringify(s.configurationSchema)
+                },
+                params: defaults
+            };
+        });
+
+        return [...BUILTIN_TEMPLATES, ...registryTemplates];
+    }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = templates.find(t => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
@@ -99,6 +99,7 @@ export function StepServiceType() {
         }
     };
 
+    const selectedTemplate = templates.find(t => t.id === (selectedTemplateId || 'manual'));
 
     return (
         <div className="space-y-6">
@@ -120,7 +121,7 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        {templates.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -130,10 +131,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {selectedTemplate?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {selectedTemplate?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>
