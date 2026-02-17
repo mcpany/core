@@ -2341,16 +2341,25 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				}
 			}
 
-			// 2. Check User Authentication (Basic Auth)
-			if !authenticated {
-				username, _, ok := r.BasicAuth()
-				if ok && a.AuthManager != nil {
-					if user, found := a.AuthManager.GetUser(username); found {
-						if err := auth.ValidateAuthentication(ctx, user.GetAuthentication(), r); err == nil {
-							authenticated = true
-							ctx = auth.ContextWithUser(ctx, username)
-							if len(user.GetRoles()) > 0 {
-								ctx = auth.ContextWithRoles(ctx, user.GetRoles())
+			// 2. Check User Authentication (API Key or Basic Auth)
+			if !authenticated && a.AuthManager != nil {
+				// Try User API Key
+				if ctx2, err := a.AuthManager.CheckAPIKeyWithUsers(ctx, r); err == nil {
+					ctx = ctx2
+					authenticated = true
+				}
+
+				// Try Basic Auth
+				if !authenticated {
+					username, _, ok := r.BasicAuth()
+					if ok {
+						if user, found := a.AuthManager.GetUser(username); found {
+							if err := auth.ValidateAuthentication(ctx, user.GetAuthentication(), r); err == nil {
+								authenticated = true
+								ctx = auth.ContextWithUser(ctx, username)
+								if len(user.GetRoles()) > 0 {
+									ctx = auth.ContextWithRoles(ctx, user.GetRoles())
+								}
 							}
 						}
 					}

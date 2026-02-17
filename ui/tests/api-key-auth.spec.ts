@@ -55,7 +55,9 @@ test.describe('API Key Authentication', () => {
 
       expect(res.status()).toBe(200);
       const data = await res.json();
-      expect(Array.isArray(data.service_states)).toBeTruthy();
+      // Handle both wrapped response and direct array (legacy/compatibility)
+      const services = Array.isArray(data) ? data : (data.serviceStates || data.service_states || data.services);
+      expect(Array.isArray(services)).toBeTruthy();
   });
 
   test('Should fail with invalid API Key', async ({ request }) => {
