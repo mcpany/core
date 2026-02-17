@@ -5,20 +5,59 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * GrpcWebImpl is a helper class for gRPC-Web clients.
+ *
+ * Summary: helper class for gRPC-Web clients.
+ */
 export class GrpcWebImpl {
+    /**
+     * Constructs a new GrpcWebImpl.
+     *
+     * Summary: Initializes the gRPC-Web implementation.
+     *
+     * Parameters:
+     * - _host: string. The host address.
+     * - _options: any. Configuration options.
+     */
     constructor(_host: string, _options: any) {}
 }
 
 /**
  * The RegistrationServiceClientImpl class.
+ *
+ * Summary: Client implementation for the Registration Service.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Constructs a new RegistrationServiceClientImpl.
+     *
+     * Summary: Initializes the client.
+     *
+     * Parameters:
+     * - _rpc: any. The RPC implementation to use.
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * GetService retrieves a service definition.
+     *
+     * Summary: Fetches service details.
+     *
+     * Parameters:
+     * - _request: any. The request object.
+     * - _metadata: any. metadata.
+     *
+     * Returns:
+     * - Promise<any>: The service definition.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
 /**
  * UpstreamServiceConfig type definition.
+ *
+ * Summary: Configuration for an upstream service.
  */
 export interface UpstreamServiceConfig {
     id?: string;
@@ -38,6 +77,8 @@ export interface UpstreamServiceConfig {
 
 /**
  * ToolDefinition type definition.
+ *
+ * Summary: Defines an MCP tool.
  */
 export interface ToolDefinition {
     name: string;
@@ -47,6 +88,8 @@ export interface ToolDefinition {
 
 /**
  * ResourceDefinition type definition.
+ *
+ * Summary: Defines an MCP resource.
  */
 export interface ResourceDefinition {
     uri: string;
@@ -57,6 +100,8 @@ export interface ResourceDefinition {
 
 /**
  * PromptDefinition type definition.
+ *
+ * Summary: Defines an MCP prompt.
  */
 export interface PromptDefinition {
     name: string;
@@ -65,6 +110,8 @@ export interface PromptDefinition {
 
 /**
  * Credential type definition.
+ *
+ * Summary: Defines credentials for authentication.
  */
 export interface Credential {
     id?: string;
@@ -73,6 +120,8 @@ export interface Credential {
 
 /**
  * Authentication type definition.
+ *
+ * Summary: Defines authentication configuration.
  */
 export interface Authentication {
     [key: string]: any;
@@ -80,18 +129,30 @@ export interface Authentication {
 
 /**
  * ListServicesResponse type definition.
+ *
+ * Summary: Response for listing services.
  */
 export type ListServicesResponse = any;
 /**
  * GetServiceResponse type definition.
+ *
+ * Summary: Response for getting a service.
  */
 export type GetServiceResponse = any;
 /**
  * GetServiceStatusResponse type definition.
+ *
+ * Summary: Response for getting service status.
  */
 export type GetServiceStatusResponse = any;
 
 // Mock types for HttpCallDefinition
+
+/**
+ * ParameterType defines the supported data types.
+ *
+ * Summary: Enumerates supported parameter types.
+ */
 export enum ParameterType {
     STRING = 0,
     NUMBER = 1,
@@ -101,6 +162,11 @@ export enum ParameterType {
     OBJECT = 5,
 }
 
+/**
+ * HttpCallDefinition_HttpMethod defines supported HTTP methods.
+ *
+ * Summary: Enumerates standard HTTP methods.
+ */
 export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_UNSPECIFIED = 0,
     HTTP_METHOD_GET = 1,
@@ -110,6 +176,11 @@ export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_PATCH = 5,
 }
 
+/**
+ * OutputTransformer_OutputFormat defines output formats.
+ *
+ * Summary: Enumerates supported output formats.
+ */
 export enum OutputTransformer_OutputFormat {
     JSON = 0,
     XML = 1,
@@ -118,11 +189,21 @@ export enum OutputTransformer_OutputFormat {
     JQ = 4,
 }
 
+/**
+ * InputTransformer defines how to transform input.
+ *
+ * Summary: Configures input transformation.
+ */
 export interface InputTransformer {
     template?: string;
     webhook?: any;
 }
 
+/**
+ * OutputTransformer defines how to transform output.
+ *
+ * Summary: Configures output transformation.
+ */
 export interface OutputTransformer {
     format: OutputTransformer_OutputFormat;
     extractionRules?: { [key: string]: string };
@@ -130,6 +211,11 @@ export interface OutputTransformer {
     jqQuery?: string;
 }
 
+/**
+ * HttpParameterMapping defines parameter mapping.
+ *
+ * Summary: Maps input parameters to HTTP request parameters.
+ */
 export interface HttpParameterMapping {
     schema?: {
         name: string;
@@ -142,6 +228,11 @@ export interface HttpParameterMapping {
     disableEscape?: boolean;
 }
 
+/**
+ * HttpCallDefinition defines an HTTP call.
+ *
+ * Summary: detailed definition of an HTTP API call.
+ */
 export interface HttpCallDefinition {
     id?: string;
     method: HttpCallDefinition_HttpMethod;

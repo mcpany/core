@@ -21,9 +21,13 @@ type ContextOptimizer struct {
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// maxChars is the maxChars.
+// Summary: Initializes a new ContextOptimizer.
 //
-// Returns the result.
+// Parameters:
+//   - maxChars: int. The maximum number of characters allowed in the response.
+//
+// Returns:
+//   - *ContextOptimizer: The initialized optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -40,9 +44,13 @@ var bufferPool = sync.Pool{
 
 // Handler returns the middleware handler.
 //
-// next is the next.
+// Summary: Wraps an HTTP handler to optimize response context size.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)

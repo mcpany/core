@@ -32,6 +32,8 @@ type VectorEntry struct {
 // NewSimpleVectorStore creates a new SimpleVectorStore.
 // It initializes the store with a default configuration.
 //
+// Summary: Creates a new in-memory vector store.
+//
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
 func NewSimpleVectorStore() *SimpleVectorStore {
@@ -44,11 +46,14 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Add adds a new entry to the vector store.
 // It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
 //
+// Summary: Inserts a new semantic cache entry.
+//
 // Parameters:
-//   - key: The key associated with the entry.
-//   - vector: The embedding vector.
-//   - result: The result to cache.
-//   - ttl: The time-to-live for the entry.
+//   - _ : context.Context. The context (unused).
+//   - key: string. The key associated with the entry.
+//   - vector: []float32. The embedding vector.
+//   - result: any. The result to cache.
+//   - ttl: time.Duration. The time-to-live for the entry.
 //
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
@@ -81,9 +86,12 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 // Search searches for the most similar entry in the vector store for the given key and query vector.
 // It returns the result, the similarity score, and a boolean indicating if a match was found.
 //
+// Summary: Finds the nearest neighbor in the vector store.
+//
 // Parameters:
-//   - key: The key to search for.
-//   - query: The query vector.
+//   - _ : context.Context. The context (unused).
+//   - key: string. The key to search for.
+//   - query: []float32. The query vector.
 //
 // Returns:
 //   - any: The cached result if found.
@@ -126,8 +134,11 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 
 // Prune removes expired entries from the vector store for the given key.
 //
+// Summary: Deletes expired entries from the cache.
+//
 // Parameters:
-//   - key: The key to prune entries for.
+//   - _ : context.Context. The context (unused).
+//   - key: string. The key to prune entries for.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
