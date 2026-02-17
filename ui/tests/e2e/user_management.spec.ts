@@ -57,7 +57,12 @@ test.describe('User Management', () => {
         await expect(page.locator('text=Warning: This key will only be shown once')).toBeVisible();
 
         // Save
+        // Wait for the request to complete to ensure the backend processed it
+        const saveResponsePromise = page.waitForResponse(response =>
+            response.url().includes('/api/v1/users') && (response.status() === 200 || response.status() === 201)
+        );
         await page.click('button:has-text("Save Changes")');
+        await saveResponsePromise;
 
         // Verify Sheet closed
         await expect(page.locator('div[role="dialog"]')).toBeHidden();

@@ -58,6 +58,8 @@ test.describe('System Status Banner', () => {
     });
 
     await page.goto('/');
+    // Ensure the health check mock is hit
+    await page.waitForResponse('**/doctor');
     await expect(page.getByText('Configuration Error')).toBeVisible();
     await expect(page.getByText('Invalid YAML syntax in config.yaml')).toBeVisible();
   });
@@ -81,6 +83,8 @@ test.describe('System Status Banner', () => {
     });
 
     await page.goto('/');
+    // Ensure the health check mock is hit
+    await page.waitForResponse('**/doctor');
     await expect(page.getByText('Configuration Error')).toBeVisible();
     await expect(page.getByText('Invalid YAML syntax')).toBeVisible();
     await expect(page.getByText('Configuration Diff:')).toBeVisible();
