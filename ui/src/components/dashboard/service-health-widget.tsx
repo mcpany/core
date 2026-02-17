@@ -192,7 +192,7 @@ export function ServiceHealthWidget() {
     return (
         <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
              <CardHeader>
-                <CardTitle>System Health</CardTitle>
+                <CardTitle>Service Health</CardTitle>
              </CardHeader>
              <CardContent>
                  <div className="flex items-center justify-center h-48">
@@ -207,7 +207,7 @@ export function ServiceHealthWidget() {
       return (
           <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
              <CardHeader>
-                <CardTitle>System Health</CardTitle>
+                <CardTitle>Service Health</CardTitle>
                  <CardDescription>
                   No services connected.
                 </CardDescription>
@@ -226,7 +226,7 @@ export function ServiceHealthWidget() {
       <CardHeader>
         <div className="flex items-center justify-between">
             <div>
-                <CardTitle>System Health</CardTitle>
+                <CardTitle>Service Health</CardTitle>
                 <CardDescription>
                 Live health checks for {sortedServices.length} connected services.
                 </CardDescription>

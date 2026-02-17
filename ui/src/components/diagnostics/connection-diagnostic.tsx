@@ -166,11 +166,11 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             const msg = error instanceof Error ? error.message : "Unknown error";
             addLog("browser_connectivity", `Failed to connect from browser: ${msg}`);
 
-            // Localhost Warning Heuristic
-            if (httpUrl.includes("localhost") || httpUrl.includes("127.0.0.1") || httpUrl.includes("0.0.0.0")) {
-                addLog("browser_connectivity", "⚠️ WARNING: You are using 'localhost' or loopback address.");
-                addLog("browser_connectivity", "If MCP Any is running in Docker, it cannot access 'localhost' of your host machine directly.");
-                addLog("browser_connectivity", "Try using 'host.docker.internal' or your LAN IP address.");
+            // Run analysis with URL for smart heuristics
+            const diagnosis = analyzeConnectionError(msg, httpUrl);
+            if (diagnosis.category === 'configuration' && diagnosis.title.includes("Localhost")) {
+                addLog("browser_connectivity", `⚠️ WARNING: ${diagnosis.description}`);
+                addLog("browser_connectivity", diagnosis.suggestion);
             }
 
             addLog("browser_connectivity", "Possible causes: Server down, blocked by firewall, invalid SSL cert, Mixed Content blocking, or CSP (Content Security Policy) restrictions.");
@@ -211,7 +211,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                  // Unhealthy or Degraded
                  addLog("backend_health", `Error: ${serviceStatus.message || "Unknown error"}`);
 
-                 const diagnosis = analyzeConnectionError(serviceStatus.message || "");
+                 const diagnosis = analyzeConnectionError(serviceStatus.message || "", url);
                  if (diagnosis.category !== 'unknown') {
                      addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
                      addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);

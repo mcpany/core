@@ -4,7 +4,7 @@ MCP Any now includes a visual timeline of service health directly in the dashboa
 
 ## Overview
 
-The System Health widget has been enhanced to show a historical timeline of each service's status.
+The **Service Health** widget has been enhanced to show a historical timeline of each service's status.
 
 ![Server Health History](../screenshots/dashboard_overview.png)
 
@@ -21,7 +21,7 @@ The System Health widget has been enhanced to show a historical timeline of each
 
 ## Usage
 
-Navigate to the **Dashboard** to view the System Health widget. The history is automatically collected and displayed.
+Navigate to the **Dashboard** to view the **Service Health** widget. The history is automatically collected and displayed.
 
 ## Roadmap & Limitations
 

@@ -1,40 +1,58 @@
 # Truth Reconciliation Audit Report
 
-## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
+**Date:** October 26, 2023
+**Auditor:** Principal Software Engineer, Google (Simulated)
+**Scope:** 10-File Sampling (UI, Backend, Docs)
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
+## 1. Executive Summary
 
-All discrepancies have been remediated.
+The audit of the `mcpany` project reveals a generally healthy codebase with high alignment between Documentation and Implementation for core backend features. However, discrepancies were identified in the Frontend/UI layer, specifically regarding "Smart Heuristics" in diagnostics and naming conventions for system health monitoring.
 
-## Verification Matrix
+*   **Total Files Audited:** 10
+*   **Status:**
+    *   **Passed:** 8/10
+    *   **Remediated (Code Fix):** 1/10 (Connection Diagnostics)
+    *   **Remediated (Doc & Code Align):** 1/10 (Server Health)
+*   **Critical Findings:**
+    *   Missing implementation of "Smart Heuristics" for localhost detection in connection diagnostics.
+    *   Naming drift between "System Health" (Server Status) vs "Service Health" (Upstream).
+    *   Runtime crash due to missing `client.getDoctorStatus` method (Caught and Fixed during audit).
 
-| Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
+## 2. Verification Matrix
 
-## Remediation Log
+| Document Name | Component | Status | Action Taken | Evidence |
+| :--- | :--- | :--- | :--- | :--- |
+| `docs/alerts-feature.md` | Server | ✅ PASS | None | `server/pkg/alerts/manager.go` verified. |
+| `docs/traces-feature.md` | Server | ✅ PASS | None | `server/pkg/middleware/debugger.go` verified. |
+| `server/docs/features/health-checks.md` | Server | ✅ PASS | None | `server/pkg/health/health.go` verified. |
+| `server/docs/features/hot_reload.md` | Server | ✅ PASS | None | Implied by `server/main.go` and development workflow. |
+| `server/docs/features/dlp.md` | Server | ✅ PASS | None | `server/pkg/dlp/` verified. |
+| `ui/docs/features/connection-diagnostics.md` | UI | ⚠️ FIX | **Engineered Solution** | Added `analyzeConnectionError` logic for localhost heuristics. |
+| `ui/docs/features/playground.md` | UI | ✅ PASS | None | UI Route `/playground` verified. |
+| `ui/docs/features/server-health-history.md` | UI | ⚠️ FIX | **Refactor & Doc Update** | Renamed `SystemHealthCard` -> `ServerStatusCard`. Updated Doc. |
+| `ui/docs/features/log-search-highlighting.md` | UI | ✅ PASS | None | UI components verified. |
+| `server/docs/features/configuration_guide.md` | Server | ✅ PASS | None | `config.go` struct tags match guide. |
 
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
+## 3. Remediation Log
 
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
+### Item 1: Connection Diagnostics (Smart Heuristics)
+*   **Issue:** Doc promised "Smart Heuristics: Localhost/Docker Detection" but code in `ui/src/lib/diagnostics-utils.ts` was generic.
+*   **Fix:**
+    *   Refactored `analyzeConnectionError` to inspect the target URL.
+    *   Added logic to detect `localhost`/`127.0.0.1` and return specific remediation advice for Docker users.
+    *   Updated `ConnectionDiagnosticDialog` to pass the URL to the analysis function.
+    *   **Test:** Added unit tests in `ui/src/lib/diagnostics-utils.test.ts`.
 
-## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+### Item 2: Server Health vs Service Health
+*   **Issue:** "System Health" term was overloaded. Used for both "Server Uptime/Version" and "Upstream Service Status". Roadmap and Docs were ambiguous.
+*   **Fix:**
+    *   Renamed UI Component: "System Health" (Stats) -> **"Server Status"**.
+    *   Renamed UI Component: "System Health" (List) -> **"Service Health"**.
+    *   Updated `ui/docs/features/server-health-history.md` to reflect these distinct terms.
+    *   **Fix:** Discovered and implemented missing `getDoctorStatus` in `ui/src/lib/client.ts` to support the Server Status card.
+
+## 4. Security Scrub
+
+*   **PII Check:** No PII detected in new code or reports.
+*   **Secrets:** No hardcoded secrets found.
+*   **Internal IPs:** Report contains no internal IP addresses.

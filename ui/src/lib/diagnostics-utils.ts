@@ -15,10 +15,26 @@ export interface DiagnosticResult {
  * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
  *
  * @param error - The raw error string received from the backend or network.
+ * @param url - Optional. The URL being accessed, used for heuristics like localhost detection.
  * @returns A structured DiagnosticResult containing the category, severity, and suggested remediation.
  */
-export function analyzeConnectionError(error: string): DiagnosticResult {
+export function analyzeConnectionError(error: string, url?: string): DiagnosticResult {
   const err = error.toLowerCase();
+
+  // Smart Heuristic: Localhost/Docker Detection
+  // If the user is trying to access localhost from within Docker (implied by connection error), warn them.
+  if (url && (url.includes("localhost") || url.includes("127.0.0.1") || url.includes("0.0.0.0"))) {
+    // Trigger on common connection failures
+    if (err.includes("connection refused") || err.includes("fetch failed") || (err.includes("dial tcp") && !err.includes("lookup")) || err.includes("network error")) {
+      return {
+        category: "configuration",
+        title: "Localhost Connection Issue",
+        description: "You are trying to connect to 'localhost' or loopback address.",
+        suggestion: "If MCP Any is running in Docker, it cannot access 'localhost' of your host machine directly.\nTry replacing 'localhost' with 'host.docker.internal' or your LAN IP address.",
+        severity: "critical",
+      };
+    }
+  }
 
   // Network: DNS / Host not found (Check this before generic "dial tcp")
   if (err.includes("no such host") || err.includes("name resolution failed")) {

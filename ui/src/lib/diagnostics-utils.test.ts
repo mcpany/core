@@ -12,6 +12,15 @@ describe('analyzeConnectionError', () => {
     expect(result.category).toBe('network');
   });
 
+  it('identifies localhost connection issue with context', () => {
+    const error = 'fetch failed: connection refused';
+    const url = 'http://localhost:3000/api';
+    const result = analyzeConnectionError(error, url);
+    expect(result.title).toBe('Localhost Connection Issue');
+    expect(result.category).toBe('configuration');
+    expect(result.suggestion).toContain('host.docker.internal');
+  });
+
   it('identifies DNS errors', () => {
     const result = analyzeConnectionError('dial tcp: lookup non-existent-host: no such host');
     expect(result.title).toBe('Host Not Found');
