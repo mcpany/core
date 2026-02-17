@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -158,6 +159,11 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
+var (
+	sharedTransport     *http.Transport
+	sharedTransportOnce sync.Once
+)
+
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.
@@ -172,24 +178,30 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
-	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
-	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+	// ⚡ BOLT: Shared transport for connection pooling.
+	// Randomized Selection from Top 5 High-Impact Targets
+	sharedTransportOnce.Do(func() {
+		dialer := NewSafeDialer()
+		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+			dialer.AllowLoopback = true
+			dialer.AllowPrivate = true
+		}
+		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+			dialer.AllowLoopback = true
+		}
+		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+			dialer.AllowPrivate = true
+		}
+		// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+
+		sharedTransport = &http.Transport{
+			DialContext: dialer.DialContext,
+		}
+	})
 
 	return &http.Client{
-		Timeout: 10 * time.Second,
-		Transport: &http.Transport{
-			DialContext: dialer.DialContext,
-		},
+		Timeout:   10 * time.Second,
+		Transport: sharedTransport,
 	}
 }
 

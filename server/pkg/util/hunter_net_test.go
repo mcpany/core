@@ -51,6 +51,11 @@ func TestCheckConnection_Coverage(t *testing.T) {
 }
 
 func TestSafeDialer_Coverage(t *testing.T) {
+	ResetSafeHTTPClientForTest()
+	t.Cleanup(func() {
+		ResetSafeHTTPClientForTest()
+	})
+
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -64,11 +69,14 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "loopback")
 
 	// Allow loopback via env
+	ResetSafeHTTPClientForTest()
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	client = NewSafeHTTPClient()
 	resp, err := client.Get(ts.URL)
 	assert.NoError(t, err)
-	resp.Body.Close()
+	if resp != nil {
+		resp.Body.Close()
+	}
 
 	// Direct SafeDialContext usage
 	// Should fail for loopback if default
