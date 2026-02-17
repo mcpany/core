@@ -224,6 +224,8 @@ type Manager struct {
 	allowedServicesCache map[string]map[string]bool
 }
 
+var toolExecutionTimeout = 60 * time.Second
+
 // NewManager creates and initializes a new Tool Manager.
 //
 // Parameters:
@@ -952,7 +954,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 				}, nil
 			case <-ctx.Done():
 				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-			case <-time.After(60 * time.Second): // Safety timeout
+			case <-time.After(toolExecutionTimeout): // Safety timeout
 				return nil, fmt.Errorf(
 					"timed out waiting for tool execution result for tool %s",
 					req.Params.Name,
