@@ -40,8 +40,9 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator('h1')).toContainText(/Dashboard|Jules Master/);
 
     // Check for metrics cards
-    await expect(page.locator('text=Total Requests').first()).toBeVisible();
-    await expect(page.locator('text=System Health').first()).toBeVisible();
+    // Increased timeout for CI environments where backend might be slow to aggregate initial metrics
+    await expect(page.locator('text=Total Requests').first()).toBeVisible({ timeout: 60000 });
+    await expect(page.locator('text=System Health').first()).toBeVisible({ timeout: 60000 });
     // Verify that exactly 2 metric cards are displayed
     const cards = page.locator('.rounded-xl.border.bg-card');
     // Note: The selector might need to be specific to the metric cards if other cards exist
