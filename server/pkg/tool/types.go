@@ -3846,6 +3846,30 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
+	// Sentinel Security Update: Block git SCP-like SSH injection
+	if filepath.Base(commandName) == "git" {
+		// Check for SCP-style URL with option injection in hostname
+		// Pattern: [user@]host:path where host starts with -
+		// If no user, it starts with -, which is caught by argument injection check.
+		// So we only need to check for user@-host...
+		if strings.Contains(val, "@-") {
+			// We need to be careful not to block valid emails or other things if this validation was generic.
+			// But for git, an argument containing @- is suspicious if it looks like an SCP URL.
+			// SCP URL must contain :
+			if strings.Contains(val, ":") {
+				// Check order: @ comes before :
+				atIdx := strings.Index(val, "@")
+				colonIdx := strings.Index(val, ":")
+				if atIdx < colonIdx {
+					// Check if character after @ is -
+					if val[atIdx+1] == '-' {
+						return fmt.Errorf("git scp-style injection detected: hostname starts with '-'")
+					}
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
