@@ -24,7 +24,13 @@ interface SchemaFormProps {
  * @returns The rendered component.
  */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
-  if (!schema || !schema.properties) return null;
+  if (!schema || !schema.properties) {
+      return (
+          <div className="p-4 border border-destructive/50 rounded bg-destructive/10 text-destructive text-sm">
+              Invalid or missing configuration schema.
+          </div>
+      );
+  }
 
   const handleChange = (key: string, val: string) => {
     onChange({ ...value, [key]: val });
@@ -50,6 +56,8 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
             inputType = "password";
         }
 
+        const currentValue = value[key] !== undefined ? value[key] : "";
+
         return (
           <div key={key} className="grid gap-2">
             <Label htmlFor={key} className="flex items-center gap-1">
@@ -60,7 +68,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                <div className="flex items-center space-x-2">
                 <Checkbox
                     id={key}
-                    checked={value[key] === "true"}
+                    checked={currentValue === "true"}
                     onCheckedChange={(c) => handleChange(key, String(c))}
                 />
                 <label
@@ -71,7 +79,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                 </label>
                </div>
             ) : prop.enum ? (
-                <Select value={value[key]} onValueChange={(v) => handleChange(key, v)}>
+                <Select value={currentValue} onValueChange={(v) => handleChange(key, v)}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select..." />
                     </SelectTrigger>
@@ -84,7 +92,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
             ) : (
                 <Input
                     id={key}
-                    value={value[key] || ""}
+                    value={currentValue}
                     onChange={(e) => handleChange(key, e.target.value)}
                     placeholder={prop.default || `Enter ${title}`}
                     type={inputType}
