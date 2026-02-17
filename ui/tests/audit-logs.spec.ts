@@ -17,7 +17,17 @@ test.describe('Feature Screenshot', () => {
     // Use test-results directory which is writable in CI
     const auditDir = path.join(process.cwd(), 'test-results/artifacts/audit/ui', date);
 
-    test.beforeAll(async () => {
+    test.beforeAll(async ({ request }) => {
+        // Seed database
+        try {
+            const res = await request.post('/api/v1/debug/reset');
+            if (!res.ok()) {
+                console.warn('Failed to seed database:', await res.text());
+            }
+        } catch (e) {
+            console.warn('Failed to connect to backend for seeding:', e);
+        }
+
         try {
             if (!fs.existsSync(auditDir)) {
                 fs.mkdirSync(auditDir, { recursive: true });

@@ -120,6 +120,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 
 	// Credentials
+	mux.HandleFunc("/middleware", a.handleMiddleware(store))
+	mux.HandleFunc("/debug/reset", a.handleDebugReset(store))
+
 	mux.HandleFunc("/credentials", a.listCredentialsHandler)
 	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
 		// Manual dispatch for detail vs specific

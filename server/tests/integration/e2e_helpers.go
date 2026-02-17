@@ -1112,14 +1112,30 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	dbPath := dbFile.Name()
 	_ = dbFile.Close()
 
+	// Create default test config with /tmp allowed
+	configFile, err := os.CreateTemp(t.TempDir(), "mcpany-test-config-*.yaml")
+	require.NoError(t, err)
+	_, err = configFile.WriteString("global_settings:\n  allowed_file_paths:\n    - /tmp\n")
+	require.NoError(t, err)
+	configPath := configFile.Name()
+	_ = configFile.Close()
+
 	args := []string{
 		"run",
 		"--mcp-listen-address", jsonrpcPortArg,
 		"--grpc-port", grpcRegPortArg,
 		"--db-path", dbPath,
+		"--config-path", configPath,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
+	env := []string{
+		"MCPANY_LOG_LEVEL=debug",
+		"NATS_URL=" + natsURL,
+		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
+		"MCPANY_ENABLE_FILE_CONFIG=true",
+		"MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true",
+		"MCPANY__GLOBAL_SETTINGS__ALLOWED_FILE_PATHS=/tmp",
+	}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
