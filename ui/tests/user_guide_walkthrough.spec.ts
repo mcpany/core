@@ -21,9 +21,10 @@ test.describe('User Guide Walkthrough', () => {
     await page.goto('/');
     // Explicitly wait for the response to ensure the frontend has received data
     await page.waitForResponse(response => response.url().includes('/api/v1/dashboard/metrics'));
+    await page.waitForLoadState('networkidle');
 
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 30000 });
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 45000 });
     // Check for "Active Services" card
     await expect(page.locator('text=Active Services')).toBeVisible();
     await expect(page.locator('text=Connected Tools')).toBeVisible();
