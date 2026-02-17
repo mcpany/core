@@ -147,7 +147,7 @@ test.describe('User Guide Walkthrough', () => {
             service: {
                 name: 'mock-service',
                 id: 'mock-service-id',
-                http_service: { address: 'http://localhost:8080' },
+                http_service: { address: 'http://example.com' },
                 disable: false,
                 version: '1.0.0'
             }

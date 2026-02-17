@@ -183,6 +183,7 @@ nodes:
 		fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
 		fmt.Sprintf("BACKEND_URL=http://127.0.0.1:%d", hostPort),
 		"SKIP_WEBSERVER=true",
+		"TEST_ENV=k8s",
 	)
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr

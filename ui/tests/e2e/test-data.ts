@@ -10,11 +10,19 @@ const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
 // In Docker CI environment (docker-compose), we use the service name.
-// In K8s or local, we default to localhost (or handle differently if needed).
-// The echo server runs on port 5678.
-const IS_DOCKER = process.env.TEST_ENV === 'docker';
-const ECHO_SERVER_HOST = IS_DOCKER ? 'ui-http-echo-server' : 'localhost';
-const ECHO_SERVER_URL = `http://${ECHO_SERVER_HOST}:5678`;
+// In K8s, we use example.com to avoid localhost connection loops.
+// In local, we default to localhost.
+const TEST_ENV = process.env.TEST_ENV;
+const IS_DOCKER = TEST_ENV === 'docker';
+const IS_K8S = TEST_ENV === 'k8s';
+
+let echoServerUrl = 'http://localhost:5678';
+if (IS_DOCKER) {
+    echoServerUrl = 'http://ui-http-echo-server:5678';
+} else if (IS_K8S) {
+    echoServerUrl = 'http://example.com';
+}
+const ECHO_SERVER_URL = echoServerUrl;
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
