@@ -37,6 +37,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional description for the service (used in UI templates).
      */
     description?: string;
+    /**
+     * JSON Schema string defining the configuration parameters.
+     */
+    configurationSchema?: string;
 }
 
 // Re-export generated types
