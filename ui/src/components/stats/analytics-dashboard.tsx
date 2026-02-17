@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     Area,
     AreaChart,
@@ -140,15 +140,26 @@ export function AnalyticsDashboard() {
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
-    const avgLatency = trafficData.length
-        ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
-        : 0;
-    const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
-    const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
-    // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
-    const durationMinutes = trafficData.length;
-    const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
+    // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
+        const totalReq = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+        const avgLat = trafficData.length
+            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+            : 0;
+        const errCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const errRate = totalReq ? ((errCount / totalReq) * 100).toFixed(2) : "0.00";
+        // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
+        const durMinutes = trafficData.length;
+        const rps = (durMinutes && totalReq) ? (totalReq / (durMinutes * 60)).toFixed(2) : "0.00";
+
+        return {
+            totalRequests: totalReq,
+            avgLatency: avgLat,
+            errorRate: errRate,
+            avgRps: rps
+        };
+    }, [trafficData]);
 
     const handleToggleTool = async (name: string, disable: boolean) => {
         try {
