@@ -8,10 +8,12 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Card component.
+ * A container component that groups related content and actions.
+ * Provides a consistent card style with borders, background, and shadow.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered card component.
  */
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -29,10 +31,11 @@ const Card = React.forwardRef<
 Card.displayName = "Card"
 
 /**
- * CardHeader component.
+ * Header section of the card, usually containing the title and description.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered card header.
  */
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -47,10 +50,11 @@ const CardHeader = React.forwardRef<
 CardHeader.displayName = "CardHeader"
 
 /**
- * CardTitle component.
+ * The primary title of the card.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered card title.
  */
 const CardTitle = React.forwardRef<
   HTMLDivElement,
@@ -68,10 +72,11 @@ const CardTitle = React.forwardRef<
 CardTitle.displayName = "CardTitle"
 
 /**
- * CardDescription component.
+ * A brief description or subtitle for the card.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered card description.
  */
 const CardDescription = React.forwardRef<
   HTMLDivElement,
@@ -86,10 +91,11 @@ const CardDescription = React.forwardRef<
 CardDescription.displayName = "CardDescription"
 
 /**
- * CardContent component.
+ * The main content area of the card.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered card content.
  */
 const CardContent = React.forwardRef<
   HTMLDivElement,
@@ -100,10 +106,11 @@ const CardContent = React.forwardRef<
 CardContent.displayName = "CardContent"
 
 /**
- * CardFooter component.
+ * The footer area of the card, often used for actions.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered card footer.
  */
 const CardFooter = React.forwardRef<
   HTMLDivElement,

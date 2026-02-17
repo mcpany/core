@@ -6,10 +6,11 @@
 import { cn } from "@/lib/utils"
 
 /**
- * Skeleton component.
+ * Used to show a placeholder while content is loading.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered skeleton component.
  */
 function Skeleton({
   className,

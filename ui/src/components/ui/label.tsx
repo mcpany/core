@@ -16,10 +16,11 @@ const labelVariants = cva(
 )
 
 /**
- * Label component.
+ * Renders an accessible label associated with controls.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered label component.
  */
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,

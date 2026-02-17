@@ -12,72 +12,61 @@ import { Check, ChevronRight, Circle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * ContextMenu component.
+ * Displays a menu located at the pointer, triggered by a right-click or a long-press.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered context menu root.
  */
 const ContextMenu = ContextMenuPrimitive.Root
 
 /**
- * ContextMenuTrigger component.
+ * The trigger area that opens the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered trigger.
  */
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger
 
 /**
- * ContextMenuGroup component.
+ * Groups multiple items in the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered group.
  */
 const ContextMenuGroup = ContextMenuPrimitive.Group
 
 /**
- * ContextMenuPortal component.
+ * Portals the context menu content into the body.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered portal.
  */
 const ContextMenuPortal = ContextMenuPrimitive.Portal
 
 /**
- * ContextMenuSub component.
+ * A submenu within the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered submenu.
  */
 const ContextMenuSub = ContextMenuPrimitive.Sub
 
 /**
- * ContextMenuRadioGroup component.
+ * A group of radio items in the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @returns The rendered radio group.
  */
 const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup
 
 /**
- * ContextMenuSubTrigger component.
+ * The trigger that opens a submenu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.inset - Whether to add indentation for the icon space.
+ * @param props.children - The content of the trigger.
+ * @returns The rendered submenu trigger.
  */
 const ContextMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubTrigger>,
@@ -101,10 +90,11 @@ const ContextMenuSubTrigger = React.forwardRef<
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName
 
 /**
- * ContextMenuSubContent component.
+ * The content of a submenu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered submenu content.
  */
 const ContextMenuSubContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubContent>,
@@ -122,10 +112,11 @@ const ContextMenuSubContent = React.forwardRef<
 ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName
 
 /**
- * ContextMenuContent component.
+ * The main content area of the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered context menu content.
  */
 const ContextMenuContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Content>,
@@ -145,11 +136,12 @@ const ContextMenuContent = React.forwardRef<
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
 
 /**
- * ContextMenuItem component.
+ * An individual item in the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.inset - Whether to add indentation.
+ * @returns The rendered menu item.
  */
 const ContextMenuItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Item>,
@@ -170,12 +162,13 @@ const ContextMenuItem = React.forwardRef<
 ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName
 
 /**
- * ContextMenuCheckboxItem component.
+ * A checkbox item in the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @param props.checked - The checked property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the item.
+ * @param props.checked - The checked state.
+ * @returns The rendered checkbox item.
  */
 const ContextMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem>,
@@ -202,11 +195,12 @@ ContextMenuCheckboxItem.displayName =
   ContextMenuPrimitive.CheckboxItem.displayName
 
 /**
- * ContextMenuRadioItem component.
+ * A radio item in the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the item.
+ * @returns The rendered radio item.
  */
 const ContextMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.RadioItem>,
@@ -231,11 +225,12 @@ const ContextMenuRadioItem = React.forwardRef<
 ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName
 
 /**
- * ContextMenuLabel component.
+ * A label for a group of items in the context menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.inset - Whether to add indentation.
+ * @returns The rendered label.
  */
 const ContextMenuLabel = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Label>,
@@ -256,10 +251,11 @@ const ContextMenuLabel = React.forwardRef<
 ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName
 
 /**
- * ContextMenuSeparator component.
+ * A visual separator between context menu items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered separator.
  */
 const ContextMenuSeparator = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Separator>,
@@ -274,10 +270,11 @@ const ContextMenuSeparator = React.forwardRef<
 ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName
 
 /**
- * ContextMenuShortcut component.
+ * Displays a keyboard shortcut for a context menu item.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered shortcut component.
  */
 const ContextMenuShortcut = ({
   className,

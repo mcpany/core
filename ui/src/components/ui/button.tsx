@@ -9,6 +9,10 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Configuration object for button styling variants using `class-variance-authority`.
+ * Defines the base styles and available variants (default, destructive, outline, etc.) and sizes.
+ */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
@@ -39,7 +43,8 @@ const buttonVariants = cva(
 )
 
 /**
- * ButtonProps type definition.
+ * Props for the Button component.
+ * Extends standard HTML button attributes and adds variant/size props from `buttonVariants`.
  */
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -48,24 +53,20 @@ export interface ButtonProps
 }
 
 /**
- * Button component.
+ * Displays a button or a component that looks like a button.
+ *
+ * Supports multiple variants (default, destructive, outline, secondary, ghost, link)
+ * and sizes (default, sm, lg, icon). Can act as a slot for a child element using `asChild`.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.variant - The visual variant of the button.
+ * @param props.size - The size of the button.
+ * @param props.asChild - If true, renders as the child component instead of a button element.
+ * @returns The rendered button component.
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-/**
- * Comp component.
- * @param props - The component props.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
- */
     const Comp = asChild ? Slot : "button"
     return (
       <Comp

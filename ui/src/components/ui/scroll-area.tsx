@@ -11,11 +11,12 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 import { cn } from "@/lib/utils"
 
 /**
- * ScrollArea component.
+ * A component that adds custom cross-browser styled scrollbars to a content area.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content to be scrolled.
+ * @returns The rendered scroll area.
  */
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
@@ -36,11 +37,12 @@ const ScrollArea = React.forwardRef<
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
 
 /**
- * ScrollBar component.
+ * The scrollbar component for the ScrollArea.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.orientation - The orientation property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.orientation - The orientation of the scrollbar (vertical or horizontal).
+ * @returns The rendered scrollbar.
  */
 const ScrollBar = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,

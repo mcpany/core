@@ -13,42 +13,43 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Sheet component.
+ * Extends the Dialog component to display content that complements the main screen content.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered sheet root.
  */
 const Sheet = SheetPrimitive.Root
 
 /**
- * SheetTrigger component.
+ * The button that opens the sheet.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered trigger.
  */
 const SheetTrigger = SheetPrimitive.Trigger
 
 /**
- * SheetClose component.
+ * The button that closes the sheet.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered close button.
  */
 const SheetClose = SheetPrimitive.Close
 
 /**
- * SheetPortal component.
+ * Portals the sheet content into the body.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered portal.
  */
 const SheetPortal = SheetPrimitive.Portal
 
 /**
- * SheetOverlay component.
+ * An overlay that covers the screen when the sheet is open.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered overlay.
  */
 const SheetOverlay = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
@@ -89,12 +90,13 @@ interface SheetContentProps
     VariantProps<typeof sheetVariants> {}
 
 /**
- * SheetContent component.
+ * The content area of the sheet.
+ *
  * @param props - The component props.
- * @param props.side - The unique identifier for se.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.side - The side of the screen where the sheet appears (top, bottom, left, right).
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the sheet.
+ * @returns The rendered content.
  */
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
@@ -118,10 +120,11 @@ const SheetContent = React.forwardRef<
 SheetContent.displayName = SheetPrimitive.Content.displayName
 
 /**
- * SheetHeader component.
+ * The header section of the sheet.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered header.
  */
 const SheetHeader = ({
   className,
@@ -138,10 +141,11 @@ const SheetHeader = ({
 SheetHeader.displayName = "SheetHeader"
 
 /**
- * SheetFooter component.
+ * The footer section of the sheet.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered footer.
  */
 const SheetFooter = ({
   className,
@@ -158,10 +162,11 @@ const SheetFooter = ({
 SheetFooter.displayName = "SheetFooter"
 
 /**
- * SheetTitle component.
+ * The title of the sheet.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered title.
  */
 const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
@@ -176,10 +181,11 @@ const SheetTitle = React.forwardRef<
 SheetTitle.displayName = SheetPrimitive.Title.displayName
 
 /**
- * SheetDescription component.
+ * The description of the sheet.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered description.
  */
 const SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,

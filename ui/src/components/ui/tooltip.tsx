@@ -11,38 +11,36 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 import { cn } from "@/lib/utils"
 
 /**
- * TooltipProvider component.
+ * Wraps the application to provide tooltip functionality.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @returns The rendered tooltip provider.
  */
 const TooltipProvider = TooltipPrimitive.Provider
 
 /**
- * Tooltip component.
+ * A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @returns The rendered tooltip root.
  */
 const Tooltip = TooltipPrimitive.Root
 
 /**
- * TooltipTrigger component.
+ * The element that triggers the tooltip.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @returns The rendered tooltip trigger.
  */
 const TooltipTrigger = TooltipPrimitive.Trigger
 
 /**
- * TooltipContent component.
+ * The content to display within the tooltip.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.sideOffset - The offset from the trigger.
+ * @returns The rendered tooltip content.
  */
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,

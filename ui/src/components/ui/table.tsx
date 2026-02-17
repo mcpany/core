@@ -8,10 +8,11 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Table component.
+ * A responsive table component.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table.
  */
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -28,10 +29,11 @@ const Table = React.forwardRef<
 Table.displayName = "Table"
 
 /**
- * TableHeader component.
+ * The header section of the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table header.
  */
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
@@ -42,10 +44,11 @@ const TableHeader = React.forwardRef<
 TableHeader.displayName = "TableHeader"
 
 /**
- * TableBody component.
+ * The body section of the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table body.
  */
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
@@ -60,10 +63,11 @@ const TableBody = React.forwardRef<
 TableBody.displayName = "TableBody"
 
 /**
- * TableFooter component.
+ * The footer section of the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table footer.
  */
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
@@ -81,10 +85,11 @@ const TableFooter = React.forwardRef<
 TableFooter.displayName = "TableFooter"
 
 /**
- * TableRow component.
+ * A row in the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table row.
  */
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
@@ -102,10 +107,11 @@ const TableRow = React.forwardRef<
 TableRow.displayName = "TableRow"
 
 /**
- * TableHead component.
+ * A header cell in the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table head cell.
  */
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
@@ -123,10 +129,11 @@ const TableHead = React.forwardRef<
 TableHead.displayName = "TableHead"
 
 /**
- * TableCell component.
+ * A data cell in the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table cell.
  */
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
@@ -141,10 +148,11 @@ const TableCell = React.forwardRef<
 TableCell.displayName = "TableCell"
 
 /**
- * TableCaption component.
+ * A caption for the table.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered table caption.
  */
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,

@@ -25,11 +25,12 @@ const alertVariants = cva(
 )
 
 /**
- * Alert component.
+ * Displays a callout for user attention.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.variant - The visual variant of the alert (default, destructive).
+ * @returns The rendered alert component.
  */
 const Alert = React.forwardRef<
   HTMLDivElement,
@@ -45,10 +46,11 @@ const Alert = React.forwardRef<
 Alert.displayName = "Alert"
 
 /**
- * AlertTitle component.
+ * The title of the alert.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered alert title.
  */
 const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
@@ -63,10 +65,11 @@ const AlertTitle = React.forwardRef<
 AlertTitle.displayName = "AlertTitle"
 
 /**
- * AlertDescription component.
+ * The description content of the alert.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered alert description.
  */
 const AlertDescription = React.forwardRef<
   HTMLParagraphElement,

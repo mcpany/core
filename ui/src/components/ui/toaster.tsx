@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/toast"
 
 /**
- * Toaster component.
- * @returns The rendered component.
+ * A component that manages the rendering of toasts.
+ *
+ * @returns The rendered toaster component.
  */
 export function Toaster() {
   const { toasts } = useToast()

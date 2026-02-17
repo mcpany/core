@@ -92,6 +92,10 @@ export type GetServiceResponse = any;
 export type GetServiceStatusResponse = any;
 
 // Mock types for HttpCallDefinition
+
+/**
+ * Enumerates the allowed data types for parameters (STRING, NUMBER, etc.).
+ */
 export enum ParameterType {
     STRING = 0,
     NUMBER = 1,
@@ -101,6 +105,9 @@ export enum ParameterType {
     OBJECT = 5,
 }
 
+/**
+ * Enumerates the supported HTTP methods (GET, POST, etc.).
+ */
 export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_UNSPECIFIED = 0,
     HTTP_METHOD_GET = 1,
@@ -110,6 +117,9 @@ export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_PATCH = 5,
 }
 
+/**
+ * Enumerates the supported output formats (JSON, XML, TEXT, etc.).
+ */
 export enum OutputTransformer_OutputFormat {
     JSON = 0,
     XML = 1,
@@ -118,11 +128,17 @@ export enum OutputTransformer_OutputFormat {
     JQ = 4,
 }
 
+/**
+ * Defines how to transform the input request before sending to the upstream service.
+ */
 export interface InputTransformer {
     template?: string;
     webhook?: any;
 }
 
+/**
+ * Defines how to transform the output response received from the upstream service.
+ */
 export interface OutputTransformer {
     format: OutputTransformer_OutputFormat;
     extractionRules?: { [key: string]: string };
@@ -130,6 +146,9 @@ export interface OutputTransformer {
     jqQuery?: string;
 }
 
+/**
+ * Maps a tool parameter to a specific location (schema, secret, etc.) in the HTTP request.
+ */
 export interface HttpParameterMapping {
     schema?: {
         name: string;
@@ -142,6 +161,9 @@ export interface HttpParameterMapping {
     disableEscape?: boolean;
 }
 
+/**
+ * Defines the structure of an HTTP call, including the method, endpoint, parameters, and transformations.
+ */
 export interface HttpCallDefinition {
     id?: string;
     method: HttpCallDefinition_HttpMethod;

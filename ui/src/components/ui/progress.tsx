@@ -11,11 +11,12 @@ import * as ProgressPrimitive from "@radix-ui/react-progress"
 import { cn } from "@/lib/utils"
 
 /**
- * Progress component.
+ * Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.value - The current value.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.value - The current progress value (0-100).
+ * @returns The rendered progress bar.
  */
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,

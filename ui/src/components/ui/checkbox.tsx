@@ -12,10 +12,11 @@ import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Checkbox component.
+ * A control that allows the user to toggle between checked and not checked.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered checkbox component.
  */
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,

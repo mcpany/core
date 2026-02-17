@@ -78,10 +78,11 @@ const FormItemContext = React.createContext<FormItemContextValue>(
 )
 
 /**
- * FormItem component.
+ * A wrapper for a form field that handles id generation and context.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered form item container.
  */
 const FormItem = React.forwardRef<
   HTMLDivElement,
@@ -98,10 +99,11 @@ const FormItem = React.forwardRef<
 FormItem.displayName = "FormItem"
 
 /**
- * FormLabel component.
+ * The label for a form field.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered form label.
  */
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
@@ -121,9 +123,11 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = "FormLabel"
 
 /**
- * FormControl component.
+ * The control element of the form (input, select, etc.).
+ * Automatically handles aria attributes based on form state.
+ *
  * @param props - The component props.
- * @returns The rendered component.
+ * @returns The rendered form control.
  */
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
@@ -148,10 +152,11 @@ const FormControl = React.forwardRef<
 FormControl.displayName = "FormControl"
 
 /**
- * FormDescription component.
+ * A description or help text for the form field.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered form description.
  */
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -171,11 +176,12 @@ const FormDescription = React.forwardRef<
 FormDescription.displayName = "FormDescription"
 
 /**
- * FormMessage component.
+ * Shows the validation error message for the form field.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content (error message).
+ * @returns The rendered form message.
  */
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,

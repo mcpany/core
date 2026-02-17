@@ -11,32 +11,29 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { cn } from "@/lib/utils"
 
 /**
- * Popover component.
+ * Displays rich content in a portal, triggered by a button.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @returns The rendered popover root.
  */
 const Popover = PopoverPrimitive.Root
 
 /**
- * PopoverTrigger component.
+ * The button that toggles the popover.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @returns The rendered trigger.
  */
 const PopoverTrigger = PopoverPrimitive.Trigger
 
 /**
- * PopoverContent component.
+ * The content to display within the popover.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.align - Alignment of the content.
+ * @param props.sideOffset - Offset from the trigger.
+ * @returns The rendered popover content.
  */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,

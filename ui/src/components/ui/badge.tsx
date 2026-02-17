@@ -8,6 +8,9 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Configuration object for badge styling variants using `class-variance-authority`.
+ */
 const badgeVariants = cva(
   "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
@@ -29,18 +32,19 @@ const badgeVariants = cva(
 )
 
 /**
- * BadgeProps type definition.
+ * Props for the Badge component.
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
 /**
- * Badge component.
+ * Displays a badge or a component that looks like a badge.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.variant - The visual variant of the badge (default, secondary, destructive, outline).
+ * @returns The rendered badge component.
  */
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (

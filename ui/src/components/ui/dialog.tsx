@@ -12,42 +12,43 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Dialog component.
+ * A window overlaid on either the primary window or another dialog, rendering the content underneath inert.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered dialog root.
  */
 const Dialog = DialogPrimitive.Root
 
 /**
- * DialogTrigger component.
+ * The button that opens the dialog.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered trigger.
  */
 const DialogTrigger = DialogPrimitive.Trigger
 
 /**
- * DialogPortal component.
+ * Portals the dialog content into the body.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered portal.
  */
 const DialogPortal = DialogPrimitive.Portal
 
 /**
- * DialogClose component.
+ * The button that closes the dialog.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @returns The rendered close button.
  */
 const DialogClose = DialogPrimitive.Close
 
 /**
- * DialogOverlay component.
+ * An overlay that covers the screen when the dialog is open.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered overlay.
  */
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -65,11 +66,12 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 /**
- * DialogContent component.
+ * The content area of the dialog.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the dialog.
+ * @returns The rendered content component.
  */
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -96,10 +98,11 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 /**
- * DialogHeader component.
+ * The header section of the dialog.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered header.
  */
 const DialogHeader = ({
   className,
@@ -116,10 +119,11 @@ const DialogHeader = ({
 DialogHeader.displayName = "DialogHeader"
 
 /**
- * DialogFooter component.
+ * The footer section of the dialog, usually containing actions.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered footer.
  */
 const DialogFooter = ({
   className,
@@ -136,10 +140,11 @@ const DialogFooter = ({
 DialogFooter.displayName = "DialogFooter"
 
 /**
- * DialogTitle component.
+ * The title of the dialog.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered title.
  */
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -157,10 +162,11 @@ const DialogTitle = React.forwardRef<
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
 /**
- * DialogDescription component.
+ * The description of the dialog.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered description.
  */
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,

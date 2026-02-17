@@ -11,30 +11,60 @@ import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A top-level menu item.
+ *
+ * @param props - The component props.
+ * @returns The rendered menu item.
+ */
 function MenubarMenu({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Menu>) {
   return <MenubarPrimitive.Menu {...props} />
 }
 
+/**
+ * Groups multiple items in the menu.
+ *
+ * @param props - The component props.
+ * @returns The rendered group.
+ */
 function MenubarGroup({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Group>) {
   return <MenubarPrimitive.Group {...props} />
 }
 
+/**
+ * Portals the menu content into the body.
+ *
+ * @param props - The component props.
+ * @returns The rendered portal.
+ */
 function MenubarPortal({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
   return <MenubarPrimitive.Portal {...props} />
 }
 
+/**
+ * A group of radio items in the menu.
+ *
+ * @param props - The component props.
+ * @returns The rendered radio group.
+ */
 function MenubarRadioGroup({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {
   return <MenubarPrimitive.RadioGroup {...props} />
 }
 
+/**
+ * A submenu within the menu.
+ *
+ * @param props - The component props.
+ * @returns The rendered submenu.
+ */
 function MenubarSub({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Sub>) {
@@ -42,10 +72,11 @@ function MenubarSub({
 }
 
 /**
- * Menubar component.
+ * A horizontal menu bar that appears at the top of an application window.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered menubar root.
  */
 const Menubar = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Root>,
@@ -63,10 +94,11 @@ const Menubar = React.forwardRef<
 Menubar.displayName = MenubarPrimitive.Root.displayName
 
 /**
- * MenubarTrigger component.
+ * The button that triggers the menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered trigger.
  */
 const MenubarTrigger = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Trigger>,
@@ -84,12 +116,13 @@ const MenubarTrigger = React.forwardRef<
 MenubarTrigger.displayName = MenubarPrimitive.Trigger.displayName
 
 /**
- * MenubarSubTrigger component.
+ * The trigger that opens a submenu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.inset - Whether to add indentation.
+ * @param props.children - The content of the trigger.
+ * @returns The rendered submenu trigger.
  */
 const MenubarSubTrigger = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.SubTrigger>,
@@ -113,10 +146,11 @@ const MenubarSubTrigger = React.forwardRef<
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
 
 /**
- * MenubarSubContent component.
+ * The content of a submenu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered submenu content.
  */
 const MenubarSubContent = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.SubContent>,
@@ -134,13 +168,14 @@ const MenubarSubContent = React.forwardRef<
 MenubarSubContent.displayName = MenubarPrimitive.SubContent.displayName
 
 /**
- * MenubarContent component.
+ * The content that pops out when a menu is triggered.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.alignOffset - The alignOffset property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.align - Alignment of the content.
+ * @param props.alignOffset - Offset from the alignment edge.
+ * @param props.sideOffset - Offset from the trigger.
+ * @returns The rendered content.
  */
 const MenubarContent = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Content>,
@@ -168,11 +203,12 @@ const MenubarContent = React.forwardRef<
 MenubarContent.displayName = MenubarPrimitive.Content.displayName
 
 /**
- * MenubarItem component.
+ * An individual item in the menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.inset - Whether to add indentation.
+ * @returns The rendered menu item.
  */
 const MenubarItem = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Item>,
@@ -193,12 +229,13 @@ const MenubarItem = React.forwardRef<
 MenubarItem.displayName = MenubarPrimitive.Item.displayName
 
 /**
- * MenubarCheckboxItem component.
+ * A checkbox item in the menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @param props.checked - The checked property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the item.
+ * @param props.checked - The checked state.
+ * @returns The rendered checkbox item.
  */
 const MenubarCheckboxItem = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.CheckboxItem>,
@@ -224,11 +261,12 @@ const MenubarCheckboxItem = React.forwardRef<
 MenubarCheckboxItem.displayName = MenubarPrimitive.CheckboxItem.displayName
 
 /**
- * MenubarRadioItem component.
+ * A radio item in the menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the item.
+ * @returns The rendered radio item.
  */
 const MenubarRadioItem = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.RadioItem>,
@@ -253,11 +291,12 @@ const MenubarRadioItem = React.forwardRef<
 MenubarRadioItem.displayName = MenubarPrimitive.RadioItem.displayName
 
 /**
- * MenubarLabel component.
+ * A label for a group of items in the menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.inset - Whether to add indentation.
+ * @returns The rendered label.
  */
 const MenubarLabel = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Label>,
@@ -278,10 +317,11 @@ const MenubarLabel = React.forwardRef<
 MenubarLabel.displayName = MenubarPrimitive.Label.displayName
 
 /**
- * MenubarSeparator component.
+ * A visual separator between menu items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered separator.
  */
 const MenubarSeparator = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Separator>,
@@ -296,10 +336,11 @@ const MenubarSeparator = React.forwardRef<
 MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName
 
 /**
- * MenubarShortcut component.
+ * Displays a keyboard shortcut for a menu item.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered shortcut.
  */
 const MenubarShortcut = ({
   className,

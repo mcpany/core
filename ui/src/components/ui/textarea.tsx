@@ -8,10 +8,11 @@ import * as React from 'react';
 import {cn} from '@/lib/utils';
 
 /**
- * Textarea component.
+ * Displays a form textarea or a component that looks like a textarea.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered textarea component.
  */
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<'textarea'>>(
   ({className, ...props}, ref) => {

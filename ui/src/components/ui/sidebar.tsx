@@ -159,14 +159,15 @@ const SidebarProvider = React.forwardRef<
 SidebarProvider.displayName = "SidebarProvider"
 
 /**
- * Sidebar component.
+ * A sidebar navigation component.
+ *
  * @param props - The component props.
- * @param props.side - The unique identifier for se.
- * @param props.variant - The variant property.
- * @param props.collapsible - The collapsible property.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.side - The side where the sidebar is positioned (left or right).
+ * @param props.variant - The variant of the sidebar (sidebar, floating, inset).
+ * @param props.collapsible - The collapsible state (offcanvas, icon, none).
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the sidebar.
+ * @returns The rendered sidebar root.
  */
 const Sidebar = React.forwardRef<
   HTMLDivElement,
@@ -272,11 +273,12 @@ const Sidebar = React.forwardRef<
 Sidebar.displayName = "Sidebar"
 
 /**
- * SidebarTrigger component.
+ * The trigger button that toggles the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.onClick - The onClick property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.onClick - Callback for click event.
+ * @returns The rendered trigger.
  */
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
@@ -305,10 +307,11 @@ const SidebarTrigger = React.forwardRef<
 SidebarTrigger.displayName = "SidebarTrigger"
 
 /**
- * SidebarRail component.
+ * A resize rail for the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered rail.
  */
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
@@ -340,10 +343,11 @@ const SidebarRail = React.forwardRef<
 SidebarRail.displayName = "SidebarRail"
 
 /**
- * SidebarInset component.
+ * The main content area next to the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered inset content.
  */
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
@@ -364,10 +368,11 @@ const SidebarInset = React.forwardRef<
 SidebarInset.displayName = "SidebarInset"
 
 /**
- * SidebarInput component.
+ * An input field designed for the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered input.
  */
 const SidebarInput = React.forwardRef<
   React.ElementRef<typeof Input>,
@@ -388,10 +393,11 @@ const SidebarInput = React.forwardRef<
 SidebarInput.displayName = "SidebarInput"
 
 /**
- * SidebarHeader component.
+ * The header section of the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered header.
  */
 const SidebarHeader = React.forwardRef<
   HTMLDivElement,
@@ -409,10 +415,11 @@ const SidebarHeader = React.forwardRef<
 SidebarHeader.displayName = "SidebarHeader"
 
 /**
- * SidebarFooter component.
+ * The footer section of the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered footer.
  */
 const SidebarFooter = React.forwardRef<
   HTMLDivElement,
@@ -430,10 +437,11 @@ const SidebarFooter = React.forwardRef<
 SidebarFooter.displayName = "SidebarFooter"
 
 /**
- * SidebarSeparator component.
+ * A separator for the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered separator.
  */
 const SidebarSeparator = React.forwardRef<
   React.ElementRef<typeof Separator>,
@@ -451,10 +459,11 @@ const SidebarSeparator = React.forwardRef<
 SidebarSeparator.displayName = "SidebarSeparator"
 
 /**
- * SidebarContent component.
+ * The main scrollable content area of the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered content.
  */
 const SidebarContent = React.forwardRef<
   HTMLDivElement,
@@ -475,10 +484,11 @@ const SidebarContent = React.forwardRef<
 SidebarContent.displayName = "SidebarContent"
 
 /**
- * SidebarGroup component.
+ * A group of items within the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered group.
  */
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
@@ -496,11 +506,12 @@ const SidebarGroup = React.forwardRef<
 SidebarGroup.displayName = "SidebarGroup"
 
 /**
- * SidebarGroupLabel component.
+ * A label for a sidebar group.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.asChild - Whether to render as a child component.
+ * @returns The rendered group label.
  */
 const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
@@ -524,11 +535,12 @@ const SidebarGroupLabel = React.forwardRef<
 SidebarGroupLabel.displayName = "SidebarGroupLabel"
 
 /**
- * SidebarGroupAction component.
+ * An action button for a sidebar group.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.asChild - Whether to render as a child component.
+ * @returns The rendered group action.
  */
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
@@ -554,10 +566,11 @@ const SidebarGroupAction = React.forwardRef<
 SidebarGroupAction.displayName = "SidebarGroupAction"
 
 /**
- * SidebarGroupContent component.
+ * The content area of a sidebar group.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered group content.
  */
 const SidebarGroupContent = React.forwardRef<
   HTMLDivElement,
@@ -573,10 +586,11 @@ const SidebarGroupContent = React.forwardRef<
 SidebarGroupContent.displayName = "SidebarGroupContent"
 
 /**
- * SidebarMenu component.
+ * A list of menu items in the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered menu.
  */
 const SidebarMenu = React.forwardRef<
   HTMLUListElement,
@@ -592,10 +606,11 @@ const SidebarMenu = React.forwardRef<
 SidebarMenu.displayName = "SidebarMenu"
 
 /**
- * SidebarMenuItem component.
+ * An individual item in the sidebar menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered menu item.
  */
 const SidebarMenuItem = React.forwardRef<
   HTMLLIElement,
@@ -633,15 +648,16 @@ const sidebarMenuButtonVariants = cva(
 )
 
 /**
- * SidebarMenuButton component.
+ * A button within a sidebar menu item.
+ *
  * @param props - The component props.
- * @param props.asChild - The asChild property.
- * @param props.isActive - The isActive property.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.tooltip - The tooltip property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.asChild - Whether to render as a child component.
+ * @param props.isActive - Whether the button is active.
+ * @param props.variant - The button variant.
+ * @param props.size - The button size.
+ * @param props.tooltip - Tooltip content for the button.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered menu button.
  */
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
@@ -703,12 +719,13 @@ const SidebarMenuButton = React.forwardRef<
 SidebarMenuButton.displayName = "SidebarMenuButton"
 
 /**
- * SidebarMenuAction component.
+ * An action button associated with a menu item.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.asChild - The asChild property.
- * @param props.showOnHover - The showOnHover property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.asChild - Whether to render as a child component.
+ * @param props.showOnHover - Whether to show only on hover.
+ * @returns The rendered menu action.
  */
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
@@ -742,10 +759,11 @@ const SidebarMenuAction = React.forwardRef<
 SidebarMenuAction.displayName = "SidebarMenuAction"
 
 /**
- * SidebarMenuBadge component.
+ * A badge to display next to a menu item.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered menu badge.
  */
 const SidebarMenuBadge = React.forwardRef<
   HTMLDivElement,
@@ -769,11 +787,12 @@ const SidebarMenuBadge = React.forwardRef<
 SidebarMenuBadge.displayName = "SidebarMenuBadge"
 
 /**
- * SidebarMenuSkeleton component.
+ * A skeleton loader for sidebar menu items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.showIcon - The showIcon property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.showIcon - Whether to show an icon skeleton.
+ * @returns The rendered menu skeleton.
  */
 const SidebarMenuSkeleton = React.forwardRef<
   HTMLDivElement,
@@ -814,10 +833,11 @@ const SidebarMenuSkeleton = React.forwardRef<
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"
 
 /**
- * SidebarMenuSub component.
+ * A submenu within the sidebar.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered submenu.
  */
 const SidebarMenuSub = React.forwardRef<
   HTMLUListElement,
@@ -837,9 +857,10 @@ const SidebarMenuSub = React.forwardRef<
 SidebarMenuSub.displayName = "SidebarMenuSub"
 
 /**
- * SidebarMenuSubItem component.
+ * An individual item in the sidebar submenu.
+ *
  * @param props - The component props.
- * @returns The rendered component.
+ * @returns The rendered submenu item.
  */
 const SidebarMenuSubItem = React.forwardRef<
   HTMLLIElement,
@@ -848,13 +869,14 @@ const SidebarMenuSubItem = React.forwardRef<
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 /**
- * SidebarMenuSubButton component.
+ * A button within a sidebar submenu item.
+ *
  * @param props - The component props.
- * @param props.asChild - The asChild property.
- * @param props.size - The size property.
- * @param props.isActive - The isActive property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.asChild - Whether to render as a child component.
+ * @param props.size - The button size.
+ * @param props.isActive - Whether the button is active.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered submenu button.
  */
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,

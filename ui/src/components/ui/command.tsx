@@ -14,10 +14,11 @@ import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * Command component.
+ * Fast, composable, unstyled command menu for React.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered command root component.
  */
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -37,10 +38,11 @@ Command.displayName = CommandPrimitive.displayName
 type CommandDialogProps = DialogProps;
 
 /**
- * CommandDialog component.
+ * A command menu displayed inside a modal dialog.
+ *
  * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.children - The content of the dialog.
+ * @returns The rendered command dialog.
  */
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
@@ -56,10 +58,11 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 }
 
 /**
- * CommandInput component.
+ * The input field for the command menu.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered command input.
  */
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
@@ -81,10 +84,11 @@ const CommandInput = React.forwardRef<
 CommandInput.displayName = CommandPrimitive.Input.displayName
 
 /**
- * CommandList component.
+ * The container list for command items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered command list.
  */
 const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
@@ -100,9 +104,10 @@ const CommandList = React.forwardRef<
 CommandList.displayName = CommandPrimitive.List.displayName
 
 /**
- * CommandEmpty component.
+ * Displayed when no results are found.
+ *
  * @param props - The component props.
- * @returns The rendered component.
+ * @returns The rendered empty state component.
  */
 const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
@@ -118,10 +123,11 @@ const CommandEmpty = React.forwardRef<
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName
 
 /**
- * CommandGroup component.
+ * A group of related command items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered command group.
  */
 const CommandGroup = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Group>,
@@ -140,10 +146,11 @@ const CommandGroup = React.forwardRef<
 CommandGroup.displayName = CommandPrimitive.Group.displayName
 
 /**
- * CommandSeparator component.
+ * A visual separator between command groups or items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered separator.
  */
 const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
@@ -158,10 +165,11 @@ const CommandSeparator = React.forwardRef<
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName
 
 /**
- * CommandItem component.
+ * An individual item in the command list.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered command item.
  */
 const CommandItem = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
@@ -180,10 +188,11 @@ const CommandItem = React.forwardRef<
 CommandItem.displayName = CommandPrimitive.Item.displayName
 
 /**
- * CommandShortcut component.
+ * Displays a keyboard shortcut for a command item.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered shortcut component.
  */
 const CommandShortcut = ({
   className,

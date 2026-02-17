@@ -47,9 +47,14 @@ const POLLING_INTERVAL = 5000;
 
 /**
  * ServiceHealthProvider component.
+ *
+ * Provides service health metrics and network topology data to the application.
+ * It manages polling the backend for updates and maintaining the state of
+ * service history and topology graphs.
+ *
  * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.children - The child components to be wrapped by the provider.
+ * @returns The rendered provider component with context values.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
@@ -206,9 +211,12 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * useServiceHealth is a hook to access service health history and current status.
- * @returns The service health context.
- * @throws Error if used outside of a ServiceHealthProvider.
+ * Retrieves the historical and current health metrics for services.
+ *
+ * This hook exposes methods to get the health history of a service and its current health status.
+ *
+ * @returns The service health context containing `getServiceHistory` and `getServiceCurrentHealth`.
+ * @throws {Error} If used outside of a `ServiceHealthProvider`.
  */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
@@ -219,10 +227,13 @@ export function useServiceHealth() {
 }
 
 /**
- * useTopology is a hook to access network topology.
- * It is optimized to not re-render when health metrics update.
- * @returns The topology context.
- * @throws Error if used outside of a ServiceHealthProvider.
+ * Retrieves the current network topology graph.
+ *
+ * This hook is optimized to minimize re-renders on metric updates, ensuring that
+ * components consuming only topology structure don't re-render unnecessarily.
+ *
+ * @returns The topology context containing `latestTopology` and `refreshTopology`.
+ * @throws {Error} If used outside of a `ServiceHealthProvider`.
  */
 export function useTopology() {
     const context = useContext(TopologyContext);

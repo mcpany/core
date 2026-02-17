@@ -12,18 +12,20 @@ import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Accordion component.
+ * A vertically stacked set of interactive headings that each reveal a section of content.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered accordion root component.
  */
 const Accordion = AccordionPrimitive.Root
 
 /**
- * AccordionItem component.
+ * An individual item within the Accordion.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered accordion item.
  */
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
@@ -38,11 +40,12 @@ const AccordionItem = React.forwardRef<
 AccordionItem.displayName = "AccordionItem"
 
 /**
- * AccordionTrigger component.
+ * The trigger button that toggles the accordion content.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the trigger (usually text).
+ * @returns The rendered accordion trigger.
  */
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
@@ -65,11 +68,12 @@ const AccordionTrigger = React.forwardRef<
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
 /**
- * AccordionContent component.
+ * The content that is revealed when the accordion trigger is clicked.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content to display.
+ * @returns The rendered accordion content.
  */
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,

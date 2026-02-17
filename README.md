@@ -142,6 +142,7 @@ make test
 ### Linting
 We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
+*   **TypeScript:** We use `eslint` and `check-ts-doc` to ensure all exported components, hooks, and types have high-quality TSDoc comments.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
 To run linters:

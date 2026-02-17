@@ -48,15 +48,16 @@ function useCarousel() {
 }
 
 /**
- * Carousel component.
+ * A carousel component for cycling through elements.
+ *
  * @param props - The component props.
- * @param props.orientation - The orientation property.
- * @param props.opts - The opts property.
- * @param props.setApi - The setApi property.
- * @param props.plugins - The plugins property.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * @param props.orientation - The orientation of the carousel (horizontal or vertical).
+ * @param props.opts - Options for the Embla Carousel instance.
+ * @param props.setApi - Callback to retrieve the carousel API instance.
+ * @param props.plugins - Plugins for the Embla Carousel.
+ * @param props.className - Additional class names to apply.
+ * @param props.children - The content of the carousel.
+ * @returns The rendered carousel root.
  */
 const Carousel = React.forwardRef<
   HTMLDivElement,
@@ -167,10 +168,11 @@ const Carousel = React.forwardRef<
 Carousel.displayName = "Carousel"
 
 /**
- * CarouselContent component.
+ * The container for the carousel items.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered carousel content container.
  */
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
@@ -195,10 +197,11 @@ const CarouselContent = React.forwardRef<
 CarouselContent.displayName = "CarouselContent"
 
 /**
- * CarouselItem component.
+ * An individual item within the carousel.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @returns The rendered carousel item.
  */
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
@@ -223,12 +226,13 @@ const CarouselItem = React.forwardRef<
 CarouselItem.displayName = "CarouselItem"
 
 /**
- * CarouselPrevious component.
+ * A button to scroll to the previous slide.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.variant - The button variant.
+ * @param props.size - The button size.
+ * @returns The rendered previous button.
  */
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
@@ -260,12 +264,13 @@ const CarouselPrevious = React.forwardRef<
 CarouselPrevious.displayName = "CarouselPrevious"
 
 /**
- * CarouselNext component.
+ * A button to scroll to the next slide.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @returns The rendered component.
+ * @param props.className - Additional class names to apply.
+ * @param props.variant - The button variant.
+ * @param props.size - The button size.
+ * @returns The rendered next button.
  */
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
