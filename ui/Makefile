@@ -23,6 +23,8 @@ endif
 lint:
 	npm run lint
 
+gen-proto:
+	$(MAKE) -C .. gen
 
 TIMESTAMP := $(shell date +%s)
 SERVER_IMAGE_TAG := ui-test-$(TIMESTAMP)
@@ -35,7 +37,7 @@ export TEST_GID
 
 # Default test target
 # Run the tests in a docker container
-test: clean-test-results build-test-docker build-server-docker
+test: clean-test-results gen-proto build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
