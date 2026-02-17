@@ -47,14 +47,18 @@ services:
     command: >
       sh -c "
         mkdir -p test-results .audit playwright-report docs &&
-        # Wait for echo server using wget/curl/nc
+        # Wait for echo server using wget or curl
         echo 'Waiting for ui-http-echo-server...' &&
-        for i in \$(seq 1 30); do
+        for i in \$(seq 1 60); do
           if wget -q --spider http://ui-http-echo-server:5678/health; then
-            echo 'ui-http-echo-server is up!'
+            echo 'ui-http-echo-server is up (wget)!'
             break
           fi
-          echo 'Waiting...'
+          if curl -s -o /dev/null -w "%{http_code}" http://ui-http-echo-server:5678/health | grep "200" > /dev/null; then
+            echo 'ui-http-echo-server is up (curl)!'
+            break
+          fi
+          echo "Waiting for ui-http-echo-server (attempt $i)..."
           sleep 1
         done &&
         npx playwright test $${PLAYWRIGHT_ARGS}
@@ -78,7 +82,5 @@ services:
 
   ui-http-echo-server:
     image: mcpany/http-echo-server:latest
-    ports:
-      - "127.0.0.1:5678:5678"
     command:
       - "--port=5678"
