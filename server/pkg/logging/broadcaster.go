@@ -87,7 +87,9 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	defer b.mu.Unlock()
 	if _, ok := b.subscribers[ch]; ok {
 		delete(b.subscribers, ch)
-		close(ch)
+		// ⚡ BOLT: Removed close(ch) to prevent race conditions during concurrent Broadcast.
+		// Randomized Selection from Top 5 High-Impact Targets
+		// The channel will be garbage collected when it becomes unreachable.
 	}
 }
 
@@ -100,7 +102,6 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	copy(msgCopy, msg)
 
 	b.mu.Lock()
-	defer b.mu.Unlock()
 
 	// ⚡ BOLT: Ring Buffer Optimization
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -111,9 +112,19 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 		b.full = true
 	}
 
+	// ⚡ BOLT: Snapshot subscribers to avoid holding lock during iteration.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// This prevents blocking the broadcaster if there are many subscribers or slow consumers.
+	subs := make([]chan []byte, 0, len(b.subscribers))
 	for ch := range b.subscribers {
+		subs = append(subs, ch)
+	}
+
+	b.mu.Unlock()
+
+	for _, ch := range subs {
 		select {
-		case ch <- msg:
+		case ch <- msgCopy:
 		default:
 			// Drop message if channel is full
 		}
