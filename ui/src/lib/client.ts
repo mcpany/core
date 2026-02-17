@@ -990,6 +990,48 @@ export const apiClient = {
         return res.json(); // { authorization_url: "...", state: "..." }
     },
 
+    /**
+     * Tests a credential against a service configuration or specific target.
+     * @param params The test parameters.
+     * @returns A promise that resolves to the test result.
+     */
+    testAuth: async (params: {
+        credentialId?: string;
+        credential?: Credential;
+        serviceType: string;
+        serviceConfig: Record<string, any>;
+    }) => {
+        const payload: any = {
+            service_type: params.serviceType,
+            service_config: params.serviceConfig
+        };
+
+        if (params.credentialId) {
+            payload.credential_id = params.credentialId;
+        }
+        if (params.credential) {
+            // Map camelCase credential to snake_case for backend protojson mapping if needed?
+            // The backend uses protojson.Unmarshal(bytes, &configv1.Credential).
+            // protojson expects camelCase or snake_case depending on options, but standard JSON mapping for proto is camelCase fields usually?
+            // Wait, standard proto JSON mapping uses lowerCamelCase by default for field names.
+            // Let's pass the credential object as is, assuming it matches what protojson expects (which is usually the generated type structure).
+            // However, our `Credential` type in client.ts is the generated one.
+            payload.credential = params.credential;
+        }
+
+        const res = await fetchWithAuth('/debug/auth-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Auth test failed: ${res.status} ${txt}`);
+        }
+        return res.json();
+    },
+
     // Profiles
 
     /**

@@ -21,6 +21,7 @@ import (
 // AuthTestRequest defines the structure for an authentication test request.
 type AuthTestRequest struct {
 	CredentialID  string         `json:"credential_id"`
+	Credential    map[string]any `json:"credential"`
 	ServiceType   string         `json:"service_type"`
 	ServiceConfig map[string]any `json:"service_config"`
 }
@@ -60,7 +61,19 @@ func (a *Application) handleAuthTest() http.HandlerFunc {
 
 		// 1. Resolve Credential
 		var cred *configv1.Credential
-		if req.CredentialID != "" && req.CredentialID != "none" && a.Storage != nil {
+		if req.Credential != nil {
+			// Use provided credential object (transient)
+			bytes, err := json.Marshal(req.Credential)
+			if err == nil {
+				var c configv1.Credential
+				if err := protojson.Unmarshal(bytes, &c); err == nil {
+					cred = &c
+				} else {
+					writeAuthResponse(w, false, fmt.Sprintf("Failed to parse credential: %v", err))
+					return
+				}
+			}
+		} else if req.CredentialID != "" && req.CredentialID != "none" && a.Storage != nil {
 			var err error
 			cred, err = a.Storage.GetCredential(ctx, req.CredentialID)
 			if err != nil {

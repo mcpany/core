@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CredentialTester } from "@/components/credentials/credential-tester"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -66,8 +67,6 @@ interface CredentialFormProps {
  */
 export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) {
   const { toast } = useToast()
-  const [isTesting, setIsTesting] = useState(false)
-  const [testUrl, setTestUrl] = useState("")
 
   // Determine initial auth type
   let defaultAuthType = "api_key"
@@ -149,84 +148,6 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
         toast({ variant: "destructive", description: "Failed to save credential: " + error.message })
     }
-  }
-
-  async function handleTest() {
-      if (!testUrl) {
-      if (!testUrl) {
-          toast({ variant: "destructive", description: "Please enter a URL to test" })
-          return
-      }
-      }
-      setIsTesting(true)
-      try {
-        // Construct temporary credential from form values to test without saving (or use saved if not changed?)
-        // Better to use form values
-        // Reuse logic from onSubmit
-        const values = form.getValues()
-        const auth: Authentication = {}
-        if (values.authType === "api_key") {
-            auth.apiKey = {
-                paramName: values.apiKeyParamName || "X-API-Key",
-                in: parseInt(values.apiKeyLocation || "0") as APIKeyAuth_Location,
-                value: { plainText: values.apiKeyValue || "", validationRegex: "" },
-                verificationValue: ""
-            }
-        } else if (values.authType === "bearer_token") {
-             auth.bearerToken = { token: { plainText: values.bearerToken || "", validationRegex: "" } }
-        } else if (values.authType === "basic_auth") {
-            auth.basicAuth = { username: values.basicUsername || "", password: { plainText: values.basicPassword || "", validationRegex: "" }, passwordHash: "" }
-        } else if (values.authType === "oauth2") {
-             // For OAuth2, test connection might mean using the stored token?
-             // Or verifying the config?
-             // If we have a token in initialData, we can use it?
-             // But valid test requires a real request.
-             // If we don't have a token, we can't really test "connection" to a protected resource yet.
-             // Maybe warn user?
-             if (initialData?.token?.accessToken) {
-                 // Use the stored token (simulated as Bearer?)
-                 // `testAuth` endpoint likely expects `Authentication` loaded.
-                 // If we send `auth.oauth2` config, `testAuth` might try to use it?
-                 // But `testAuth` probably doesn't handle OAuth flow.
-                 // It checks if `Authenticator` works.
-                 // OAuth2 Authenticator uses `UserToken`?
-                 // If `testAuth` allows passing a UserToken, we could test.
-                 // But `Authentication` proto doesn't hold the token. `Credential` does.
-                 // `testAuth` API handler takes `TestAuthRequest` which likely contains `Authentication`.
-                 // It doesn't seem to take `UserToken`.
-                 // So `testAuth` for OAuth might be tricky without token.
-                 // Let's defer OAuth test logic or just basic config check.
-                 auth.oauth2 = {
-                    clientId: { plainText: values.oauthClientId || "", validationRegex: "" },
-                    clientSecret: { plainText: values.oauthClientSecret || "", validationRegex: "" },
-                    authorizationUrl: values.oauthAuthUrl || "",
-                    tokenUrl: values.oauthTokenUrl || "",
-                    scopes: values.oauthScopes || "",
-                    issuerUrl: "",
-                    audience: "",
-                 }
-             } else {
-                 toast({ description: "OAuth 2.0 requires connecting (getting a token) before testing." })
-                 return
-             }
-        }
-
-        const res = await apiClient.testAuth({
-            authentication: auth, // This might not be enough for OAuth if logic requires Token
-            target_url: testUrl,
-            method: "GET"
-        })
-        if (res.status >= 200 && res.status < 300) {
-            toast({ description: `Test passed: ${res.status} ${res.status_text}` })
-        } else {
-            toast({ variant: "destructive", description: `Test returned: ${res.status} ${res.status_text}` })
-        }
-
-      } catch (error: any) {
-          toast({ variant: "destructive", description: "Test failed: " + error.message })
-      } finally {
-          setIsTesting(false)
-      }
   }
 
   async function handleConnect() {
@@ -478,17 +399,30 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
         )}
 
         <div className="space-y-2 pt-4 border-t">
-            <FormLabel>Test Connection</FormLabel>
-            <div className="flex gap-2">
-                <Input
-                    placeholder="https://api.example.com/test"
-                    value={testUrl}
-                    onChange={(e) => setTestUrl(e.target.value)}
-                />
-                <Button type="button" variant="outline" onClick={handleTest} disabled={isTesting}>
-                    {isTesting ? "Testing..." : "Test"}
-                </Button>
-            </div>
+            <CredentialTester credential={(() => {
+                const values = form.watch();
+                const cred: any = {
+                    name: values.name,
+                    authentication: {}
+                };
+                if (values.authType === "api_key") {
+                    cred.authentication.apiKey = {
+                        paramName: values.apiKeyParamName || "X-API-Key",
+                        in: parseInt(values.apiKeyLocation || "0"),
+                        value: { plainText: values.apiKeyValue || "" }
+                    };
+                } else if (values.authType === "bearer_token") {
+                    cred.authentication.bearerToken = {
+                        token: { plainText: values.bearerToken || "" }
+                    };
+                } else if (values.authType === "basic_auth") {
+                    cred.authentication.basicAuth = {
+                        username: values.basicUsername || "",
+                        password: { plainText: values.basicPassword || "" }
+                    };
+                }
+                return cred;
+            })()} />
         </div>
 
         <div className="flex justify-end gap-2 pt-4">
