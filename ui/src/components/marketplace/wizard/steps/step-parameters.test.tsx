@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { StepParameters } from './step-parameters';
 import { vi, describe, it, expect } from 'vitest';
 import { useWizard } from '../wizard-context';

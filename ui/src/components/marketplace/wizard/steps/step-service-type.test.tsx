@@ -7,7 +7,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { StepServiceType } from './step-service-type';
 import { WizardProvider } from '../wizard-context';
-import { SERVICE_REGISTRY } from '@/lib/service-registry';
 import { vi, describe, it, expect } from 'vitest';
 
 // Mock dependencies
