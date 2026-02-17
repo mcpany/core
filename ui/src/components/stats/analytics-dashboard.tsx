@@ -77,10 +77,10 @@ export function AnalyticsDashboard() {
         const fetchDashboardData = async () => {
             try {
                 const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
-                    apiClient.getDashboardTraffic(),
-                    apiClient.getTopTools(),
-                    apiClient.listTools().catch(() => ({ tools: [] })),
-                    apiClient.getToolUsage().catch(() => [])
+                    apiClient.getDashboardTraffic().catch((e) => { console.error("Traffic fetch failed", e); return []; }),
+                    apiClient.getTopTools().catch((e) => { console.error("Top tools fetch failed", e); return []; }),
+                    apiClient.listTools().catch((e) => { console.error("List tools failed", e); return { tools: [] }; }),
+                    apiClient.getToolUsage().catch((e) => { console.error("Tool usage fetch failed", e); return []; })
                 ]);
                 setTrafficData(traffic || []);
 
