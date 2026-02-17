@@ -141,8 +141,12 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    // Use HH:MM format expected by backend
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
     const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
+        { time: timeStr, requests: 100, errors: 2, latency: 50 }
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });

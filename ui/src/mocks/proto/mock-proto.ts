@@ -131,7 +131,9 @@ export enum OutputTransformer_OutputFormat {
  * Input transformer definition.
  */
 export interface InputTransformer {
+    /** The template string. */
     template?: string;
+    /** The webhook configuration. */
     webhook?: any;
 }
 
@@ -139,9 +141,13 @@ export interface InputTransformer {
  * Output transformer definition.
  */
 export interface OutputTransformer {
+    /** The output format. */
     format: OutputTransformer_OutputFormat;
+    /** Rules for extracting values. */
     extractionRules?: { [key: string]: string };
+    /** The template string. */
     template?: string;
+    /** The JQ query string. */
     jqQuery?: string;
 }
 
@@ -149,6 +155,7 @@ export interface OutputTransformer {
  * HTTP Parameter Mapping.
  */
 export interface HttpParameterMapping {
+    /** The parameter schema. */
     schema?: {
         name: string;
         description?: string;
@@ -156,7 +163,9 @@ export interface HttpParameterMapping {
         isRequired?: boolean;
         defaultValue?: any;
     };
+    /** Secret configuration. */
     secret?: any;
+    /** Whether to disable escaping. */
     disableEscape?: boolean;
 }
 
@@ -164,11 +173,17 @@ export interface HttpParameterMapping {
  * HTTP Call definition.
  */
 export interface HttpCallDefinition {
+    /** The ID of the call. */
     id?: string;
+    /** The HTTP method. */
     method: HttpCallDefinition_HttpMethod;
+    /** The endpoint path. */
     endpointPath: string;
+    /** The parameters. */
     parameters: HttpParameterMapping[];
+    /** The input transformer. */
     inputTransformer?: InputTransformer;
+    /** The output transformer. */
     outputTransformer?: OutputTransformer;
     [key: string]: any;
 }

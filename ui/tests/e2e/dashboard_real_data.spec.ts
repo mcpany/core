@@ -36,7 +36,8 @@ test.describe('Dashboard Real Data', () => {
         // Generate 60 points for the last 60 minutes
         for (let i = 59; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 60000);
-            const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            // Use manual formatting for CI robustness (avoid locale issues)
+            const timeStr = `${t.getHours().toString().padStart(2, '0')}:${t.getMinutes().toString().padStart(2, '0')}`;
             trafficPoints.push({
                 time: timeStr,
                 requests: 100, // Constant request rate for easy verification
@@ -88,7 +89,10 @@ test.describe('Dashboard Real Data', () => {
         // Just wait for non-zero requests
         // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
-        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
+        // We look for the card containing "Total Requests" and then find the value div (text-2xl)
+        // Note: The previous locator found the paragraph which holds the "Change" value (--)
+        // Use a filter on the card container (div with border) that contains the title "Total Requests"
+        const totalRequestsLocator = page.locator('div.border').filter({ hasText: 'Total Requests' }).locator('.text-2xl');
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
 
         // Avg Latency: 50ms
@@ -104,6 +108,10 @@ test.describe('Dashboard Real Data', () => {
 
         // 4. Verify charts existence (roughly)
         await expect(page.locator('.recharts-surface').first()).toBeVisible();
+
+        if (process.env.CAPTURE_SCREENSHOTS === 'true') {
+            await page.screenshot({ path: 'test-results/dashboard_real_data.png', fullPage: true });
+        }
     });
 
     test('should display health history based on traffic', async ({ page, request }) => {
@@ -114,7 +122,8 @@ test.describe('Dashboard Real Data', () => {
          // 5 mins of high errors (100% errors) to cause "error" status
          for (let i = 0; i < 5; i++) {
              const t = new Date(now.getTime() - i * 60000);
-             const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+             // Use manual formatting for CI robustness
+             const timeStr = `${t.getHours().toString().padStart(2, '0')}:${t.getMinutes().toString().padStart(2, '0')}`;
              trafficPoints.push({
                  time: timeStr,
                  requests: 100,
