@@ -222,6 +222,8 @@ type Manager struct {
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
 	allowedServicesCache map[string]map[string]bool
+
+	toolExecutionTimeout time.Duration
 }
 
 // NewManager creates and initializes a new Tool Manager.
@@ -241,6 +243,7 @@ func NewManager(bus *bus.Provider) *Manager {
 		serviceToolNames:     make(map[string]map[string]struct{}),
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
 		allowedServicesCache: make(map[string]map[string]bool),
+		toolExecutionTimeout: 60 * time.Second,
 	}
 }
 
@@ -952,7 +955,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 				}, nil
 			case <-ctx.Done():
 				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-			case <-time.After(60 * time.Second): // Safety timeout
+			case <-time.After(tm.toolExecutionTimeout): // Safety timeout
 				return nil, fmt.Errorf(
 					"timed out waiting for tool execution result for tool %s",
 					req.Params.Name,
