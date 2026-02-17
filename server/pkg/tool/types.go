@@ -2986,8 +2986,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+	// in both single and double-quoted strings (which might be evaluated),
+	// and unquoted strings (Level 0) for interpreters (perl/ruby/etc).
+	if quoteLevel <= 2 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3254,7 +3255,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			if inSingle { // Entered quote
 				if wordBuilder.Len() > 0 {
 					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					// Pass current char as nextChar because it is the delimiter starting the quote
+					if err := checkKeyword(word, keywords, lastChar, lastWord, char); err != nil {
 						return err
 					}
 					lastWord = word
@@ -3274,7 +3276,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			if inDouble { // Entered quote
 				if wordBuilder.Len() > 0 {
 					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					// Pass current char as nextChar because it is the delimiter starting the quote
+					if err := checkKeyword(word, keywords, lastChar, lastWord, char); err != nil {
 						return err
 					}
 					lastWord = word
@@ -3292,7 +3295,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			if inBacktick { // Entered quote
 				if wordBuilder.Len() > 0 {
 					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+					// Pass current char as nextChar because it is the delimiter starting the quote
+					if err := checkKeyword(word, keywords, lastChar, lastWord, char); err != nil {
 						return err
 					}
 					lastWord = word
@@ -3318,7 +3322,8 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			// We treat them as delimiters to ensure we correctly isolate potential keywords.
 			if wordBuilder.Len() > 0 {
 				word := wordBuilder.String()
-				if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+				// Pass current char as nextChar (delimiter)
+				if err := checkKeyword(word, keywords, lastChar, lastWord, char); err != nil {
 					return err
 				}
 				lastWord = word
@@ -3335,14 +3340,15 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	// Check last word
 	if wordBuilder.Len() > 0 {
 		word := wordBuilder.String()
-		if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+		// Pass 0 as nextChar (end of string)
+		if err := checkKeyword(word, keywords, lastChar, lastWord, 0); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func checkKeyword(word string, keywords []string, lastChar rune, lastWord string) error {
+func checkKeyword(word string, keywords []string, lastChar rune, lastWord string, nextChar rune) error {
 	// Check if word is dangerous keyword
 	for _, kw := range keywords {
 		if word == kw {
@@ -3354,6 +3360,15 @@ func checkKeyword(word string, keywords []string, lastChar rune, lastWord string
 			if lastWord == "sub" || lastWord == "package" || lastWord == "use" || lastWord == "class" {
 				return nil
 			}
+
+			// Allow system.pl, system-config, system/path, system=val
+			// These delimiters indicate the keyword is likely part of a filename or safe operation,
+			// not a function call which typically uses space or parenthesis.
+			// Note: + is NOT allowed because 'system+q/id/' is valid Perl RCE.
+			if nextChar == '.' || nextChar == '-' || nextChar == '/' || nextChar == '=' {
+				return nil
+			}
+
 			return fmt.Errorf("interpreter injection detected: dangerous keyword %q found (unquoted)", kw)
 		}
 	}
