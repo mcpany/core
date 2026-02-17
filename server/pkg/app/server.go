@@ -338,6 +338,9 @@ func NewApplication() *Application {
 // Returns:
 //   - error: An error if execution fails.
 //
+// Errors:
+//   - An error if filesystem setup, database initialization, or server startup fails.
+//
 // Side Effects:
 //   - Starts HTTP and gRPC servers.
 //   - Initializes background workers.
@@ -891,6 +894,9 @@ func (a *Application) Run(opts RunOptions) error {
 //
 // Returns:
 //   - error: An error if the configuration reload fails.
+//
+// Errors:
+//   - An error if reading config files or loading services fails.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1255,6 +1261,9 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - error: nil if startup completes successfully, or a context error if canceled.
+//
+// Errors:
+//   - context.Canceled or context.DeadlineExceeded if the context is done before startup completes.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1385,6 +1394,9 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - error: nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - An error if the health check request fails or the server returns a non-200 status code.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1406,6 +1418,9 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - error: nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - An error if the health check request fails or the server returns a non-200 status code.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,

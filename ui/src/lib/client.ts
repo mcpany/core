@@ -769,9 +769,13 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
-     * @param request The execution request (tool name, arguments, etc.).
-     * @param dryRun If true, performs a dry run without side effects.
+     *
+     * Summary: Executes a tool on the backend with the given parameters.
+     *
+     * @param request - The execution request object containing tool name and arguments.
+     * @param dryRun - If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
+     * @throws {Error} If the network request fails or the tool execution returns an error.
      */
     executeTool: async (request: any, dryRun?: boolean) => {
         try {
