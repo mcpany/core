@@ -17,6 +17,9 @@ import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
 
 /**
  * ServiceStatusList component.
+ *
+*
+ * Summary: ServiceStatusList component.
  * @returns The rendered component.
  */
 export function ServiceStatusList() {

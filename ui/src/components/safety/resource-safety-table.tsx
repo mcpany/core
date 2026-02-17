@@ -26,6 +26,9 @@ interface ResourceSafetyTableProps {
 /**
  * ResourceSafetyTable displays a table of resources and allows toggling their enabled/disabled status.
  *
+*
+ * Summary: ResourceSafetyTable displays a table of resources and allows toggling their enabled/disabled status.
+ *
  * @param props - The component props.
  * @param props.resources - The list of resources to display.
  * @param props.onUpdate - Callback function called when a resource status is updated.

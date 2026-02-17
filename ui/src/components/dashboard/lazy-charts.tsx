@@ -24,6 +24,9 @@ const ChartSkeleton = () => (
 
 /**
  * LazyRequestVolumeChart is a dynamically loaded RequestVolumeChart component.
+ *
+*
+ * Summary: LazyRequestVolumeChart is a dynamically loaded RequestVolumeChart component.
  * It uses a skeleton loader while the component is being fetched to improve performance.
  */
 export const LazyRequestVolumeChart = dynamic(
@@ -36,6 +39,9 @@ export const LazyRequestVolumeChart = dynamic(
 
 /**
  * LazyRecentActivityWidget is a dynamically loaded RecentActivityWidget component.
+ *
+*
+ * Summary: LazyRecentActivityWidget is a dynamically loaded RecentActivityWidget component.
  * It uses a skeleton loader while the component is being fetched.
  */
 export const LazyRecentActivityWidget = dynamic(
@@ -48,6 +54,9 @@ export const LazyRecentActivityWidget = dynamic(
 
 /**
  * LazyTopToolsWidget is a dynamically loaded TopToolsWidget component.
+ *
+*
+ * Summary: LazyTopToolsWidget is a dynamically loaded TopToolsWidget component.
  * It uses a skeleton loader while the component is being fetched.
  */
 export const LazyTopToolsWidget = dynamic(
@@ -60,6 +69,9 @@ export const LazyTopToolsWidget = dynamic(
 
 /**
  * LazyHealthHistoryChart is a dynamically loaded HealthHistoryChart component.
+ *
+*
+ * Summary: LazyHealthHistoryChart is a dynamically loaded HealthHistoryChart component.
  * It uses a skeleton loader while the component is being fetched.
  */
 export const LazyHealthHistoryChart = dynamic(

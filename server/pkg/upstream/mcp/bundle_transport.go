@@ -31,6 +31,7 @@ type transportError struct {
 }
 
 // Error returns the error message.
+// Summary: Error returns the error message.
 //
 // Returns the result.
 func (e *transportError) Error() string {
@@ -38,6 +39,9 @@ func (e *transportError) Error() string {
 }
 
 // BundleDockerTransport implements the mcp.Transport interface to connect to a service
+//
+// Summary: BundleDockerTransport implements the mcp.
+//
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
 type BundleDockerTransport struct {
 	Image      string
@@ -53,6 +57,7 @@ type BundleDockerTransport struct {
 }
 
 // Connect establishes a connection to the service within the Docker container.
+// Summary: Connect establishes a connection to the service within the Docker container.
 //
 // ctx is the context for the request.
 //
@@ -169,6 +174,7 @@ type bundleDockerConn struct {
 }
 
 // Read reads a JSON-RPC message from the connection.
+// Summary: Read reads a JSON-RPC message from the connection.
 //
 // _ is an unused parameter.
 //
@@ -303,6 +309,7 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 }
 
 // Write writes a JSON-RPC message to the connection.
+// Summary: Write writes a JSON-RPC message to the connection.
 //
 // _ is an unused parameter.
 // msg is the msg.
@@ -428,6 +435,7 @@ func fixIDExtracted(val interface{}) interface{} {
 }
 
 // Close closes the connection.
+// Summary: Close closes the connection.
 //
 // Returns an error if the operation fails.
 func (c *bundleDockerConn) Close() error {
@@ -435,6 +443,7 @@ func (c *bundleDockerConn) Close() error {
 }
 
 // SessionID returns the session ID of the connection.
+// Summary: SessionID returns the session ID of the connection.
 //
 // Returns the result.
 func (c *bundleDockerConn) SessionID() string {
@@ -448,6 +457,7 @@ type bundleSlogWriter struct {
 }
 
 // Write writes the log message to the logger.
+// Summary: Write writes the log message to the logger.
 //
 // p is the p.
 //

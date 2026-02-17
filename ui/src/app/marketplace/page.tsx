@@ -29,6 +29,9 @@ import { SERVICE_REGISTRY } from "@/lib/service-registry";
 
 /**
  * MarketplacePage component.
+ *
+*
+ * Summary: MarketplacePage component.
  * @returns The rendered component.
  */
 export default function MarketplacePage() {

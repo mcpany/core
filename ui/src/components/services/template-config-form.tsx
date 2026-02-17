@@ -18,6 +18,9 @@ interface TemplateConfigFormProps {
 
 /**
  * TemplateConfigForm renders a form based on a service template definition.
+ *
+*
+ * Summary: TemplateConfigForm renders a form based on a service template definition.
  * It handles variable substitution inputs.
  * @param props - Component props.
  * @returns The TemplateConfigForm component.

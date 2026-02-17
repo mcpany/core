@@ -22,6 +22,9 @@ import (
 )
 
 // WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
+//
+// Summary: WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
+//
 // connection. It handles sending and receiving messages over a persistent
 // WebSocket connection managed by a connection pool.
 type WebsocketTool struct {
@@ -38,6 +41,7 @@ type WebsocketTool struct {
 }
 
 // NewWebsocketTool creates a new WebsocketTool.
+// Summary: NewWebsocketTool creates a new WebsocketTool.
 //
 // tool is the protobuf definition of the tool.
 // poolManager is used to get a WebSocket client from the connection pool.
@@ -65,6 +69,7 @@ func NewWebsocketTool(
 }
 
 // Tool returns the protobuf definition of the WebSocket tool.
+// Summary: Tool returns the protobuf definition of the WebSocket tool.
 //
 // Returns the result.
 func (t *WebsocketTool) Tool() *v1.Tool {
@@ -72,6 +77,7 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP tool definition.
+// Summary: MCPTool returns the MCP tool definition.
 //
 // Returns the result.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
@@ -86,6 +92,7 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
+// Summary: GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
 // Returns the result.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
@@ -93,6 +100,9 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 // Execute handles the execution of the WebSocket tool. It retrieves a connection
+//
+// Summary: Execute handles the execution of the WebSocket tool.
+//
 // from the pool, sends the tool inputs as a message, and waits for a single
 // response message, which it then processes and returns.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {

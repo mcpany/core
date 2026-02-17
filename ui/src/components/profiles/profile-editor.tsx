@@ -135,6 +135,9 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
 
 /**
  * Represents a user profile configuration in the UI.
+ *
+*
+ * Summary: Represents a user profile configuration in the UI.
  */
 export interface Profile {
     /** Unique identifier for the profile (usually same as name). */
@@ -171,6 +174,9 @@ interface ProfileEditorProps {
 
 /**
  * A sheet component for creating or editing a user profile.
+ *
+*
+ * Summary: A sheet component for creating or editing a user profile.
  * Allows configuring profile details and selecting accessible services.
  *
  * @param props - The component props.

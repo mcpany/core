@@ -11,6 +11,9 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
 /**
  * Provides theme context to the application using next-themes.
  *
+*
+ * Summary: Provides theme context to the application using next-themes.
+ *
  * @param props - The properties for the ThemeProvider, including children and theme settings.
  * @returns The ThemeProvider component.
  */

@@ -15,11 +15,16 @@ import (
 )
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
+//
+// Summary: PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
+//
+// Summary: NewPostgresVectorStore creates a new PostgresVectorStore.
+//
 // It connects to the database and ensures the schema exists.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
@@ -41,6 +46,9 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 }
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
+//
+// Summary: NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
+//
 // It ensures the schema exists.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
@@ -84,6 +92,7 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 }
 
 // Add adds a new entry to the vector store.
+// Summary: Add adds a new entry to the vector store.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -120,6 +129,7 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 }
 
 // Search searches for the most similar entry in the vector store.
+// Summary: Search searches for the most similar entry in the vector store.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -171,6 +181,7 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 }
 
 // Prune removes expired entries.
+// Summary: Prune removes expired entries.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -187,6 +198,7 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 }
 
 // Close closes the database connection.
+// Summary: Close closes the database connection.
 //
 // Returns an error if the operation fails.
 func (s *PostgresVectorStore) Close() error {

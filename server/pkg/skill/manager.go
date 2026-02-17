@@ -28,6 +28,8 @@ var (
 )
 
 // Manager handles the storage and retrieval of skills.
+//
+// Summary: Manager handles the storage and retrieval of skills.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
@@ -35,6 +37,9 @@ type Manager struct {
 }
 
 // NewManager creates a new Skill Manager.
+//
+// Summary: NewManager creates a new Skill Manager.
+//
 // rootDir is the directory where skills are stored.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
@@ -46,6 +51,9 @@ func NewManager(rootDir string) (*Manager, error) {
 }
 
 // ListSkills returns all available skills.
+//
+// Summary: ListSkills returns all available skills.
+//
 // It scans the root directory for subdirectories containing SKILL.md.
 func (m *Manager) ListSkills() ([]*Skill, error) {
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
@@ -88,6 +96,7 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 }
 
 // GetSkill retrieves a specific skill by name.
+// Summary: GetSkill retrieves a specific skill by name.
 //
 // name is the name of the resource.
 //
@@ -100,6 +109,9 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 }
 
 // CreateSkill creates a new skill.
+//
+// Summary: CreateSkill creates a new skill.
+//
 // It ensures the name is valid and the directory doesn't already exist.
 func (m *Manager) CreateSkill(skill *Skill) error {
 	m.mu.Lock()
@@ -130,6 +142,9 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 }
 
 // UpdateSkill updates an existing skill.
+//
+// Summary: UpdateSkill updates an existing skill.
+//
 // If the name has changed, it renames the directory.
 func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	m.mu.Lock()
@@ -163,6 +178,7 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 }
 
 // DeleteSkill deletes a skill.
+// Summary: DeleteSkill deletes a skill.
 //
 // name is the name of the resource.
 //
@@ -184,6 +200,9 @@ func (m *Manager) DeleteSkill(name string) error {
 }
 
 // SaveAsset saves an asset file (script, reference, etc.) for a skill.
+//
+// Summary: SaveAsset saves an asset file (script, reference, etc.
+//
 // path is relative to the skill root (e.g. "scripts/myscript.py").
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()

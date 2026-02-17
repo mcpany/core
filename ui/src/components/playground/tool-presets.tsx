@@ -26,6 +26,9 @@ interface ToolPresetsProps {
 
 /**
  * ToolPresets component.
+ *
+*
+ * Summary: ToolPresets component.
  * @param props - The component props.
  * @param props.toolName - The name of the tool.
  * @param props.currentData - The data to display.

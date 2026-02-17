@@ -17,6 +17,9 @@ import (
 )
 
 // ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
+//
+// Summary: ConvertMCPToolToProto transforms an *mcp.
+//
 // representation, into a protobuf-defined *pb.Tool with a structured input
 // schema. This is used to standardize tool definitions within the system.
 //
@@ -106,6 +109,9 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 }
 
 // ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
+//
+// Summary: ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
+//
 // represent fields from a protobuf message, into a structpb.Struct that can be
 // used as the `properties` field in a JSON schema.
 //
@@ -140,6 +146,9 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 
 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
+//
+// Summary: ConvertToolDefinitionToProto transforms a *configv1.
+//
 // *pb.Tool.
 //
 // Parameters:
@@ -190,6 +199,9 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 }
 
 // GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
+//
+// Summary: GetJSONSchemaForScalarType maps a protobuf scalar type (e.
+//
 // "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
 // is a helper function for building JSON schemas from protobuf definitions.
 //
@@ -226,6 +238,9 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 
 
 // ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
+//
+// Summary: ConvertProtoToMCPTool transforms a protobuf-defined *pb.
+//
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
 // exposing internally defined tools to the outside world.
 //

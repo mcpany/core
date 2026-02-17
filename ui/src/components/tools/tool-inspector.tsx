@@ -45,6 +45,9 @@ interface AuditLogEntry {
 /**
  * ToolInspector.
  *
+*
+ * Summary: ToolInspector.
+ *
  * @param onOpenChange - The onOpenChange.
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {

@@ -14,6 +14,9 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 /**
  * StepReview.
  *
+*
+ * Summary: StepReview.
+ *
  * @param { onComplete - The { onComplete.
  */
 export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {

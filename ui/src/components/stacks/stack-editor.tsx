@@ -23,6 +23,9 @@ interface StackEditorProps {
 /**
  * StackEditor component for editing stack configurations with visual feedback.
  *
+*
+ * Summary: StackEditor component for editing stack configurations with visual feedback.
+ *
  * @param props - Component properties
  * @param props.initialValue - Initial YAML content
  * @param props.onSave - Callback when saving

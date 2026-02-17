@@ -28,6 +28,9 @@ interface SmartToolSearchProps {
 
 /**
  * A search component that provides autocomplete for finding and selecting tools.
+ *
+*
+ * Summary: A search component that provides autocomplete for finding and selecting tools.
  * It also displays recently used tools for quick access.
  *
  * @param props - The component props.

@@ -32,6 +32,9 @@ import (
 type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
+//
+// Summary: Upstream implements the upstream.
+//
 // communicate over WebRTC data channels.
 type Upstream struct {
 	poolManager       *pool.Manager
@@ -41,6 +44,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: CheckHealth performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -57,6 +62,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 }
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
+//
+// Summary: Shutdown is a no-op for the WebRTC upstream, as connections are transient
+//
 // and not managed by a persistent pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -70,6 +78,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of WebrtcUpstream.
+// Summary: NewUpstream creates a new instance of WebrtcUpstream.
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
@@ -81,6 +90,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 }
 
 // Register processes the configuration for a WebRTC service, creating and
+//
+// Summary: Register processes the configuration for a WebRTC service, creating and
+//
 // registering tools for each call definition specified in the configuration.
 func (u *Upstream) Register(
 	ctx context.Context,

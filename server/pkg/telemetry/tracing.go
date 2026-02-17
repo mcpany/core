@@ -30,6 +30,9 @@ const (
 )
 
 // InitTelemetry initializes OpenTelemetry tracing and metrics.
+//
+// Summary: InitTelemetry initializes OpenTelemetry tracing and metrics.
+//
 // It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected.
 // It returns a shutdown function that should be called when the application exits.
 func InitTelemetry(ctx context.Context, serviceName string, version string, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {

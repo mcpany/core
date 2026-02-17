@@ -5,6 +5,9 @@
 
 /**
  * Estimates the number of tokens in a string using a simple heuristic.
+ *
+*
+ * Summary: Estimates the number of tokens in a string using a simple heuristic.
  * This is meant for UI estimation only, not for precision.
  * @param text - The text to estimate tokens for.
  * @returns Estimated token count.
@@ -29,6 +32,9 @@ export function estimateTokens(text: string): number {
 
 /**
  * Calculates total tokens for a sequence of messages.
+ *
+*
+ * Summary: Calculates total tokens for a sequence of messages.
  * @param messages - Array of message objects with content.
  * @returns Total estimated tokens.
  */
@@ -44,6 +50,9 @@ export function estimateMessageTokens(messages: any[]): number {
 
 /**
  * Formats a number of tokens into a human-readable string (e.g., 1.2k).
+ *
+*
+ * Summary: Formats a number of tokens into a human-readable string (e.g., 1.2k).
  * @param count - The number of tokens.
  * @returns Formatted string.
  */

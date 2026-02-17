@@ -9,6 +9,8 @@ import (
 )
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
+//
+// Summary: EmbeddingProvider defines the interface for fetching text embeddings.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	// It returns the embedding as a slice of float32 and any error encountered.
@@ -16,6 +18,8 @@ type EmbeddingProvider interface {
 }
 
 // VectorStore defines the interface for storing and searching vectors.
+//
+// Summary: VectorStore defines the interface for storing and searching vectors.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -45,6 +49,8 @@ type VectorStore interface {
 }
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
+//
+// Summary: SemanticCache implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore
@@ -52,6 +58,7 @@ type SemanticCache struct {
 }
 
 // NewSemanticCache creates a new SemanticCache.
+// Summary: NewSemanticCache creates a new SemanticCache.
 //
 // provider is the provider.
 // store is the store.
@@ -73,6 +80,9 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 }
 
 // Get attempts to find a semantically similar cached result.
+//
+// Summary: Get attempts to find a semantically similar cached result.
+//
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
@@ -88,6 +98,7 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 }
 
 // Set adds a result to the cache using the provided embedding.
+// Summary: Set adds a result to the cache using the provided embedding.
 //
 // ctx is the context for the request.
 // key is the key.

@@ -41,6 +41,9 @@ import { useSearchParams } from "next/navigation";
 
 /**
  * PlaygroundClientPro component.
+ *
+*
+ * Summary: PlaygroundClientPro component.
  * @returns The rendered component.
  */
 export function PlaygroundClientPro() {

@@ -26,6 +26,8 @@ import (
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
+//
+// Summary: ProviderFactory is a function that creates an EmbeddingProvider.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -38,6 +40,8 @@ var (
 )
 
 // CachingMiddleware handles caching of tool execution results.
+//
+// Summary: CachingMiddleware handles caching of tool execution results.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -48,6 +52,7 @@ type CachingMiddleware struct {
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
+// Summary: NewCachingMiddleware creates a new CachingMiddleware.
 //
 // toolManager is the toolManager.
 //
@@ -111,6 +116,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 }
 
 // SetProviderFactory allows overriding the default provider factory for testing.
+// Summary: SetProviderFactory allows overriding the default provider factory for testing.
 //
 // factory is the factory.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
@@ -118,6 +124,7 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 }
 
 // Execute executes the caching middleware.
+// Summary: Execute executes the caching middleware.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -418,6 +425,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 }
 
 // Clear clears the cache.
+// Summary: Clear clears the cache.
 //
 // ctx is the context for the request.
 //

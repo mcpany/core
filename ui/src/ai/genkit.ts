@@ -8,6 +8,9 @@ import {googleAI} from '@genkit-ai/google-genai';
 
 /**
  * The initialized Genkit instance configured with Google AI plugin and Gemini 2.5 Flash model.
+ *
+*
+ * Summary: The initialized Genkit instance configured with Google AI plugin and Gemini 2.5 Flash model.
  * Used for AI-powered features in the application.
  */
 export const ai = genkit({

@@ -23,6 +23,9 @@ interface ToolSidebarProps {
 /**
  * ToolSidebar.
  *
+*
+ * Summary: ToolSidebar.
+ *
  * @param className - The className.
  */
 export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps) {

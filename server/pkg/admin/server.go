@@ -28,6 +28,8 @@ import (
 )
 
 // Server implements the AdminServiceServer interface.
+//
+// Summary: Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware
@@ -39,6 +41,7 @@ type Server struct {
 }
 
 // NewServer creates a new Admin Server.
+// Summary: NewServer creates a new Admin Server.
 //
 // cache manages the caching layer.
 // toolManager is the toolManager.
@@ -67,6 +70,7 @@ func NewServer(
 }
 
 // ClearCache clears the cache.
+// Summary: ClearCache clears the cache.
 //
 // ctx is the context for the request.
 // _ is an unused parameter.
@@ -84,6 +88,7 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 }
 
 // ListServices returns all registered services.
+// Summary: ListServices returns all registered services.
 //
 // _ is an unused parameter.
 // _ is an unused parameter.
@@ -137,6 +142,7 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 }
 
 // GetService returns a specific service by ID.
+// Summary: GetService returns a specific service by ID.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -186,6 +192,7 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 }
 
 // ListTools returns all registered tools.
+// Summary: ListTools returns all registered tools.
 //
 // _ is an unused parameter.
 // _ is an unused parameter.
@@ -202,6 +209,7 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 }
 
 // GetTool returns a specific tool by name.
+// Summary: GetTool returns a specific tool by name.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -217,6 +225,7 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 }
 
 // CreateUser creates a new user.
+// Summary: CreateUser creates a new user.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -249,6 +258,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 }
 
 // GetUser retrieves a user by ID.
+// Summary: GetUser retrieves a user by ID.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -270,6 +280,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 }
 
 // ListUsers lists all users.
+// Summary: ListUsers lists all users.
 //
 // ctx is the context for the request.
 // _ is an unused parameter.
@@ -293,6 +304,7 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 }
 
 // UpdateUser updates an existing user.
+// Summary: UpdateUser updates an existing user.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -325,6 +337,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 }
 
 // DeleteUser deletes a user by ID.
+// Summary: DeleteUser deletes a user by ID.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -339,6 +352,8 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 }
 
 // GetDiscoveryStatus returns the status of auto-discovery providers.
+//
+// Summary: GetDiscoveryStatus returns the status of auto-discovery providers.
 func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
 	if s.discoveryManager == nil {
 		return &pb.GetDiscoveryStatusResponse{}, nil
@@ -362,6 +377,8 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 }
 
 // ListAuditLogs returns audit logs matching the filter.
+//
+// Summary: ListAuditLogs returns audit logs matching the filter.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")

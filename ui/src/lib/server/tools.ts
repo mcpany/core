@@ -3,6 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Tool defines the interface for a built-in tool execution.
+ *
+ * Summary: Defines the structure and execution logic for a tool.
+ */
 export interface Tool {
   name: string;
   description: string;
@@ -11,8 +16,9 @@ export interface Tool {
 }
 
 /**
- * BuiltInTools contains the definitions and implementations of standard tools
- * provided by the server, such as calculator, echo, and system info.
+ * BuiltInTools contains the definitions and implementations of standard tools.
+ *
+ * Summary: BuiltInTools contains the definitions and implementations of standard tools provided by the server, such as calculator, echo, and system info.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
@@ -100,6 +106,8 @@ export const BuiltInTools: Record<string, Tool> = {
 
 /**
  * executeTool executes a built-in tool by name with the provided arguments.
+ *
+ * Summary: Executes a built-in tool by name with the provided arguments.
  *
  * @param toolName - The name of the tool to execute.
  * @param args - The arguments for the tool execution.

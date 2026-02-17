@@ -26,6 +26,9 @@ interface ToolSafetyTableProps {
 /**
  * ToolSafetyTable displays a table of tools and allows toggling their enabled/disabled status.
  *
+*
+ * Summary: ToolSafetyTable displays a table of tools and allows toggling their enabled/disabled status.
+ *
  * @param props - The component props.
  * @param props.tools - The list of tools to display.
  * @param props.onUpdate - Callback function called when a tool status is updated.

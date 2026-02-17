@@ -7,6 +7,9 @@ import { UpstreamServiceConfig } from "@/lib/client";
 
 /**
  * A collection of services, typically organized by theme or use case.
+ *
+*
+ * Summary: A collection of services, typically organized by theme or use case.
  */
 export interface ServiceCollection {
   /** The name of the collection. */
@@ -23,6 +26,9 @@ export interface ServiceCollection {
 
 /**
  * An external marketplace where MCP servers can be discovered.
+ *
+*
+ * Summary: An external marketplace where MCP servers can be discovered.
  */
 export interface ExternalMarketplace {
   /** Unique identifier for the marketplace. */
@@ -39,6 +45,9 @@ export interface ExternalMarketplace {
 
 /**
  * A server listed in an external marketplace.
+ *
+*
+ * Summary: A server listed in an external marketplace.
  */
 export interface ExternalServer {
   /** Unique identifier for the server. */
@@ -55,6 +64,9 @@ export interface ExternalServer {
 
 /**
  * A server discovered from the Community (Awesome List).
+ *
+*
+ * Summary: A server discovered from the Community (Awesome List).
  */
 export interface CommunityServer {
     /** The category or section where this server was found (e.g., "Browser Automation"). */
@@ -138,6 +150,9 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
 
 /**
  * Service for interacting with internal and external marketplaces.
+ *
+*
+ * Summary: Service for interacting with internal and external marketplaces.
  */
 export const marketplaceService = {
   /**

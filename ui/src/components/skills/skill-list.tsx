@@ -13,6 +13,9 @@ import { toast } from 'sonner';
 
 /**
  * SkillList component.
+ *
+*
+ * Summary: SkillList component.
  * @returns The rendered component.
  */
 export default function SkillList() {

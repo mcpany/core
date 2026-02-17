@@ -14,6 +14,8 @@ import (
 )
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+//
+// Summary: OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -21,6 +23,7 @@ type OllamaEmbeddingProvider struct {
 }
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
+// Summary: NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
 // baseURL is the baseURL.
 // model is the model.
@@ -50,6 +53,7 @@ type ollamaEmbeddingResponse struct {
 }
 
 // Embed generates an embedding for the given text using Ollama.
+// Summary: Embed generates an embedding for the given text using Ollama.
 //
 // ctx is the context for the request.
 // text is the text.

@@ -19,6 +19,9 @@ interface CollectionDetailsDialogProps {
 
 /**
  * CollectionDetailsDialog component.
+ *
+*
+ * Summary: CollectionDetailsDialog component.
  * Displays details about a specific service collection in a dialog.
  *
  * @param props - The component props.

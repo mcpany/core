@@ -18,12 +18,16 @@ import (
 )
 
 // StdioTransport implements mcp.Transport for a local command,
+//
+// Summary: StdioTransport implements mcp.
+//
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
 
 // Connect starts the command and returns a connection.
+// Summary: Connect starts the command and returns a connection.
 //
 // _ is an unused parameter.
 //
@@ -92,6 +96,7 @@ type stdioConn struct {
 }
 
 // Read reads a JSON-RPC message from the standard output of the command.
+// Summary: Read reads a JSON-RPC message from the standard output of the command.
 //
 // _ is an unused parameter.
 //
@@ -184,6 +189,7 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write writes a JSON-RPC message to the standard input of the command.
+// Summary: Write writes a JSON-RPC message to the standard input of the command.
 //
 // _ is an unused parameter.
 // msg is the msg.
@@ -229,6 +235,7 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 }
 
 // Close terminates the command and closes the streams.
+// Summary: Close terminates the command and closes the streams.
 //
 // Returns an error if the operation fails.
 func (c *stdioConn) Close() error {
@@ -247,6 +254,7 @@ func (c *stdioConn) Close() error {
 }
 
 // SessionID returns a static session ID for the stdio connection.
+// Summary: SessionID returns a static session ID for the stdio connection.
 //
 // Returns the result.
 func (c *stdioConn) SessionID() string {

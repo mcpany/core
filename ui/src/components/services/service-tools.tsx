@@ -28,6 +28,9 @@ interface ServiceToolsProps {
 
 /**
  * ServiceTools lists the tools exposed by an upstream service.
+ *
+*
+ * Summary: ServiceTools lists the tools exposed by an upstream service.
  * It provides actions to try out tools in the playground and view their schema definitions.
  */
 export function ServiceTools({ tools }: ServiceToolsProps) {

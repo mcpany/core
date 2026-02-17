@@ -13,6 +13,9 @@ import (
 )
 
 // Generator handles the interactive generation of configuration files.
+//
+// Summary: Generator handles the interactive generation of configuration files.
+//
 // It prompts the user for input and uses templates to generate YAML configuration
 // for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
 type Generator struct {
@@ -20,6 +23,7 @@ type Generator struct {
 }
 
 // NewGenerator creates a new Generator instance that reads from standard input.
+// Summary: NewGenerator creates a new Generator instance that reads from standard input.
 //
 // Returns:
 //   - A pointer to a new Generator initialized with os.Stdin.
@@ -30,6 +34,9 @@ func NewGenerator() *Generator {
 }
 
 // Generate prompts the user for service details and returns the generated
+//
+// Summary: Generate prompts the user for service details and returns the generated
+//
 // configuration as a byte slice. It supports multiple service types including
 // HTTP, gRPC, OpenAPI, and GraphQL.
 //

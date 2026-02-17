@@ -14,6 +14,9 @@ import { Button } from "@/components/ui/button";
 
 /**
  * StepAuth component.
+ *
+*
+ * Summary: StepAuth component.
  * @returns The rendered component.
  */
 export function StepAuth() {

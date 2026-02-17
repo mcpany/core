@@ -78,6 +78,9 @@ const TEMPLATES = [
 
 /**
  * StepServiceType component.
+ *
+*
+ * Summary: StepServiceType component.
  * @returns The rendered component.
  */
 export function StepServiceType() {

@@ -17,6 +17,9 @@ import { useToast } from "@/hooks/use-toast";
 
 /**
  * ConnectClientButton component.
+ *
+*
+ * Summary: ConnectClientButton component.
  * Provides a modal with configuration snippets for connecting various MCP clients.
  *
  * @returns {JSX.Element} The rendered component.

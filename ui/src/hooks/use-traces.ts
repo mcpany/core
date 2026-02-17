@@ -13,6 +13,9 @@ interface UseTracesOptions {
 /**
  * Hook to manage trace subscriptions via WebSocket.
  *
+*
+ * Summary: Hook to manage trace subscriptions via WebSocket.
+ *
  * @param options - Configuration options for the trace hook.
  * @param options.initialPaused - Whether to start in a paused state.
  * @returns An object containing the current traces, loading state, connection status, and controls.

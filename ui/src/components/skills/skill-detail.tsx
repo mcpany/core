@@ -15,6 +15,9 @@ import { toast } from 'sonner';
 
 /**
  * SkillDetail component.
+ *
+*
+ * Summary: SkillDetail component.
  * @returns The rendered component.
  */
 export default function SkillDetail() {

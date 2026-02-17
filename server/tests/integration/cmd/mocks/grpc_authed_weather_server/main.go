@@ -40,6 +40,7 @@ var weatherData = map[string]string{
 }
 
 // GetWeather returns the weather for a specific location.
+// Summary: GetWeather returns the weather for a specific location.
 //
 // Parameters:
 //   ctx: The context for the request.

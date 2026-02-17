@@ -20,6 +20,8 @@ import (
 )
 
 // MCPServerReconciler reconciles a MCPServer object
+//
+// Summary: MCPServerReconciler reconciles a MCPServer object
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -32,6 +34,9 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
+//
+// Summary: Reconcile is part of the main kubernetes reconciliation loop which aims to
+//
 // move the current state of the cluster closer to the desired state.
 // It creates or updates the Deployment and Service for the MCPServer.
 //
@@ -235,6 +240,7 @@ func labelsForMCPServer(name string) map[string]string {
 }
 
 // SetupWithManager sets up the controller with the Manager.
+// Summary: SetupWithManager sets up the controller with the Manager.
 //
 // Parameters:
 //   - mgr: The controller manager.

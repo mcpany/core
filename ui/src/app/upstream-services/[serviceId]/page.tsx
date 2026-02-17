@@ -22,6 +22,9 @@ import { ServiceInspector } from "@/components/services/editor/service-inspector
 
 /**
  * UpstreamServiceDetailPage renders the detailed view for a specific upstream service.
+ *
+*
+ * Summary: UpstreamServiceDetailPage renders the detailed view for a specific upstream service.
  * It includes tabs for Overview, Tools, Resources, Logs, Inspector, and Settings.
  */
 export default function UpstreamServiceDetailPage() {

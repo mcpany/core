@@ -7,6 +7,9 @@ import data from './placeholder-images.json';
 
 /**
  * ImagePlaceholder type definition.
+ *
+*
+ * Summary: ImagePlaceholder type definition.
  */
 export type ImagePlaceholder = {
   id: string;
@@ -17,5 +20,8 @@ export type ImagePlaceholder = {
 
 /**
  * The PlaceHolderImages const.
+ *
+*
+ * Summary: The PlaceHolderImages const.
  */
 export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;

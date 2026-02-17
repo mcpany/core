@@ -16,14 +16,19 @@ import (
 )
 
 // DefaultClaudeModel is the default Claude model to use.
+//
+// Summary: DefaultClaudeModel is the default Claude model to use.
 const DefaultClaudeModel = "claude-3-5-sonnet-latest"
 
 // ClaudeCLI handles interactions with the Claude CLI tool for testing.
+//
+// Summary: ClaudeCLI handles interactions with the Claude CLI tool for testing.
 type ClaudeCLI struct {
 	t *testing.T
 }
 
 // NewClaudeCLI creates a new ClaudeCLI instance.
+// Summary: NewClaudeCLI creates a new ClaudeCLI instance.
 //
 // t is the t.
 //
@@ -33,6 +38,8 @@ func NewClaudeCLI(t *testing.T) *ClaudeCLI {
 }
 
 // Install installs the Claude CLI tool.
+//
+// Summary: Install installs the Claude CLI tool.
 func (c *ClaudeCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -53,6 +60,7 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 }
 
 // AddMCP adds an MCP server to the Claude CLI configuration.
+// Summary: AddMCP adds an MCP server to the Claude CLI configuration.
 //
 // name is the name of the resource.
 // endpoint is the endpoint.
@@ -75,6 +83,7 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 }
 
 // RemoveMCP removes an MCP server from the Claude CLI configuration.
+// Summary: RemoveMCP removes an MCP server from the Claude CLI configuration.
 //
 // name is the name of the resource.
 func (c *ClaudeCLI) RemoveMCP(name string) {
@@ -87,6 +96,7 @@ func (c *ClaudeCLI) RemoveMCP(name string) {
 }
 
 // Run executes a prompt against the Claude CLI.
+// Summary: Run executes a prompt against the Claude CLI.
 //
 // apiKey is the apiKey.
 // prompt is the prompt.

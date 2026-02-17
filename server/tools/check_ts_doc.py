@@ -76,6 +76,9 @@ def main():
         if 'node_modules' in dirnames:
             dirnames.remove('node_modules')
 
+        if 'mocks' in dirnames:
+            dirnames.remove('mocks')
+
         for filename in filenames:
             if filename.endswith('.ts') or filename.endswith('.tsx'):
                 if filename.endswith('.d.ts') or filename.endswith('.test.ts') or filename.endswith('.test.tsx'):

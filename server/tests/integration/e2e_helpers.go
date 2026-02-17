@@ -40,6 +40,7 @@ import (
 )
 
 // CreateTempConfigFile creates a temporary configuration file for the configured upstream service.
+// Summary: CreateTempConfigFile creates a temporary configuration file for the configured upstream service.
 //
 // t is the t.
 // config holds the configuration settings.
@@ -68,6 +69,7 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 }
 
 // CreateTempNatsConfigFile creates a temporary configuration file for NATS.
+// Summary: CreateTempNatsConfigFile creates a temporary configuration file for NATS.
 //
 // t is the t.
 //
@@ -107,6 +109,7 @@ type threadSafeBuffer struct {
 }
 
 // Write appends the contents of p to the buffer, growing the buffer as needed.
+// Summary: Write appends the contents of p to the buffer, growing the buffer as needed.
 //
 // p is the p.
 //
@@ -119,6 +122,9 @@ func (b *threadSafeBuffer) Write(p []byte) (int, error) {
 }
 
 // String returns the contents of the unread portion of the buffer
+//
+// Summary: String returns the contents of the unread portion of the buffer
+//
 // as a string. If the Buffer is a nil pointer, it returns "<nil>".
 func (b *threadSafeBuffer) String() string {
 	b.mu.RLock()
@@ -127,6 +133,7 @@ func (b *threadSafeBuffer) String() string {
 }
 
 // ProjectRoot returns the absolute path to the project root.
+// Summary: ProjectRoot returns the absolute path to the project root.
 //
 // t is the t.
 //
@@ -213,6 +220,7 @@ var (
 )
 
 // GetProjectRoot returns the absolute path to the project root.
+// Summary: GetProjectRoot returns the absolute path to the project root.
 //
 // Returns the result.
 // Returns an error if the operation fails.
@@ -253,6 +261,7 @@ func GetProjectRoot() (string, error) {
 var portMutex sync.Mutex
 
 // FindFreePort finds a free TCP port on localhost.
+// Summary: FindFreePort finds a free TCP port on localhost.
 //
 // t is the t.
 //
@@ -275,6 +284,9 @@ func FindFreePort(t *testing.T) int {
 }
 
 // ManagedProcess represents an external process managed by the test framework.
+//
+// Summary: ManagedProcess represents an external process managed by the test framework.
+//
 // --- Process Management for External Services ---
 // ManagedProcess manages an external process for testing.
 type ManagedProcess struct {
@@ -291,6 +303,7 @@ type ManagedProcess struct {
 }
 
 // NewManagedProcess creates a new ManagedProcess instance.
+// Summary: NewManagedProcess creates a new ManagedProcess instance.
 //
 // t is the t.
 // label is the label.
@@ -326,6 +339,7 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 }
 
 // Cmd returns the underlying exec.Cmd.
+// Summary: Cmd returns the underlying exec.
 //
 // Returns the result.
 func (mp *ManagedProcess) Cmd() *exec.Cmd {
@@ -333,6 +347,7 @@ func (mp *ManagedProcess) Cmd() *exec.Cmd {
 }
 
 // Start starts the process.
+// Summary: Start starts the process.
 //
 // Returns an error if the operation fails.
 func (mp *ManagedProcess) Start() error {
@@ -376,6 +391,8 @@ func (mp *ManagedProcess) Start() error {
 var syscallKill = syscall.Kill
 
 // Stop stops the process, attempting graceful shutdown then force kill.
+//
+// Summary: Stop stops the process, attempting graceful shutdown then force kill.
 func (mp *ManagedProcess) Stop() {
 	select {
 	case <-mp.waitDone:
@@ -453,16 +470,19 @@ func (mp *ManagedProcess) Stop() {
 }
 
 // StdoutString returns the captured stdout as a string.
+// Summary: StdoutString returns the captured stdout as a string.
 //
 // Returns the result.
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
 
 // StderrString returns the captured stderr as a string.
+// Summary: StderrString returns the captured stderr as a string.
 //
 // Returns the result.
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
 // WaitForText waits for specific text to appear in the process's stdout.
+// Summary: WaitForText waits for specific text to appear in the process's stdout.
 //
 // t is the t.
 // text is the text.
@@ -475,6 +495,7 @@ func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Du
 }
 
 // WaitForTCPPort waits for a TCP port to become open and accepting connections.
+// Summary: WaitForTCPPort waits for a TCP port to become open and accepting connections.
 //
 // t is the t.
 // port is the port.
@@ -493,6 +514,7 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 }
 
 // WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
+// Summary: WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
 //
 // t is the t.
 // grpcAddress is the grpcAddress.
@@ -527,6 +549,7 @@ func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 }
 
 // WaitForWebsocketReady waits for a websocket server to become ready by attempting to connect.
+// Summary: WaitForWebsocketReady waits for a websocket server to become ready by attempting to connect.
 //
 // t is the t.
 // url is the url.
@@ -549,6 +572,7 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 }
 
 // WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
+// Summary: WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
 //
 // t is the t.
 // url is the url.
@@ -573,6 +597,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// Summary: IsDockerSocketAccessible checks if the Docker daemon is accessible.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
@@ -595,6 +620,7 @@ func IsDockerSocketAccessible() bool {
 // --- Mock Service Start Helpers (External Processes) ---
 
 // StartDockerContainer starts a docker container with the given image and args.
+// Summary: StartDockerContainer starts a docker container with the given image and args.
 //
 // t is the t.
 // imageName is the imageName.
@@ -660,6 +686,9 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 }
 
 // MCPANYTestServerInfo contains information about a running MCPANY test server.
+//
+// Summary: MCPANYTestServerInfo contains information about a running MCPANY test server.
+//
 // --- MCPANY Server Helper (External Process) ---
 // MCPANYTestServerInfo contains information about a running MCP Any server instance for testing.
 type MCPANYTestServerInfo struct {
@@ -678,6 +707,9 @@ type MCPANYTestServerInfo struct {
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
+//
+// Summary: WebsocketEchoServerInfo contains information about a running Websocket echo server.
+//
 // --- Websocket Echo Server Helper ---
 // WebsocketEchoServerInfo contains information about a running mock WebSocket echo server.
 type WebsocketEchoServerInfo struct {
@@ -686,6 +718,7 @@ type WebsocketEchoServerInfo struct {
 }
 
 // StartWebsocketEchoServer starts a mock WebSocket echo server.
+// Summary: StartWebsocketEchoServer starts a mock WebSocket echo server.
 //
 // t is the t.
 //
@@ -749,6 +782,7 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 }
 
 // StartMCPANYServerWithConfig starts the MCP Any server with a provided config content.
+// Summary: StartMCPANYServerWithConfig starts the MCP Any server with a provided config content.
 //
 // t is the t.
 // testName is the testName.
@@ -767,6 +801,7 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 }
 
 // StartMCPANYServer starts the MCP Any server with default settings.
+// Summary: StartMCPANYServer starts the MCP Any server with default settings.
 //
 // t is the t.
 // testName is the testName.
@@ -778,6 +813,7 @@ func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPA
 }
 
 // StartMCPANYServerWithNoHealthCheck starts the MCP Any server but skips the health check.
+// Summary: StartMCPANYServerWithNoHealthCheck starts the MCP Any server but skips the health check.
 //
 // t is the t.
 // testName is the testName.
@@ -789,6 +825,7 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 }
 
 // StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
+// Summary: StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
 //
 // t is the t.
 // _ is an unused parameter.
@@ -925,6 +962,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 }
 
 // StartNatsServer starts a NATS server for testing.
+// Summary: StartNatsServer starts a NATS server for testing.
 //
 // t is the t.
 //
@@ -1007,6 +1045,9 @@ func StartNatsServer(t *testing.T) (string, func()) {
 }
 
 // StartRedisContainer starts a Redis container for testing.
+//
+// Summary: StartRedisContainer starts a Redis container for testing.
+//
 // StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
@@ -1085,6 +1126,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 }
 
 // StartMCPANYServerWithClock starts the MCP Any server, optionally waiting for health.
+// Summary: StartMCPANYServerWithClock starts the MCP Any server, optionally waiting for health.
 //
 // t is the t.
 // testName is the testName.
@@ -1305,6 +1347,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 }
 
 // Initialize performs the MCP initialization handshake.
+// Summary: Initialize performs the MCP initialization handshake.
 //
 // ctx is the context for the request.
 //
@@ -1410,6 +1453,7 @@ func parseMCPResponse(_ *testing.T, resp *http.Response) ([]byte, error) {
 }
 
 // ListTools calls tools/list via JSON-RPC.
+// Summary: ListTools calls tools/list via JSON-RPC.
 //
 // ctx is the context for the request.
 //
@@ -1468,6 +1512,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 }
 
 // CallTool calls tools/call via JSON-RPC.
+// Summary: CallTool calls tools/call via JSON-RPC.
 //
 // ctx is the context for the request.
 // params is the params.
@@ -1527,6 +1572,7 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 }
 
 // RegisterServiceViaAPI registers a service using the gRPC API.
+// Summary: RegisterServiceViaAPI registers a service using the gRPC API.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1542,6 +1588,7 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 }
 
 // RegisterHTTPService registers a simple HTTP service.
+// Summary: RegisterHTTPService registers a simple HTTP service.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1560,6 +1607,7 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 }
 
 // RegisterHTTPServiceWithParams registers an HTTP service with parameters.
+// Summary: RegisterHTTPServiceWithParams registers an HTTP service with parameters.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1611,6 +1659,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 }
 
 // RegisterWebsocketService registers a WebSocket service.
+// Summary: RegisterWebsocketService registers a WebSocket service.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1654,6 +1703,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 }
 
 // RegisterWebrtcService registers a WebRTC service.
+// Summary: RegisterWebrtcService registers a WebRTC service.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1697,6 +1747,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 }
 
 // RegisterStreamableMCPService registers a streamable MCP service (SSE).
+// Summary: RegisterStreamableMCPService registers a streamable MCP service (SSE).
 //
 // t is the t.
 // regClient is the regClient.
@@ -1744,6 +1795,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 }
 
 // RegisterStdioMCPService registers an MCP service using stdio.
+// Summary: RegisterStdioMCPService registers an MCP service using stdio.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1760,6 +1812,7 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 }
 
 // RegisterGRPCService registers a gRPC service.
+// Summary: RegisterGRPCService registers a gRPC service.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1790,6 +1843,7 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 }
 
 // RegisterStdioService registers a raw stdio service.
+// Summary: RegisterStdioService registers a raw stdio service.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1803,6 +1857,7 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 }
 
 // RegisterStdioServiceWithSetup registers a stdio service with setup steps.
+// Summary: RegisterStdioServiceWithSetup registers a stdio service with setup steps.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1858,6 +1913,7 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 }
 
 // RegisterOpenAPIService registers an OpenAPI service.
+// Summary: RegisterOpenAPIService registers an OpenAPI service.
 //
 // t is the t.
 // regClient is the regClient.
@@ -1898,6 +1954,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 }
 
 // RegisterHTTPServiceWithJSONRPC registers an HTTP service using the JSON-RPC endpoint.
+// Summary: RegisterHTTPServiceWithJSONRPC registers an HTTP service using the JSON-RPC endpoint.
 //
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
@@ -1980,6 +2037,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 }
 
 // WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
+// Summary: WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
 //
 // t is the t.
 // mp is the mp.
@@ -2019,6 +2077,8 @@ func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (s
 }
 
 // MCPJSONRPCError represents a JSON-RPC error.
+//
+// Summary: MCPJSONRPCError represents a JSON-RPC error.
 type MCPJSONRPCError struct {
 	// Code is the error code.
 	Code int `json:"code"`
@@ -2029,6 +2089,7 @@ type MCPJSONRPCError struct {
 }
 
 // Error implements the error interface.
+// Summary: Error implements the error interface.
 //
 // Returns the result.
 func (e *MCPJSONRPCError) Error() string {

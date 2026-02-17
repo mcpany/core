@@ -10,6 +10,9 @@ const MAX_RECENT_TOOLS = 5;
 
 /**
  * Hook for managing recently used tools.
+ *
+*
+ * Summary: Hook for managing recently used tools.
  * @returns The recent tools state and functions.
  */
 export function useRecentTools() {

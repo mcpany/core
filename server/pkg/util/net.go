@@ -19,6 +19,9 @@ import (
 )
 
 // IPResolver defines an interface for looking up IP addresses.
+//
+// Summary: IPResolver defines an interface for looking up IP addresses.
+//
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
@@ -27,6 +30,9 @@ type IPResolver interface {
 }
 
 // NetDialer defines an interface for dialing network connections.
+//
+// Summary: NetDialer defines an interface for dialing network connections.
+//
 // It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using
@@ -35,6 +41,8 @@ type NetDialer interface {
 }
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+//
+// Summary: SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -194,6 +202,9 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: CheckConnection verifies if a TCP connection can be established to the given address.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
@@ -263,6 +274,9 @@ func CheckConnection(ctx context.Context, address string) error {
 }
 
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
+// Summary: ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //

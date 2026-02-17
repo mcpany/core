@@ -11,6 +11,8 @@ import (
 )
 
 // SimpleVectorStore is a naive in-memory vector store.
+//
+// Summary: SimpleVectorStore is a naive in-memory vector store.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -18,6 +20,8 @@ type SimpleVectorStore struct {
 }
 
 // VectorEntry represents a single entry in the vector store.
+//
+// Summary: VectorEntry represents a single entry in the vector store.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32
@@ -30,6 +34,9 @@ type VectorEntry struct {
 }
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
+//
+// Summary: NewSimpleVectorStore creates a new SimpleVectorStore.
+//
 // It initializes the store with a default configuration.
 //
 // Returns:
@@ -42,6 +49,9 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 }
 
 // Add adds a new entry to the vector store.
+//
+// Summary: Add adds a new entry to the vector store.
+//
 // It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
 //
 // Parameters:
@@ -79,6 +89,9 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 }
 
 // Search searches for the most similar entry in the vector store for the given key and query vector.
+//
+// Summary: Search searches for the most similar entry in the vector store for the given key and query vector.
+//
 // It returns the result, the similarity score, and a boolean indicating if a match was found.
 //
 // Parameters:
@@ -125,6 +138,7 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 }
 
 // Prune removes expired entries from the vector store for the given key.
+// Summary: Prune removes expired entries from the vector store for the given key.
 //
 // Parameters:
 //   - key: The key to prune entries for.

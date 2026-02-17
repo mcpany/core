@@ -24,6 +24,8 @@ import (
 )
 
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
+//
+// Summary: ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
 // ServiceRegistryInterface defines the interface for a service registry.

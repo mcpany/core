@@ -7,6 +7,9 @@ import { ResourceExplorer } from "@/components/resources/resource-explorer";
 
 /**
  * ResourcesPage component.
+ *
+*
+ * Summary: ResourcesPage component.
  * @returns The rendered component.
  */
 export default function ResourcesPage() {

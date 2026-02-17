@@ -31,6 +31,9 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for services that
+//
+// Summary: Upstream implements the upstream.
+//
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
 type Upstream struct {
@@ -41,6 +44,8 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Summary: CheckHealth performs a health check on the upstream service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -57,6 +62,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 }
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
+//
+// Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down
+//
 // the associated connection pool.
 //
 // Parameters:
@@ -79,6 +87,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of WebsocketUpstream.
+// Summary: NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Parameters:
 //   - poolManager: The connection pool manager to be used for managing WebSocket connections.
@@ -92,6 +101,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 }
 
 // Register processes the configuration for a WebSocket service. It creates a
+//
+// Summary: Register processes the configuration for a WebSocket service.
+//
 // connection pool and registers tools for each call definition specified in the
 // configuration.
 //

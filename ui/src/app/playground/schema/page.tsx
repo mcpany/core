@@ -15,6 +15,9 @@ import { apiClient } from "@/lib/client";
 
 /**
  * SchemaPlaygroundPage provides an interactive environment for users to test and validate
+ *
+*
+ * Summary: SchemaPlaygroundPage provides an interactive environment for users to test and validate
  * configuration snippets against the MCP Any schema.
  * @returns The Schema Playground page component.
  */

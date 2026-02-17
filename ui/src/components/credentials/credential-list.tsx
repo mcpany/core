@@ -31,6 +31,9 @@ import { useToast } from "@/hooks/use-toast"
 
 /**
  * CredentialList component.
+ *
+*
+ * Summary: CredentialList component.
  * @returns The rendered component.
  */
 export function CredentialList() {

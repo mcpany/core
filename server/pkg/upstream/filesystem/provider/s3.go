@@ -17,11 +17,14 @@ import (
 )
 
 // S3Provider provides access to files in an S3 bucket.
+//
+// Summary: S3Provider provides access to files in an S3 bucket.
 type S3Provider struct {
 	fs afero.Fs
 }
 
 // NewS3Provider creates a new S3Provider from the given configuration.
+// Summary: NewS3Provider creates a new S3Provider from the given configuration.
 //
 // config holds the configuration settings.
 //
@@ -65,6 +68,7 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 }
 
 // GetFs returns the underlying filesystem.
+// Summary: GetFs returns the underlying filesystem.
 //
 // Returns the result.
 func (p *S3Provider) GetFs() afero.Fs {
@@ -72,6 +76,7 @@ func (p *S3Provider) GetFs() afero.Fs {
 }
 
 // ResolvePath resolves the virtual path to a real path in the bucket.
+// Summary: ResolvePath resolves the virtual path to a real path in the bucket.
 //
 // virtualPath is the virtualPath.
 //
@@ -94,6 +99,7 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 }
 
 // Close closes the provider.
+// Summary: Close closes the provider.
 //
 // Returns an error if the operation fails.
 func (p *S3Provider) Close() error {

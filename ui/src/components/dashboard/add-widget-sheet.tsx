@@ -26,6 +26,9 @@ interface AddWidgetSheetProps {
 
 /**
  * AddWidgetSheet component.
+ *
+*
+ * Summary: AddWidgetSheet component.
  * A sheet that displays a gallery of available widgets to add to the dashboard.
  * @param props - The component props.
  * @returns The rendered component.

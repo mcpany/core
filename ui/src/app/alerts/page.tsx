@@ -12,6 +12,9 @@ import { WebhookDialog } from "@/components/alerts/webhook-dialog";
 
 /**
  * AlertsPage component.
+ *
+*
+ * Summary: AlertsPage component.
  * @returns The rendered component.
  */
 export default function AlertsPage() {

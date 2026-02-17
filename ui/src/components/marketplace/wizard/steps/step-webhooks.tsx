@@ -12,6 +12,9 @@ import { Plus, Trash2, Webhook } from "lucide-react";
 
 /**
  * StepWebhooks component.
+ *
+*
+ * Summary: StepWebhooks component.
  * @returns The rendered component.
  */
 export function StepWebhooks() {

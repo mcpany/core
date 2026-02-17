@@ -45,6 +45,9 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
 
 /**
  * A component for editing call policies.
+ *
+*
+ * Summary: A component for editing call policies.
  * @param props The component props.
  * @param props.policies The list of policies to edit.
  * @param props.onUpdate A callback to update the policies.

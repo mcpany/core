@@ -15,11 +15,14 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+//
+// Summary: ContextOptimizer optimises the context size of responses.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
+// Summary: NewContextOptimizer creates a new ContextOptimizer.
 //
 // maxChars is the maxChars.
 //
@@ -39,6 +42,7 @@ var bufferPool = sync.Pool{
 }
 
 // Handler returns the middleware handler.
+// Summary: Handler returns the middleware handler.
 //
 // next is the next.
 //
@@ -175,6 +179,7 @@ func (w *responseBuffer) checkBuffer() {
 }
 
 // Write writes the data to the buffer or the underlying ResponseWriter.
+// Summary: Write writes the data to the buffer or the underlying ResponseWriter.
 //
 // b is the b.
 //
@@ -194,6 +199,7 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 }
 
 // WriteHeader captures the status code and decides whether to buffer based on headers.
+// Summary: WriteHeader captures the status code and decides whether to buffer based on headers.
 //
 // statusCode is the HTTP status code to write.
 func (w *responseBuffer) WriteHeader(statusCode int) {

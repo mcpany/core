@@ -15,12 +15,15 @@ import (
 )
 
 // SkillServiceServer implements the SkillService gRPC interface.
+//
+// Summary: SkillServiceServer implements the SkillService gRPC interface.
 type SkillServiceServer struct {
 	pb.UnimplementedSkillServiceServer
 	manager *skill.Manager
 }
 
 // NewSkillServiceServer creates a new SkillServiceServer.
+// Summary: NewSkillServiceServer creates a new SkillServiceServer.
 //
 // manager handles the resource management.
 //
@@ -32,6 +35,7 @@ func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 }
 
 // ListSkills lists all available skills.
+// Summary: ListSkills lists all available skills.
 //
 // _ is an unused parameter.
 // _ is an unused parameter.
@@ -55,6 +59,7 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 }
 
 // GetSkill retrieves a specific skill by name.
+// Summary: GetSkill retrieves a specific skill by name.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -79,6 +84,7 @@ func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest
 }
 
 // CreateSkill creates a new skill.
+// Summary: CreateSkill creates a new skill.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -101,6 +107,7 @@ func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillR
 }
 
 // UpdateSkill updates an existing skill.
+// Summary: UpdateSkill updates an existing skill.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -128,6 +135,7 @@ func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillR
 }
 
 // DeleteSkill deletes a skill.
+// Summary: DeleteSkill deletes a skill.
 //
 // _ is an unused parameter.
 // req is the request object.

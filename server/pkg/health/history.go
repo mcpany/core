@@ -9,12 +9,16 @@ import (
 )
 
 // HistoryPoint represents a single point in time for a service's health.
+//
+// Summary: HistoryPoint represents a single point in time for a service's health.
 type HistoryPoint struct {
 	Timestamp int64  `json:"timestamp"` // Unix millis
 	Status    string `json:"status"`
 }
 
 // ServiceHealthHistory stores the history for a service.
+//
+// Summary: ServiceHealthHistory stores the history for a service.
 type ServiceHealthHistory struct {
 	Points []HistoryPoint
 }
@@ -25,6 +29,8 @@ var (
 )
 
 // AddHealthStatus adds a status point to the history.
+//
+// Summary: AddHealthStatus adds a status point to the history.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -61,6 +67,8 @@ func AddHealthStatus(serviceName string, status string) {
 }
 
 // GetHealthHistory returns the history for all services.
+//
+// Summary: GetHealthHistory returns the history for all services.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

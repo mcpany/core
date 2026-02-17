@@ -30,6 +30,9 @@ interface EnvVarEditorProps {
 /**
  * EnvVarEditor.
  *
+*
+ * Summary: EnvVarEditor.
+ *
  * @param onChange - The onChange.
  */
 export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {

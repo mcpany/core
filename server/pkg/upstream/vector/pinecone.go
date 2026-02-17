@@ -18,6 +18,8 @@ import (
 )
 
 // PineconeClient implements VectorClient for Pinecone.
+//
+// Summary: PineconeClient implements VectorClient for Pinecone.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client
@@ -25,6 +27,7 @@ type PineconeClient struct {
 }
 
 // NewPineconeClient creates a new Pinecone client.
+// Summary: NewPineconeClient creates a new Pinecone client.
 //
 // config holds the configuration settings.
 //
@@ -111,6 +114,7 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 }
 
 // Query searches for similar vectors.
+// Summary: Query searches for similar vectors.
 //
 // ctx is the context for the request.
 // vector is the vector.
@@ -138,6 +142,7 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 }
 
 // Upsert inserts or updates vectors.
+// Summary: Upsert inserts or updates vectors.
 //
 // ctx is the context for the request.
 // vectors is the vectors.
@@ -157,6 +162,7 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 }
 
 // Delete removes vectors.
+// Summary: Delete removes vectors.
 //
 // ctx is the context for the request.
 // ids is the ids.
@@ -185,6 +191,7 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 }
 
 // DescribeIndexStats returns statistics about the index.
+// Summary: DescribeIndexStats returns statistics about the index.
 //
 // ctx is the context for the request.
 // filter is the filter.

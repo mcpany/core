@@ -11,6 +11,9 @@ import (
 )
 
 // CORSMiddleware creates an MCP middleware for handling Cross-Origin Resource
+//
+// Summary: CORSMiddleware creates an MCP middleware for handling Cross-Origin Resource
+//
 // Sharing (CORS). It is intended to add the necessary CORS headers to outgoing
 // responses, allowing web browsers to securely make cross-origin requests to
 // the MCP server.

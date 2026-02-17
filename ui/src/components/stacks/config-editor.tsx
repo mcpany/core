@@ -21,6 +21,9 @@ interface ConfigEditorProps {
 /**
  * ConfigEditor.
  *
+*
+ * Summary: ConfigEditor.
+ *
  * @param readOnly = false - The readOnly = false.
  */
 export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {

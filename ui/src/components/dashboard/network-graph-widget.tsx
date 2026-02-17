@@ -11,6 +11,9 @@ import { NetworkGraphFlow } from "@/components/network/network-graph-client";
 
 /**
  * NetworkGraphWidget component for the dashboard.
+ *
+*
+ * Summary: NetworkGraphWidget component for the dashboard.
  * Renders a simplified network topology graph.
  * @returns The rendered component.
  */

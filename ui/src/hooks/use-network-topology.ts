@@ -11,6 +11,9 @@ import { useTopology } from '../contexts/service-health-context';
 
 /**
  * State and actions for the network graph visualization.
+ *
+*
+ * Summary: State and actions for the network graph visualization.
  */
 export interface NetworkGraphState {
     /** Current list of nodes in the graph. */
@@ -68,6 +71,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
 /**
  * Hook to fetch and manage network topology data.
+ *
+*
+ * Summary: Hook to fetch and manage network topology data.
  *
  * It periodically polls the backend for topology updates and handles layouting
  * using Dagre for automatic positioning of nodes and edges.

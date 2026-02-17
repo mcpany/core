@@ -8,6 +8,9 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * GET handles file download requests.
  *
+*
+ * Summary: GET handles file download requests.
+ *
  * It proxies the request to the backend service to fetch the resource content
  * and streams it back to the client as a download attachment.
  *

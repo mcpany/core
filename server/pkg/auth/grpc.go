@@ -13,6 +13,9 @@ import (
 )
 
 // PerRPCCredentials adapts an UpstreamAuthenticator to the gRPC
+//
+// Summary: PerRPCCredentials adapts an UpstreamAuthenticator to the gRPC
+//
 // credentials.PerRPCCredentials interface. It allows applying upstream
 // authentication headers to outgoing gRPC requests.
 type PerRPCCredentials struct {
@@ -20,6 +23,9 @@ type PerRPCCredentials struct {
 }
 
 // NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an
+//
+// Summary: NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an
+//
 // UpstreamAuthenticator. It returns nil if the provided authenticator is nil.
 //
 // authenticator is the upstream authenticator to be used for generating gRPC
@@ -32,6 +38,9 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 }
 
 // GetRequestMetadata retrieves the authentication metadata for an outgoing gRPC
+//
+// Summary: GetRequestMetadata retrieves the authentication metadata for an outgoing gRPC
+//
 // request. It uses the wrapped UpstreamAuthenticator to generate the necessary
 // headers and transforms them into gRPC metadata.
 //
@@ -62,6 +71,9 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 }
 
 // RequireTransportSecurity indicates whether a secure transport (e.g., TLS) is
+//
+// Summary: RequireTransportSecurity indicates whether a secure transport (e.
+//
 // required for the credentials. This implementation returns false, but should be
 // updated if TLS is enabled for the gRPC connection.
 func (c *PerRPCCredentials) RequireTransportSecurity() bool {

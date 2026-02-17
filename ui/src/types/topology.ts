@@ -5,6 +5,9 @@
 
 /**
  * Represents the type of a node in the topology graph.
+ *
+*
+ * Summary: Represents the type of a node in the topology graph.
  */
 export type NodeType =
   | 'NODE_TYPE_UNSPECIFIED'
@@ -20,6 +23,9 @@ export type NodeType =
 
 /**
  * Represents the operational status of a node.
+ *
+*
+ * Summary: Represents the operational status of a node.
  */
 export type NodeStatus =
   | 'NODE_STATUS_UNSPECIFIED'
@@ -29,6 +35,9 @@ export type NodeStatus =
 
 /**
  * Performance metrics associated with a node.
+ *
+*
+ * Summary: Performance metrics associated with a node.
  */
 export interface NodeMetrics {
   /** Queries per second. */
@@ -41,6 +50,9 @@ export interface NodeMetrics {
 
 /**
  * Represents a single node in the topology graph.
+ *
+*
+ * Summary: Represents a single node in the topology graph.
  */
 export interface Node {
   /** Unique identifier for the node. */
@@ -61,6 +73,9 @@ export interface Node {
 
 /**
  * Represents the entire topology graph structure.
+ *
+*
+ * Summary: Represents the entire topology graph structure.
  */
 export interface Graph {
   /** List of client nodes connected to the system. */

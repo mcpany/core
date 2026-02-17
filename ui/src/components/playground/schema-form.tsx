@@ -29,6 +29,9 @@ interface SchemaFieldProps {
 
 /**
  * SchemaForm component.
+ *
+*
+ * Summary: SchemaForm component.
  * @param props - The component props.
  * @param props.schema - The schema definition.
  * @param props.value - The current value.

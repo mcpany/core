@@ -14,6 +14,9 @@ import { Loader2 } from "lucide-react";
 
 /**
  * TracesPage component.
+ *
+*
+ * Summary: TracesPage component.
  * @returns The rendered component.
  */
 export default function TracesPage() {

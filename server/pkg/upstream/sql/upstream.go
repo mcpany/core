@@ -23,12 +23,15 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: Upstream implements the upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
 }
 
 // NewUpstream creates a new SQL upstream.
+// Summary: NewUpstream creates a new SQL upstream.
 //
 // Returns the result.
 func NewUpstream() *Upstream {
@@ -36,6 +39,7 @@ func NewUpstream() *Upstream {
 }
 
 // Shutdown closes the database connection.
+// Summary: Shutdown closes the database connection.
 //
 // _ is an unused parameter.
 //
@@ -54,6 +58,7 @@ func ptr(s string) *string {
 }
 
 // Register discovers and registers tools from the SQL configuration.
+// Summary: Register discovers and registers tools from the SQL configuration.
 //
 // ctx is the context for the request.
 // serviceConfig is the serviceConfig.

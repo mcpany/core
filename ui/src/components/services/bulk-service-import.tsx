@@ -48,6 +48,9 @@ interface ServiceImportItem {
 
 /**
  * BulkServiceImport provides a wizard-like interface for importing multiple service configurations.
+ *
+*
+ * Summary: BulkServiceImport provides a wizard-like interface for importing multiple service configurations.
  * It supports JSON/YAML input, file uploads, and URL imports with validation steps.
  */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {

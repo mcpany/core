@@ -65,6 +65,9 @@ const getTableData = (data: unknown, smartTable: boolean) => {
 
 /**
  * JsonView component.
+ *
+*
+ * Summary: JsonView component.
  * Renders data with interactive tree view, optional smart table view, and raw syntax highlighting.
  *
  * @param props - The component props.

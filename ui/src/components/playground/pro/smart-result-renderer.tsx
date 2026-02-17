@@ -29,6 +29,9 @@ interface McpContent {
 
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
+ *
+*
+ * Summary: Renders the result of a tool execution in a smart, tabular format if possible,
  * falling back to a raw JSON view.
  */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {

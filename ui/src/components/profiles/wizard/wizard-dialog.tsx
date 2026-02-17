@@ -18,6 +18,9 @@ import { apiClient } from "@/lib/client";
 
 /**
  * Interface defining a service configuration within the wizard.
+ *
+*
+ * Summary: Interface defining a service configuration within the wizard.
  */
 export interface WizardService {
     templateId: string;
@@ -29,6 +32,9 @@ export interface WizardService {
 
 /**
  * Dialog component for the profile creation wizard.
+ *
+*
+ * Summary: Dialog component for the profile creation wizard.
  * @param props Component properties.
  * @param props.onProfileCreated Callback when a profile is created.
  */

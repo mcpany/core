@@ -23,6 +23,9 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 /**
  * Metadata for the application.
+ *
+*
+ * Summary: Metadata for the application.
  */
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -46,6 +49,9 @@ const robotoMono = Roboto_Mono({
 
 /**
  * Root layout component for the application.
+ *
+*
+ * Summary: Root layout component for the application.
  * Wraps the application with necessary providers and the sidebar layout.
  * @param props.children - The child components to render.
  * @returns The root layout structure.

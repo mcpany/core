@@ -23,6 +23,8 @@ var (
 )
 
 // OAuthServer mocks an OAuth 2.0 Identity Provider.
+//
+// Summary: OAuthServer mocks an OAuth 2.
 type OAuthServer struct {
 	// PrivateKey is the RSA private key used for signing tokens.
 	PrivateKey *rsa.PrivateKey

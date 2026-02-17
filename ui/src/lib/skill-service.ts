@@ -15,6 +15,9 @@ const API_BASE = '/api/v1/skills';
 
 /**
  * SkillService provides methods to interact with the backend Skills API.
+ *
+*
+ * Summary: SkillService provides methods to interact with the backend Skills API.
  * It handles listing, getting, creating, updating, and deleting skills.
  */
 export const SkillService = {

@@ -35,6 +35,9 @@ const getDurationColor = (ms: number) => {
 
 /**
  * RecentActivityWidget component.
+ *
+*
+ * Summary: RecentActivityWidget component.
  * Displays the most recent tool executions.
  * @returns The rendered component.
  */

@@ -20,6 +20,9 @@ interface ServiceOverviewProps {
 
 /**
  * ServiceOverview displays a high-level summary of the service's health and metrics.
+ *
+*
+ * Summary: ServiceOverview displays a high-level summary of the service's health and metrics.
  * It includes status indicators, sparkline charts for traffic history, and key configuration details.
  */
 export function ServiceOverview({ service, status, trafficData = [] }: ServiceOverviewProps) {

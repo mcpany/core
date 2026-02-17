@@ -43,6 +43,9 @@ interface ServicesTableProps {
 /**
  * ServicesTable.
  *
+*
+ * Summary: ServicesTable.
+ *
  * @param onDelete - The onDelete.
  */
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {

@@ -54,11 +54,17 @@ const JsonViewer = dynamic(() => import("./json-viewer"), {
 
 /**
  * LogLevel type definition.
+ *
+*
+ * Summary: LogLevel type definition.
  */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
 /**
  * LogEntry type definition.
+ *
+*
+ * Summary: LogEntry type definition.
  */
 export interface LogEntry {
   id: string
@@ -251,6 +257,9 @@ LogRow.displayName = 'LogRow'
 
 /**
  * LogStream component.
+ *
+*
+ * Summary: LogStream component.
  * @param props - The component props.
  * @param props.source - Optional source to filter by initially.
  * @returns The rendered component.

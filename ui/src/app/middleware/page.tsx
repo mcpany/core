@@ -28,6 +28,9 @@ const INITIAL_MIDDLEWARE: Middleware[] = [
 
 /**
  * MiddlewarePage component.
+ *
+*
+ * Summary: MiddlewarePage component.
  * @returns The rendered component.
  */
 export default function MiddlewarePage() {

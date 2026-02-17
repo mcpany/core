@@ -15,6 +15,9 @@ import (
 )
 
 // NewHTTPClientWithTLS creates a new *http.Client configured with the specified
+//
+// Summary: NewHTTPClientWithTLS creates a new *http.
+//
 // TLS settings. It supports setting a custom CA certificate, a client
 // certificate and key, the server name for SNI, and skipping verification.
 //

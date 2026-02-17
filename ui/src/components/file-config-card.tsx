@@ -74,6 +74,9 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 /**
  * Displays the configuration of a service in multiple formats (YAML, JSON, TextProto).
  *
+*
+ * Summary: Displays the configuration of a service in multiple formats (YAML, JSON, TextProto).
+ *
  * @param props - The component props.
  * @param props.service - The service configuration to display.
  * @returns {JSX.Element} The rendered config card.

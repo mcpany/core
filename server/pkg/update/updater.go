@@ -19,6 +19,7 @@ import (
 )
 
 // Updater handles the self-update process.
+// Summary: Updater handles the self-update process.
 //
 // It manages checking for updates on GitHub and applying them to the local executable.
 type Updater struct {
@@ -27,6 +28,7 @@ type Updater struct {
 }
 
 // NewUpdater creates a new Updater.
+// Summary: NewUpdater creates a new Updater.
 //
 // Parameters:
 //   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
@@ -52,6 +54,7 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 }
 
 // CheckForUpdate checks for a new release on GitHub.
+// Summary: CheckForUpdate checks for a new release on GitHub.
 //
 // It compares the provided current version tag with the latest release tag on the repository.
 //
@@ -79,6 +82,7 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 }
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+// Summary: UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
 //
 // It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
 //

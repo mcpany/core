@@ -11,6 +11,9 @@ import (
 )
 
 // Message defines the interface that all messages exchanged on the event bus must
+//
+// Summary: Message defines the interface that all messages exchanged on the event bus must
+//
 // implement. It provides a standard way to manage correlation IDs for tracking
 // requests and their corresponding responses.
 type Message interface {
@@ -25,6 +28,9 @@ type Message interface {
 }
 
 // BaseMessage provides a default implementation of the Message interface. It
+//
+// Summary: BaseMessage provides a default implementation of the Message interface.
+//
 // includes a correlation ID field (`CID`) and can be embedded in other message
 // structs to provide a common mechanism for message tracking.
 type BaseMessage struct {
@@ -32,6 +38,9 @@ type BaseMessage struct {
 }
 
 // CorrelationID returns the correlation ID of the message. This ID is used to
+//
+// Summary: CorrelationID returns the correlation ID of the message.
+//
 // associate requests with their corresponding responses in asynchronous
 // workflows.
 func (m *BaseMessage) CorrelationID() string {
@@ -39,12 +48,18 @@ func (m *BaseMessage) CorrelationID() string {
 }
 
 // SetCorrelationID sets the correlation ID for the message. This is typically
+//
+// Summary: SetCorrelationID sets the correlation ID for the message.
+//
 // called by the message publisher to assign a unique ID to a request.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }
 
 // ServiceRegistrationRequest is a message sent to the bus to request the
+//
+// Summary: ServiceRegistrationRequest is a message sent to the bus to request the
+//
 // registration of a new upstream service. It contains the service's
 // configuration and the context for the request.
 type ServiceRegistrationRequest struct {
@@ -54,6 +69,9 @@ type ServiceRegistrationRequest struct {
 }
 
 // ServiceRegistrationResult is a message published in response to a
+//
+// Summary: ServiceRegistrationResult is a message published in response to a
+//
 // ServiceRegistrationRequest. It contains the outcome of the registration
 // process, including the generated service key, a list of any tools that were
 // discovered, or an error if the registration failed.
@@ -66,6 +84,9 @@ type ServiceRegistrationResult struct {
 }
 
 // ToolExecutionRequest is a message sent to the bus to request the execution of
+//
+// Summary: ToolExecutionRequest is a message sent to the bus to request the execution of
+//
 // a specific tool on an upstream service. It includes the name of the tool and
 // its inputs in raw JSON format.
 type ToolExecutionRequest struct {
@@ -76,6 +97,9 @@ type ToolExecutionRequest struct {
 }
 
 // ToolExecutionResult is a message published in response to a
+//
+// Summary: ToolExecutionResult is a message published in response to a
+//
 // ToolExecutionRequest. It contains the result of the tool execution, in raw
 // JSON format, or an error if the execution failed.
 type ToolExecutionResult struct {
@@ -85,12 +109,18 @@ type ToolExecutionResult struct {
 }
 
 // ServiceListRequest is a message sent to the bus to request a list of all
+//
+// Summary: ServiceListRequest is a message sent to the bus to request a list of all
+//
 // registered services.
 type ServiceListRequest struct {
 	BaseMessage
 }
 
 // ServiceListResult is a message published in response to a
+//
+// Summary: ServiceListResult is a message published in response to a
+//
 // ServiceListRequest. It contains a list of all registered services.
 type ServiceListResult struct {
 	BaseMessage
@@ -99,12 +129,16 @@ type ServiceListResult struct {
 }
 
 // ServiceGetRequest is a message sent to the bus to request a specific service.
+//
+// Summary: ServiceGetRequest is a message sent to the bus to request a specific service.
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
 }
 
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
+//
+// Summary: ServiceGetResult is a message published in response to a ServiceGetRequest.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

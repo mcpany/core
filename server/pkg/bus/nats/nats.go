@@ -16,6 +16,8 @@ import (
 )
 
 // Bus is a message bus implementation using NATS.
+//
+// Summary: Bus is a message bus implementation using NATS.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
@@ -23,6 +25,7 @@ type Bus[T any] struct {
 }
 
 // New creates and initializes a new NATS bus.
+// Summary: New creates and initializes a new NATS bus.
 //
 // If the server URL is not provided in the configuration, an embedded NATS server
 // is started on a random port.
@@ -75,6 +78,7 @@ func (b *Bus[T]) Close() {
 }
 
 // Publish sends a message to a NATS topic.
+// Summary: Publish sends a message to a NATS topic.
 //
 // The message is marshaled to JSON before being published.
 //
@@ -94,6 +98,7 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 }
 
 // Subscribe registers a handler for a NATS topic.
+// Summary: Subscribe registers a handler for a NATS topic.
 //
 // The handler will be invoked for each message received on the topic.
 //
@@ -117,6 +122,7 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 }
 
 // SubscribeOnce registers a one-time handler for a NATS topic.
+// Summary: SubscribeOnce registers a one-time handler for a NATS topic.
 //
 // The handler will be invoked only once for the next message received on the topic.
 // The subscription is automatically removed after one message.

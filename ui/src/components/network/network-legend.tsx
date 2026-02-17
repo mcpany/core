@@ -47,6 +47,9 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
 
 /**
  * NetworkLegend component.
+ *
+*
+ * Summary: NetworkLegend component.
  * Displays a legend for the network topology graph, explaining node types and status indicators.
  *
  * @returns The rendered NetworkLegend component.

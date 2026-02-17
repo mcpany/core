@@ -20,6 +20,9 @@ interface CatalogStepProps {
 
 /**
  * Step for selecting services from the catalog.
+ *
+*
+ * Summary: Step for selecting services from the catalog.
  * @param props Component properties.
  */
 export function CatalogStep({ onNext }: CatalogStepProps) {

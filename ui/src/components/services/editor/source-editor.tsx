@@ -16,6 +16,9 @@ interface SourceEditorProps {
 
 /**
  * SourceEditor component for editing YAML configuration.
+ *
+*
+ * Summary: SourceEditor component for editing YAML configuration.
  * Uses Monaco Editor.
  *
  * @param props - The component props.

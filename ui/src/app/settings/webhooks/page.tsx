@@ -21,6 +21,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
  * WebhooksPage component.
+ *
+*
+ * Summary: WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {

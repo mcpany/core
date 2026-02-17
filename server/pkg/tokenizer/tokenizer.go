@@ -14,6 +14,8 @@ import (
 )
 
 // Tokenizer defines the interface for counting tokens in a given text.
+//
+// Summary: Tokenizer defines the interface for counting tokens in a given text.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -25,10 +27,14 @@ type Tokenizer interface {
 }
 
 // SimpleTokenizer implements a character-based heuristic.
+//
+// Summary: SimpleTokenizer implements a character-based heuristic.
+//
 // Logic: ~4 characters per token.
 type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer creates a new SimpleTokenizer.
+// Summary: NewSimpleTokenizer creates a new SimpleTokenizer.
 //
 // Returns the result.
 func NewSimpleTokenizer() *SimpleTokenizer {
@@ -36,6 +42,7 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 }
 
 // CountTokens counts tokens in text using the simple heuristic.
+// Summary: CountTokens counts tokens in text using the simple heuristic.
 //
 // text is the text.
 //
@@ -53,12 +60,16 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 }
 
 // WordTokenizer implements a word-based heuristic.
+//
+// Summary: WordTokenizer implements a word-based heuristic.
+//
 // Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
 type WordTokenizer struct {
 	Factor float64
 }
 
 // NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3.
+// Summary: NewWordTokenizer creates a new WordTokenizer with a default factor of 1.
 //
 // Returns the result.
 func NewWordTokenizer() *WordTokenizer {
@@ -66,6 +77,7 @@ func NewWordTokenizer() *WordTokenizer {
 }
 
 // CountTokens counts tokens in text using the word-based heuristic.
+// Summary: CountTokens counts tokens in text using the word-based heuristic.
 //
 // text is the text.
 //
@@ -150,6 +162,7 @@ func countWords(text string) int {
 }
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
+// Summary: CountTokensInValue recursively counts tokens in arbitrary structures.
 //
 // t is the t.
 // v is the v.
@@ -191,6 +204,7 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 type rawWordCounter struct{}
 
 // CountTokens counts the number of words in the text.
+// Summary: CountTokens counts the number of words in the text.
 //
 // Parameters:
 //   - text: The input text.

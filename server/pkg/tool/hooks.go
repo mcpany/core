@@ -29,12 +29,15 @@ type compiledRule struct {
 }
 
 // PolicyHook implements PreCallHook using CallPolicy.
+//
+// Summary: PolicyHook implements PreCallHook using CallPolicy.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
 }
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
+// Summary: NewPolicyHook creates a new PolicyHook with the given call policy.
 //
 // policy is the policy.
 //
@@ -75,6 +78,7 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 }
 
 // ExecutePre executes the policy check before a tool is called.
+// Summary: ExecutePre executes the policy check before a tool is called.
 //
 // _ is an unused parameter.
 // req is the request object.
@@ -134,6 +138,8 @@ func (h *PolicyHook) ExecutePre(
 // (Deprecated hooks removed)
 
 // WebhookClient handles the communication with an external webhook.
+//
+// Summary: WebhookClient handles the communication with an external webhook.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -142,6 +148,7 @@ type WebhookClient struct {
 }
 
 // NewWebhookClient creates a new WebhookClient.
+// Summary: NewWebhookClient creates a new WebhookClient.
 //
 // config holds the configuration settings.
 //
@@ -178,6 +185,7 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 }
 
 // Call sends a cloud event to the webhook and returns the response event.
+// Summary: Call sends a cloud event to the webhook and returns the response event.
 //
 // ctx is the context for the request.
 // eventType is the eventType.
@@ -223,11 +231,14 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 }
 
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+//
+// Summary: WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
 type WebhookHook struct {
 	client *WebhookClient
 }
 
 // NewWebhookHook creates a new WebhookHook.
+// Summary: NewWebhookHook creates a new WebhookHook.
 //
 // config holds the configuration settings.
 //
@@ -239,6 +250,7 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 }
 
 // ExecutePre executes the webhook notification before a tool is called.
+// Summary: ExecutePre executes the webhook notification before a tool is called.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -270,6 +282,8 @@ func (h *WebhookHook) ExecutePre(
 	}
 
 	// ResponseData is a helper struct for parsing the webhook response.
+//
+// Summary: ResponseData is a helper struct for parsing the webhook response.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
@@ -307,6 +321,7 @@ func (h *WebhookHook) ExecutePre(
 }
 
 // ExecutePost executes the webhook notification after a tool is called.
+// Summary: ExecutePost executes the webhook notification after a tool is called.
 //
 // ctx is the context for the request.
 // req is the request object.
@@ -333,6 +348,8 @@ func (h *WebhookHook) ExecutePost(
 	}
 
 	// ResponseData is a helper struct for parsing the webhook response.
+//
+// Summary: ResponseData is a helper struct for parsing the webhook response.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
@@ -364,6 +381,8 @@ func (h *WebhookHook) ExecutePost(
 }
 
 // WebhookStatus represents the status returned by the webhook.
+//
+// Summary: WebhookStatus represents the status returned by the webhook.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -372,12 +391,15 @@ type WebhookStatus struct {
 }
 
 // SigningRoundTripper signs the request using the webhook signer.
+//
+// Summary: SigningRoundTripper signs the request using the webhook signer.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper
 }
 
 // RoundTrip executes the HTTP request with a signature.
+// Summary: RoundTrip executes the HTTP request with a signature.
 //
 // req is the request object.
 //

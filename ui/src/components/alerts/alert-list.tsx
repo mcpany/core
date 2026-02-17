@@ -40,6 +40,9 @@ import { apiClient } from "@/lib/client";
 
 /**
  * AlertList component.
+ *
+*
+ * Summary: AlertList component.
  * @returns The rendered component.
  */
 export function AlertList() {

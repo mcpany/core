@@ -15,6 +15,9 @@ import (
 )
 
 // LogEntry is the structure for logs sent over WebSocket.
+//
+// Summary: LogEntry is the structure for logs sent over WebSocket.
+//
 // It matches the frontend expectation.
 type LogEntry struct {
 	ID        string         `json:"id"`
@@ -26,6 +29,8 @@ type LogEntry struct {
 }
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+//
+// Summary: BroadcastHandler implements slog.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -35,6 +40,7 @@ type BroadcastHandler struct {
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
+// Summary: NewBroadcastHandler creates a new BroadcastHandler.
 //
 // broadcaster is the broadcaster.
 // level is the minimum log level to broadcast.
@@ -48,6 +54,7 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastH
 }
 
 // Enabled returns true if the level is greater than or equal to the handler's level.
+// Summary: Enabled returns true if the level is greater than or equal to the handler's level.
 //
 // _ is an unused parameter.
 // level is the log level.
@@ -58,6 +65,7 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 }
 
 // Handle handles the log record by converting it to LogEntry and broadcasting it.
+// Summary: Handle handles the log record by converting it to LogEntry and broadcasting it.
 //
 // _ is an unused parameter.
 // r is the r.
@@ -138,6 +146,7 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new handler with the given attributes.
+// Summary: WithAttrs returns a new handler with the given attributes.
 //
 // attrs is the attrs.
 //
@@ -159,6 +168,7 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new handler with the given group.
+// Summary: WithGroup returns a new handler with the given group.
 //
 // name is the name of the resource.
 //
@@ -180,11 +190,14 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 }
 
 // TeeHandler is a slog.Handler that writes to multiple handlers.
+//
+// Summary: TeeHandler is a slog.
 type TeeHandler struct {
 	handlers []slog.Handler
 }
 
 // NewTeeHandler creates a new TeeHandler.
+// Summary: NewTeeHandler creates a new TeeHandler.
 //
 // handlers is the handlers.
 //
@@ -194,6 +207,7 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 }
 
 // Enabled returns true if any of the handlers are enabled.
+// Summary: Enabled returns true if any of the handlers are enabled.
 //
 // ctx is the context for the request.
 // level is the level.
@@ -209,6 +223,7 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 // Handle forwards the record to all enabled handlers.
+// Summary: Handle forwards the record to all enabled handlers.
 //
 // ctx is the context for the request.
 // r is the r.
@@ -227,6 +242,7 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new TeeHandler with the attributes applied to all handlers.
+// Summary: WithAttrs returns a new TeeHandler with the attributes applied to all handlers.
 //
 // attrs is the attrs.
 //
@@ -240,6 +256,7 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new TeeHandler with the group applied to all handlers.
+// Summary: WithGroup returns a new TeeHandler with the group applied to all handlers.
 //
 // name is the name of the resource.
 //

@@ -16,12 +16,15 @@ import (
 )
 
 // ZipProvider provides access to files within a zip archive.
+//
+// Summary: ZipProvider provides access to files within a zip archive.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
 }
 
 // NewZipProvider creates a new ZipProvider from the given configuration.
+// Summary: NewZipProvider creates a new ZipProvider from the given configuration.
 //
 // config holds the configuration settings.
 //
@@ -58,6 +61,7 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 }
 
 // GetFs returns the underlying filesystem.
+// Summary: GetFs returns the underlying filesystem.
 //
 // Returns the result.
 func (p *ZipProvider) GetFs() afero.Fs {
@@ -65,6 +69,7 @@ func (p *ZipProvider) GetFs() afero.Fs {
 }
 
 // ResolvePath resolves the virtual path to a real path in the zip.
+// Summary: ResolvePath resolves the virtual path to a real path in the zip.
 //
 // virtualPath is the virtualPath.
 //
@@ -76,6 +81,7 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 }
 
 // Close closes the underlying zip file.
+// Summary: Close closes the underlying zip file.
 //
 // Returns an error if the operation fails.
 func (p *ZipProvider) Close() error {

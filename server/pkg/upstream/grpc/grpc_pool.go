@@ -32,6 +32,7 @@ type poolWithChecker[T pool.ClosableClient] struct {
 }
 
 // Close stops the health checker and closes the underlying pool.
+// Summary: Close stops the health checker and closes the underlying pool.
 //
 // Returns an error if the operation fails.
 func (p *poolWithChecker[T]) Close() error {
@@ -42,6 +43,9 @@ func (p *poolWithChecker[T]) Close() error {
 }
 
 // NewGrpcPool creates a new connection pool for gRPC clients. It configures the
+//
+// Summary: NewGrpcPool creates a new connection pool for gRPC clients.
+//
 // pool with a factory function that establishes new gRPC connections with the
 // specified address, dialer, and credentials.
 //

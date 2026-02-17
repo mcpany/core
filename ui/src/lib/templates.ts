@@ -8,6 +8,9 @@ import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSqua
 
 /**
  * A template for creating a new service configuration.
+ *
+*
+ * Summary: A template for creating a new service configuration.
  */
 export interface ServiceTemplate {
   /** Unique identifier for the template. */
@@ -51,6 +54,9 @@ export interface ServiceTemplate {
 
 /**
  * A list of built-in service templates.
+ *
+*
+ * Summary: A list of built-in service templates.
  */
 export const SERVICE_TEMPLATES: ServiceTemplate[] = [
   {

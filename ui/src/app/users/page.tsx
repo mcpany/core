@@ -16,6 +16,9 @@ import { useToast } from "@/hooks/use-toast";
 
 /**
  * UsersPage component.
+ *
+*
+ * Summary: UsersPage component.
  * @returns The rendered component.
  */
 export default function UsersPage() {

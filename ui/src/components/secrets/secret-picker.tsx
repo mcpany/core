@@ -38,6 +38,9 @@ interface SecretPickerProps {
 
 /**
  * A component to select a secret from the stored secrets.
+ *
+*
+ * Summary: A component to select a secret from the stored secrets.
  * Can be used as a full combobox or attached to a custom trigger (icon).
  */
 export function SecretPicker({

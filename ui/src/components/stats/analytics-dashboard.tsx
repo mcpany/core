@@ -57,6 +57,9 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899'
 
 /**
  * AnalyticsDashboard component.
+ *
+*
+ * Summary: AnalyticsDashboard component.
  * @returns The rendered component.
  */
 export function AnalyticsDashboard() {

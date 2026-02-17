@@ -29,6 +29,9 @@ import (
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
+//
+// Summary: RateLimitMiddleware is a tool execution middleware that provides rate limiting
+//
 // functionality for upstream services.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
@@ -40,9 +43,12 @@ type RateLimitMiddleware struct {
 }
 
 // Option defines a functional option for RateLimitMiddleware.
+//
+// Summary: Option defines a functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
+// Summary: WithTokenizer sets a custom tokenizer for the middleware.
 //
 // t is the t.
 //
@@ -54,6 +60,7 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// Summary: NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
 // toolManager is the toolManager.
 // opts contains the options.
@@ -82,6 +89,7 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 }
 
 // Execute executes the rate limiting middleware.
+// Summary: Execute executes the rate limiting middleware.
 //
 // ctx is the context for the request.
 // req is the request object.

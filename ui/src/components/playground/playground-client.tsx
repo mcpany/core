@@ -53,6 +53,9 @@ interface Message {
 
 /**
  * PlaygroundClient component.
+ *
+*
+ * Summary: PlaygroundClient component.
  * @returns The rendered component.
  */
 export function PlaygroundClient() {

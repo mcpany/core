@@ -40,6 +40,9 @@ import { applyTemplateFields } from "@/lib/template-utils";
 
 /**
  * ServicesPage component.
+ *
+*
+ * Summary: ServicesPage component.
  * @returns The rendered component.
  */
 export default function ServicesPage() {

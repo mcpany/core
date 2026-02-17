@@ -22,6 +22,9 @@ import (
 )
 
 // GenerateDocumentation generates Markdown documentation for the tools defined in the configuration.
+//
+// Summary: GenerateDocumentation generates Markdown documentation for the tools defined in the configuration.
+//
 // It iterates through the configured upstream services, registers their tools, and produces a
 // Markdown formatted string describing each tool and its input schema.
 //

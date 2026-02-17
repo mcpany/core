@@ -9,6 +9,9 @@ import { UpstreamServiceConfig } from "@/lib/client";
 /**
  * Applies user-provided field values to a service template's configuration.
  *
+*
+ * Summary: Applies user-provided field values to a service template's configuration.
+ *
  * @param template The service template.
  * @param fieldValues A map of field names to their values.
  * @returns A new UpstreamServiceConfig object with the values applied.

@@ -11,6 +11,9 @@ import (
 )
 
 // SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
+//
+// Summary: SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
+//
 // This allows requests from upstream (like sampling) to be routed to the correct downstream client.
 type SessionRegistry struct {
 	mu       sync.RWMutex
@@ -18,6 +21,7 @@ type SessionRegistry struct {
 }
 
 // NewSessionRegistry creates a new SessionRegistry.
+// Summary: NewSessionRegistry creates a new SessionRegistry.
 //
 // Returns the result.
 func NewSessionRegistry() *SessionRegistry {
@@ -27,6 +31,7 @@ func NewSessionRegistry() *SessionRegistry {
 }
 
 // Register registers a mapping between an upstream session and a downstream session.
+// Summary: Register registers a mapping between an upstream session and a downstream session.
 //
 // upstreamSession is the upstreamSession.
 // downstreamSession is the downstreamSession.
@@ -37,6 +42,7 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 }
 
 // Unregister removes the mapping for an upstream session.
+// Summary: Unregister removes the mapping for an upstream session.
 //
 // upstreamSession is the upstreamSession.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
@@ -46,6 +52,7 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 }
 
 // Get retrieves the downstream session associated with an upstream session.
+// Summary: Get retrieves the downstream session associated with an upstream session.
 //
 // upstreamSession is the upstreamSession.
 //

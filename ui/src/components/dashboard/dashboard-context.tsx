@@ -18,6 +18,9 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 
 /**
  * Provides dashboard context to children, allowing them to access and update shared state
+ *
+*
+ * Summary: Provides dashboard context to children, allowing them to access and update shared state
  * like the currently selected service filter.
  *
  * @param props - The component props.
@@ -37,6 +40,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
 /**
  * Hook to access the dashboard context.
+ *
+*
+ * Summary: Hook to access the dashboard context.
  * Must be used within a DashboardProvider.
  *
  * @returns The dashboard context value.

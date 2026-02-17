@@ -21,14 +21,19 @@ import (
 )
 
 // ClientFactory is a function that creates a VectorClient.
+//
+// Summary: ClientFactory is a function that creates a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
+//
+// Summary: Upstream implements the upstream.
 type Upstream struct {
 	clientFactory ClientFactory
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
+// Summary: NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns the result.
 func NewUpstream() upstream.Upstream {
@@ -48,6 +53,7 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 }
 
 // Shutdown implements the upstream.Upstream interface.
+// Summary: Shutdown implements the upstream.
 //
 // _ is an unused parameter.
 //
@@ -57,6 +63,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a vector service.
+// Summary: Register processes the configuration for a vector service.
 //
 // _ is an unused parameter.
 // serviceConfig is the serviceConfig.
@@ -167,6 +174,9 @@ type vectorCallable struct {
 }
 
 // Call executes the vector tool with the given arguments.
+//
+// Summary: Call executes the vector tool with the given arguments.
+//
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
@@ -182,6 +192,8 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
+//
+// Summary: Client interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

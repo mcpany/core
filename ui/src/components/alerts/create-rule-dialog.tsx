@@ -32,6 +32,9 @@ import { Severity } from "./types";
 
 /**
  * CreateRuleDialog component.
+ *
+*
+ * Summary: CreateRuleDialog component.
  * @returns The rendered component.
  */
 export function CreateRuleDialog() {

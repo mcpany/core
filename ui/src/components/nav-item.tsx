@@ -25,6 +25,9 @@ interface NavItemProps {
 /**
  * A navigation item for the sidebar or menu.
  *
+*
+ * Summary: A navigation item for the sidebar or menu.
+ *
  * @param props - The component props.
  * @param props.href - The URL to link to.
  * @param props.icon - The icon component to display.

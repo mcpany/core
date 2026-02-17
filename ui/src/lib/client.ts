@@ -23,6 +23,9 @@ import { BrowserHeaders } from 'browser-headers';
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
+ *
+*
+ * Summary: Extended UpstreamServiceConfig to include runtime error information.
  */
 export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
     /**
@@ -45,6 +48,9 @@ export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse
 
 /**
  * ServiceTemplate defines a template for an upstream service.
+ *
+*
+ * Summary: ServiceTemplate defines a template for an upstream service.
  */
 export interface ServiceTemplate {
     id: string;
@@ -124,6 +130,9 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
 
 /**
  * Definition of a secret stored in the system.
+ *
+*
+ * Summary: Definition of a secret stored in the system.
  */
 export interface SecretDefinition {
     /** Unique identifier for the secret. */
@@ -144,6 +153,9 @@ export interface SecretDefinition {
 
 /**
  * Content of a resource.
+ *
+*
+ * Summary: Content of a resource.
  */
 export interface ResourceContent {
     /** The URI of the resource. */
@@ -158,6 +170,9 @@ export interface ResourceContent {
 
 /**
  * Response for reading a resource.
+ *
+*
+ * Summary: Response for reading a resource.
  */
 export interface ReadResourceResponse {
     /** List of resource contents. */
@@ -166,6 +181,9 @@ export interface ReadResourceResponse {
 
 /**
  * Result of a single system health check.
+ *
+*
+ * Summary: Result of a single system health check.
  */
 export interface CheckResult {
     /** The status of the check (e.g., "ok", "degraded", "error"). */
@@ -180,6 +198,9 @@ export interface CheckResult {
 
 /**
  * Full doctor report containing system health status.
+ *
+*
+ * Summary: Full doctor report containing system health status.
  */
 export interface DoctorReport {
     /** Overall system status. */
@@ -192,6 +213,9 @@ export interface DoctorReport {
 
 /**
  * Tool failure statistics.
+ *
+*
+ * Summary: Tool failure statistics.
  */
 export interface ToolFailureStats {
     name: string;
@@ -202,6 +226,9 @@ export interface ToolFailureStats {
 
 /**
  * Tool usage analytics.
+ *
+*
+ * Summary: Tool usage analytics.
  */
 export interface ToolAnalytics {
     name: string;
@@ -213,6 +240,9 @@ export interface ToolAnalytics {
 
 /**
  * Metric definition for dashboard.
+ *
+*
+ * Summary: Metric definition for dashboard.
  */
 export interface Metric {
     label: string;
@@ -226,6 +256,9 @@ export interface Metric {
 
 /**
  * Represents the current status and health of the system.
+ *
+*
+ * Summary: Represents the current status and health of the system.
  */
 export interface SystemStatus {
     /** The number of seconds the server has been running. */
@@ -244,11 +277,17 @@ export interface SystemStatus {
 
 /**
  * ServiceStatus represents the possible health states of a service.
+ *
+*
+ * Summary: ServiceStatus represents the possible health states of a service.
  */
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
  * ServiceHealth describes the current health information of a service.
+ *
+*
+ * Summary: ServiceHealth describes the current health information of a service.
  */
 export interface ServiceHealth {
   /** The unique identifier of the service. */
@@ -267,6 +306,9 @@ export interface ServiceHealth {
 
 /**
  * HealthHistoryPoint represents a single data point in the health history of a service.
+ *
+*
+ * Summary: HealthHistoryPoint represents a single data point in the health history of a service.
  */
 export interface HealthHistoryPoint {
   /** The timestamp of the health check in milliseconds. */
@@ -277,6 +319,9 @@ export interface HealthHistoryPoint {
 
 /**
  * ServiceHealthResponse represents the response for the health dashboard.
+ *
+*
+ * Summary: ServiceHealthResponse represents the response for the health dashboard.
  */
 export interface ServiceHealthResponse {
   services: ServiceHealth[];
@@ -302,6 +347,9 @@ const getMetadata = () => {
 
 /**
  * API Client for interacting with the MCP Any server.
+ *
+*
+ * Summary: API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
     // Services (Migrated to gRPC)

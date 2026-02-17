@@ -14,6 +14,9 @@ export interface MarketplaceItemConfig {
 
 /**
  * EnvVarDefinition type definition.
+ *
+*
+ * Summary: EnvVarDefinition type definition.
  */
 export interface EnvVarDefinition {
   name: string;
@@ -26,6 +29,9 @@ export interface EnvVarDefinition {
 
 /**
  * MarketplaceItem type definition.
+ *
+*
+ * Summary: MarketplaceItem type definition.
  */
 export interface MarketplaceItem {
   id: string;
@@ -37,6 +43,9 @@ export interface MarketplaceItem {
 
 /**
  * The MARKETPLACE_ITEMS const.
+ *
+*
+ * Summary: The MARKETPLACE_ITEMS const.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {

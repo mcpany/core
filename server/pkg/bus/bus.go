@@ -17,6 +17,9 @@ import (
 )
 
 // Bus defines the interface for a generic, type-safe event bus that facilitates
+//
+// Summary: Bus defines the interface for a generic, type-safe event bus that facilitates
+//
 // communication between different parts of the application. The type parameter T
 // specifies the type of message that the bus will handle.
 type Bus[T any] interface {
@@ -62,6 +65,9 @@ type Bus[T any] interface {
 }
 
 // Provider is a thread-safe container for managing multiple, type-safe bus
+//
+// Summary: Provider is a thread-safe container for managing multiple, type-safe bus
+//
 // instances, with each bus being dedicated to a specific topic. It ensures that
 // for any given topic, there is only one bus instance, creating one on demand
 // if it doesn't already exist.
@@ -75,9 +81,14 @@ type Provider struct {
 }
 
 // NewProviderHook is a test hook for overriding the NewProvider logic.
+//
+// Summary: NewProviderHook is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
+//
+// Summary: NewProvider creates and returns a new Provider, which is used to manage
+//
 // multiple topic-based bus instances.
 //
 // Parameters:
@@ -120,9 +131,14 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 }
 
 // GetBusHook is a test hook for overriding the bus retrieval logic.
+//
+// Summary: GetBusHook is a test hook for overriding the bus retrieval logic.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic. If a bus for the given topic
+//
+// Summary: GetBus retrieves a bus for the given topic.
+//
 // already exists, it is returned; otherwise, a new one is created and stored for
 // future use.
 //

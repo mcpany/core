@@ -44,6 +44,9 @@ import { apiClient, SecretDefinition } from "@/lib/client";
 
 /**
  * SecretsManager component.
+ *
+*
+ * Summary: SecretsManager component.
  * @returns The rendered component.
  */
 export function SecretsManager() {

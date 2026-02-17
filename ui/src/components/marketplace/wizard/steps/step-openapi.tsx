@@ -13,6 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
  * StepOpenAPI component.
+ *
+*
+ * Summary: StepOpenAPI component.
  * Allows users to configure an OpenAPI/Swagger upstream service.
  * @returns The rendered component.
  */

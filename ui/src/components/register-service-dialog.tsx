@@ -57,6 +57,9 @@ const detectSensitiveData = (text: string) => {
 /**
  * RegisterServiceDialog.
  *
+*
+ * Summary: RegisterServiceDialog.
+ *
  * @param serviceToEdit - The serviceToEdit.
  */
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {

@@ -31,6 +31,7 @@ var weatherData = map[string]string{
 }
 
 // GetWeather implements the GetWeather method of the WeatherService.
+// Summary: GetWeather implements the GetWeather method of the WeatherService.
 //
 // _ is an unused parameter.
 // in is the request object.

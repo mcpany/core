@@ -41,6 +41,9 @@ interface PromptWorkbenchProps {
 /**
  * PromptWorkbench.
  *
+*
+ * Summary: PromptWorkbench.
+ *
  * @param { initialPrompts = [] - The { initialPrompts = [].
  */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {

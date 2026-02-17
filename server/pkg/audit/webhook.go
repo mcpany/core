@@ -22,6 +22,8 @@ const (
 )
 
 // WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Summary: WebhookAuditStore sends audit logs to a configured webhook URL.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string
@@ -32,6 +34,8 @@ type WebhookAuditStore struct {
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
+//
+// Summary: NewWebhookAuditStore creates a new WebhookAuditStore.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -88,6 +92,8 @@ func (s *WebhookAuditStore) worker() {
 }
 
 // Write writes an audit entry to the webhook (buffered).
+//
+// Summary: Write writes an audit entry to the webhook (buffered).
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -133,11 +139,15 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Read implements the Store interface.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
 
 // Close stops the workers and drains the queue.
+//
+// Summary: Close stops the workers and drains the queue.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

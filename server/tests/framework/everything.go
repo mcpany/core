@@ -12,6 +12,7 @@ import (
 )
 
 // BuildEverythingServer builds a server with everything.
+// Summary: BuildEverythingServer builds a server with everything.
 //
 // t is the t.
 //
@@ -27,6 +28,7 @@ func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterEverythingService registers everything service.
+// Summary: RegisterEverythingService registers everything service.
 //
 // t is the t.
 // registrationClient is the registrationClient.

@@ -35,6 +35,7 @@ func ensureSchema() (*jsonschema.Schema, error) {
 }
 
 // ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
+// Summary: ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
 //
 // Parameters:
 //   rawConfig: The raw configuration data as a map.
@@ -54,6 +55,7 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 }
 
 // GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice.
+// Summary: GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice.
 //
 // Returns the result.
 // Returns an error if the operation fails.

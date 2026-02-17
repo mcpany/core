@@ -32,6 +32,9 @@ import (
 )
 
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
+//
+// Summary: OpenAPIUpstream implements the upstream.
+//
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
 type OpenAPIUpstream struct { //nolint:revive
@@ -42,6 +45,9 @@ type OpenAPIUpstream struct { //nolint:revive
 }
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
+//
+// Summary: Shutdown gracefully terminates the OpenAPI upstream service.
+//
 // services, this typically means closing any persistent connections.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -55,6 +61,9 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 }
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
+//
+// Summary: NewOpenAPIUpstream creates a new instance of OpenAPIUpstream.
+//
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
@@ -69,6 +78,9 @@ func NewOpenAPIUpstream() upstream.Upstream {
 }
 
 // Register processes an OpenAPI service configuration. It parses the OpenAPI
+//
+// Summary: Register processes an OpenAPI service configuration.
+//
 // specification, extracts the operations, converts them into tools, and
 // registers them with the tool manager.
 func (u *OpenAPIUpstream) Register(
@@ -252,6 +264,9 @@ type httpClientImpl struct {
 }
 
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
+//
+// Summary: Do sends an HTTP request and returns an HTTP response, fulfilling the
+//
 // client.HTTPClient interface.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)

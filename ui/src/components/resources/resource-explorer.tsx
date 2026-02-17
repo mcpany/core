@@ -54,6 +54,9 @@ interface ResourceExplorerProps {
 /**
  * ResourceExplorer.
  *
+*
+ * Summary: ResourceExplorer.
+ *
  * @param { initialResources = [] - The { initialResources = [].
  */
 export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProps) {

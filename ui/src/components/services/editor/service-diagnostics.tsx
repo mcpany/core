@@ -27,6 +27,9 @@ interface DiagnosticResult {
 
 /**
  * A component that runs and displays diagnostic checks for a service.
+ *
+*
+ * Summary: A component that runs and displays diagnostic checks for a service.
  * Checks include configuration validation, runtime status, and tool discovery.
  *
  * @param props - The component props.

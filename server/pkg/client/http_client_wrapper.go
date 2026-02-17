@@ -13,6 +13,9 @@ import (
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the
+//
+// Summary: HTTPClientWrapper wraps an `*http.
+//
 // `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
 // connection pool, which can help control the number of concurrent connections
 // and reuse them where appropriate.
@@ -24,6 +27,9 @@ type HTTPClientWrapper struct {
 }
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
+//
+// Summary: NewHTTPClientWrapper creates a new HTTPClientWrapper.
+//
 // It accepts a shared health checker to avoid creating a new one for every client.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
@@ -38,6 +44,7 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 }
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
+// Summary: IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
 //
 // ctx is the context for the request.
 //
@@ -50,6 +57,9 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 }
 
 // Close is a no-op for the wrapper as it does not own the http.Client.
+//
+// Summary: Close is a no-op for the wrapper as it does not own the http.
+//
 // The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections
 // on the shared Transport when the service is shut down.
 //

@@ -11,6 +11,9 @@ export type { ServiceHealth, HealthHistoryPoint };
 
 /**
  * ServiceHistory maps service IDs to their list of historical health points.
+ *
+*
+ * Summary: ServiceHistory maps service IDs to their list of historical health points.
  */
 export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
@@ -18,6 +21,9 @@ export interface ServiceHistory {
 
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
+ *
+*
+ * Summary: useServiceHealthHistory is a hook that fetches and maintains the health history of services.
  * It polls the backend API for health data (which now includes server-side history).
  *
  * @returns An object containing the current services list, their health history, and a loading state.

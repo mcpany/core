@@ -11,6 +11,9 @@ import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
 
 /**
  * The main dashboard page component.
+ *
+*
+ * Summary: The main dashboard page component.
  * Displays an overview of metrics, service health, and request volume.
  * @returns The dashboard page.
  */

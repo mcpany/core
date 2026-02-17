@@ -73,6 +73,9 @@ const addToRemoveQueue = (toastId: string) => {
 /**
  * The reducer function for managing toast state.
  *
+*
+ * Summary: The reducer function for managing toast state.
+ *
  * @param state - The current state of the toasts.
  * @param action - The action to perform (ADD, UPDATE, DISMISS, REMOVE).
  * @returns The new state after applying the action.

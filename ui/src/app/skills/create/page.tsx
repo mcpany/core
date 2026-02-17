@@ -9,6 +9,9 @@ import SkillWizard from '@/components/skills/skill-wizard';
 
 /**
  * CreateSkillPage component.
+ *
+*
+ * Summary: CreateSkillPage component.
  * @returns The rendered component.
  */
 export default function CreateSkillPage() {

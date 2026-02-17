@@ -11,6 +11,9 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 /**
  * RequestVolumeChart component.
+ *
+*
+ * Summary: RequestVolumeChart component.
  * @returns The rendered component.
  */
 export function RequestVolumeChart() {

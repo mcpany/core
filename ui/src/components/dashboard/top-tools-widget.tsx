@@ -19,6 +19,9 @@ interface ToolUsageStats {
 
 /**
  * TopToolsWidget displays a bar chart of the most frequently executed tools.
+ *
+*
+ * Summary: TopToolsWidget displays a bar chart of the most frequently executed tools.
  * @returns The rendered TopToolsWidget component.
  */
 export function TopToolsWidget() {

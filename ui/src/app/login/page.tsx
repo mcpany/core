@@ -30,6 +30,9 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 /**
  * LoginPage component.
+ *
+*
+ * Summary: LoginPage component.
  * @returns The rendered component.
  */
 export default function LoginPage() {

@@ -19,6 +19,9 @@ interface ServiceConfigDiffProps {
 
 /**
  * ServiceConfigDiff component.
+ *
+*
+ * Summary: ServiceConfigDiff component.
  * @param props - The component props.
  * @param props.original - The original property.
  * @param props.modified - The modified property.

@@ -14,11 +14,14 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: DB wraps the sql.
 type DB struct {
 	*sql.DB
 }
 
 // NewDB opens a PostgreSQL database connection.
+// Summary: NewDB opens a PostgreSQL database connection.
 //
 // dsn is the dsn.
 //
@@ -29,6 +32,7 @@ func NewDB(dsn string) (*DB, error) {
 }
 
 // NewDBWithDriver opens a database connection with the specified driver.
+// Summary: NewDBWithDriver opens a database connection with the specified driver.
 //
 // driver is the driver.
 // dsn is the dsn.
@@ -62,6 +66,7 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 }
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
+// Summary: NewDBFromSQLDB creates a new DB wrapper from an existing sql.
 //
 // db is the db.
 //

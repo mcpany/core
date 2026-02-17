@@ -33,6 +33,9 @@ interface OptimizationTabProps {
 
 /**
  * OptimizationTab displays analysis of tool usage and suggests optimizations.
+ *
+*
+ * Summary: OptimizationTab displays analysis of tool usage and suggests optimizations.
  * It identifies "Ghost Tools" which are heavy in tokens but rarely used.
  *
  * @param props - The component props.

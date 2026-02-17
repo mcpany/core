@@ -40,6 +40,9 @@ const INITIAL_WEBHOOKS: WebhookConfig[] = [
 
 /**
  * WebhooksPage component.
+ *
+*
+ * Summary: WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {

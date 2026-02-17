@@ -6,11 +6,17 @@
 export type Severity = "critical" | "warning" | "info";
 /**
  * AlertStatus type definition.
+ *
+*
+ * Summary: AlertStatus type definition.
  */
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
 /**
  * Alert type definition.
+ *
+*
+ * Summary: Alert type definition.
  */
 export interface Alert {
   id: string;

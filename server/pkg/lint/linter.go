@@ -15,6 +15,7 @@ import (
 )
 
 // Severity indicates the importance of a linting result.
+// Summary: Severity indicates the importance of a linting result.
 //
 // It is used to categorize findings based on their impact and urgency.
 type Severity int
@@ -29,6 +30,7 @@ const (
 )
 
 // String returns the string representation of the severity.
+// Summary: String returns the string representation of the severity.
 //
 // It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
 //
@@ -48,6 +50,7 @@ func (s Severity) String() string {
 }
 
 // Result represents a single linting finding.
+// Summary: Result represents a single linting finding.
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 type Result struct {
@@ -62,6 +65,7 @@ type Result struct {
 }
 
 // String returns the string representation of the result.
+// Summary: String returns the string representation of the result.
 //
 // It formats the result into a human-readable string suitable for CLI output.
 //
@@ -80,6 +84,7 @@ func (r Result) String() string {
 }
 
 // Linter performs static analysis on the configuration.
+// Summary: Linter performs static analysis on the configuration.
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 type Linter struct {
@@ -87,6 +92,7 @@ type Linter struct {
 }
 
 // NewLinter creates a new Linter instance.
+// Summary: NewLinter creates a new Linter instance.
 //
 // Parameters:
 //   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
@@ -98,6 +104,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 }
 
 // Run executes all linting checks.
+// Summary: Run executes all linting checks.
 //
 // It aggregates results from multiple check categories including standard validation,
 // secret usage, shell injection risks, insecure HTTP, and cache settings.

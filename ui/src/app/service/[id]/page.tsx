@@ -15,6 +15,9 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
 /**
  * Page component for displaying service details.
  *
+*
+ * Summary: Page component for displaying service details.
+ *
  * @param props - The component props.
  * @param props.params - Promise resolving to route parameters containing the service ID.
  * @returns The service detail page.

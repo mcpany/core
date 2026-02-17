@@ -13,6 +13,9 @@ import { useTraces } from "@/hooks/use-traces";
 
 /**
  * InspectorPage component.
+ *
+*
+ * Summary: InspectorPage component.
  * @returns The rendered component.
  */
 export default function InspectorPage() {

@@ -7,6 +7,9 @@ import { PromptWorkbench } from "@/components/prompts/prompt-workbench";
 
 /**
  * PromptsPage component.
+ *
+*
+ * Summary: PromptsPage component.
  * @returns The rendered component.
  */
 export default function PromptsPage() {

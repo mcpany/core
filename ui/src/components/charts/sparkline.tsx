@@ -20,6 +20,9 @@ interface SparklineProps {
 // ⚡ Bolt Optimization: Memoized to prevent re-renders when parent updates (e.g. selection) but chart data is stable.
 /**
  * Sparkline component.
+ *
+*
+ * Summary: Sparkline component.
  * @param props - The component props.
  * @param props.data - The data to display.
  * @param props.width - The width of the chart.

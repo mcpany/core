@@ -17,6 +17,9 @@ import { WizardDialog } from "@/components/profiles/wizard/wizard-dialog";
 
 /**
  * ProfilesPage component.
+ *
+*
+ * Summary: ProfilesPage component.
  * @returns The rendered component.
  */
 export default function ProfilesPage() {

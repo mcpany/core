@@ -14,6 +14,9 @@ import (
 )
 
 // Watcher monitors configuration files for changes and triggers a reload.
+//
+// Summary: Watcher monitors configuration files for changes and triggers a reload.
+//
 // It watches the parent directory of specified files to handle atomic saves (rename/move)
 // commonly used by text editors.
 type Watcher struct {
@@ -24,6 +27,7 @@ type Watcher struct {
 }
 
 // NewWatcher creates a new file watcher.
+// Summary: NewWatcher creates a new file watcher.
 //
 // Returns:
 //   - A pointer to a new Watcher.
@@ -41,6 +45,7 @@ func NewWatcher() (*Watcher, error) {
 }
 
 // Watch starts monitoring the specified configuration paths.
+// Summary: Watch starts monitoring the specified configuration paths.
 //
 // Parameters:
 //   - paths: A slice of file or directory paths to watch.
@@ -161,6 +166,8 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close stops the file watcher and releases resources.
+//
+// Summary: Close stops the file watcher and releases resources.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

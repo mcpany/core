@@ -24,6 +24,9 @@ import (
 )
 
 // Factory defines the interface for a factory that creates upstream service
+//
+// Summary: Factory defines the interface for a factory that creates upstream service
+//
 // instances.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
@@ -32,6 +35,9 @@ type Factory interface {
 }
 
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
+//
+// Summary: UpstreamServiceFactory is a concrete implementation of the Factory interface.
+//
 // It creates different types of upstream services based on the service
 // configuration.
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
@@ -43,6 +49,7 @@ type UpstreamServiceFactory struct {
 }
 
 // NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
+// Summary: NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
 //
 // Parameters:
 //   poolManager: The connection pool manager used by upstreams that require
@@ -59,6 +66,9 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 }
 
 // NewUpstream creates and returns an appropriate upstream.Upstream implementation
+//
+// Summary: NewUpstream creates and returns an appropriate upstream.
+//
 // based on the type of service specified in the configuration.
 //
 // Parameters:

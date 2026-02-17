@@ -34,6 +34,9 @@ import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
+ *
+*
+ * Summary: ToolsPage component.
  * @returns The rendered component.
  */
 export default function ToolsPage() {

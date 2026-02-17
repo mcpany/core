@@ -11,6 +11,7 @@ import (
 )
 
 // Password hashes a password using bcrypt.
+// Summary: Password hashes a password using bcrypt.
 //
 // Parameters:
 //   - password: The password to hash.
@@ -29,6 +30,7 @@ func Password(password string) (string, error) {
 }
 
 // CheckPassword checks if a password matches a hash.
+// Summary: CheckPassword checks if a password matches a hash.
 //
 // Parameters:
 //   - password: The password to check.

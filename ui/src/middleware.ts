@@ -8,6 +8,9 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Middleware for handling request interception, proxying, and security headers.
+ *
+*
+ * Summary: Middleware for handling request interception, proxying, and security headers.
  * @param request - The incoming NextRequest object.
  * @returns A NextResponse object.
  */
@@ -72,6 +75,9 @@ export function middleware(request: NextRequest) {
 
 /**
  * Configuration for the middleware matcher.
+ *
+*
+ * Summary: Configuration for the middleware matcher.
  */
 export const config = {
   matcher: [

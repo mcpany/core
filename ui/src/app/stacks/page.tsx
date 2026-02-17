@@ -17,6 +17,9 @@ import { ServiceCollection } from "@/lib/marketplace-service";
 
 /**
  * StacksPage component.
+ *
+*
+ * Summary: StacksPage component.
  * Lists all available service collections (stacks) and provides options to create or delete them.
  * @returns The rendered page.
  */

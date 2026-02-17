@@ -147,6 +147,9 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 /**
  * ServiceDetail.
  *
+*
+ * Summary: ServiceDetail.
+ *
  * @param { serviceId - The { serviceId.
  */
 export function ServiceDetail({ serviceId }: { serviceId: string }) {

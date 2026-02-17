@@ -21,6 +21,9 @@ const formatUptime = (seconds: number) => {
 
 /**
  * SystemHealthCard component.
+ *
+*
+ * Summary: SystemHealthCard component.
  * @returns The rendered component.
  */
 export const SystemHealthCard = memo(function SystemHealthCard() {

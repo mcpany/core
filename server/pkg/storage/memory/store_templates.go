@@ -11,6 +11,7 @@ import (
 )
 
 // _ is an unused parameter.
+// Summary: _ is an unused parameter.
 //
 // Returns the result.
 // Returns an error if the operation fails.
@@ -25,6 +26,7 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 }
 
 // GetServiceTemplate retrieves a service template by ID.
+// Summary: GetServiceTemplate retrieves a service template by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.
@@ -41,6 +43,7 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 }
 
 // SaveServiceTemplate saves a service template.
+// Summary: SaveServiceTemplate saves a service template.
 //
 // _ is an unused parameter.
 // template is the template.
@@ -54,6 +57,8 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
+//
+// Summary: DeleteServiceTemplate deletes a service template by ID.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

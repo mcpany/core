@@ -22,6 +22,9 @@ interface ToolFailureRate {
 
 /**
  * ToolFailureRateWidget component.
+ *
+*
+ * Summary: ToolFailureRateWidget component.
  * Displays tools with the highest error rates.
  * @returns The rendered component.
  */

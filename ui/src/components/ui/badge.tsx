@@ -30,6 +30,9 @@ const badgeVariants = cva(
 
 /**
  * BadgeProps type definition.
+ *
+*
+ * Summary: BadgeProps type definition.
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,

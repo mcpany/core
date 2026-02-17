@@ -9,11 +9,17 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 /**
  * Defines the role of a user in the system.
+ *
+*
+ * Summary: Defines the role of a user in the system.
  */
 export type UserRole = 'admin' | 'editor' | 'viewer';
 
 /**
  * Represents a user of the application.
+ *
+*
+ * Summary: Represents a user of the application.
  */
 export interface User {
   /** Unique user ID. */
@@ -46,6 +52,9 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**
  * Provider component for user authentication context.
+ *
+*
+ * Summary: Provider component for user authentication context.
  *
  * @param props - The component props.
  * @param props.children - The child components.
@@ -95,6 +104,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
 /**
  * Hook to access the user context.
+ *
+*
+ * Summary: Hook to access the user context.
  * @returns The user context.
  * @throws Error if used outside of a UserProvider.
  */

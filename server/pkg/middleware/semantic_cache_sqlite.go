@@ -15,6 +15,9 @@ import (
 )
 
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
+//
+// Summary: SQLiteVectorStore implements VectorStore using SQLite for persistence
+//
 // and an in-memory cache for fast search.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
@@ -22,6 +25,9 @@ type SQLiteVectorStore struct {
 }
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
+//
+// Summary: NewSQLiteVectorStore creates a new SQLiteVectorStore.
+//
 // It loads existing entries from the database into memory.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
@@ -156,6 +162,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 }
 
 // Add adds a new entry to both memory and DB.
+// Summary: Add adds a new entry to both memory and DB.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -205,6 +212,7 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 }
 
 // Search searches in memory.
+// Summary: Search searches in memory.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -218,6 +226,7 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 }
 
 // Prune removes expired entries from both memory and DB.
+// Summary: Prune removes expired entries from both memory and DB.
 //
 // ctx is the context for the request.
 // key is the key.
@@ -229,6 +238,7 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 }
 
 // Close closes the database connection.
+// Summary: Close closes the database connection.
 //
 // Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Close() error {

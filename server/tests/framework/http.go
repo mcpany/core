@@ -17,6 +17,7 @@ import (
 )
 
 // BuildHTTPEchoServer builds and starts an HTTP echo server for testing.
+// Summary: BuildHTTPEchoServer builds and starts an HTTP echo server for testing.
 //
 // t is the t.
 //
@@ -31,6 +32,7 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterHTTPEchoService registers the HTTP echo service with the MCP server.
+// Summary: RegisterHTTPEchoService registers the HTTP echo service with the MCP server.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -41,6 +43,7 @@ func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.Registration
 }
 
 // BuildHTTPAuthedEchoServer builds the HTTP authed echo server for testing.
+// Summary: BuildHTTPAuthedEchoServer builds the HTTP authed echo server for testing.
 //
 // t is the t.
 //
@@ -55,6 +58,7 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterHTTPAuthedEchoService registers the HTTP authed echo service with the given registration client.
+// Summary: RegisterHTTPAuthedEchoService registers the HTTP authed echo service with the given registration client.
 //
 // t is the t.
 // registrationClient is the registrationClient.

@@ -13,11 +13,14 @@ import (
 )
 
 // LocalLimiter is an in-memory implementation of Limiter.
+//
+// Summary: LocalLimiter is an in-memory implementation of Limiter.
 type LocalLimiter struct {
 	*rate.Limiter
 }
 
 // Allow checks if the request is allowed (cost 1).
+// Summary: Allow checks if the request is allowed (cost 1).
 //
 // _ is an unused parameter.
 //
@@ -28,6 +31,7 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 }
 
 // AllowN checks if the request is allowed with a specific cost.
+// Summary: AllowN checks if the request is allowed with a specific cost.
 //
 // _ is an unused parameter.
 // n is the n.
@@ -39,6 +43,7 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 }
 
 // Update updates the limiter configuration.
+// Summary: Update updates the limiter configuration.
 //
 // rps is the rps.
 // burst is the burst.
@@ -53,9 +58,12 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 }
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+//
+// Summary: LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
+// Summary: NewLocalStrategy creates a new LocalStrategy.
 //
 // Returns the result.
 func NewLocalStrategy() *LocalStrategy {
@@ -63,6 +71,7 @@ func NewLocalStrategy() *LocalStrategy {
 }
 
 // Create creates a new LocalLimiter.
+// Summary: Create creates a new LocalLimiter.
 //
 // _ is an unused parameter.
 // _ is an unused parameter.

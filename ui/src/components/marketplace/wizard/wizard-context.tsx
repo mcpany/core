@@ -8,6 +8,9 @@ import { UpstreamServiceConfig } from '@/lib/client';
 
 /**
  * WizardStep defines the sequence of steps in the configuration wizard.
+ *
+*
+ * Summary: WizardStep defines the sequence of steps in the configuration wizard.
  */
 export enum WizardStep {
     SERVICE_TYPE = 0,
@@ -19,6 +22,9 @@ export enum WizardStep {
 
 /**
  * WizardState type definition.
+ *
+*
+ * Summary: WizardState type definition.
  */
 export interface WizardState {
     currentStep: WizardStep;
@@ -64,6 +70,9 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**
  * WizardProvider manages the state of the configuration wizard and provides
+ *
+*
+ * Summary: WizardProvider manages the state of the configuration wizard and provides
  * methods to navigate between steps and update the configuration.
  * @param props - The component props.
  * @param props.children - The child components.
@@ -176,6 +185,9 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 
 /**
  * useWizard is a hook to access the wizard context.
+ *
+*
+ * Summary: useWizard is a hook to access the wizard context.
  * @returns The wizard context containing state and navigation methods.
  * @throws Error if used outside of a WizardProvider.
  */

@@ -11,9 +11,12 @@ import (
 )
 
 // RolesContextKey is the context key for the user roles.
+//
+// Summary: RolesContextKey is the context key for the user roles.
 const RolesContextKey authContextKey = "user_roles"
 
 // ContextWithRoles returns a new context with the user roles.
+// Summary: ContextWithRoles returns a new context with the user roles.
 //
 // ctx is the context for the request.
 // roles is the roles.
@@ -24,6 +27,7 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 }
 
 // RolesFromContext returns the user roles from the context.
+// Summary: RolesFromContext returns the user roles from the context.
 //
 // ctx is the context for the request.
 //
@@ -35,10 +39,13 @@ func RolesFromContext(ctx context.Context) ([]string, bool) {
 }
 
 // RBACEnforcer handles Role-Based Access Control checks.
+//
+// Summary: RBACEnforcer handles Role-Based Access Control checks.
 type RBACEnforcer struct {
 }
 
 // NewRBACEnforcer creates a new RBACEnforcer.
+// Summary: NewRBACEnforcer creates a new RBACEnforcer.
 //
 // Returns the result.
 func NewRBACEnforcer() *RBACEnforcer {
@@ -46,6 +53,7 @@ func NewRBACEnforcer() *RBACEnforcer {
 }
 
 // HasRole checks if the given user has the specified role.
+// Summary: HasRole checks if the given user has the specified role.
 //
 // user is the user.
 // role is the role.
@@ -59,6 +67,7 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 }
 
 // HasAnyRole checks if the user has at least one of the specified roles.
+// Summary: HasAnyRole checks if the user has at least one of the specified roles.
 //
 // user is the user.
 // roles is the roles.
@@ -77,6 +86,7 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 }
 
 // HasRoleInContext checks if the context contains the specified role.
+// Summary: HasRoleInContext checks if the context contains the specified role.
 //
 // ctx is the context for the request.
 // role is the role.

@@ -14,6 +14,8 @@ import (
 )
 
 // VerifyIntegrity checks if the tool definition matches its expected hash.
+//
+// Summary: VerifyIntegrity checks if the tool definition matches its expected hash.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -36,6 +38,8 @@ func VerifyIntegrity(t *v1.Tool) error {
 }
 
 // VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
+//
+// Summary: VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -58,6 +62,8 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 }
 
 // CalculateHash computes the SHA256 hash of a runtime tool definition.
+//
+// Summary: CalculateHash computes the SHA256 hash of a runtime tool definition.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -77,6 +83,8 @@ func CalculateHash(t *v1.Tool) (string, error) {
 }
 
 // CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
+//
+// Summary: CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

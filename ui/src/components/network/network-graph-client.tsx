@@ -111,6 +111,9 @@ const defaultEdgeOptions = {
 
 /**
  * Props for the NetworkGraphFlow component.
+ *
+*
+ * Summary: Props for the NetworkGraphFlow component.
  */
 export interface NetworkGraphFlowProps {
     /**
@@ -121,6 +124,9 @@ export interface NetworkGraphFlowProps {
 
 /**
  * NetworkGraphFlow component.
+ *
+*
+ * Summary: NetworkGraphFlow component.
  * Renders the interactive network graph using ReactFlow.
  * @param props - The component props.
  * @returns The rendered component.
@@ -426,6 +432,9 @@ MetricCard.displayName = 'MetricCard';
 
 /**
  * NetworkGraphClient component.
+ *
+*
+ * Summary: NetworkGraphClient component.
  * @returns The rendered component.
  */
 export function NetworkGraphClient() {

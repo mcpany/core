@@ -21,6 +21,8 @@ type tokenKey struct {
 }
 
 // Store implements storage.Storage in memory.
+//
+// Summary: Store implements storage.
 type Store struct {
 	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig
@@ -35,6 +37,7 @@ type Store struct {
 }
 
 // NewStore creates a new memory store.
+// Summary: NewStore creates a new memory store.
 //
 // Returns the result.
 func NewStore() *Store {
@@ -51,6 +54,7 @@ func NewStore() *Store {
 }
 
 // SaveToken saves a user token.
+// Summary: SaveToken saves a user token.
 //
 // _ is an unused parameter.
 // token is the token.
@@ -68,6 +72,7 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 }
 
 // GetToken retrieves a user token by user ID and service ID.
+// Summary: GetToken retrieves a user token by user ID and service ID.
 //
 // _ is an unused parameter.
 // userID is the userID.
@@ -89,6 +94,7 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 }
 
 // DeleteToken deletes a user token.
+// Summary: DeleteToken deletes a user token.
 //
 // _ is an unused parameter.
 // userID is the userID.
@@ -107,6 +113,7 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 }
 
 // Load retrieves the full server configuration.
+// Summary: Load retrieves the full server configuration.
 //
 // _ is an unused parameter.
 //
@@ -160,6 +167,7 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 }
 
 // SaveService saves a single upstream service configuration.
+// Summary: SaveService saves a single upstream service configuration.
 //
 // _ is an unused parameter.
 // service is the service instance.
@@ -173,6 +181,7 @@ func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamService
 }
 
 // GetService retrieves a single upstream service configuration by name.
+// Summary: GetService retrieves a single upstream service configuration by name.
 //
 // _ is an unused parameter.
 // name is the name of the resource.
@@ -189,6 +198,7 @@ func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamSe
 }
 
 // ListServices lists all upstream service configurations.
+// Summary: ListServices lists all upstream service configurations.
 //
 // _ is an unused parameter.
 //
@@ -205,6 +215,7 @@ func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConf
 }
 
 // DeleteService deletes an upstream service configuration by name.
+// Summary: DeleteService deletes an upstream service configuration by name.
 //
 // _ is an unused parameter.
 // name is the name of the resource.
@@ -218,6 +229,7 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 }
 
 // Close closes the underlying storage connection.
+// Summary: Close closes the underlying storage connection.
 //
 // Returns an error if the operation fails.
 func (s *Store) Close() error {
@@ -225,12 +237,16 @@ func (s *Store) Close() error {
 }
 
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+//
+// Summary: HasConfigSources returns true if the store has configuration sources (e.
+//
 // Memory store always has data available.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
 
 // GetGlobalSettings retrieves the global configuration.
+// Summary: GetGlobalSettings retrieves the global configuration.
 //
 // _ is an unused parameter.
 //
@@ -246,6 +262,7 @@ func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, 
 }
 
 // SaveGlobalSettings saves the global configuration.
+// Summary: SaveGlobalSettings saves the global configuration.
 //
 // _ is an unused parameter.
 // settings is the settings.
@@ -259,6 +276,7 @@ func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalS
 }
 
 // ListSecrets retrieves all secrets.
+// Summary: ListSecrets retrieves all secrets.
 //
 // _ is an unused parameter.
 //
@@ -275,6 +293,7 @@ func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 }
 
 // GetSecret retrieves a secret by ID.
+// Summary: GetSecret retrieves a secret by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.
@@ -291,6 +310,7 @@ func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error
 }
 
 // SaveSecret saves a secret.
+// Summary: SaveSecret saves a secret.
 //
 // _ is an unused parameter.
 // secret is the secret.
@@ -304,6 +324,7 @@ func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 }
 
 // DeleteSecret deletes a secret by ID.
+// Summary: DeleteSecret deletes a secret by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.
@@ -317,6 +338,7 @@ func (s *Store) DeleteSecret(_ context.Context, id string) error {
 }
 
 // CreateUser creates a new user.
+// Summary: CreateUser creates a new user.
 //
 // _ is an unused parameter.
 // user is the user.
@@ -336,6 +358,7 @@ func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 }
 
 // GetUser retrieves a user by ID.
+// Summary: GetUser retrieves a user by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.
@@ -352,6 +375,7 @@ func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 }
 
 // ListUsers retrieves all users.
+// Summary: ListUsers retrieves all users.
 //
 // _ is an unused parameter.
 //
@@ -368,6 +392,7 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 }
 
 // UpdateUser updates an existing user.
+// Summary: UpdateUser updates an existing user.
 //
 // _ is an unused parameter.
 // user is the user.
@@ -384,6 +409,7 @@ func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 }
 
 // DeleteUser deletes a user by ID.
+// Summary: DeleteUser deletes a user by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.
@@ -399,6 +425,7 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 // Profiles
 
 // ListProfiles retrieves all profile definitions.
+// Summary: ListProfiles retrieves all profile definitions.
 //
 // _ is an unused parameter.
 //
@@ -415,6 +442,7 @@ func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, 
 }
 
 // GetProfile retrieves a profile definition by name.
+// Summary: GetProfile retrieves a profile definition by name.
 //
 // _ is an unused parameter.
 // name is the name of the resource.
@@ -431,6 +459,7 @@ func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDef
 }
 
 // SaveProfile saves a profile definition.
+// Summary: SaveProfile saves a profile definition.
 //
 // _ is an unused parameter.
 // profile is the profile.
@@ -444,6 +473,7 @@ func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefiniti
 }
 
 // DeleteProfile deletes a profile definition by name.
+// Summary: DeleteProfile deletes a profile definition by name.
 //
 // _ is an unused parameter.
 // name is the name of the resource.
@@ -459,6 +489,7 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 // Service Collections
 
 // ListServiceCollections retrieves all service collections.
+// Summary: ListServiceCollections retrieves all service collections.
 //
 // _ is an unused parameter.
 //
@@ -475,6 +506,7 @@ func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collectio
 }
 
 // GetServiceCollection retrieves a service collection by name.
+// Summary: GetServiceCollection retrieves a service collection by name.
 //
 // _ is an unused parameter.
 // name is the name of the resource.
@@ -491,6 +523,7 @@ func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.
 }
 
 // SaveServiceCollection saves a service collection.
+// Summary: SaveServiceCollection saves a service collection.
 //
 // _ is an unused parameter.
 // collection is the collection.
@@ -504,6 +537,7 @@ func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Co
 }
 
 // DeleteServiceCollection deletes a service collection by name.
+// Summary: DeleteServiceCollection deletes a service collection by name.
 //
 // _ is an unused parameter.
 // name is the name of the resource.
@@ -519,6 +553,7 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 // Credentials
 
 // ListCredentials retrieves all credentials.
+// Summary: ListCredentials retrieves all credentials.
 //
 // _ is an unused parameter.
 //
@@ -535,6 +570,7 @@ func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, erro
 }
 
 // GetCredential retrieves a credential by ID.
+// Summary: GetCredential retrieves a credential by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.
@@ -551,6 +587,7 @@ func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credentia
 }
 
 // SaveCredential saves a credential.
+// Summary: SaveCredential saves a credential.
 //
 // _ is an unused parameter.
 // cred is the cred.
@@ -564,6 +601,7 @@ func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) err
 }
 
 // DeleteCredential deletes a credential by ID.
+// Summary: DeleteCredential deletes a credential by ID.
 //
 // _ is an unused parameter.
 // id is the unique identifier.

@@ -7,6 +7,9 @@ import { SystemHealth } from "@/components/diagnostics/system-health";
 
 /**
  * DiagnosticsPage component.
+ *
+*
+ * Summary: DiagnosticsPage component.
  * @returns The rendered component.
  */
 export default function DiagnosticsPage() {

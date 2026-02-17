@@ -44,6 +44,9 @@ interface Participant {
 
 /**
  * SequenceDiagram renders an interactive sequence diagram of a trace.
+ *
+*
+ * Summary: SequenceDiagram renders an interactive sequence diagram of a trace.
  * It visualizes the flow of messages between the user, MCP core, and tools.
  *
  * @param props - The component props.

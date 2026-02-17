@@ -29,6 +29,9 @@ interface ResourcePreviewModalProps {
 
 /**
  * ResourcePreviewModal component.
+ *
+*
+ * Summary: ResourcePreviewModal component.
  * @param props - The component props.
  * @param props.isOpen - Whether the component is open.
  * @param props.onClose - The onClose property.

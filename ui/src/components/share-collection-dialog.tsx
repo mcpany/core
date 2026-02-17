@@ -39,6 +39,9 @@ import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils"
 
 /**
  * ShareCollectionDialog component.
+ *
+*
+ * Summary: ShareCollectionDialog component.
  * @returns The rendered component.
  */
 export function ShareCollectionDialog() {

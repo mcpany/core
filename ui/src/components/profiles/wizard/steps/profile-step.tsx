@@ -22,6 +22,9 @@ interface ProfileStepProps {
 
 /**
  * Step for finalizing the profile configuration.
+ *
+*
+ * Summary: Step for finalizing the profile configuration.
  * @param props Component properties.
  */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {

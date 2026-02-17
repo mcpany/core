@@ -40,11 +40,17 @@ const DiffEditor = dynamic(
 
 /**
  * MessageType type definition.
+ *
+*
+ * Summary: MessageType type definition.
  */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
 /**
  * Message type definition.
+ *
+*
+ * Summary: Message type definition.
  */
 export interface Message {
   id: string;
@@ -88,6 +94,9 @@ function analyzeError(error: string): string | null {
 
 /**
  * ChatMessage.
+ *
+*
+ * Summary: ChatMessage.
  *
  * @param { message - The { message.
  */

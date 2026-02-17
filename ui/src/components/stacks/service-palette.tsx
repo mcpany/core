@@ -25,6 +25,9 @@ import { Badge } from "@/components/ui/badge";
 
 /**
  * ServiceTemplate type definition.
+ *
+*
+ * Summary: ServiceTemplate type definition.
  */
 export interface ServiceTemplate {
     id: string;
@@ -130,6 +133,9 @@ interface ServicePaletteProps {
 
 /**
  * ServicePalette.
+ *
+*
+ * Summary: ServicePalette.
  *
  * @param { onTemplateSelect - The { onTemplateSelect.
  */

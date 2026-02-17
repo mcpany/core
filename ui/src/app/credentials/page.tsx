@@ -8,6 +8,9 @@ import { Separator } from "@/components/ui/separator"
 
 /**
  * CredentialsPage component.
+ *
+*
+ * Summary: CredentialsPage component.
  * @returns The rendered component.
  */
 export default function CredentialsPage() {

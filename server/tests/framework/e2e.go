@@ -27,6 +27,8 @@ import (
 )
 
 // RegistrationMethod defines the method used to register an upstream service.
+//
+// Summary: RegistrationMethod defines the method used to register an upstream service.
 type RegistrationMethod string
 
 const (
@@ -41,6 +43,8 @@ const (
 var portRegex = regexp.MustCompile(`(?:metricsPort=|Metrics server listening on port |Listening on port port=)(\d+)`)
 
 // E2ETestCase defines the structure for an end-to-end test case.
+//
+// Summary: E2ETestCase defines the structure for an end-to-end test case.
 type E2ETestCase struct {
 	Name                         string
 	UpstreamServiceType          string
@@ -57,6 +61,7 @@ type E2ETestCase struct {
 }
 
 // ValidateRegisteredTool validates that the expected tool is registered.
+// Summary: ValidateRegisteredTool validates that the expected tool is registered.
 //
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
@@ -92,6 +97,7 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 }
 
 // RunE2ETest runs an end-to-end test case.
+// Summary: RunE2ETest runs an end-to-end test case.
 //
 // t is the t.
 // testCase is the testCase.
@@ -188,6 +194,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 }
 
 // BuildGRPCWeatherServer builds the gRPC weather server.
+// Summary: BuildGRPCWeatherServer builds the gRPC weather server.
 //
 // t is the t.
 //
@@ -202,6 +209,7 @@ func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterGRPCWeatherService registers the gRPC weather service.
+// Summary: RegisterGRPCWeatherService registers the gRPC weather service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -212,6 +220,7 @@ func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.Registrat
 }
 
 // BuildGRPCAuthedWeatherServer builds the authenticated gRPC weather server.
+// Summary: BuildGRPCAuthedWeatherServer builds the authenticated gRPC weather server.
 //
 // t is the t.
 //
@@ -226,6 +235,9 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // WaitForPort waits for a process to output its assigned port.
+//
+// Summary: WaitForPort waits for a process to output its assigned port.
+//
 // WaitForPort waits for a process to output its assigned port.
 func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 	t.Helper()
@@ -281,6 +293,7 @@ func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 }
 
 // RegisterGRPCAuthedWeatherService registers the authenticated gRPC weather service.
+// Summary: RegisterGRPCAuthedWeatherService registers the authenticated gRPC weather service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -299,6 +312,7 @@ func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.Reg
 }
 
 // BuildWebsocketWeatherServer builds the websocket weather server.
+// Summary: BuildWebsocketWeatherServer builds the websocket weather server.
 //
 // t is the t.
 //
@@ -325,6 +339,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterWebsocketWeatherService registers the websocket weather service.
+// Summary: RegisterWebsocketWeatherService registers the websocket weather service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -335,6 +350,7 @@ func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.Regi
 }
 
 // BuildWebrtcWeatherServer builds the webrtc weather server.
+// Summary: BuildWebrtcWeatherServer builds the webrtc weather server.
 //
 // t is the t.
 //
@@ -349,6 +365,7 @@ func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterWebrtcWeatherService registers the webrtc weather service.
+// Summary: RegisterWebrtcWeatherService registers the webrtc weather service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -359,6 +376,7 @@ func RegisterWebrtcWeatherService(t *testing.T, registrationClient apiv1.Registr
 }
 
 // BuildStdioServer builds the stdio server (nop).
+// Summary: BuildStdioServer builds the stdio server (nop).
 //
 // _ is an unused parameter.
 //
@@ -368,6 +386,7 @@ func BuildStdioServer(_ *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterStdioService registers the stdio service.
+// Summary: RegisterStdioService registers the stdio service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -379,6 +398,7 @@ func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationSer
 }
 
 // BuildStdioDockerServer builds the stdio docker server (nop).
+// Summary: BuildStdioDockerServer builds the stdio docker server (nop).
 //
 // _ is an unused parameter.
 //
@@ -388,6 +408,7 @@ func BuildStdioDockerServer(_ *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterStdioDockerService registers the stdio docker service.
+// Summary: RegisterStdioDockerService registers the stdio docker service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -412,6 +433,7 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 }
 
 // BuildOpenAPIWeatherServer builds the openapi weather server.
+// Summary: BuildOpenAPIWeatherServer builds the openapi weather server.
 //
 // t is the t.
 //
@@ -426,6 +448,7 @@ func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterOpenAPIWeatherService registers the openapi weather service.
+// Summary: RegisterOpenAPIWeatherService registers the openapi weather service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -451,6 +474,7 @@ func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.Regist
 }
 
 // BuildOpenAPIAuthedServer builds the openapi authenticated server.
+// Summary: BuildOpenAPIAuthedServer builds the openapi authenticated server.
 //
 // t is the t.
 //
@@ -465,6 +489,7 @@ func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterOpenAPIAuthedService registers the openapi authenticated service.
+// Summary: RegisterOpenAPIAuthedService registers the openapi authenticated service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -514,6 +539,7 @@ paths:
 }
 
 // BuildStreamableHTTPServer builds the streamable http server.
+// Summary: BuildStreamableHTTPServer builds the streamable http server.
 //
 // t is the t.
 //
@@ -529,6 +555,7 @@ func BuildStreamableHTTPServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterStreamableHTTPService registers the streamable http service.
+// Summary: RegisterStreamableHTTPService registers the streamable http service.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -539,6 +566,7 @@ func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.Regist
 }
 
 // VerifyMCPClient verifies the MCP client.
+// Summary: VerifyMCPClient verifies the MCP client.
 //
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.

@@ -15,11 +15,14 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: DB wraps the sql.
 type DB struct {
 	*sql.DB
 }
 
 // NewDB opens or creates a SQLite database at the specified path.
+// Summary: NewDB opens or creates a SQLite database at the specified path.
 //
 // path is the path.
 //

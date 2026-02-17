@@ -19,6 +19,9 @@ import {
 
 /**
  * Represents a single item in the breadcrumb navigation.
+ *
+*
+ * Summary: Represents a single item in the breadcrumb navigation.
  */
 export interface BreadcrumbItem {
     /** The label to display for the breadcrumb. */
@@ -41,6 +44,9 @@ interface BreadcrumbsProps {
 
 /**
  * Breadcrumbs navigation component.
+ *
+*
+ * Summary: Breadcrumbs navigation component.
  *
  * @param props - The component props.
  * @param props.items - The list of breadcrumb items to display.

@@ -27,6 +27,9 @@ interface InstantiateDialogProps {
 /**
  * InstantiateDialog.
  *
+*
+ * Summary: InstantiateDialog.
+ *
  * @param onComplete - The onComplete.
  */
 export function InstantiateDialog({ open, onOpenChange, templateConfig, onComplete }: InstantiateDialogProps) {

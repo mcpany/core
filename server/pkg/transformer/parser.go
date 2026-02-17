@@ -26,6 +26,9 @@ var (
 )
 
 // TextParser provides functionality to parse various text formats (JSON, XML,
+//
+// Summary: TextParser provides functionality to parse various text formats (JSON, XML,
+//
 // plain text) and extract data into a structured map. It uses a configuration
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
@@ -39,6 +42,7 @@ var (
 )
 
 // NewTextParser returns a shared instance of TextParser.
+// Summary: NewTextParser returns a shared instance of TextParser.
 //
 // Returns the result.
 func NewTextParser() *TextParser {
@@ -51,6 +55,9 @@ func NewTextParser() *TextParser {
 }
 
 // Transform takes a map of data and a Go template string and returns a byte
+//
+// Summary: Transform takes a map of data and a Go template string and returns a byte
+//
 // slice containing the transformed output.
 //
 // templateStr is the Go template to be executed.
@@ -62,6 +69,9 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 }
 
 // Parse extracts data from an input byte slice based on the specified input
+//
+// Summary: Parse extracts data from an input byte slice based on the specified input
+//
 // type and configuration.
 //
 // inputType specifies the format of the input data ("json", "xml", "text", or "jq").

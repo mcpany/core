@@ -7,6 +7,9 @@ import { SecretsManager } from "@/components/settings/secrets-manager";
 
 /**
  * SecretsPage component.
+ *
+*
+ * Summary: SecretsPage component.
  * @returns The rendered component.
  */
 export default function SecretsPage() {

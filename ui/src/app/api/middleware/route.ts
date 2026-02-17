@@ -8,6 +8,9 @@ import { NextResponse } from 'next/server';
 
 /**
  * Handles GET requests to retrieve the list of configured middlewares.
+ *
+*
+ * Summary: Handles GET requests to retrieve the list of configured middlewares.
  * @returns A JSON response containing an array of middleware configurations.
  */
 export async function GET() {

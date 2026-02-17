@@ -18,6 +18,9 @@ import { ServicePropertyCard } from "./service-property-card";
 /**
  * PromptDetail.
  *
+*
+ * Summary: PromptDetail.
+ *
  * @param promptName - The promptName.
  * @param promptName - The promptName.
  */

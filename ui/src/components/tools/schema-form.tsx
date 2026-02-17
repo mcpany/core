@@ -24,6 +24,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 /**
  * Schema definition for form generation.
+ *
+*
+ * Summary: Schema definition for form generation.
  */
 export interface Schema {
   type?: string | string[];
@@ -48,6 +51,9 @@ interface SchemaFormProps {
 
 /**
  * Recursive form builder based on JSON Schema.
+ *
+*
+ * Summary: Recursive form builder based on JSON Schema.
  *
  * @param props - The component props.
  * @param props.schema - The JSON schema to render.

@@ -23,6 +23,9 @@ services:
 
 /**
  * StackDetailPage component.
+ *
+*
+ * Summary: StackDetailPage component.
  * Displays the Stack Editor for creating or editing a stack.
  * @returns The rendered page.
  */

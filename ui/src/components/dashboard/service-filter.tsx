@@ -19,6 +19,9 @@ import { Filter } from "lucide-react";
 
 /**
  * A dropdown component to filter dashboard views by a specific service.
+ *
+*
+ * Summary: A dropdown component to filter dashboard views by a specific service.
  * Updates the global dashboard context when a service is selected.
  *
  * @returns The rendered service filter component.

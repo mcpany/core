@@ -18,6 +18,9 @@ interface Middleware {
 
 /**
  * MiddlewarePage component.
+ *
+*
+ * Summary: MiddlewarePage component.
  * @returns The rendered component.
  */
 export default function MiddlewarePage() {

@@ -13,6 +13,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 /**
  * StepParameters component.
+ *
+*
+ * Summary: StepParameters component.
  * @returns The rendered component.
  */
 export function StepParameters() {

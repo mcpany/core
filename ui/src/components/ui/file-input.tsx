@@ -19,6 +19,9 @@ interface FileInputProps {
 
 /**
  * FileInput is a form component for selecting a file and converting it to a Base64 string.
+ *
+*
+ * Summary: FileInput is a form component for selecting a file and converting it to a Base64 string.
  * It displays the selected filename and allows clearing the selection.
  * @param props - Component props.
  * @returns The FileInput component.

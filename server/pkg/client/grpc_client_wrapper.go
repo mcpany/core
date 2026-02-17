@@ -14,6 +14,9 @@ import (
 )
 
 // Conn is an interface that represents a gRPC client connection.
+//
+// Summary: Conn is an interface that represents a gRPC client connection.
+//
 // It is used to allow for mocking of the gRPC client in tests.
 type Conn interface {
 	grpc.ClientConnInterface
@@ -28,6 +31,9 @@ type Conn interface {
 }
 
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
+//
+// Summary: GrpcClientWrapper wraps a `Conn` to adapt it to the
+//
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
 type GrpcClientWrapper struct {
@@ -38,6 +44,9 @@ type GrpcClientWrapper struct {
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
+//
+// Summary: NewGrpcClientWrapper creates a new GrpcClientWrapper.
+//
 // It accepts a shared health checker to avoid creating a new one for every client.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
@@ -52,6 +61,7 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 }
 
 // IsHealthy checks if the underlying gRPC connection is in a usable state.
+// Summary: IsHealthy checks if the underlying gRPC connection is in a usable state.
 //
 // It returns `true` if the connection's state is not `connectivity.Shutdown`,
 // indicating that it is still active and can be used for new RPCs.
@@ -69,6 +79,9 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 }
 
 // Close terminates the underlying gRPC connection, releasing any associated
+//
+// Summary: Close terminates the underlying gRPC connection, releasing any associated
+//
 // resources.
 func (w *GrpcClientWrapper) Close() error {
 	return w.Conn.Close()

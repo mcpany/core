@@ -23,6 +23,9 @@ const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Clou
 
 /**
  * ServiceTemplateSelector component.
+ *
+*
+ * Summary: ServiceTemplateSelector component.
  * Allows users to browse and search for service templates.
  *
  * @param onSelect - Callback when a template is selected.

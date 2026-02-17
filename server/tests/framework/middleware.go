@@ -20,6 +20,7 @@ import (
 )
 
 // TestE2ECaching tests the end-to-end caching functionality.
+// Summary: TestE2ECaching tests the end-to-end caching functionality.
 //
 // t is the t.
 func TestE2ECaching(t *testing.T) {
@@ -38,6 +39,7 @@ func TestE2ECaching(t *testing.T) {
 }
 
 // BuildCachingServer builds and starts a caching server for testing.
+// Summary: BuildCachingServer builds and starts a caching server for testing.
 //
 // t is the t.
 //
@@ -52,6 +54,7 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterCachingService registers the caching service with the MCP server.
+// Summary: RegisterCachingService registers the caching service with the MCP server.
 //
 // t is the t.
 // registrationClient is the registrationClient.
@@ -62,6 +65,7 @@ func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationS
 }
 
 // NoOpMiddleware is a middleware that does nothing and calls the next handler.
+// Summary: NoOpMiddleware is a middleware that does nothing and calls the next handler.
 //
 // _ is an unused parameter.
 // next is the next.
@@ -93,6 +97,7 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 }
 
 // ValidateCaching validates that caching is working correctly.
+// Summary: ValidateCaching validates that caching is working correctly.
 //
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.

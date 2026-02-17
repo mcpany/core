@@ -30,9 +30,14 @@ const (
 )
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+//
+// Summary: MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
+//
+// Summary: MethodDescriptorToProtoProperties converts the fields of a method's input
+//
 // message into a `structpb.Struct` for use as the `properties` field in a tool
 // input schema.
 //
@@ -47,6 +52,9 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 }
 
 // MethodOutputDescriptorToProtoProperties converts the fields of a method's
+//
+// Summary: MethodOutputDescriptorToProtoProperties converts the fields of a method's
+//
 // output message into a `structpb.Struct` for use as the `properties` field in
 // a tool output schema.
 //
@@ -151,6 +159,8 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 }
 
 // ConfigParameter an interface for config parameter schemas.
+//
+// Summary: ConfigParameter an interface for config parameter schemas.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -160,6 +170,8 @@ type ConfigParameter interface {
 }
 
 // McpFieldParameter an interface for McpField parameter schemas.
+//
+// Summary: McpFieldParameter an interface for McpField parameter schemas.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//
@@ -184,6 +196,9 @@ type McpFieldParameter interface {
 }
 
 // ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
+//
+// Summary: ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
+//
 // from a service configuration into a `structpb.Struct` that can be used as the
 // `properties` field in a protobuf-based tool input schema.
 //
@@ -230,6 +245,9 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 }
 
 // McpFieldsToProtoProperties converts a slice of McpField definitions into a
+//
+// Summary: McpFieldsToProtoProperties converts a slice of McpField definitions into a
+//
 // `structpb.Struct` that can be used as the `properties` field in a
 // protobuf-based tool input schema.
 //

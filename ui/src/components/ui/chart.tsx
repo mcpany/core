@@ -15,6 +15,9 @@ const THEMES = { light: "", dark: ".dark" } as const
 
 /**
  * ChartConfig type definition.
+ *
+*
+ * Summary: ChartConfig type definition.
  */
 export type ChartConfig = {
   [k in string]: {

@@ -27,6 +27,9 @@ import { cn } from "@/lib/utils";
 
 /**
  * SystemHealth component.
+ *
+*
+ * Summary: SystemHealth component.
  * @returns The rendered component.
  */
 export function SystemHealth() {

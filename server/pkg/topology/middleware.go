@@ -13,6 +13,7 @@ import (
 )
 
 // Middleware returns a middleware function to track session activity.
+// Summary: Middleware returns a middleware function to track session activity.
 //
 // next is the next.
 //

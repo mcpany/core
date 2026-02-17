@@ -16,6 +16,9 @@ interface DiffViewerProps {
 
 /**
  * DiffViewer component for comparing YAML configurations.
+ *
+*
+ * Summary: DiffViewer component for comparing YAML configurations.
  * Uses Monaco Diff Editor.
  *
  * @param props - The component props.

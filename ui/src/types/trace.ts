@@ -5,11 +5,17 @@
 
 /**
  * Represents the status of a span.
+ *
+*
+ * Summary: Represents the status of a span.
  */
 export type SpanStatus = 'success' | 'error' | 'pending';
 
 /**
  * Represents a span in a trace.
+ *
+*
+ * Summary: Represents a span in a trace.
  */
 export interface Span {
   id: string;
@@ -27,6 +33,9 @@ export interface Span {
 
 /**
  * Represents a full trace.
+ *
+*
+ * Summary: Represents a full trace.
  */
 export interface Trace {
   id: string;

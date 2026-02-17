@@ -95,6 +95,9 @@ import { apiClient, Metric } from "@/lib/client";
 
 /**
  * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
+ *
+*
+ * Summary: MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
  * and the system health status. It fetches data periodically from the API.
  * @returns The rendered MetricsOverview component.
  */

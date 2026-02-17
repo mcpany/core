@@ -41,6 +41,9 @@ interface AuditLogEntry {
 
 /**
  * AuditLogViewer component.
+ *
+*
+ * Summary: AuditLogViewer component.
  * Displays a table of audit logs with filtering capabilities and detailed view.
  *
  * @returns The rendered AuditLogViewer component.

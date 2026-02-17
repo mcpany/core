@@ -15,6 +15,9 @@ import (
 )
 
 // Transformer provides functionality to transform a map of data into a
+//
+// Summary: Transformer provides functionality to transform a map of data into a
+//
 // structured string using a Go template. It supports multiple output formats
 // specified by the template, such as JSON, XML, or plain text.
 type Transformer struct {
@@ -23,6 +26,7 @@ type Transformer struct {
 }
 
 // NewTransformer creates and returns a new instance of Transformer.
+// Summary: NewTransformer creates and returns a new instance of Transformer.
 //
 // Returns the result.
 func NewTransformer() *Transformer {
@@ -36,6 +40,9 @@ func NewTransformer() *Transformer {
 }
 
 // Transform takes a map of data and a Go template string and returns a byte
+//
+// Summary: Transform takes a map of data and a Go template string and returns a byte
+//
 // slice containing the transformed output.
 //
 // templateStr is the Go template to be executed.

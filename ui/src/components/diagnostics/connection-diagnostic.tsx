@@ -38,6 +38,9 @@ interface ConnectionDiagnosticDialogProps {
 /**
  * ConnectionDiagnosticDialog.
  *
+*
+ * Summary: ConnectionDiagnosticDialog.
+ *
  * @param trigger - The trigger.
  */
 export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagnosticDialogProps) {

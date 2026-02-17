@@ -27,6 +27,9 @@ interface HttpToolEditorProps {
 
 /**
  * Editor for configuring a single HTTP tool.
+ *
+*
+ * Summary: Editor for configuring a single HTTP tool.
  * Allows defining tool metadata and the mapped HTTP request details.
  * @param props - The component props.
  * @returns The rendered tool editor.

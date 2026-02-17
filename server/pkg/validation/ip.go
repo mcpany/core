@@ -24,6 +24,9 @@ func init() {
 }
 
 // IsPrivateNetworkIP checks if the IP address is a private network address.
+//
+// Summary: IsPrivateNetworkIP checks if the IP address is a private network address.
+//
 // This includes RFC1918, RFC4193 (Unique Local), and RFC6598 (CGNAT).
 // It does NOT include loopback or link-local addresses.
 //
@@ -63,6 +66,7 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 }
 
 // IsNAT64 checks for NAT64 (IPv4-embedded IPv6) addresses - 64:ff9b::/96 (RFC 6052).
+// Summary: IsNAT64 checks for NAT64 (IPv4-embedded IPv6) addresses - 64:ff9b::/96 (RFC 6052).
 //
 // Parameters:
 //   - ip: The IP address to check.
@@ -78,6 +82,7 @@ func IsNAT64(ip net.IP) bool {
 }
 
 // IsIPv4Compatible checks for IPv4-compatible IPv6 addresses (::a.b.c.d).
+// Summary: IsIPv4Compatible checks for IPv4-compatible IPv6 addresses (::a.
 //
 // Parameters:
 //   - ip: The IP address to check.
@@ -93,6 +98,7 @@ func IsIPv4Compatible(ip net.IP) bool {
 }
 
 // IsNAT64LinkLocal checks if a NAT64 address embeds a link-local IPv4 address.
+// Summary: IsNAT64LinkLocal checks if a NAT64 address embeds a link-local IPv4 address.
 //
 // Parameters:
 //   - ip: The IP address to check.
@@ -110,6 +116,7 @@ func IsNAT64LinkLocal(ip net.IP) bool {
 }
 
 // IsNAT64Loopback checks if a NAT64 address embeds a loopback IPv4 address.
+// Summary: IsNAT64Loopback checks if a NAT64 address embeds a loopback IPv4 address.
 //
 // Parameters:
 //   - ip: The IP address to check.
@@ -127,6 +134,7 @@ func IsNAT64Loopback(ip net.IP) bool {
 }
 
 // IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
+// Summary: IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
 //
 // Parameters:
 //   - ip: The IP address to check.
@@ -172,6 +180,9 @@ func IsPrivateIP(ip net.IP) bool {
 }
 
 // IsPrivateNetworkIPv4 checks if an IPv4 address is private.
+//
+// Summary: IsPrivateNetworkIPv4 checks if an IPv4 address is private.
+//
 // ip must be a valid 4-byte IPv4 address slice.
 //
 // Parameters:

@@ -15,12 +15,15 @@ import (
 )
 
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
+//
+// Summary: PostgresAuditStore writes audit logs to a PostgreSQL database.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
 }
 
 // NewPostgresAuditStore creates a new PostgresAuditStore.
+// Summary: NewPostgresAuditStore creates a new PostgresAuditStore.
 //
 // dsn is the dsn.
 //
@@ -78,6 +81,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 }
 
 // Write writes an audit entry to the database.
+// Summary: Write writes an audit entry to the database.
 //
 // ctx is the context for the request.
 // entry is the entry.
@@ -164,11 +168,14 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Read implements the Store interface.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
 // Verify checks the integrity of the audit logs.
+// Summary: Verify checks the integrity of the audit logs.
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
@@ -236,6 +243,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
+// Summary: Close closes the database connection.
 //
 // Returns an error if the operation fails.
 func (s *PostgresAuditStore) Close() error {

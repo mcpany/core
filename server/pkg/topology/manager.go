@@ -25,6 +25,8 @@ type activityEvent struct {
 }
 
 // Manager handles topology state tracking.
+//
+// Summary: Manager handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -37,6 +39,8 @@ type Manager struct {
 }
 
 // SessionStats contains statistics about a topology session.
+//
+// Summary: SessionStats contains statistics about a topology session.
 type SessionStats struct {
 	ID             string
 	Metadata       map[string]string
@@ -50,6 +54,8 @@ type SessionStats struct {
 }
 
 // Stats aggregated metrics.
+//
+// Summary: Stats aggregated metrics.
 type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
@@ -57,6 +63,8 @@ type Stats struct {
 }
 
 // MinuteStats tracks stats for a single minute.
+//
+// Summary: MinuteStats tracks stats for a single minute.
 type MinuteStats struct {
 	Requests     int64
 	Errors       int64
@@ -65,6 +73,8 @@ type MinuteStats struct {
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
+//
+// Summary: ServiceTrafficStats tracks stats for a single service in a minute.
 type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
@@ -72,6 +82,8 @@ type ServiceTrafficStats struct {
 }
 
 // TrafficPoint represents a data point for the traffic chart.
+//
+// Summary: TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
 	Time    string `json:"time"`
 	Total   int64  `json:"requests"` // mapped to "requests" for UI
@@ -80,6 +92,7 @@ type TrafficPoint struct {
 }
 
 // NewManager creates a new Topology Manager.
+// Summary: NewManager creates a new Topology Manager.
 //
 // registry is the registry.
 // tm is the tm.
@@ -200,6 +213,9 @@ func (m *Manager) handleActivity(event activityEvent) {
 }
 
 // RecordActivity updates the session activity.
+//
+// Summary: RecordActivity updates the session activity.
+//
 // ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
 // Randomized Selection from Top 5 High-Impact Targets
 //
@@ -229,11 +245,16 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 }
 
 // Close stops the background worker.
+//
+// Summary: Close stops the background worker.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
 
 // GetStats returns the aggregated stats.
+//
+// Summary: GetStats returns the aggregated stats.
+//
 // serviceID is optional.
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
@@ -273,6 +294,9 @@ func (m *Manager) GetStats(serviceID string) Stats {
 }
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.
+//
+// Summary: GetTrafficHistory returns the traffic history for the last 24 hours.
+//
 // serviceID is optional.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
@@ -325,6 +349,9 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 }
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
+//
+// Summary: SeedTrafficHistory allows seeding the traffic history with external data.
+//
 // This is primarily for testing and debugging purposes.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
@@ -382,6 +409,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 }
 
 // GetGraph generates the current topology graph.
+// Summary: GetGraph generates the current topology graph.
 //
 // _ is an unused parameter.
 //

@@ -15,6 +15,9 @@ import (
 )
 
 // ConnectionFactory is responsible for creating new gRPC client connections.
+//
+// Summary: ConnectionFactory is responsible for creating new gRPC client connections.
+//
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
 type ConnectionFactory struct {
@@ -22,12 +25,18 @@ type ConnectionFactory struct {
 }
 
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
+//
+// Summary: NewConnectionFactory creates and returns a new ConnectionFactory with default
+//
 // settings.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
 
 // WithDialer sets a custom dialer function for the ConnectionFactory. This is
+//
+// Summary: WithDialer sets a custom dialer function for the ConnectionFactory.
+//
 // useful for tests that need to mock the network connection.
 //
 // dialer is the function to be used for creating network connections.
@@ -36,6 +45,9 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 }
 
 // NewConnection establishes a new gRPC client connection to the specified
+//
+// Summary: NewConnection establishes a new gRPC client connection to the specified
+//
 // target address. It uses insecure credentials by default. If a custom dialer
 // has been set, it will be used for the connection.
 //

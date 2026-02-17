@@ -7,6 +7,9 @@ import { AuditLogViewer } from "@/components/audit/audit-log-viewer";
 
 /**
  * AuditPage component.
+ *
+*
+ * Summary: AuditPage component.
  * Renders the audit logs page, which includes the AuditLogViewer.
  *
  * @returns The rendered AuditPage component.

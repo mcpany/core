@@ -8,6 +8,8 @@ import (
 )
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
+//
+// Summary: Broadcaster manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan []byte]struct{}
@@ -23,6 +25,7 @@ var (
 )
 
 // NewBroadcaster creates a new Broadcaster.
+// Summary: NewBroadcaster creates a new Broadcaster.
 //
 // Returns the result.
 func NewBroadcaster() *Broadcaster {
@@ -34,6 +37,9 @@ func NewBroadcaster() *Broadcaster {
 }
 
 // Subscribe returns a channel that will receive broadcast messages.
+//
+// Summary: Subscribe returns a channel that will receive broadcast messages.
+//
 // The channel has a small buffer to prevent slow consumers from blocking the broadcaster.
 // It is the caller's responsibility to read from the channel promptly.
 func (b *Broadcaster) Subscribe() chan []byte {
@@ -45,6 +51,9 @@ func (b *Broadcaster) Subscribe() chan []byte {
 }
 
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
+//
+// Summary: SubscribeWithHistory returns a channel that will receive broadcast messages,
+//
 // and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
 func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 	b.mu.Lock()
@@ -80,6 +89,7 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 }
 
 // Unsubscribe removes a subscriber channel.
+// Summary: Unsubscribe removes a subscriber channel.
 //
 // ch is the ch.
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
@@ -92,6 +102,9 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 }
 
 // Broadcast sends a message to all subscribers.
+//
+// Summary: Broadcast sends a message to all subscribers.
+//
 // This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
 func (b *Broadcaster) Broadcast(msg []byte) {
 	// We make a copy of msg to ensure history persists even if caller reuses buffer.
@@ -121,6 +134,8 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 }
 
 // GetHistory returns the current log history.
+//
+// Summary: GetHistory returns the current log history.
 func (b *Broadcaster) GetHistory() [][]byte {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -149,6 +164,9 @@ func (b *Broadcaster) GetHistory() [][]byte {
 }
 
 // Hydrate populates the history buffer with messages.
+//
+// Summary: Hydrate populates the history buffer with messages.
+//
 // It is intended to be called at startup. Messages are NOT broadcasted to subscribers,
 // as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
 func (b *Broadcaster) Hydrate(messages [][]byte) {

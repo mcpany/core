@@ -9,6 +9,9 @@ import * as React from "react"
 
 /**
  * Defines a keyboard shortcut.
+ *
+*
+ * Summary: Defines a keyboard shortcut.
  */
 export type ShortcutDefinition = {
   /** Unique identifier for the shortcut. */
@@ -53,6 +56,9 @@ const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
 /**
  * Provider component for keyboard shortcuts.
+ *
+*
+ * Summary: Provider component for keyboard shortcuts.
  *
  * @param { children - The { children.
  */
@@ -136,6 +142,9 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 
 /**
  * Hook to access the keyboard shortcuts context.
+ *
+*
+ * Summary: Hook to access the keyboard shortcuts context.
  * @returns The context.
  */
 export function useKeyboardShortcuts() {
@@ -172,6 +181,9 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
 
 /**
  * Hook to register and listen for a keyboard shortcut.
+ *
+*
+ * Summary: Hook to register and listen for a keyboard shortcut.
  * @param id Unique identifier.
  * @param defaultKeys Default key combinations.
  * @param action Callback function when shortcut is triggered.

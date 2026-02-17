@@ -114,6 +114,9 @@ const nodeTypes = {
 
 /**
  * StackGraph component.
+ *
+*
+ * Summary: StackGraph component.
  * Visualizes the stack configuration as a graph.
  */
 export function StackGraph({ yamlContent }: StackGraphProps) {

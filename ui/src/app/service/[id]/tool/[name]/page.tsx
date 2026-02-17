@@ -14,6 +14,9 @@ import { useServiceSiblings, useToolSiblings } from "@/hooks/use-siblings";
 
 /**
  * ToolDetailPage component.
+ *
+*
+ * Summary: ToolDetailPage component.
  * @param props - The component props.
  * @param props.params - The params property.
  * @returns The rendered component.

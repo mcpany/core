@@ -72,6 +72,9 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
 
 /**
  * A table component for displaying and inspecting traces.
+ *
+*
+ * Summary: A table component for displaying and inspecting traces.
  * Allows clicking on a row to view detailed trace information in a sheet.
  *
  * @param props - The component props.

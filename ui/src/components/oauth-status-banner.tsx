@@ -17,6 +17,9 @@ interface OAuthStatusBannerProps {
 
 /**
  * OAuthStatusBanner component.
+ *
+*
+ * Summary: OAuthStatusBanner component.
  * @param props - The component props.
  * @param props.status - The current status.
  * @param props.serviceName - The name of the service.

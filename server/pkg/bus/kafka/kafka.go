@@ -29,6 +29,8 @@ type readerInterface interface {
 }
 
 // Bus is a Kafka-backed implementation of the Bus interface.
+//
+// Summary: Bus is a Kafka-backed implementation of the Bus interface.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
@@ -38,6 +40,7 @@ type Bus[T any] struct {
 }
 
 // New creates and initializes a new KafkaBus.
+// Summary: New creates and initializes a new KafkaBus.
 //
 // Parameters:
 //   - config: *bus.KafkaBus. The configuration settings for the Kafka bus.
@@ -68,6 +71,7 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 }
 
 // Publish sends a message to a Kafka topic.
+// Summary: Publish sends a message to a Kafka topic.
 //
 // The message is marshaled to JSON and sent to the configured topic prefix + topic.
 //
@@ -95,6 +99,7 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe subscribes to a Kafka topic.
+// Summary: Subscribe subscribes to a Kafka topic.
 //
 // It starts a goroutine that continuously reads messages from the topic and invokes
 // the provided handler.
@@ -181,6 +186,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
+// Summary: SubscribeOnce subscribes to a topic for a single message.
 //
 // It ensures that the handler is called only once for the next message received.
 //

@@ -46,12 +46,16 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 }
 
 // DockerTransport implements the mcp.Transport interface to connect to a service
+//
+// Summary: DockerTransport implements the mcp.
+//
 // running inside a Docker container. It manages the container lifecycle.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
 
 // Connect establishes a connection to the service within the Docker container.
+// Summary: Connect establishes a connection to the service within the Docker container.
 //
 // ctx is the context for the request.
 //
@@ -197,6 +201,7 @@ type dockerConn struct {
 }
 
 // Read decodes a single JSON-RPC message from the container's output stream.
+// Summary: Read decodes a single JSON-RPC message from the container's output stream.
 //
 // _ is an unused parameter.
 //
@@ -282,6 +287,7 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
+// Summary: Write encodes and sends a JSON-RPC message to the container's input stream.
 //
 // _ is an unused parameter.
 // msg is the msg.
@@ -327,6 +333,7 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 }
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
+// Summary: Close terminates the connection by closing the underlying ReadWriteCloser.
 //
 // Returns an error if the operation fails.
 func (c *dockerConn) Close() error {
@@ -334,6 +341,7 @@ func (c *dockerConn) Close() error {
 }
 
 // SessionID returns a static identifier for the Docker transport session.
+// Summary: SessionID returns a static identifier for the Docker transport session.
 //
 // Returns the result.
 func (c *dockerConn) SessionID() string {
@@ -349,6 +357,7 @@ type dockerReadWriteCloser struct {
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
+// Summary: Close closes the underlying connection and removes the associated Docker container.
 //
 // Returns an error if the operation fails.
 func (c *dockerReadWriteCloser) Close() error {
@@ -380,6 +389,9 @@ type slogWriter struct {
 }
 
 // Write takes a byte slice, scans it for lines, and logs each line
+//
+// Summary: Write takes a byte slice, scans it for lines, and logs each line
+//
 // individually using the configured slog.Logger and level.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
@@ -397,6 +409,7 @@ type tailBuffer struct {
 }
 
 // Write writes data to the buffer, maintaining the size limit.
+// Summary: Write writes data to the buffer, maintaining the size limit.
 //
 // p is the p.
 //
@@ -415,6 +428,7 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 }
 
 // String returns the buffered data as a string.
+// Summary: String returns the buffered data as a string.
 //
 // Returns the result.
 func (b *tailBuffer) String() string {

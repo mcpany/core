@@ -18,6 +18,9 @@ interface MetricCardProps {
 /**
  * MetricCard.
  *
+*
+ * Summary: MetricCard.
+ *
  * @param icon - The icon.
  * @param trend - The trend.
  */

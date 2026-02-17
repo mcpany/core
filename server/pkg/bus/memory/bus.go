@@ -19,6 +19,9 @@ const (
 )
 
 // DefaultBus is the default, thread-safe implementation of the Bus interface.
+//
+// Summary: DefaultBus is the default, thread-safe implementation of the Bus interface.
+//
 // It uses channels to deliver messages to subscribers, with each subscriber
 // having its own dedicated goroutine for message processing.
 type DefaultBus[T any] struct {
@@ -29,6 +32,9 @@ type DefaultBus[T any] struct {
 }
 
 // New creates and returns a new instance of DefaultBus, which is the default,
+//
+// Summary: New creates and returns a new instance of DefaultBus, which is the default,
+//
 // thread-safe implementation of the Bus interface. It is initialized with the
 // default publish timeout.
 //
@@ -41,6 +47,9 @@ func New[T any]() *DefaultBus[T] {
 }
 
 // Publish sends a message to all handlers subscribed to the specified topic.
+//
+// Summary: Publish sends a message to all handlers subscribed to the specified topic.
+//
 // It sends the message to a channel for each subscriber, where it will be
 // processed by the subscriber's dedicated goroutine.
 //
@@ -84,6 +93,9 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 }
 
 // Subscribe registers a handler function for a given topic. It starts a new
+//
+// Summary: Subscribe registers a handler function for a given topic.
+//
 // goroutine for each subscription to process messages from a buffered channel,
 // ensuring that subscribers handle messages independently and do not block each
 // other.
@@ -141,6 +153,9 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 }
 
 // SubscribeOnce registers a handler for a topic that will be executed only
+//
+// Summary: SubscribeOnce registers a handler for a topic that will be executed only
+//
 // once. After the handler is invoked for the first time, the subscription is
 // automatically removed.
 //

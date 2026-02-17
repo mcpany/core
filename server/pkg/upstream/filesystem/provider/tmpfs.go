@@ -10,11 +10,14 @@ import (
 )
 
 // TmpfsProvider provides access to a temporary in-memory filesystem.
+//
+// Summary: TmpfsProvider provides access to a temporary in-memory filesystem.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
 
 // NewTmpfsProvider creates a new TmpfsProvider.
+// Summary: NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Returns the result.
 func NewTmpfsProvider() *TmpfsProvider {
@@ -24,6 +27,7 @@ func NewTmpfsProvider() *TmpfsProvider {
 }
 
 // GetFs returns the underlying filesystem.
+// Summary: GetFs returns the underlying filesystem.
 //
 // Returns the result.
 func (p *TmpfsProvider) GetFs() afero.Fs {
@@ -31,6 +35,7 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 }
 
 // ResolvePath resolves the virtual path to a real path.
+// Summary: ResolvePath resolves the virtual path to a real path.
 //
 // virtualPath is the virtualPath.
 //
@@ -42,6 +47,7 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 }
 
 // Close closes the provider.
+// Summary: Close closes the provider.
 //
 // Returns an error if the operation fails.
 func (p *TmpfsProvider) Close() error {

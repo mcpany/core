@@ -16,6 +16,8 @@ import (
 )
 
 // Registry manages available middlewares.
+//
+// Summary: Registry manages available middlewares.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -23,9 +25,13 @@ type Registry struct {
 }
 
 // Factory is a function that creates a HTTP middleware from configuration.
+//
+// Summary: Factory is a function that creates a HTTP middleware from configuration.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
+//
+// Summary: MCPFactory is a function that creates an MCP middleware from configuration.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -36,6 +42,7 @@ var (
 )
 
 // Register registers a HTTP middleware factory.
+// Summary: Register registers a HTTP middleware factory.
 //
 // name is the name of the resource.
 // factory is the factory.
@@ -46,6 +53,7 @@ func Register(name string, factory Factory) {
 }
 
 // RegisterMCP registers an MCP middleware factory.
+// Summary: RegisterMCP registers an MCP middleware factory.
 //
 // name is the name of the resource.
 // factory is the factory.
@@ -56,6 +64,7 @@ func RegisterMCP(name string, factory MCPFactory) {
 }
 
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// Summary: GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
 // configs is the configs.
 //
@@ -84,6 +93,7 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 }
 
 // GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// Summary: GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
 //
 // configs is the configs.
 //
@@ -112,6 +122,8 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 }
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
+//
+// Summary: StandardMiddlewares holds the standard middlewares that might need to be updated.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -122,6 +134,7 @@ type StandardMiddlewares struct {
 }
 
 // InitStandardMiddlewares registers standard middlewares.
+// Summary: InitStandardMiddlewares registers standard middlewares.
 //
 // authManager is the authManager.
 // toolManager is the toolManager.

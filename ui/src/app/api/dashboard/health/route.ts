@@ -17,6 +17,9 @@ interface BackendService {
 /**
  * GET retrieves the health status of upstream services.
  *
+*
+ * Summary: GET retrieves the health status of upstream services.
+ *
  * It queries the backend API for service status and transforms the response
  * into a format suitable for the dashboard UI, mapping error states to health statuses.
  *

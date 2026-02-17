@@ -35,6 +35,9 @@ type AuthSettingsValues = z.infer<typeof authSettingsSchema>;
 
 /**
  * AuthSettingsForm component.
+ *
+*
+ * Summary: AuthSettingsForm component.
  * @returns The rendered component.
  */
 export function AuthSettingsForm() {

@@ -14,6 +14,9 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
  * PromptDetailPage component.
+ *
+*
+ * Summary: PromptDetailPage component.
  * @param props - The component props.
  * @param props.params - The params property.
  * @returns The rendered component.

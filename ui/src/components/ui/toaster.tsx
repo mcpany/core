@@ -17,6 +17,9 @@ import {
 
 /**
  * Toaster component.
+ *
+*
+ * Summary: Toaster component.
  * @returns The rendered component.
  */
 export function Toaster() {

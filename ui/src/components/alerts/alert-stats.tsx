@@ -10,6 +10,9 @@ import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react
 
 /**
  * AlertStats component.
+ *
+*
+ * Summary: AlertStats component.
  * @returns The rendered component.
  */
 export function AlertStats() {

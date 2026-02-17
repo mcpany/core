@@ -24,6 +24,9 @@ interface AuthStepProps {
 
 /**
  * Step for authenticating services.
+ *
+*
+ * Summary: Step for authenticating services.
  * @param props Component properties.
  */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {

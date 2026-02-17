@@ -9,6 +9,9 @@ const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
  * Hook for pinnedtools.
+ *
+*
+ * Summary: Hook for pinnedtools.
  * @returns The result.
  */
 export function usePinnedTools() {

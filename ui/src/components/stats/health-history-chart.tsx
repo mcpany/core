@@ -18,6 +18,9 @@ interface HealthPoint {
 
 /**
  * HealthHistoryChart component.
+ *
+*
+ * Summary: HealthHistoryChart component.
  * Displays server uptime history over the last 24 hours.
  * @returns The rendered component.
  */

@@ -13,6 +13,9 @@ import (
 )
 
 // GrpcClient defines a standard interface for a gRPC client, abstracting the
+//
+// Summary: GrpcClient defines a standard interface for a gRPC client, abstracting the
+//
 // underlying implementation. It provides methods for both unary and streaming
 // RPCs and is compatible with the standard `*grpc.ClientConn`.
 type GrpcClient interface {
@@ -37,6 +40,9 @@ type GrpcClient interface {
 }
 
 // HTTPClient defines a standard interface for an HTTP client, abstracting the
+//
+// Summary: HTTPClient defines a standard interface for an HTTP client, abstracting the
+//
 // underlying implementation. This interface is compatible with the standard
 // `*http.Client`.
 type HTTPClient interface {
@@ -48,6 +54,9 @@ type HTTPClient interface {
 }
 
 // MCPClient defines the interface for a client that interacts with an MCP
+//
+// Summary: MCPClient defines the interface for a client that interacts with an MCP
+//
 // service. It provides a standard method for executing tools.
 type MCPClient interface {
 	// CallTool executes a tool on the MCP service, sending the tool name and

@@ -35,6 +35,9 @@ import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
+ *
+*
+ * Summary: Represents a specific instance of a widget on the dashboard.
  */
 export interface WidgetInstance {
     /** Unique ID for this instance (allows multiple widgets of same type). */
@@ -60,6 +63,9 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 
 /**
  * DashboardGrid component.
+ *
+*
+ * Summary: DashboardGrid component.
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
  */

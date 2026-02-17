@@ -26,6 +26,9 @@ interface ServiceResourcesProps {
 
 /**
  * ServiceResources lists the resources exposed by an upstream service.
+ *
+*
+ * Summary: ServiceResources lists the resources exposed by an upstream service.
  * It allows users to view resource details and read their content.
  */
 export function ServiceResources({ resources }: ServiceResourcesProps) {

@@ -18,6 +18,9 @@ import { ServicePropertyCard } from "./service-property-card";
 /**
  * ResourceDetail.
  *
+*
+ * Summary: ResourceDetail.
+ *
  * @param resourceName - The resourceName.
  * @param resourceName - The resourceName.
  */

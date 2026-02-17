@@ -21,6 +21,8 @@ import (
 )
 
 // AuditMiddleware provides audit logging for tool executions.
+//
+// Summary: AuditMiddleware provides audit logging for tool executions.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig
@@ -89,6 +91,9 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
+//
+// Summary: SetStore sets the audit store.
+//
 // This is primarily used for testing.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
@@ -264,22 +269,31 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 }
 
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
+//
+// Summary: SubscribeWithHistory returns a channel that will receive broadcast messages,
+//
 // and the current history of messages.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan []byte, [][]byte) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
 // GetHistory returns the current broadcast history.
+//
+// Summary: GetHistory returns the current broadcast history.
 func (m *AuditMiddleware) GetHistory() [][]byte {
 	return m.broadcaster.GetHistory()
 }
 
 // Unsubscribe removes a subscriber channel.
+//
+// Summary: Unsubscribe removes a subscriber channel.
 func (m *AuditMiddleware) Unsubscribe(ch chan []byte) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
 // Read reads audit entries from the underlying store.
+//
+// Summary: Read reads audit entries from the underlying store.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -292,6 +306,7 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 }
 
 // Close closes the underlying store.
+// Summary: Close closes the underlying store.
 //
 // Returns an error if the operation fails.
 func (m *AuditMiddleware) Close() error {

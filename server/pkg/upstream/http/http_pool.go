@@ -27,6 +27,7 @@ type httpPool struct {
 }
 
 // Close closes the connection pool and the idle connections.
+// Summary: Close closes the connection pool and the idle connections.
 //
 // Returns an error if the operation fails.
 func (p *httpPool) Close() error {
@@ -38,6 +39,9 @@ func (p *httpPool) Close() error {
 }
 
 // NewHTTPPool creates a new connection pool for HTTP clients. It is defined as
+//
+// Summary: NewHTTPPool creates a new connection pool for HTTP clients.
+//
 // a variable to allow for easy mocking in tests.
 //
 // minSize is the initial number of clients to create.

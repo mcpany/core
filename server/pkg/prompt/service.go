@@ -12,6 +12,9 @@ import (
 )
 
 // Service handles the business logic for the prompts feature. It provides
+//
+// Summary: Service handles the business logic for the prompts feature.
+//
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
 type Service struct {

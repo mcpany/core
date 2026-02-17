@@ -10,6 +10,9 @@ import { LogStream } from "@/components/logs/log-stream"
 
 /**
  * LogsPage component.
+ *
+*
+ * Summary: LogsPage component.
  * @returns The rendered component.
  */
 export default function LogsPage() {

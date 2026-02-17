@@ -10,6 +10,9 @@ import { Graph, NodeStatus } from '@/types/topology';
 
 /**
  * MetricPoint represents a single data point for service health metrics at a specific time.
+ *
+*
+ * Summary: MetricPoint represents a single data point for service health metrics at a specific time.
  */
 export interface MetricPoint {
     /** The timestamp of the metric point in milliseconds. */
@@ -47,6 +50,9 @@ const POLLING_INTERVAL = 5000;
 
 /**
  * ServiceHealthProvider component.
+ *
+*
+ * Summary: ServiceHealthProvider component.
  * @param props - The component props.
  * @param props.children - The child components.
  * @returns The rendered component.
@@ -207,6 +213,9 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
 /**
  * useServiceHealth is a hook to access service health history and current status.
+ *
+*
+ * Summary: useServiceHealth is a hook to access service health history and current status.
  * @returns The service health context.
  * @throws Error if used outside of a ServiceHealthProvider.
  */
@@ -220,6 +229,9 @@ export function useServiceHealth() {
 
 /**
  * useTopology is a hook to access network topology.
+ *
+*
+ * Summary: useTopology is a hook to access network topology.
  * It is optimized to not re-render when health metrics update.
  * @returns The topology context.
  * @throws Error if used outside of a ServiceHealthProvider.

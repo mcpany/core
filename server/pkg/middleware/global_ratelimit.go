@@ -68,6 +68,7 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 }
 
 // Execute executes the rate limiting middleware.
+// Summary: Execute executes the rate limiting middleware.
 //
 // ctx is the context for the request.
 // method is the method.

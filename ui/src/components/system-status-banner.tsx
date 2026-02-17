@@ -12,6 +12,9 @@ import { apiClient, DoctorReport } from "@/lib/client";
 
 /**
  * SystemStatusBanner component.
+ *
+*
+ * Summary: SystemStatusBanner component.
  * @returns The rendered component.
  */
 export function SystemStatusBanner() {

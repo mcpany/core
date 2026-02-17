@@ -25,6 +25,8 @@ import (
 )
 
 // Executor is an interface for executing commands.
+//
+// Summary: Executor is an interface for executing commands.
 type Executor interface {
 	// Execute executes a command and returns the stdout and stderr as streams.
 	//
@@ -56,6 +58,7 @@ type Executor interface {
 }
 
 // NewExecutor creates a new command executor.
+// Summary: NewExecutor creates a new command executor.
 //
 // containerEnv is the containerEnv.
 //
@@ -68,6 +71,7 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // NewLocalExecutor creates a new local command executor.
+// Summary: NewLocalExecutor creates a new local command executor.
 //
 // Returns the result.
 func NewLocalExecutor() Executor {
@@ -77,6 +81,7 @@ func NewLocalExecutor() Executor {
 type localExecutor struct{}
 
 // Execute executes a command locally.
+// Summary: Execute executes a command locally.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -134,6 +139,7 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 }
 
 // ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
+// Summary: ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -214,6 +220,7 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // Execute executes a command inside a docker container.
+// Summary: Execute executes a command inside a docker container.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -343,6 +350,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 }
 
 // ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
+// Summary: ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
 //
 // ctx is the context for the request.
 // command is the command.
@@ -475,6 +483,7 @@ type closeWriter struct {
 }
 
 // Write writes data to the connection.
+// Summary: Write writes data to the connection.
 //
 // p is the p.
 //
@@ -485,6 +494,7 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 }
 
 // Close closes the write side of the connection.
+// Summary: Close closes the write side of the connection.
 //
 // Returns an error if the operation fails.
 func (c *closeWriter) Close() error {

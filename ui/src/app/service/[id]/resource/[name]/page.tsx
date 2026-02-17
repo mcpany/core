@@ -14,6 +14,9 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
  * ResourceDetailPage component.
+ *
+*
+ * Summary: ResourceDetailPage component.
  * @param props - The component props.
  * @param props.params - The params property.
  * @returns The rendered component.

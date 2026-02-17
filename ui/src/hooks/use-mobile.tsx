@@ -9,6 +9,9 @@ const MOBILE_BREAKPOINT = 768
 
 /**
  * Hook to detect if the current viewport is mobile-sized.
+ *
+*
+ * Summary: Hook to detect if the current viewport is mobile-sized.
  * @returns True if the viewport is mobile, false otherwise.
  */
 export function useIsMobile() {

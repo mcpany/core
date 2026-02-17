@@ -143,6 +143,9 @@ function WaterfallItem({
 /**
  * TraceDetail.
  *
+*
+ * Summary: TraceDetail.
+ *
  * @param { trace - The { trace.
  */
 export function TraceDetail({ trace }: { trace: Trace | null }) {

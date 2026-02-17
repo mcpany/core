@@ -24,6 +24,9 @@ import { apiClient } from "@/lib/client";
 
 /**
  * WebhookDialog component.
+ *
+*
+ * Summary: WebhookDialog component.
  * @returns The rendered component.
  */
 export function WebhookDialog() {

@@ -9,6 +9,9 @@ import { Loader2 } from "lucide-react";
 
 /**
  * PlaygroundPage component.
+ *
+*
+ * Summary: PlaygroundPage component.
  * @returns The rendered component.
  */
 export default function PlaygroundPage() {

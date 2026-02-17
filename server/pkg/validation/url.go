@@ -28,6 +28,9 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 }
 
 // IsSafeURL checks if the URL is safe to connect to.
+//
+// Summary: IsSafeURL checks if the URL is safe to connect to.
+//
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
 //

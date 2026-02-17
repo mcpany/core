@@ -22,6 +22,9 @@ interface PolicyEditorProps {
 
 /**
  * A component for editing export policies (allow/deny rules).
+ *
+*
+ * Summary: A component for editing export policies (allow/deny rules).
  * Allows setting a default action and adding specific exception rules based on regex.
  *
  * @param props - The component props.

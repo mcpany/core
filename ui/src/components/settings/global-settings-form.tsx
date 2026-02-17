@@ -42,6 +42,9 @@ type SettingsValues = z.infer<typeof settingsSchema>;
 
 /**
  * GlobalSettingsForm component.
+ *
+*
+ * Summary: GlobalSettingsForm component.
  * @returns The rendered component.
  */
 export function GlobalSettingsForm() {

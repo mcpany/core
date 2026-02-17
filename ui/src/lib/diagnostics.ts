@@ -7,6 +7,9 @@ import { Trace } from "@/types/trace";
 
 /**
  * Diagnostic represents a finding from the trace analysis, indicating an error or warning.
+ *
+*
+ * Summary: Diagnostic represents a finding from the trace analysis, indicating an error or warning.
  */
 export interface Diagnostic {
   /** The severity of the diagnostic. */
@@ -21,6 +24,9 @@ export interface Diagnostic {
 
 /**
  * Analyzes a trace for common errors and returns a list of diagnostics.
+ *
+*
+ * Summary: Analyzes a trace for common errors and returns a list of diagnostics.
  *
  * This function inspects the trace status and error messages to identify
  * known error patterns such as schema validation failures, permission issues,

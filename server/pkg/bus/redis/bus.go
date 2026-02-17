@@ -15,11 +15,14 @@ import (
 )
 
 // Bus is a Redis-backed implementation of the Bus interface.
+//
+// Summary: Bus is a Redis-backed implementation of the Bus interface.
 type Bus[T any] struct {
 	client *redis.Client
 }
 
 // New creates and initializes a new RedisBus.
+// Summary: New creates and initializes a new RedisBus.
 //
 // Parameters:
 //   - redisConfig: *bus.RedisBus. The configuration settings for the Redis bus.
@@ -42,6 +45,7 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
+// Summary: NewWithClient creates a new RedisBus with an existing Redis client.
 //
 // Parameters:
 //   - client: *redis.Client. The existing Redis client instance.
@@ -55,6 +59,7 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 }
 
 // Publish publishes a message to a Redis channel.
+// Summary: Publish publishes a message to a Redis channel.
 //
 // The message is marshaled to JSON before being published.
 //
@@ -74,6 +79,7 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe subscribes to a Redis channel.
+// Summary: Subscribe subscribes to a Redis channel.
 //
 // It starts a goroutine that continuously receives messages from the channel
 // and invokes the provided handler.
@@ -135,6 +141,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
+// Summary: SubscribeOnce subscribes to a topic for a single message.
 //
 // It ensures that the handler is called only once for the next message received.
 //

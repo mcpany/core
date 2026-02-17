@@ -150,6 +150,9 @@ SchemaNode.displayName = "SchemaNode";
 // Optimization: Memoize SchemaVisualizer to prevent re-renders when parent component updates unrelated state.
 /**
  * SchemaVisualizer component.
+ *
+*
+ * Summary: SchemaVisualizer component.
  * @param props - The component props.
  * @param props.schema - The schema definition.
  * @returns The rendered component.
