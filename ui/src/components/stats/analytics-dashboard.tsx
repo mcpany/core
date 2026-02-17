@@ -85,7 +85,8 @@ export function AnalyticsDashboard() {
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
+                const topToolsArray = Array.isArray(topTools) ? topTools : [];
+                const formattedTools = topToolsArray.map((t: any, index: number) => ({
                     name: t.name,
                     value: t.count,
                     color: COLORS[index % COLORS.length]
@@ -93,7 +94,8 @@ export function AnalyticsDashboard() {
                 setToolUsageData(formattedTools);
 
                 const usageMap: Record<string, ToolAnalytics> = {};
-                (toolUsageStats || []).forEach((s: ToolAnalytics) => {
+                const toolUsageStatsArray = Array.isArray(toolUsageStats) ? toolUsageStats : [];
+                toolUsageStatsArray.forEach((s: ToolAnalytics) => {
                     usageMap[`${s.name}@${s.serviceId}`] = s;
                 });
                 setToolUsageMap(usageMap);
