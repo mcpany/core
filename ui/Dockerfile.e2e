@@ -14,14 +14,9 @@ RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
 # Copy the rest of the UI code
 COPY ui/ .
 COPY proto/ /work/proto/
-# Symlink node_modules so proto files can find dependencies
-RUN ln -s /work/ui/node_modules /work/proto/node_modules
-# Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
-RUN cp -r /work/proto /work/ui/proto
-# Update tsconfig to use local proto path (aligns with copied folder)
-RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
-# Recursively chmod, but skip node_modules and symlinks to avoid errors
-RUN find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmod 777 {} +
+
+# Recursively chmod, but skip node_modules to avoid errors
+RUN find . \( -name node_modules -prune \) -o -exec chmod 777 {} +
 # Ensure proto directory is also writable/accessible
 RUN chmod -R 777 /work/proto
 

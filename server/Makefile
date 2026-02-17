@@ -151,7 +151,7 @@ prepare:
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+		if curl -fsSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
 			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
 			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
@@ -234,7 +234,7 @@ prepare:
 			if ! test -d "$$VENV_DIR"; then \
 				echo "Creating virtual environment..."; \
 				$$PYTHON_CMD -m venv $$VENV_DIR --without-pip; \
-				curl -sSL https://bootstrap.pypa.io/get-pip.py -o $$VENV_DIR/get-pip.py; \
+				curl -fsSL https://bootstrap.pypa.io/get-pip.py -o $$VENV_DIR/get-pip.py; \
 				$$VENV_DIR/bin/python $$VENV_DIR/get-pip.py; \
 			fi; \
 			if ! test -f "$$VENV_DIR/bin/python"; then \
@@ -458,7 +458,7 @@ else
 	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
-	$(GOLANGCI_LINT_BIN) run --timeout 10m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
+	$(GOLANGCI_LINT_BIN) run --timeout 20m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
 	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
