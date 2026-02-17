@@ -79,3 +79,63 @@ func TestPerlInjection(t *testing.T) {
 		}
 	}
 }
+
+func TestPerlReadpipeInjection(t *testing.T) {
+	cmdService := &configv1.CommandLineUpstreamService{}
+	cmdService.SetCommand("perl")
+
+	paramSchema := &configv1.ParameterSchema{}
+	paramSchema.SetName("name")
+	paramSchema.SetType(configv1.ParameterType_STRING)
+
+	paramMapping := &configv1.CommandLineParameterMapping{}
+	paramMapping.SetSchema(paramSchema)
+
+	callDef := &configv1.CommandLineCallDefinition{}
+	callDef.SetArgs([]string{"-e", "print '{{name}}'"}) // Unquoted in args substitution if {{name}} replaces it? No, args definition here is string.
+	// Wait, Arg substitution in CommandTool:
+	// args[i] = strings.ReplaceAll(arg, placeholder, val)
+	// So if arg is "-e", "print '{{name}}'", and name is "foo", result is "-e", "print 'foo'".
+	// This is effectively quoted (single quote).
+	// But `checkInterpreterFunctionCalls` checks the value itself against the interpreter context.
+	// And `checkForShellInjection` determines quote level based on the template.
+	// Template is "print '{{name}}'". Placeholder is "{{name}}".
+	// It is inside single quotes. So quoteLevel = 2.
+
+	callDef.SetParameters([]*configv1.CommandLineParameterMapping{paramMapping})
+
+	toolStruct := &v1.Tool{}
+	toolStruct.SetName("perl_rce")
+
+	tool := NewLocalCommandTool(
+		toolStruct,
+		cmdService,
+		callDef,
+		nil,
+		"test-call-id",
+	)
+
+	ctx := context.Background()
+
+	// Attack payload: ' . readpipe('echo INJECTED') . '
+	// This closes the single quote, executes readpipe, and opens another single quote.
+	// Resulting Perl code: print '' . readpipe('echo INJECTED') . ''
+	// This payload was NOT blocked before because checkInterpreterFunctionCalls was not run for quoteLevel=2 (Single Quoted).
+	// Now it should be blocked.
+	payload := "' . readpipe('echo INJECTED') . '"
+
+	jsonInput := "{\"name\": \"' . readpipe('echo INJECTED') . '\"}"
+
+	req := &ExecutionRequest{
+		ToolName:   "perl_rce",
+		ToolInputs: []byte(jsonInput),
+	}
+
+	_, err := tool.Execute(ctx, req)
+
+	if err == nil {
+        assert.Error(t, err, "Expected error for readpipe injection")
+	} else {
+		assert.Contains(t, err.Error(), "injection detected", "Expected injection detection error")
+	}
+}
