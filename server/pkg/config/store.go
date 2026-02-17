@@ -406,7 +406,7 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 	for i < len(b) {
 		// Look for '$'
 		if b[i] != '$' {
-			buf.WriteByte(b[i])
+			_ = buf.WriteByte(b[i])
 			i++
 			continue
 		}
@@ -414,7 +414,7 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 		// Found '$', check next char
 		if i+1 >= len(b) {
 			// Trailing '$', just write it
-			buf.WriteByte(b[i])
+			_ = buf.WriteByte(b[i])
 			i++
 			continue
 		}
@@ -427,7 +427,7 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 				continue
 			}
 			// If not consumed (e.g. unclosed brace), treat as literal
-			buf.WriteByte(b[i])
+			_ = buf.WriteByte(b[i])
 			i++
 			continue
 		}
@@ -440,7 +440,7 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 		}
 
 		// Not a variable
-		buf.WriteByte(b[i])
+		_ = buf.WriteByte(b[i])
 		i++
 	}
 
@@ -490,9 +490,9 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	if !util.IsEnvVarAllowed(varName) {
 		*missingCount++
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
-		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
+		_, _ = fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
 		// Write the original string to preserve structure
-		buf.Write(b[startIdx : j+1])
+		_, _ = buf.Write(b[startIdx : j+1])
 		return j + 1 - startIdx
 	}
 
@@ -500,9 +500,9 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	if !ok && !hasDefault {
 		*missingCount++
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
-		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
+		_, _ = fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
 		// Write the original string to preserve structure
-		buf.Write(b[startIdx : j+1])
+		_, _ = buf.Write(b[startIdx : j+1])
 		return j + 1 - startIdx
 	}
 
@@ -516,9 +516,9 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 			errMsg := err.Error()
 			prefix := "missing environment variables:"
 			errMsg = strings.TrimPrefix(errMsg, prefix)
-			fmt.Fprintf(missingErrBuilder, "\n  - In default value for %s:%s", varName, errMsg)
+			_, _ = fmt.Fprintf(missingErrBuilder, "\n  - In default value for %s:%s", varName, errMsg)
 		}
-		buf.Write(expanded)
+		_, _ = buf.Write(expanded)
 	} else {
 		_, _ = buf.WriteString(val)
 	}
@@ -553,9 +553,9 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	if !util.IsEnvVarAllowed(varName) {
 		*missingCount++
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
-		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
+		_, _ = fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
 		// Write the original string to preserve structure
-		buf.Write(b[startIdx:j])
+		_, _ = buf.Write(b[startIdx:j])
 		return j - startIdx
 	}
 
@@ -563,9 +563,9 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	if !ok {
 		*missingCount++
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
-		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
+		_, _ = fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
 		// Write the original string to preserve structure
-		buf.Write(b[startIdx:j])
+		_, _ = buf.Write(b[startIdx:j])
 		return j - startIdx
 	}
 
@@ -971,7 +971,7 @@ func clearOneofSiblings(m map[string]interface{}, fd protoreflect.FieldDescripto
 	for i := 0; i < oo.Fields().Len(); i++ {
 		sibling := oo.Fields().Get(i)
 		if sibling.FullName() != fd.FullName() {
-			fmt.Fprintf(os.Stderr, "DEBUG: Clearing oneof sibling %s (Name: %s, JSONName: %s) because %s is being set\n", sibling.FullName(), sibling.Name(), sibling.JSONName(), fd.Name())
+			_, _ = fmt.Fprintf(os.Stderr, "DEBUG: Clearing oneof sibling %s (Name: %s, JSONName: %s) because %s is being set\n", sibling.FullName(), sibling.Name(), sibling.JSONName(), fd.Name())
 			delete(m, string(sibling.Name()))
 			delete(m, sibling.JSONName())
 		}
