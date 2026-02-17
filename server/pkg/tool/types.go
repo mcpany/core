@@ -3192,9 +3192,14 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		// Sentinel Security Update: Add missing dangerous functions for various interpreters
+		"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert", "include", "include_once", "require_once", "dl", // PHP
+		"syscall", "load", // Ruby, Perl
+		"compile", "execfile", // Python
+		"Function", // Node.js (Function constructor)
 	}
 
-	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+	if err := checkUnquotedKeywords(strings.ToLower(val), dangerousKeywords); err != nil {
 		return err
 	}
 
