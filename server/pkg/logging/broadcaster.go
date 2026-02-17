@@ -85,9 +85,12 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+	// ⚡ BOLT: Do not close channel on unsubscribe.
+	// Closing the channel here introduces a panic risk if Broadcast() is running concurrently
+	// and has already snapshotted this channel.
+	// Since the subscriber initiates Unsubscribe, they stop reading, and the channel will be GC'd.
 	if _, ok := b.subscribers[ch]; ok {
 		delete(b.subscribers, ch)
-		close(ch)
 	}
 }
 
@@ -100,8 +103,6 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	copy(msgCopy, msg)
 
 	b.mu.Lock()
-	defer b.mu.Unlock()
-
 	// ⚡ BOLT: Ring Buffer Optimization
 	// Randomized Selection from Top 5 High-Impact Targets
 	b.history[b.head] = msgCopy
@@ -111,9 +112,20 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 		b.full = true
 	}
 
+	// Snapshot subscribers to release lock early
+	subs := make([]chan []byte, 0, len(b.subscribers))
 	for ch := range b.subscribers {
+		subs = append(subs, ch)
+	}
+	b.mu.Unlock()
+
+	// Iterate without holding the lock
+	for _, ch := range subs {
 		select {
-		case ch <- msg:
+		// ⚡ BOLT: Send msgCopy instead of msg.
+		// msg might be reused by caller (buffer pool), so sending it is unsafe.
+		// msgCopy is safe and shared (read-only) by subscribers.
+		case ch <- msgCopy:
 		default:
 			// Drop message if channel is full
 		}
