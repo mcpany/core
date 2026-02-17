@@ -8,7 +8,14 @@
 import { useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, CheckCircle2, XCircle, FileText } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
@@ -25,6 +32,46 @@ export default function ConfigValidatorPage() {
     null
   );
   const { theme } = useTheme();
+
+  const TEMPLATES = {
+    server: `global_settings:
+  mcp_listen_address: ":8080"
+  log_level: 1 # INFO
+  audit:
+    enabled: true
+  dlp:
+    enabled: false
+`,
+    service_stdio: `id: "my-tool"
+name: "My Local Tool"
+version: "1.0.0"
+command_line_service:
+  command: "python3"
+  args: ["script.py"]
+  env:
+    API_KEY: "\${MY_API_KEY}"
+`,
+    service_http: `id: "weather-api"
+name: "Weather Service"
+version: "1.0.0"
+http_service:
+  base_url: "https://api.weather.gov"
+  headers:
+    User-Agent: "MCP-Any/1.0"
+calls:
+  get_forecast:
+    method: "GET"
+    path: "/gridpoints/{office}/{gridX},{gridY}/forecast"
+`,
+    profile: `name: "dev-profile"
+selector:
+  tags: ["dev"]
+service_config:
+  "weather-api":
+    enabled: true
+    rate_limit: 100
+`
+  };
 
   const handleValidate = async () => {
     if (!content.trim()) {
@@ -75,10 +122,24 @@ export default function ConfigValidatorPage() {
             Validate your YAML or JSON configuration against the server schema.
           </p>
         </div>
-        <Button onClick={handleValidate} disabled={isValidating}>
-          {isValidating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Validate Configuration
-        </Button>
+        <div className="flex gap-2">
+            <Select onValueChange={(v) => setContent(TEMPLATES[v as keyof typeof TEMPLATES] || "")}>
+                <SelectTrigger className="w-[200px]">
+                    <FileText className="mr-2 h-4 w-4" />
+                    <SelectValue placeholder="Load Template" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="server">Server Config</SelectItem>
+                    <SelectItem value="service_stdio">Service (Stdio)</SelectItem>
+                    <SelectItem value="service_http">Service (HTTP)</SelectItem>
+                    <SelectItem value="profile">Profile</SelectItem>
+                </SelectContent>
+            </Select>
+            <Button onClick={handleValidate} disabled={isValidating}>
+            {isValidating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Validate Configuration
+            </Button>
+        </div>
       </div>
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">

@@ -18,10 +18,11 @@ import { Plus } from "lucide-react";
 import { WIDGET_DEFINITIONS } from "@/components/dashboard/widget-registry";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 
 interface AddWidgetSheetProps {
     onAdd: (type: string) => void;
+    children?: ReactNode;
 }
 
 /**
@@ -30,7 +31,7 @@ interface AddWidgetSheetProps {
  * @param props - The component props.
  * @returns The rendered component.
  */
-export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
+export function AddWidgetSheet({ onAdd, children }: AddWidgetSheetProps) {
     const [open, setOpen] = useState(false);
 
     const handleAdd = (type: string) => {
@@ -41,9 +42,11 @@ export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button size="sm" className="gap-2">
-                    <Plus className="h-4 w-4" /> Add Widget
-                </Button>
+                {children || (
+                    <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" /> Add Widget
+                    </Button>
+                )}
             </SheetTrigger>
             <SheetContent className="w-[400px] sm:w-[540px]">
                 <SheetHeader>
