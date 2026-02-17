@@ -59,6 +59,12 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await page.route('/api/v1/debug/auth-test', async route => {
         await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
     });
+
+    // Mock Service Validation (Connection Check)
+    // The wizard calls this to verify credentials. We mock it to ensure the test passes without a real DB.
+    await page.route('/api/v1/services/validate', async route => {
+        await route.fulfill({ json: { valid: true } });
+    });
   });
 
   test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {

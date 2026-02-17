@@ -15,11 +15,72 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ request, page }) => {
-      await seedServices(request);
+      // Use debug endpoints for reliable reset/seeding
+      await request.post('/api/v1/debug/reset', { headers: { 'X-API-Key': 'test-token' } });
+
+      const seedData = {
+          users: [{
+              id: "e2e-admin",
+              authentication: {
+                  basic_auth: {
+                      username: "e2e-admin",
+                      password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // "password"
+                  }
+              },
+              roles: ["admin"]
+          }],
+          services: [
+            {
+                id: "svc_01",
+                name: "Payment Gateway",
+                version: "v1.2.0",
+                http_service: {
+                    address: "https://stripe.com",
+                    tools: [
+                        { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                    ],
+                    calls: {
+                        process_payment_call: {
+                            method: "HTTP_METHOD_POST",
+                            endpoint_path: "/v1/charges"
+                        }
+                    }
+                }
+            },
+            // ... (Other services needed for tests)
+             {
+                id: "svc_03",
+                name: "Math",
+                version: "v1.0",
+                http_service: {
+                    address: "http://localhost:8080",
+                    tools: [
+                        { name: "calculator", description: "calc", call_id: "calc_call" }
+                    ],
+                    calls: {
+                        calc_call: {
+                            method: "HTTP_METHOD_POST",
+                            endpoint_path: "/calc"
+                        }
+                    }
+                }
+            }
+          ]
+      };
+
+      await request.post('/api/v1/debug/seed', {
+          headers: { 'X-API-Key': 'test-token' },
+          data: seedData
+      });
+
+      // Seed traffic separately as it's a dedicated debug endpoint
       await seedTraffic(request);
-      await seedTemplates(request);
-      await seedWebhooks(request);
-      await seedUser(request, "e2e-admin");
+      await seedWebhooks(request); // Still use helper or move to seedData if supported
+      // Note: seedWebhooks uses internal API. handleDebugSeed supports 'GlobalSettings' but maybe not individual alerts easily in the same payload structure I defined.
+      // My handleDebugSeed implementation supports "secrets", "collections", "global_settings".
+      // Alerts are part of GlobalSettings usually, but the `api_alerts.go` manages them.
+      // Let's keep seedWebhooks separate or move logic.
+      // seedWebhooks uses POST /api/v1/alerts/webhook.
 
       // Login before each test
       await page.goto('/login');
@@ -35,10 +96,7 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test.afterEach(async ({ request }) => {
-      await cleanupServices(request);
-      await cleanupTemplates(request);
-      await cleanupWebhooks(request);
-      await cleanupUser(request, "e2e-admin");
+      // No cleanup needed as we reset in beforeEach
   });
 
   test('Dashboard loads correctly', async ({ page }) => {

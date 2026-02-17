@@ -4,21 +4,35 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from '../e2e/test-data';
 
 test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
-        await seedUser(request, "e2e-admin-users");
+        // Reset state
+        await request.post('/api/v1/debug/reset', { headers: { 'X-API-Key': 'test-token' } });
+
+        // Seed admin user
+        const seedData = {
+            users: [{
+                id: "e2e-admin-users",
+                authentication: {
+                    basic_auth: {
+                        username: "e2e-admin-users",
+                        password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // "password"
+                    }
+                },
+                roles: ["admin"]
+            }]
+        };
+        await request.post('/api/v1/debug/seed', {
+            headers: { 'X-API-Key': 'test-token' },
+            data: seedData
+        });
+
         await page.goto('/login');
         await page.fill('input[name="username"]', 'e2e-admin-users');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
         await expect(page).toHaveURL('/', { timeout: 15000 });
-    });
-
-    test.afterEach(async ({ request }) => {
-        await cleanupUser(request, "e2e-admin-users");
-        await cleanupUser(request, "test-api-user");
     });
 
     test('should allow creating a user with API Key', async ({ page }) => {
