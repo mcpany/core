@@ -48,23 +48,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         },
         // Add a service with calculator for existing test compatibility if desired
         {
-            id: "svc_03",
-            name: "Math",
-            version: "v1.0",
-            http_service: {
-                address: "http://example.com", // Dummy address to avoid connection refused in CI
-                tools: [
-                    { name: "calculator", description: "calc", call_id: "calc_call" }
-                ],
-                calls: {
-                    calc_call: {
-                        method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
-                    }
-                }
-            }
-        },
-        {
             id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
@@ -259,7 +242,6 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     try {
         await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);

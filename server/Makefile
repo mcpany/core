@@ -76,13 +76,14 @@ ifeq ($(UNAME_M), aarch64)
 endif
 
 # Detect GCC for CGO/Race
-HAS_GCC := $(shell command -v gcc 2> /dev/null)
-ifeq ($(HAS_GCC),)
-	# No GCC, disable CGO and race detector
+# Check if gcc is available AND runnable
+GCC_VERSION := $(shell gcc --version 2> /dev/null)
+ifeq ($(GCC_VERSION),)
+	# No working GCC, disable CGO and race detector
 	CGO_ENABLED_VAL := 0
 	RACE_FLAG :=
 else
-	# GCC present, enable CGO and race detector
+	# Working GCC present, enable CGO and race detector
 	CGO_ENABLED_VAL := 1
 	RACE_FLAG := -race
 endif
