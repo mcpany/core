@@ -3192,6 +3192,10 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		// PHP / Perl / Ruby / Python additional dangerous functions
+		"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
+		"include", "include_once", "require_once", "dl",
+		"syscall", "load", "execfile", "compile",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
