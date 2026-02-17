@@ -46,7 +46,8 @@ test.describe('Service Detail Logs Tab', () => {
 
     // 3. Click Logs Tab
     // Scoping to main to avoid potential conflicts with other UI elements (e.g. sidebar)
-    const logsTab = page.locator('main').getByRole('tab', { name: 'Logs' });
+    // Using .first() to be absolutely safe against duplicates even within main (though unlikely)
+    const logsTab = page.locator('main').getByRole('tab', { name: 'Logs' }).first();
     await expect(logsTab).toBeVisible();
     // Ensure the tab list is also visible and stable
     await expect(page.locator('main').getByRole('tablist')).toBeVisible();

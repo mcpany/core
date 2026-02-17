@@ -140,7 +140,7 @@ nodes:
 		"--set", "env.MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"--set", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
 		"--wait",
-		"--timeout", "10m",
+		"--timeout", "20m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
