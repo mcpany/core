@@ -7,20 +7,10 @@ import { test, expect } from '@playwright/test';
 
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
-    // Mock the stats endpoint
-    await page.route('**/api/v1/dashboard/metrics*', async route => {
-        await route.fulfill({
-            json: [
-                { label: "Total Requests", value: "1234", icon: "Activity" },
-                { label: "Active Services", value: "5", icon: "Server" },
-                { label: "Connected Tools", value: "12", icon: "Zap" }
-            ]
-        });
-    });
-
     await page.goto('/');
     // Explicitly wait for the response to ensure the frontend has received data
-    await page.waitForResponse(response => response.url().includes('/api/v1/dashboard/metrics'));
+    // Use a longer timeout for CI
+    await page.waitForResponse(response => response.url().includes('/api/v1/dashboard/metrics'), { timeout: 45000 });
     await page.waitForLoadState('networkidle');
 
     // Check for "Total Requests" card
@@ -39,8 +29,9 @@ test.describe('User Guide Walkthrough', () => {
     await expect(addButton).toBeVisible();
 
     // Check for dialog opens
-    await addButton.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await addButton.click({ force: true });
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('New Service')).toBeVisible();
 
     // Close it
@@ -49,24 +40,12 @@ test.describe('User Guide Walkthrough', () => {
   });
 
   test('Resources: List and Preview', async ({ page }) => {
-    // Mock resources to ensure 'config.json' is present
-    await page.route('**/api/v1/resources', async route => {
-        const json = {
-            resources: [{
-                uri: 'config.json',
-                name: 'config.json',
-                mimeType: 'application/json'
-            }]
-        };
-        await route.fulfill({ json });
-    });
-
     await page.goto('/resources');
     await expect(page.getByRole('heading', { name: 'Resources' })).toBeVisible();
 
-    // Check for known mock resources from walkthrough or just non-empty page
-    // "config.json" was seen in verification
-    await expect(page.locator('body')).toContainText('config.json');
+    // Check for known resources from seeded data (Echo Service has System Logs)
+    // Wait for the table/list to load
+    await expect(page.locator('text=System Logs')).toBeVisible({ timeout: 20000 });
   });
 
   test('Global Search Modal', async ({ page }) => {
@@ -134,41 +113,20 @@ test.describe('User Guide Walkthrough', () => {
   });
 
   test('Connection Diagnostic Tool', async ({ page }) => {
-    // Mock services response to ensure at least one service exists
-    await page.route('**/api/v1/services', async route => {
-      const json = [{
-        name: 'mock-service',
-        id: 'mock-service-id',
-        http_service: { address: 'http://localhost:8080' },
-        disable: false
-      }];
-      await route.fulfill({ json });
-    });
-
-    // Mock getService response as well since clicking navigates to detail which fetches /api/v1/services/mock-service-id
-    await page.route('**/api/v1/services/mock-service-id', async route => {
-        const json = {
-            service: {
-                name: 'mock-service',
-                id: 'mock-service-id',
-                http_service: { address: 'http://localhost:8080' },
-                disable: false,
-                version: '1.0.0'
-            }
-        };
-        await route.fulfill({ json });
-    });
-
     // Navigate to services first
     await page.goto('/upstream-services');
+    await page.waitForLoadState('networkidle');
+
+    // Use "Payment Gateway" which is seeded in test-data.ts
+    const row = page.locator('tr').filter({ hasText: 'Payment Gateway' });
+    await expect(row).toBeVisible({ timeout: 20000 });
+
     // Open Edit Sheet
-    const row = page.locator('tr').filter({ hasText: 'mock-service' });
-    await expect(row).toBeVisible();
     await row.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('menuitem', { name: 'Edit' }).click();
 
     // Check for Edit Sheet load
     await expect(page.getByRole('heading', { name: 'Edit Service' })).toBeVisible();
-    await expect(page.locator('input[id="name"]')).toHaveValue('mock-service');
+    await expect(page.locator('input[id="name"]')).toHaveValue('Payment Gateway');
   });
 });

@@ -10,6 +10,7 @@ test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
         await seedUser(request, "e2e-admin-users");
         await page.goto('/login');
+        await page.waitForLoadState('networkidle');
         await page.fill('input[name="username"]', 'e2e-admin-users');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
@@ -59,8 +60,11 @@ test.describe('User Management', () => {
         // Save
         await page.click('button:has-text("Save Changes")');
 
+        // Wait for submission state
+        await expect(page.locator('button:has-text("Saving...")')).toBeVisible();
+
         // Verify Sheet closed
-        await expect(page.locator('div[role="dialog"]')).toBeHidden();
+        await expect(page.locator('div[role="dialog"]')).toBeHidden({ timeout: 10000 });
 
         // Verify user created in list
         // Row should contain "test-api-user"

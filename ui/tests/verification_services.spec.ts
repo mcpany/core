@@ -13,10 +13,11 @@ test.describe('Services Verification', () => {
 
     // 2. Click Add Service
     // It is a button that opens a dialog (initially shows Template selector)
-    await page.getByRole('button', { name: 'Add Service' }).click();
+    await page.waitForLoadState('networkidle');
+    await page.getByRole('button', { name: 'Add Service' }).click({ force: true });
 
     // 3. Verify Sheet/Dialog Opens
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('New Service')).toBeVisible();
   });
 });

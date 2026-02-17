@@ -34,7 +34,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address
+                // Use the echo server to ensure connectivity in CI
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
@@ -52,7 +53,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                // Use the echo server to ensure connectivity in CI
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
