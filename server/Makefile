@@ -78,12 +78,17 @@ endif
 # Detect GCC for CGO/Race
 # Check if gcc is available AND runnable
 GCC_VERSION := $(shell gcc --version 2> /dev/null)
-ifeq ($(GCC_VERSION),)
-	# No working GCC, disable CGO and race detector
+
+# In CI, force disable CGO/Race to avoid runner compatibility issues (missing gcc/glibc mismatches)
+ifdef CI
+	CGO_ENABLED_VAL := 0
+	RACE_FLAG :=
+else ifeq ($(GCC_VERSION),)
+	# No working GCC locally, disable CGO and race detector
 	CGO_ENABLED_VAL := 0
 	RACE_FLAG :=
 else
-	# Working GCC present, enable CGO and race detector
+	# Working GCC present locally, enable CGO and race detector
 	CGO_ENABLED_VAL := 1
 	RACE_FLAG := -race
 endif
