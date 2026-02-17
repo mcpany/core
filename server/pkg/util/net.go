@@ -206,12 +206,6 @@ func NewSafeHTTPClient() *http.Client {
 	}
 }
 
-// ResetSafeHTTPClient resets the internal singleton. Strictly for testing.
-func ResetSafeHTTPClient() {
-	transportOnce = sync.Once{}
-	sharedSafeTransport = nil
-}
-
 // CheckConnection verifies if a TCP connection can be established to the given address.
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
