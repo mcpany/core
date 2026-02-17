@@ -36,7 +36,8 @@ test.describe('Dashboard Real Data', () => {
         // Generate 60 points for the last 60 minutes
         for (let i = 59; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 60000);
-            const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            // Use ISO string slicing for robust HH:MM format in CI environments
+            const timeStr = t.toISOString().substring(11, 16);
             trafficPoints.push({
                 time: timeStr,
                 requests: 100, // Constant request rate for easy verification
@@ -114,7 +115,8 @@ test.describe('Dashboard Real Data', () => {
          // 5 mins of high errors (100% errors) to cause "error" status
          for (let i = 0; i < 5; i++) {
              const t = new Date(now.getTime() - i * 60000);
-             const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+             // Use ISO string slicing for robust HH:MM format in CI environments
+             const timeStr = t.toISOString().substring(11, 16);
              trafficPoints.push({
                  time: timeStr,
                  requests: 100,

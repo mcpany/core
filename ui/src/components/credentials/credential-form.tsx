@@ -130,31 +130,6 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-        // ... (Re-implement logic or rely on getAuthConfig mapping if we align it?
-        // Backend expects camelCase now due to proto change?
-        // Wait, apiClient.createCredential expects Snake Case usually if mapping to proto directly via JSON?
-        // No, `apiClient` implementation in `client.ts` uses `protojson` usually or manual mapping?
-        // Let's check client.ts `createCredential`.
-        // It manually maps if we used manual fetch.
-        // Wait, client.ts `createCredential` snippet:
-        // const payload: any = { ... authentication: auth ... }
-        // where auth is constructed manually.
-        // I should keep the existing manual mapping in onSubmit to be safe for now,
-        // as `getAuthConfig` returns strict proto types which might differ from what `createCredential` expects if it does manual JSON construction.
-        // Actually `client.ts` assumes manual JSON construction in snake_case?
-        // Let's look at `onSubmit` I am replacing.
-        // It constructs `auth.api_key = { param_name: ... }`.
-        // My `getAuthConfig` constructs `auth.apiKey = { paramName: ... }`.
-        // The server expects snake_case for REST?
-        // `createCredentialHandler` uses `protojson.Unmarshal`.
-        // `protojson` accepts BOTH snake_case and camelCase usually if configured, but default is strict?
-        // Standard protojson expects camelCase (lowerCamelCase) by default for JSON mapping of Proto fields!
-        // But the previous code was constructing snake_case!
-        // `auth.api_key = ...`
-        // If the server was working with snake_case, maybe it configured `UnmarshalOptions`?
-        // Let's stick to what was working for `onSubmit` to avoid regression,
-        // but use `getAuthConfig` for `CredentialTester` which expects `Authentication` object (camelCase TS interface).
-
         const auth: any = {}
         if (values.authType === "api_key") {
             auth.api_key = {

@@ -45,7 +45,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 export interface TestAuthRequest {
     credential_id?: string;
     authentication?: Authentication;
-    user_token?: any; // Using any for UserToken if not exported yet, or try explicit type if available
+    user_token?: any;
     target_url: string;
     method: string;
 }

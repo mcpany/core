@@ -6,8 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { Authentication } from "@proto/config/v1/auth";
-import { apiClient, TestAuthRequest, TestAuthResponse } from "@/lib/client";
+import { apiClient, Authentication, TestAuthRequest, TestAuthResponse } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -62,7 +61,7 @@ export function CredentialTester({ authConfig, credentialId, defaultUrl = "" }: 
         }
 
         if (!url.startsWith("http")) {
-             toast({
+            toast({
                 variant: "destructive",
                 title: "Validation Error",
                 description: "URL must start with http:// or https://",
@@ -77,24 +76,6 @@ export function CredentialTester({ authConfig, credentialId, defaultUrl = "" }: 
             const req: TestAuthRequest = {
                 target_url: url,
                 method: method,
-                // If we have a credential ID, send it to use stored secrets/tokens.
-                // Otherwise send the auth config directly (e.g. for new credentials).
-                // Note: If using authConfig directly, secrets like "${SECRET}" might not be resolved by the test endpoint
-                // unless the endpoint handles expansion or we expand them client-side (bad practice).
-                // The backend testAuthHandler handles expansion if we pass the Auth object?
-                // The backend generally expects resolved values or handles expansion if using the standard authenticator.
-                // However, `prepareAndExecuteRequest` creates an authenticator from the config.
-                // If the config contains `${...}`, the authenticator might fail or send literal string depending on implementation.
-                // Ideally, we should use `credential_id` if available.
-                // If creating a NEW credential, we only have `authConfig`.
-                // In that case, we hope the user entered the real value or the backend expands it.
-                // `AuthManager` usually expands secrets when loading from storage.
-                // Here we are passing raw config.
-                // Let's pass both if possible, but the API takes one or the other usually?
-                // Looking at `server/pkg/app/api_credential.go`:
-                // `if req.CredentialID != "" { ... } else { ... }`
-                // So it prioritizes ID.
-
                 // If credentialId is provided, use it (and ignore authConfig).
                 // If credentialId is undefined/null, use authConfig (from form).
                 credential_id: credentialId,
