@@ -459,7 +459,7 @@ else
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
 	$(GOLANGCI_LINT_BIN) run --timeout 30m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
-	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
+	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files --show-diff-on-failure
 endif
 
 clean-pre-commit:
