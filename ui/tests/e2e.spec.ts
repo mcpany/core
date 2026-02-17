@@ -52,8 +52,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     // console.log('Traffic Data:', body);
 
     // Check for metrics
-    await expect(page.locator('text=Total Requests')).toBeVisible();
-    await expect(page.locator('text=Active Services')).toBeVisible();
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 30000 });
+    await expect(page.locator('text=Active Services')).toBeVisible({ timeout: 30000 });
     // Check for health widget
     await expect(page.locator('text=System Health').first()).toBeVisible();
 

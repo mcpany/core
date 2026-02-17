@@ -13,9 +13,13 @@ test.describe('Services Verification', () => {
 
     // 2. Click Add Service
     // Wait for hydration/network idle to ensure event handlers are attached
-    await page.waitForLoadState('networkidle');
+    // Also explicitly wait for the button to be enabled and stable
+    const addButton = page.getByRole('button', { name: 'Add Service' });
+    await expect(addButton).toBeVisible();
+    await expect(addButton).toBeEnabled();
+
     // It is a button that opens a dialog (initially shows Template selector)
-    await page.getByRole('button', { name: 'Add Service' }).click();
+    await addButton.click();
 
     // 3. Verify Sheet/Dialog Opens
     await expect(page.getByRole('dialog')).toBeVisible();
