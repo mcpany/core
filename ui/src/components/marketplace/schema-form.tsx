@@ -23,7 +23,7 @@ interface SchemaFormProps {
  * @param props.onChange - Callback function when value changes.
  * @returns The rendered component.
  */
-export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
+export function SchemaForm({ schema, value = {}, onChange }: SchemaFormProps) {
   if (!schema || !schema.properties) return null;
 
   const handleChange = (key: string, val: string) => {
@@ -71,7 +71,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                 </label>
                </div>
             ) : prop.enum ? (
-                <Select value={value[key]} onValueChange={(v) => handleChange(key, v)}>
+                <Select value={value[key] || ""} onValueChange={(v) => handleChange(key, v)}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select..." />
                     </SelectTrigger>

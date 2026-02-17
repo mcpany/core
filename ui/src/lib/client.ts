@@ -897,6 +897,88 @@ export const apiClient = {
         return res.json();
     },
 
+    // Templates
+
+    /**
+     * Lists all available service templates.
+     * Alias for getServiceTemplates.
+     */
+    listTemplates: async () => {
+        return apiClient.getServiceTemplates();
+    },
+
+    /**
+     * Saves a service template.
+     * @param config The service configuration to save as a template.
+     */
+    saveTemplate: async (config: UpstreamServiceConfig) => {
+        // Map camelCase to snake_case if needed, but let's assume backend handles it or we reuse registerService mapping logic?
+        // For templates, we might just dump the JSON?
+        // Let's assume the endpoint expects the same format as registerService but wrapped or just the config.
+        // Given existing code context, we'll try to send it as is or mapped.
+        // Since registerService has mapping logic, we should probably extract it or reuse it.
+        // For now, let's send it as snake_case using registerService logic (manually copied/adapted for safety).
+        const payload: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            description: config.description,
+            icon: (config as any).icon,
+            tags: config.tags,
+            service_config: {} // The nested config
+        };
+
+        // Construct service_config (reuse logic from registerService roughly)
+        const sc: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
+        if (config.httpService) sc.http_service = HttpUpstreamService.toJSON(config.httpService);
+        if (config.grpcService) sc.grpc_service = { address: config.grpcService.address };
+        if (config.commandLineService) {
+            sc.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env
+            };
+        }
+        if (config.mcpService) sc.mcp_service = { ...config.mcpService };
+        if (config.openapiService) {
+            sc.openapi_service = {
+                address: config.openapiService.address,
+                spec_url: config.openapiService.specUrl,
+                spec_content: config.openapiService.specContent,
+            };
+        }
+
+        payload.service_config = sc;
+
+        const res = await fetchWithAuth('/api/v1/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to save template');
+        return res.json();
+    },
+
+    /**
+     * Deletes a service template.
+     * @param id The ID of the template to delete.
+     */
+    deleteTemplate: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete template');
+        return {};
+    },
+
     // Wizard Helpers
 
     /**
@@ -1266,6 +1348,16 @@ export const apiClient = {
         return res.json();
     },
 
+
+    /**
+     * Gets the doctor status.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
+    },
 
     /**
      * Gets the system status.

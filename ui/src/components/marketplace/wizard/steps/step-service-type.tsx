@@ -3,14 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWizard } from '../wizard-context';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
+// Static templates that are not in the registry (e.g. manual/custom)
+const STATIC_TEMPLATES = [
     {
         id: 'manual',
         name: 'Manual / Custom',
@@ -21,43 +23,10 @@ const TEMPLATES = [
                 env: {},
                 workingDirectory: ''
             },
-            openapiService: undefined
+            openapiService: undefined,
+            configurationSchema: ""
         },
         params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
     },
     {
         id: 'openapi',
@@ -70,7 +39,8 @@ const TEMPLATES = [
                 specContent: "",
                 tools: []
             },
-            commandLineService: undefined
+            commandLineService: undefined,
+            configurationSchema: ""
         },
         params: {}
     }
@@ -84,9 +54,52 @@ export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
 
+    // Merge static templates with registry
+    const templates = useMemo(() => {
+        const registryTemplates = SERVICE_REGISTRY.map(item => {
+            // Extract defaults from schema
+            const defaults: Record<string, string> = {};
+            if (item.configurationSchema && item.configurationSchema.properties) {
+                Object.entries(item.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
+                    if (prop.default) {
+                        defaults[key] = String(prop.default);
+                    } else {
+                        // Initialize empty string for required fields to hint existence
+                        defaults[key] = "";
+                    }
+                });
+            }
+
+            // Build config env object from defaults
+            const env: Record<string, any> = {};
+            Object.keys(defaults).forEach(k => {
+                env[k] = { plainText: defaults[k] };
+            });
+
+            return {
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                config: {
+                    commandLineService: {
+                        command: item.command,
+                        env: env,
+                        workingDirectory: ''
+                    },
+                    openapiService: undefined,
+                    configurationSchema: JSON.stringify(item.configurationSchema)
+                },
+                params: defaults
+            };
+        });
+
+        // Filter out duplicates if any. Registry takes precedence.
+        // We assume STATIC_TEMPLATES IDs (manual, openapi) don't conflict with registry IDs.
+        return [...STATIC_TEMPLATES, ...registryTemplates];
+    }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = templates.find(t => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
@@ -119,8 +132,8 @@ export function StepServiceType() {
                     <SelectTrigger id="service-template">
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
-                    <SelectContent>
-                        {TEMPLATES.map(t => (
+                    <SelectContent className="max-h-[300px]">
+                        {templates.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -130,10 +143,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>
