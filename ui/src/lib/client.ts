@@ -1514,5 +1514,61 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    // Templates (Marketplace)
+
+    /**
+     * Lists all available service templates.
+     */
+    listTemplates: async () => {
+        return apiClient.getServiceTemplates();
+    },
+
+    /**
+     * Saves a service template.
+     * @param config The service configuration to save as a template.
+     */
+    saveTemplate: async (config: UpstreamServiceConfig) => {
+        // Map camelCase to snake_case for the backend
+        const mappedConfig: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            command_line_service: config.commandLineService ? {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env
+            } : undefined,
+            openapi_service: config.openapiService ? {
+                spec_url: config.openapiService.specUrl,
+                spec_content: config.openapiService.specContent
+            } : undefined,
+            // Add other fields as needed for the template payload
+        };
+
+        const res = await fetchWithAuth('/api/v1/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: config.name,
+                description: config.description || "Custom Template",
+                service_config: mappedConfig
+            })
+        });
+        if (!res.ok) throw new Error('Failed to save template');
+        return res.json();
+    },
+
+    /**
+     * Deletes a service template.
+     * @param id The ID of the template.
+     */
+    deleteTemplate: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete template');
+        return {};
     }
 };

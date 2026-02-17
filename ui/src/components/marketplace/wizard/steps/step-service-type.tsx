@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useWizard } from '../wizard-context';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { apiClient, ServiceTemplate } from '@/lib/client';
 import { SERVICE_REGISTRY } from '@/lib/service-registry';
+import { Loader2 } from 'lucide-react';
 
 // Define the static templates (Manual, OpenAPI)
 const STATIC_TEMPLATES = [
@@ -53,43 +55,86 @@ const STATIC_TEMPLATES = [
 export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
+    const [remoteTemplates, setRemoteTemplates] = useState<ServiceTemplate[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Merge Static templates with Registry templates
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            try {
+                let templates = await apiClient.getServiceTemplates();
+
+                // SEEDING LOGIC: If no templates, seed from Registry
+                if (templates.length === 0) {
+                    console.log("No templates found. Seeding database from Registry...");
+                    // We seed a few core ones to avoid spamming
+                    const coreIds = ['postgres', 'sqlite', 'filesystem'];
+                    const seedPromises = SERVICE_REGISTRY
+                        .filter(r => coreIds.includes(r.id))
+                        .map(item => {
+                            const config = {
+                                id: item.id,
+                                name: item.name,
+                                description: item.description,
+                                version: "1.0.0",
+                                disable: false,
+                                commandLineService: {
+                                    command: item.command,
+                                    env: {},
+                                    workingDirectory: ''
+                                },
+                                configurationSchema: JSON.stringify(item.configurationSchema)
+                            } as any;
+                            return apiClient.saveTemplate(config).catch(e => console.warn(`Failed to seed ${item.id}`, e));
+                        });
+
+                    await Promise.all(seedPromises);
+                    // Fetch again
+                    templates = await apiClient.getServiceTemplates();
+                }
+
+                setRemoteTemplates(templates);
+            } catch (e) {
+                console.error("Failed to fetch templates", e);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTemplates();
+    }, []);
+
+    // Merge Static templates with Remote templates
     const allTemplates = useMemo(() => {
-        const registryTemplates = SERVICE_REGISTRY.map(item => {
-            // Extract defaults from schema
+        const mappedRemote = remoteTemplates.map(t => {
+            // Extract defaults from schema if available
             const defaults: Record<string, string> = {};
-            if (item.configurationSchema && item.configurationSchema.properties) {
-                Object.entries(item.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
-                    if (prop.default !== undefined) {
-                        defaults[key] = String(prop.default);
-                    } else {
-                        // Initialize empty string for required fields to improve UX
-                         defaults[key] = "";
+            try {
+                if (t.serviceConfig.configurationSchema) {
+                    const schema = JSON.parse(t.serviceConfig.configurationSchema);
+                    if (schema.properties) {
+                        Object.entries(schema.properties).forEach(([key, prop]: [string, any]) => {
+                            if (prop.default !== undefined) {
+                                defaults[key] = String(prop.default);
+                            } else {
+                                defaults[key] = "";
+                            }
+                        });
                     }
-                });
+                }
+            } catch (e) {
+                // ignore invalid schema
             }
 
             return {
-                id: item.id,
-                name: item.name,
-                description: item.description,
-                config: {
-                    commandLineService: {
-                        command: item.command,
-                        env: {}, // Will be filled from params
-                        workingDirectory: ''
-                    },
-                    openapiService: undefined,
-                    configurationSchema: JSON.stringify(item.configurationSchema)
-                },
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                config: t.serviceConfig,
                 params: defaults
             };
         });
 
-        // Filter out any static templates that might duplicate registry IDs if we kept them
-        return [...STATIC_TEMPLATES, ...registryTemplates];
-    }, []);
+        return [...STATIC_TEMPLATES, ...mappedRemote];
+    }, [remoteTemplates]);
 
     const handleTemplateChange = (val: string) => {
         const template = allTemplates.find(t => t.id === val);
@@ -138,18 +183,22 @@ export function StepServiceType() {
 
             <div className="space-y-2">
                 <Label htmlFor="service-template">Template</Label>
-                <Select value={selectedTemplateId || 'manual'} onValueChange={handleTemplateChange}>
-                    <SelectTrigger id="service-template">
-                        <SelectValue placeholder="Select a template" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                        {allTemplates.map(t => (
-                            <SelectItem key={t.id} value={t.id}>
-                                {t.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <div className="relative">
+                    <Select value={selectedTemplateId || 'manual'} onValueChange={handleTemplateChange} disabled={loading}>
+                        <SelectTrigger id="service-template">
+                            <SelectValue placeholder={loading ? "Loading templates..." : "Select a template"} />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                            {allTemplates.map(t => (
+                                <SelectItem key={t.id} value={t.id}>
+                                    {t.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {loading && <Loader2 className="h-4 w-4 animate-spin absolute right-10 top-3 text-muted-foreground" />}
+                </div>
+
                 {selectedTemplate && (
                     <Card className="mt-2 bg-muted/50">
                         <CardHeader>
