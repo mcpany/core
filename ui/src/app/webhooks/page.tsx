@@ -179,7 +179,7 @@ export default function WebhooksPage() {
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                             <Button>
-                                <Plus className="mr-2 h-4 w-4" /> Add Webhook
+                            <Plus className="mr-2 h-4 w-4" /> New Webhook
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
