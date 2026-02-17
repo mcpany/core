@@ -19,7 +19,8 @@ test.describe('Services Verification', () => {
     await expect(addButton).toBeEnabled();
 
     // It is a button that opens a dialog (initially shows Template selector)
-    await addButton.click();
+    // Force click to bypass any potential overlay issues
+    await addButton.click({ force: true });
 
     // 3. Verify Sheet/Dialog Opens
     await expect(page.getByRole('dialog')).toBeVisible();

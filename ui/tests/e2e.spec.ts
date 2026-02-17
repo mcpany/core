@@ -32,6 +32,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
       // Wait for redirect to home page and verify
       await expect(page).toHaveURL('/', { timeout: 15000 });
+      // Ensure the page is fully loaded and hydrated
+      await page.waitForLoadState('networkidle');
   });
 
   test.afterEach(async ({ request }) => {
