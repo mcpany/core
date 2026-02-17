@@ -143,17 +143,25 @@ export function AnalyticsDashboard() {
     const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
-        const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
-        const avgLatency = trafficData.length
-            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
-            : 0;
-        const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
-        const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
-        // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
-        const durationMinutes = trafficData.length;
-        const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
+        try {
+            if (!Array.isArray(trafficData)) {
+                return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
+            }
+            const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+            const avgLatency = trafficData.length
+                ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+                : 0;
+            const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+            const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
+            // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
+            const durationMinutes = trafficData.length;
+            const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-        return { totalRequests, avgLatency, errorRate, avgRps };
+            return { totalRequests, avgLatency, errorRate, avgRps };
+        } catch (e) {
+            console.error("Failed to calculate traffic stats", e);
+            return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
+        }
     }, [trafficData]);
 
     const handleToggleTool = async (name: string, disable: boolean) => {
