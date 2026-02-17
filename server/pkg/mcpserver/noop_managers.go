@@ -18,111 +18,135 @@ type NoOpToolManager struct{}
 
 // AddTool implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - t: tool.Tool. The tool to add.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: Always returns nil.
 func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 
 // GetTool implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - name: string. The name of the tool.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - tool.Tool: Always nil.
+//   - bool: Always false.
 func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 
 // ListTools implements tool.ManagerInterface.
 //
-// Returns the result.
+// Returns:
+//   - []tool.Tool: Always nil.
 func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 
 // ListMCPTools implements tool.ManagerInterface.
 //
-// Returns the result.
+// Returns:
+//   - []*mcp.Tool: Always nil.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
 // ClearToolsForService implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
 func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 
 // ExecuteTool implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - req: *tool.ExecutionRequest. The execution request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - any: Always nil.
+//   - error: Always nil.
 func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 
 // SetMCPServer implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - p: tool.MCPServerProvider. The provider.
 func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
 // AddMiddleware implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - mw: tool.ExecutionMiddleware. The middleware.
 func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 
 // AddServiceInfo implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
+//   - info: *tool.ServiceInfo. The service info.
 func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 // GetServiceInfo implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - *tool.ServiceInfo: Always nil.
+//   - bool: Always false.
 func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 
 // ListServices implements tool.ManagerInterface.
 //
-// Returns the result.
+// Returns:
+//   - []*tool.ServiceInfo: Always nil.
 func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 
 // SetProfiles implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - profiles: []string. The profiles.
+//   - definitions: []*configv1.ProfileDefinition. The definitions.
 func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 // IsServiceAllowed implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
+//   - profileID: string. The profile ID.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: Always true.
 func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
 // ToolMatchesProfile implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - t: tool.Tool. The tool.
+//   - profileID: string. The profile ID.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: Always true.
 func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { return true }
 
 // GetAllowedServiceIDs implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - profileID: string. The profile ID.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - map[string]bool: Always nil.
+//   - bool: Always false.
 func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, false
 }
 
 // GetToolCountForService implements tool.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
 //
-// Returns the result.
+// Returns:
+//   - int: Always 0.
 func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
 }
@@ -132,35 +156,42 @@ type NoOpPromptManager struct{}
 
 // AddPrompt implements prompt.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - p: prompt.Prompt. The prompt to add.
 func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 
 // UpdatePrompt implements prompt.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - p: prompt.Prompt. The prompt to update.
 func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 
 // GetPrompt implements prompt.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - name: string. The name of the prompt.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - prompt.Prompt: Always nil.
+//   - bool: Always false.
 func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return nil, false }
 
 // ListPrompts implements prompt.ManagerInterface.
 //
-// Returns the result.
+// Returns:
+//   - []prompt.Prompt: Always nil.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
 // ClearPromptsForService implements prompt.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
 func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 
 // SetMCPServer implements prompt.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - p: prompt.MCPServerProvider. The provider.
 func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
 // NoOpResourceManager is a no-op implementation of resource.ManagerInterface.
@@ -168,33 +199,40 @@ type NoOpResourceManager struct{}
 
 // GetResource implements resource.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - uri: string. The resource URI.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - resource.Resource: Always nil.
+//   - bool: Always false.
 func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { return nil, false }
 
 // AddResource implements resource.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - r: resource.Resource. The resource to add.
 func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 
 // RemoveResource implements resource.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - uri: string. The resource URI.
 func (m *NoOpResourceManager) RemoveResource(_ string) {}
 
 // ListResources implements resource.ManagerInterface.
 //
-// Returns the result.
+// Returns:
+//   - []resource.Resource: Always nil.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
 // OnListChanged implements resource.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - f: func(). The callback.
 func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 
 // ClearResourcesForService implements resource.ManagerInterface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - serviceID: string. The service ID.
 func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}

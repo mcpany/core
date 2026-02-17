@@ -39,6 +39,15 @@ interface SecretPickerProps {
 /**
  * A component to select a secret from the stored secrets.
  * Can be used as a full combobox or attached to a custom trigger (icon).
+ *
+ * @param props - The component props.
+ * @param props.onSelect - Callback when a secret is selected.
+ * @param props.value - The currently selected secret key.
+ * @param props.placeholder - Placeholder text.
+ * @param props.disabled - Whether the picker is disabled.
+ * @param props.className - Additional CSS classes.
+ * @param props.children - Optional custom trigger element.
+ * @returns The rendered secret picker.
  */
 export function SecretPicker({
   onSelect,

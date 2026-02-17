@@ -29,6 +29,9 @@ interface PolicyEditorProps {
     onUpdate: (policies: CallPolicy[]) => void;
 }
 
+/**
+ * Labels for policy actions.
+ */
 const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.ALLOW]: "Allow",
     [CallPolicy_Action.DENY]: "Deny",
@@ -36,6 +39,9 @@ const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.DELETE_CACHE]: "Delete Cache",
 };
 
+/**
+ * Color variants for policy actions.
+ */
 const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "outline"> = {
     [CallPolicy_Action.ALLOW]: "default", // Green-ish usually, but default works
     [CallPolicy_Action.DENY]: "destructive",

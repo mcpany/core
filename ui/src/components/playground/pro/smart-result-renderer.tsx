@@ -30,6 +30,10 @@ interface McpContent {
 /**
  * Renders the result of a tool execution in a smart, tabular format if possible,
  * falling back to a raw JSON view.
+ *
+ * @param props - The component props.
+ * @param props.result - The result object to render.
+ * @returns The rendered component.
  */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | null>(null);

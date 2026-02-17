@@ -138,6 +138,12 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
   );
 }
 
+/**
+ * PrimitiveValue component.
+ * @param props - The component props.
+ * @param props.value - The current value.
+ * @returns The rendered component.
+ */
 function PrimitiveValue({ value }: { value: unknown }) {
   if (typeof value === 'string') {
     return <span className="text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
