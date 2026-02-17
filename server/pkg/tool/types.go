@@ -2986,8 +2986,10 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		// in unquoted (Level 0), double-quoted (Level 1), and single-quoted (Level 2) strings.
+		// Even unquoted arguments passed to interpreters (e.g. perl -e {{ARG}}) can execute code
+		// if they contain keywords like 'readpipe' or 'system' with safe delimiters.
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3006,7 +3008,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
-			if quoteLevel == 1 || quoteLevel == 2 {
+			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
 				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
@@ -3188,10 +3190,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
-		"spawn", "fork",
+		"spawn", "fork", "syscall", "readpipe",
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"Function", // Block Function constructor in JS
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
@@ -3212,10 +3215,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
 		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
 		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
+		kwLower := strings.ToLower(kw)
+		if strings.Contains(cleanVal, kwLower+"(") ||
+			strings.Contains(cleanVal, kwLower+"'") ||
+			strings.Contains(cleanVal, kwLower+"\"") ||
+			strings.Contains(cleanVal, kwLower+"`") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
 		}
 	}
