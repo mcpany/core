@@ -26,6 +26,7 @@ import (
 
 // ToolExecutionTimeout is the maximum duration to wait for a tool execution to complete.
 // It is exposed as a variable to allow overriding in tests.
+// Default is 60 seconds.
 var ToolExecutionTimeout = 60 * time.Second
 
 // MCPServerProvider defines an interface for components that can provide an
