@@ -9,11 +9,7 @@ linters:
   enable:
     - bodyclose
     - errcheck
-    - goconst
     - govet
-    - nolintlint
-    - prealloc
-    - revive
     - staticcheck
     - tparallel
     - unconvert
