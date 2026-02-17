@@ -21,7 +21,8 @@ endif
 
 # Run lint
 lint:
-	npm run lint
+	# Run eslint directly to avoid next lint deprecated warning exit code
+	npx eslint .
 
 
 TIMESTAMP := $(shell date +%s)
