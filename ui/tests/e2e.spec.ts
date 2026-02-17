@@ -46,7 +46,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('text=Total Requests')).toBeVisible();
     await expect(page.locator('text=Active Services')).toBeVisible();
     // Check for health widget
-    await expect(page.locator('text=System Health').first()).toBeVisible();
+    await expect(page.locator('text=Server Status').first()).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });

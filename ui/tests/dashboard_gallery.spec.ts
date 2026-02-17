@@ -24,9 +24,9 @@ test('dashboard widget gallery', async ({ page }) => {
   await galleryItem.click();
 
   // Verify we have widgets on the dashboard.
-  // The ServiceHealthWidget renders with title "System Health".
+  // The ServiceHealthWidget renders with title "Service Health".
   // Since we might have multiple, let's just check that at least one is visible.
-  await expect(page.getByText('System Health').first()).toBeVisible();
+  await expect(page.getByText('Service Health').first()).toBeVisible();
 
   // Optionally check count if we started with known state, but default layout might change.
 });

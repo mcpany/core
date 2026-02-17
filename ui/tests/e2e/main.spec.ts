@@ -41,7 +41,7 @@ test.describe('MCP Any UI E2E', () => {
 
     // Check for metrics cards
     await expect(page.locator('text=Total Requests').first()).toBeVisible();
-    await expect(page.locator('text=System Health').first()).toBeVisible();
+    await expect(page.locator('text=Server Status').first()).toBeVisible();
     // Verify that exactly 2 metric cards are displayed
     const cards = page.locator('.rounded-xl.border.bg-card');
     // Note: The selector might need to be specific to the metric cards if other cards exist
