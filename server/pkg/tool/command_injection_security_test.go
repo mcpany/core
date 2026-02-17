@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -25,7 +26,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		if err != nil {
+			msg := err.Error()
+			if !strings.Contains(msg, "shell injection detected") && !strings.Contains(msg, "interpreter injection detected") {
+				t.Errorf("Expected shell or interpreter injection detected, got: %s", msg)
+			}
+		}
 	})
 
 	// Case 2: Double quoted shell injection
@@ -39,7 +45,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		if err != nil {
+			msg := err.Error()
+			if !strings.Contains(msg, "shell injection detected") && !strings.Contains(msg, "interpreter injection detected") {
+				t.Errorf("Expected shell or interpreter injection detected, got: %s", msg)
+			}
+		}
 	})
 
 	// Case 3: Argument injection (leading dash)
@@ -95,7 +106,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		if err != nil {
+			msg := err.Error()
+			if !strings.Contains(msg, "shell injection detected") && !strings.Contains(msg, "interpreter injection detected") {
+				t.Errorf("Expected shell or interpreter injection detected, got: %s", msg)
+			}
+		}
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
@@ -137,7 +153,12 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 				_, err := tool.Execute(context.Background(), req)
 				assert.Error(t, err, "Expected error for %s", cmd)
-				assert.Contains(t, err.Error(), "shell injection detected", "Interpreter %s should be detected as shell", cmd)
+				if err != nil {
+					msg := err.Error()
+					if !strings.Contains(msg, "shell injection detected") && !strings.Contains(msg, "interpreter injection detected") {
+						t.Errorf("Expected shell or interpreter injection detected, got: %s", msg)
+					}
+				}
 			})
 		}
 	})

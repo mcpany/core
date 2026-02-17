@@ -1255,7 +1255,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service.
 //
@@ -2986,8 +2985,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		// in unquoted, double-quoted, and single-quoted strings.
+		if quoteLevel <= 2 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3192,6 +3191,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"readpipe", "syscall", // Perl/Ruby RCE
+		"Function", "setTimeout", "setInterval", "setImmediate", // Node.js/JS RCE
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
