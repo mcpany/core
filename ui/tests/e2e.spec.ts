@@ -42,6 +42,15 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
+    // Wait for the traffic data to be loaded to ensure the dashboard has rendered
+    const trafficResponse = await page.waitForResponse(resp =>
+      resp.url().includes('/api/v1/dashboard/traffic') && resp.status() === 200
+    );
+
+    // Optional: Log body if needed for debugging
+    // const body = await trafficResponse.json();
+    // console.log('Traffic Data:', body);
+
     // Check for metrics
     await expect(page.locator('text=Total Requests')).toBeVisible();
     await expect(page.locator('text=Active Services')).toBeVisible();

@@ -12,6 +12,8 @@ test.describe('Services Verification', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Upstream Services' })).toBeVisible();
 
     // 2. Click Add Service
+    // Wait for hydration/network idle to ensure event handlers are attached
+    await page.waitForLoadState('networkidle');
     // It is a button that opens a dialog (initially shows Template selector)
     await page.getByRole('button', { name: 'Add Service' }).click();
 
