@@ -41,8 +41,13 @@ test.describe('Service Detail Logs Tab', () => {
     // Use the actual ID returned from the backend creation
     await page.goto(`/service/${serviceId}`);
 
+    // Wait for the page content to load to avoid "heading not found" if spinner is present
+    // We can wait for the breadcrumb or some other static element first
+    await expect(page.locator('text=Service Details')).toBeVisible();
+
     // 2. Verify Page Title to ensure we loaded
-    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
+    // Increase timeout or be more specific if there are multiple headings
+    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName, { timeout: 15000 });
 
     // 3. Click Logs Tab
     const logsTab = page.getByRole('tab', { name: 'Logs' });

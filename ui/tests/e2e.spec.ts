@@ -42,9 +42,16 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
-    // Check for metrics
-    await expect(page.locator('text=Total Requests')).toBeVisible();
-    await expect(page.locator('text=Active Services')).toBeVisible();
+    // Check for metrics - use robust locator from dashboard_real_data.spec.ts
+    // We expect "Total Requests" label to be present, and potentially the value
+    // Using the same locator strategy as the fixed dashboard test
+    const totalRequestsCard = page.locator('div.border').filter({ hasText: 'Total Requests' });
+    await expect(totalRequestsCard).toBeVisible();
+
+    // Check for Active Services
+    const activeServicesCard = page.locator('div.border').filter({ hasText: 'Active Services' });
+    await expect(activeServicesCard).toBeVisible();
+
     // Check for health widget
     await expect(page.locator('text=System Health').first()).toBeVisible();
 

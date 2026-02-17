@@ -11,6 +11,12 @@ test('dashboard network topology widget', async ({ page }) => {
 
   // The widget should be present in the default layout.
   // We can look for the React Flow container
+  // Note: The widget might be "NetworkGraphWidget" which renders "NetworkGraph".
+  // If the widget is missing, it might be due to default layout or load failure.
+  // We'll first check if the widget card is even there.
+  await expect(page.locator('div.border').filter({ hasText: 'Network Topology' })).toBeVisible();
+
+  // Then check for the graph container.
   await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
 
   // We can also check if the widget title "Network Topology" is visible in the layout configuration (if we opened it)

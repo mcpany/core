@@ -60,7 +60,20 @@ test.describe('User Management', () => {
         await page.click('button:has-text("Save Changes")');
 
         // Verify Sheet closed
-        await expect(page.locator('div[role="dialog"]')).toBeHidden();
+        // Wait for the success toast or the dialog to disappear.
+        // If the dialog doesn't close, it might be due to an error.
+        // We'll check if the dialog is hidden, but allow a retry or longer timeout if needed.
+        // Also check if any error message appeared.
+        try {
+            await expect(page.locator('div[role="dialog"]')).toBeHidden({ timeout: 5000 });
+        } catch (e) {
+            // If still visible, check for error
+            if (await page.locator('text=Error').isVisible()) {
+                const error = await page.locator('text=Error').textContent();
+                throw new Error(`Failed to save user: ${error}`);
+            }
+            throw e;
+        }
 
         // Verify user created in list
         // Row should contain "test-api-user"
