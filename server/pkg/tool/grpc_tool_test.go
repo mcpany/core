@@ -51,6 +51,10 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 			path = "build/all.protoset"
 		}
 		if _, err := os.Stat(path); os.IsNotExist(err) {
+			// Try looking up two directories (e.g. if running from server/)
+			path = "../../build/all.protoset"
+		}
+		if _, err := os.Stat(path); os.IsNotExist(err) {
 			// Debugging info for CI failure
 			cwd, _ := os.Getwd()
 			t.Logf("Current working directory: %s", cwd)
