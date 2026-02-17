@@ -87,7 +87,10 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	defer b.mu.Unlock()
 	if _, ok := b.subscribers[ch]; ok {
 		delete(b.subscribers, ch)
-		close(ch)
+		// ⚡ BOLT: Do NOT close channel here.
+		// Since Broadcast now iterates without lock, we might send to this channel concurrently.
+		// Sending to a closed channel panics. The channel will be GC'd when unreachable.
+		// close(ch)
 	}
 }
 
@@ -100,7 +103,6 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	copy(msgCopy, msg)
 
 	b.mu.Lock()
-	defer b.mu.Unlock()
 
 	// ⚡ BOLT: Ring Buffer Optimization
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -111,9 +113,21 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 		b.full = true
 	}
 
+	// ⚡ BOLT: Snapshot subscribers to release lock during iteration.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// Optimization: We snapshot the channels to iterate without holding the lock.
+	// This prevents slow sends or high contention from blocking other operations.
+	subs := make([]chan []byte, 0, len(b.subscribers))
 	for ch := range b.subscribers {
+		subs = append(subs, ch)
+	}
+	b.mu.Unlock()
+
+	for _, ch := range subs {
 		select {
-		case ch <- msg:
+		// Use msgCopy to ensure subscribers get an immutable copy and not the original buffer
+		// which might be reused by the caller.
+		case ch <- msgCopy:
 		default:
 			// Drop message if channel is full
 		}

@@ -148,9 +148,12 @@ func TestBroadcaster(t *testing.T) {
 	b.Unsubscribe(ch1)
 	assert.Len(t, b.subscribers, 1)
 
-	// Ensure ch1 is closed
-	_, ok := <-ch1
-	assert.False(t, ok)
+	// Ensure ch1 does not receive messages immediately (it should be empty)
+	select {
+	case <-ch1:
+		t.Fatal("ch1 should be empty")
+	default:
+	}
 
 	// Broadcast again, only ch2 should receive
 	msg2 := []byte("test message 2")
@@ -161,6 +164,13 @@ func TestBroadcaster(t *testing.T) {
 		assert.Equal(t, msg2, received)
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout waiting for ch2")
+	}
+
+	// Verify ch1 did not receive the new message
+	select {
+	case val := <-ch1:
+		t.Fatalf("ch1 received message after unsubscribe: %s", string(val))
+	default:
 	}
 
 	// Unsubscribe ch2
