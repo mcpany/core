@@ -85,13 +85,11 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	if _, ok := b.subscribers[ch]; ok {
-		delete(b.subscribers, ch)
-		// ⚡ BOLT: Do NOT close channel here.
-		// Since Broadcast now iterates without lock, we might send to this channel concurrently.
-		// Sending to a closed channel panics. The channel will be GC'd when unreachable.
-		// close(ch)
-	}
+	// ⚡ BOLT: Do NOT close channel here.
+	// Since Broadcast now iterates without lock, we might send to this channel concurrently.
+	// Sending to a closed channel panics. The channel will be GC'd when unreachable.
+	// We also don't need to check existence before delete.
+	delete(b.subscribers, ch)
 }
 
 // Broadcast sends a message to all subscribers.
