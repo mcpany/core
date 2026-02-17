@@ -3194,19 +3194,6 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"open", "read", "write",
 	}
 
-	// Add language-specific dangerous keywords
-	switch {
-	case strings.HasPrefix(language, "php"):
-		dangerousKeywords = append(dangerousKeywords,
-			"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
-			"include", "include_once", "require_once", "dl",
-		)
-	case strings.HasPrefix(language, "ruby"):
-		dangerousKeywords = append(dangerousKeywords, "syscall", "load")
-	case strings.HasPrefix(language, "perl"):
-		dangerousKeywords = append(dangerousKeywords, "syscall")
-	}
-
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
 		return err
 	}
