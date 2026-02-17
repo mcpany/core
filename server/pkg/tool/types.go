@@ -3188,10 +3188,13 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
+		"spawn", "fork", "syscall",
+		"import", "require", "load",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		// PHP specific dangerous functions
+		"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
+		"include", "include_once", "require_once", "dl",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
