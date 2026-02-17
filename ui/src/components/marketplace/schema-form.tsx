@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertTriangle } from "lucide-react";
 
 interface SchemaFormProps {
   schema: any;
@@ -24,7 +25,16 @@ interface SchemaFormProps {
  * @returns The rendered component.
  */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
-  if (!schema || !schema.properties) return null;
+  if (!schema) return null;
+
+  if (!schema.properties || typeof schema.properties !== 'object') {
+      return (
+          <div className="flex items-center gap-2 p-4 text-sm text-yellow-500 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+              <AlertTriangle className="h-4 w-4" />
+              <span>Invalid configuration schema: Missing properties definition.</span>
+          </div>
+      );
+  }
 
   const handleChange = (key: string, val: string) => {
     onChange({ ...value, [key]: val });
