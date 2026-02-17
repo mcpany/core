@@ -78,6 +78,7 @@ test.describe('Tool Detail Performance Optimization', () => {
 
         await page.goto(`/service/${serviceId}/tool/${toolName}`);
 
-        await expect(page.getByRole('alert').filter({ hasText: /not found|404|error|failed/i })).toBeVisible();
+        // Use .first() to handle cases where multiple errors might appear (e.g. connection error + 404)
+        await expect(page.getByRole('alert').filter({ hasText: /not found|404|error|failed/i }).first()).toBeVisible();
     });
 });
