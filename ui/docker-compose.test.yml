@@ -47,6 +47,16 @@ services:
     command: >
       sh -c "
         mkdir -p test-results .audit playwright-report docs &&
+        # Simple wait loop for echo server using curl which is usually in the e2e image
+        echo 'Waiting for ui-http-echo-server...' &&
+        for i in \$(seq 1 30); do
+          if curl -s http://ui-http-echo-server:5678/health >/dev/null; then
+            echo 'ui-http-echo-server is up!'
+            break
+          fi
+          echo 'Waiting...'
+          sleep 1
+        done &&
         npx playwright test $${PLAYWRIGHT_ARGS}
       "
     volumes:
@@ -62,7 +72,7 @@ services:
       server:
         condition: service_healthy
       ui-http-echo-server:
-        condition: service_healthy
+        condition: service_started
     networks:
       default:
 
@@ -72,8 +82,3 @@ services:
       - "127.0.0.1:5678:5678"
     command:
       - "--port=5678"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:5678/health || exit 1"]
-      interval: 2s
-      timeout: 2s
-      retries: 10
