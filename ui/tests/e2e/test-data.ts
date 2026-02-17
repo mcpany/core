@@ -33,16 +33,17 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                // Use the echo server to ensure connectivity in CI
-                address: "http://ui-http-echo-server:5678",
+            // Use command_line_service to ensure health checks pass in all environments (K8s, Docker)
+            // without requiring external network connectivity or specific service names.
+            command_line_service: {
+                command: "echo",
+                args: ["user_service_active"],
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
                 calls: {
                     get_user_call: {
-                        method: "HTTP_METHOD_GET",
-                        endpoint_path: "/users/{id}"
+                        args: ["user_details"]
                     }
                 }
             }
@@ -52,16 +53,16 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                // Use the echo server to ensure connectivity in CI
-                address: "http://ui-http-echo-server:5678",
+            // Use command_line_service to ensure health checks pass in all environments
+            command_line_service: {
+                command: "echo",
+                args: ["math_service_active"],
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
                 calls: {
                     calc_call: {
-                        method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
+                        args: ["42"]
                     }
                 }
             }
