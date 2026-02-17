@@ -41,6 +41,7 @@ services:
       - MCPANY_API_KEY=test-token
       - NEXT_PUBLIC_MCPANY_API_KEY=test-token
       - CI=true
+      - TEST_ENV=docker
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
     command: >

@@ -9,6 +9,13 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
+// In Docker CI environment (docker-compose), we use the service name.
+// In K8s or local, we default to localhost (or handle differently if needed).
+// The echo server runs on port 5678.
+const IS_DOCKER = process.env.TEST_ENV === 'docker';
+const ECHO_SERVER_HOST = IS_DOCKER ? 'ui-http-echo-server' : 'localhost';
+const ECHO_SERVER_URL = `http://${ECHO_SERVER_HOST}:5678`;
+
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -17,7 +24,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                // Use echo server to avoid external dependencies and failures
+                address: ECHO_SERVER_URL,
                 tools: [
                     { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
                 ],
@@ -34,7 +42,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address
+                address: ECHO_SERVER_URL, // Use echo server
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
@@ -52,7 +60,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: ECHO_SERVER_URL, // Use echo server
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
