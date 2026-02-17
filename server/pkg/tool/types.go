@@ -3187,7 +3187,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
 	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
 	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
+		"system", "exec", "popen", "eval", "readpipe", "syscall",
 		"spawn", "fork",
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
@@ -3532,6 +3532,15 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
 				return fmt.Errorf("shell injection detected: perl qx execution")
 			}
+		}
+
+		// Sentinel Security Update:
+		// Block dangerous function calls when they appear as unquoted keywords.
+		// This covers Level 0 injection (code injection) where keywords are used directly.
+		// We use checkUnquotedKeywords to avoid false positives in quoted strings.
+		dangerousPerl := []string{"system", "exec", "popen", "readpipe", "syscall", "open"}
+		if err := checkUnquotedKeywords(val, dangerousPerl); err != nil {
+			return err
 		}
 
 		if quoteLevel == 1 || quoteLevel == 3 {
