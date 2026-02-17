@@ -5,17 +5,30 @@ package tool_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestGitSCPSecurity(t *testing.T) {
+	// Mock validation.IsSafeURL to simulate production behavior (blocking non-http/https)
+	// This is necessary because TestMain globally mocks it to allow everything.
+	originalIsSafeURL := validation.IsSafeURL
+	validation.IsSafeURL = func(urlStr string) error {
+		if strings.HasPrefix(urlStr, "ssh://") {
+			return assert.AnError // Simulate unsafe URL error
+		}
+		return nil
+	}
+	defer func() { validation.IsSafeURL = originalIsSafeURL }()
+
 	// Create the call definition using builder
 	callDef := (&configv1.CommandLineCallDefinition_builder{
 		Args: []string{"clone", "{{url}}", "target_dir"},
@@ -62,32 +75,41 @@ func TestGitSCPSecurity(t *testing.T) {
 	}).Build()
 
 	// Create the tool
-	// We use NewLocalCommandTool because we want to test local execution path validation
 	cmdTool := tool.NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "clone")
 
-	// Payload that attempts to inject SSH options via SCP-like syntax
-	// git clone user@-oProxyCommand=touch%20/tmp/pwned:repo
-	// This makes git use ssh with -oProxyCommand=... as the hostname, which ssh interprets as an option.
-	payload := "user@-oProxyCommand=touch%20/tmp/pwned:repo"
-
-	req := &tool.ExecutionRequest{
-		ToolName: "git_clone",
-		ToolInputs: []byte(`{"url": "` + payload + `"}`),
+	tests := []struct {
+		name    string
+		payload string
+		wantErr string
+	}{
+		{
+			name:    "Basic SCP Injection",
+			payload: "user@-oProxyCommand=touch%20/tmp/pwned:repo",
+			wantErr: "git scp-style injection",
+		},
+		{
+			name:    "Bypass Attempt (Double User)",
+			payload: "fakeuser@realuser@-oProxyCommand=touch%20/tmp/pwned:repo",
+			wantErr: "git scp-style injection",
+		},
+		{
+			name:    "SSH Scheme Injection",
+			payload: "ssh://-oProxyCommand=touch%20/tmp/pwned/x",
+			wantErr: "unsafe url argument", // IsSafeURL blocks non-http/https
+		},
 	}
 
-	// Execute the tool
-	_, err := cmdTool.Execute(context.Background(), req)
-
-	// We expect validation error.
-	if err == nil {
-		t.Fatal("Expected error due to dangerous SCP-like URL, but got nil")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := &tool.ExecutionRequest{
+				ToolName: "git_clone",
+				ToolInputs: []byte(`{"url": "` + tt.payload + `"}`),
+			}
+			_, err := cmdTool.Execute(context.Background(), req)
+			if err == nil {
+				t.Fatalf("Expected error for payload %q, got nil", tt.payload)
+			}
+			assert.ErrorContains(t, err, tt.wantErr)
+		})
 	}
-
-	// Check if the error is what we expect (once implemented)
-	// For now, it might fail with "exit status 128" (git error) or pass if validation is missing.
-	// If validation is missing, git might try to clone and fail.
-	// But we WANT it to fail validation BEFORE execution.
-
-	t.Logf("Got error: %v", err)
-	assert.ErrorContains(t, err, "git scp-style injection")
 }

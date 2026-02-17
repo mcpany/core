@@ -3850,21 +3850,29 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	if filepath.Base(commandName) == "git" {
 		// Check for SCP-style URL with option injection in hostname
 		// Pattern: [user@]host:path where host starts with -
-		// If no user, it starts with -, which is caught by argument injection check.
-		// So we only need to check for user@-host...
-		if strings.Contains(val, "@-") {
-			// We need to be careful not to block valid emails or other things if this validation was generic.
-			// But for git, an argument containing @- is suspicious if it looks like an SCP URL.
-			// SCP URL must contain :
-			if strings.Contains(val, ":") {
-				// Check order: @ comes before :
-				atIdx := strings.Index(val, "@")
-				colonIdx := strings.Index(val, ":")
-				if atIdx < colonIdx {
-					// Check if character after @ is -
-					if val[atIdx+1] == '-' {
-						return fmt.Errorf("git scp-style injection detected: hostname starts with '-'")
-					}
+		// We ignore URLs with schemes (://) as they are handled by IsSafeURL.
+		if !strings.Contains(val, "://") {
+			// Find the separator between host and path
+			// Note: IPv6 addresses like [::1]:path are tricky, but git/ssh handles them.
+			// However, for injection, we are worried about hostnames starting with -.
+			// [user@]host:path
+			colonIdx := strings.Index(val, ":")
+			if colonIdx != -1 {
+				// The potential host part is everything before the colon
+				authority := val[:colonIdx]
+
+				// The host starts after the *last* @ in the authority section
+				lastAtIdx := strings.LastIndex(authority, "@")
+
+				var host string
+				if lastAtIdx != -1 {
+					host = authority[lastAtIdx+1:]
+				} else {
+					host = authority
+				}
+
+				if strings.HasPrefix(host, "-") {
+					return fmt.Errorf("git scp-style injection detected: hostname starts with '-'")
 				}
 			}
 		}
