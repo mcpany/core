@@ -143,14 +143,15 @@ export function AnalyticsDashboard() {
     // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
     // Randomized Selection from Top 5 High-Impact Targets
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
-        const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
-        const avgLatency = trafficData.length
-            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+        const data = Array.isArray(trafficData) ? trafficData : [];
+        const totalRequests = data.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+        const avgLatency = data.length
+            ? Math.floor(data.reduce((acc, cur) => acc + (cur.latency || 0), 0) / data.length)
             : 0;
-        const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+        const errorCount = data.reduce((acc, cur) => acc + (cur.errors || 0), 0);
         const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
-        const durationMinutes = trafficData.length;
+        const durationMinutes = data.length;
         const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
         return { totalRequests, avgLatency, errorCount, errorRate, avgRps };
