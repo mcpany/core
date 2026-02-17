@@ -71,4 +71,27 @@ func TestSqlite3Injection(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected error for single quote injection in quoted context, got nil")
 	}
+
+	// Case 7: Double-quoted SQL injection (previously vulnerable)
+	// Template: "\"SELECT * FROM users WHERE id={{id}}\""
+	// Value: "1 OR 1=1"
+	// Quote level 1 (Double Quoted)
+	templateDouble := "\"SELECT * FROM users WHERE id={{id}}\""
+	val = "1 OR 1=1"
+	err = checkForShellInjection(val, templateDouble, placeholder, command, isShell)
+	if err == nil {
+		t.Fatalf("Expected error (blocked) for double-quoted SQL injection, got nil")
+	}
+
+	// Case 8: Double-quoted single quote injection
+	// Template: "\"SELECT * FROM users WHERE name='{{name}}'\""
+	// Value: "foo' bar"
+	// Quote level 1 (Double Quoted) - single quotes inside double quotes are literals to the shell/quoter
+	templateDoubleQuoted := "\"SELECT * FROM users WHERE name='{{name}}'\""
+	placeholderName := "{{name}}"
+	val = "foo' bar"
+	err = checkForShellInjection(val, templateDoubleQuoted, placeholderName, command, isShell)
+	if err == nil {
+		t.Fatalf("Expected error (blocked) for single quote in double-quoted SQL string, got nil")
+	}
 }
