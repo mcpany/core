@@ -143,6 +143,12 @@ export function AnalyticsDashboard() {
     const { totalRequests, avgLatency, errorCount, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
+
+        // Defensive check: Ensure trafficData is an array to prevent crashes during reduce
+        if (!Array.isArray(trafficData)) {
+            return { totalRequests: 0, avgLatency: 0, errorCount: 0, errorRate: "0.00", avgRps: "0.00" };
+        }
+
         const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
         const avgLatency = trafficData.length
             ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
