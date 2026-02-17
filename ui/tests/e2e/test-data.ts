@@ -339,3 +339,17 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         console.log(`Failed to cleanup user: ${e}`);
     }
 };
+
+export const seedProfile = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const profile = {
+        name: "default",
+        description: "Default profile for E2E tests"
+    };
+    try {
+        // Use PUT to create or update to be safe
+        await context.put('/api/v1/profiles/default', { data: profile, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed profile: ${e}`);
+    }
+};

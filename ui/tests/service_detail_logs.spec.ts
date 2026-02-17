@@ -42,7 +42,8 @@ test.describe('Service Detail Logs Tab', () => {
     await page.goto(`/service/${serviceId}`);
 
     // 2. Verify Page Title to ensure we loaded
-    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
+    // CardTitle renders as a div, not a heading, so we search by text
+    await expect(page.getByText(serviceName)).toBeVisible();
 
     // 3. Click Logs Tab
     const logsTab = page.getByRole('tab', { name: 'Logs' });
