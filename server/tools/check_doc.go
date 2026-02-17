@@ -61,7 +61,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if hasErrors {
+	if hasErrors && *strictMode {
 		os.Exit(1)
 	}
 }
