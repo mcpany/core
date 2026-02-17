@@ -15,8 +15,21 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
+
+var (
+	sharedSafeTransport *http.Transport
+	transportOnce       sync.Once
+)
+
+// ForTestsOnlyResetSafeHTTPClient resets the shared HTTP transport singleton.
+// This allows tests to modify environment variables and re-initialize the client.
+func ForTestsOnlyResetSafeHTTPClient() {
+	transportOnce = sync.Once{}
+	sharedSafeTransport = nil
+}
 
 // IPResolver defines an interface for looking up IP addresses.
 // It matches the signature of net.Resolver.LookupIP.
@@ -172,24 +185,34 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
-	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
-	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+	// ⚡ BOLT: Implement connection pooling via shared transport.
+	// Randomized Selection from Top 5 High-Impact Targets
+	transportOnce.Do(func() {
+		dialer := NewSafeDialer()
+		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+			dialer.AllowLoopback = true
+			dialer.AllowPrivate = true
+		}
+		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+			dialer.AllowLoopback = true
+		}
+		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+			dialer.AllowPrivate = true
+		}
+		// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+
+		sharedSafeTransport = &http.Transport{
+			DialContext: dialer.DialContext,
+			// Ensure proper connection pooling settings
+			MaxIdleConns:        100,
+			MaxIdleConnsPerHost: 10,
+			IdleConnTimeout:     90 * time.Second,
+		}
+	})
 
 	return &http.Client{
-		Timeout: 10 * time.Second,
-		Transport: &http.Transport{
-			DialContext: dialer.DialContext,
-		},
+		Timeout:   10 * time.Second,
+		Transport: sharedSafeTransport,
 	}
 }
 

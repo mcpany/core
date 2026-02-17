@@ -18,6 +18,7 @@ import (
 
 func TestNewSafeHTTPClient(t *testing.T) {
 	// Test default behavior (blocking private/loopback)
+	util.ForTestsOnlyResetSafeHTTPClient()
 	client := util.NewSafeHTTPClient()
 	require.NotNil(t, client)
 	require.NotNil(t, client.Transport)
@@ -27,6 +28,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	// Since NewSafeHTTPClient reads env vars directly, we need to set them.
 
 	t.Run("Default restricted", func(t *testing.T) {
+		util.ForTestsOnlyResetSafeHTTPClient()
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
 		client := util.NewSafeHTTPClient()
@@ -60,6 +62,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	})
 
 	t.Run("Allow loopback", func(t *testing.T) {
+		util.ForTestsOnlyResetSafeHTTPClient()
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
 		client := util.NewSafeHTTPClient()
@@ -77,6 +80,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	})
 
 	t.Run("Allow private", func(t *testing.T) {
+		util.ForTestsOnlyResetSafeHTTPClient()
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
 		client := util.NewSafeHTTPClient()
