@@ -45,7 +45,8 @@ test.describe('Service Detail Logs Tab', () => {
     await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
 
     // 3. Click Logs Tab
-    const logsTab = page.getByRole('tab', { name: 'Logs' });
+    // Scoping to main to avoid potential conflicts with other UI elements (e.g. sidebar)
+    const logsTab = page.locator('main').getByRole('tab', { name: 'Logs' });
     await expect(logsTab).toBeVisible();
     await logsTab.click();
 

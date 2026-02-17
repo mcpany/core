@@ -115,10 +115,8 @@ export function CredentialList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Credentials</h2>
+        <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4" /> New Credential</Button>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4" /> New Credential</Button>
-            </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>{editingCred ? "Edit Credential" : "Create Credential"}</DialogTitle>
