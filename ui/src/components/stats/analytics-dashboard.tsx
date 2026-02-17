@@ -143,10 +143,17 @@ export function AnalyticsDashboard() {
     // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
     // Randomized Selection from Top 5 High-Impact Targets
     const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
+        if (!trafficData || trafficData.length === 0) {
+            return {
+                totalRequests: 0,
+                avgLatency: 0,
+                errorRate: "0.00",
+                avgRps: "0.00"
+            };
+        }
+
         const totalReq = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
-        const avgLat = trafficData.length
-            ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
-            : 0;
+        const avgLat = Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length);
         const errCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
         const errRate = totalReq ? ((errCount / totalReq) * 100).toFixed(2) : "0.00";
         // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
