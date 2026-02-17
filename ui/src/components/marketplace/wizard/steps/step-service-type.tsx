@@ -3,14 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWizard } from '../wizard-context';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
+const MANUAL_TEMPLATES = [
     {
         id: 'manual',
         name: 'Manual / Custom',
@@ -24,40 +25,6 @@ const TEMPLATES = [
             openapiService: undefined
         },
         params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
     },
     {
         id: 'openapi',
@@ -84,9 +51,46 @@ export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
 
+    const templates = useMemo(() => {
+        const registryTemplates = SERVICE_REGISTRY.map(s => {
+            // Extract defaults from schema
+            const params: Record<string, string> = {};
+            const env: Record<string, any> = {};
+
+            if (s.configurationSchema && s.configurationSchema.properties) {
+                Object.entries(s.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
+                     // Check if default exists, otherwise empty string
+                     const defaultVal = prop.default !== undefined ? String(prop.default) : "";
+                     params[key] = defaultVal;
+                     // Initialize env config structure
+                     env[key] = { plainText: defaultVal, validationRegex: "" };
+                });
+            }
+
+            return {
+                id: s.id,
+                name: s.name,
+                description: s.description,
+                config: {
+                    commandLineService: {
+                        command: s.command,
+                        env: env,
+                        workingDirectory: ''
+                    },
+                    // Store the schema string so StepParameters can use it
+                    configurationSchema: JSON.stringify(s.configurationSchema),
+                    openapiService: undefined
+                },
+                params: params
+            };
+        });
+
+        // Filter out manual templates that might conflict by ID (though unlikely with 'manual' and 'openapi')
+        return [...MANUAL_TEMPLATES, ...registryTemplates];
+    }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = templates.find(t => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
@@ -99,6 +103,7 @@ export function StepServiceType() {
         }
     };
 
+    const selectedTemplate = templates.find(t => t.id === (selectedTemplateId || 'manual'));
 
     return (
         <div className="space-y-6">
@@ -120,7 +125,13 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        <SelectItem value="manual" className="font-semibold">Manual / Custom</SelectItem>
+                        <SelectItem value="openapi" className="font-semibold">OpenAPI / Swagger</SelectItem>
+                        <div className="h-px bg-muted my-1" />
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                            Official Registry
+                        </div>
+                        {templates.filter(t => t.id !== 'manual' && t.id !== 'openapi').map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -130,10 +141,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {selectedTemplate?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {selectedTemplate?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>

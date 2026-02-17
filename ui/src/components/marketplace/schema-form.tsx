@@ -24,7 +24,13 @@ interface SchemaFormProps {
  * @returns The rendered component.
  */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
-  if (!schema || !schema.properties) return null;
+  if (!schema || typeof schema !== 'object') {
+    return <div className="text-destructive text-sm p-2 border border-destructive/20 rounded bg-destructive/10">Invalid configuration schema.</div>;
+  }
+
+  if (!schema.properties || Object.keys(schema.properties).length === 0) {
+     return <div className="text-muted-foreground text-sm italic p-2">No configuration fields required.</div>;
+  }
 
   const handleChange = (key: string, val: string) => {
     onChange({ ...value, [key]: val });
@@ -86,7 +92,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                     id={key}
                     value={value[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    placeholder={prop.default || `Enter ${title}`}
+                    placeholder={prop.default !== undefined ? String(prop.default) : `Enter ${title}`}
                     type={inputType}
                 />
             )}

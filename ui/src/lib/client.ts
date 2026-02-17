@@ -69,6 +69,7 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
     postCallHooks: s.post_call_hooks,
     lastError: s.last_error,
     toolCount: s.tool_count,
+    configurationSchema: s.configuration_schema,
     toolExportPolicy: s.tool_export_policy,
     promptExportPolicy: s.prompt_export_policy,
     resourceExportPolicy: s.resource_export_policy,
@@ -473,6 +474,7 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            configuration_schema: config.configurationSchema,
         };
 
         if (config.httpService) {
@@ -561,6 +563,7 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            configuration_schema: config.configurationSchema,
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
@@ -660,6 +663,7 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            configuration_schema: config.configurationSchema,
         };
 
         if (config.httpService) {
