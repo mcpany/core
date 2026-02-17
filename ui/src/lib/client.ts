@@ -1514,5 +1514,42 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    // Credentials
+
+    /**
+     * Lists all credentials.
+     * @returns A promise that resolves to a list of credentials.
+     */
+    listCredentials: async () => {
+        const res = await fetchWithAuth('/api/v1/credentials');
+        if (!res.ok) throw new Error('Failed to list credentials');
+        return res.json();
+    },
+
+    /**
+     * Deletes a credential.
+     * @param id The ID of the credential to delete.
+     * @returns A promise that resolves when the credential is deleted.
+     */
+    deleteCredential: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete credential');
+        return {};
+    },
+
+    // System
+
+    /**
+     * Gets the system doctor status.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to get doctor status');
+        return res.json();
     }
 };

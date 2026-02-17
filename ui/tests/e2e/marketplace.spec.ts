@@ -6,6 +6,30 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Marketplace Tests', () => {
+  test.beforeEach(async ({ request }) => {
+    // Reset and Seed
+    const seedData = {
+        services: [
+            {
+                id: "test-service-1",
+                name: "Test Service 1",
+                version: "1.0.0",
+                mcpService: {
+                    httpConnection: { httpAddress: "http://example.com" }
+                }
+            }
+        ]
+    };
+
+    await request.post('/api/v1/debug/reset', {
+        headers: { 'X-API-Key': 'test-token' }
+    });
+    await request.post('/api/v1/debug/seed', {
+        headers: { 'X-API-Key': 'test-token' },
+        data: seedData
+    });
+  });
+
   test('Share Config flow should work', async ({ page }) => {
     await page.goto('/marketplace');
 

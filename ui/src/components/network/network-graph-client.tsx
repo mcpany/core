@@ -138,6 +138,11 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
     if (!selectedNodeId) return null;
     return nodes.find((n) => n.id === selectedNodeId) || null;
   }, [nodes, selectedNodeId]);
+
+  const selectedNodeData = useMemo(() => {
+      return selectedNode ? (selectedNode.data as NodeData) : null;
+  }, [selectedNode]);
+
   const [isControlsExpanded, setIsControlsExpanded] = useState(true);
 
   // Basic filtering state
@@ -304,11 +309,11 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
         <SheetContent className="w-full sm:w-[540px] border-l-muted">
             <SheetHeader className="pb-4 border-b">
                 <div className="flex items-center gap-2 text-muted-foreground text-sm uppercase tracking-wider font-mono mb-1">
-                    {selectedNode?.data.type.replace('NODE_TYPE_', '')}
+                    {selectedNodeData?.type.replace('NODE_TYPE_', '')}
                 </div>
                 <SheetTitle className="flex items-center gap-3 text-2xl">
-                    {selectedNode && <NodeIcon type={selectedNode.data.type} />}
-                    {selectedNode?.data.label}
+                    {selectedNodeData && <NodeIcon type={selectedNodeData.type} />}
+                    {selectedNodeData?.label}
                 </SheetTitle>
                 <SheetDescription className="flex items-center gap-2">
                     ID: <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">{selectedNode?.id}</code>
@@ -322,33 +327,33 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
                         <span className="text-sm font-medium">Operational Status</span>
                         <span className="text-xs text-muted-foreground">Current health check result</span>
                     </div>
-                    <Badge variant={selectedNode ? getStatusBadgeVariant(selectedNode.data.status) : 'outline'} className="flex items-center gap-1.5 px-3 py-1">
-                        {selectedNode && <StatusIcon status={selectedNode.data.status} />}
-                        {selectedNode?.data.status.replace('NODE_STATUS_', '')}
+                    <Badge variant={selectedNodeData ? getStatusBadgeVariant(selectedNodeData.status) : 'outline'} className="flex items-center gap-1.5 px-3 py-1">
+                        {selectedNodeData && <StatusIcon status={selectedNodeData.status} />}
+                        {selectedNodeData?.status.replace('NODE_STATUS_', '')}
                     </Badge>
                 </div>
 
                 {/* Metrics Section */}
-                {selectedNode?.data.metrics && (
+                {selectedNodeData?.metrics && (
                     <div className="space-y-3">
                         <h4 className="font-medium text-sm flex items-center gap-2">
                             <Activity className="h-4 w-4" /> Real-time Metrics
                         </h4>
                         <div className="grid grid-cols-3 gap-3">
-                            <MetricCard label="QPS" value={selectedNode.data.metrics.qps?.toFixed(2)} unit="req/s" />
-                            <MetricCard label="Latency" value={selectedNode.data.metrics.latencyMs?.toFixed(0)} unit="ms" />
+                            <MetricCard label="QPS" value={selectedNodeData.metrics.qps?.toFixed(2)} unit="req/s" />
+                            <MetricCard label="Latency" value={selectedNodeData.metrics.latencyMs?.toFixed(0)} unit="ms" />
                             <MetricCard
                                 label="Error Rate"
-                                value={((selectedNode.data.metrics.errorRate || 0) * 100).toFixed(2)}
+                                value={((selectedNodeData.metrics.errorRate || 0) * 100).toFixed(2)}
                                 unit="%"
-                                intent={((selectedNode.data.metrics.errorRate || 0) > 0.05) ? "danger" : "neutral"}
+                                intent={((selectedNodeData.metrics.errorRate || 0) > 0.05) ? "danger" : "neutral"}
                             />
                         </div>
                     </div>
                 )}
 
                  {/* Metadata Section */}
-                 {selectedNode?.data.metadata && Object.keys(selectedNode.data.metadata).length > 0 && (
+                 {selectedNodeData?.metadata && Object.keys(selectedNodeData.metadata).length > 0 && (
                     <div className="space-y-3">
                         <h4 className="font-medium text-sm flex items-center gap-2">
                             <Database className="h-4 w-4" /> Metadata
@@ -356,7 +361,7 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
                         <div className="bg-black/90 rounded-lg p-3 overflow-hidden border border-slate-800">
                              <table className="w-full text-xs font-mono">
                                 <tbody>
-                                    {Object.entries(selectedNode.data.metadata).map(([k, v]) => (
+                                    {Object.entries(selectedNodeData.metadata).map(([k, v]) => (
                                         <tr key={k} className="border-b border-white/10 last:border-0">
                                             <td className="py-2 pr-4 text-slate-400 select-none w-1/3">{k}</td>
                                             <td className="py-2 text-slate-100 break-all">{String(v)}</td>
@@ -391,7 +396,7 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
                             View Logs
                          </Button>
                          <Button variant="outline" size="sm" className="h-8">Trace Request</Button>
-                         {selectedNode?.data.status === 'NODE_STATUS_ERROR' && (
+                         {selectedNodeData?.status === 'NODE_STATUS_ERROR' && (
                              <Button variant="destructive" size="sm" className="h-8">Restart Service</Button>
                          )}
                      </div>
