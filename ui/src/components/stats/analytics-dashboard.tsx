@@ -72,13 +72,6 @@ export function AnalyticsDashboard() {
     const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
 
-    // Stats State
-    const [totalRequests, setTotalRequests] = useState(0);
-    const [avgLatency, setAvgLatency] = useState(0);
-    const [errorRate, setErrorRate] = useState("0.00");
-    const [avgRps, setAvgRps] = useState("0.00");
-
-
     useEffect(() => {
         setIsMounted(true);
         const fetchDashboardData = async () => {
@@ -147,16 +140,12 @@ export function AnalyticsDashboard() {
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    useEffect(() => {
+    const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
         try {
             if (!Array.isArray(trafficData)) {
-                setTotalRequests(0);
-                setAvgLatency(0);
-                setErrorRate("0.00");
-                setAvgRps("0.00");
-                return;
+                return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
             }
             const reqs = trafficData.reduce((acc, cur) => acc + (cur?.requests || cur?.total || 0), 0);
             const lat = trafficData.length
@@ -168,16 +157,10 @@ export function AnalyticsDashboard() {
             const durationMinutes = trafficData.length;
             const rps = (durationMinutes && reqs) ? (reqs / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-            setTotalRequests(reqs);
-            setAvgLatency(lat);
-            setErrorRate(rate);
-            setAvgRps(rps);
+            return { totalRequests: reqs, avgLatency: lat, errorRate: rate, avgRps: rps };
         } catch (e) {
             console.error("Failed to calculate traffic stats", e);
-            setTotalRequests(0);
-            setAvgLatency(0);
-            setErrorRate("0.00");
-            setAvgRps("0.00");
+            return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
         }
     }, [trafficData]);
 
