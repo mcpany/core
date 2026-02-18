@@ -4,9 +4,13 @@
 package tool
 
 import (
+	"fmt"
+
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+const maxRecursionDepth = 100
 
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
@@ -17,12 +21,20 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	}
 
 	// Deep copy schema to avoid mutation of the input
-	schemaCopy := deepCopyJSON(schema)
+	// We use a depth-limited deep copy now to prevent stack overflow on circular refs
+	schemaCopy, err := deepCopyJSON(schema, 0)
+	if err != nil {
+		return nil, fmt.Errorf("failed to copy schema: %w", err)
+	}
 
-	return sanitizeJSONSchemaInPlace(schemaCopy)
+	return sanitizeJSONSchemaInPlace(schemaCopy, 0)
 }
 
-func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
+func sanitizeJSONSchemaInPlace(schema any, depth int) (*structpb.Struct, error) {
+	if depth > maxRecursionDepth {
+		return nil, fmt.Errorf("schema exceeds maximum recursion depth of %d", maxRecursionDepth)
+	}
+
 	schemaMap, ok := schema.(map[string]interface{})
 	if !ok {
 		// If it's not a map, we can't really sanitize it easily, but it might be valid if it's not an object type.
@@ -39,56 +51,119 @@ func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 		}
 	}
 
+	// Helper to recurse
+	var recurse func(v any) (any, error)
+	recurse = func(v any) (any, error) {
+		// If it's a schema object (map), sanitize it
+		if m, ok := v.(map[string]interface{}); ok {
+			res, err := sanitizeJSONSchemaInPlace(m, depth+1)
+			if err != nil {
+				return nil, err
+			}
+			return res.AsMap(), nil
+		}
+		// If it's a list of schemas (e.g. oneOf), sanitize each
+		if list, ok := v.([]interface{}); ok {
+			newList := make([]interface{}, len(list))
+			for i, item := range list {
+				res, err := recurse(item)
+				if err != nil {
+					return nil, err
+				}
+				newList[i] = res
+			}
+			return newList, nil
+		}
+		return v, nil
+	}
+
 	// 2. Recursively sanitize properties
 	if props, ok := schemaMap["properties"].(map[string]interface{}); ok {
 		for k, v := range props {
-			if vMap, ok := v.(map[string]interface{}); ok {
-				// Recursively sanitize
-				sanitizedV, err := sanitizeJSONSchemaInPlace(vMap)
-				if err == nil && sanitizedV != nil {
-					props[k] = sanitizedV.AsMap()
-				}
+			res, err := recurse(v)
+			if err != nil {
+				return nil, err
 			}
+			props[k] = res
 		}
 	}
 
 	// 3. Recursively sanitize items (for arrays)
-	if items, ok := schemaMap["items"].(map[string]interface{}); ok {
-		sanitizedItems, err := sanitizeJSONSchemaInPlace(items)
-		if err == nil && sanitizedItems != nil {
-			schemaMap["items"] = sanitizedItems.AsMap()
+	// Can be a single schema or an array of schemas
+	if items, ok := schemaMap["items"]; ok {
+		res, err := recurse(items)
+		if err != nil {
+			return nil, err
+		}
+		schemaMap["items"] = res
+	}
+
+	// 4. Handle additionalProperties (can be boolean or schema)
+	if addProps, ok := schemaMap["additionalProperties"]; ok {
+		// Only recurse if it's a map (schema), boolean is fine as is
+		if _, isMap := addProps.(map[string]interface{}); isMap {
+			res, err := recurse(addProps)
+			if err != nil {
+				return nil, err
+			}
+			schemaMap["additionalProperties"] = res
 		}
 	}
 
-	// 4. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
-	// The issue #10606 says: "input_schema does not support oneOf, allOf, or anyOf at the top level"
-	// If we detect this at the top level, what can we do?
-	// We could try to merge them if possible, or just pick the first one?
-	// Merging is hard. Picking the first one is lossy.
-	// For now, let's just log a warning if we see it at the top level.
-	// Note: We need to know if this is the "top level" of the Tool's InputSchema.
-	// Since this function is recursive, we might need a context or just assume the caller handles the top-level check.
-	// But `SanitizeJSONSchema` is likely called on the root schema.
+	// 5. Handle combinators (oneOf, anyOf, allOf)
+	for _, key := range []string{"oneOf", "anyOf", "allOf"} {
+		if val, ok := schemaMap[key]; ok {
+			res, err := recurse(val)
+			if err != nil {
+				return nil, err
+			}
+			schemaMap[key] = res
+		}
+	}
+
+	// 6. Handle definitions / $defs
+	for _, key := range []string{"definitions", "$defs"} {
+		if defs, ok := schemaMap[key].(map[string]interface{}); ok {
+			for k, v := range defs {
+				res, err := recurse(v)
+				if err != nil {
+					return nil, err
+				}
+				defs[k] = res
+			}
+		}
+	}
 
 	// Let's convert back to structpb
 	return structpb.NewStruct(schemaMap)
 }
 
-func deepCopyJSON(src any) any {
+func deepCopyJSON(src any, depth int) (any, error) {
+	if depth > maxRecursionDepth {
+		return nil, fmt.Errorf("deep copy exceeds maximum recursion depth of %d", maxRecursionDepth)
+	}
 	switch v := src.(type) {
 	case map[string]interface{}:
 		dst := make(map[string]interface{}, len(v))
 		for k, val := range v {
-			dst[k] = deepCopyJSON(val)
+			res, err := deepCopyJSON(val, depth+1)
+			if err != nil {
+				return nil, err
+			}
+			dst[k] = res
 		}
-		return dst
+		return dst, nil
 	case []interface{}:
 		dst := make([]interface{}, len(v))
 		for i, val := range v {
-			dst[i] = deepCopyJSON(val)
+			res, err := deepCopyJSON(val, depth+1)
+			if err != nil {
+				return nil, err
+			}
+			dst[i] = res
 		}
-		return dst
+		return dst, nil
 	default:
-		return v
+		return v, nil
 	}
 }
