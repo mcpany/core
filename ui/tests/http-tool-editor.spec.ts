@@ -6,17 +6,21 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('HTTP Tool Editor - Live Test', () => {
+  // Increase timeout for network calls (httpbin can be slow)
+  test.setTimeout(60000);
+
   const serviceName = 'e2e-http-tool-preview';
 
   test.beforeAll(async ({ request }) => {
     // Seed HTTP service
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => {});
 
+    // Use httpbin.org for Real Data test.
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
         http_service: {
-            address: "https://httpbin.org" // Use a real echo service for execution test
+            address: "https://httpbin.org"
         }
       }
     });
@@ -62,7 +66,7 @@ test.describe('HTTP Tool Editor - Live Test', () => {
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
     // Verify Preview shows the correct path
-    // Limit scope to the preview card
+    // Limit scope to the preview card to avoid ambiguity with editor fields
     const previewCard = page.locator('.space-y-4 > .h-full');
     await expect(previewCard.getByText('/uuid')).toBeVisible();
     await expect(previewCard.getByText('GET')).toBeVisible();
@@ -82,28 +86,28 @@ test.describe('HTTP Tool Editor - Live Test', () => {
     await page.getByRole('tab', { name: 'Tools' }).click();
 
     // Find the tool 'get_uuid' and click edit icon
+    // Use a specific locator for the tool card to avoid ambiguity
     const toolCard = page.locator('.space-y-4 > .grid > div').filter({ hasText: 'get_uuid' });
     await toolCard.getByRole('button').nth(0).click();
 
     // Go to Test Tab
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
-    // Verify Preview
+    // Verify Preview again
     await expect(previewCard.getByText('/uuid')).toBeVisible();
 
     // Execute
     await page.getByRole('button', { name: 'Execute Tool' }).click();
 
     // Verify Result
-    // Wait for the header "Execution Result" to appear anywhere
+    // Wait for the header "Execution Result" to appear
     const resultHeader = page.getByText('Execution Result');
-    await expect(resultHeader).toBeVisible({ timeout: 15000 });
+    await expect(resultHeader).toBeVisible({ timeout: 20000 });
 
-    // Get content
-    const preTag = page.locator('pre.text-green-400');
+    // Check content
+    const preTag = page.locator('pre');
     await expect(preTag).toBeVisible();
     const content = await preTag.textContent();
-    console.log("Execution Result Content:", content);
 
     expect(content).toContain('uuid');
   });

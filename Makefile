@@ -62,7 +62,8 @@ k8s-e2e:
 
 k8s-test: k8s-e2e
 
-lint:
+# Ensure generation happens before linting to satisfy typescript dependencies
+lint: gen
 	$(MAKE) -C server lint
 
 # Run runs server
