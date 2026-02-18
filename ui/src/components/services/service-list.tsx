@@ -272,6 +272,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
         if (service.grpcService) return "gRPC";
         if (service.commandLineService) return "CLI";
         if (service.mcpService) return "MCP";
+        if (service.filesystemService) return "Filesystem";
         return "Other";
     }, [service]);
 
@@ -281,6 +282,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
             service.commandLineService?.command ||
             service.mcpService?.httpConnection?.httpAddress ||
             service.mcpService?.stdioConnection?.command ||
+            (service.filesystemService ? Object.values(service.filesystemService.rootPaths || {}).join(", ") : null) ||
             "-";
     }, [service]);
 
