@@ -111,6 +111,7 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
                 name: "weather-service",
                 // Use command_line_service matching config.minimal.yaml to avoid Docker issues in E2E
                 command_line_service: {
+                    // Use single quotes for the JSON string to avoid escaping hell
                     command: "echo '{\"weather\": \"sunny\"}'",
                     tools: [
                         {
