@@ -1,0 +1,63 @@
+# Dockerfile.ci
+# Optimized CI builder image based on Alpine Linux
+
+FROM golang:1.24-alpine
+
+# Install system tools
+# libc6-compat and gcompat are needed for some pre-compiled binaries (protoc, node, etc)
+RUN apk add --no-cache \
+    git \
+    make \
+    bash \
+    curl \
+    docker-cli \
+    python3 \
+    py3-pip \
+    nodejs \
+    npm \
+    gcc \
+    musl-dev \
+    libc6-compat \
+    gcompat \
+    zip \
+    unzip \
+    which
+
+# Install Python tools
+RUN pip3 install --break-system-packages pre-commit
+
+# Install specific versions of tools (Pre-bake to avoid download during build)
+# Using the same logic as Makefile but baking it in
+ENV TOOL_INSTALL_DIR=/usr/local/bin
+
+# Install GolangCI-Lint
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $TOOL_INSTALL_DIR v1.64.5
+
+# Install Protoc
+# Alpine has protobuf-dev but we might want the standard binary if possible,
+# or just use the Alpine one if version matches. Any recent version is usually fine.
+# We'll stick to downloading the linux-x86_64 zip to be safe with plugins, but Alpine might need gcompat.
+# Let's try standard installation with gcompat (already installed).
+ENV PROTOC_VERSION=33.1
+RUN if [ "$(uname -m)" = "aarch64" ]; then ARCH="aarch_64"; else ARCH="x86_64"; fi && \
+    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-${ARCH}.zip -o protoc.zip && \
+    unzip protoc.zip -d /usr/local && \
+    rm protoc.zip
+
+# Install Go Plugins
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11 && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1 && \
+    go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3 && \
+    go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
+
+# Pre-download googleapis (optional but speeds up generation)
+WORKDIR /build-cache
+RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q googleapis.zip && \
+    mv googleapis-master /usr/local/include/googleapis && \
+    rm googleapis.zip
+
+# Cleanup
+RUN rm -rf /go/pkg/mod/* /root/.cache
+
+WORKDIR /workspace

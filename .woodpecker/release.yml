@@ -1,0 +1,62 @@
+
+pipeline:
+  # -------------------------------------------------------------------------
+  # Job 1: Build Binaries
+  # -------------------------------------------------------------------------
+  build-binaries:
+    image: iowoi/mcpany-runner-ci:latest
+    group: build
+    when:
+      event: tag
+    commands:
+      # dependencies pre-installed
+      - make prepare
+      # Cross-compile for all platforms
+      - make release PLATFORMS="linux/amd64 linux/arm64 linux/386 darwin/amd64 darwin/arm64 windows/amd64"
+      - ls -l build/release
+
+  # -------------------------------------------------------------------------
+  # Job 2: Docker Build & Push
+  # -------------------------------------------------------------------------
+  docker-publish:
+    image: iowoi/mcpany-runner-ci:latest
+    group: build
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKERHUB_USERNAME=from_secret
+      - DOCKERHUB_TOKEN=from_secret
+      - GITHUB_TOKEN=from_secret
+    when:
+      event: tag
+    commands:
+      - echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $CI_REPO_OWNER --password-stdin
+      # Build and push server
+      - make build-docker PUSH=true PLATFORMS="linux/amd64,linux/arm64"
+      # Build and push UI
+      # dependencies pre-installed
+      - make -C ui docker-build-ui PUSH=true PLATFORMS="linux/amd64,linux/arm64"
+
+  # -------------------------------------------------------------------------
+  # Job 3: GitHub Release
+  # -------------------------------------------------------------------------
+  github-release:
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: GITHUB_TOKEN
+      files:
+        - build/release/*.zip
+      checksum:
+        - sha256
+      draft: true
+      prerelease: false
+    when:
+      event: tag
+
+services:
+  docker:
+    image: docker:24-dind
+    privileged: true

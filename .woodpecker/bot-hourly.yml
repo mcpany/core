@@ -1,0 +1,16 @@
+
+pipeline:
+  hourly-maintenance:
+    image: iowoi/mcpany-runner-bot:latest
+    when:
+      event: cron
+      cron: hourly # Requires cron to be named 'hourly' in Woodpecker UI
+    environment:
+      - GH_TOKEN=from_secret:ORG_GITHUB_TOKEN
+    commands:
+      # tools pre-installed
+      - |
+        gh pr list --repo $CI_REPO --base main --search "is:pr is:open author:@me sort:updated-desc" --limit 1000 --json number --jq '.[].number' | while read pr_number; do
+          echo "Processing PR #$pr_number..."
+          gh pr merge $pr_number --squash --auto --repo $CI_REPO || echo "Failed to merge PR #$pr_number"
+        done
