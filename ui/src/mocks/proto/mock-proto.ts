@@ -9,6 +9,11 @@
  * GrpcWebImpl class.
  */
 export class GrpcWebImpl {
+    /**
+     * Constructs a new GrpcWebImpl.
+     * @param _host - The host URL.
+     * @param _options - The options.
+     */
     constructor(_host: string, _options: any) {}
 }
 
@@ -16,7 +21,18 @@ export class GrpcWebImpl {
  * The RegistrationServiceClientImpl class.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Constructs a new RegistrationServiceClientImpl.
+     * @param _rpc - The RPC implementation.
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * GetService method.
+     * @param _request - The request object.
+     * @param _metadata - The metadata.
+     * @returns A promise resolving to the service.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
