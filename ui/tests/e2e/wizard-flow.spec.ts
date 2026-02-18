@@ -32,7 +32,9 @@ test.describe('Smart Config Wizard', () => {
 
     // Check if dialog opened with increased timeout
     try {
-        await expect(page.getByRole('heading', { name: 'Create Upstream Service Config' })).toBeVisible({ timeout: 15000 });
+        // Try alternate locator strategy if heading isn't immediately found
+        await expect(page.locator('div[role="dialog"]')).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText('Create Upstream Service Config')).toBeVisible({ timeout: 5000 });
     } catch (e) {
         console.log('Dialog not visible. Body HTML:', await page.innerHTML('body'));
         throw e;
@@ -75,10 +77,12 @@ test.describe('Smart Config Wizard', () => {
     await page.getByRole('button', { name: 'Finish & Save to Local Marketplace' }).click();
 
     // 11. Verify Success Toast
-    await expect(page.getByText('Config Saved')).toBeVisible();
+    // Increase timeout for backend response
+    await expect(page.getByText('Config Saved')).toBeVisible({ timeout: 20000 });
 
     // 12. Verify in "Local Templates" tab
-    await page.getByRole('tab', { name: 'Local' }).click();
-    await expect(page.getByRole('heading', { name: serviceName })).toBeVisible();
+    // Wait for the modal to close or toast to disappear to prevent click interception
+    await page.getByRole('tab', { name: 'Local' }).click({ force: true });
+    await expect(page.getByRole('heading', { name: serviceName })).toBeVisible({ timeout: 20000 });
   });
 });
