@@ -31,6 +31,9 @@ export function useTraces(options: UseTracesOptions = {}) {
     // Randomized Selection from Top 5 High-Impact Targets
     const bufferRef = useRef<Trace[]>([]);
 
+    // ⚡ BOLT: Limit maximum traces to prevent memory leak
+    const MAX_TRACES = 1000;
+
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
@@ -79,7 +82,14 @@ export function useTraces(options: UseTracesOptions = {}) {
                 // 5. Prepend new inserts (newest first).
                 // Buffer is oldest->newest. We want newest at top of list.
                 // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                const newTraces = [...inserts.reverse(), ...nextTraces];
+
+                // ⚡ BOLT: Cap the size of the traces array to avoid unbounded memory growth
+                // Randomized Selection from Top 5 High-Impact Targets
+                if (newTraces.length > MAX_TRACES) {
+                    return newTraces.slice(0, MAX_TRACES);
+                }
+                return newTraces;
             });
         }, 100);
 
