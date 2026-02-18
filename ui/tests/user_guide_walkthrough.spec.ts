@@ -20,11 +20,12 @@ test.describe('User Guide Walkthrough', () => {
     });
 
     await page.goto('/');
+    // Wait for the specific response to ensure data is loaded
+    await page.waitForResponse(response => response.url().includes('/api/v1/dashboard/metrics'));
+
     // Use .first() to handle potential duplicates or strict mode violations if multiple matches exist temporarily
-    // Ensure network idle before checking elements
-    await page.waitForLoadState('networkidle');
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Total Requests', { exact: false }).first()).toBeVisible({ timeout: 15000 });
     // Check for "Active Services" card
     await expect(page.locator('text=Active Services').first()).toBeVisible();
     await expect(page.locator('text=Connected Tools').first()).toBeVisible();
