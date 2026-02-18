@@ -15,6 +15,7 @@ import (
 )
 
 func TestPerlInjection(t *testing.T) {
+	t.Parallel()
 	// Setup the tool configuration
 	// We simulate a tool that runs a perl command with a double-quoted argument
 	cmdService := &configv1.CommandLineUpstreamService{}
@@ -82,6 +83,7 @@ func TestPerlInjection(t *testing.T) {
 }
 
 func TestPerlReadpipeInjection(t *testing.T) {
+	t.Parallel()
 	cmdService := &configv1.CommandLineUpstreamService{}
 	cmdService.SetCommand("perl")
 
