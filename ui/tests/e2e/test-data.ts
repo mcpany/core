@@ -51,15 +51,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            command_line_service: {
+                command: "echo",
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
                 calls: {
                     calc_call: {
-                        method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
+                        args: ["calculated"]
                     }
                 }
             }
