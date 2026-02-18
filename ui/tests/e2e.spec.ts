@@ -22,9 +22,9 @@ test.describe('MCP Any UI E2E Tests', () => {
           users: [{
               id: "e2e-admin",
               authentication: {
-                  basic_auth: {
+                  basicAuth: {
                       username: "e2e-admin",
-                      password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // "password"
+                      passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // "password"
                   }
               },
               roles: ["admin"]
@@ -34,15 +34,15 @@ test.describe('MCP Any UI E2E Tests', () => {
                 id: "svc_01",
                 name: "Payment Gateway",
                 version: "v1.2.0",
-                http_service: {
+                httpService: {
                     address: "https://stripe.com",
                     tools: [
-                        { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                        { name: "process_payment", description: "Process a payment", callId: "process_payment_call" }
                     ],
                     calls: {
                         process_payment_call: {
                             method: "HTTP_METHOD_POST",
-                            endpoint_path: "/v1/charges"
+                            endpointPath: "/v1/charges"
                         }
                     }
                 }
@@ -52,15 +52,15 @@ test.describe('MCP Any UI E2E Tests', () => {
                 id: "svc_03",
                 name: "Math",
                 version: "v1.0",
-                http_service: {
+                httpService: {
                     address: "http://localhost:8080",
                     tools: [
-                        { name: "calculator", description: "calc", call_id: "calc_call" }
+                        { name: "calculator", description: "calc", callId: "calc_call" }
                     ],
                     calls: {
                         calc_call: {
                             method: "HTTP_METHOD_POST",
-                            endpoint_path: "/calc"
+                            endpointPath: "/calc"
                         }
                     }
                 }

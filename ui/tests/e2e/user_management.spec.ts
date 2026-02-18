@@ -15,9 +15,9 @@ test.describe('User Management', () => {
             users: [{
                 id: "e2e-admin-users",
                 authentication: {
-                    basic_auth: {
+                    basicAuth: {
                         username: "e2e-admin-users",
-                        password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // "password"
+                        passwordHash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // "password"
                     }
                 },
                 roles: ["admin"]

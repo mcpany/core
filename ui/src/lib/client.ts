@@ -1551,5 +1551,20 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/doctor');
         if (!res.ok) throw new Error('Failed to get doctor status');
         return res.json();
+    },
+
+    /**
+     * Tests authentication configuration against the backend.
+     * @param params The auth configuration to test.
+     * @returns The test result.
+     */
+    testAuth: async (params: { credential_id: string, service_type: string, service_config: any }) => {
+        const res = await fetchWithAuth('/api/v1/debug/auth-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        });
+        if (!res.ok) throw new Error('Failed to test auth');
+        return res.json();
     }
 };
