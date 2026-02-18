@@ -2987,7 +2987,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		// We only apply this to actual scripting languages, not to CLI tools like docker/kubectl
+		// which might have valid subcommands like "exec" or "run".
+		if isScriptingLanguage(command) && (quoteLevel == 1 || quoteLevel == 2) {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3629,6 +3631,42 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+func isScriptingLanguage(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	scriptingLangs := []string{
+		"python", "ruby", "perl", "php",
+		"node", "nodejs", "bun", "deno",
+		"lua", "awk", "gawk", "nawk", "mawk",
+		"tclsh", "wish",
+		"irb", "php-cgi",
+		"r", "rscript", "julia", "groovy", "jshell",
+		"scala", "kotlin", "swift",
+		"elixir", "iex", "erl", "escript",
+		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"lua", "luajit",
+		"java", // Java can compile/run source
+	}
+	for _, lang := range scriptingLangs {
+		if base == lang || strings.HasPrefix(base, lang) {
+			return true
+		}
+	}
+	// Check for script extensions that indicate interpretation (covering cases not in list)
+	ext := strings.ToLower(filepath.Ext(base))
+	scriptExts := []string{
+		".js", ".mjs", ".ts",
+		".py", ".pyc", ".pyo", ".pyd",
+		".rb", ".pl", ".pm", ".php",
+		".lua", ".r",
+	}
+	for _, scriptExt := range scriptExts {
+		if ext == scriptExt {
+			return true
+		}
+	}
+	return false
 }
 
 func isInterpreter(command string) bool {
