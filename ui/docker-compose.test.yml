@@ -4,7 +4,9 @@
 services:
   server:
     image: ${SERVER_IMAGE}
-
+    depends_on:
+      ui-http-echo-server:
+        condition: service_healthy
     command:
       [
         "run",
@@ -62,7 +64,7 @@ services:
       server:
         condition: service_healthy
       ui-http-echo-server:
-        condition: service_started
+        condition: service_healthy
     networks:
       default:
 
@@ -70,3 +72,8 @@ services:
     image: mcpany/http-echo-server:latest
     command:
       - "--port=5678"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5678/health || exit 1"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
