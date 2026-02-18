@@ -12,34 +12,58 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Trash2, Plus, Play, Loader2, AlertTriangle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { InputTransformerEditor } from "./input-transformer-editor";
 import { OutputTransformerEditor } from "./output-transformer-editor";
+import { RequestPreview } from "./request-preview";
+import { apiClient } from "@/lib/client";
+import { cn } from "@/lib/utils";
 
 interface HttpToolEditorProps {
     tool: ToolDefinition;
     call: HttpCallDefinition;
+    serviceName?: string;
+    serviceAddress?: string;
     onChange: (tool: ToolDefinition, call: HttpCallDefinition) => void;
 }
 
 /**
  * Editor for configuring a single HTTP tool.
- * Allows defining tool metadata and the mapped HTTP request details.
+ * Allows defining tool metadata, mapped HTTP request details, and live testing.
  * @param props - The component props.
  * @returns The rendered tool editor.
  */
-export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
+export function HttpToolEditor({ tool, call, serviceName, serviceAddress, onChange }: HttpToolEditorProps) {
     const [localTool, setLocalTool] = useState<ToolDefinition>(tool);
     const [localCall, setLocalCall] = useState<HttpCallDefinition>(call);
     const [activeTab, setActiveTab] = useState("request");
+
+    // Test State
+    const [testArgs, setTestArgs] = useState("{}");
+    const [parsedArgs, setParsedArgs] = useState<Record<string, unknown>>({});
+    const [argError, setArgError] = useState<string | null>(null);
+    const [isExecuting, setIsExecuting] = useState(false);
+    const [executionResult, setExecutionResult] = useState<any>(null);
+    const [executionError, setExecutionError] = useState<string | null>(null);
 
     useEffect(() => {
         setLocalTool(tool);
         setLocalCall(call);
     }, [tool, call]);
+
+    useEffect(() => {
+        try {
+            const parsed = JSON.parse(testArgs);
+            setParsedArgs(parsed);
+            setArgError(null);
+        } catch (e: any) {
+            setArgError(e.message);
+        }
+    }, [testArgs]);
 
     const updateTool = (updates: Partial<ToolDefinition>) => {
         const newTool = { ...localTool, ...updates };
@@ -90,6 +114,27 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
 
     const handleOutputTransformerChange = (transformer: OutputTransformer) => {
         updateCall({ outputTransformer: transformer });
+    };
+
+    const handleExecute = async () => {
+        if (!serviceName) return;
+        setIsExecuting(true);
+        setExecutionError(null);
+        setExecutionResult(null);
+
+        try {
+            // Construct fully qualified name
+            const fullName = `${serviceName}.${localTool.name}`;
+            const result = await apiClient.executeTool({
+                name: fullName,
+                arguments: parsedArgs
+            });
+            setExecutionResult(result);
+        } catch (e: any) {
+            setExecutionError(e.message || "Execution failed");
+        } finally {
+            setIsExecuting(false);
+        }
     };
 
     return (
@@ -150,9 +195,10 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="w-full justify-start">
-                    <TabsTrigger value="request">Request Parameters</TabsTrigger>
+                    <TabsTrigger value="request">Parameters</TabsTrigger>
                     <TabsTrigger value="input-transform">Input Transform</TabsTrigger>
                     <TabsTrigger value="output-transform">Output Transform</TabsTrigger>
+                    <TabsTrigger value="test" className="ml-auto bg-primary/5 text-primary data-[state=active]:bg-primary/10">Live Test</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="request" className="space-y-4 mt-4">
@@ -238,6 +284,69 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                         transformer={localCall.outputTransformer}
                         onChange={handleOutputTransformerChange}
                     />
+                </TabsContent>
+
+                <TabsContent value="test" className="mt-4 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[500px]">
+                        <div className="flex flex-col gap-4 h-full">
+                            <div className="space-y-2">
+                                <Label>Test Arguments (JSON)</Label>
+                                <div className="relative h-[200px]">
+                                    <Textarea
+                                        className={cn("font-mono h-full resize-none", argError && "border-destructive")}
+                                        value={testArgs}
+                                        onChange={(e) => setTestArgs(e.target.value)}
+                                        placeholder='{"city": "San Francisco"}'
+                                    />
+                                    {argError && (
+                                        <span className="text-xs text-destructive absolute bottom-2 left-2 bg-background/90 px-1 rounded">
+                                            {argError}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <RequestPreview
+                                tool={localTool}
+                                call={localCall}
+                                args={parsedArgs}
+                                baseUrl={serviceAddress}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-4 h-full">
+                            <div className="flex items-center justify-between">
+                                <Label>Execution Result</Label>
+                                <Button
+                                    onClick={handleExecute}
+                                    disabled={isExecuting || !!argError || !serviceName}
+                                    size="sm"
+                                >
+                                    {isExecuting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                                    Execute
+                                </Button>
+                            </div>
+
+                            {!serviceName && (
+                                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 text-xs rounded border border-yellow-200 dark:border-yellow-900 flex items-center gap-2">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    Save the service to enable execution.
+                                </div>
+                            )}
+
+                            <div className="flex-1 bg-muted/30 rounded border border-muted p-4 font-mono text-xs overflow-auto">
+                                {executionResult ? (
+                                    <pre>{JSON.stringify(executionResult, null, 2)}</pre>
+                                ) : executionError ? (
+                                    <span className="text-destructive whitespace-pre-wrap">{executionError}</span>
+                                ) : (
+                                    <span className="text-muted-foreground italic">
+                                        Run execution to see results...
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>

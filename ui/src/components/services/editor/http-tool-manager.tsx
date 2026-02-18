@@ -213,10 +213,10 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" onClick={() => handleEditTool(index)}>
+                                <Button variant="ghost" size="icon" onClick={() => handleEditTool(index)} aria-label="Edit">
                                     <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteTool(index)}>
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteTool(index)} aria-label="Delete">
                                     <Trash2 className="h-4 w-4 text-destructive" />
                                 </Button>
                             </div>
@@ -240,6 +240,8 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                             <HttpToolEditor
                                 tool={tools[editingToolIndex]}
                                 call={getCallForTool(tools[editingToolIndex])}
+                                serviceName={service.name}
+                                serviceAddress={service.httpService?.address}
                                 onChange={handleToolChange}
                             />
                         )}
