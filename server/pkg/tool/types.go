@@ -3597,19 +3597,17 @@ func checkAwkInjection(val, base string) error {
 			}
 
 			// Keyword check
-			if char < 128 && isWordChar(byte(char)) {
-				wordBuilder.WriteByte(byte(char))
-			} else {
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if word == "getline" {
-						return fmt.Errorf("awk injection detected: value contains 'getline' (unquoted)")
-					}
-					if word == "system" {
-						return fmt.Errorf("awk injection detected: value contains 'system' (unquoted)")
-					}
-					wordBuilder.Reset()
+			if char < 128 && isWordChar(char) {
+				wordBuilder.WriteByte(char)
+			} else if wordBuilder.Len() > 0 {
+				word := wordBuilder.String()
+				if word == "getline" {
+					return fmt.Errorf("awk injection detected: value contains 'getline' (unquoted)")
 				}
+				if word == "system" {
+					return fmt.Errorf("awk injection detected: value contains 'system' (unquoted)")
+				}
+				wordBuilder.Reset()
 			}
 		}
 
