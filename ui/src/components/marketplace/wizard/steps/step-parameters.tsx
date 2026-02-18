@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { SchemaForm } from '@/components/marketplace/schema-form';
 
 /**
  * StepParameters component.
@@ -31,8 +32,6 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
         if (config.commandLineService) {
             const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
@@ -70,6 +69,64 @@ export function StepParameters() {
             });
         }
     };
+
+    const handleSchemaChange = (newParams: Record<string, string>) => {
+        updateState({ params: newParams });
+        // Sync to config env
+        if (config.commandLineService) {
+             const env: any = {};
+             Object.entries(newParams).forEach(([k, v]) => {
+                 env[k] = { plainText: v };
+             });
+             updateConfig({
+                 commandLineService: {
+                     ...config.commandLineService,
+                     env
+                 }
+             });
+        }
+    };
+
+    let parsedSchema = null;
+    if (config.configurationSchema) {
+        try {
+            parsedSchema = JSON.parse(config.configurationSchema);
+        } catch (e) {
+            console.error("Invalid schema", e);
+        }
+    }
+
+    if (parsedSchema && parsedSchema.properties) {
+        return (
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium">Configuration</h3>
+                </div>
+
+                <SchemaForm schema={parsedSchema} value={params} onChange={handleSchemaChange} />
+
+                <div className="space-y-4 pt-4 border-t">
+                     <h3 className="text-lg font-medium">Command</h3>
+                     <div className="grid gap-2">
+                         <Label>Executable</Label>
+                         <Input
+                            value={config.commandLineService?.command || ''}
+                            onChange={e => updateConfig({
+                                commandLineService: {
+                                    ...(config.commandLineService || { env: {}, workingDirectory: '', tools: [], resources: [], calls: {}, prompts: [], communicationProtocol: 0, local: false }),
+                                    command: e.target.value
+                                }
+                            })}
+                            placeholder="npx -y package-name OR /usr/bin/python3"
+                         />
+                         <p className="text-xs text-muted-foreground">
+                            The command is pre-filled from the template but can be customized.
+                         </p>
+                     </div>
+                 </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

@@ -9,8 +9,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
-const TEMPLATES = [
+const MANUAL_TEMPLATES = [
     {
         id: 'manual',
         name: 'Manual / Custom',
@@ -24,40 +25,6 @@ const TEMPLATES = [
             openapiService: undefined
         },
         params: {}
-    },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
     },
     {
         id: 'openapi',
@@ -76,6 +43,27 @@ const TEMPLATES = [
     }
 ];
 
+// Map Service Registry items to Template format
+const REGISTRY_TEMPLATES = SERVICE_REGISTRY.map(service => ({
+    id: service.id,
+    name: service.name,
+    description: service.description,
+    config: {
+        commandLineService: {
+            command: service.command,
+            env: {},
+            workingDirectory: ''
+        },
+        // Store schema string for StepParameters to use
+        configurationSchema: JSON.stringify(service.configurationSchema),
+        openapiService: undefined
+    },
+    params: {} // Will be populated from schema defaults on selection
+}));
+
+// Combine templates, filtering out duplicates if any ID conflicts (prefer registry)
+const ALL_TEMPLATES = [...MANUAL_TEMPLATES, ...REGISTRY_TEMPLATES.filter(r => !MANUAL_TEMPLATES.find(m => m.id === r.id))];
+
 /**
  * StepServiceType component.
  * @returns The rendered component.
@@ -86,11 +74,28 @@ export function StepServiceType() {
 
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = ALL_TEMPLATES.find(t => t.id === val);
         if (template) {
+            // Extract defaults from schema if available
+            const defaultParams: Record<string, string> = {};
+            if (template.config.configurationSchema) {
+                try {
+                    const schema = JSON.parse(template.config.configurationSchema);
+                    if (schema.properties) {
+                        Object.entries(schema.properties).forEach(([key, prop]: [string, any]) => {
+                            if (prop.default !== undefined) {
+                                defaultParams[key] = String(prop.default);
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to parse schema defaults", e);
+                }
+            }
+
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: defaultParams
             });
             updateConfig({
                 ...template.config as any,
@@ -120,7 +125,7 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        {ALL_TEMPLATES.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -130,10 +135,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {ALL_TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {ALL_TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>
