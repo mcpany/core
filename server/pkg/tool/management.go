@@ -24,6 +24,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ToolExecutionTimeout is the default timeout for tool execution.
+// It is exposed as a variable to allow overrides during testing.
+var ToolExecutionTimeout = 60 * time.Second
+
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server.
 //
@@ -251,7 +255,7 @@ func NewManager(bus *bus.Provider) *Manager {
 //
 // Parameters:
 //   - enabled: []string. A list of names of the currently active profiles.
-//   - defs: []*configv1.ProfileDefinition. The definitions of all available profiles.
+//   - defs: []*configv1.ProfileDefinition. The detailed definitions of the profiles.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -952,7 +956,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 				}, nil
 			case <-ctx.Done():
 				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-			case <-time.After(60 * time.Second): // Safety timeout
+			case <-time.After(ToolExecutionTimeout): // Safety timeout
 				return nil, fmt.Errorf(
 					"timed out waiting for tool execution result for tool %s",
 					req.Params.Name,
@@ -1097,10 +1101,7 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 //
 // Parameters:
 //   - serviceID: string. The unique identifier for the service.
-//
-// Side Effects:
-//   - Removes entries from the tools map and secondary indices.
-//   - Invalidates internal caches.
+//   - info: *ServiceInfo. The ServiceInfo struct containing the service's metadata and configuration.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
