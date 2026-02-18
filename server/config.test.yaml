@@ -1,0 +1,23 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+# Test configuration without global_settings to allow DB persistence testing.
+
+upstream_services:
+  - id: "weather-service"
+    name: "weather-service"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "get_weather"
+          description: "Get current weather"
+          call_id: "get_weather"
+      calls:
+        get_weather:
+          args: ['{"weather": "sunny"}']
+      resources:
+        - uri: "system://logs"
+          name: "System Logs"
+          mime_type: "text/plain"
+      prompts:
+        - name: "summarize_text"
+          description: "Summarize text"

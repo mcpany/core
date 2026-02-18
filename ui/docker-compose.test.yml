@@ -8,7 +8,7 @@ services:
     command:
       [
         "run",
-        "--config-path=config.minimal.yaml",
+        "--config-path=config.test.yaml",
         "--mcp-listen-address=:50050",
         "--grpc-port=:50051"
       ]
@@ -17,13 +17,19 @@ services:
       - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
       - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
       - MCPANY_ADMIN_PASSWORD=password
+      # Global Settings Config via Env (since config.test.yaml omits them to allow persistence testing)
+      - MCPANY__GLOBAL_SETTINGS__DB_PATH=/tmp/mcpany.db
+      # Use JSON format for list environment variable to ensure correct parsing
+      - MCPANY__GLOBAL_SETTINGS__ALLOWED_ORIGINS=["*"]
+      # Need to ensure default profile exists if file doesn't provide it
+      - MCPANY__GLOBAL_SETTINGS__PROFILE_DEFINITIONS=[{"name":"default","selector":{"tags":["dev"]}}]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
-      - ${HOST_WORKSPACE_ROOT:-..}/server/config.minimal.yaml:/app/config.minimal.yaml
+      - ${HOST_WORKSPACE_ROOT:-..}/server/config.test.yaml:/app/config.test.yaml
     networks:
       default:
         aliases:
