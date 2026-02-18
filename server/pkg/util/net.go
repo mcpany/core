@@ -160,8 +160,8 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 }
 
 var (
-	sharedTransport     *http.Transport
-	sharedTransportOnce sync.Once
+	transportCache = make(map[string]*http.Transport)
+	transportMu    sync.RWMutex
 )
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
@@ -178,35 +178,54 @@ var (
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
-	// ⚡ BOLT: Shared transport for connection pooling.
-	// Randomized Selection from Top 5 High-Impact Targets
-	sharedTransportOnce.Do(func() {
-		dialer := NewSafeDialer()
-		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-			dialer.AllowLoopback = true
-			dialer.AllowPrivate = true
-		}
-		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-			dialer.AllowLoopback = true
-		}
-		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-			dialer.AllowPrivate = true
-		}
-		// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+	allowLoopback := false
+	allowPrivate := false
 
-		sharedTransport = &http.Transport{
-			DialContext: dialer.DialContext,
-			// ⚡ BOLT: Tune connection pooling for high concurrency.
-			// MaxIdleConnsPerHost defaults to 2, which is too low for shared transport.
-			MaxIdleConns:        100,
-			MaxIdleConnsPerHost: 10,
-			IdleConnTimeout:     30 * time.Second,
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		allowLoopback = true
+		allowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		allowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		allowPrivate = true
+	}
+
+	// Create a unique key for the configuration
+	configKey := fmt.Sprintf("loop:%v|priv:%v", allowLoopback, allowPrivate)
+
+	transportMu.RLock()
+	transport, ok := transportCache[configKey]
+	transportMu.RUnlock()
+
+	if !ok {
+		transportMu.Lock()
+		// Double check locking
+		transport, ok = transportCache[configKey]
+		if !ok {
+			// ⚡ BOLT: Shared transport for connection pooling based on config.
+			// Randomized Selection from Top 5 High-Impact Targets
+			dialer := NewSafeDialer()
+			dialer.AllowLoopback = allowLoopback
+			dialer.AllowPrivate = allowPrivate
+
+			transport = &http.Transport{
+				DialContext: dialer.DialContext,
+				// ⚡ BOLT: Tune connection pooling for high concurrency.
+				// MaxIdleConnsPerHost defaults to 2, which is too low for shared transport.
+				MaxIdleConns:        200,
+				MaxIdleConnsPerHost: 50,
+				IdleConnTimeout:     30 * time.Second,
+			}
+			transportCache[configKey] = transport
 		}
-	})
+		transportMu.Unlock()
+	}
 
 	return &http.Client{
 		Timeout:   10 * time.Second,
-		Transport: sharedTransport,
+		Transport: transport,
 	}
 }
 

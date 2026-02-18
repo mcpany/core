@@ -3,10 +3,11 @@
 
 package util
 
-import "sync"
+import "net/http"
 
 // ResetSafeHTTPClientForTest resets the shared transport for testing purposes.
 func ResetSafeHTTPClientForTest() {
-	sharedTransport = nil
-	sharedTransportOnce = sync.Once{}
+	transportMu.Lock()
+	defer transportMu.Unlock()
+	transportCache = make(map[string]*http.Transport)
 }
