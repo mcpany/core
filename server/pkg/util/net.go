@@ -182,21 +182,26 @@ func NewSafeHTTPClient() *http.Client {
 		// ⚡ BOLT: Shared transport for connection pooling.
 		// Randomized Selection from Top 5 High-Impact Targets
 
-		dialer := NewSafeDialer()
-		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-			dialer.AllowLoopback = true
-			dialer.AllowPrivate = true
-		}
-		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-			dialer.AllowLoopback = true
-		}
-		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-			dialer.AllowPrivate = true
-		}
-		// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
-
+		// We use a closure for DialContext to ensure that environment variables
+		// (which might be set after init but before the first request) are checked
+		// on every connection attempt. This is crucial for tests that modify env vars
+		// and for proper runtime configuration.
 		sharedSafeTransport = &http.Transport{
-			DialContext: dialer.DialContext,
+			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+				dialer := NewSafeDialer()
+				if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+					dialer.AllowLoopback = true
+					dialer.AllowPrivate = true
+				}
+				if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+					dialer.AllowLoopback = true
+				}
+				if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+					dialer.AllowPrivate = true
+				}
+				// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+				return dialer.DialContext(ctx, network, addr)
+			},
 		}
 	})
 
