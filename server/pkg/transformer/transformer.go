@@ -87,11 +87,73 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 }
 
 func joinFunc(sep string, input any) (string, error) {
-	a, err := toAnySlice(input)
-	if err != nil {
-		return "", fmt.Errorf("join: %w", err)
+	// ⚡ BOLT: Optimized joinFunc to avoid O(N) allocations for slice conversion.
+	// Randomized Selection from Top 5 High-Impact Targets
+
+	// Fast path for []string
+	if s, ok := input.([]string); ok {
+		return strings.Join(s, sep), nil
 	}
 
+	// Fast path for []any
+	if s, ok := input.([]any); ok {
+		return joinAnySlice(sep, s)
+	}
+
+	val := reflect.ValueOf(input)
+	kind := val.Kind()
+	if kind != reflect.Slice && kind != reflect.Array {
+		return "", fmt.Errorf("expected slice or array, got %T", input)
+	}
+
+	var sb strings.Builder
+	l := val.Len()
+	if l == 0 {
+		return "", nil
+	}
+
+	// Pre-allocate buffer based on estimated size
+	// We can't easily guess size for non-strings without iterating,
+	// but we can guess based on element count.
+	sb.Grow(l * 10)
+
+	var scratch [64]byte
+	elemKind := val.Type().Elem().Kind()
+
+	for i := 0; i < l; i++ {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		v := val.Index(i)
+
+		switch elemKind {
+		case reflect.String:
+			sb.WriteString(v.String())
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			sb.Write(strconv.AppendInt(scratch[:0], v.Int(), 10))
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			sb.Write(strconv.AppendUint(scratch[:0], v.Uint(), 10))
+		case reflect.Float32:
+			sb.Write(strconv.AppendFloat(scratch[:0], v.Float(), 'g', -1, 32))
+		case reflect.Float64:
+			sb.Write(strconv.AppendFloat(scratch[:0], v.Float(), 'g', -1, 64))
+		case reflect.Bool:
+			sb.Write(strconv.AppendBool(scratch[:0], v.Bool()))
+		case reflect.Interface:
+			// If element type is interface (e.g. []any was handled, but maybe []error or others)
+			if err := writeAny(&sb, v.Interface(), scratch[:]); err != nil {
+				return "", err
+			}
+		default:
+			// Fallback
+			fmt.Fprint(&sb, v.Interface())
+		}
+	}
+
+	return sb.String(), nil
+}
+
+func joinAnySlice(sep string, a []any) (string, error) {
 	var sb strings.Builder
 	sepLen := len(sep)
 	var totalLen int
@@ -105,11 +167,8 @@ func joinFunc(sep string, input any) (string, error) {
 		if s, ok := v.(string); ok {
 			totalLen += len(s)
 		} else {
-			// For non-strings, we stop estimating and just guess.
-			// This avoids expensive iteration and type assertions for numbers.
 			remaining := len(a) - i
 			totalLen += remaining * 10
-			// Add separators estimate for remaining items
 			if remaining > 1 {
 				totalLen += (remaining - 1) * sepLen
 			}
@@ -118,65 +177,53 @@ func joinFunc(sep string, input any) (string, error) {
 	}
 
 	sb.Grow(totalLen)
-
-	// Scratch buffer for number conversion to avoid allocations
 	var scratch [64]byte
 
 	for i, v := range a {
 		if i > 0 {
 			sb.WriteString(sep)
 		}
-		switch val := v.(type) {
-		case string:
-			sb.WriteString(val)
-		case int:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case int64:
-			sb.Write(strconv.AppendInt(scratch[:0], val, 10))
-		case int32:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case int16:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case int8:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case uint:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case uint64:
-			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
-		case uint32:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case uint16:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case uint8:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case float64:
-			// Use -1 to behave like %v / %g
-			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
-		case float32:
-			sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
-		case bool:
-			sb.Write(strconv.AppendBool(scratch[:0], val))
-		case fmt.Stringer:
-			sb.WriteString(val.String())
-		default:
-			fmt.Fprint(&sb, v)
+		if err := writeAny(&sb, v, scratch[:]); err != nil {
+			return "", err
 		}
 	}
 	return sb.String(), nil
 }
 
-func toAnySlice(input any) ([]any, error) {
-	if s, ok := input.([]any); ok {
-		return s, nil
+func writeAny(sb *strings.Builder, v any, scratch []byte) error {
+	switch val := v.(type) {
+	case string:
+		sb.WriteString(val)
+	case int:
+		sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+	case int64:
+		sb.Write(strconv.AppendInt(scratch[:0], val, 10))
+	case int32:
+		sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+	case int16:
+		sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+	case int8:
+		sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+	case uint:
+		sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+	case uint64:
+		sb.Write(strconv.AppendUint(scratch[:0], val, 10))
+	case uint32:
+		sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+	case uint16:
+		sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+	case uint8:
+		sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+	case float64:
+		sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
+	case float32:
+		sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
+	case bool:
+		sb.Write(strconv.AppendBool(scratch[:0], val))
+	case fmt.Stringer:
+		sb.WriteString(val.String())
+	default:
+		fmt.Fprint(sb, v)
 	}
-	val := reflect.ValueOf(input)
-	if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
-		return nil, fmt.Errorf("expected slice or array, got %T", input)
-	}
-	l := val.Len()
-	a := make([]any, l)
-	for i := 0; i < l; i++ {
-		a[i] = val.Index(i).Interface()
-	}
-	return a, nil
+	return nil
 }
