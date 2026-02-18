@@ -10,10 +10,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// _ is an unused parameter.
-//
+// ListServiceTemplates _ is an unused parameter.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - _ (context.Context): The _.
+//
+// Returns:
+//  - []*configv1.ServiceTemplate: The result.
+//  - error: Returns error on failure.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -25,12 +31,18 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 }
 
 // GetServiceTemplate retrieves a service template by ID.
-//
 // _ is an unused parameter.
 // id is the unique identifier.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - _ (context.Context): The _.
+//  - id (string): The unique identifier.
+//
+// Returns:
+//  - *configv1.ServiceTemplate: The result.
+//  - error: Returns error on failure.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -41,11 +53,16 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 }
 
 // SaveServiceTemplate saves a service template.
-//
 // _ is an unused parameter.
 // template is the template.
-//
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - _ (context.Context): The _.
+//  - template (*configv1.ServiceTemplate): The template.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -54,6 +71,13 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
+//
+// Parameters:
+//  - _ (context.Context): The _.
+//  - id (string): The unique identifier.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

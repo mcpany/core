@@ -598,6 +598,12 @@ type SecretRedactor struct {
 
 // NewSecretRedactor creates a new SecretRedactor with the given secrets.
 // It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
+//
+// Parameters:
+//  - secrets ([]string): The secrets.
+//
+// Returns:
+//  - *SecretRedactor: The result.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -634,6 +640,12 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 }
 
 // Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
+//
+// Parameters:
+//  - text (string): The text.
+//
+// Returns:
+//  - string: The string representation.
 func (r *SecretRedactor) Redact(text string) string {
 	if text == "" || r.replacer == nil {
 		return text

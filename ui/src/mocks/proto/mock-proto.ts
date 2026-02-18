@@ -92,6 +92,10 @@ export type GetServiceResponse = any;
 export type GetServiceStatusResponse = any;
 
 // Mock types for HttpCallDefinition
+
+/**
+ * ParameterType defines the type of a parameter.
+ */
 export enum ParameterType {
     STRING = 0,
     NUMBER = 1,
@@ -101,6 +105,9 @@ export enum ParameterType {
     OBJECT = 5,
 }
 
+/**
+ * HttpCallDefinition_HttpMethod defines the HTTP method for a call.
+ */
 export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_UNSPECIFIED = 0,
     HTTP_METHOD_GET = 1,
@@ -110,6 +117,9 @@ export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_PATCH = 5,
 }
 
+/**
+ * OutputTransformer_OutputFormat defines the format of the output.
+ */
 export enum OutputTransformer_OutputFormat {
     JSON = 0,
     XML = 1,
@@ -118,11 +128,17 @@ export enum OutputTransformer_OutputFormat {
     JQ = 4,
 }
 
+/**
+ * InputTransformer defines how to transform inputs.
+ */
 export interface InputTransformer {
     template?: string;
     webhook?: any;
 }
 
+/**
+ * OutputTransformer defines how to transform outputs.
+ */
 export interface OutputTransformer {
     format: OutputTransformer_OutputFormat;
     extractionRules?: { [key: string]: string };
@@ -130,6 +146,9 @@ export interface OutputTransformer {
     jqQuery?: string;
 }
 
+/**
+ * HttpParameterMapping defines how to map parameters.
+ */
 export interface HttpParameterMapping {
     schema?: {
         name: string;
@@ -142,6 +161,9 @@ export interface HttpParameterMapping {
     disableEscape?: boolean;
 }
 
+/**
+ * HttpCallDefinition defines an HTTP call.
+ */
 export interface HttpCallDefinition {
     id?: string;
     method: HttpCallDefinition_HttpMethod;

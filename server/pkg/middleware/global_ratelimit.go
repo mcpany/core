@@ -68,14 +68,22 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 }
 
 // Execute executes the rate limiting middleware.
-//
 // ctx is the context for the request.
 // method is the method.
 // req is the request object.
 // next is the next.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - ctx (context.Context): The context for the request.
+//  - method (string): The method.
+//  - req (mcp.Request): The request parameters.
+//  - next (mcp.MethodHandler): The next handler in the chain.
+//
+// Returns:
+//  - mcp.Result: The result.
+//  - error: Returns error on failure.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

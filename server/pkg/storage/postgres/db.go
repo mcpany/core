@@ -19,22 +19,33 @@ type DB struct {
 }
 
 // NewDB opens a PostgreSQL database connection.
-//
 // dsn is the dsn.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - dsn (string): The dsn.
+//
+// Returns:
+//  - *DB: The result.
+//  - error: Returns error on failure.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
 // NewDBWithDriver opens a database connection with the specified driver.
-//
 // driver is the driver.
 // dsn is the dsn.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - driver: The parameter.
+//  - dsn (string): The dsn.
+//
+// Returns:
+//  - *DB: The result.
+//  - error: Returns error on failure.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -62,11 +73,16 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 }
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
-//
 // db is the db.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - db (*sql.DB): The db.
+//
+// Returns:
+//  - *DB: The result.
+//  - error: Returns error on failure.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

@@ -983,6 +983,9 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
+//
+// Returns:
+//  - slog.Value: The result.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -995,6 +998,9 @@ type LazyLogResult struct {
 }
 
 // LogValue implements slog.LogValuer.
+//
+// Returns:
+//  - slog.Value: The result.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

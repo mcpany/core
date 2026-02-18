@@ -18,10 +18,14 @@ type ResilienceMiddleware struct {
 }
 
 // NewResilienceMiddleware creates a new ResilienceMiddleware.
-//
 // toolManager is the toolManager.
-//
 // Returns the result.
+//
+// Parameters:
+//  - toolManager (tool.ManagerInterface): The toolManager.
+//
+// Returns:
+//  - *ResilienceMiddleware: The result.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
@@ -29,13 +33,20 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 }
 
 // Execute executes the resilience middleware.
-//
 // ctx is the context for the request.
 // req is the request object.
 // next is the next.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - ctx (context.Context): The context for the request.
+//  - req (*tool.ExecutionRequest): The request parameters.
+//  - next (tool.ExecutionFunc): The next handler in the chain.
+//
+// Returns:
+//  - any: The result.
+//  - error: Returns error on failure.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

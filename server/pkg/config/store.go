@@ -118,16 +118,29 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Parameters:
+//  - skip (bool): The skip.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
 // SetIgnoreEnv sets whether to ignore environment variables.
+//
+// Parameters:
+//  - ignore (bool): The ignore.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// Parameters:
+//  - b ([]byte): The b.
+//  - v (proto.Message): The v.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -147,6 +160,14 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Parameters:
+//  - yamlMap (map[string]interface{}): The yamlMap.
+//  - v (proto.Message): The v.
+//  - originalBytes ([]byte): The originalBytes.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -252,6 +273,13 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Parameters:
+//  - b ([]byte): The b.
+//  - v (proto.Message): The v.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -260,6 +288,13 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Parameters:
+//  - b ([]byte): The b.
+//  - v (proto.Message): The v.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format

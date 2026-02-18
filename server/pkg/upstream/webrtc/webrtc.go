@@ -41,6 +41,12 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//  - ctx (context.Context): The context for the request.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -58,6 +64,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
+//
+// Parameters:
+//  - _ (context.Context): The _.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -70,9 +82,14 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of WebrtcUpstream.
-//
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+//
+// Parameters:
+//  - poolManager (*pool.Manager): The poolManager.
+//
+// Returns:
+//  - upstream.Upstream: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

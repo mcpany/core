@@ -43,15 +43,21 @@ func New[T any]() *DefaultBus[T] {
 // Publish sends a message to all handlers subscribed to the specified topic.
 // It sends the message to a channel for each subscriber, where it will be
 // processed by the subscriber's dedicated goroutine.
-//
 // To prevent a slow subscriber from blocking the publisher indefinitely, this
 // call will time out after a configurable duration if a subscriber's channel is
 // full. If a timeout occurs, the message is dropped for that subscriber, and a
 // warning is logged.
+// Parameters:
+// - topic: The topic to publish the message to.
+// - msg: The message to be sent.
 //
 // Parameters:
-//   - topic: The topic to publish the message to.
-//   - msg: The message to be sent.
+//  - _ (context.Context): The _.
+//  - topic (string): The topic.
+//  - msg (T): The msg.
+//
+// Returns:
+//  - error: Returns error on failure.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()

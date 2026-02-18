@@ -35,10 +35,14 @@ type PolicyHook struct {
 }
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
-//
 // policy is the policy.
-//
 // Returns the result.
+//
+// Parameters:
+//  - policy (*configv1.CallPolicy): The policy.
+//
+// Returns:
+//  - *PolicyHook: The result.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -142,10 +146,14 @@ type WebhookClient struct {
 }
 
 // NewWebhookClient creates a new WebhookClient.
-//
 // config holds the configuration settings.
-//
 // Returns the result.
+//
+// Parameters:
+//  - config (*configv1.WebhookConfig): The configuration.
+//
+// Returns:
+//  - *WebhookClient: The result.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -178,13 +186,20 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 }
 
 // Call sends a cloud event to the webhook and returns the response event.
-//
 // ctx is the context for the request.
 // eventType is the eventType.
 // data is the data.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - ctx (context.Context): The context for the request.
+//  - eventType (string): The eventType.
+//  - data (any): The data.
+//
+// Returns:
+//  - *cloudevents.Event: The result.
+//  - error: Returns error on failure.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -228,10 +243,14 @@ type WebhookHook struct {
 }
 
 // NewWebhookHook creates a new WebhookHook.
-//
 // config holds the configuration settings.
-//
 // Returns the result.
+//
+// Parameters:
+//  - config (*configv1.WebhookConfig): The configuration.
+//
+// Returns:
+//  - *WebhookHook: The result.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -378,11 +397,16 @@ type SigningRoundTripper struct {
 }
 
 // RoundTrip executes the HTTP request with a signature.
-//
 // req is the request object.
-//
 // Returns the response.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - req (*http.Request): The request parameters.
+//
+// Returns:
+//  - *http.Response: The result.
+//  - error: Returns error on failure.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

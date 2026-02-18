@@ -19,10 +19,14 @@ type CallPolicyMiddleware struct {
 }
 
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
-//
 // toolManager is the toolManager.
-//
 // Returns the result.
+//
+// Parameters:
+//  - toolManager (tool.ManagerInterface): The toolManager.
+//
+// Returns:
+//  - *CallPolicyMiddleware: The result.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
@@ -30,13 +34,20 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 }
 
 // Execute enforces call policies before proceeding to the next handler.
-//
 // ctx is the context for the request.
 // req is the request object.
 // next is the next.
-//
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//  - ctx (context.Context): The context for the request.
+//  - req (*tool.ExecutionRequest): The request parameters.
+//  - next (tool.ExecutionFunc): The next handler in the chain.
+//
+// Returns:
+//  - any: The result.
+//  - error: Returns error on failure.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {
