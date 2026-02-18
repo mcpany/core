@@ -1255,7 +1255,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service.
 //
@@ -3198,6 +3197,15 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		return err
 	}
 
+	if isAwk(language) {
+		// Sentinel Security Update: Block indirect function calls in awk/gawk (e.g. @f("id"))
+		// which bypass keyword checks.
+		// For awk, we use strict quoting (only double quotes) because awk doesn't treat single quotes or backticks as string delimiters.
+		if err := checkUnquotedChar(val, '@', true); err != nil {
+			return fmt.Errorf("awk injection detected: value contains '@' (potential indirect function call)")
+		}
+	}
+
 	// Normalize value to detect obfuscation (e.g. system ( ) )
 	var b strings.Builder
 	b.Grow(len(val))
@@ -3222,6 +3230,50 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 	if strings.Contains(cleanVal, "__import__") {
 		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
+	}
+	return nil
+}
+
+func checkUnquotedChar(val string, target byte, strictQuotes bool) error {
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	for i := 0; i < len(val); i++ {
+		char := val[i]
+		if escaped {
+			escaped = false
+			continue
+		}
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		// strictQuotes is for languages like awk that only use double quotes for strings.
+		// They do not treat single quotes or backticks as quotes.
+
+		if !strictQuotes && char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			continue
+		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			continue
+		}
+		if !strictQuotes && char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			continue
+		}
+
+		if char == target {
+			return fmt.Errorf("dangerous character %q found in unquoted context", target)
+		}
 	}
 	return nil
 }
@@ -3552,12 +3604,16 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
+func isAwk(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	return strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
+}
+
 func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
-	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	if isAwk {
+	if isAwk(base) {
 		if strings.Contains(val, "|") {
 			return fmt.Errorf("awk injection detected: value contains '|'")
 		}
@@ -3615,6 +3671,9 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 	dangerousChars := ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 	if isShell {
 		dangerousChars += " "
+	}
+	if isAwk(command) {
+		dangerousChars += "@"
 	}
 
 	charsToCheck := dangerousChars
