@@ -19,10 +19,10 @@ services:
       - MCPANY_ADMIN_PASSWORD=password
       # Global Settings Config via Env (since config.test.yaml omits them to allow persistence testing)
       - MCPANY__GLOBAL_SETTINGS__DB_PATH=/tmp/mcpany.db
-      # Use JSON format for list environment variable to ensure correct parsing
-      - MCPANY__GLOBAL_SETTINGS__ALLOWED_ORIGINS=["*"]
+      # Use JSON format for list environment variable to ensure correct parsing. Quoted to prevent YAML parsing issues.
+      - 'MCPANY__GLOBAL_SETTINGS__ALLOWED_ORIGINS=["*"]'
       # Need to ensure default profile exists if file doesn't provide it
-      - MCPANY__GLOBAL_SETTINGS__PROFILE_DEFINITIONS=[{"name":"default","selector":{"tags":["dev"]}}]
+      - 'MCPANY__GLOBAL_SETTINGS__PROFILE_DEFINITIONS=[{"name":"default","selector":{"tags":["dev"]}}]'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
