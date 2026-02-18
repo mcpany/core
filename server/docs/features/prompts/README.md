@@ -8,11 +8,13 @@ Prompts are defined within the `prompts` block of a service.
 
 ### Fields
 
-| Field         | Type     | Description                    |
-| ------------- | -------- | ------------------------------ |
-| `name`        | `string` | unique name of the prompt      |
-| `description` | `string` | description of what it does    |
-| `messages`    | `list`   | list of messages in the prompt |
+| Field          | Type     | Description                    |
+| -------------- | -------- | ------------------------------ |
+| `name`         | `string` | unique name of the prompt      |
+| `title`        | `string` | human-readable title           |
+| `description`  | `string` | description of what it does    |
+| `input_schema` | `object` | JSON Schema for arguments      |
+| `messages`     | `list`   | list of messages in the prompt |
 
 ### Configuration Snippet
 

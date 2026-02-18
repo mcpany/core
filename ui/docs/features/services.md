@@ -23,8 +23,8 @@ Key columns:
 
 - **Name**: Application identifier.
 - **Type**: Protocol (HTTP, gRPC, MCP, CMD).
-- **Status**: Health indicator (Healthy, Degraded, Unhealthy).
-- **Control**: Toggle switch to quickly enable/disable traffic.
+- **Status**: Contains the toggle switch to enable/disable the service, and an error indicator if connectivity fails.
+- **Activity**: A sparkline graph showing recent latency and health status (Green=Healthy, Yellow=Slow, Red=Error).
 - **Actions**: "View Logs" to jump directly to the live logs for a specific service.
 
 ### 2. Add New Service

@@ -111,7 +111,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			}.Build(),
 			expectedErrorCount:  1,
-			expectedErrorString: "mtls 'client_cert_path' not found",
+			expectedErrorString: "mtls 'client_cert_path' is not a secure path",
 		},
 		{
 			name: "Basic Auth Unset Env",
@@ -519,7 +519,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			}.Build(),
 			expectedErrorCount:  1,
-			expectedErrorString: "mtls 'ca_cert_path' not found",
+			expectedErrorString: "mtls 'ca_cert_path' is not a secure path",
 		},
 		{
 			name: "invalid grpc service - schema error",

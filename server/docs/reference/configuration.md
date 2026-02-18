@@ -15,10 +15,11 @@ upstream_services:
   - name: "my-api"
     http_service:
       address: "https://api.example.com"
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "X-API-Key"
-        api_key:
+        param_name: "X-API-Key"
+        in: HEADER
+        value:
           plain_text: "${API_KEY:my-secret-key}"
 ```
 
@@ -159,7 +160,7 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `id`                      | `string`                 | A UUID to uniquely identify this upstream service configuration, used for bindings.           |
 | `name`                    | `string`                 | A unique name for the upstream service. Used for identification, logging, and metrics.        |
 | `connection_pool`         | `ConnectionPoolConfig`   | Configuration for the pool of connections to the upstream service.                            |
-| `upstream_auth` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
+| `upstream_auth`           | `Authentication`         | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
 | `cache`                   | `CacheConfig`            | Caching configuration to improve performance and reduce load on the upstream.                 |
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
@@ -215,8 +216,9 @@ upstream_services:
         open_duration: "5s"
     upstream_auth:
       api_key:
-        header_name: "X-API-Key"
-        api_key:
+        param_name: "X-API-Key"
+        in: HEADER
+        value:
           environment_variable: "PRODUCT_CATALOG_API_KEY"
     grpc_service:
       address: "grpc.product-catalog.svc.cluster.local:50051"
@@ -570,6 +572,11 @@ connection_pool:
 | `is_enabled`          | `bool`   | Whether rate limiting is enabled.                            |
 | `requests_per_second` | `double` | The maximum number of requests allowed per second.           |
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
+| `storage`             | `enum`   | The storage backend to use: `STORAGE_MEMORY` (default) or `STORAGE_REDIS`. |
+| `redis`               | `RedisBus` | Redis connection details (required if storage is `STORAGE_REDIS`). |
+| `tool_limits`         | `map`    | Tool-specific rate limits. Key is the tool name, value is a RateLimitConfig object. |
+| `key_by`              | `enum`   | Strategy for partitioning limits. Options: `KEY_BY_IP` (default), `KEY_BY_USER_ID`, `KEY_BY_API_KEY`, `KEY_BY_GLOBAL`. |
+| `cost_metric`         | `enum`   | `COST_METRIC_REQUESTS` (default) or `COST_METRIC_TOKENS`. |
 
 ##### Use Case and Example
 
@@ -751,16 +758,82 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 
 MCP Any supports authentication for both incoming requests (securing access to the MCP Any service itself) and outgoing requests (authenticating with upstream services).
 
-#### `AuthenticationConfig` (Incoming)
+Both use the `Authentication` message, but fields are used differently depending on the context.
 
-Configures the authentication method for incoming requests to the MCP Any server.
+#### `Authentication`
 
-| Field     | Type         | Description                                     |
-| --------- | ------------ | ----------------------------------------------- |
-| `api_key` | `APIKeyAuth` | API key in a header or query parameter.         |
-| `oauth2`  | `OAuth2Auth` | OAuth 2.0 client credentials or JWT validation. |
+Configures the authentication method.
 
-##### Use Case and Example
+| Field          | Type               | Description                                      |
+| -------------- | ------------------ | ------------------------------------------------ |
+| `api_key`      | `APIKeyAuth`       | API key in a header, query parameter, or cookie. |
+| `bearer_token` | `BearerTokenAuth`  | Bearer token in the `Authorization` header.      |
+| `basic_auth`   | `BasicAuth`        | Basic authentication with username and password. |
+| `oauth2`       | `OAuth2Auth`       | OAuth 2.0 client credentials or JWT validation.  |
+| `oidc`         | `OIDCAuth`         | OpenID Connect authentication.                   |
+| `mtls`         | `MTLSAuth`         | Mutual TLS authentication.                       |
+| `trusted_header` | `TrustedHeaderAuth` | Authentication via a trusted header (e.g. from a proxy). |
+
+##### `APIKeyAuth`
+
+| Field                | Type          | Description                                                     |
+| -------------------- | ------------- | --------------------------------------------------------------- |
+| `param_name`         | `string`      | The name of the parameter carrying the key (e.g., "X-API-Key"). |
+| `in`                 | `enum`        | Where the API key is located (`HEADER`, `QUERY`, or `COOKIE`).  |
+| `value`              | `SecretValue` | The API key value. **Used for outgoing authentication.**        |
+| `verification_value` | `string`      | The expected API key value. **Used for incoming validation.**   |
+
+##### `BearerTokenAuth`
+
+| Field   | Type          | Description                            |
+| ------- | ------------- | -------------------------------------- |
+| `token` | `SecretValue` | The bearer token, managed as a secret. |
+
+##### `BasicAuth`
+
+| Field           | Type          | Description                                                    |
+| --------------- | ------------- | -------------------------------------------------------------- |
+| `username`      | `string`      | The username for basic authentication.                         |
+| `password`      | `SecretValue` | The password. **Used for outgoing authentication.**            |
+| `password_hash` | `string`      | The bcrypt hash of the password. **Used for incoming validation.** |
+
+##### `OAuth2Auth`
+
+| Field               | Type          | Description                                      |
+| ------------------- | ------------- | ------------------------------------------------ |
+| `token_url`         | `string`      | The URL to the OAuth 2.0 token endpoint.         |
+| `client_id`         | `SecretValue` | The client ID.                                   |
+| `client_secret`     | `SecretValue` | The client secret.                               |
+| `scopes`            | `string`      | A space-delimited list of scopes.                |
+| `issuer_url`        | `string`      | The URL of the JWT issuer for token validation.  |
+| `audience`          | `string`      | The audience for JWT token validation.           |
+| `authorization_url` | `string`      | The URL to the OAuth 2.0 authorization endpoint. |
+
+##### `OIDCAuth`
+
+| Field     | Type              | Description                            |
+| --------- | ----------------- | -------------------------------------- |
+| `issuer`  | `string`          | The OIDC issuer URL.                   |
+| `subject` | `string`          | The subject to validate (incoming).    |
+| `email`   | `string`          | The email to validate (incoming).      |
+| `audience`| `repeated string` | The audience(s) to validate (incoming).|
+
+##### `MTLSAuth`
+
+| Field              | Type     | Description                                                     |
+| ------------------ | -------- | --------------------------------------------------------------- |
+| `client_cert_path` | `string` | Path to the client certificate file.                            |
+| `client_key_path`  | `string` | Path to the client private key file.                            |
+| `ca_cert_path`     | `string` | Path to the CA certificate file for verifying the peer.         |
+
+##### `TrustedHeaderAuth`
+
+| Field          | Type     | Description                                |
+| -------------- | -------- | ------------------------------------------ |
+| `header_name`  | `string` | The name of the trusted header.            |
+| `header_value` | `string` | The expected value of the trusted header.  |
+
+#### Use Case and Example: Incoming API Key
 
 Secure the MCP Any server with API key authentication.
 
@@ -769,39 +842,10 @@ authentication:
   api_key:
     param_name: "X-Mcp-Api-Key"
     in: "HEADER"
-    key_value: "my-secret-key"
+    verification_value: "my-secret-key"
 ```
 
-##### `APIKeyAuth`
-
-| Field        | Type     | Description                                                     |
-| ------------ | -------- | --------------------------------------------------------------- |
-| `param_name` | `string` | The name of the parameter carrying the key (e.g., "X-API-Key"). |
-| `in`         | `enum`   | Where the API key is located (`HEADER` or `QUERY`).             |
-| `key_value`  | `string` | The actual API key value.                                       |
-
-##### `OAuth2Auth`
-
-| Field               | Type     | Description                                      |
-| ------------------- | -------- | ------------------------------------------------ |
-| `token_url`         | `string` | The URL to the OAuth 2.0 token endpoint.         |
-| `authorization_url` | `string` | The URL to the OAuth 2.0 authorization endpoint. |
-| `scopes`            | `string` | A space-delimited list of scopes.                |
-| `issuer_url`        | `string` | The URL of the JWT issuer for token validation.  |
-| `audience`          | `string` | The audience for JWT token validation.           |
-
-#### `UpstreamAuthentication` (Outgoing)
-
-Configures the authentication method for MCP Any to use when connecting to an upstream service.
-
-| Field          | Type                      | Description                                        |
-| -------------- | ------------------------- | -------------------------------------------------- |
-| `api_key`      | `UpstreamAPIKeyAuth`      | API key sent in a header.                          |
-| `bearer_token` | `UpstreamBearerTokenAuth` | Bearer token in the `Authorization` header.        |
-| `basic_auth`   | `UpstreamBasicAuth`       | Basic authentication with a username and password. |
-| `oauth2`       | `UpstreamOAuth2Auth`      | OAuth 2.0 client credentials flow.                 |
-
-##### Use Case and Example
+#### Use Case and Example: Outgoing OAuth2
 
 Authenticate with an upstream service using the OAuth 2.0 client credentials flow.
 
@@ -816,15 +860,16 @@ upstream_auth:
     scopes: "read:data write:data"
 ```
 
-##### Use Case and Example with Vault
+#### Use Case and Example: Outgoing API Key with Vault
 
 Authenticate with an upstream service using an API key stored in HashiCorp Vault.
 
 ```yaml
 upstream_auth:
   api_key:
-    header_name: "X-API-Key"
-    api_key:
+    param_name: "X-API-Key"
+    in: "HEADER"
+    value:
       vault:
         address: "https://vault.example.com"
         token: "s.1234567890abcdef"
@@ -832,61 +877,17 @@ upstream_auth:
         key: "api_key"
 ```
 
-##### Use Case and Example with AWS Secrets Manager
-
-Authenticate using an API key stored in AWS Secrets Manager.
-
-```yaml
-upstream_auth:
-  api_key:
-    header_name: "X-API-Key"
-    api_key:
-      aws_secret_manager:
-        secret_id: "my-app/api-keys"
-        json_key: "my-api-key"
-        region: "us-west-2"
-```
-
-##### `UpstreamAPIKeyAuth`
-
-| Field         | Type          | Description                                  |
-| ------------- | ------------- | -------------------------------------------- |
-| `header_name` | `string`      | The name of the header to carry the API key. |
-| `api_key`     | `SecretValue` | The API key value, managed as a secret.      |
-
-##### `UpstreamBearerTokenAuth`
-
-| Field   | Type          | Description                            |
-| ------- | ------------- | -------------------------------------- |
-| `token` | `SecretValue` | The bearer token, managed as a secret. |
-
-##### `UpstreamBasicAuth`
-
-| Field      | Type          | Description                            |
-| ---------- | ------------- | -------------------------------------- |
-| `username` | `string`      | The username for basic authentication. |
-| `password` | `SecretValue` | The password, managed as a secret.     |
-
-##### `UpstreamOAuth2Auth`
-
-| Field           | Type          | Description                               |
-| --------------- | ------------- | ----------------------------------------- |
-| `token_url`     | `string`      | The URL to the OAuth 2.0 token endpoint.  |
-| `client_id`     | `SecretValue` | The client ID for the OAuth 2.0 flow.     |
-| `client_secret` | `SecretValue` | The client secret for the OAuth 2.0 flow. |
-| `scopes`        | `string`      | A space-delimited list of scopes.         |
-
-##### `SecretValue`
+### SecretValue
 
 The `SecretValue` message provides a secure way to manage sensitive information like API keys, passwords, and tokens. It can be defined in one of the following ways:
 
-| Field                  | Type            | Description                                                    |
-| ---------------------- | --------------- | -------------------------------------------------------------- |
-| `plain_text`           | `string`        | The secret value as a plain text string. **(Not Recommended)** |
-| `environment_variable` | `string`        | The name of an environment variable containing the secret.     |
-| `file_path`            | `string`        | The path to a file containing the secret.                      |
-| `remote_content`       | `RemoteContent` | Fetches the secret from a remote URL.                          |
-| `vault`                | `VaultSecret`   | Fetches the secret from a HashiCorp Vault instance.            |
+| Field                  | Type                     | Description                                                    |
+| ---------------------- | ------------------------ | -------------------------------------------------------------- |
+| `plain_text`           | `string`                 | The secret value as a plain text string. **(Not Recommended)** |
+| `environment_variable` | `string`                 | The name of an environment variable containing the secret.     |
+| `file_path`            | `string`                 | The path to a file containing the secret.                      |
+| `remote_content`       | `RemoteContent`          | Fetches the secret from a remote URL.                          |
+| `vault`                | `VaultSecret`            | Fetches the secret from a HashiCorp Vault instance.            |
 | `aws_secret_manager`   | `AwsSecretManagerSecret` | Fetches the secret from AWS Secrets Manager.                   |
 
 ##### `VaultSecret`
@@ -937,11 +938,13 @@ tls_config:
 
 MCP Any allows you to define and execute prompts directly from your configuration files. This is useful for integrating with AI models and other services that require dynamic, template-based inputs.
 
-| Field         | Type                     | Description                            |
-| ------------- | ------------------------ | -------------------------------------- |
-| `name`        | `string`                 | The name of the prompt.                |
-| `description` | `string`                 | A description of what the prompt does. |
-| `messages`    | `repeated PromptMessage` | The list of messages in the prompt.    |
+| Field          | Type                     | Description                            |
+| -------------- | ------------------------ | -------------------------------------- |
+| `name`         | `string`                 | The name of the prompt.                |
+| `title`        | `string`                 | Human-readable title.                  |
+| `description`  | `string`                 | A description of what the prompt does. |
+| `input_schema` | `object`                 | JSON Schema for arguments.             |
+| `messages`     | `repeated PromptMessage` | The list of messages in the prompt.    |
 
 ### Use Case and Example
 
@@ -954,6 +957,7 @@ upstream_services:
       address: "https://api.example.com"
       prompts:
         - name: "my-prompt"
+          title: "My Prompt"
           description: "A sample prompt"
           messages:
             - role: "user"

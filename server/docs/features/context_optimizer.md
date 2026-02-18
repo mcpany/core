@@ -7,8 +7,9 @@ The Context Optimizer middleware automatically truncates large text outputs in J
 To enable the context optimizer:
 
 ```yaml
-context_optimizer:
-  max_chars: 32000 # Maximum characters per text field (default: 32000, approx 8000 tokens)
+global_settings:
+  context_optimizer:
+    max_chars: 32000 # Maximum characters per text field (default: 32000, approx 8000 tokens)
 ```
 
 ## How it works
