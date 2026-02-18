@@ -3797,6 +3797,25 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		if err := validation.IsSafeURL(val); err != nil {
 			return fmt.Errorf("unsafe url argument: %w", err)
 		}
+	} else if strings.HasPrefix(strings.ToLower(val), "ssh:") {
+		// Sentinel Security Update: Detect ssh: scheme without // (e.g. ssh:host or ssh:-o...)
+		// This format is valid for git/ssh but bypasses IsSafeURL.
+		// We must ensure it doesn't start with a dash to prevent option injection.
+		// Use Parse to correctly separate scheme from the rest.
+		if u, err := url.Parse(val); err == nil {
+			// Check Opaque part (ssh:opaque) or Host (ssh://host) if parser handled it weirdly
+			partToCheck := u.Opaque
+			if partToCheck == "" {
+				partToCheck = u.Host
+			}
+			if strings.HasPrefix(partToCheck, "-") {
+				return fmt.Errorf("unsafe ssh argument: %q (starts with '-')", partToCheck)
+			}
+		} else {
+			// If parsing fails but it starts with ssh:, it's likely malformed or dangerous.
+			// Block it to be safe.
+			return fmt.Errorf("unsafe ssh argument: %w", err)
+		}
 	}
 
 	if err := checkForPathTraversal(val); err != nil {
