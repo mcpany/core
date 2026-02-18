@@ -5,14 +5,13 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { UpstreamServiceConfig, FilesystemUpstreamService, OsFs, S3Fs, GcsFs, ZipFs, SftpFs } from "@/lib/client";
+import { UpstreamServiceConfig, FilesystemUpstreamService } from "@/lib/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, FolderOpen, Key } from "lucide-react";
+import { Plus, Trash2, Key } from "lucide-react";
 import { SecretPicker } from "@/components/secrets/secret-picker";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -32,10 +31,9 @@ export function FilesystemConfig({ service, onChange }: FilesystemConfigProps) {
     };
 
     const updateFs = (updates: Partial<FilesystemUpstreamService>) => {
-        onChange({
-            ...service,
-            filesystemService: { ...fsConfig, ...updates } as any
-        });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const newService = { ...service, filesystemService: { ...fsConfig, ...updates } as any };
+        onChange(newService);
     };
 
     const getFsType = () => {
@@ -49,6 +47,7 @@ export function FilesystemConfig({ service, onChange }: FilesystemConfigProps) {
     };
 
     const handleTypeChange = (type: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let newType: any = {};
         if (type === "os") newType = { os: {} };
         if (type === "s3") newType = { s3: { region: "us-east-1" } };
