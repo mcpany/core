@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator"
 import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
 import { ServiceHealthProvider } from "@/contexts/service-health-context"
-import { SystemStatusBanner } from "@/components/system-status-banner"
+import { SystemStatusIndicator } from "@/components/system-status-indicator"
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 /**
@@ -82,13 +82,13 @@ export default function RootLayout({
                              MCP Any
                          </div>
                          <div className="flex items-center gap-2">
+                             <SystemStatusIndicator />
                              <ConnectClientButton />
                              <GlobalSearch />
                              <ThemeToggle />
                          </div>
                      </div>
                   </header>
-                  <SystemStatusBanner />
                   <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
                     <ErrorBoundary>
                       {children}
