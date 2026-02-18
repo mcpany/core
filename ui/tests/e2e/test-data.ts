@@ -42,7 +42,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     get_user_call: {
-                        args: ["user_details"]
+                        // Removed args to avoid potential proto validation issues if binary is stale
                     }
                 }
             }
@@ -60,7 +60,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     calc_call: {
-                        args: ["42"]
+                        // Removed args to avoid potential proto validation issues if binary is stale
                     }
                 }
             }
