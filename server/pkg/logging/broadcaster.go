@@ -81,7 +81,9 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 
 // Unsubscribe removes a subscriber channel.
 //
-// ch is the ch.
+// Note: We do not close the channel here to avoid a panic in Broadcast if it races
+// with a send on the closed channel. Since Broadcast uses non-blocking sends and
+// the channel is buffered, leaving it open for GC is safe.
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
