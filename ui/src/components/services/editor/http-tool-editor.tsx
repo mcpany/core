@@ -12,16 +12,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Trash2, Plus, Play, Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputTransformerEditor } from "./input-transformer-editor";
 import { OutputTransformerEditor } from "./output-transformer-editor";
+import { RequestPreview } from "./request-preview";
+import { apiClient } from "@/lib/client";
+import { Textarea } from "@/components/ui/textarea";
 
 interface HttpToolEditorProps {
     tool: ToolDefinition;
     call: HttpCallDefinition;
+    serviceName: string;
     onChange: (tool: ToolDefinition, call: HttpCallDefinition) => void;
 }
 
@@ -31,10 +35,16 @@ interface HttpToolEditorProps {
  * @param props - The component props.
  * @returns The rendered tool editor.
  */
-export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
+export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEditorProps) {
     const [localTool, setLocalTool] = useState<ToolDefinition>(tool);
     const [localCall, setLocalCall] = useState<HttpCallDefinition>(call);
     const [activeTab, setActiveTab] = useState("request");
+
+    // Test State
+    const [testArgsJson, setTestArgsJson] = useState("{}");
+    const [testArgs, setTestArgs] = useState<Record<string, any>>({});
+    const [executionResult, setExecutionResult] = useState<any>(null);
+    const [isExecuting, setIsExecuting] = useState(false);
 
     useEffect(() => {
         setLocalTool(tool);
@@ -90,6 +100,47 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
 
     const handleOutputTransformerChange = (transformer: OutputTransformer) => {
         updateCall({ outputTransformer: transformer });
+    };
+
+    const handleTestArgsChange = (value: string) => {
+        setTestArgsJson(value);
+        try {
+            const parsed = JSON.parse(value);
+            setTestArgs(parsed);
+        } catch {
+            // Ignore JSON error for preview update
+        }
+    };
+
+    const handleExecute = async () => {
+        setIsExecuting(true);
+        setExecutionResult(null);
+        try {
+            let args = {};
+            try {
+                args = JSON.parse(testArgsJson);
+            } catch {
+                throw new Error("Invalid JSON arguments");
+            }
+
+            // Construct fully qualified tool name
+            // If serviceName is empty (e.g. creating new service), user must save first.
+            // But if we are editing existing service, we can execute.
+            if (!serviceName) {
+                throw new Error("Please save the service first to execute tools.");
+            }
+
+            const toolName = `${serviceName}.${localTool.name}`;
+            const result = await apiClient.executeTool({
+                name: toolName,
+                arguments: args
+            });
+            setExecutionResult(result);
+        } catch (e: any) {
+            setExecutionResult({ error: e.message || String(e) });
+        } finally {
+            setIsExecuting(false);
+        }
     };
 
     return (
@@ -149,10 +200,13 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full justify-start">
+                <TabsList className="w-full justify-start flex-wrap h-auto">
                     <TabsTrigger value="request">Request Parameters</TabsTrigger>
                     <TabsTrigger value="input-transform">Input Transform</TabsTrigger>
                     <TabsTrigger value="output-transform">Output Transform</TabsTrigger>
+                    <TabsTrigger value="test" className="ml-auto bg-primary/10 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                        <Play className="w-3 h-3 mr-1" /> Test & Preview
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="request" className="space-y-4 mt-4">
@@ -238,6 +292,52 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                         transformer={localCall.outputTransformer}
                         onChange={handleOutputTransformerChange}
                     />
+                </TabsContent>
+
+                <TabsContent value="test" className="mt-4 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Test Arguments (JSON)</Label>
+                                <Textarea
+                                    value={testArgsJson}
+                                    onChange={(e) => handleTestArgsChange(e.target.value)}
+                                    className="font-mono text-xs h-[200px]"
+                                    placeholder='{ "userId": "123" }'
+                                />
+                            </div>
+                            <Button className="w-full" onClick={handleExecute} disabled={isExecuting || !serviceName}>
+                                {isExecuting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                                {serviceName ? "Execute Tool" : "Save Service to Execute"}
+                            </Button>
+                            {!serviceName && (
+                                <p className="text-[10px] text-muted-foreground text-center">
+                                    You must save the service definition before you can execute the tool against the live backend.
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-4 h-full">
+                            <RequestPreview
+                                call={localCall}
+                                tool={localTool}
+                                serviceName={serviceName}
+                                args={testArgs}
+                            />
+                        </div>
+                    </div>
+
+                    {executionResult && (
+                        <Card>
+                            <CardHeader className="py-3">
+                                <CardTitle className="text-sm">Execution Result</CardTitle>
+                            </CardHeader>
+                            <CardContent className="py-3">
+                                <pre className="text-xs bg-black text-green-400 p-2 rounded overflow-auto max-h-[300px] font-mono">
+                                    {JSON.stringify(executionResult, null, 2)}
+                                </pre>
+                            </CardContent>
+                        </Card>
+                    )}
                 </TabsContent>
             </Tabs>
         </div>

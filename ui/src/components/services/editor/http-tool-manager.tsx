@@ -240,6 +240,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                             <HttpToolEditor
                                 tool={tools[editingToolIndex]}
                                 call={getCallForTool(tools[editingToolIndex])}
+                                serviceName={service.name}
                                 onChange={handleToolChange}
                             />
                         )}
