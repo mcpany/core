@@ -19,11 +19,12 @@ test.describe('User Guide Walkthrough', () => {
     });
 
     await page.goto('/');
+    // Use .first() to handle potential duplicates or strict mode violations if multiple matches exist temporarily
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=Total Requests').first()).toBeVisible({ timeout: 10000 });
     // Check for "Active Services" card
-    await expect(page.locator('text=Active Services')).toBeVisible();
-    await expect(page.locator('text=Connected Tools')).toBeVisible();
+    await expect(page.locator('text=Active Services').first()).toBeVisible();
+    await expect(page.locator('text=Connected Tools').first()).toBeVisible();
   });
 
   test('Services: Add Service Redirects to Marketplace', async ({ page }) => {

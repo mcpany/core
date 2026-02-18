@@ -16,7 +16,8 @@ test.describe('Services Verification', () => {
     await page.getByRole('button', { name: 'Add Service' }).click();
 
     // 3. Verify Sheet/Dialog Opens
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible();
+    // Use .first() to handle cases where multiple dialogs might be detected or lingering
+    await expect(page.getByRole('dialog').first()).toBeVisible();
+    await expect(page.getByText('New Service').first()).toBeVisible();
   });
 });

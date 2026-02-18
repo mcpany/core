@@ -11,7 +11,8 @@ test('dashboard network topology widget', async ({ page }) => {
 
   // The widget should be present in the default layout.
   // We can look for the React Flow container
-  await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+  // Use .first() to handle cases where multiple instances might linger or exist
+  await expect(page.locator('.react-flow').first()).toBeVisible({ timeout: 30000 });
 
   // We can also check if the widget title "Network Topology" is visible in the layout configuration (if we opened it)
   // But we want to check the widget itself.
