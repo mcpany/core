@@ -1118,8 +1118,21 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--grpc-port", grpcRegPortArg,
 		"--db-path", dbPath,
 	}
-	args = append(args, extraArgs...)
+
+	// Separate args and envs
+	var finalArgs []string
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
+
+	for _, arg := range extraArgs {
+		if strings.HasPrefix(arg, "ENV:") {
+			env = append(env, strings.TrimPrefix(arg, "ENV:"))
+		} else {
+			finalArgs = append(finalArgs, arg)
+		}
+	}
+
+	args = append(args, finalArgs...)
+
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}

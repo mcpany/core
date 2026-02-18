@@ -44,6 +44,7 @@ var portRegex = regexp.MustCompile(`(?:metricsPort=|Metrics server listening on 
 type E2ETestCase struct {
 	Name                         string
 	UpstreamServiceType          string
+	ServerEnv                    map[string]string
 	BuildUpstream                func(t *testing.T) *integration.ManagedProcess
 	RegisterUpstream             func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
 	ValidateTool                 func(t *testing.T, mcpanyEndpoint string)
@@ -119,15 +120,26 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 				}
 			}
 
+			var extraArgs []string
+			for k, v := range testCase.ServerEnv {
+				extraArgs = append(extraArgs, fmt.Sprintf("ENV:%s=%s", k, v))
+			}
+
 			var mcpanyTestServerInfo *integration.MCPANYTestServerInfo
 			switch {
 			case testCase.StartMCPANYServer != nil:
-				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name)
+				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name, extraArgs...)
 			case method == FileRegistration:
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("127.0.0.1:%d", upstreamServerProc.Port))
+				// StartMCPANYServerWithConfig doesn't take extraArgs yet?
+				// It calls StartMCPANYServer internally with --config-path.
+				// We need to check integration.StartMCPANYServerWithConfig signature.
+				// It is: func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *MCPANYTestServerInfo
+				// It doesn't take extraArgs. We might need to update it too or fail here.
+				// But MCP_Playwright_Stdio uses GRPCRegistration, so it hits default case.
 				mcpanyTestServerInfo = integration.StartMCPANYServerWithConfig(t, testCase.Name, configContent)
 			default:
-				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
+				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name, extraArgs...)
 			}
 			t.Cleanup(mcpanyTestServerInfo.CleanupFunc)
 

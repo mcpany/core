@@ -21,6 +21,7 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 
 	testCase := &framework.E2ETestCase{
 		Name:                "playwright server (Stdio)",
+		ServerEnv:           map[string]string{"MCP_ALLOW_UNSAFE_SETUP_COMMANDS": "true"},
 		UpstreamServiceType: "stdio",
 		BuildUpstream:       func(_ *testing.T) *integration.ManagedProcess { return nil },
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
