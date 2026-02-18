@@ -23,7 +23,12 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 		Name:                "playwright server (Stdio)",
 		ServerEnv:           map[string]string{"MCP_ALLOW_UNSAFE_SETUP_COMMANDS": "true"},
 		UpstreamServiceType: "stdio",
-		BuildUpstream:       func(_ *testing.T) *integration.ManagedProcess { return nil },
+		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
+			if err := integration.PullDockerImage(t, "mcr.microsoft.com/playwright:v1.58.0-jammy"); err != nil {
+				t.Skipf("Skipping test due to Docker pull failure (likely overlayfs/permissions issue): %v", err)
+			}
+			return nil
+		},
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 			const serviceID = "playwright"
 			env := map[string]string{

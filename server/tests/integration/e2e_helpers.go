@@ -594,6 +594,27 @@ func IsDockerSocketAccessible() bool {
 
 // --- Mock Service Start Helpers (External Processes) ---
 
+// PullDockerImage pulls a docker image.
+//
+// t is the t.
+// imageName is the imageName.
+//
+// Returns an error if the pull fails.
+func PullDockerImage(t *testing.T, imageName string) error {
+	t.Helper()
+	dockerExe, dockerBaseArgs := getDockerCommand()
+
+	args := append(dockerBaseArgs, "pull", imageName)
+	cmd := exec.CommandContext(context.Background(), dockerExe, args...)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("Warning: Failed to pull docker image %s: %v\nOutput: %s", imageName, err, string(out))
+		return err
+	}
+	t.Logf("Successfully pulled docker image %s", imageName)
+	return nil
+}
+
 // StartDockerContainer starts a docker container with the given image and args.
 //
 // t is the t.
@@ -606,6 +627,9 @@ func IsDockerSocketAccessible() bool {
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
+
+	// Ensure image is present (best effort)
+	_ = PullDockerImage(t, imageName)
 
 	// buildArgs safely creates a new slice for command arguments.
 	buildArgs := func(cmdArgs ...string) []string {
