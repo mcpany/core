@@ -16,7 +16,11 @@ vi.mock('@/lib/service-registry', () => ({
             id: 'mock-postgres',
             name: 'Mock Postgres',
             description: 'Mock DB',
-            command: 'mock-cmd',
+            config: {
+                commandLineService: {
+                    command: 'mock-cmd'
+                }
+            },
             configurationSchema: {
                 properties: {
                     POSTGRES_URL: { default: 'postgres://mock' }

@@ -70,25 +70,21 @@ export function StepServiceType() {
                 });
             }
 
-            // Build config env object from defaults
-            const env: Record<string, any> = {};
-            Object.keys(defaults).forEach(k => {
-                env[k] = { plainText: defaults[k] };
-            });
+            // Determine type based on config presence for merging
+            let config: any = {
+                configurationSchema: JSON.stringify(item.configurationSchema)
+            };
+
+            // Use spread to copy config from template
+            if (item.config) {
+                config = { ...config, ...item.config };
+            }
 
             return {
                 id: item.id,
                 name: item.name,
                 description: item.description,
-                config: {
-                    commandLineService: {
-                        command: item.command,
-                        env: env,
-                        workingDirectory: ''
-                    },
-                    openapiService: undefined,
-                    configurationSchema: JSON.stringify(item.configurationSchema)
-                },
+                config: config,
                 params: defaults
             };
         });
