@@ -1,55 +1,55 @@
-# Monitoring
+# Monitoring & Metrics
 
-MCP Any provides built-in observability through a Prometheus metrics endpoint. This allows you to track the performance and health of your MCP server, including request rates, latencies, and error counts for tools and services.
+MCP Any exposes comprehensive metrics in Prometheus format to help you monitor the health and performance of your server.
 
-## Configuration
+## Endpoint
 
-Monitoring is primarily enabled via a command-line flag when starting the server.
+Metrics are exposed at the `/metrics` endpoint by default.
 
-- `--metrics-listen-address`: The address to expose Prometheus metrics on (e.g., `:9090`).
+```bash
+curl http://localhost:8081/metrics
+```
 
-If this flag is provided, the server will start a metrics server.
+> **Note**: The metrics server port is configurable via `--metrics-listen-address` or `MCPANY_METRICS_LISTEN_ADDRESS`.
 
-### Service Configuration
+## Key Metrics
 
-While monitoring is enabled globally, the metrics are tagged by **service name** and **tool name**. Therefore, defining meaningful names in your configuration is key to effective monitoring.
+### Tool Execution Metrics
+
+These metrics provide deep insights into tool usage, performance, and token consumption.
+
+| Metric Name | Type | Labels | Description |
+| :--- | :--- | :--- | :--- |
+| `mcpany_tools_call_total` | Counter | `tool`, `service_id`, `status` (success/error), `error_type` | Total number of tool executions. |
+| `mcpany_tools_call_latency_seconds` | Histogram | `tool`, `service_id`, `status`, `error_type` | Latency distribution of tool executions. |
+| `mcpany_tools_call_tokens_total` | Counter | `tool`, `service_id`, `direction` (input/output) | Total tokens consumed by tool inputs and outputs. |
+| `mcpany_tools_call_in_flight` | Gauge | `tool`, `service_id` | Current number of tool executions in progress. |
+| `mcpany_tools_call_input_bytes` | Histogram | `tool`, `service_id` | Size of tool inputs in bytes. |
+| `mcpany_tools_call_output_bytes` | Histogram | `tool`, `service_id` | Size of tool outputs in bytes. |
+
+### System & Middleware Metrics
+
+These metrics track the overall health and request flow of the server.
+
+| Metric Name | Type | Description |
+| :--- | :--- | :--- |
+| `mcpany_middleware_request_total` | Counter | Total number of requests processed by the middleware chain. |
+| `mcpany_middleware_request_latency` | Summary | Latency of request processing in the middleware chain. |
+| `mcpany_middleware_request_error` | Counter | Total number of failed requests. |
+| `mcpany_config_reload_total` | Counter | Total number of configuration reload attempts. |
+| `mcpany_config_reload_errors` | Counter | Total number of failed configuration reloads. |
+
+## Integration with Prometheus
+
+To scrape these metrics, add a job to your `prometheus.yml`:
 
 ```yaml
-upstream_services:
-  - name: "weather-service" # This name appears in metrics
-    http_service:
-      address: "https://api.weather.com"
-      tools:
-        - name: "get_forecast" # This name appears in metrics
+scrape_configs:
+  - job_name: 'mcpany'
+    static_configs:
+      - targets: ['localhost:8081']
 ```
 
-## Use Case
+## Dashboard
 
-You want to alert if the error rate of your "weather-service" exceeds 5% or if the P99 latency of "get_forecast" goes above 2 seconds. By enabling the metrics endpoint and scraping it with Prometheus, you can build Grafana dashboards to visualize these metrics and set up Alertmanager rules.
-
-## Available Metrics
-
-- `mcpany_tools_call_total`: Total number of tool calls.
-  - Labels: `tool`, `service_id`, `status` (success/error), `error_type`
-- `mcpany_tools_call_latency_seconds`: Latency of tool calls in seconds.
-  - Labels: `tool`, `service_id`, `status`
-- `mcpany_grpc_connections_opened_total`: Total number of opened gRPC connections.
-- `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
-- `mcpany_grpc_rpc_started_total`: Total number of started gRPC RPCs.
-- `mcpany_grpc_rpc_finished_total`: Total number of finished gRPC RPCs.
-
-*Note: Some metrics like `mcpany_tool_execution_total` mentioned in older documentation have been standardized to `mcpany_tools_call_total` with labels.*
-
-## Public API Example
-
-Start the server:
-
-```bash
-./mcp-any-server --config config.yaml --metrics-listen-address :9090
-```
-
-Scrape the metrics:
-
-```bash
-curl http://localhost:9090/metrics
-```
+You can visualize these metrics using Grafana. A sample dashboard JSON is available in the `examples/monitoring/grafana` directory (if available).

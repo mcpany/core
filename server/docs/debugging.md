@@ -19,6 +19,26 @@ export MCPANY_DEBUG=true
 
 When debug mode is enabled, the server will log the full JSON-RPC request and response for each tool call. The logs will be printed to standard output or to the file specified by the `--logfile` flag.
 
+### Important Note on Middlewares
+
+The debug logging functionality is provided by the `debug` middleware. This middleware is enabled by default in the standard configuration chain.
+
+However, if you explicitly configure a custom list of `middlewares` in your `config.yaml`, **you must include the `debug` middleware in your list** to enable JSON-RPC payload logging.
+
+Example `config.yaml`:
+
+```yaml
+global_settings:
+  middlewares:
+    - name: debug
+      priority: 10
+    - name: logging
+      priority: 20
+    # ... other middlewares
+```
+
+If the `debug` middleware is missing from your custom configuration, setting `--debug` will still enable debug-level logging for the system (e.g., connection details, internal errors) but will **not** log the full JSON-RPC request/response bodies.
+
 ## Example Log Output
 
 Here is an example of the log output when debug mode is enabled (using structured logging):
