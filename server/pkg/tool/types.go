@@ -2986,8 +2986,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		// in unquoted (Level 0), double-quoted (Level 1), and single-quoted (Level 2) strings.
+		// Unquoted strings can be executed as code (e.g., barewords + args in Perl/Ruby).
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3188,10 +3189,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
-		"spawn", "fork",
+		"spawn", "fork", "syscall", "trap", "readpipe",
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"Function", "setTimeout", "setInterval", "setImmediate",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {

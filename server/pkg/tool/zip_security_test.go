@@ -38,9 +38,9 @@ func TestZipSecurity(t *testing.T) {
 			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
 		} else {
 			// If error is "executable file not found", it means validation passed -> Vulnerable
-			// The validation error we want is "shell injection detected"
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
+			// The validation error we want is "injection detected" (shell or interpreter)
+			if !strings.Contains(err.Error(), "injection detected") {
+				t.Fatalf("Expected injection error, got: %v (Vulnerability present: validation passed)", err)
 			}
 		}
 	})
@@ -59,8 +59,8 @@ func TestZipSecurity(t *testing.T) {
 		if err == nil {
 			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
 		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
+			if !strings.Contains(err.Error(), "injection detected") {
+				t.Fatalf("Expected injection error, got: %v (Vulnerability present: validation passed)", err)
 			}
 		}
 	})
@@ -79,8 +79,8 @@ func TestZipSecurity(t *testing.T) {
 		if err == nil {
 			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
 		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
+			if !strings.Contains(err.Error(), "injection detected") {
+				t.Fatalf("Expected injection error, got: %v (Vulnerability present: validation passed)", err)
 			}
 		}
 	})
@@ -99,8 +99,8 @@ func TestZipSecurity(t *testing.T) {
 		if err == nil {
 			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
 		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
+			if !strings.Contains(err.Error(), "injection detected") {
+				t.Fatalf("Expected injection error, got: %v (Vulnerability present: validation passed)", err)
 			}
 		}
 	})
