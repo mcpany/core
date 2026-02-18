@@ -3187,9 +3187,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
 	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
 	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
-		"import", "require",
+		"system", "exec", "popen", "eval", "assert",
+		"passthru", "shell_exec", "proc_open", "pcntl_exec",
+		"spawn", "fork", "syscall",
+		"import", "require", "include",
+		"include_once", "require_once", "load", "dl",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 	}
