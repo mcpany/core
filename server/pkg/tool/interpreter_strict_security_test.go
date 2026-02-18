@@ -14,6 +14,7 @@ import (
 )
 
 func TestPerlSystemInjection(t *testing.T) {
+	// Verify that 'system' calls are blocked even when unquoted (barewords)
 	runPerlInjectionTest(t, "system ls", "system")
 }
 
