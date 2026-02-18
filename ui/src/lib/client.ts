@@ -1099,6 +1099,73 @@ export const apiClient = {
         return {};
     },
 
+    // Credentials
+
+    /**
+     * Lists all credentials.
+     * @returns A promise that resolves to a list of credentials.
+     */
+    listCredentials: async () => {
+        const res = await fetchWithAuth('/credentials');
+        if (!res.ok) throw new Error('Failed to list credentials');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.credentials || []);
+    },
+
+    /**
+     * Creates a new credential.
+     * @param credential The credential to create.
+     * @returns A promise that resolves to the created credential.
+     */
+    createCredential: async (credential: any) => {
+        const res = await fetchWithAuth('/credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credential)
+        });
+        if (!res.ok) throw new Error('Failed to create credential');
+        return res.json();
+    },
+
+    /**
+     * Gets a credential by ID.
+     * @param id The ID of the credential.
+     * @returns A promise that resolves to the credential.
+     */
+    getCredential: async (id: string) => {
+        const res = await fetchWithAuth(`/credentials/${id}`);
+        if (!res.ok) throw new Error('Failed to get credential');
+        return res.json();
+    },
+
+    /**
+     * Updates a credential.
+     * @param credential The credential to update.
+     * @returns A promise that resolves to the updated credential.
+     */
+    updateCredential: async (credential: any) => {
+        const res = await fetchWithAuth(`/credentials/${credential.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credential)
+        });
+        if (!res.ok) throw new Error('Failed to update credential');
+        return res.json();
+    },
+
+    /**
+     * Deletes a credential.
+     * @param id The ID of the credential to delete.
+     * @returns A promise that resolves when the credential is deleted.
+     */
+    deleteCredential: async (id: string) => {
+        const res = await fetchWithAuth(`/credentials/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete credential');
+        return {};
+    },
+
     // Global Settings
 
     /**
@@ -1326,6 +1393,20 @@ export const apiClient = {
             body: JSON.stringify(points)
         });
         if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
+    /**
+     * Seeds the database with the provided data (Debug/Test only).
+     * @param data The data to seed (services, users, secrets, etc.).
+     */
+    seedDatabase: async (data: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Failed to seed database');
+        return res.json();
     },
 
     /**

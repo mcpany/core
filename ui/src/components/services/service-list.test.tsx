@@ -24,6 +24,7 @@ const mockServices: UpstreamServiceConfig[] = [
     prompts: [],
     autoDiscoverTool: false,
     configError: "",
+    configurationSchema: "",
     readOnly: false,
     httpService: {
         address: "http://localhost:8080",
@@ -48,6 +49,7 @@ const mockServices: UpstreamServiceConfig[] = [
     prompts: [],
     autoDiscoverTool: false,
     configError: "",
+    configurationSchema: "",
     readOnly: false,
     httpService: {
         address: "http://localhost:8081",

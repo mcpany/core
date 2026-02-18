@@ -638,7 +638,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                             }
 
                                             const redirectUrl = `${window.location.origin}/oauth/callback`;
-                                            const res = await apiClient.initiateOAuth(serviceId, redirectUrl);
+                                            const res = await apiClient.initiateOAuth(serviceId, "", redirectUrl);
 
                                             // Store context for callback
                                             sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({
