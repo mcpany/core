@@ -16,15 +16,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            command_line_service: {
+                command: "echo",
                 tools: [
-                    { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                    { name: "process_payment", description: "Process a payment", input_schema: {}, call_id: "process_payment_call" }
                 ],
                 calls: {
                     process_payment_call: {
-                        method: "HTTP_METHOD_POST",
-                        endpoint_path: "/v1/charges"
+                        args: ["{\"status\": \"processed\"}"]
                     }
                 }
             }
