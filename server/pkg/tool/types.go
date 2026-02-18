@@ -3570,6 +3570,15 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
+		// Sentinel Security Update: Block indirect function calls (@f()), extensions (@include, @load),
+		// and explicit system() calls.
+		// Although checkInterpreterFunctionCalls covers system(), this adds depth against obfuscation.
+		if strings.Contains(val, "@") {
+			return fmt.Errorf("awk injection detected: value contains '@'")
+		}
+		if strings.Contains(val, "system") {
+			return fmt.Errorf("awk injection detected: value contains 'system'")
+		}
 	}
 	return nil
 }
