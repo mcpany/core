@@ -265,7 +265,9 @@ prepare:
 		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
 			(cd tests/integration/upstream && npm install) || true; \
-			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
+			if [ -n "$(SKIP_PLAYWRIGHT)" ]; then \
+				echo "Skipping Playwright installation (SKIP_PLAYWRIGHT is set)."; \
+			elif [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
 				echo "CI detected, installing Playwright with system dependencies..."; \
 				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
 			else \
@@ -458,7 +460,7 @@ else
 	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
-	$(GOLANGCI_LINT_BIN) run --timeout 10m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
+	$(GOLANGCI_LINT_BIN) run --timeout 20m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
 	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
