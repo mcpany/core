@@ -123,13 +123,14 @@ export default function MarketplacePage() {
 
   const handleWizardComplete = async (config: UpstreamServiceConfig) => {
       try {
-          await apiClient.saveTemplate(config);
-          toast({ title: "Config Saved", description: `${config.name} saved to Backend Templates.` });
+          await apiClient.registerService(config);
+          toast({ title: "Service Deployed", description: `${config.name} has been deployed successfully.` });
           setIsWizardOpen(false);
+          // Redirect or reload? For now reload data although services are on another page.
           loadData();
       } catch (e) {
           console.error(e);
-          toast({ title: "Failed to save template", variant: "destructive", description: String(e) });
+          toast({ title: "Failed to deploy service", variant: "destructive", description: String(e) });
       }
   };
 

@@ -3,190 +3,85 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useWizard } from "../wizard-context";
-import { useEffect, useState } from "react";
-import { apiClient, Credential } from "@/lib/client";
-import { Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from 'react';
+import { useWizard } from '../wizard-context';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { apiClient } from '@/lib/client';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { RotateCw } from 'lucide-react';
 
 /**
  * StepAuth component.
  * @returns The rendered component.
  */
 export function StepAuth() {
-  const { state, updateConfig, updateState } = useWizard();
-  const { config, authCredentialId } = state;
-  const [credentials, setCredentials] = useState<Credential[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [testing, setTesting] = useState(false);
-  const [testResult, setTestResult] = useState<{success: boolean, message: string} | null>(null);
-  const [justConnected, setJustConnected] = useState(false);
+    const { state, updateConfig } = useWizard();
+    const { config } = state;
+    const [credentials, setCredentials] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedCredId, setSelectedCredId] = useState<string>('none');
 
-  useEffect(() => {
-    const fetchCredentials = async () => {
-      try {
-        const creds = await apiClient.listCredentials();
-        setCredentials(creds);
-      } catch (e) {
-        console.error("Failed to load credentials", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCredentials();
-  }, []);
-
-  const [selectedCredId, setSelectedCredId] = useState<string>(authCredentialId || "");
-
-  // Sync with context
-  useEffect(() => {
-      if (authCredentialId && authCredentialId !== selectedCredId) {
-          setSelectedCredId(authCredentialId);
-      }
-  }, [authCredentialId]);
-
-  const handleAuthChange = (value: string) => {
-      updateState({ authCredentialId: value });
-  };
-
-  const getServiceType = (c: any) => {
-      if (c.httpService) return "http";
-      if (c.grpcService) return "grpc";
-      if (c.commandLineService) return "command_line";
-      if (c.mcpService) return "mcp";
-      if (c.serviceType) return c.serviceType; // Fallback if manually set in state
-      return "unknown";
-  };
-
-  const testConnection = async () => {
-      setTesting(true);
-      setTestResult(null);
-      try {
-          const res = await apiClient.testAuth({
-              credential_id: selectedCredId,
-              service_type: getServiceType(config),
-              service_config: config
-           });
-          setTestResult({
-              success: res.success,
-              message: res.message || (res.success ? "Connection successful" : "Connection failed")
-          });
-      } catch (e) {
-          console.error("Auth test error:", e);
-          setTestResult({ success: false, message: "Connection failed (Network/Server Error)" });
-      } finally {
-          setTesting(false);
-      }
-  };
-
-  const selectedCred = credentials.find(c => c.id === selectedCredId);
-  const isOAuthConfigured = selectedCred?.authentication?.oauth2;
-
-  const handleConnect = async () => {
-    if (!selectedCred || !selectedCredId) return;
-
-    try {
+    const loadCredentials = async () => {
         setLoading(true);
-        const redirectUrl = `${window.location.origin}/auth/callback`;
+        try {
+            const list = await apiClient.listCredentials();
+            setCredentials(list);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        // SAVE to wizard state before leaving!
-        updateState({ authCredentialId: selectedCredId });
+    useEffect(() => {
+        loadCredentials();
+    }, []);
 
-        const res = await apiClient.initiateOAuth(getServiceType(config), redirectUrl, selectedCredId);
+    const handleSelect = (val: string) => {
+        setSelectedCredId(val);
+        if (val === 'none') {
+            updateConfig({ upstreamAuth: undefined });
+        } else {
+            const cred = credentials.find(c => c.id === val);
+            if (cred && cred.authentication) {
+                updateConfig({ upstreamAuth: cred.authentication });
+            }
+        }
+    };
 
-        // Store context for callback
-        sessionStorage.setItem('oauth_service_id', getServiceType(config) === 'unknown' ? '' : getServiceType(config));
-        sessionStorage.setItem('oauth_credential_id', selectedCredId);
-        sessionStorage.setItem('oauth_state', res.state);
-        sessionStorage.setItem('oauth_redirect_url', redirectUrl);
-        const returnPath = window.location.pathname;
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set('wizard', 'open');
-        sessionStorage.setItem('oauth_return_path', `${returnPath}?${searchParams.toString()}`);
+    return (
+        <div className="space-y-4">
+            <h3 className="text-lg font-medium">Authentication</h3>
 
-        // Redirect
-        window.location.href = res.authorization_url;
-    } catch (e) {
-        console.error("OAuth init failed", e);
-        setTestResult({ success: false, message: "Failed to initiate OAuth flow" });
-        setLoading(false);
-    }
-  };
+            <div className="space-y-2">
+                <Label htmlFor="auth-select">Select Credential (Optional)</Label>
+                <div className="flex gap-2">
+                    <Select value={selectedCredId} onValueChange={handleSelect}>
+                        <SelectTrigger id="auth-select" className="w-full">
+                            <SelectValue placeholder="No Authentication" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {credentials.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button size="icon" variant="ghost" onClick={loadCredentials} disabled={loading}>
+                        <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                    </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                    Bind a saved credential to this service. The authentication configuration (e.g. API keys, OAuth tokens) will be applied.
+                </p>
+            </div>
 
-  if (loading) {
-      return <div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin" /></div>;
-  }
-
-  return (
-    <div className="space-y-6">
-      <Alert variant="default" className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
-        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-        <AlertTitle className="text-amber-800 dark:text-amber-300">Test Connection Only</AlertTitle>
-        <AlertDescription className="text-amber-700 dark:text-amber-400">
-          Authentication selected here is used <strong>only to test connectivity</strong> during this configuration.
-          The actual credential binding for the running service must be configured in the <strong>Upstream Services</strong> page after instantiation.
-        </AlertDescription>
-      </Alert>
-
-      <div className="space-y-4">
-          <Label htmlFor="cred-select">Select Credential for Testing</Label>
-          <Select onValueChange={(val) => { setSelectedCredId(val); handleAuthChange(val); }} value={selectedCredId}>
-              <SelectTrigger id="cred-select">
-                  <SelectValue placeholder="Select a credential..." />
-              </SelectTrigger>
-              <SelectContent>
-                  {credentials.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                  {credentials.length === 0 && (
-                       <SelectItem value="none" disabled>No credentials found</SelectItem>
-                  )}
-              </SelectContent>
-          </Select>
-
-          <div className="pt-4 flex gap-4">
-              <Button
-                onClick={testConnection}
-                disabled={!selectedCredId || testing}
-                variant="secondary"
-                className="w-full sm:w-auto"
-              >
-                  {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-                  Test Connection
-              </Button>
-
-              {isOAuthConfigured && (
-                  <Button
-                    onClick={handleConnect}
-                    disabled={!selectedCredId}
-                    variant="default"
-                    className="w-full sm:w-auto"
-                  >
-                      Connect with OAuth
-                  </Button>
-              )}
-          </div>
-
-          {testResult && (
-              <Alert variant={testResult.success ? "default" : "destructive"} className={testResult.success ? "border-green-200 bg-green-50 dark:bg-green-900/10" : ""}>
-                   <AlertDescription className={testResult.success ? "text-green-800 dark:text-green-300" : ""}>
-                       {testResult.message}
-                   </AlertDescription>
-              </Alert>
-          )}
-
-          {isOAuthConfigured && selectedCred?.token?.accessToken && (
-              <Alert variant="default" className="border-green-200 bg-green-50 dark:bg-green-900/10" id="oauth-success-alert">
-                  <AlertDescription className="text-green-800 dark:text-green-300 flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4" />
-                      Account Connected
-                  </AlertDescription>
-              </Alert>
-          )}
-      </div>
-    </div>
-  );
+            {config.upstreamAuth && (
+                <div className="p-3 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300 rounded-md text-sm border border-green-200 dark:border-green-900">
+                    Authentication configured from credential.
+                </div>
+            )}
+        </div>
+    );
 }

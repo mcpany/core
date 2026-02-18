@@ -5,89 +5,56 @@
 
 import React from 'react';
 import { useWizard } from '../wizard-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Trash2, Plus } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SchemaForm } from '@/components/marketplace/schema-form';
+import { EnvVarEditor } from '@/components/services/env-var-editor';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 /**
  * StepParameters component.
  * @returns The rendered component.
  */
 export function StepParameters() {
-    const { state, updateState, updateConfig } = useWizard();
-    const { params, config } = state;
+    const { state, updateConfig, updateState } = useWizard();
+    const { config, selectedTemplateId, params } = state;
 
-    // Parse Schema if available
-    const schema = React.useMemo(() => {
-        if (!config.configurationSchema) return null;
-        try {
-            return JSON.parse(config.configurationSchema);
-        } catch (e) {
-            console.error("Failed to parse schema", e);
-            return null;
+    // Determine if we have a schema to render
+    // The schema string is stored in config.configurationSchema (if from template)
+    let schema: any = null;
+    try {
+        if (config.configurationSchema) {
+            schema = JSON.parse(config.configurationSchema);
         }
-    }, [config.configurationSchema]);
+    } catch (e) {
+        // ignore
+    }
 
-    const handleSchemaChange = (newValues: Record<string, string>) => {
-        updateState({ params: newValues });
+    const handleSchemaChange = (newParams: Record<string, string>) => {
+        updateState({ params: newParams });
+
+        // Also map back to config env vars if commandLineService exists
+        // This mapping depends on the template logic. Usually schema fields map to env vars.
         if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newValues).forEach(([k, v]) => {
-                env[k] = { plainText: v };
+            const newEnv = { ...(config.commandLineService.env || {}) };
+            Object.entries(newParams).forEach(([k, v]) => {
+                // Determine env var name. Schema properties keys are usually env var names?
+                // The SERVICE_REGISTRY uses uppercase keys for env vars directly as properties.
+                // So we can assume keys match.
+                newEnv[k] = v; // Simple string assignment
             });
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
-                    env
+                    env: newEnv as any
                 }
             });
+        } else if (config.httpService) {
+             // Maybe map to something else? For now assume env vars or manual config.
         }
     };
 
-    const handleParamChange = (key: string, value: string, newKey?: string) => {
-        const newParams = { ...params };
-        if (newKey !== undefined && newKey !== key) {
-             // Key change
-             delete newParams[key];
-             newParams[newKey] = value;
-        } else {
-            newParams[key] = value;
-        }
-        updateState({ params: newParams });
-
-        // Also update config env
+    const handleEnvChange = (env: Record<string, any>) => {
         if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
-            updateConfig({
-                commandLineService: {
-                    ...config.commandLineService,
-                    env
-                }
-            });
-        }
-    };
-
-    const addParam = () => {
-        const newParams = { ...params, "": "" };
-        updateState({ params: newParams });
-    };
-
-    const removeParam = (key: string) => {
-        const newParams = { ...params };
-        delete newParams[key];
-        updateState({ params: newParams });
-         // Sync with config
-         if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
@@ -99,92 +66,39 @@ export function StepParameters() {
 
     return (
         <div className="space-y-6">
+            <h3 className="text-lg font-medium">Service Configuration</h3>
+
             {schema ? (
-                <>
-                     <div className="flex items-center justify-between">
-                         <h3 className="text-lg font-medium">Service Configuration</h3>
+                <SchemaForm
+                    schema={schema}
+                    value={params || {}}
+                    onChange={handleSchemaChange}
+                />
+            ) : config.commandLineService ? (
+                <div className="space-y-4">
+                     <div className="grid gap-2">
+                        <Label htmlFor="command">Command</Label>
+                        <Input
+                            id="command"
+                            value={config.commandLineService.command || ''}
+                            onChange={e => updateConfig({
+                                commandLineService: {
+                                    ...config.commandLineService!,
+                                    command: e.target.value
+                                }
+                            })}
+                        />
                      </div>
-                     <p className="text-sm text-muted-foreground">
-                        Configure the service using the form below. These values will be passed as environment variables.
-                     </p>
-                     <SchemaForm schema={schema} value={params} onChange={handleSchemaChange} />
-                </>
-            ) : (
-                <>
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium">Environment Variables / Parameters</h3>
-                        <Button size="sm" onClick={addParam}><Plus className="mr-2 h-4 w-4"/> Add Parameter</Button>
-                    </div>
-
-                    <div className="border rounded-lg">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Key</TableHead>
-                                    <TableHead>Value</TableHead>
-                                    <TableHead className="w-[50px]"></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Object.entries(params).map(([key, value], idx) => (
-                                    <TableRow key={idx}>
-                                        <TableCell>
-                                            <Input
-                                                value={key}
-                                                placeholder="VAR_NAME"
-                                                onChange={e => handleParamChange(key, value, e.target.value)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Input
-                                                value={value}
-                                                placeholder="Value"
-                                                onChange={e => handleParamChange(key, e.target.value)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button variant="ghost" size="icon" onClick={() => removeParam(key)}>
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {Object.keys(params).length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="text-center text-muted-foreground h-24">
-                                            No parameters configured.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </>
-            )}
-
-             <div className="space-y-4 pt-4 border-t">
-                 <h3 className="text-lg font-medium">Command</h3>
-                 <div className="grid gap-2">
-                     <Label>Executable</Label>
-
-                     <Input
-                        value={config.commandLineService?.command || ''}
-                        onChange={e => updateConfig({
-                            commandLineService: {
-                                ...(config.commandLineService || { env: {}, workingDirectory: '', tools: [], resources: [], calls: {}, prompts: [], communicationProtocol: 0, local: false }),
-                                command: e.target.value
-                            }
-                        })}
-                        placeholder="npx -y package-name OR /usr/bin/python3"
+                     <EnvVarEditor
+                        initialEnv={config.commandLineService.env as any}
+                        onChange={handleEnvChange}
                      />
-
-                 </div>
-                 <div className="grid gap-2">
-                     <Label>Arguments (Space separated or JSON array coming soon)</Label>
-                     {/* For now just command string editing is easiest if we don't strictly separate args */}
-                     <p className="text-xs text-muted-foreground">Modify the command above to include arguments.</p>
-                 </div>
-             </div>
+                </div>
+            ) : (
+                <div className="text-sm text-muted-foreground">
+                    No specific parameters required or available for this template type.
+                </div>
+            )}
         </div>
     );
 }
