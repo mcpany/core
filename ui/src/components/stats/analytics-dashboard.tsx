@@ -77,44 +77,57 @@ export function AnalyticsDashboard() {
         const fetchDashboardData = async () => {
             try {
                 const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
-                    apiClient.getDashboardTraffic(),
-                    apiClient.getTopTools(),
+                    apiClient.getDashboardTraffic().catch(() => []),
+                    apiClient.getTopTools().catch(() => []),
                     apiClient.listTools().catch(() => ({ tools: [] })),
                     apiClient.getToolUsage().catch(() => [])
                 ]);
-                setTrafficData(traffic || []);
 
-                // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
-                    name: t.name,
-                    value: t.count,
-                    color: COLORS[index % COLORS.length]
-                }));
+                // Ensure traffic is an array
+                setTrafficData(Array.isArray(traffic) ? traffic : []);
+
+                // Format tool usage data safely
+                const safeTopTools = Array.isArray(topTools) ? topTools : [];
+                const formattedTools = safeTopTools
+                    .filter((t: any) => t && typeof t === 'object' && t.name)
+                    .map((t: any, index: number) => ({
+                        name: t.name,
+                        value: Number(t.count) || 0,
+                        color: COLORS[index % COLORS.length]
+                    }));
                 setToolUsageData(formattedTools);
 
                 const usageMap: Record<string, ToolAnalytics> = {};
-                (toolUsageStats || []).forEach((s: ToolAnalytics) => {
-                    usageMap[`${s.name}@${s.serviceId}`] = s;
+                const safeToolStats = Array.isArray(toolUsageStats) ? toolUsageStats : [];
+                safeToolStats.forEach((s: ToolAnalytics) => {
+                    if (s && s.name && s.serviceId) {
+                        usageMap[`${s.name}@${s.serviceId}`] = s;
+                    }
                 });
                 setToolUsageMap(usageMap);
 
                 // Calculate Context Usage
-                const allTools: ToolDefinition[] = toolsResponse.tools || [];
+                const allTools: ToolDefinition[] = Array.isArray(toolsResponse?.tools) ? toolsResponse.tools : [];
                 setTools(allTools);
                 let totalTokens = 0;
                 const serviceMap: Record<string, number> = {};
                 const toolTokens: { name: string, tokens: number, service: string }[] = [];
 
                 allTools.forEach(tool => {
+                    if (!tool) return;
                     // Estimate tokens for the tool definition
-                    const json = JSON.stringify(tool);
-                    const tokens = estimateTokens(json);
-                    totalTokens += tokens;
+                    try {
+                        const json = JSON.stringify(tool);
+                        const tokens = estimateTokens(json);
+                        totalTokens += tokens;
 
-                    const serviceId = tool.serviceId || "Unknown";
-                    serviceMap[serviceId] = (serviceMap[serviceId] || 0) + tokens;
+                        const serviceId = tool.serviceId || "Unknown";
+                        serviceMap[serviceId] = (serviceMap[serviceId] || 0) + tokens;
 
-                    toolTokens.push({ name: tool.name, tokens, service: serviceId });
+                        toolTokens.push({ name: tool.name || 'Unknown', tokens, service: serviceId });
+                    } catch (e) {
+                        console.warn("Failed to process tool tokens", e);
+                    }
                 });
 
                 setContextTotal(totalTokens);
@@ -132,6 +145,7 @@ export function AnalyticsDashboard() {
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
+                // Fallback states are already set by useState initial values, but we could set empty if needed
             }
         };
 
@@ -144,20 +158,36 @@ export function AnalyticsDashboard() {
         // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
         // Randomized Selection from Top 5 High-Impact Targets
         try {
-            if (!Array.isArray(trafficData)) {
-                return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
+            const defaults = { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
+            if (!Array.isArray(trafficData) || trafficData.length === 0) {
+                return defaults;
             }
-            const reqs = trafficData.reduce((acc, cur) => acc + (cur?.requests || cur?.total || 0), 0);
-            const lat = trafficData.length
-                ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur?.latency || 0), 0) / trafficData.length)
-                : 0;
-            const errs = trafficData.reduce((acc, cur) => acc + (cur?.errors || 0), 0);
-            const rate = reqs ? ((errs / reqs) * 100).toFixed(2) : "0.00";
-            // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
-            const durationMinutes = trafficData.length;
-            const rps = (durationMinutes && reqs) ? (reqs / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-            return { totalRequests: reqs, avgLatency: lat, errorRate: rate, avgRps: rps };
+            const safeTraffic = trafficData.filter(t => t && typeof t === 'object');
+            if (safeTraffic.length === 0) return defaults;
+
+            const reqs = safeTraffic.reduce((acc, cur) => acc + (Number(cur.requests) || Number(cur.total) || 0), 0);
+
+            const lat = Math.floor(
+                safeTraffic.reduce((acc, cur) => acc + (Number(cur.latency) || 0), 0) / safeTraffic.length
+            );
+
+            const errs = safeTraffic.reduce((acc, cur) => acc + (Number(cur.errors) || 0), 0);
+
+            const rate = reqs ? ((errs / reqs) * 100).toFixed(2) : "0.00";
+
+            // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
+            const durationMinutes = safeTraffic.length;
+            const rps = (durationMinutes > 0 && reqs > 0)
+                ? (reqs / (durationMinutes * 60)).toFixed(2)
+                : "0.00";
+
+            return {
+                totalRequests: reqs,
+                avgLatency: isNaN(lat) ? 0 : lat,
+                errorRate: rate,
+                avgRps: rps
+            };
         } catch (e) {
             console.error("Failed to calculate traffic stats", e);
             return { totalRequests: 0, avgLatency: 0, errorRate: "0.00", avgRps: "0.00" };
@@ -217,7 +247,7 @@ export function AnalyticsDashboard() {
                                 <Activity className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalRequests.toLocaleString()}</div>
+                                <div className="text-2xl font-bold">{(totalRequests || 0).toLocaleString()}</div>
                                 <p className="text-xs text-muted-foreground">
                                     <span className="text-emerald-500 flex items-center">
                                        <Activity className="h-3 w-3 mr-1" /> Live
