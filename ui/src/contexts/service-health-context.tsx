@@ -6,7 +6,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
-import { Graph, NodeStatus } from '@/types/topology';
+import { Graph, NodeStatus, Node } from '@/types/topology';
 import { apiClient, HealthHistoryPoint, ServiceHealth } from '@/lib/client';
 
 /**
@@ -72,48 +72,53 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             // We fetch topology (graph) and health history (status timeline) concurrently.
             // Randomized Selection from Top 5 High-Impact Targets (Redundant Polling Fix)
             const fetchGraphPromise = (async () => {
-                // Handle relative URL for fetch in jsdom/test env
-                const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
+                try {
+                    // Handle relative URL for fetch in jsdom/test env
+                    const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
 
-                // ⚡ Bolt: Optimize Polling with ETag (If-None-Match).
-                const headers: HeadersInit = {};
-                if (lastEtag.current) {
-                    headers['If-None-Match'] = lastEtag.current;
-                }
-
-                // Inject Auth Token if available
-                if (typeof window !== 'undefined') {
-                    const token = localStorage.getItem('mcp_auth_token');
-                    if (token) {
-                        headers['Authorization'] = `Basic ${token}`;
+                    // ⚡ Bolt: Optimize Polling with ETag (If-None-Match).
+                    const headers: HeadersInit = {};
+                    if (lastEtag.current) {
+                        headers['If-None-Match'] = lastEtag.current;
                     }
+
+                    // Inject Auth Token if available
+                    if (typeof window !== 'undefined') {
+                        const token = localStorage.getItem('mcp_auth_token');
+                        if (token) {
+                            headers['Authorization'] = `Basic ${token}`;
+                        }
+                    }
+
+                    const res = await fetch(url, { headers });
+
+                    if (res.status === 304 && lastGraph.current) {
+                        return lastGraph.current;
+                    }
+
+                    if (!res.ok) return null;
+
+                    const etag = res.headers.get('ETag');
+                    if (etag) {
+                        lastEtag.current = etag;
+                    }
+
+                    const text = await res.text();
+                    let graph: Graph;
+
+                    if (text === lastTopologyText.current && lastGraph.current) {
+                        graph = lastGraph.current;
+                    } else {
+                        graph = JSON.parse(text);
+                        lastTopologyText.current = text;
+                        lastGraph.current = graph;
+                        setLatestTopology(graph);
+                    }
+                    return graph;
+                } catch (e) {
+                    console.warn("Failed to fetch topology", e);
+                    return null;
                 }
-
-                const res = await fetch(url, { headers });
-
-                if (res.status === 304 && lastGraph.current) {
-                    return lastGraph.current;
-                }
-
-                if (!res.ok) return null;
-
-                const etag = res.headers.get('ETag');
-                if (etag) {
-                    lastEtag.current = etag;
-                }
-
-                const text = await res.text();
-                let graph: Graph;
-
-                if (text === lastTopologyText.current && lastGraph.current) {
-                    graph = lastGraph.current;
-                } else {
-                    graph = JSON.parse(text);
-                    lastTopologyText.current = text;
-                    lastGraph.current = graph;
-                    setLatestTopology(graph);
-                }
-                return graph;
             })();
 
             const fetchHealthPromise = (async () => {
@@ -138,7 +143,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 const now = Date.now();
                 const newPoints: Record<string, MetricPoint> = {};
 
-                const extractServiceNodes = (nodes: any[]) => {
+                const extractServiceNodes = (nodes: Node[]) => {
                     nodes.forEach(node => {
                         if (node.type === 'NODE_TYPE_SERVICE') {
                             newPoints[node.id] = {
