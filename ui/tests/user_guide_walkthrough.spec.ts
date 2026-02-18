@@ -8,7 +8,8 @@ import { test, expect } from '@playwright/test';
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
     // Mock the stats endpoint
-    await page.route('**/api/v1/dashboard/metrics', async route => {
+    // NOTE: We use * as a wildcard for the query params which might be present
+    await page.route('**/api/v1/dashboard/metrics*', async route => {
         await route.fulfill({
             json: [
                 { label: "Total Requests", value: "1234", icon: "Activity" },
