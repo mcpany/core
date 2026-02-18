@@ -5,6 +5,9 @@
 
 import { UpstreamServiceConfig } from "./types";
 
+/**
+ * ServiceTemplate defines the structure for a service preset.
+ */
 export interface ServiceTemplate {
     id: string;
     name: string;
@@ -12,8 +15,16 @@ export interface ServiceTemplate {
     icon: string;
     config: Partial<UpstreamServiceConfig>;
     configurationSchema?: Record<string, any>;
+    authMapping?: {
+        type: 'bearer' | 'apiKey';
+        field: string;
+        header?: string;
+    };
 }
 
+/**
+ * SERVICE_REGISTRY contains a list of predefined service templates.
+ */
 export const SERVICE_REGISTRY: ServiceTemplate[] = [
     {
         id: "stripe",
@@ -23,7 +34,15 @@ export const SERVICE_REGISTRY: ServiceTemplate[] = [
         config: {
             httpService: {
                 address: "https://api.stripe.com",
+                tools: [],
+                calls: {},
+                resources: [],
+                prompts: []
             }
+        },
+        authMapping: {
+            type: 'bearer',
+            field: 'STRIPE_SECRET_KEY'
         },
         configurationSchema: {
             type: "object",
@@ -45,7 +64,15 @@ export const SERVICE_REGISTRY: ServiceTemplate[] = [
         config: {
             httpService: {
                 address: "https://slack.com/api",
+                tools: [],
+                calls: {},
+                resources: [],
+                prompts: []
             }
+        },
+        authMapping: {
+            type: 'bearer',
+            field: 'SLACK_BOT_TOKEN'
         },
         configurationSchema: {
             type: "object",
@@ -67,7 +94,15 @@ export const SERVICE_REGISTRY: ServiceTemplate[] = [
         config: {
             httpService: {
                 address: "https://api.github.com",
+                tools: [],
+                calls: {},
+                resources: [],
+                prompts: []
             }
+        },
+        authMapping: {
+            type: 'bearer',
+            field: 'GITHUB_TOKEN'
         },
         configurationSchema: {
             type: "object",
@@ -89,7 +124,15 @@ export const SERVICE_REGISTRY: ServiceTemplate[] = [
         config: {
             httpService: {
                 address: "https://api.openai.com/v1",
+                tools: [],
+                calls: {},
+                resources: [],
+                prompts: []
             }
+        },
+        authMapping: {
+            type: 'bearer',
+            field: 'OPENAI_API_KEY'
         },
         configurationSchema: {
             type: "object",

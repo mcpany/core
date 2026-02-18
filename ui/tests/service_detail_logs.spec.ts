@@ -22,8 +22,8 @@ test.describe('Service Detail Logs Tab', () => {
     });
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
-    // Use ID if available, otherwise fallback to name if the API behaves that way
-    serviceId = data.id || data.name || serviceName;
+    // Use Name for lookup as backend expects name (not UUID) for GetService
+    serviceId = data.name || serviceName;
   });
 
   test.afterAll(async ({ request }) => {
@@ -40,6 +40,19 @@ test.describe('Service Detail Logs Tab', () => {
     // 1. Navigate to the detail page
     // Use the actual ID returned from the backend creation
     await page.goto(`/service/${serviceId}`);
+
+    // Check for loading state first
+    // Wait for skeleton to disappear
+    await expect(page.locator('.animate-pulse').first()).not.toBeVisible({ timeout: 15000 }).catch(() => {
+      console.log('Skeleton still visible after timeout');
+    });
+
+    // Check for error state
+    const errorAlert = page.locator('.text-destructive');
+    if (await errorAlert.count() > 0) {
+        const errorText = await errorAlert.textContent();
+        throw new Error(`Page showed error: ${errorText}`);
+    }
 
     // 2. Verify Page Title to ensure we loaded
     await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);

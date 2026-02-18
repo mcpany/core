@@ -445,8 +445,6 @@ jobs:
         run: |
           make gen
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -976,6 +974,14 @@ jobs:
       - name: Run K8s E2E Tests
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
+
+      - name: Dump K8s Logs
+        if: failure()
+        run: |
+          kubectl get all -A
+          kubectl describe pods -A
+          kubectl logs -l app=mcpany-server -n default --tail=100 || true
+          kubectl logs -l app=mcpany-operator -n default --tail=100 || true
 
   ci-success:
     runs-on: oci-runner # ubuntu-slim

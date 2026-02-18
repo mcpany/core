@@ -12,6 +12,7 @@ import { Trash2, Plus, Info } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SchemaForm } from '@/components/marketplace/schema-form';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { SERVICE_REGISTRY } from '@/lib/service-registry';
 
 /**
  * StepParameters component.
@@ -62,6 +63,7 @@ export function StepParameters() {
     };
 
     const syncToConfig = (currentParams: Record<string, string>) => {
+        // 1. Handle Command Line Env Vars
         if (config.commandLineService) {
             const env: any = {};
             // Preserve existing env structure if it has extra metadata not in params?
@@ -75,6 +77,24 @@ export function StepParameters() {
                     env
                 }
             });
+        }
+
+        // 2. Handle Template Auth Mapping
+        if (state.selectedTemplateId) {
+            const template = SERVICE_REGISTRY.find(t => t.id === state.selectedTemplateId);
+            if (template && template.authMapping) {
+                const { type, field } = template.authMapping;
+                const value = currentParams[field];
+                if (value) {
+                    const auth: any = { ...config.upstreamAuth };
+                    if (type === 'bearer') {
+                        auth.bearerToken = value;
+                    } else if (type === 'apiKey') {
+                        auth.apiKey = value;
+                    }
+                    updateConfig({ upstreamAuth: auth });
+                }
+            }
         }
     };
 
