@@ -91,59 +91,79 @@ func joinFunc(sep string, input any) (string, error) {
 	// Randomized Selection from Top 5 High-Impact Targets
 	switch v := input.(type) {
 	case []string:
-		var totalLen int
-		sepLen := len(sep)
-		for i, s := range v {
-			if i > 0 {
-				totalLen += sepLen
-			}
-			totalLen += len(s)
-		}
-		var sb strings.Builder
-		sb.Grow(totalLen)
-		for i, s := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.WriteString(s)
-		}
-		return sb.String(), nil
+		return joinStrings(sep, v), nil
 	case []int:
-		var sb strings.Builder
-		// Heuristic: estimate 4 chars per int + separator
-		sb.Grow(len(v) * (4 + len(sep)))
-		var scratch [64]byte
-		for i, n := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], int64(n), 10))
-		}
-		return sb.String(), nil
+		return joinInts(sep, v), nil
 	case []int64:
-		var sb strings.Builder
-		sb.Grow(len(v) * (4 + len(sep)))
-		var scratch [64]byte
-		for i, n := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], n, 10))
-		}
-		return sb.String(), nil
+		return joinInt64s(sep, v), nil
 	case []float64:
-		var sb strings.Builder
-		sb.Grow(len(v) * (5 + len(sep)))
-		var scratch [64]byte
-		for i, f := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendFloat(scratch[:0], f, 'g', -1, 64))
-		}
-		return sb.String(), nil
+		return joinFloat64s(sep, v), nil
 	}
 
+	return joinGeneric(sep, input)
+}
+
+func joinStrings(sep string, v []string) string {
+	var totalLen int
+	sepLen := len(sep)
+	for i, s := range v {
+		if i > 0 {
+			totalLen += sepLen
+		}
+		totalLen += len(s)
+	}
+	var sb strings.Builder
+	sb.Grow(totalLen)
+	for i, s := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.WriteString(s)
+	}
+	return sb.String()
+}
+
+func joinInts(sep string, v []int) string {
+	var sb strings.Builder
+	// Heuristic: estimate 4 chars per int + separator
+	sb.Grow(len(v) * (4 + len(sep)))
+	var scratch [64]byte
+	for i, n := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendInt(scratch[:0], int64(n), 10))
+	}
+	return sb.String()
+}
+
+func joinInt64s(sep string, v []int64) string {
+	var sb strings.Builder
+	sb.Grow(len(v) * (4 + len(sep)))
+	var scratch [64]byte
+	for i, n := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendInt(scratch[:0], n, 10))
+	}
+	return sb.String()
+}
+
+func joinFloat64s(sep string, v []float64) string {
+	var sb strings.Builder
+	sb.Grow(len(v) * (5 + len(sep)))
+	var scratch [64]byte
+	for i, f := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendFloat(scratch[:0], f, 'g', -1, 64))
+	}
+	return sb.String()
+}
+
+func joinGeneric(sep string, input any) (string, error) {
 	a, err := toAnySlice(input)
 	if err != nil {
 		return "", fmt.Errorf("join: %w", err)
