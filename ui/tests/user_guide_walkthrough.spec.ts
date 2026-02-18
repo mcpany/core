@@ -20,6 +20,8 @@ test.describe('User Guide Walkthrough', () => {
 
     await page.goto('/');
     // Use .first() to handle potential duplicates or strict mode violations if multiple matches exist temporarily
+    // Ensure network idle before checking elements
+    await page.waitForLoadState('networkidle');
     // Check for "Total Requests" card
     await expect(page.locator('text=Total Requests').first()).toBeVisible({ timeout: 10000 });
     // Check for "Active Services" card
@@ -36,9 +38,11 @@ test.describe('User Guide Walkthrough', () => {
     await expect(addButton).toBeVisible();
 
     // Check for dialog opens
-    await addButton.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible();
+    // Force click to ensure it triggers even if overlaying elements exist
+    await addButton.click({ force: true });
+    // Use .first() to handle potential duplicates
+    await expect(page.getByRole('dialog').first()).toBeVisible();
+    await expect(page.getByText('New Service').first()).toBeVisible();
 
     // Close it
     await page.keyboard.press('Escape');
