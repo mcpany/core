@@ -6,80 +6,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Credential OAuth Flow E2E', () => {
-  const credentialID = 'cred-123';
-  const credentials: any[] = [];
 
   test.beforeEach(async ({ page }) => {
     // Increase viewport height for long forms
     await page.setViewportSize({ width: 1280, height: 1000 });
-
-    credentials.length = 0;
-    page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
-
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: { credentials } });
-        } else if (route.request().method() === 'POST') {
-             const req = route.request().postDataJSON();
-             const newCred = {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: null
-             };
-             credentials.push(newCred);
-             await route.fulfill({ json: newCred });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route(`**/api/v1/credentials/${credentialID}`, async route => {
-        const method = route.request().method();
-        if (method === 'PUT') {
-            const req = route.request().postDataJSON();
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) {
-                cred.name = req.name;
-                cred.authentication = req.authentication;
-            }
-             await route.fulfill({
-                 json: {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: req.token
-                 }
-             });
-        } else if (method === 'DELETE') {
-            const idx = credentials.findIndex(c => c.id === credentialID);
-            if (idx !== -1) credentials.splice(idx, 1);
-            await route.fulfill({ json: {} });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
-        const urlStr = route.request().url();
-        console.log(`OAuth mock hit for ${urlStr}`);
-        if (urlStr.includes('/initiate')) {
-            const origin = new URL(page.url()).origin;
-            await route.fulfill({
-                json: {
-                    authorization_url: `${origin}/auth/callback?code=mock-code&state=xyz`,
-                    state: 'xyz'
-                }
-            });
-        } else if (urlStr.includes('/callback')) {
-            // Find credential and update token
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) cred.token = { accessToken: 'mock-token' };
-            await route.fulfill({ json: { status: 'success' } });
-        } else {
-            await route.continue();
-        }
-    });
   });
 
   test('should create oauth credential and connect', async ({ page }) => {
@@ -102,8 +32,17 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     await page.getByLabel('Client ID').fill('test-client-id');
     await page.getByLabel('Client Secret').fill('test-client-secret');
-    await authUrlLabel.fill('http://example.com/auth');
-    await page.getByLabel('Token URL').fill('http://example.com/token');
+
+    // Determine hosts based on environment
+    // In CI (Docker), backend sees test runner as 'ui-tests'
+    // Locally, everything is localhost
+    const isCI = !!process.env.CI;
+    const tokenHost = isCI ? 'http://ui-tests:9999' : 'http://localhost:9999';
+    // Browser (running in ui-tests container or locally) sees oauth server on localhost:9999
+    const authHost = 'http://localhost:9999';
+
+    await authUrlLabel.fill(`${authHost}/auth`);
+    await page.getByLabel('Token URL').fill(`${tokenHost}/token`);
 
     const saveButton = page.getByRole('button', { name: 'Save', exact: true });
     await saveButton.scrollIntoViewIfNeeded();

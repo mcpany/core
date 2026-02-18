@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -36,7 +37,7 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
+  /** Logs in the user with the specified role. */
   login: (role: UserRole) => void;
   /** Logs out the current user. */
   logout: () => void;
@@ -56,20 +57,36 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    async function checkAuth() {
+        try {
+            // Check connectivity and auth status by fetching system status
+            await apiClient.getSystemStatus();
+
+            // If successful, we assume we are authenticated (likely via API Key or existing session)
+            // Ideally, backend provides /api/v1/me to get user details.
+            // For now, we infer Admin role if we can access protected endpoints.
+            const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
+
+            setUser({
+                id: '1',
+                name: 'Admin User',
+                email: 'admin@mcp-any.io',
+                role: storedRole,
+                avatar: '/avatars/admin.png'
+            });
+        } catch (e) {
+            console.warn('Auth check failed:', e);
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    }
+    checkAuth();
   }, []);
 
   const login = (role: UserRole) => {
+    // In a real app, this would trigger OAuth flow or set API key.
+    // For now, we update local state assuming the user has provided credentials (e.g. in Settings)
     const newUser = {
         id: '1',
         name: role === 'admin' ? 'Admin User' : 'Regular User',
@@ -84,6 +101,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('mcp_user_role');
+    // Also clear auth token if we were managing it
+    localStorage.removeItem('mcp_auth_token');
   };
 
   return (

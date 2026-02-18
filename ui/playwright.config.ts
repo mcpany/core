@@ -5,6 +5,7 @@
 
 import { defineConfig, devices } from '@playwright/test';
 import os from 'os';
+import path from 'path';
 
 // Use TEST_PORT env var if set, otherwise default to 9111
 const PORT = process.env.TEST_PORT || 9111;
@@ -13,6 +14,7 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
+  globalSetup: require.resolve('./tests/global-setup.ts'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
