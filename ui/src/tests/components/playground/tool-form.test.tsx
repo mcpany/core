@@ -20,6 +20,10 @@ vi.mock("@/hooks/use-toast", () => ({
 const mockTool: ToolDefinition = {
   name: "test_tool",
   description: "A test tool",
+  serviceId: "test-service",
+  isStream: false,
+  title: "Test Tool",
+  readOnlyHint: false,
   inputSchema: {
     type: "object",
     properties: {

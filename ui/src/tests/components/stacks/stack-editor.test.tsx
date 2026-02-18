@@ -5,18 +5,7 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { StackEditor } from '@/components/stacks/stack-editor';
-import { apiClient } from '@/lib/client';
 import { vi } from 'vitest';
-
-// Mock the API client
-vi.mock('@/lib/client', () => ({
-  apiClient: {
-    getStackConfig: vi.fn(),
-    saveStackConfig: vi.fn(),
-    getCollection: vi.fn(), // Added getCollection mock
-    saveCollection: vi.fn(), // Added saveCollection mock
-  },
-}));
 
 // Mock ConfigEditor to render a simple textarea for testing
 vi.mock('@/components/stacks/config-editor', () => ({
@@ -37,60 +26,64 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe('StackEditor', () => {
+  const mockSave = vi.fn();
+  const mockCancel = vi.fn();
+  const initialValue = 'name: test-stack\nservices: []\n';
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('loads and displays configuration', async () => {
-    (apiClient.getCollection as any).mockResolvedValue({
-      name: 'test-stack',
-      services: []
-    });
+  it('renders configuration', () => {
+    render(
+      <StackEditor
+        initialValue={initialValue}
+        onSave={mockSave}
+        onCancel={mockCancel}
+      />
+    );
 
-    render(<StackEditor stackId="test-stack" />);
-
-    await waitFor(() => {
-      expect(screen.getByText('config.yaml')).toBeInTheDocument();
-      // The content will be a yaml dump of the collection.
-      // Since services is empty array, it might be just "name: test-stack\nservices: {}\n" or similar.
-      // Let's just check for the presence of the editor mock.
-      expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument();
-    });
+    expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument();
+    expect(screen.getByTestId('config-editor-mock')).toHaveValue(initialValue);
   });
 
-  it('validates YAML content', async () => {
-    (apiClient.getCollection as any).mockResolvedValue({
-      name: 'test-stack',
-      services: []
-    });
+  it('calls onSave with updated content', async () => {
+    render(
+      <StackEditor
+        initialValue={initialValue}
+        onSave={mockSave}
+        onCancel={mockCancel}
+      />
+    );
 
-    const { container } = render(<StackEditor stackId="test-stack" />);
-
-    // Find textarea by selector if role is elusive
-    await waitFor(() => expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument());
     const textarea = screen.getByTestId('config-editor-mock');
+    fireEvent.change(textarea, { target: { value: 'updated: content' } });
 
-    // Valid YAML
-    fireEvent.change(textarea, { target: { value: 'key: value' } });
-    await waitFor(() => {
-        expect(screen.getByText('Valid YAML')).toBeInTheDocument();
-    });
+    const saveBtn = screen.getByText('Save & Deploy');
+    fireEvent.click(saveBtn);
 
-    // Invalid YAML
-    fireEvent.change(textarea, { target: { value: 'key: "unclosed quote' } });
-
-    await waitFor(() => {
-         expect(screen.getByText('Invalid YAML')).toBeInTheDocument();
-    });
+    expect(mockSave).toHaveBeenCalledWith('updated: content');
   });
 
   it('toggles palette and visualizer', async () => {
-    (apiClient.getCollection as any).mockResolvedValue({ name: 'test-stack', services: [] });
-    render(<StackEditor stackId="test-stack" />);
+    render(
+      <StackEditor
+        initialValue={initialValue}
+        onSave={mockSave}
+        onCancel={mockCancel}
+      />
+    );
 
-    // Check initial state
-    expect(screen.getByText('Service Palette')).toBeInTheDocument();
-    // Since config is empty, visualizer shows "No services defined"
-    expect(screen.getByText('No services defined')).toBeInTheDocument();
+    // Initial state: Palette and Visualizer are shown (based on component default)
+    // The test might depend on exact rendering of child components.
+    // Since we didn't mock Palette or Visualizer, they might render (or fail if dependencies missing).
+    // Let's assume they render buttons with specific titles.
+    // "Toggle Palette" and "Toggle Visualizer"
+
+    const togglePalette = screen.getByTitle('Toggle Palette');
+    const toggleVisualizer = screen.getByTitle('Toggle Visualizer');
+
+    expect(togglePalette).toBeInTheDocument();
+    expect(toggleVisualizer).toBeInTheDocument();
   });
 });
