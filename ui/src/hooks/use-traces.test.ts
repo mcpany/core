@@ -5,7 +5,7 @@
 
 
 import { renderHook, act } from '@testing-library/react';
-import { useTraces } from './use-traces';
+import { useTraces, MAX_TRACES } from './use-traces';
 import { Trace } from '@/types/trace';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -37,6 +37,7 @@ describe('useTraces Hook', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    global.WebSocket = originalWebSocket;
   });
 
   const createTrace = (id: string, duration: number): Trace => ({
@@ -153,5 +154,32 @@ describe('useTraces Hook', () => {
 
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
+  });
+
+  it('should enforce MAX_TRACES limit', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+
+    act(() => {
+      mockWebSocket.onopen({} as any);
+    });
+
+    // Simulate sending MAX_TRACES + 50 items
+    act(() => {
+      for (let i = 0; i < MAX_TRACES + 50; i++) {
+        mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+      }
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces).toHaveLength(MAX_TRACES);
+    // Expect the newest items to be present.
+    // The last inserted item was id `${MAX_TRACES + 49}`.
+    // Since items are prepended (reversed), index 0 should be the newest.
+    expect(result.current.traces[0].id).toBe(`${MAX_TRACES + 49}`);
   });
 });
