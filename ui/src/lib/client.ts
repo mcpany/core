@@ -17,7 +17,8 @@ import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
-import { Credential, Authentication } from '@proto/config/v1/auth';
+import { Credential, Authentication, DeepPartial } from '@proto/config/v1/auth';
+import { User } from '@proto/config/v1/user';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -40,7 +41,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, User };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
@@ -1042,8 +1043,68 @@ export const apiClient = {
         return data.profiles || [];
     },
 
+    // Users
 
+    /**
+     * Lists all users.
+     */
+    listUsers: async () => {
+        const res = await fetchWithAuth('/api/v1/users');
+        if (!res.ok) throw new Error('Failed to list users');
+        const data = await res.json();
+        // Backend returns an array of users directly
+        return Array.isArray(data) ? data : (data.users || []);
+    },
 
+    /**
+     * Creates a new user.
+     * @param user The user object to create.
+     */
+    createUser: async (user: DeepPartial<User>) => {
+        // Convert to proto JSON format using generated helper to handle snake_case mapping
+        const userProto = User.fromPartial(user);
+        const userJson = User.toJSON(userProto);
+
+        const res = await fetchWithAuth('/api/v1/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: userJson })
+        });
+        if (!res.ok) throw new Error('Failed to create user');
+        return res.json();
+    },
+
+    /**
+     * Updates an existing user.
+     * @param user The user object to update.
+     */
+    updateUser: async (user: DeepPartial<User>) => {
+        // Convert to proto JSON format using generated helper to handle snake_case mapping
+        const userProto = User.fromPartial(user);
+        const userJson = User.toJSON(userProto);
+
+        if (!user.id) throw new Error('User ID required for update');
+
+        const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: userJson })
+        });
+        if (!res.ok) throw new Error('Failed to update user');
+        return res.json();
+    },
+
+    /**
+     * Deletes a user.
+     * @param id The ID of the user to delete.
+     */
+    deleteUser: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete user');
+        return {};
+    },
 
     // Secrets
 
