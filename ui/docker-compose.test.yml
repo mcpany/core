@@ -43,35 +43,10 @@ services:
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
-      - MOCK_SERVICE_URL=http://localhost:5678
+      - MOCK_SERVICE_URL=http://ui-http-echo-server:5678
     command: >
       sh -c "
         mkdir -p test-results .audit playwright-report docs &&
-        # Start a local echo server for testing
-        node -e '
-          const http = require(\"http\");
-          const server = http.createServer((req, res) => {
-            res.writeHead(200, { \"Content-Type\": \"application/json\" });
-            res.end(JSON.stringify({
-              method: req.method,
-              path: req.url,
-              headers: req.headers,
-              body: \"\" // Simplified
-            }));
-          });
-          server.listen(5678, () => console.log(\"Local echo server running on port 5678\"));
-        ' &
-        # Wait for local echo server
-        echo 'Waiting for localhost:5678...' &&
-        for i in \$(seq 1 30); do
-          if grep -q \"Local echo server\" <(netstat -tln | grep 5678 || echo \"\"); then
-             echo \"Port 5678 is open\"
-             break
-          fi
-          # Fallback check
-          node -e 'require(\"net\").createConnection(5678, \"127.0.0.1\").on(\"connect\", () => process.exit(0)).on(\"error\", () => process.exit(1))' && break
-          sleep 1
-        done &&
         npx playwright test $${PLAYWRIGHT_ARGS}
       "
     volumes:
@@ -86,5 +61,12 @@ services:
     depends_on:
       server:
         condition: service_healthy
+      ui-http-echo-server:
+        condition: service_started
     networks:
       default:
+
+  ui-http-echo-server:
+    image: mcpany/http-echo-server:latest
+    command:
+      - "--port=5678"
