@@ -227,37 +227,35 @@ prepare:
 	else \
 		PYTHON_CMD=""; \
 	fi; \
-	if test -z "$(CI)"; then \
-		if test -n "$$PYTHON_CMD"; then \
-			echo "Python found. Installing/updating pre-commit and fastmcp locally..."; \
-			VENV_DIR=$(BUILD_DIR)/venv; \
-			if ! test -d "$$VENV_DIR"; then \
-				echo "Creating virtual environment..."; \
-				$$PYTHON_CMD -m venv $$VENV_DIR --without-pip; \
-				curl -sSL https://bootstrap.pypa.io/get-pip.py -o $$VENV_DIR/get-pip.py; \
-				$$VENV_DIR/bin/python $$VENV_DIR/get-pip.py; \
-			fi; \
-			if ! test -f "$$VENV_DIR/bin/python"; then \
-				echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
-				exit 1; \
-			fi; \
-			if ! test -f "$$VENV_DIR/.installed"; then \
-				$(PYTHON_EXEC) -m pip install --upgrade pip; \
-				$(PYTHON_EXEC) -m pip install -r requirements.txt; \
-				touch "$$VENV_DIR/.installed"; \
-			fi; \
-			mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
+	if test -n "$$PYTHON_CMD"; then \
+		echo "Python found. Installing/updating pre-commit and fastmcp locally..."; \
+		VENV_DIR=$(BUILD_DIR)/venv; \
+		if ! test -d "$$VENV_DIR"; then \
+			echo "Creating virtual environment..."; \
+			$$PYTHON_CMD -m venv $$VENV_DIR --without-pip; \
+			curl -sSL https://bootstrap.pypa.io/get-pip.py -o $$VENV_DIR/get-pip.py; \
+			$$VENV_DIR/bin/python $$VENV_DIR/get-pip.py; \
+		fi; \
+		if ! test -f "$$VENV_DIR/bin/python"; then \
+			echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
+			exit 1; \
+		fi; \
+		if ! test -f "$$VENV_DIR/.installed"; then \
+			$(PYTHON_EXEC) -m pip install --upgrade pip; \
+			$(PYTHON_EXEC) -m pip install -r requirements.txt; \
+			touch "$$VENV_DIR/.installed"; \
+		fi; \
+		mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
+		if test -z "$(CI)"; then \
 			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
 				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
 				echo "\033[1;33mTo fix this, run: git config --unset-all core.hooksPath\n"; \
 			fi; \
-		else \
-			echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
 		fi; \
 	else \
-		echo "CI environment detected, skipping local Python venv setup."; \
+		echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
 	fi
 	@#
 	@echo "Installing Node.js dependencies for integration tests..."
