@@ -354,16 +354,6 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
-      - name: Download Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download HTTP Echo Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-
       - name: Download Cowsay Image
         uses: actions/download-artifact@v4
         with:
@@ -603,11 +593,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download HTTP Echo Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
 
       - name: Download Cowsay Image
         uses: actions/download-artifact@v4

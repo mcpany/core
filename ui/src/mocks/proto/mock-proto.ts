@@ -9,6 +9,11 @@
  * GrpcWebImpl mock class.
  */
 export class GrpcWebImpl {
+    /**
+     * Constructor for GrpcWebImpl.
+     * @param _host The host address.
+     * @param _options The options.
+     */
     constructor(_host: string, _options: any) {}
 }
 
@@ -16,7 +21,18 @@ export class GrpcWebImpl {
  * The RegistrationServiceClientImpl class.
  */
 export class RegistrationServiceClientImpl {
+    /**
+     * Constructor for RegistrationServiceClientImpl.
+     * @param _rpc The RPC implementation.
+     */
     constructor(_rpc: any) {}
+
+    /**
+     * GetService mock method.
+     * @param _request The request object.
+     * @param _metadata The metadata object.
+     * @returns A promise resolving to an empty object.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
