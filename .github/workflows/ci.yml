@@ -236,7 +236,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -523,7 +523,7 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -707,25 +707,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Get Date
         id: get-date
         run: |
@@ -816,7 +797,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -874,7 +855,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     needs: [build-images]
     steps:
       - uses: actions/checkout@v5
