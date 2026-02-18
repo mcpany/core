@@ -1,0 +1,17 @@
+# Dockerfile.bot
+# Extremely lightweight bot runner
+
+FROM alpine:3.19
+
+RUN apk add --no-cache \
+    git \
+    github-cli \
+    jq \
+    curl \
+    bash \
+    openssh-client
+
+# Verify gh is working
+RUN gh --version
+
+WORKDIR /workspace

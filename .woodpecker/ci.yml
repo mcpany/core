@@ -1,0 +1,100 @@
+
+pipeline:
+  # -------------------------------------------------------------------------
+  # Job 1: Lint & Fast Tests
+  # -------------------------------------------------------------------------
+  lint-and-test:
+    image: iowoi/mcpany-runner-ci:latest
+    group: verify
+    when:
+      - event: [push, pull_request]
+        branch: main
+        path:
+          include: ["**"]
+          exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
+    environment:
+      - GEMINI_API_KEY=from_secret
+      - IPINFO_API_TOKEN=from_secret
+    commands:
+      # dependencies are pre-installed in iowoi/mcpany-runner-ci
+      - make prepare
+      # Lint
+      - make lint
+      # Fast Tests
+      - make test-fast
+
+  # -------------------------------------------------------------------------
+  # Job 2: Build Docker Images (Parallel)
+  # -------------------------------------------------------------------------
+  build-images:
+    group: build
+    image: docker:24-dind
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKERHUB_USERNAME=from_secret
+      - DOCKERHUB_TOKEN=from_secret
+      - GITHUB_TOKEN=from_secret
+    when:
+      - event: [push, pull_request]
+        branch: main
+        path:
+          include: ["**"]
+          exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
+    commands:
+      # Setup
+      - apk add --no-cache make git
+      - git fetch --tags
+      # Login
+      - echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $CI_REPO_OWNER --password-stdin
+      # Build & Push (or Load)
+      # Note: In Woodpecker, we might need to adjust how we handle multi-arch if strictly running on one arch
+      # For now, we assume the runner is linux/amd64 and we cross-compile if needed or just build for amd64
+      - make build-docker PUSH=true
+      - make build-http-echo-docker
+      - make build-e2e-timeserver-docker
+      - make build-cowsay-docker
+      - make build-everything-docker
+      # UI Build (needs node)
+      - apk add --no-cache nodejs npm
+      - make -C ui docker-build-ui
+
+  # -------------------------------------------------------------------------
+  # Job 3: E2E Tests (Sequential & Parallel)
+  # -------------------------------------------------------------------------
+  e2e-tests:
+    group: e2e
+    image: iowoi/mcpany-runner-ci:latest
+    privileged: true # For docker-in-docker if needed, or binding socket
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - GEMINI_API_KEY=from_secret
+      - IPINFO_API_TOKEN=from_secret
+    when:
+      - event: [push, pull_request]
+        branch: main
+        path:
+          include: ["**"]
+          exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
+    commands:
+      # dependencies are pre-installed
+      - make prepare
+      # Run E2E
+      - make e2e-parallel
+      - make e2e-sequential
+      - make test-public-api
+
+services:
+  # We might need a proper dind service if the runner doesn't mount the socket
+  # But based on user request "docker based woodpecker ci", it implies the agent is running in docker
+  # usually we mount the socket or use dind service.
+  # Let's assume the agent provides docker access via socket mount or we use dind service.
+  # Using a dind service is safer for portability.
+  docker:
+    image: docker:24-dind
+    privileged: true
+    commands: ["--storage-driver=overlay2"]
+

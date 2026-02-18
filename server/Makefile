@@ -640,6 +640,34 @@ else
 	@exit 1
 endif
 
+# Target to build CI builder image (Alpine)
+docker-build-ci: docker/Dockerfile.ci
+ifdef HAS_DOCKER
+	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
+	@if [ "$(PUSH)" = "true" ]; then \
+		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+	else \
+		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+	fi
+else
+	@echo "Docker not found. Cannot build CI image."
+	@exit 1
+endif
+
+# Target to build Bot runner image (Alpine)
+docker-build-bot: docker/Dockerfile.bot
+ifdef HAS_DOCKER
+	@echo "Building Bot runner Docker image (iowoi/mcpany-runner-bot:latest)..."
+	@if [ "$(PUSH)" = "true" ]; then \
+		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-bot:latest -f docker/Dockerfile.bot $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+	else \
+		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-bot:latest -f docker/Dockerfile.bot $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+	fi
+else
+	@echo "Docker not found. Cannot build Bot image."
+	@exit 1
+endif
+
 # Target to build all test images
 build-test-images:
 ifndef SKIP_DOCKER_REBUILD
