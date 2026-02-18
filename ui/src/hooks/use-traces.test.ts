@@ -5,7 +5,7 @@
 
 
 import { renderHook, act } from '@testing-library/react';
-import { useTraces } from './use-traces';
+import { useTraces, MAX_TRACES } from './use-traces';
 import { Trace } from '@/types/trace';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -153,5 +153,29 @@ describe('useTraces Hook', () => {
 
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
+  });
+
+  it('should limit the number of traces to avoid memory leak', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    act(() => {
+        mockWebSocket.onopen({} as any);
+    });
+
+    // Send MAX_TRACES + 50 items
+    act(() => {
+        for (let i = 0; i < MAX_TRACES + 50; i++) {
+            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces).toHaveLength(MAX_TRACES);
+    // The list is reversed (newest first). The last inserted was ID (MAX_TRACES + 49).
+    // So the first element should be the last inserted.
+    expect(result.current.traces[0].id).toBe(`${MAX_TRACES + 49}`);
   });
 });

@@ -6,6 +6,10 @@
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
 
+// ⚡ BOLT: Maximum number of traces to keep in memory to prevent crashes
+// Randomized Selection from Top 5 High-Impact Targets
+export const MAX_TRACES = 1000;
+
 interface UseTracesOptions {
     initialPaused?: boolean;
 }
@@ -79,7 +83,11 @@ export function useTraces(options: UseTracesOptions = {}) {
                 // 5. Prepend new inserts (newest first).
                 // Buffer is oldest->newest. We want newest at top of list.
                 // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                const merged = [...inserts.reverse(), ...nextTraces];
+                if (merged.length > MAX_TRACES) {
+                    return merged.slice(0, MAX_TRACES);
+                }
+                return merged;
             });
         }, 100);
 
