@@ -3558,17 +3558,70 @@ func checkAwkInjection(val, base string) error {
 	// And block getline to prevent file reading
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
+		inDouble := false
+		escaped := false
+		var wordBuilder strings.Builder
+
+		for i := 0; i < len(val); i++ {
+			char := val[i]
+
+			if escaped {
+				escaped = false
+				continue
+			}
+			if char == '\\' {
+				escaped = true
+				continue
+			}
+
+			if char == '"' {
+				inDouble = !inDouble
+				continue
+			}
+
+			if inDouble {
+				continue
+			}
+
+			// Unquoted context checks
+			switch char {
+			case '|':
+				return fmt.Errorf("awk injection detected: value contains '|' (unquoted)")
+			case '>':
+				return fmt.Errorf("awk injection detected: value contains '>' (unquoted)")
+			case '<':
+				return fmt.Errorf("awk injection detected: value contains '<' (unquoted)")
+			case '@':
+				// Sentinel Security Update: Block indirect function calls (@fun) and extensions (@include)
+				return fmt.Errorf("awk injection detected: value contains '@' (unquoted)")
+			}
+
+			// Keyword check
+			if char < 128 && isWordChar(byte(char)) {
+				wordBuilder.WriteByte(byte(char))
+			} else {
+				if wordBuilder.Len() > 0 {
+					word := wordBuilder.String()
+					if word == "getline" {
+						return fmt.Errorf("awk injection detected: value contains 'getline' (unquoted)")
+					}
+					if word == "system" {
+						return fmt.Errorf("awk injection detected: value contains 'system' (unquoted)")
+					}
+					wordBuilder.Reset()
+				}
+			}
 		}
-		if strings.Contains(val, ">") {
-			return fmt.Errorf("awk injection detected: value contains '>'")
-		}
-		if strings.Contains(val, "<") {
-			return fmt.Errorf("awk injection detected: value contains '<'")
-		}
-		if strings.Contains(val, "getline") {
-			return fmt.Errorf("awk injection detected: value contains 'getline'")
+
+		// Check last word
+		if wordBuilder.Len() > 0 {
+			word := wordBuilder.String()
+			if word == "getline" {
+				return fmt.Errorf("awk injection detected: value contains 'getline' (unquoted)")
+			}
+			if word == "system" {
+				return fmt.Errorf("awk injection detected: value contains 'system' (unquoted)")
+			}
 		}
 	}
 	return nil
