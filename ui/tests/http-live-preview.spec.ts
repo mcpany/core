@@ -53,9 +53,6 @@ test.describe('HTTP Tool Live Preview & Test', () => {
 
     // 6. Verify Preview
     // Scope to the Request Preview area to avoid ambiguity
-    const previewArea = page.locator('div').filter({ hasText: 'Endpoint' }).last();
-    // We use .last() or more specific filter because "Endpoint" might appear in Label? No, Label is "Endpoint Path".
-    // Let's use the unique text "Request Preview" to find the card.
     const previewCard = page.locator('.rounded-lg', { hasText: 'Request Preview' });
 
     await expect(previewCard.getByText('GET', { exact: true })).toBeVisible();
