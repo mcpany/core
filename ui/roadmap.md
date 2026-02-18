@@ -47,7 +47,7 @@
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [x] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
 - [x] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
-- [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
+- [x] Bulk Service Import: Allow importing multiple services from a single config file or URL.
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
 - [x] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.

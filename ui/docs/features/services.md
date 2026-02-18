@@ -15,7 +15,7 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
+Navigate to the **Upstream Services** page via the sidebar (URL: `/upstream-services`). This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 
@@ -38,7 +38,15 @@ To register a new upstream service:
 
 ![Add Service Dialog](screenshots/services_add_dialog.png)
 
-### 3. Configure Service
+### 3. Bulk Import
+
+You can import multiple services at once from a configuration file.
+
+1. Click the **"Bulk Import"** button in the top-right corner.
+2. Paste your JSON configuration or upload a file.
+3. Review the services to be imported and confirm.
+
+### 4. Configure Service
 
 To edit an existing service:
 
@@ -48,7 +56,7 @@ To edit an existing service:
 
 ![Service Configuration](screenshots/service_config.png)
 
-### 4. Toggle Service State
+### 5. Toggle Service State
 
 You can instantly stop routing traffic to a service by toggling the switch in the main list.
 
