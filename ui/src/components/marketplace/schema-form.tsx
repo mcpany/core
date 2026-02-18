@@ -26,8 +26,11 @@ interface SchemaFormProps {
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
   if (!schema || !schema.properties) return null;
 
+  // Safety check: ensure value is an object
+  const safeValue = value || {};
+
   const handleChange = (key: string, val: string) => {
-    onChange({ ...value, [key]: val });
+    onChange({ ...safeValue, [key]: val });
   };
 
   return (
@@ -60,7 +63,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                <div className="flex items-center space-x-2">
                 <Checkbox
                     id={key}
-                    checked={value[key] === "true"}
+                    checked={safeValue[key] === "true"}
                     onCheckedChange={(c) => handleChange(key, String(c))}
                 />
                 <label
@@ -71,7 +74,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
                 </label>
                </div>
             ) : prop.enum ? (
-                <Select value={value[key]} onValueChange={(v) => handleChange(key, v)}>
+                <Select value={safeValue[key]} onValueChange={(v) => handleChange(key, v)}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select..." />
                     </SelectTrigger>
@@ -84,7 +87,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
             ) : (
                 <Input
                     id={key}
-                    value={value[key] || ""}
+                    value={safeValue[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
                     placeholder={prop.default || `Enter ${title}`}
                     type={inputType}
