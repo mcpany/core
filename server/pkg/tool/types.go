@@ -3373,7 +3373,7 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
-	if err := checkAwkInjection(val, base); err != nil {
+	if err := checkAwkInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
@@ -3552,7 +3552,7 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
-func checkAwkInjection(val, base string) error {
+func checkAwkInjection(val, base string, quoteLevel int) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
@@ -3569,6 +3569,13 @@ func checkAwkInjection(val, base string) error {
 		}
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+		// Sentinel Security Update: Block @ (indirect calls / extensions) and system
+		// We only block @ in quoted contexts (Level 1, 2) where it could be used for indirect calls.
+		// In unquoted context (Level 0), checkUnquotedInjection blocks '(' which prevents function calls.
+		// We also block "system" explicitly to catch it even if checkInterpreterFunctionCalls misses it (defense in depth).
+		if (quoteLevel == 1 || quoteLevel == 2) && strings.Contains(val, "@") {
+			return fmt.Errorf("awk injection detected: value contains '@' (indirect function call or extension)")
 		}
 	}
 	return nil
