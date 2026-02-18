@@ -357,7 +357,7 @@ prepare:
 		fi; \
 	fi
 	@echo "Downloading go modules..." && \
-	go mod download
+	go mod download || (echo "Retrying go mod download..." && go mod download)
 	@echo "Preparation complete."
 
 

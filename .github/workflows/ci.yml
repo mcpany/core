@@ -472,6 +472,9 @@ jobs:
           make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
           docker save -o ui-test-image.tar mcpany-ui-e2e:latest
 
+          # Fix permissions for artifacts
+          sudo chmod 644 *.tar
+
       - name: Upload Server Image
         uses: actions/upload-artifact@v4
         with:
