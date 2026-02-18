@@ -43,39 +43,41 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 		path = "../../../build/all.protoset"
 	}
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// Fallback to absolute path in container
-		path = "/app/build/all.protoset"
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			// Try finding relative to CWD (e.g. if running from root)
-			path = "build/all.protoset"
-		}
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			// Try looking up two directories (e.g. if running from server/)
-			path = "../../build/all.protoset"
-		}
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			// Debugging info for CI failure
-			cwd, _ := os.Getwd()
-			t.Logf("Current working directory: %s", cwd)
-			t.Logf("Failed to find protoset at computed path: %s", path)
+	// Try multiple fallback paths
+	possiblePaths := []string{
+		path,                        // Relative to test file
+		"build/all.protoset",        // Relative to CWD (if running from root)
+		"../build/all.protoset",     // One level up
+		"../../build/all.protoset",  // Two levels up (if running from server/)
+		"../../../build/all.protoset", // Three levels up (if running from server/pkg/tool)
+		"/app/build/all.protoset",   // Absolute path in container
+		"/workspace/build/all.protoset", // Absolute path in workspace container
+	}
 
-			// Check what IS available
-			if entries, err := os.ReadDir("../../.."); err == nil {
+	found := false
+	for _, p := range possiblePaths {
+		if _, err := os.Stat(p); err == nil {
+			path = p
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		// Debugging info for CI failure
+		cwd, _ := os.Getwd()
+		t.Logf("Current working directory: %s", cwd)
+		t.Logf("Failed to find protoset. Checked: %v", possiblePaths)
+
+		// Check what IS available in common directories
+		dirsToCheck := []string{".", "..", "../..", "../../..", "build", "../build"}
+		for _, d := range dirsToCheck {
+			if entries, err := os.ReadDir(d); err == nil {
 				var names []string
 				for _, e := range entries {
 					names = append(names, e.Name())
 				}
-				t.Logf("Entries in ../../..: %v", names)
-			} else {
-				t.Logf("Failed to read ../../..: %v", err)
-			}
-			if entries, err := os.ReadDir("../../../build"); err == nil {
-				var names []string
-				for _, e := range entries {
-					names = append(names, e.Name())
-				}
-				t.Logf("Entries in ../../../build: %v", names)
+				t.Logf("Entries in %s: %v", d, names)
 			}
 		}
 	}
