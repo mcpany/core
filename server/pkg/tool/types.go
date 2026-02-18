@@ -3557,18 +3557,88 @@ func checkAwkInjection(val, base string) error {
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
+	if !isAwk {
+		return nil
+	}
+
+	inDouble := false
+	inComment := false
+	escaped := false
+
+	for i := 0; i < len(val); i++ {
+		char := val[i]
+
+		if inComment {
+			if char == '\n' {
+				inComment = false
+			}
+			continue
 		}
-		if strings.Contains(val, ">") {
-			return fmt.Errorf("awk injection detected: value contains '>'")
+
+		if escaped {
+			escaped = false
+			continue
 		}
-		if strings.Contains(val, "<") {
-			return fmt.Errorf("awk injection detected: value contains '<'")
+
+		if char == '\\' {
+			escaped = true
+			continue
 		}
-		if strings.Contains(val, "getline") {
-			return fmt.Errorf("awk injection detected: value contains 'getline'")
+
+		if char == '"' {
+			inDouble = !inDouble
+			continue
+		}
+
+		if inDouble {
+			continue
+		}
+
+		// Not in quote, not in comment
+		if char == '#' {
+			inComment = true
+			continue
+		}
+
+		if char == '|' {
+			return fmt.Errorf("awk injection detected: value contains '|' (pipe)")
+		}
+		if char == '>' {
+			return fmt.Errorf("awk injection detected: value contains '>' (redirection)")
+		}
+		if char == '<' {
+			return fmt.Errorf("awk injection detected: value contains '<' (redirection)")
+		}
+		if char == '@' {
+			return fmt.Errorf("awk injection detected: value contains '@' (indirect call/extension)")
+		}
+
+		// Check for words like "getline"
+		if char == 'g' {
+			if strings.HasPrefix(val[i:], "getline") {
+				// check boundaries
+				end := i + 7
+				if end >= len(val) || !isWordChar(val[end]) {
+					// check start boundary
+					if i == 0 || !isWordChar(val[i-1]) {
+						return fmt.Errorf("awk injection detected: value contains 'getline'")
+					}
+				}
+			}
+		}
+
+		// Check for words like "system"
+		if char == 's' {
+			if strings.HasPrefix(val[i:], "system") {
+				// check boundaries
+				end := i + 6
+				if end >= len(val) || !isWordChar(val[end]) {
+					// check start boundary
+					if i == 0 || !isWordChar(val[i-1]) {
+						return fmt.Errorf("awk injection detected: value contains 'system'")
+					}
+				}
+			}
 		}
 	}
 	return nil
