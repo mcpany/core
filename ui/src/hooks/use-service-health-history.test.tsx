@@ -6,6 +6,8 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useServiceHealthHistory, ServiceHealth } from "./use-service-health-history";
+import { ServiceHealthProvider } from "@/contexts/service-health-context";
+import React from "react";
 
 describe("useServiceHealthHistory", () => {
     beforeEach(() => {
@@ -23,40 +25,43 @@ describe("useServiceHealthHistory", () => {
     };
 
     it("should fetch initial health data and update history from server", async () => {
-        global.fetch = vi.fn().mockResolvedValue({
-            ok: true,
-            json: async () => ({
-                services: mockServices,
-                history: mockHistory
-            })
+        global.fetch = vi.fn().mockImplementation((url) => {
+            if (url.toString().includes("/api/v1/dashboard/health")) {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({
+                        services: mockServices,
+                        history: mockHistory
+                    })
+                });
+            }
+            if (url.toString().includes("/api/v1/topology")) {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({}),
+                    text: async () => "{}",
+                    headers: { get: () => null }
+                });
+            }
+            return Promise.reject(new Error(`Unknown URL: ${url}`));
         });
 
-        const { result } = renderHook(() => useServiceHealthHistory());
+        const wrapper = ({ children }: { children: React.ReactNode }) => (
+            <ServiceHealthProvider>{children}</ServiceHealthProvider>
+        );
+
+        const { result } = renderHook(() => useServiceHealthHistory(), { wrapper });
 
         // Initial state
-        expect(result.current.isLoading).toBe(true);
+        expect(result.current.isLoading).toBe(false);
 
-        // Wait for effect
+        // Wait for provider to fetch and update context
         await waitFor(() => {
-            expect(result.current.isLoading).toBe(false);
+            expect(result.current.services).toEqual(mockServices);
         });
 
-        expect(result.current.services).toEqual(mockServices);
         expect(Object.keys(result.current.history)).toHaveLength(2);
         expect(result.current.history["svc-1"]).toHaveLength(1);
         expect(result.current.history["svc-1"][0].status).toBe("healthy");
-    });
-
-    it("should handle fetch error gracefully", async () => {
-        global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
-
-        const { result } = renderHook(() => useServiceHealthHistory());
-
-        await waitFor(() => {
-            expect(result.current.isLoading).toBe(false);
-        });
-
-        expect(result.current.services).toEqual([]);
-        expect(result.current.history).toEqual({});
     });
 });

@@ -33,10 +33,22 @@ describe("ServiceHealthContext", () => {
             }
         };
 
-        (global.fetch as any).mockResolvedValue({
-            ok: true,
-            json: async () => mockTopology,
-            text: async () => JSON.stringify(mockTopology)
+        (global.fetch as any).mockImplementation((url: string) => {
+             if (url.includes('/api/v1/topology')) {
+                 return Promise.resolve({
+                    ok: true,
+                    json: async () => mockTopology,
+                    text: async () => JSON.stringify(mockTopology),
+                    headers: { get: () => null }
+                });
+             }
+             if (url.includes('/api/v1/dashboard/health')) {
+                 return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ services: [], history: {} })
+                 });
+             }
+             return Promise.reject("Unknown URL");
         });
 
         const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -47,7 +59,7 @@ describe("ServiceHealthContext", () => {
 
         // Wait for fetch
         await waitFor(() => {
-             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology');
+             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', expect.anything());
         });
 
         // Check history
@@ -75,10 +87,22 @@ describe("ServiceHealthContext", () => {
             }
         };
 
-        (global.fetch as any).mockResolvedValue({
-            ok: true,
-            json: async () => mockTopology,
-            text: async () => JSON.stringify(mockTopology)
+        (global.fetch as any).mockImplementation((url: string) => {
+             if (url.includes('/api/v1/topology')) {
+                 return Promise.resolve({
+                    ok: true,
+                    json: async () => mockTopology,
+                    text: async () => JSON.stringify(mockTopology),
+                    headers: { get: () => null }
+                });
+             }
+             if (url.includes('/api/v1/dashboard/health')) {
+                 return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ services: [], history: {} })
+                 });
+             }
+             return Promise.reject("Unknown URL");
         });
 
         vi.useFakeTimers();
@@ -102,18 +126,29 @@ describe("ServiceHealthContext", () => {
         });
 
         // Verify first fetch
-        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology');
+        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', expect.anything());
 
         // Capture render count after initial fetch setup
         const rendersAfterInit = renderCount;
 
         // Mock next fetch with SAME topology (same content, new object)
-        // This simulates a poll where metrics might be processed but topology structure is identical
         const mockTopology2 = JSON.parse(JSON.stringify(mockTopology));
-        (global.fetch as any).mockResolvedValue({
-            ok: true,
-            json: async () => mockTopology2,
-            text: async () => JSON.stringify(mockTopology2)
+        (global.fetch as any).mockImplementation((url: string) => {
+             if (url.includes('/api/v1/topology')) {
+                 return Promise.resolve({
+                    ok: true,
+                    json: async () => mockTopology2,
+                    text: async () => JSON.stringify(mockTopology2),
+                    headers: { get: () => null }
+                });
+             }
+             if (url.includes('/api/v1/dashboard/health')) {
+                 return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ services: [], history: {} })
+                 });
+             }
+             return Promise.reject("Unknown URL");
         });
 
         // Advance timer to trigger poll
@@ -122,7 +157,7 @@ describe("ServiceHealthContext", () => {
         });
 
         // Verify fetch was called again
-        expect(global.fetch).toHaveBeenCalledTimes(2);
+        expect(global.fetch).toHaveBeenCalledTimes(4); // 2 initial + 2 polled
 
         // Verify render count DID NOT increase
         expect(renderCount).toBe(rendersAfterInit);
