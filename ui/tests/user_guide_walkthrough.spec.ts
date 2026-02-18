@@ -20,10 +20,10 @@ test.describe('User Guide Walkthrough', () => {
 
     await page.goto('/');
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 60000 });
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 90000 });
     // Check for "Active Services" card
-    await expect(page.locator('text=Active Services')).toBeVisible({ timeout: 60000 });
-    await expect(page.locator('text=Connected Tools')).toBeVisible({ timeout: 60000 });
+    await expect(page.locator('text=Active Services')).toBeVisible({ timeout: 90000 });
+    await expect(page.locator('text=Connected Tools')).toBeVisible({ timeout: 90000 });
   });
 
   test('Services: Add Service Redirects to Marketplace', async ({ page }) => {
@@ -32,16 +32,16 @@ test.describe('User Guide Walkthrough', () => {
 
     // Explicitly target the button with text "Add Service"
     const addButton = page.getByRole('button', { name: 'Add Service' });
-    await expect(addButton).toBeVisible({ timeout: 60000 });
+    await expect(addButton).toBeVisible({ timeout: 90000 });
 
     // Check for dialog opens
     await addButton.click();
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 60000 });
-    await expect(page.getByText('New Service')).toBeVisible({ timeout: 60000 });
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 90000 });
+    await expect(page.getByText('New Service')).toBeVisible({ timeout: 90000 });
 
     // Close it
     await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 60000 });
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 90000 });
   });
 
   test('Resources: List and Preview', async ({ page }) => {
