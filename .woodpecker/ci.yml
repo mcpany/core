@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 
 pipeline:
   # -------------------------------------------------------------------------
@@ -97,4 +100,3 @@ services:
     image: docker:24-dind
     privileged: true
     commands: ["--storage-driver=overlay2"]
-

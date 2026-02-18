@@ -2288,6 +2288,7 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - any: The execution result.
 //   - error: An error if execution fails.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+    logging.GetLogger().Info("CommandTool.Execute called", "tool", req.ToolName)
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -3611,6 +3612,13 @@ func isSafeBacktickLanguage(command string) bool {
 	return false
 }
 
+func isSafeRunner(cmd string) bool {
+	base := filepath.Base(cmd)
+	// Commands that execute other commands but don't perform shell expansion on arguments themselves
+	// This allows passing arguments with spaces (which are safe when using exec.Command)
+	return base == "env" || base == "sudo" || base == "time" || base == "nice" || base == "watch"
+}
+
 func checkUnquotedInjection(val, command string, isShell bool) error {
 	// Unquoted (or unknown quoting): strict check
 	// Block common shell metacharacters and globbing/expansion characters
@@ -3620,8 +3628,6 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
 	// Sentinel Security Update: Space is only dangerous for Shells, not for Interpreters when using exec.Command
 	dangerousChars := ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
-	// For command runners like env/sudo, arguments with spaces are safe because they are not interpreted as shell commands
-	// but rather passed as distinct arguments to the child process.
 	if isShell && !isSafeRunner(command) {
 		dangerousChars += " "
 	}
@@ -3636,17 +3642,6 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
-}
-
-func isSafeRunner(command string) bool {
-	base := strings.ToLower(filepath.Base(command))
-	runners := []string{"env", "sudo", "nice", "nohup", "time", "watch", "timeout"}
-	for _, r := range runners {
-		if base == r {
-			return true
-		}
-	}
-	return false
 }
 
 func isInterpreter(command string) bool {
