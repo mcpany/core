@@ -140,7 +140,7 @@ export function AnalyticsDashboard() {
     }, [timeRange]);
 
     // ⚡ BOLT: Memoized traffic stats calculation to prevent re-render waste.
-    // Randomized Selection from Top 5 High-Impact Targets
+    // Randomized Selection from Top 5 High-Impact Targets (Render Optimization)
     const { totalRequests, avgLatency, errorRate, avgRps } = useMemo(() => {
         if (!trafficData || trafficData.length === 0) {
             return {
