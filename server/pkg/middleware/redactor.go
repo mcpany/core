@@ -121,9 +121,18 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		}
 
 		var s string
-		if err := json.Unmarshal(raw, &s); err != nil {
-			// Should not happen for valid JSON strings
-			return nil, false
+
+		// ⚡ BOLT: Avoid json.Unmarshal for strings without escape characters
+		// Randomized Selection from Top 5 High-Impact Targets
+		if len(raw) >= 2 && raw[0] == '"' && raw[len(raw)-1] == '"' && bytes.IndexByte(raw, '\\') == -1 {
+			// Fast path: No escape characters, so raw content (excluding quotes) is the string.
+			// raw includes quotes, so we slice [1 : len(raw)-1]
+			s = string(raw[1 : len(raw)-1])
+		} else {
+			if err := json.Unmarshal(raw, &s); err != nil {
+				// Should not happen for valid JSON strings
+				return nil, false
+			}
 		}
 
 		redacted := r.RedactString(s)

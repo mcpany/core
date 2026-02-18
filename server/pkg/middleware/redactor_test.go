@@ -291,3 +291,31 @@ func TestRedactString_Fallback(t *testing.T) {
 	assert.Equal(t, "***REDACTED***", r.RedactString("bar"))
 	assert.Equal(t, "baz", r.RedactString("baz"))
 }
+
+func TestRedactJSON_WithEscapes(t *testing.T) {
+	enabled := true
+	cfg := configv1.DLPConfig_builder{
+		Enabled:        &enabled,
+		CustomPatterns: []string{`secret`},
+	}.Build()
+	r := NewRedactor(cfg, slog.Default())
+
+	// Input with escapes: "foo\nbar", "say \"hello\"", "unicode \u0073ecret"
+	// "unicode \u0073ecret" decodes to "unicode secret", which should be redacted.
+	input := []byte(`{
+		"escaped_newline": "foo\nbar",
+		"escaped_quote": "say \"hello\"",
+		"unicode_secret": "unicode \u0073ecret"
+	}`)
+
+	output, err := r.RedactJSON(input)
+	assert.NoError(t, err)
+
+	outputStr := string(output)
+	// foo\nbar should be preserved (no redaction matched)
+	assert.Contains(t, outputStr, `foo\nbar`)
+	// say \"hello\" should be preserved
+	assert.Contains(t, outputStr, `say \"hello\"`)
+	// "unicode \u0073ecret" -> "unicode secret" -> "unicode ***REDACTED***"
+	assert.Contains(t, outputStr, `unicode ***REDACTED***`)
+}
