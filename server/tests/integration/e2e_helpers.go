@@ -604,7 +604,11 @@ func PullDockerImage(t *testing.T, imageName string) error {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
 
-	args := append(dockerBaseArgs, "pull", imageName)
+	// Safely construct args without modifying dockerBaseArgs
+	args := make([]string, 0, len(dockerBaseArgs)+2)
+	args = append(args, dockerBaseArgs...)
+	args = append(args, "pull", imageName)
+
 	cmd := exec.CommandContext(context.Background(), dockerExe, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
