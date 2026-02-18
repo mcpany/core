@@ -70,7 +70,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Echo Service",
             version: "v1.0",
             command_line_service: {
-                command: "echo",
+                command: "echo echoed_output",
                 tools: [
                     {
                         name: "echo_tool",
@@ -81,7 +81,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     echo_call: {
-                        args: ["echoed_output"]
+                        // Removed args to avoid potential proto validation issues if binary is stale
                     }
                 }
             }
@@ -111,7 +111,7 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
                 name: "weather-service",
                 // Use command_line_service matching config.minimal.yaml to avoid Docker issues in E2E
                 command_line_service: {
-                    command: "echo",
+                    command: "echo '{\"weather\": \"sunny\"}'",
                     tools: [
                         {
                             name: "get_weather",
@@ -121,7 +121,7 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
                     ],
                     calls: {
                         get_weather: {
-                            args: ['{"weather": "sunny"}']
+                            // Removed args to avoid potential proto validation issues if binary is stale
                         }
                     }
                 }
