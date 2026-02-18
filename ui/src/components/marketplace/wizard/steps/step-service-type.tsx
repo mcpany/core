@@ -5,13 +5,26 @@
 
 import React from 'react';
 import { useWizard } from '../wizard-context';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { SERVICE_REGISTRY } from '@/lib/service-registry';
+import { UpstreamServiceConfig } from '@/lib/client';
 
-const MANUAL_TEMPLATE = {
+interface TemplateConfig extends Partial<UpstreamServiceConfig> {
+    configurationSchema?: string;
+}
+
+interface Template {
+    id: string;
+    name: string;
+    description: string;
+    config: TemplateConfig;
+    params: Record<string, string>;
+}
+
+const MANUAL_TEMPLATE: Template = {
     id: 'manual',
     name: 'Manual / Custom',
     description: 'Configure everything from scratch.',
@@ -19,14 +32,20 @@ const MANUAL_TEMPLATE = {
         commandLineService: {
             command: '',
             env: {},
-            workingDirectory: ''
+            workingDirectory: '',
+            tools: [],
+            resources: [],
+            prompts: [],
+            calls: {},
+            communicationProtocol: 0,
+            local: false
         },
         openapiService: undefined
     },
     params: {}
 };
 
-const OPENAPI_TEMPLATE = {
+const OPENAPI_TEMPLATE: Template = {
     id: 'openapi',
     name: 'OpenAPI / Swagger Import',
     description: 'Import tools from an OpenAPI specification.',
@@ -43,7 +62,7 @@ const OPENAPI_TEMPLATE = {
 };
 
 // Map registry items to wizard templates
-const REGISTRY_TEMPLATES = SERVICE_REGISTRY.map(s => {
+const REGISTRY_TEMPLATES: Template[] = SERVICE_REGISTRY.map(s => {
     // Extract defaults from schema if any
     const defaultParams: Record<string, string> = {};
     if (s.configurationSchema && s.configurationSchema.properties) {
@@ -62,7 +81,13 @@ const REGISTRY_TEMPLATES = SERVICE_REGISTRY.map(s => {
             commandLineService: {
                 command: s.command,
                 env: {}, // Will be populated from params later
-                workingDirectory: ''
+                workingDirectory: '',
+                tools: [],
+                resources: [],
+                prompts: [],
+                calls: {},
+                communicationProtocol: 0,
+                local: false
             },
             configurationSchema: JSON.stringify(s.configurationSchema),
             openapiService: undefined
@@ -71,7 +96,7 @@ const REGISTRY_TEMPLATES = SERVICE_REGISTRY.map(s => {
     };
 });
 
-const TEMPLATES = [MANUAL_TEMPLATE, ...REGISTRY_TEMPLATES, OPENAPI_TEMPLATE];
+const TEMPLATES: Template[] = [MANUAL_TEMPLATE, ...REGISTRY_TEMPLATES, OPENAPI_TEMPLATE];
 
 /**
  * StepServiceType component.
@@ -86,17 +111,11 @@ export function StepServiceType() {
         if (template) {
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: template.params
             });
 
-            // We need to be careful not to overwrite the commandLineService env if we switch templates
-            // But actually, switching templates SHOULD reset params, so this is fine.
-
-            // However, we must ensure `configurationSchema` is passed along.
-            // The spread `...template.config` handles that because we mapped it above.
-
             updateConfig({
-                ...template.config as any,
+                ...template.config,
                 name: config.name || template.name,
             });
         }

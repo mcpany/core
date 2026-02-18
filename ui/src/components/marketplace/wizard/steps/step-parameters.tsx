@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SchemaForm } from '@/components/marketplace/schema-form';
+import { SecretValue } from '@proto/config/v1/auth';
 
 /**
  * StepParameters component.
@@ -33,9 +34,9 @@ export function StepParameters() {
 
     const syncEnv = (currentParams: Record<string, string>) => {
         if (config.commandLineService) {
-            const env: any = {};
+            const env: Record<string, SecretValue> = {};
             Object.entries(currentParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
+                env[k] = { plainText: v, validationRegex: "" };
             });
             updateConfig({
                 commandLineService: {
@@ -150,7 +151,7 @@ export function StepParameters() {
                         value={config.commandLineService?.command || ''}
                         onChange={e => updateConfig({
                             commandLineService: {
-                                ...(config.commandLineService || { env: {}, workingDirectory: '', tools: [], resources: [], calls: {}, prompts: [], communicationProtocol: 0, local: false }),
+                                ...(config.commandLineService || { env: {}, workingDirectory: '', tools: [], resources: [], prompts: [], calls: {}, communicationProtocol: 0, local: false }),
                                 command: e.target.value
                             }
                         })}

@@ -9,8 +9,23 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+interface JsonSchemaProperty {
+    type: string;
+    description?: string;
+    default?: string;
+    title?: string;
+    format?: string;
+    enum?: string[];
+}
+
+interface JsonSchema {
+    type: string;
+    properties: Record<string, JsonSchemaProperty>;
+    required?: string[];
+}
+
 interface SchemaFormProps {
-  schema: any;
+  schema: JsonSchema;
   value: Record<string, string>;
   onChange: (value: Record<string, string>) => void;
 }
@@ -35,7 +50,7 @@ export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
 
   return (
     <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
-      {Object.entries(schema.properties).map(([key, prop]: [string, any]) => {
+      {Object.entries(schema.properties).map(([key, prop]) => {
         const isRequired = schema.required?.includes(key);
         const description = prop.description || "";
         const title = prop.title || key;
