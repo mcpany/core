@@ -1,12 +1,8 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:20-bookworm-slim AS base
-# libc6-compat is not needed on Debian/Ubuntu base
-# RUN apk add --no-cache libc6-compat
-
-# Install dependencies only when needed
-FROM base AS deps
+# Re-declare FROM for each stage to avoid potential layer caching issues with 'base' alias on some runners
+FROM node:20-bookworm-slim AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -15,7 +11,7 @@ COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
 
 # Rebuild the source code only when needed
-FROM base AS builder
+FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
@@ -24,12 +20,11 @@ COPY --from=deps /app/package-lock.json ./package-lock.json
 # Copy proto files to local directory to avoid reliance on parent paths
 # Explicitly copy proto directory from context to inside image
 COPY proto/ ./proto/
+# Ensure permissions are open for the build process
+RUN chmod -R 777 proto/
 
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
-
-# Ensure permissions (just in case)
-RUN chmod -R 777 proto/
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -44,7 +39,7 @@ RUN npm run build
 RUN mkdir -p public
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM node:20-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
