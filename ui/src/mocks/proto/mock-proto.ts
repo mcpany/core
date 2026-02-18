@@ -5,6 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * A gRPC-Web implementation for testing.
+ */
 export class GrpcWebImpl {
     constructor(_host: string, _options: any) {}
 }
@@ -14,6 +17,9 @@ export class GrpcWebImpl {
  */
 export class RegistrationServiceClientImpl {
     constructor(_rpc: any) {}
+    /**
+     * Mocks the GetService method.
+     */
     GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
@@ -92,6 +98,10 @@ export type GetServiceResponse = any;
 export type GetServiceStatusResponse = any;
 
 // Mock types for HttpCallDefinition
+
+/**
+ * ParameterType enum.
+ */
 export enum ParameterType {
     STRING = 0,
     NUMBER = 1,
@@ -101,6 +111,9 @@ export enum ParameterType {
     OBJECT = 5,
 }
 
+/**
+ * HttpMethod enum.
+ */
 export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_UNSPECIFIED = 0,
     HTTP_METHOD_GET = 1,
@@ -110,6 +123,9 @@ export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_PATCH = 5,
 }
 
+/**
+ * OutputFormat enum.
+ */
 export enum OutputTransformer_OutputFormat {
     JSON = 0,
     XML = 1,
@@ -118,11 +134,17 @@ export enum OutputTransformer_OutputFormat {
     JQ = 4,
 }
 
+/**
+ * InputTransformer interface.
+ */
 export interface InputTransformer {
     template?: string;
     webhook?: any;
 }
 
+/**
+ * OutputTransformer interface.
+ */
 export interface OutputTransformer {
     format: OutputTransformer_OutputFormat;
     extractionRules?: { [key: string]: string };
@@ -130,6 +152,9 @@ export interface OutputTransformer {
     jqQuery?: string;
 }
 
+/**
+ * HttpParameterMapping interface.
+ */
 export interface HttpParameterMapping {
     schema?: {
         name: string;
@@ -142,6 +167,9 @@ export interface HttpParameterMapping {
     disableEscape?: boolean;
 }
 
+/**
+ * HttpCallDefinition interface.
+ */
 export interface HttpCallDefinition {
     id?: string;
     method: HttpCallDefinition_HttpMethod;
