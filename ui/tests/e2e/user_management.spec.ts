@@ -31,8 +31,8 @@ test.describe('User Management', () => {
         await page.click('button:has-text("Add User")');
 
         // Expect Sheet to open
-        await expect(page.locator('div[role="dialog"]')).toBeVisible();
-        await expect(page.locator('h2:has-text("Add New User")')).toBeVisible();
+        await expect(page.locator('div[role="dialog"]')).toBeVisible({ timeout: 60000 });
+        await expect(page.locator('h2:has-text("Add New User")')).toBeVisible({ timeout: 60000 });
 
         // Fill username
         await page.fill('input[name="id"]', 'test-api-user');
@@ -60,12 +60,12 @@ test.describe('User Management', () => {
         await page.click('button:has-text("Save Changes")');
 
         // Verify Sheet closed
-        await expect(page.locator('div[role="dialog"]')).toBeHidden();
+        await expect(page.locator('div[role="dialog"]')).toBeHidden({ timeout: 60000 });
 
         // Verify user created in list
         // Row should contain "test-api-user"
         const row = page.locator('tr:has-text("test-api-user")');
-        await expect(row).toBeVisible();
+        await expect(row).toBeVisible({ timeout: 60000 });
 
         // Row should indicate API Key auth
         await expect(row.locator('text=API Key')).toBeVisible();

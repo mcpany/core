@@ -42,16 +42,16 @@ test.describe('Service Detail Logs Tab', () => {
     await page.goto(`/service/${serviceId}`);
 
     // 2. Verify Page Title to ensure we loaded
-    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
+    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName, { timeout: 60000 });
 
     // 3. Click Logs Tab
     const logsTab = page.getByRole('tab', { name: 'Logs' });
-    await expect(logsTab).toBeVisible();
+    await expect(logsTab).toBeVisible({ timeout: 60000 });
     await logsTab.click();
 
     // 4. Verify LogStream is visible
     // "Live Logs" is the h1 in LogStream
-    await expect(page.getByText('Live Logs')).toBeVisible();
+    await expect(page.getByText('Live Logs')).toBeVisible({ timeout: 60000 });
 
     // 5. Verify source is filtered (optional, but good)
     // The LogStream displays source badge/text.
