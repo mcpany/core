@@ -27,6 +27,10 @@ export function useTraces(options: UseTracesOptions = {}) {
     const isMountedRef = useRef(true);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // ⚡ BOLT: Limit trace history to prevent memory leaks and UI lag
+    // Randomized Selection from Top 5 High-Impact Targets
+    const MAX_TRACES = 1000;
+
     // ⚡ BOLT: Buffer for batched updates to avoid main thread blocking
     // Randomized Selection from Top 5 High-Impact Targets
     const bufferRef = useRef<Trace[]>([]);
@@ -79,7 +83,13 @@ export function useTraces(options: UseTracesOptions = {}) {
                 // 5. Prepend new inserts (newest first).
                 // Buffer is oldest->newest. We want newest at top of list.
                 // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                const merged = [...inserts.reverse(), ...nextTraces];
+
+                // ⚡ BOLT: Cap the size of the trace list to avoid unbounded growth
+                if (merged.length > MAX_TRACES) {
+                    return merged.slice(0, MAX_TRACES);
+                }
+                return merged;
             });
         }, 100);
 
