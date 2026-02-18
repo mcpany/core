@@ -1369,6 +1369,67 @@ export const apiClient = {
         return res.json();
     },
 
+    // User Management
+
+    /**
+     * Lists all users.
+     * @returns A promise that resolves to a list of users.
+     */
+    listUsers: async () => {
+        const res = await fetchWithAuth('/api/v1/users');
+        if (!res.ok) throw new Error('Failed to list users');
+        return res.json();
+    },
+
+    /**
+     * Creates a new user.
+     * @param user The user configuration to create.
+     * @returns A promise that resolves to the created user.
+     */
+    createUser: async (user: any) => {
+        const res = await fetchWithAuth('/api/v1/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user })
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to create user: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Updates an existing user.
+     * @param user The user configuration to update.
+     * @returns A promise that resolves to the updated user.
+     */
+    updateUser: async (user: any) => {
+        const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user })
+        });
+        if (!res.ok) {
+             const txt = await res.text();
+             throw new Error(`Failed to update user: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes a user.
+     * @param id The ID of the user to delete.
+     * @returns A promise that resolves when the user is deleted.
+     */
+    deleteUser: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete user');
+        return {};
+    },
+
     // Stack Management (Collections)
 
     /**
