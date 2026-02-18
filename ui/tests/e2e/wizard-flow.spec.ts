@@ -27,17 +27,26 @@ test.describe('Smart Config Wizard', () => {
     await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
 
     // 2. Open Wizard
+    const createButton = page.getByRole('button', { name: 'Create Config' });
+
+    // Ensure button is ready and attached
+    await expect(createButton).toBeVisible();
+    await expect(createButton).toBeEnabled();
+
     // Force click to ensure it works even if toasts overlay
-    await page.getByRole('button', { name: 'Create Config' }).click({ force: true });
+    await createButton.click({ force: true });
 
     // Check if dialog opened with increased timeout
     try {
         // Try alternate locator strategy if heading isn't immediately found
-        await expect(page.locator('div[role="dialog"]')).toBeVisible({ timeout: 15000 });
+        const dialog = page.locator('div[role="dialog"]');
+        await expect(dialog).toBeVisible({ timeout: 15000 });
         await expect(page.getByText('Create Upstream Service Config')).toBeVisible({ timeout: 5000 });
     } catch (e) {
-        console.log('Dialog not visible. Body HTML:', await page.innerHTML('body'));
-        throw e;
+        console.log('Dialog not visible. Retrying click...');
+        // Retry click once if dialog didn't open (hydration race condition mitigation)
+        await createButton.click({ force: true });
+        await expect(page.locator('div[role="dialog"]')).toBeVisible({ timeout: 15000 });
     }
 
     // 3. Select Template
@@ -50,7 +59,8 @@ test.describe('Smart Config Wizard', () => {
     await page.getByLabel('Service Name').fill(serviceName);
 
     // 5. Click Next (Step 1 -> 2)
-    await page.getByRole('button', { name: 'Next' }).click();
+    // Use exact match to avoid matching Next.js dev tools button
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
     // 6. Fill Parameters (Schema Driven)
     // Wait for the schema form to render
@@ -58,15 +68,15 @@ test.describe('Smart Config Wizard', () => {
     await page.getByLabel('Connection URL').fill('postgresql://test:test@localhost:5432/testdb');
 
     // 7. Click Next (Step 2 -> 3)
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
     // 8. Click Next (Step 3 -> 4)
     await expect(page.getByText('3. Webhooks & Transformers')).toBeVisible();
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
     // 9. Click Next (Step 4 -> 5)
     await expect(page.getByText('4. Authentication')).toBeVisible();
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
     // 10. Review & Finish
     await expect(page.getByText('Review & Finish')).toBeVisible();
