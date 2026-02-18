@@ -6,6 +6,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PlaygroundClientPro } from './playground-client-pro';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
@@ -93,5 +94,28 @@ describe('PlaygroundClientPro', () => {
           expect(screen.getByText('imported command')).toBeInTheDocument();
           expect(screen.getByText('imported response')).toBeInTheDocument();
       });
+  });
+
+  it('executes tool and tracks duration', async () => {
+    // We need to render PlaygroundClientPro
+    const { getByPlaceholderText, getByText, findByText } = render(
+        <TooltipProvider>
+            <PlaygroundClientPro />
+        </TooltipProvider>
+    );
+
+    const input = getByPlaceholderText('Enter command or select a tool...');
+    fireEvent.change(input, { target: { value: 'test-tool {}' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    // Mock implementation returns immediately, so duration will be 0ms or small
+    // Wait for result
+    const resultHeader = await findByText('Result: test-tool');
+    expect(resultHeader).toBeInTheDocument();
+
+    // Check for "ms" text which indicates duration is displayed
+    // It might be "0ms" or small number
+    const durationElement = await findByText(/ms/);
+    expect(durationElement).toBeInTheDocument();
   });
 });

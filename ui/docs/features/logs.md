@@ -20,9 +20,13 @@ Navigate to `/logs`. The view connects to the log WebSocket and begins streaming
 Use the search bar at the top to filter logs by keyword (e.g., "error", "payment-service").
 - **Service Filter**: Select a specific service from the dropdown to isolate its logs.
 - **Level Filter**: Show only Warning/Error logs.
+- **Search Highlighting**: Search terms are automatically highlighted in the log message for better visibility.
 
 ![Filtered Logs](screenshots/logs_filtered.png)
 
-### 3. Pause and Resume
+### 3. Structured Log Viewer
+If a log message contains valid JSON, it is automatically parsed and displayed as an expandable tree object. This makes debugging complex structured logs much easier.
+
+### 4. Pause and Resume
 - **Scroll Up**: Scrolling up automatically pauses the live tail, allowing you to read history.
 - **Resume**: Click the "Resume" button (or scroll to bottom) to re-enable auto-scrolling.

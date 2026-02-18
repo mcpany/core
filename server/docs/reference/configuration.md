@@ -15,10 +15,11 @@ upstream_services:
   - name: "my-api"
     http_service:
       address: "https://api.example.com"
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "X-API-Key"
-        api_key:
+        param_name: "X-API-Key"
+        in: HEADER
+        value:
           plain_text: "${API_KEY:my-secret-key}"
 ```
 
@@ -215,8 +216,9 @@ upstream_services:
         open_duration: "5s"
     upstream_auth:
       api_key:
-        header_name: "X-API-Key"
-        api_key:
+        param_name: "X-API-Key"
+        in: HEADER
+        value:
           environment_variable: "PRODUCT_CATALOG_API_KEY"
     grpc_service:
       address: "grpc.product-catalog.svc.cluster.local:50051"
@@ -823,8 +825,9 @@ Authenticate with an upstream service using an API key stored in HashiCorp Vault
 ```yaml
 upstream_auth:
   api_key:
-    header_name: "X-API-Key"
-    api_key:
+    param_name: "X-API-Key"
+    in: HEADER
+    value:
       vault:
         address: "https://vault.example.com"
         token: "s.1234567890abcdef"
@@ -839,20 +842,22 @@ Authenticate using an API key stored in AWS Secrets Manager.
 ```yaml
 upstream_auth:
   api_key:
-    header_name: "X-API-Key"
-    api_key:
+    param_name: "X-API-Key"
+    in: HEADER
+    value:
       aws_secret_manager:
         secret_id: "my-app/api-keys"
         json_key: "my-api-key"
         region: "us-west-2"
 ```
 
-##### `UpstreamAPIKeyAuth`
+##### `UpstreamAPIKeyAuth` (Using `APIKeyAuth`)
 
 | Field         | Type          | Description                                  |
 | ------------- | ------------- | -------------------------------------------- |
-| `header_name` | `string`      | The name of the header to carry the API key. |
-| `api_key`     | `SecretValue` | The API key value, managed as a secret.      |
+| `param_name`  | `string`      | The name of the parameter carrying the key.  |
+| `in`          | `enum`        | Where the key is located (`HEADER`, `QUERY`, `COOKIE`). |
+| `value`       | `SecretValue` | The API key value, managed as a secret.      |
 
 ##### `UpstreamBearerTokenAuth`
 

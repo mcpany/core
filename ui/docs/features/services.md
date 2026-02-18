@@ -25,7 +25,10 @@ Key columns:
 - **Type**: Protocol (HTTP, gRPC, MCP, CMD).
 - **Status**: Health indicator (Healthy, Degraded, Unhealthy).
 - **Control**: Toggle switch to quickly enable/disable traffic.
-- **Actions**: "View Logs" to jump directly to the live logs for a specific service.
+- **Actions**:
+  - "View Logs": Jump directly to the live logs for a specific service.
+  - "Duplicate": Clone an existing service configuration to create a new one.
+  - "Diagnose": Run interactive connection diagnostics to troubleshoot issues.
 
 ### 2. Add New Service
 
@@ -45,6 +48,7 @@ To edit an existing service:
 1. Click on the service name in the list (or select "Edit" from the Actions menu).
 2. A detailed **Configuration Sheet** will open.
 3. Here you can update the endpoint, managing **Environment Variables**, and view specialized settings.
+4. **Configuration Diff**: When modifying a service, you can view a side-by-side diff of the changes before saving.
 
 ![Service Configuration](screenshots/service_config.png)
 

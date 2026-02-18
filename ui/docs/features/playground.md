@@ -50,6 +50,8 @@ The execution result is displayed in the chat stream.
 
 - **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
+- **Output Diffing**: If a tool is executed multiple times with the same arguments, a "Show Changes" button appears to visualize the difference between the current and previous output.
+- **Execution Duration**: The time taken for the tool to execute is displayed in milliseconds next to the result.
 
 ### 5. Session History (Import/Export)
 

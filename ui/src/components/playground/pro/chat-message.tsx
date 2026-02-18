@@ -54,6 +54,7 @@ export interface Message {
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
   previousResult?: unknown;
+  duration?: number;
   timestamp: Date;
 }
 
@@ -216,6 +217,11 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             <span className="ml-2 text-[10px] opacity-60" title="Estimated token usage for result">
                                 ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
                             </span>
+                            {message.duration !== undefined && (
+                                <span className="ml-2 text-[10px] opacity-60 border-l pl-2 border-muted-foreground/30">
+                                    {message.duration}ms
+                                </span>
+                            )}
                         </div>
                         <div className="flex items-center gap-2">
                             {hasDiff && (
