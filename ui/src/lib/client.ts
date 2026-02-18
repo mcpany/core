@@ -1106,7 +1106,7 @@ export const apiClient = {
      * @returns A promise that resolves to a list of credentials.
      */
     listCredentials: async () => {
-        const res = await fetchWithAuth('/credentials');
+        const res = await fetchWithAuth('/api/v1/credentials');
         if (!res.ok) throw new Error('Failed to list credentials');
         const data = await res.json();
         return Array.isArray(data) ? data : (data.credentials || []);
@@ -1118,7 +1118,7 @@ export const apiClient = {
      * @returns A promise that resolves to the created credential.
      */
     createCredential: async (credential: any) => {
-        const res = await fetchWithAuth('/credentials', {
+        const res = await fetchWithAuth('/api/v1/credentials', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credential)
@@ -1133,7 +1133,7 @@ export const apiClient = {
      * @returns A promise that resolves to the credential.
      */
     getCredential: async (id: string) => {
-        const res = await fetchWithAuth(`/credentials/${id}`);
+        const res = await fetchWithAuth(`/api/v1/credentials/${id}`);
         if (!res.ok) throw new Error('Failed to get credential');
         return res.json();
     },
@@ -1144,7 +1144,7 @@ export const apiClient = {
      * @returns A promise that resolves to the updated credential.
      */
     updateCredential: async (credential: any) => {
-        const res = await fetchWithAuth(`/credentials/${credential.id}`, {
+        const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credential)
@@ -1159,7 +1159,7 @@ export const apiClient = {
      * @returns A promise that resolves when the credential is deleted.
      */
     deleteCredential: async (id: string) => {
-        const res = await fetchWithAuth(`/credentials/${id}`, {
+        const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
             method: 'DELETE'
         });
         if (!res.ok) throw new Error('Failed to delete credential');
