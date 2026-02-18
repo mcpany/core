@@ -3184,18 +3184,58 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
-	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
-	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
+	// Only apply keyword checks to actual scripting languages where these are functions/keywords.
+	// CLI tools like kubectl, docker, etc. are "interpreters" in the broad sense (can exec code)
+	// but their arguments are flags, not scripts, so checking for "load" or "system" is prone to false positives.
+	scriptingLangs := map[string]bool{
+		"python": true, "ruby": true, "perl": true, "php": true,
+		"node": true, "nodejs": true, "bun": true, "deno": true,
+		"lua": true, "awk": true, "gawk": true, "nawk": true, "mawk": true,
+		"tclsh": true, "wish": true, "irb": true, "php-cgi": true,
+		"r": true, "rscript": true, "julia": true, "groovy": true, "jshell": true,
+		"scala": true, "kotlin": true, "swift": true, "elixir": true, "iex": true,
+		"erl": true, "escript": true, "ghci": true, "clisp": true, "sbcl": true,
+		"lisp": true, "scheme": true, "racket": true, "luajit": true,
+		"gcc": true, "g++": true, "clang": true, "java": true,
+	}
+
+	// Check prefix
+	isScripting := false
+	for sl := range scriptingLangs {
+		if strings.HasPrefix(language, sl) {
+			isScripting = true
+			break
+		}
+	}
+
+	if !isScripting {
+		return nil
+	}
+
+	// Base dangerous keywords (Universal RCE candidates in scripting languages)
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
 		"spawn", "fork",
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
-		// PHP / Perl / Ruby / Python additional dangerous functions
-		"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
-		"include", "include_once", "require_once", "dl",
-		"syscall", "load", "execfile", "compile",
+	}
+
+	// Add language specific dangerous functions
+	if strings.HasPrefix(language, "php") {
+		dangerousKeywords = append(dangerousKeywords,
+			"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
+			"include", "include_once", "require_once", "dl",
+		)
+	}
+	if strings.HasPrefix(language, "ruby") {
+		dangerousKeywords = append(dangerousKeywords, "syscall", "load")
+	}
+	if strings.HasPrefix(language, "python") {
+		dangerousKeywords = append(dangerousKeywords, "execfile", "compile")
+	}
+	if strings.HasPrefix(language, "perl") {
+		dangerousKeywords = append(dangerousKeywords, "syscall")
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
