@@ -15,6 +15,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
+import { Check, Copy, Code } from "lucide-react";
+import { generateCurlCommand, generatePythonCommand } from "@/lib/code-gen";
+import dynamic from "next/dynamic";
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+const SyntaxHighlighter = dynamic(
+    () => import("react-syntax-highlighter").then((mod) => mod.Prism),
+    {
+        ssr: false,
+        loading: () => <div className="p-4 bg-muted h-32 animate-pulse rounded" />,
+    }
+);
 
 interface ToolFormProps {
   tool: ToolDefinition;
@@ -31,7 +43,9 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [jsonInput, setJsonInput] = useState<string>("{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [mode, setMode] = useState<"form" | "json" | "schema">("form");
+  const [mode, setMode] = useState<"form" | "json" | "schema" | "code">("form");
+  const [copiedCurl, setCopiedCurl] = useState(false);
+  const [copiedPython, setCopiedPython] = useState(false);
 
   // Initialize AJV and compile schema
   const validate = useMemo(() => {
@@ -63,10 +77,6 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
           path = path.replace(/\//g, '.');
 
           // Replace .number with [number] for arrays
-          // We need to be careful not to replace object keys that happen to be numbers,
-          // but strictly speaking in JS dot notation is fine for number keys too,
-          // however SchemaForm uses [x] for arrays.
-          // AJV instancePath for arrays is like /arr/0.
           path = path.replace(/\.(\d+)(?=\.|$)/g, '[$1]');
 
           // Also handle the case where it starts with a number (root array)
@@ -120,33 +130,22 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   };
 
   const handleTabChange = (value: string) => {
-      if (value === "schema") {
-          setMode("schema");
-          // Update JSON input from form data if coming from form, so returning to JSON works
-          if (mode === "form") {
-              setJsonInput(JSON.stringify(formData, null, 2));
-          }
-          return;
-      }
-
-      if (value === "json") {
-          if (mode === "form") {
-              setJsonInput(JSON.stringify(formData, null, 2));
-          }
-          setMode("json");
-          // Validate immediately on switch
-          setErrors(runValidation(formData));
-      } else if (value === "form") {
+      // Common logic: update state based on current mode before switching
+      if (mode === "form") {
+          setJsonInput(JSON.stringify(formData, null, 2));
+      } else if (mode === "json") {
           try {
               const parsed = JSON.parse(jsonInput);
               setFormData(parsed);
-              setMode("form");
+              // Validate immediately on switch
               setErrors(runValidation(parsed));
           } catch (e) {
-              setErrors({ "json": "Cannot switch to Form view: Invalid JSON." });
-              // Do NOT switch mode
+              setErrors({ "json": "Cannot switch: Invalid JSON." });
+              return; // Do NOT switch mode
           }
       }
+
+      setMode(value as any);
   };
 
   const handlePresetSelect = (data: Record<string, unknown>) => {
@@ -166,6 +165,17 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       return formData;
   };
 
+  const handleCopy = (text: string, type: 'curl' | 'python') => {
+      navigator.clipboard.writeText(text);
+      if (type === 'curl') {
+          setCopiedCurl(true);
+          setTimeout(() => setCopiedCurl(false), 2000);
+      } else {
+          setCopiedPython(true);
+          setTimeout(() => setCopiedPython(false), 2000);
+      }
+  };
+
   // Real-time validation for JSON mode
   useEffect(() => {
       if (mode === "json") {
@@ -173,37 +183,26 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
               const parsed = JSON.parse(jsonInput);
               setErrors(runValidation(parsed));
           } catch (e) {
-               // Don't show parse error while typing, only on submit or switch.
-               // Or maybe show it? Textarea handles change events.
-               // Let's just clear schema errors but keep "json" error if user manually set it via submit?
-               // Actually, if it's invalid JSON, we can't validate schema.
+               // Ignore parse errors during typing
           }
-      } else {
-          // Real-time validation for Form mode
-          // We could debounce this if needed, but for small forms it's fine.
-          // Check if we want to show errors immediately or only after first submit attempt?
-          // Typically immediate is annoying if fields are empty.
-          // But existing code passed errors prop to SchemaForm.
-          // Let's only validate if there are already errors (meaning user tried to submit or switched tabs with invalid data)
-          // OR if we want "Premium" feel, maybe validate only fields that are dirty?
-          // For now, to keep it simple and consistent with "Playground Schema Validation" goal:
-          // We will validate on change IF we already have errors.
+      } else if (mode === "form") {
           if (Object.keys(errors).length > 0) {
              setErrors(runValidation(formData));
           }
       }
   }, [formData, jsonInput, mode]);
-  // removed errors from deps to avoid infinite loop if setErrors is called.
-  // actually including formData/jsonInput is enough.
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
       <Tabs value={mode} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-1 mb-2">
-            <TabsList className="grid w-[300px] grid-cols-3">
+            <TabsList className="grid w-[400px] grid-cols-4">
                 <TabsTrigger value="form">Form</TabsTrigger>
                 <TabsTrigger value="json">JSON</TabsTrigger>
                 <TabsTrigger value="schema">Schema</TabsTrigger>
+                <TabsTrigger value="code" className="flex gap-1 items-center">
+                    <Code className="w-3 h-3" /> Code
+                </TabsTrigger>
             </TabsList>
             <ToolPresets
                 toolName={tool.name}
@@ -235,7 +234,6 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
                     value={jsonInput}
                     onChange={(e) => {
                         setJsonInput(e.target.value);
-                        // Optional: Clear syntax error on type
                         if (errors.json === "Invalid JSON format") {
                             const newErrors = {...errors};
                             delete newErrors.json;
@@ -248,7 +246,6 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
                 {errors.json && (
                     <p className="text-xs text-destructive">{errors.json}</p>
                 )}
-                {/* Show other schema errors in JSON mode too, maybe as a list? */}
                 {mode === "json" && Object.keys(errors).length > 0 && !errors.json && (
                     <div className="text-xs text-destructive max-h-[100px] overflow-y-auto border border-destructive/20 bg-destructive/10 p-2 rounded">
                         <p className="font-semibold mb-1">Validation Errors:</p>
@@ -268,6 +265,54 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
             <div className="h-full flex flex-col gap-2">
                 <JsonView data={tool.inputSchema} className="h-full overflow-auto" maxHeight={0} />
             </div>
+        </TabsContent>
+
+        <TabsContent value="code" className="flex-1 overflow-hidden mt-0">
+             <div className="h-full flex flex-col gap-4 overflow-y-auto pr-2">
+                 {/* Curl Section */}
+                 <div className="space-y-2">
+                     <div className="flex items-center justify-between">
+                         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">cURL</h4>
+                         <Button variant="ghost" size="sm" type="button" className="h-6 text-xs gap-1" onClick={() => handleCopy(generateCurlCommand(tool.name, getCurrentData()), 'curl')}>
+                             {copiedCurl ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                             Copy
+                         </Button>
+                     </div>
+                     <div className="rounded-md overflow-hidden border">
+                         <SyntaxHighlighter
+                            language="bash"
+                            style={vscDarkPlus}
+                            customStyle={{ margin: 0, padding: '1rem', fontSize: '12px' }}
+                            wrapLines={true}
+                            wrapLongLines={true}
+                         >
+                             {generateCurlCommand(tool.name, getCurrentData())}
+                         </SyntaxHighlighter>
+                     </div>
+                 </div>
+
+                 {/* Python Section */}
+                 <div className="space-y-2">
+                     <div className="flex items-center justify-between">
+                         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Python</h4>
+                         <Button variant="ghost" size="sm" type="button" className="h-6 text-xs gap-1" onClick={() => handleCopy(generatePythonCommand(tool.name, getCurrentData()), 'python')}>
+                             {copiedPython ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                             Copy
+                         </Button>
+                     </div>
+                     <div className="rounded-md overflow-hidden border">
+                         <SyntaxHighlighter
+                            language="python"
+                            style={vscDarkPlus}
+                            customStyle={{ margin: 0, padding: '1rem', fontSize: '12px' }}
+                            wrapLines={true}
+                            wrapLongLines={true}
+                         >
+                             {generatePythonCommand(tool.name, getCurrentData())}
+                         </SyntaxHighlighter>
+                     </div>
+                 </div>
+             </div>
         </TabsContent>
       </Tabs>
 
