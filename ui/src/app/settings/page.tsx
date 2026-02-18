@@ -8,6 +8,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
+import { SecuritySettings } from "@/components/settings/security-settings";
 
 /**
  * SettingsPage component.
@@ -20,17 +21,23 @@ export default function SettingsPage() {
         <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
       </div>
 
-      <Tabs defaultValue="general" className="space-y-4 flex-1 flex flex-col">
+      <Tabs defaultValue="general" className="space-y-4 flex-1 flex flex-col overflow-hidden">
         <TabsList>
-          <TabsTrigger value="general">Global Config</TabsTrigger>
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="security">Security & Governance</TabsTrigger>
           <TabsTrigger value="auth">Authentication</TabsTrigger>
         </TabsList>
-        <TabsContent value="auth">
-            <AuthSettingsForm />
-        </TabsContent>
-        <TabsContent value="general">
-             <GlobalSettingsForm />
-        </TabsContent>
+        <div className="flex-1 overflow-y-auto pr-2 pb-10">
+            <TabsContent value="general" className="mt-0">
+                <GlobalSettingsForm />
+            </TabsContent>
+            <TabsContent value="security" className="mt-0">
+                <SecuritySettings />
+            </TabsContent>
+            <TabsContent value="auth" className="mt-0">
+                <AuthSettingsForm />
+            </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
