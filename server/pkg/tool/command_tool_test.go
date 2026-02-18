@@ -81,7 +81,7 @@ func TestCommandTool_Execute(t *testing.T) {
 			},
 		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
-		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
+		inputData := map[string]interface{}{"args": []string{"echo", "hello", "world"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
