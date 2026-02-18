@@ -42,7 +42,8 @@ test.describe('Service Detail Logs Tab', () => {
     await page.goto(`/service/${serviceId}`);
 
     // 2. Verify Page Title to ensure we loaded
-    await expect(page.getByRole('heading', { level: 3 })).toContainText(serviceName);
+    // CardTitle uses a div with text-3xl class, not an H3
+    await expect(page.locator('.text-3xl')).toContainText(serviceName);
 
     // 3. Click Logs Tab
     // Scoping to main to avoid potential conflicts with other UI elements (e.g. sidebar)
