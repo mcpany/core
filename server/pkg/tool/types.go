@@ -1968,6 +1968,38 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
+	// Identify allowed parameters
+	allowedParams := make(map[string]bool)
+	for _, param := range t.callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			allowedParams[schema.GetName()] = true
+		}
+	}
+
+	// Check if "args" is allowed in schema
+	argsAllowed := false
+	if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+			if _, ok := props.Fields["args"]; ok {
+				argsAllowed = true
+			}
+		}
+	}
+
+	// Filter inputs: Remove any key that is not in allowedParams or "args"
+	// This prevents Parameter Pollution where user injects variables not defined in configuration.
+	for k := range inputs {
+		if k == "args" {
+			if !argsAllowed {
+				delete(inputs, k)
+			}
+			continue
+		}
+		if !allowedParams[k] {
+			delete(inputs, k)
+		}
+	}
+
 	args := []string{}
 	if len(t.sandboxArgs) > 0 {
 		args = append(args, t.sandboxArgs...)
@@ -1982,45 +2014,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	commandName := t.service.GetCommand()
 
-	// Substitute placeholders in args with input values
-	if inputs != nil {
-		for i, arg := range args {
-			for k, v := range inputs {
-				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
-					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					// If running a shell or interpreter, validate that inputs are safe
-					cmd := t.service.GetCommand()
-					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
-				}
-			}
-		}
-	}
-
+	// Process "args" parameter first if allowed
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			// Check if args is allowed in the schema
-			argsAllowed := false
-			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
-				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-					if _, ok := props.Fields["args"]; ok {
-						argsAllowed = true
-					}
-				}
-			}
-
-			if !argsAllowed {
-				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
-			}
-
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
@@ -2042,18 +2038,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			} else {
 				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
+			// Remove "args" from inputs so it doesn't participate in general substitution
 			delete(inputs, "args")
-		}
-	}
-
-	// Sentinel Security Update: Block git ext:: protocol
-	// We check this after all argument substitutions to capture injected protocols.
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
-		for _, arg := range args {
-			// Check for ext:: in arguments (potentially hidden in options or URLs)
-			if strings.Contains(arg, "ext::") {
-				return nil, fmt.Errorf("git ext:: protocol is not allowed")
-			}
 		}
 	}
 
@@ -2094,6 +2080,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
 
+	// Resolve parameters (secrets and normal) BEFORE args substitution.
+	// This ensures that secrets are resolved and placed into 'inputs' map (overwriting any user input),
+	// so that they can be securely substituted into command arguments.
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
@@ -2103,6 +2092,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+			// CRITICAL FIX: Overwrite any user-provided input with the resolved secret value.
+			// This ensures args substitution uses the authoritative secret.
+			inputs[name] = secretValue
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
@@ -2129,6 +2121,42 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 		}
 	}
+
+	// Substitute placeholders in args with input values (including secrets)
+	if inputs != nil {
+		for i, arg := range args {
+			for k, v := range inputs {
+				placeholder := "{{" + k + "}}"
+				if strings.Contains(arg, placeholder) {
+					val := util.ToString(v)
+					// Use validateSafePathAndInjection which now centralizes all checks
+					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					// If running a shell or interpreter, validate that inputs are safe
+					cmd := t.service.GetCommand()
+					if isShellCommand(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
+				}
+			}
+		}
+	}
+
+	// Sentinel Security Update: Block git ext:: protocol
+	// We check this after all argument substitutions to capture injected protocols.
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
+		for _, arg := range args {
+			// Check for ext:: in arguments (potentially hidden in options or URLs)
+			if strings.Contains(arg, "ext::") {
+				return nil, fmt.Errorf("git ext:: protocol is not allowed")
+			}
+		}
+	}
+
 
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
@@ -2313,6 +2341,38 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
+	// Identify allowed parameters
+	allowedParams := make(map[string]bool)
+	for _, param := range t.callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			allowedParams[schema.GetName()] = true
+		}
+	}
+
+	// Check if "args" is allowed in schema
+	argsAllowed := false
+	if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+		if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+			if _, ok := props.Fields["args"]; ok {
+				argsAllowed = true
+			}
+		}
+	}
+
+	// Filter inputs: Remove any key that is not in allowedParams or "args"
+	// This prevents Parameter Pollution where user injects variables not defined in configuration.
+	for k := range inputs {
+		if k == "args" {
+			if !argsAllowed {
+				delete(inputs, k)
+			}
+			continue
+		}
+		if !allowedParams[k] {
+			delete(inputs, k)
+		}
+	}
+
 	args := []string{}
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
@@ -2323,46 +2383,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	commandName := t.service.GetCommand()
 
-	// Substitute placeholders in args with input values
-	if inputs != nil {
-		for i, arg := range args {
-			for k, v := range inputs {
-				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
-					val := util.ToString(v)
-					// Use validateSafePathAndInjection which now centralizes all checks
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					// If running a shell or interpreter, validate that inputs are safe
-					cmd := t.service.GetCommand()
-					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
-				}
-			}
-		}
-	}
-
+	// Process "args" parameter first if allowed
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			// Check if args is allowed in the schema
-			argsAllowed := false
-			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
-				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-					if _, ok := props.Fields["args"]; ok {
-						argsAllowed = true
-					}
-				}
-			}
-
-			if !argsAllowed {
-				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
-			}
-
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
@@ -2378,16 +2401,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			} else {
 				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
+			// Remove "args" from inputs so it doesn't participate in general substitution
 			delete(inputs, "args")
-		}
-	}
-
-	// Sentinel Security Update: Block git ext:: protocol
-	if filepath.Base(t.service.GetCommand()) == gitCommand {
-		for _, arg := range args {
-			if strings.Contains(arg, "ext::") {
-				return nil, fmt.Errorf("git ext:: protocol is not allowed")
-			}
 		}
 	}
 
@@ -2441,6 +2456,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
+	// Resolve parameters (secrets and normal) BEFORE args substitution.
+	// This ensures that secrets are resolved and placed into 'inputs' map (overwriting any user input),
+	// so that they can be securely substituted into command arguments.
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
@@ -2450,6 +2468,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+			// CRITICAL FIX: Overwrite any user-provided input with the resolved secret value.
+			// This ensures args substitution uses the authoritative secret.
+			inputs[name] = secretValue
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
@@ -2478,6 +2499,41 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 			if safeForEnv {
 				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+			}
+		}
+	}
+
+	// Substitute placeholders in args with input values (including secrets)
+	if inputs != nil {
+		for i, arg := range args {
+			for k, v := range inputs {
+				placeholder := "{{" + k + "}}"
+				if strings.Contains(arg, placeholder) {
+					val := util.ToString(v)
+					// Use validateSafePathAndInjection which now centralizes all checks
+					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					// If running a shell or interpreter, validate that inputs are safe
+					cmd := t.service.GetCommand()
+					if isShellCommand(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
+				}
+			}
+		}
+	}
+
+	// Sentinel Security Update: Block git ext:: protocol
+	// We check this after all argument substitutions to capture injected protocols.
+	if filepath.Base(t.service.GetCommand()) == gitCommand {
+		for _, arg := range args {
+			// Check for ext:: in arguments (potentially hidden in options or URLs)
+			if strings.Contains(arg, "ext::") {
+				return nil, fmt.Errorf("git ext:: protocol is not allowed")
 			}
 		}
 	}

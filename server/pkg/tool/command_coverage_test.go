@@ -179,7 +179,16 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{Command: proto.String("echo")}.Build()
-	tool := NewLocalCommandTool(pb.Tool_builder{Name: proto.String("t")}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	tool := NewLocalCommandTool(pb.Tool_builder{Name: proto.String("t"), InputSchema: inputSchema}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
@@ -294,7 +303,16 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{Command: proto.String("echo")}.Build()
-	tool := NewCommandTool(pb.Tool_builder{Name: proto.String("t")}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
+	tool := NewCommandTool(pb.Tool_builder{Name: proto.String("t"), InputSchema: inputSchema}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
