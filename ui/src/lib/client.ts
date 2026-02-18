@@ -1514,5 +1514,30 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    /**
+     * Gets the middleware configuration.
+     * @returns A promise that resolves to the list of middlewares.
+     */
+    getMiddleware: async () => {
+        // Use local API route which proxies to backend
+        const res = await fetchWithAuth('/api/middleware');
+        if (!res.ok) throw new Error('Failed to fetch middleware');
+        return res.json();
+    },
+
+    /**
+     * Saves the middleware configuration.
+     * @param middleware The list of middlewares to save.
+     */
+    saveMiddleware: async (middleware: any[]) => {
+        const res = await fetchWithAuth('/api/middleware', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(middleware)
+        });
+        if (!res.ok) throw new Error('Failed to save middleware');
+        return res.json();
     }
 };

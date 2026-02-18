@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Webhook, Plus, Play, Trash2 } from "lucide-react";
+import { Play, Trash2, Plus, Loader2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -23,6 +23,8 @@ import {
     DialogTrigger,
     DialogFooter
 } from "@/components/ui/dialog"
+import { apiClient } from "@/lib/client";
+import { toast } from "sonner";
 
 interface WebhookConfig {
     id: string;
@@ -33,43 +35,162 @@ interface WebhookConfig {
     status?: "success" | "failure" | "pending";
 }
 
-const INITIAL_WEBHOOKS: WebhookConfig[] = [
-    { id: "wh-1", url: "https://api.example.com/events", events: ["service.registered", "tool.invoked"], active: true, lastTriggered: "2 mins ago", status: "success" },
-    { id: "wh-2", url: "https://hooks.slack.com/...", events: ["error.occurred"], active: true, lastTriggered: "1 day ago", status: "success" },
-];
-
 /**
  * WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
+    const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newUrl, setNewUrl] = useState("");
+    const [globalSettings, setGlobalSettings] = useState<any>(null);
+
+    useEffect(() => {
+        loadWebhooks();
+    }, []);
+
+    const loadWebhooks = async () => {
+        try {
+            setLoading(true);
+            const settings = await apiClient.getGlobalSettings();
+            setGlobalSettings(settings);
+
+            const hooks: WebhookConfig[] = [];
+
+            // Alerts Webhook
+            if (settings.alerts?.webhookUrl) {
+                hooks.push({
+                    id: "alerts",
+                    url: settings.alerts.webhookUrl,
+                    events: ["alerts", "errors"],
+                    active: settings.alerts.enabled,
+                    status: "success" // Unknown really
+                });
+            } else if (settings.alerts?.webhook_url) { // Handle snake_case if protojson uses it (depends on options)
+                 hooks.push({
+                    id: "alerts",
+                    url: settings.alerts.webhook_url,
+                    events: ["alerts", "errors"],
+                    active: settings.alerts.enabled,
+                    status: "success"
+                });
+            }
+
+            // Audit Webhook
+            if (settings.audit?.webhookUrl) {
+                hooks.push({
+                    id: "audit",
+                    url: settings.audit.webhookUrl,
+                    events: ["audit.log"],
+                    active: settings.audit.enabled,
+                    status: "success"
+                });
+            } else if (settings.audit?.webhook_url) {
+                 hooks.push({
+                    id: "audit",
+                    url: settings.audit.webhook_url,
+                    events: ["audit.log"],
+                    active: settings.audit.enabled,
+                    status: "success"
+                });
+            }
+
+            setWebhooks(hooks);
+        } catch (error) {
+            console.error("Failed to load webhooks", error);
+            toast.error("Failed to load configuration");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const saveSettings = async (newSettings: any) => {
+        try {
+            await apiClient.saveGlobalSettings(newSettings);
+            toast.success("Configuration saved");
+            loadWebhooks(); // Reload to confirm
+        } catch (error) {
+            console.error("Failed to save settings", error);
+            toast.error("Failed to save configuration");
+        }
+    };
 
     const toggleWebhook = (id: string) => {
-        setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: !w.active } : w));
+        if (!globalSettings) return;
+        const newSettings = { ...globalSettings };
+
+        if (id === "alerts") {
+            if (!newSettings.alerts) newSettings.alerts = {};
+            newSettings.alerts.enabled = !newSettings.alerts.enabled;
+        } else if (id === "audit") {
+            if (!newSettings.audit) newSettings.audit = {};
+            newSettings.audit.enabled = !newSettings.audit.enabled;
+        }
+
+        saveSettings(newSettings);
     };
 
     const deleteWebhook = (id: string) => {
-        setWebhooks(webhooks.filter(w => w.id !== id));
+        if (!globalSettings) return;
+        const newSettings = { ...globalSettings };
+
+        if (id === "alerts") {
+            if (!newSettings.alerts) newSettings.alerts = {};
+            newSettings.alerts.webhookUrl = ""; // Clear URL to delete?
+            newSettings.alerts.webhook_url = "";
+            newSettings.alerts.enabled = false;
+        } else if (id === "audit") {
+            if (!newSettings.audit) newSettings.audit = {};
+            newSettings.audit.webhookUrl = "";
+            newSettings.audit.webhook_url = "";
+            newSettings.audit.enabled = false;
+        }
+
+        saveSettings(newSettings);
     };
 
     const addWebhook = () => {
-        if (!newUrl) return;
-        setWebhooks([...webhooks, {
-            id: `wh-${Date.now()}`,
-            url: newUrl,
-            events: ["all"],
-            active: true
-        }]);
+        if (!newUrl || !globalSettings) return;
+
+        // Determine which one to add. Since we only support 2 specific ones,
+        // we can check which one is missing or default to Alerts.
+        // Or we could add a selector in the dialog.
+        // For now, let's assume we are setting Alerts webhook if empty, or Audit if Alerts exists?
+        // This is a bit rigid. The backend schema is rigid.
+        // Let's assume the dialog adds an "Alerts" webhook for now.
+
+        const newSettings = { ...globalSettings };
+        if (!newSettings.alerts) newSettings.alerts = {};
+
+        // If alerts is taken, try audit?
+        if (newSettings.alerts.webhookUrl || newSettings.alerts.webhook_url) {
+             if (!newSettings.audit) newSettings.audit = {};
+             newSettings.audit.webhookUrl = newUrl;
+             newSettings.audit.enabled = true;
+             newSettings.audit.storageType = "WEBHOOK"; // Ensure type is webhook
+             newSettings.audit.storage_type = "WEBHOOK";
+        } else {
+            newSettings.alerts.webhookUrl = newUrl;
+            newSettings.alerts.enabled = true;
+        }
+
+        saveSettings(newSettings);
         setNewUrl("");
         setIsDialogOpen(false);
     }
 
     const testWebhook = (id: string) => {
         // Simulate test
-        alert(`Testing webhook ${id}...`);
+        alert(`Testing webhook ${id}... (Not implemented in backend yet)`);
+    }
+
+    if (loading && webhooks.length === 0) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
     }
 
     return (
@@ -82,14 +203,14 @@ export default function WebhooksPage() {
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                          <Button>
-                            <Plus className="mr-2 h-4 w-4" /> New Webhook
+                            <Plus className="mr-2 h-4 w-4" /> Configure Webhook
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Add Webhook</DialogTitle>
                             <DialogDescription>
-                                Enter the URL where events should be sent.
+                                Enter the URL where events should be sent. Note: Backend currently supports one Alerts webhook and one Audit webhook.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -107,7 +228,7 @@ export default function WebhooksPage() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button onClick={addWebhook}>Add Webhook</Button>
+                            <Button onClick={addWebhook}>Save</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -131,7 +252,7 @@ export default function WebhooksPage() {
                         <TableBody>
                             {webhooks.map((hook) => (
                                 <TableRow key={hook.id}>
-                                    <TableCell className="font-mono text-xs">{hook.url}</TableCell>
+                                    <TableCell className="font-mono text-xs max-w-[300px] truncate" title={hook.url}>{hook.url}</TableCell>
                                     <TableCell>
                                         <div className="flex gap-1 flex-wrap">
                                             {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}

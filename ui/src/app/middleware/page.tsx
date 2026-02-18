@@ -5,12 +5,14 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { GripVertical, Plus, Trash2, Settings } from "lucide-react";
+import { GripVertical, Plus, Settings, Loader2 } from "lucide-react";
+import { apiClient } from "@/lib/client";
+import { toast } from "sonner";
 
 interface Middleware {
     id: string;
@@ -19,19 +21,60 @@ interface Middleware {
     enabled: boolean;
 }
 
-const INITIAL_MIDDLEWARE: Middleware[] = [
-    { id: "mw-1", name: "Authentication", type: "auth", enabled: true },
-    { id: "mw-2", name: "Rate Limiter", type: "rate_limit", enabled: true },
-    { id: "mw-3", name: "Logging", type: "logger", enabled: true },
-    { id: "mw-4", name: "Request Validation", type: "validator", enabled: false },
-];
-
 /**
  * MiddlewarePage component.
  * @returns The rendered component.
  */
 export default function MiddlewarePage() {
-    const [middleware, setMiddleware] = useState<Middleware[]>(INITIAL_MIDDLEWARE);
+    const [middleware, setMiddleware] = useState<Middleware[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadMiddleware();
+    }, []);
+
+    const loadMiddleware = async () => {
+        try {
+            setLoading(true);
+            const data = await apiClient.getMiddleware();
+            // Sort by priority (asc)
+            const sorted = data.sort((a: any, b: any) => (a.priority || 0) - (b.priority || 0));
+
+            const mapped: Middleware[] = sorted.map((m: any) => ({
+                id: m.name,
+                name: m.name, // Use name as display name for now
+                type: m.name, // Use name as type for now
+                enabled: !m.disabled
+            }));
+            setMiddleware(mapped);
+        } catch (error) {
+            console.error("Failed to load middleware", error);
+            toast.error("Failed to load middleware");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const saveMiddleware = async (items: Middleware[]) => {
+        try {
+            // Map back to backend format
+            // Re-assign priorities based on order
+            const payload = items.map((m, index) => ({
+                name: m.name,
+                priority: (index + 1) * 10,
+                disabled: !m.enabled
+            }));
+
+            await apiClient.saveMiddleware(payload);
+            // No need to reload as we updated local state optimistically or we can reload to be sure
+            toast.success("Middleware updated");
+        } catch (error) {
+            console.error("Failed to save middleware", error);
+            toast.error("Failed to save middleware");
+            // Revert or reload? Reloading is safer.
+            loadMiddleware();
+        }
+    };
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) {
@@ -43,11 +86,22 @@ export default function MiddlewarePage() {
         items.splice(result.destination.index, 0, reorderedItem);
 
         setMiddleware(items);
+        saveMiddleware(items);
     };
 
     const toggleMiddleware = (id: string) => {
-        setMiddleware(middleware.map(m => m.id === id ? { ...m, enabled: !m.enabled } : m));
+        const updated = middleware.map(m => m.id === id ? { ...m, enabled: !m.enabled } : m);
+        setMiddleware(updated);
+        saveMiddleware(updated);
     };
+
+    if (loading && middleware.length === 0) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
@@ -56,8 +110,8 @@ export default function MiddlewarePage() {
                     <h1 className="text-3xl font-bold tracking-tight">Middleware Pipeline</h1>
                     <p className="text-muted-foreground">Drag and drop to reorder the request processing pipeline.</p>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Add Middleware
+                <Button disabled>
+                    <Plus className="mr-2 h-4 w-4" /> Add Middleware (Coming Soon)
                 </Button>
             </div>
 
