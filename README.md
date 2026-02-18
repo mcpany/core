@@ -144,6 +144,12 @@ We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
+**Documentation Standard:**
+All exported symbols must include structured documentation:
+*   **Summary:** Concise action statement.
+*   **Parameters/Fields:** Meaningful descriptions.
+*   **Returns:** Output description.
+
 To run linters:
 ```bash
 make lint

@@ -12,21 +12,21 @@ import (
 
 // Metric represents a single dashboard metric to be displayed in the UI.
 //
-// Summary: Data structure for dashboard metrics.
+// Summary: A visual data point for the frontend dashboard.
 //
-// It contains the label, value, trend direction, and other visual metadata.
+// Fields:
+//   - Label: string. The primary title of the metric (e.g., "Total Requests").
+//   - Value: string. The formatted value to display (e.g., "1,234").
+//   - Change: string. The percentage or absolute change (e.g., "+10%").
+//   - Trend: string. The direction of the trend ("up", "down", "neutral").
+//   - Icon: string. The icon identifier for the metric.
+//   - SubLabel: string. Secondary text providing context (e.g., "Since startup").
 type Metric struct {
-	// Label is the primary text description of the metric (e.g., "Total Requests").
-	Label string `json:"label"`
-	// Value is the current value of the metric to display (e.g., "1,234").
-	Value string `json:"value"`
-	// Change represents the change from a previous period (e.g., "+10%").
-	Change string `json:"change"`
-	// Trend indicates the direction of the change ("up", "down", or "neutral").
-	Trend string `json:"trend"` // "up" | "down" | "neutral"
-	// Icon is the name of the icon to display with the metric (e.g., "Activity").
-	Icon string `json:"icon"`
-	// SubLabel provides additional context or subtitle for the metric (e.g., "Since startup").
+	Label    string `json:"label"`
+	Value    string `json:"value"`
+	Change   string `json:"change"`
+	Trend    string `json:"trend"`
+	Icon     string `json:"icon"`
 	SubLabel string `json:"subLabel"`
 }
 

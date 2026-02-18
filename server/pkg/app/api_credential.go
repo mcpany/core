@@ -275,26 +275,34 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// TestAuthRequest defines the payload for testing authentication.
+// TestAuthRequest defines the payload for testing authentication configuration.
 //
-// Summary: Request payload for testing authentication configurations.
+// Summary: Input parameters for testing an authentication setup against a target.
+//
+// Fields:
+//   - CredentialID: string. The ID of an existing credential to use (optional if Authentication/UserToken provided).
+//   - Authentication: *configv1.Authentication. Inline authentication configuration (optional).
+//   - UserToken: *configv1.UserToken. Inline user token for ad-hoc testing (optional).
+//   - TargetURL: string. The URL to send the test request to.
+//   - Method: string. The HTTP method to use (defaults to GET).
 type TestAuthRequest struct {
-	// The credential to use (can be a reference ID or inline Credential).
-	CredentialID string `json:"credential_id"`
-	// OR inline authentication config
-	Authentication *configv1.Authentication `json:"authentication"`
-	// OR inline user token (for ad-hoc testing)
-	UserToken *configv1.UserToken `json:"user_token"`
-
-	// The URL to test against.
-	TargetURL string `json:"target_url"`
-	// HTTP Method (GET, POST, etc.)
-	Method string `json:"method"`
+	CredentialID   string                    `json:"credential_id"`
+	Authentication *configv1.Authentication  `json:"authentication"`
+	UserToken      *configv1.UserToken       `json:"user_token"`
+	TargetURL      string                    `json:"target_url"`
+	Method         string                    `json:"method"`
 }
 
-// TestAuthResponse defines the response for testing authentication.
+// TestAuthResponse defines the outcome of an authentication test.
 //
-// Summary: Response payload for authentication tests.
+// Summary: The result of the authentication test request.
+//
+// Fields:
+//   - Status: int. The HTTP status code received from the target.
+//   - StatusText: string. The status text corresponding to the status code.
+//   - Headers: map[string]string. The response headers from the target.
+//   - Body: string. The response body from the target.
+//   - Error: string. Any error message if the test failed locally or upstream.
 type TestAuthResponse struct {
 	Status     int               `json:"status"`
 	StatusText string            `json:"status_text"`

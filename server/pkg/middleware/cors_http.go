@@ -11,7 +11,13 @@ import (
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
+//
+// Summary: HTTP Middleware for Cross-Origin Resource Sharing control.
+//
+// Fields:
+//   - mu: sync.RWMutex. Mutex for thread-safe updates.
+//   - allowedOrigins: map[string]struct{}. Set of allowed origins.
+//   - wildcardAllowed: bool. Flag indicating if all origins are allowed.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -19,8 +25,14 @@ type HTTPCORSMiddleware struct {
 }
 
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
+//
+// Summary: Initializes the CORS middleware.
+//
+// Parameters:
+//   - allowedOrigins: []string. List of origins to allow. Use "*" for all.
+//
+// Returns:
+//   - *HTTPCORSMiddleware: The initialized middleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -29,7 +41,10 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 
 // Update updates the allowed origins.
 //
-// allowedOrigins is the allowedOrigins.
+// Summary: Dynamically updates the list of allowed origins.
+//
+// Parameters:
+//   - allowedOrigins: []string. The new list of allowed origins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -53,9 +68,13 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 
 // Handler wraps an http.Handler with CORS logic.
 //
-// next is the next.
+// Summary: Applies CORS headers and preflight handling to an HTTP handler.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

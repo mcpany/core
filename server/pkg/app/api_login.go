@@ -12,13 +12,24 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-// LoginRequest is the request body for login.
+// LoginRequest represents the payload for a user login attempt.
+//
+// Summary: The request body for authenticating a user.
+//
+// Fields:
+//   - Username: string. The unique identifier for the user.
+//   - Password: string. The user's password.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// LoginResponse is the response body for login.
+// LoginResponse represents the response containing the authentication token.
+//
+// Summary: The successful login response payload.
+//
+// Fields:
+//   - Token: string. The generated authentication token (e.g., Basic Auth token).
 type LoginResponse struct {
 	Token string `json:"token"`
 }
