@@ -87,6 +87,63 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 }
 
 func joinFunc(sep string, input any) (string, error) {
+	// ⚡ BOLT: Optimized joinFunc to avoid []any allocation for common slice types.
+	// Randomized Selection from Top 5 High-Impact Targets
+	switch v := input.(type) {
+	case []string:
+		var totalLen int
+		sepLen := len(sep)
+		for i, s := range v {
+			if i > 0 {
+				totalLen += sepLen
+			}
+			totalLen += len(s)
+		}
+		var sb strings.Builder
+		sb.Grow(totalLen)
+		for i, s := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.WriteString(s)
+		}
+		return sb.String(), nil
+	case []int:
+		var sb strings.Builder
+		// Heuristic: estimate 4 chars per int + separator
+		sb.Grow(len(v) * (4 + len(sep)))
+		var scratch [64]byte
+		for i, n := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendInt(scratch[:0], int64(n), 10))
+		}
+		return sb.String(), nil
+	case []int64:
+		var sb strings.Builder
+		sb.Grow(len(v) * (4 + len(sep)))
+		var scratch [64]byte
+		for i, n := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendInt(scratch[:0], n, 10))
+		}
+		return sb.String(), nil
+	case []float64:
+		var sb strings.Builder
+		sb.Grow(len(v) * (5 + len(sep)))
+		var scratch [64]byte
+		for i, f := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendFloat(scratch[:0], f, 'g', -1, 64))
+		}
+		return sb.String(), nil
+	}
+
 	a, err := toAnySlice(input)
 	if err != nil {
 		return "", fmt.Errorf("join: %w", err)
