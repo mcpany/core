@@ -226,7 +226,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
             </div>
 
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetContent className="sm:max-w-xl w-full overflow-y-auto">
+                <SheetContent className="sm:max-w-4xl w-full overflow-y-auto">
                     <SheetHeader>
                         <SheetTitle>
                             {editingToolIndex !== null && tools[editingToolIndex] ? `Edit ${tools[editingToolIndex].name}` : "Edit Tool"}
@@ -235,9 +235,10 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                             Configure the tool definition and its mapping to the HTTP endpoint.
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="mt-6">
+                    <div className="mt-6 h-full">
                         {editingToolIndex !== null && tools[editingToolIndex] && (
                             <HttpToolEditor
+                                serviceName={service.name}
                                 tool={tools[editingToolIndex]}
                                 call={getCallForTool(tools[editingToolIndex])}
                                 onChange={handleToolChange}
