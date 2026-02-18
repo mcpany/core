@@ -36,6 +36,7 @@ export TEST_GID
 # Default test target
 # Run the tests in a docker container
 test: clean-test-results build-test-docker build-server-docker
+	$(MAKE) -C .. gen
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
@@ -89,10 +90,12 @@ test-local:
 # Build the UI test Docker image
 build-test-docker:
 	@echo "Building UI test Docker image (mcpany-ui-e2e)..."
+	$(MAKE) -C .. gen
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 docker-build-ui:
 	@echo "Building UI Docker image (mcpany/ui:latest)..."
+	$(MAKE) -C .. gen
 	@$(DOCKER_BUILD_CMD) -t mcpany/ui:latest -f Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 # Build the UI production build
