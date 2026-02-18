@@ -8,8 +8,8 @@ DLP is critical for preventing sensitive data leaks when interacting with LLMs. 
 
 ## Features
 
-- **Input Redaction**: Scans arguments in `CallToolRequest` for PII.
-- **Output Redaction**: Scans text content in `CallToolResult` for PII.
+- **Input Redaction**: Scans arguments in `CallToolRequest` and `GetPromptRequest` for PII.
+- **Output Redaction**: Scans text content in `CallToolResult`, `GetPromptResult`, and `ReadResourceResult` for PII.
 - **Configurable Rules**: Define what patterns to look for (e.g., Credit Card numbers, SSN, Email addresses).
 
 ## Configuration
