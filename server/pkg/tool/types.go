@@ -1982,13 +1982,103 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	commandName := t.service.GetCommand()
 
+	timeout := t.service.GetTimeout()
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
+		defer cancel()
+	}
+
+	executor := command.NewLocalExecutor()
+
+	env := []string{}
+	// Only inherit safe environment variables from host for local execution
+	// For Docker execution, we should not inherit host environment variables at all
+	if !isDocker {
+		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+		for _, key := range allowedEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
+			}
+		}
+	}
+
+	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve service env: %w", err)
+	}
+
+	// Collect secrets for redaction
+	secrets := make([]string, 0, len(resolvedServiceEnv))
+	for _, v := range resolvedServiceEnv {
+		secrets = append(secrets, v)
+	}
+
+	for k, v := range resolvedServiceEnv {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	// Resolve secrets and validate inputs FIRST
+	// This ensures that:
+	// 1. Secrets are available for args substitution (fixing secret override vulnerability)
+	// 2. User inputs are validated before use in args
+	// 3. Environment variables are prepared
+	paramEnv := make([]string, 0, len(t.callDefinition.GetParameters()))
+
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			secrets = append(secrets, secretValue)
+			paramEnv = append(paramEnv, fmt.Sprintf("%s=%s", name, secretValue))
+			// FIX: Overwrite user input with secret to ensure args use the secret value
+			if inputs == nil {
+				inputs = make(map[string]any)
+			}
+			inputs[name] = secretValue
+		} else if val, ok := inputs[name]; ok {
+			valStr := util.ToString(val)
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			// Sentinel Security: For shell commands, we only add environment variables if they are safe
+			// for unquoted use. If they contain dangerous characters, we omit them from the environment
+			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
+			safeForEnv := true
+			if isShellCommand(t.service.GetCommand()) {
+				if err := checkEnvInjection(valStr); err != nil {
+					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
+					safeForEnv = false
+				}
+			}
+			// Sentinel Security Update: Block known dangerous environment variables
+			if isDangerousEnvVar(name) {
+				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
+				safeForEnv = false
+			}
+
+			if safeForEnv {
+				paramEnv = append(paramEnv, fmt.Sprintf("%s=%s", name, valStr))
+			}
+		}
+	}
+
 	// Substitute placeholders in args with input values
+	// Now inputs contains resolved secrets where applicable
 	if inputs != nil {
 		for i, arg := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
+					// We re-validate here because secrets might contain characters that trigger checks?
+					// But secrets are trusted. However, to prevent accidental injection via secrets, validation is safer.
+					// Note: If a secret contains "-", validateSafePathAndInjection might fail (argument injection).
+					// This is acceptable: secrets shouldn't be flags.
 					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -2057,78 +2147,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}
 	}
 
-	timeout := t.service.GetTimeout()
-	if timeout != nil {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
-		defer cancel()
-	}
-
-	executor := command.NewLocalExecutor()
-
-	env := []string{}
-	// Only inherit safe environment variables from host for local execution
-	// For Docker execution, we should not inherit host environment variables at all
-	if !isDocker {
-		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
-		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
-		for _, key := range allowedEnvVars {
-			if val, ok := os.LookupEnv(key); ok {
-				env = append(env, fmt.Sprintf("%s=%s", key, val))
-			}
-		}
-	}
-
-	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve service env: %w", err)
-	}
-
-	// Collect secrets for redaction
-	secrets := make([]string, 0, len(resolvedServiceEnv))
-	for _, v := range resolvedServiceEnv {
-		secrets = append(secrets, v)
-	}
-
-	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
-	}
-
-	for _, param := range t.callDefinition.GetParameters() {
-		name := param.GetSchema().GetName()
-		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
-			}
-			secrets = append(secrets, secretValue)
-			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
-		} else if val, ok := inputs[name]; ok {
-			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
-				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			// Sentinel Security: For shell commands, we only add environment variables if they are safe
-			// for unquoted use. If they contain dangerous characters, we omit them from the environment
-			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
-			safeForEnv := true
-			if isShellCommand(t.service.GetCommand()) {
-				if err := checkEnvInjection(valStr); err != nil {
-					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
-					safeForEnv = false
-				}
-			}
-			// Sentinel Security Update: Block known dangerous environment variables
-			if isDangerousEnvVar(name) {
-				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
-				safeForEnv = false
-			}
-
-			if safeForEnv {
-				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
-			}
-		}
-	}
+	// Add params to env
+	env = append(env, paramEnv...)
 
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
@@ -2323,6 +2343,105 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	commandName := t.service.GetCommand()
 
+	timeout := t.service.GetTimeout()
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
+		defer cancel()
+	}
+
+	executor := t.getExecutor(t.service.GetContainerEnvironment())
+
+	env := []string{}
+	// Only inherit safe environment variables from host for local execution
+	// For Docker execution, we should not inherit host environment variables at all
+	if !isDocker {
+		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+		for _, key := range allowedEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
+			}
+		}
+	}
+
+	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve service env: %w", err)
+	}
+
+	// Collect secrets for redaction
+	secrets := make([]string, 0, len(resolvedServiceEnv))
+	for _, v := range resolvedServiceEnv {
+		secrets = append(secrets, v)
+	}
+
+	for k, v := range resolvedServiceEnv {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	if ce := t.service.GetContainerEnvironment(); ce != nil {
+		resolvedContainerEnv, err := util.ResolveSecretMap(ctx, ce.GetEnv(), nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve container env: %w", err)
+		}
+		for _, v := range resolvedContainerEnv {
+			secrets = append(secrets, v)
+		}
+		for k, v := range resolvedContainerEnv {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
+	}
+
+	// Resolve secrets and validate inputs FIRST
+	paramEnv := make([]string, 0, len(t.callDefinition.GetParameters()))
+
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			secrets = append(secrets, secretValue)
+			paramEnv = append(paramEnv, fmt.Sprintf("%s=%s", name, secretValue))
+			// FIX: Overwrite user input with secret to ensure args use the secret value
+			if inputs == nil {
+				inputs = make(map[string]any)
+			}
+			inputs[name] = secretValue
+		} else if val, ok := inputs[name]; ok {
+			valStr := util.ToString(val)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			if !isDocker {
+				if err := checkForLocalFileAccess(valStr); err != nil {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
+			}
+			// Sentinel Security: For shell commands, we only add environment variables if they are safe
+			// for unquoted use. If they contain dangerous characters, we omit them from the environment
+			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
+			safeForEnv := true
+			if isShellCommand(t.service.GetCommand()) {
+				if err := checkEnvInjection(valStr); err != nil {
+					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
+					safeForEnv = false
+				}
+			}
+			// Sentinel Security Update: Block known dangerous environment variables
+			if isDangerousEnvVar(name) {
+				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
+				safeForEnv = false
+			}
+
+			if safeForEnv {
+				paramEnv = append(paramEnv, fmt.Sprintf("%s=%s", name, valStr))
+			}
+		}
+	}
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -2391,96 +2510,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	timeout := t.service.GetTimeout()
-	if timeout != nil {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
-		defer cancel()
-	}
-
-	executor := t.getExecutor(t.service.GetContainerEnvironment())
-
-	env := []string{}
-	// Only inherit safe environment variables from host for local execution
-	// For Docker execution, we should not inherit host environment variables at all
-	if !isDocker {
-		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
-		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
-		for _, key := range allowedEnvVars {
-			if val, ok := os.LookupEnv(key); ok {
-				env = append(env, fmt.Sprintf("%s=%s", key, val))
-			}
-		}
-	}
-
-	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve service env: %w", err)
-	}
-
-	// Collect secrets for redaction
-	secrets := make([]string, 0, len(resolvedServiceEnv))
-	for _, v := range resolvedServiceEnv {
-		secrets = append(secrets, v)
-	}
-
-	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
-	}
-
-	if ce := t.service.GetContainerEnvironment(); ce != nil {
-		resolvedContainerEnv, err := util.ResolveSecretMap(ctx, ce.GetEnv(), nil)
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve container env: %w", err)
-		}
-		for _, v := range resolvedContainerEnv {
-			secrets = append(secrets, v)
-		}
-		for k, v := range resolvedContainerEnv {
-			env = append(env, fmt.Sprintf("%s=%s", k, v))
-		}
-	}
-
-	for _, param := range t.callDefinition.GetParameters() {
-		name := param.GetSchema().GetName()
-		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
-			}
-			secrets = append(secrets, secretValue)
-			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
-		} else if val, ok := inputs[name]; ok {
-			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
-				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
-			}
-			// Sentinel Security: For shell commands, we only add environment variables if they are safe
-			// for unquoted use. If they contain dangerous characters, we omit them from the environment
-			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
-			safeForEnv := true
-			if isShellCommand(t.service.GetCommand()) {
-				if err := checkEnvInjection(valStr); err != nil {
-					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
-					safeForEnv = false
-				}
-			}
-			// Sentinel Security Update: Block known dangerous environment variables
-			if isDangerousEnvVar(name) {
-				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
-				safeForEnv = false
-			}
-
-			if safeForEnv {
-				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
-			}
-		}
-	}
+	// Add params to env
+	env = append(env, paramEnv...)
 
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
