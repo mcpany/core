@@ -16,7 +16,13 @@ var redisClientCreator = redis.NewClient
 
 // SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
-// creator: A function that takes Redis options and returns a client instance.
+// Summary: Sets a custom Redis client creator.
+//
+// Parameters:
+//   - creator: func(opts *redis.Options) *redis.Client. A function that takes Redis options and returns a client instance.
+//
+// Returns:
+//   None.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }

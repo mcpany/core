@@ -252,10 +252,14 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 
 // SaveService saves an upstream service configuration.
 //
-// ctx is the context for the request.
-// service is the service instance.
+// Summary: Stores or updates an upstream service configuration.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - service: *configv1.UpstreamServiceConfig. The service configuration to save.
+//
+// Returns:
+//   - error: An error if the save operation fails.
 func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
@@ -288,11 +292,15 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 
 // GetService retrieves an upstream service configuration by name.
 //
-// ctx is the context for the request.
-// name is the name of the resource.
+// Summary: Retrieves an upstream service configuration.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - name: string. The name of the service to retrieve.
+//
+// Returns:
+//   - *configv1.UpstreamServiceConfig: The service configuration if found.
+//   - error: An error if the service is not found or retrieval fails.
 func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -314,10 +322,14 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 
 // ListServices lists all upstream service configurations.
 //
-// ctx is the context for the request.
+// Summary: Lists all stored upstream service configurations.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
+//   - error: An error if the query fails.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
@@ -664,10 +676,14 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 
 // ListProfiles retrieves all profile definitions.
 //
-// ctx is the context for the request.
+// Summary: Lists all profile definitions.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - []*configv1.ProfileDefinition: A list of profile definitions.
+//   - error: An error if the query fails.
 func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
 	if err != nil {
@@ -696,11 +712,15 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 
 // GetProfile retrieves a profile definition by name.
 //
-// ctx is the context for the request.
-// name is the name of the resource.
+// Summary: Retrieves a profile definition by its name.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - name: string. The name of the profile.
+//
+// Returns:
+//   - *configv1.ProfileDefinition: The profile definition if found.
+//   - error: An error if the profile is not found or retrieval fails.
 func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
 	query := "SELECT config_json FROM profile_definitions WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -722,10 +742,14 @@ func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileD
 
 // SaveProfile saves a profile definition.
 //
-// ctx is the context for the request.
-// profile is the profile.
+// Summary: Stores or updates a profile definition.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - profile: *configv1.ProfileDefinition. The profile definition to save.
+//
+// Returns:
+//   - error: An error if the save operation fails.
 func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
 	if profile.GetName() == "" {
 		return fmt.Errorf("profile name is required")
@@ -755,10 +779,14 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 
 // DeleteProfile deletes a profile definition by name.
 //
-// ctx is the context for the request.
-// name is the name of the resource.
+// Summary: Removes a profile from the database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - name: string. The unique name of the profile to delete.
+//
+// Returns:
+//   - error: An error if the deletion fails.
 func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM profile_definitions WHERE name = ?", name)
 	if err != nil {
