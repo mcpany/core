@@ -36,7 +36,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             command_line_service: {
                 command: "echo",
                 tools: [
-                    { name: "get_user", description: "Get user details", input_schema: { type: "object" }, call_id: "get_user_call" }
+                    { name: "get_user", description: "Get user details", input_schema: {}, call_id: "get_user_call" }
                 ],
                 calls: {
                     get_user_call: {
@@ -53,7 +53,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             command_line_service: {
                 command: "echo",
                 tools: [
-                    { name: "calculator", description: "calc", input_schema: { type: "object" }, call_id: "calc_call" }
+                    { name: "calculator", description: "calc", input_schema: {}, call_id: "calc_call" }
                 ],
                 calls: {
                     calc_call: {
