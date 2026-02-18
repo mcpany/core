@@ -1968,6 +1968,27 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
+	// Sentinel Security Update: Pre-resolve secrets and inject them into inputs.
+	// This ensures that if args use placeholders for secrets (e.g. {{api_key}}),
+	// they are replaced with the actual secret value, NOT user input.
+	resolvedSecrets := make(map[string]string)
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			// Store resolved secret for later use in env population
+			resolvedSecrets[name] = secretValue
+			// Inject into inputs for args substitution (OVERWRITING any user input)
+			if inputs == nil {
+				inputs = make(map[string]any)
+			}
+			inputs[name] = secretValue
+		}
+	}
+
 	args := []string{}
 	if len(t.sandboxArgs) > 0 {
 		args = append(args, t.sandboxArgs...)
@@ -2097,9 +2118,15 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			// Use pre-resolved secret
+			secretValue, ok := resolvedSecrets[name]
+			if !ok {
+				// Should not happen if logic above is correct, but fallback safely
+				var err error
+				secretValue, err = util.ResolveSecret(ctx, secret)
+				if err != nil {
+					return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+				}
 			}
 			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
@@ -2313,6 +2340,23 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
+	// Sentinel Security Update: Pre-resolve secrets and inject them into inputs.
+	resolvedSecrets := make(map[string]string)
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			resolvedSecrets[name] = secretValue
+			if inputs == nil {
+				inputs = make(map[string]any)
+			}
+			inputs[name] = secretValue
+		}
+	}
+
 	args := []string{}
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
@@ -2444,9 +2488,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			secretValue, ok := resolvedSecrets[name]
+			if !ok {
+				var err error
+				secretValue, err = util.ResolveSecret(ctx, secret)
+				if err != nil {
+					return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+				}
 			}
 			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
