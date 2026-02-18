@@ -34,6 +34,17 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 }
 
 // Execute executes the middleware logic.
+//
+// Summary: Wraps tool execution with LLM-based error recovery.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *tool.ExecutionRequest. The execution request.
+//   - next: tool.ExecutionFunc. The next handler.
+//
+// Returns:
+//   - any: The result.
+//   - error: Error if recovery fails.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

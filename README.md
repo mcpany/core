@@ -144,6 +144,11 @@ We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
+**Documentation Standard:**
+*   **Public API:** All exported functions, methods, and types must have high-quality docstrings.
+*   **Structure:** Summary, Parameters, Returns, Errors, Side Effects.
+*   **Verification:** `make lint` checks for documentation presence and formatting.
+
 To run linters:
 ```bash
 make lint

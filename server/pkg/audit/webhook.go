@@ -32,6 +32,15 @@ type WebhookAuditStore struct {
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
+//
+// Summary: Initializes a webhook audit store.
+//
+// Parameters:
+//   - webhookURL: string. The destination URL.
+//   - headers: map[string]string. Custom headers.
+//
+// Returns:
+//   - *WebhookAuditStore: The initialized store.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -88,6 +97,15 @@ func (s *WebhookAuditStore) worker() {
 }
 
 // Write writes an audit entry to the webhook (buffered).
+//
+// Summary: Queues an audit entry for sending.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - entry: Entry. The audit entry.
+//
+// Returns:
+//   - error: Error if queue is full.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -133,11 +151,26 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Reads audit entries (not implemented for webhook).
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - filter: Filter. The filter.
+//
+// Returns:
+//   - []Entry: Nil.
+//   - error: Error indicating not implemented.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
 
 // Close stops the workers and drains the queue.
+//
+// Summary: Closes the store and releases resources.
+//
+// Returns:
+//   - error: Always nil.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

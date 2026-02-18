@@ -14,12 +14,25 @@ import (
 )
 
 // ValidateRequest represents the request body for the validation endpoint.
+//
+// Summary: Payload for validating configuration content.
+//
+// Fields:
+//   - Content: string. The configuration content to validate (JSON or YAML).
+//   - Format: string. The format of the content ("json" or "yaml"). Optional.
 type ValidateRequest struct {
 	Content string `json:"content"`
 	Format  string `json:"format"` // "json" or "yaml"
 }
 
 // ValidateResponse represents the response body for the validation endpoint.
+//
+// Summary: Result of the validation operation.
+//
+// Fields:
+//   - Valid: bool. Whether the configuration is valid.
+//   - Error: string. Error message if invalid.
+//   - Message: string. Detailed validation message.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`
 	Error   string `json:"error,omitempty"`

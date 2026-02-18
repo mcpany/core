@@ -79,10 +79,14 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 
 // RedactJSON redacts sensitive information from a JSON byte slice.
 //
-// data is the data.
+// Summary: Scans and redacts PII in a JSON byte slice.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - data: []byte. The JSON data.
+//
+// Returns:
+//   - []byte: The redacted data.
+//   - error: Error if redaction fails.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil
@@ -140,9 +144,13 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 
 // RedactString redacts sensitive information from a string.
 //
-// s is the s.
+// Summary: Redacts PII from a string.
 //
-// Returns the result.
+// Parameters:
+//   - s: string. The input string.
+//
+// Returns:
+//   - string: The redacted string.
 func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
@@ -202,9 +210,12 @@ func (r *Redactor) RedactString(s string) string {
 	return res
 }
 
-// RedactStruct redacts sensitive information from a map.
+// RedactStruct redacts sensitive information from a map (in-place).
 //
-// v is the v.
+// Summary: Recursively redacts PII in a map.
+//
+// Parameters:
+//   - v: map[string]interface{}. The map to redact.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return
@@ -216,9 +227,13 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 
 // RedactValue redacts sensitive information from a value.
 //
-// val is the val.
+// Summary: Recursively redacts PII from an arbitrary value (string, map, list).
 //
-// Returns the result.
+// Parameters:
+//   - val: interface{}. The value to redact.
+//
+// Returns:
+//   - interface{}: The redacted value.
 func (r *Redactor) RedactValue(val interface{}) interface{} {
 	if r == nil {
 		return val

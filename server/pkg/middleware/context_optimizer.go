@@ -15,15 +15,24 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+//
+// Summary: Middleware to truncate large text content in JSON responses.
+//
+// Fields:
+//   - MaxChars: int. The maximum number of characters allowed in text fields.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// maxChars is the maxChars.
+// Summary: Initializes a ContextOptimizer.
 //
-// Returns the result.
+// Parameters:
+//   - maxChars: int. The character limit for text fields.
+//
+// Returns:
+//   - *ContextOptimizer: The initialized optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -40,9 +49,13 @@ var bufferPool = sync.Pool{
 
 // Handler returns the middleware handler.
 //
-// next is the next.
+// Summary: Returns the HTTP handler that performs optimization.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)

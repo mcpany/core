@@ -23,10 +23,14 @@ type FileAuditStore struct {
 
 // NewFileAuditStore creates a new FileAuditStore.
 //
-// path is the path.
+// Summary: Initializes a file-based audit store.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - path: string. The file path (or empty for stdout).
+//
+// Returns:
+//   - *FileAuditStore: The initialized store.
+//   - error: Error if file opening fails.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -47,10 +51,14 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 
 // Write writes an audit entry to the file.
 //
-// _ is an unused parameter.
-// entry is the entry.
+// Summary: Writes an audit entry to the file/stdout.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - entry: Entry. The audit entry.
+//
+// Returns:
+//   - error: Error if writing fails.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -76,13 +84,26 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Reads audit entries (not implemented for file store yet).
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - filter: Filter. The filter.
+//
+// Returns:
+//   - []Entry: Nil.
+//   - error: Error indicating not implemented.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
 // Close closes the file.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the file handle.
+//
+// Returns:
+//   - error: Error if closing fails.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

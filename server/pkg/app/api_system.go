@@ -14,6 +14,16 @@ import (
 )
 
 // SystemStatusResponse represents the response from the system status API.
+//
+// Summary: Response object for the system status endpoint.
+//
+// Fields:
+//   - UptimeSeconds: int64. The server uptime in seconds.
+//   - ActiveConnections: int32. The number of active HTTP connections.
+//   - BoundHTTPPort: int. The port the HTTP server is listening on.
+//   - BoundGRPCPort: int. The port the gRPC server is listening on.
+//   - Version: string. The server version.
+//   - SecurityWarnings: []string. A list of security warnings (e.g., no API key).
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

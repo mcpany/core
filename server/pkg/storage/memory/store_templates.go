@@ -10,10 +10,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// _ is an unused parameter.
+// ListServiceTemplates retrieves all service templates.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Summary: Lists all service templates.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//
+// Returns:
+//   - []*configv1.ServiceTemplate: The list of templates.
+//   - error: Error if listing fails.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -26,11 +32,15 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 
 // GetServiceTemplate retrieves a service template by ID.
 //
-// _ is an unused parameter.
-// id is the unique identifier.
+// Summary: Retrieves a service template by ID.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - id: string. The template ID.
+//
+// Returns:
+//   - *configv1.ServiceTemplate: The template.
+//   - error: Error if retrieval fails.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -42,10 +52,14 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 
 // SaveServiceTemplate saves a service template.
 //
-// _ is an unused parameter.
-// template is the template.
+// Summary: Persists a service template.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - template: *configv1.ServiceTemplate. The template to save.
+//
+// Returns:
+//   - error: Error if saving fails.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -54,6 +68,15 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
+//
+// Summary: Deletes a service template by ID.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - id: string. The template ID.
+//
+// Returns:
+//   - error: Error if deletion fails.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

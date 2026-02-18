@@ -62,6 +62,13 @@ const (
 )
 
 // ToolUsageStats represents usage statistics for a tool.
+//
+// Summary: Statistics on tool usage count.
+//
+// Fields:
+//   - Name: string. The name of the tool.
+//   - ServiceID: string. The ID of the service the tool belongs to.
+//   - Count: int64. The number of times the tool has been called.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -208,6 +215,14 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 }
 
 // ToolFailureStats represents failure statistics for a tool.
+//
+// Summary: Statistics on tool failure rates.
+//
+// Fields:
+//   - Name: string. The name of the tool.
+//   - ServiceID: string. The ID of the service.
+//   - FailureRate: float64. The percentage of calls that failed (0-100).
+//   - TotalCalls: int64. The total number of calls (success + failure).
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -328,6 +343,14 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 }
 
 // ToolAnalytics represents detailed usage analytics for a tool.
+//
+// Summary: Detailed performance metrics for a tool.
+//
+// Fields:
+//   - Name: string. The name of the tool.
+//   - ServiceID: string. The ID of the service.
+//   - TotalCalls: int64. The total number of calls.
+//   - SuccessRate: float64. The percentage of calls that succeeded.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -442,12 +465,28 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 }
 
 // ServiceHealthResponse represents the response for the health dashboard.
+//
+// Summary: Aggregated health status for all services.
+//
+// Fields:
+//   - Services: []ServiceHealth. List of service health statuses.
+//   - History: map[string][]health.HistoryPoint. Historical health data keyed by service ID.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                 `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
 // ServiceHealth represents the health status of a service.
+//
+// Summary: Current health snapshot of a single service.
+//
+// Fields:
+//   - ID: string. The service ID.
+//   - Name: string. The service name.
+//   - Status: string. The current status (healthy, unhealthy, degraded, inactive).
+//   - Latency: string. The current latency (e.g., "10ms").
+//   - Uptime: string. The current uptime percentage (e.g., "99.9%").
+//   - Message: string. Optional status message or error description.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
