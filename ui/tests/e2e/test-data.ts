@@ -40,7 +40,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     get_user_call: {
-                        args: ["user_details"]
+                        args: ["{\"id\": \"user_1\", \"name\": \"Test User\"}"]
                     }
                 }
             }
@@ -57,7 +57,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 ],
                 calls: {
                     calc_call: {
-                        args: ["calculated"]
+                        args: ["{\"result\": 42}"]
                     }
                 }
             }
