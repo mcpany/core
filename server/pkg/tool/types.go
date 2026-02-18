@@ -3373,7 +3373,7 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
-	if err := checkAwkInjection(val, base); err != nil {
+	if err := checkAwkInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
@@ -3552,7 +3552,7 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
-func checkAwkInjection(val, base string) error {
+func checkAwkInjection(val, base string, quoteLevel int) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
@@ -3570,8 +3570,73 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
+
+		// Sentinel Security Update: Block indirect function calls and extensions (gawk)
+		// We strip string literals first to avoid false positives (e.g., "email@example.com").
+		// If quoteLevel is 1 (Double), we assume we start inside a string (e.g. awk "print \"{{input}}\"").
+		// If quoteLevel is 2 (Single), we assume we start outside a string (e.g. awk '{{input}}').
+		inQuote := quoteLevel == 1
+		codeOnly := stripAwkStrings(val, inQuote)
+		for i, r := range codeOnly {
+			if r == '@' {
+				// Check previous character
+				if i == 0 || !isWordChar(codeOnly[i-1]) {
+					return fmt.Errorf("awk injection detected: value contains '@' (indirect function call or extension)")
+				}
+			}
+		}
+
+		// Sentinel Security Update: Block system() calls by checking "system" keyword in code.
+		// Since we stripped strings, "filesystem" in a string literal won't trigger this.
+		// We perform a word boundary check to avoid blocking words like "filesystem" in unquoted code/data.
+		sysIdx := strings.Index(codeOnly, "system")
+		for sysIdx != -1 {
+			// Check start boundary
+			startOk := sysIdx == 0 || !isWordChar(codeOnly[sysIdx-1])
+			// Check end boundary
+			endOk := sysIdx+6 == len(codeOnly) || !isWordChar(codeOnly[sysIdx+6])
+
+			if startOk && endOk {
+				return fmt.Errorf("awk injection detected: value contains 'system'")
+			}
+			// Find next occurrence
+			next := strings.Index(codeOnly[sysIdx+1:], "system")
+			if next == -1 {
+				break
+			}
+			sysIdx += 1 + next
+		}
 	}
 	return nil
+}
+
+func stripAwkStrings(val string, inQuote bool) string {
+	var b strings.Builder
+	b.Grow(len(val))
+	escaped := false
+
+	for _, c := range val {
+		if escaped {
+			escaped = false
+			// If we are in quote, we skip the escaped char (it's part of string)
+			// But wait, if we skip it, we might lose structure?
+			// stripAwkStrings is intended to remove string content.
+			// So "foo\"bar" -> .
+			continue
+		}
+		if c == '\\' {
+			escaped = true
+			continue
+		}
+		if c == '"' {
+			inQuote = !inQuote
+			continue
+		}
+		if !inQuote {
+			b.WriteRune(c)
+		}
+	}
+	return b.String()
 }
 
 func checkBacktickInjection(val, command string) error {
