@@ -10,6 +10,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 func (a *Application) handleDebugReset(store storage.Storage) http.HandlerFunc {
@@ -19,7 +20,7 @@ func (a *Application) handleDebugReset(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		if os.Getenv("MCPANY_ENABLE_DEBUG_RESET") != "true" {
+		if os.Getenv("MCPANY_ENABLE_DEBUG_RESET") != util.TrueStr {
 			http.Error(w, "Debug reset disabled", http.StatusForbidden)
 			return
 		}

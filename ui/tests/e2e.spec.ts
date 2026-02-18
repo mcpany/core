@@ -42,9 +42,16 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
-    // Check for metrics
-    await expect(page.locator('text=Total Requests')).toBeVisible();
+    // Check for metrics - wait for loading to finish and real data to appear
+    // The dashboard initially shows "Loading dashboard metrics..."
+    // We expect "Total Requests" card to be visible once loaded.
+    // Using a longer timeout here to account for backend polling/startup latency in CI.
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 60000 });
     await expect(page.locator('text=Active Services')).toBeVisible();
+
+    // Ensure we are not seeing the loading state anymore
+    await expect(page.locator('text=Loading dashboard metrics...')).not.toBeVisible();
+
     // Check for health widget
     await expect(page.locator('text=System Health').first()).toBeVisible();
 
