@@ -994,6 +994,41 @@ export const apiClient = {
         return res.json(); // { authorization_url: "...", state: "..." }
     },
 
+    // Credentials
+
+    /**
+     * Lists all credentials.
+     * @returns A promise that resolves to a list of credentials.
+     */
+    listCredentials: async () => {
+        const res = await fetchWithAuth('/api/v1/credentials');
+        if (!res.ok) throw new Error('Failed to fetch credentials');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.credentials || []);
+    },
+
+    /**
+     * Tests authentication with a credential against a service configuration.
+     */
+    testAuth: async (payload: { credential_id: string, service_type: string, service_config: any }) => {
+        const res = await fetchWithAuth('/api/v1/auth/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+             // Try to parse error message
+             const text = await res.text();
+             let msg = text;
+             try {
+                 const json = JSON.parse(text);
+                 msg = json.error || json.message || text;
+             } catch {}
+             throw new Error(`Auth test failed: ${msg}`);
+        }
+        return res.json();
+    },
+
     // Profiles
 
     /**
