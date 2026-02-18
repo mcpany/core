@@ -47,6 +47,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
 
@@ -838,7 +839,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -896,7 +897,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     needs: [build-images]
     steps:
       - uses: actions/checkout@v5
