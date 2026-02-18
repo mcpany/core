@@ -67,9 +67,12 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
 
     // 2. Open Wizard
-    await page.getByRole('button', { name: 'Create Config' }).click();
-    // Using getByText for the title to be robust against accessibility name quirks in different environments
-    await expect(page.getByText('Create Upstream Service Config')).toBeVisible();
+    const createButton = page.getByRole('button', { name: 'Create Config' });
+    await expect(createButton).toBeVisible();
+    await createButton.click();
+
+    // Using heading role for the dialog title
+    await expect(page.getByRole('heading', { name: 'Create Upstream Service Config' })).toBeVisible();
 
     // 3. Step 1: Service Type
     await expect(page.getByText('Service Type')).toBeVisible();
