@@ -110,6 +110,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
+| 82 | **Semantic Tool Search API** | **Intelligence**: Vector-based tool discovery to support large registries and natural language discovery. | High |
+| 83 | **Tool Output Integrity Middleware** | **Security**: Cryptographic verification of tool responses to prevent injection via tool output. | Medium |
 
 ## 1. Completed Features
 

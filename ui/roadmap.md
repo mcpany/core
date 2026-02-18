@@ -97,3 +97,5 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P1] Semantic Tool Discovery Search Bar**: Natural language search for tools using the Semantic Search API.
+- [ ] **[P2] Zero Trust Policy Editor**: Visual builder for Rego-based tool access policies.
