@@ -1,6 +1,7 @@
 *
 !ui/
 !proto/
+!proto/**/*.ts
 !server/
 !go.mod
 !go.sum
