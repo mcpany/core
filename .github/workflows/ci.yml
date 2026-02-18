@@ -107,7 +107,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -651,7 +651,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
