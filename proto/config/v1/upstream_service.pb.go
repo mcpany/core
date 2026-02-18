@@ -10,7 +10,6 @@
 package v1
 
 import (
-	_ "github.com/mcpany/core/proto/bus"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/gofeaturespb"
@@ -8540,7 +8539,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xe9\x12\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xe9\x12\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +

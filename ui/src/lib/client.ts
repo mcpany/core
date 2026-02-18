@@ -903,7 +903,7 @@ export const apiClient = {
      * Returns a list of available service templates for the wizard.
      * Fetches from the backend /api/v1/templates endpoint.
      */
-    getServiceTemplates: async () => {
+    listTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
         if (!res.ok) throw new Error('Failed to fetch templates');
         const data = await res.json();
@@ -1123,6 +1123,34 @@ export const apiClient = {
         return {};
     },
 
+    // Templates
+
+    /**
+     * Saves a service template.
+     * @param config The template configuration.
+     */
+    saveTemplate: async (config: any) => {
+        const res = await fetchWithAuth('/api/v1/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        if (!res.ok) throw new Error('Failed to save template');
+        return res.json();
+    },
+
+    /**
+     * Deletes a service template.
+     * @param id The ID of the template to delete.
+     */
+    deleteTemplate: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete template');
+        return {};
+    },
+
     // Global Settings
 
     /**
@@ -1298,6 +1326,16 @@ export const apiClient = {
     getSystemStatus: async (): Promise<SystemStatus> => {
         const res = await fetchWithAuth('/api/v1/system/status');
         if (!res.ok) throw new Error('Failed to fetch system status');
+        return res.json();
+    },
+
+    /**
+     * Gets the doctor status report.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
     },
 
