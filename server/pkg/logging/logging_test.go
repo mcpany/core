@@ -148,9 +148,15 @@ func TestBroadcaster(t *testing.T) {
 	b.Unsubscribe(ch1)
 	assert.Len(t, b.subscribers, 1)
 
-	// Ensure ch1 is closed
-	_, ok := <-ch1
-	assert.False(t, ok)
+	// Ensure ch1 is removed and doesn't receive messages
+	// Note: We no longer close the channel to avoid panics on concurrent sends.
+	// We just verify it receives no new messages.
+	select {
+	case <-ch1:
+		t.Fatal("ch1 should not receive any more messages")
+	case <-time.After(10 * time.Millisecond):
+		// OK
+	}
 
 	// Broadcast again, only ch2 should receive
 	msg2 := []byte("test message 2")
