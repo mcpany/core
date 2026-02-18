@@ -103,8 +103,13 @@ func TestValidate_MoreServices(t *testing.T) {
 						}.Build(),
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
-								ClientCertPath: proto.String("non-existent-cert.pem"),
-								ClientKeyPath:  proto.String("non-existent-key.pem"),
+								// Using a path that IsSecurePath accepts (relative or absolute without weirdness)
+								// but FileExists fails.
+								// Note: IsSecurePath usually checks perms if file exists.
+								// If file doesn't exist, IsSecurePath might fail if it tries to stat it?
+								// Let's use a path in temp dir which is allowed by SetAllowedPaths
+								ClientCertPath: proto.String(insecurePath + ".missing"),
+								ClientKeyPath:  proto.String(insecurePath + ".missing"),
 							}.Build(),
 						}.Build(),
 					}.Build(),
@@ -510,9 +515,23 @@ func TestValidate_MoreServices(t *testing.T) {
 						}.Build(),
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
+								// We need client cert/key to be valid to reach CA check?
+								// Actually validation order matters.
+								// If ClientCertPath is insecurePath (which exists), IsSecurePath checks it.
+								// If IsSecurePath fails on insecurePath (it does in previous tests), we might not reach CA check.
+								// But here we want to test CA path missing.
+								// We should use a "secure" path for client cert/key if we want to bypass that check?
+								// But we don't have a secure path easily mockable without filesystem?
+								// Wait, we mocked IsAllowedPath in TestValidate_MtlsInsecure but not here.
+								// In TestValidate_MoreServices, we only mocked execLookPath.
+								// We set SetAllowedPaths to TempDir.
+								// insecurePath is in TempDir.
+								// The error "access to private key file ... is denied" suggests IsSecurePath is failing on "non-existent..."
+								// or checking file existence inside IsSecurePath?
+								// Let's use a path in TempDir that doesn't exist.
 								ClientCertPath: proto.String(insecurePath),
 								ClientKeyPath:  proto.String(insecurePath),
-								CaCertPath:     proto.String("non-existent-ca.pem"),
+								CaCertPath:     proto.String(insecurePath + ".missing_ca"),
 							}.Build(),
 						}.Build(),
 					}.Build(),
