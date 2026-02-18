@@ -459,7 +459,11 @@ else
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
 	$(GOLANGCI_LINT_BIN) run --timeout 10m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
-	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
+	if [ -z "$(CI)" ]; then \
+		cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files; \
+	else \
+		echo "Skipping pre-commit in CI environment due to network restrictions."; \
+	fi
 endif
 
 clean-pre-commit:
