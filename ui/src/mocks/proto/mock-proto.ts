@@ -9,76 +9,76 @@
  * GrpcWebImpl class definition.
  */
 export class GrpcWebImpl {
-    constructor(_host: string, _options: any) {}
+  constructor(_host: string, _options: any) {}
 }
 
 /**
  * The RegistrationServiceClientImpl class.
  */
 export class RegistrationServiceClientImpl {
-    constructor(_rpc: any) {}
-    GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
+  constructor(_rpc: any) {}
+  GetService(_request: any, _metadata: any) { return Promise.resolve({}); }
 }
 
 /**
  * UpstreamServiceConfig type definition.
  */
 export interface UpstreamServiceConfig {
-    id?: string;
-    name?: string;
-    version?: string;
-    disable?: boolean;
-    priority?: number;
-    loadBalancingStrategy?: string;
-    httpService?: any;
-    grpcService?: any;
-    commandLineService?: any;
-    mcpService?: any;
-    preCallHooks?: any[];
-    postCallHooks?: any[];
-    [key: string]: any;
+  id?: string;
+  name?: string;
+  version?: string;
+  disable?: boolean;
+  priority?: number;
+  loadBalancingStrategy?: string;
+  httpService?: any;
+  grpcService?: any;
+  commandLineService?: any;
+  mcpService?: any;
+  preCallHooks?: any[];
+  postCallHooks?: any[];
+  [key: string]: any;
 }
 
 /**
  * ToolDefinition type definition.
  */
 export interface ToolDefinition {
-    name: string;
-    description?: string;
-    [key: string]: any;
+  name: string;
+  description?: string;
+  [key: string]: any;
 }
 
 /**
  * ResourceDefinition type definition.
  */
 export interface ResourceDefinition {
-    uri: string;
-    name: string;
-    mimeType?: string;
-    [key: string]: any;
+  uri: string;
+  name: string;
+  mimeType?: string;
+  [key: string]: any;
 }
 
 /**
  * PromptDefinition type definition.
  */
 export interface PromptDefinition {
-    name: string;
-    [key: string]: any;
+  name: string;
+  [key: string]: any;
 }
 
 /**
  * Credential type definition.
  */
 export interface Credential {
-    id?: string;
-    [key: string]: any;
+  id?: string;
+  [key: string]: any;
 }
 
 /**
  * Authentication type definition.
  */
 export interface Authentication {
-    [key: string]: any;
+  [key: string]: any;
 }
 
 /**
@@ -100,79 +100,79 @@ export type GetServiceStatusResponse = any;
  * ParameterType enum definition.
  */
 export enum ParameterType {
-    STRING = 0,
-    NUMBER = 1,
-    INTEGER = 2,
-    BOOLEAN = 3,
-    ARRAY = 4,
-    OBJECT = 5,
+  STRING = 0,
+  NUMBER = 1,
+  INTEGER = 2,
+  BOOLEAN = 3,
+  ARRAY = 4,
+  OBJECT = 5,
 }
 
 /**
  * HttpMethod enum definition.
  */
 export enum HttpCallDefinition_HttpMethod {
-    HTTP_METHOD_UNSPECIFIED = 0,
-    HTTP_METHOD_GET = 1,
-    HTTP_METHOD_POST = 2,
-    HTTP_METHOD_PUT = 3,
-    HTTP_METHOD_DELETE = 4,
-    HTTP_METHOD_PATCH = 5,
+  HTTP_METHOD_UNSPECIFIED = 0,
+  HTTP_METHOD_GET = 1,
+  HTTP_METHOD_POST = 2,
+  HTTP_METHOD_PUT = 3,
+  HTTP_METHOD_DELETE = 4,
+  HTTP_METHOD_PATCH = 5,
 }
 
 /**
  * OutputFormat enum definition.
  */
 export enum OutputTransformer_OutputFormat {
-    JSON = 0,
-    XML = 1,
-    TEXT = 2,
-    RAW_BYTES = 3,
-    JQ = 4,
+  JSON = 0,
+  XML = 1,
+  TEXT = 2,
+  RAW_BYTES = 3,
+  JQ = 4,
 }
 
 /**
  * InputTransformer interface definition.
  */
 export interface InputTransformer {
-    template?: string;
-    webhook?: any;
+  template?: string;
+  webhook?: any;
 }
 
 /**
  * OutputTransformer interface definition.
  */
 export interface OutputTransformer {
-    format: OutputTransformer_OutputFormat;
-    extractionRules?: { [key: string]: string };
-    template?: string;
-    jqQuery?: string;
+  format: OutputTransformer_OutputFormat;
+  extractionRules?: { [key: string]: string };
+  template?: string;
+  jqQuery?: string;
 }
 
 /**
  * HttpParameterMapping interface definition.
  */
 export interface HttpParameterMapping {
-    schema?: {
-        name: string;
-        description?: string;
-        type: ParameterType;
-        isRequired?: boolean;
-        defaultValue?: any;
-    };
-    secret?: any;
-    disableEscape?: boolean;
+  schema?: {
+    name: string;
+    description?: string;
+    type: ParameterType;
+    isRequired?: boolean;
+    defaultValue?: any;
+  };
+  secret?: any;
+  disableEscape?: boolean;
 }
 
 /**
  * HttpCallDefinition interface definition.
  */
 export interface HttpCallDefinition {
-    id?: string;
-    method: HttpCallDefinition_HttpMethod;
-    endpointPath: string;
-    parameters: HttpParameterMapping[];
-    inputTransformer?: InputTransformer;
-    outputTransformer?: OutputTransformer;
-    [key: string]: any;
+  id?: string;
+  method: HttpCallDefinition_HttpMethod;
+  endpointPath: string;
+  parameters: HttpParameterMapping[];
+  inputTransformer?: InputTransformer;
+  outputTransformer?: OutputTransformer;
+  [key: string]: any;
 }
