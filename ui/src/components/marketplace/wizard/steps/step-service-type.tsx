@@ -24,6 +24,12 @@ interface Template {
     params: Record<string, string>;
 }
 
+interface SchemaProperty {
+    default?: unknown;
+    // other properties
+    [key: string]: unknown;
+}
+
 const MANUAL_TEMPLATE: Template = {
     id: 'manual',
     name: 'Manual / Custom',
@@ -66,7 +72,7 @@ const REGISTRY_TEMPLATES: Template[] = SERVICE_REGISTRY.map(s => {
     // Extract defaults from schema if any
     const defaultParams: Record<string, string> = {};
     if (s.configurationSchema && s.configurationSchema.properties) {
-        Object.entries(s.configurationSchema.properties).forEach(([key, prop]: [string, any]) => {
+        Object.entries(s.configurationSchema.properties).forEach(([key, prop]: [string, SchemaProperty]) => {
             if (prop.default !== undefined) {
                 defaultParams[key] = String(prop.default);
             }
