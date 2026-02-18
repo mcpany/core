@@ -50,7 +50,11 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	}
 
 	log.Info("Database appears empty, initializing with default configuration...")
+	return a.performDatabaseSeeding(ctx, store)
+}
 
+func (a *Application) performDatabaseSeeding(ctx context.Context, store config.Store) error {
+	log := logging.GetLogger()
 	// Default Configuration
 	defaultGS := configv1.GlobalSettings_builder{
 		ProfileDefinitions: []*configv1.ProfileDefinition{

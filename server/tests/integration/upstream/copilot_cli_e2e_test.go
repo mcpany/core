@@ -15,8 +15,11 @@ import (
 
 func TestCopilotCLIE2E_Everything(t *testing.T) {
 	apiKey := os.Getenv("GITHUB_COPILOT_TOKEN")
+	expectAuthFailure := false
 	if apiKey == "" {
-		t.Skip("GITHUB_COPILOT_TOKEN not set, skipping test")
+		apiKey = "dummy_token"
+		expectAuthFailure = true
+		t.Log("GITHUB_COPILOT_TOKEN not set, using dummy token and expecting auth failure")
 	}
 
 	copilot := framework.NewCopilotCLI(t)
@@ -32,8 +35,12 @@ func TestCopilotCLIE2E_Everything(t *testing.T) {
 			defer copilot.RemoveMCP("mcpany-server")
 			// Copilot CLI usually requires 'explain' or 'suggest' subcommands
 			output, err := copilot.Run(apiKey, "what is the result of 10 + 5")
-			require.NoError(t, err)
-			require.Contains(t, output, "15")
+			if expectAuthFailure {
+				require.Error(t, err, "Expected auth error with dummy token")
+			} else {
+				require.NoError(t, err)
+				require.Contains(t, output, "15")
+			}
 		},
 	}
 	framework.RunE2ETest(t, testCase)

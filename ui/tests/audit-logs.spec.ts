@@ -27,7 +27,12 @@ test.describe('Feature Screenshot', () => {
         }
     });
 
-  test('Capture Logs', async ({ page }) => {
+  test('Capture Logs', async ({ page, request }) => {
+    // Seed database to ensure logs are available
+    await request.post('/api/v1/debug/reset', {
+        headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'testkey' }
+    });
+
     await page.goto('/logs');
     // Wait for some logs to appear
     await page.waitForTimeout(3000);
