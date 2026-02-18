@@ -60,4 +60,46 @@ func TestPHPInjectionSecurity(t *testing.T) {
 			assert.Contains(t, err.Error(), "interpreter injection detected", "Should contain specific error message")
 		}
 	})
+
+    t.Run("PHP_ShellExec_Injection", func(t *testing.T) {
+		toolDef := (&pb.Tool_builder{
+			Name: proto.String("php_tool"),
+		}).Build()
+		cmd := "php"
+		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}).Build()
+
+		callDef := (&configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-r", "\"{{code}}\""},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				(&configv1.CommandLineParameterMapping_builder{
+					Schema: (&configv1.ParameterSchema_builder{
+						Name: proto.String("code"),
+					}).Build(),
+				}).Build(),
+			},
+		}).Build()
+
+		policies := []*configv1.CallPolicy{}
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, policies, "test_call")
+
+		input := "echo shell_exec('id');"
+
+		req := &ExecutionRequest{
+			ToolName: "php_tool",
+			ToolInputs: []byte(fmt.Sprintf(`{"code": %q}`, input)),
+			Arguments: map[string]interface{}{
+				"code": input,
+			},
+			DryRun: true,
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+
+		assert.Error(t, err, "Should detect php shell_exec injection")
+		if err != nil {
+			assert.Contains(t, err.Error(), "interpreter injection detected", "Should contain specific error message")
+		}
+	})
 }
