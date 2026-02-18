@@ -7,6 +7,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
 import { Graph, NodeStatus } from '@/types/topology';
+import { apiClient, ServiceHealth, HealthHistoryPoint } from '@/lib/client';
 
 /**
  * MetricPoint represents a single data point for service health metrics at a specific time.
@@ -29,6 +30,8 @@ interface ServiceHealthContextType {
     getServiceCurrentHealth: (serviceId: string) => MetricPoint | null;
     latestTopology: Graph | null;
     refreshTopology: () => Promise<void>;
+    serverHistory: Record<string, HealthHistoryPoint[]>;
+    services: ServiceHealth[];
 }
 
 interface TopologyContextType {
@@ -54,6 +57,9 @@ const POLLING_INTERVAL = 5000;
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
+    const [serverHistory, setServerHistory] = useState<Record<string, HealthHistoryPoint[]>>({});
+    const [services, setServices] = useState<ServiceHealth[]>([]);
+
     const lastTopologyText = useRef<string>('');
     const lastGraph = useRef<Graph | null>(null);
     const lastEtag = useRef<string | null>(null);
@@ -78,77 +84,96 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 }
             }
 
+            // 1. Fetch Topology
             const res = await fetch(url, { headers });
 
             if (res.status === 304 && lastGraph.current) {
                 // Not modified, use cached graph
-                return;
-            }
+                // We still want to fetch dashboard health even if topology unchanged?
+                // Yes, because history grows.
+            } else if (res.ok) {
+                const etag = res.headers.get('ETag');
+                if (etag) {
+                    lastEtag.current = etag;
+                }
 
-            if (!res.ok) return;
+                // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
+                const text = await res.text();
+                let graph: Graph;
 
-            const etag = res.headers.get('ETag');
-            if (etag) {
-                lastEtag.current = etag;
-            }
+                if (text === lastTopologyText.current && lastGraph.current) {
+                    graph = lastGraph.current;
+                } else {
+                    graph = JSON.parse(text);
+                    lastTopologyText.current = text;
+                    lastGraph.current = graph;
+                    setLatestTopology(graph);
+                }
 
-            // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
-            // res.text() + string comparison is much faster than res.json() + JSON.stringify().
-            const text = await res.text();
-            let graph: Graph;
+                const now = Date.now();
+                const newPoints: Record<string, MetricPoint> = {};
 
-            if (text === lastTopologyText.current && lastGraph.current) {
-                graph = lastGraph.current;
-            } else {
-                graph = JSON.parse(text);
-                lastTopologyText.current = text;
-                lastGraph.current = graph;
-                setLatestTopology(graph);
-            }
+                // Helper to extract service nodes
+                const extractServiceNodes = (nodes: any[]) => {
+                    nodes.forEach(node => {
+                        if (node.type === 'NODE_TYPE_SERVICE') {
+                            newPoints[node.id] = {
+                                timestamp: now,
+                                latencyMs: node.metrics?.latencyMs || 0,
+                                errorRate: node.metrics?.errorRate || 0,
+                                qps: node.metrics?.qps || 0,
+                                status: node.status || 'NODE_STATUS_UNSPECIFIED'
+                            };
+                        }
+                        if (node.children) {
+                            extractServiceNodes(node.children);
+                        }
+                    });
+                };
 
-            const now = Date.now();
-            const newPoints: Record<string, MetricPoint> = {};
+                if (graph.core) {
+                    extractServiceNodes([graph.core]);
+                    if (graph.core.children) extractServiceNodes(graph.core.children);
+                }
 
-            // Helper to extract service nodes
-            // Using 'any' for node because TopologyNode type from types/topology
-            // might not match exactly what comes from API or recursion needs to be flexible
-            // But we should try to be safer if possible.
-            // Assuming Node type from @/types/topology
-            const extractServiceNodes = (nodes: any[]) => {
-                nodes.forEach(node => {
-                    if (node.type === 'NODE_TYPE_SERVICE') {
-                        newPoints[node.id] = {
-                            timestamp: now,
-                            latencyMs: node.metrics?.latencyMs || 0,
-                            errorRate: node.metrics?.errorRate || 0,
-                            qps: node.metrics?.qps || 0,
-                            status: node.status || 'NODE_STATUS_UNSPECIFIED'
-                        };
-                    }
-                    if (node.children) {
-                        extractServiceNodes(node.children);
-                    }
+                // Update accumulated history (metrics)
+                setHistory(prev => {
+                    const next = { ...prev };
+                    Object.entries(newPoints).forEach(([id, point]) => {
+                        const points = next[id] ? [...next[id], point] : [point];
+                        if (points.length > MAX_HISTORY_POINTS) {
+                            points.shift();
+                        }
+                        next[id] = points;
+                    });
+
+                    return next;
                 });
-            };
-
-            if (graph.core) {
-                extractServiceNodes([graph.core]);
-                if (graph.core.children) extractServiceNodes(graph.core.children);
             }
 
-            // Update history
-            setHistory(prev => {
-                const next = { ...prev };
-                Object.entries(newPoints).forEach(([id, point]) => {
-                    const points = next[id] ? [...next[id], point] : [point];
-                    if (points.length > MAX_HISTORY_POINTS) {
-                        points.shift();
-                    }
-                    next[id] = points;
-                });
+            // 2. Fetch Dashboard Health (Server-side History)
+            // ⚡ Bolt Optimization: Centralized polling to avoid redundant requests.
+            // Randomized Selection from Top 5 High-Impact Targets
+            try {
+                const healthData = await apiClient.getDashboardHealth();
+                setServices(healthData.services || []);
 
-                return next;
-            });
+                // Map status strings if needed (backend might return "up"/"down", UI wants "healthy")
+                const mappedHistory: Record<string, HealthHistoryPoint[]> = {};
+                if (healthData.history) {
+                    Object.entries(healthData.history).forEach(([id, points]) => {
+                        mappedHistory[id] = points.map(p => {
+                            let status = p.status as string;
+                            if (status === 'up' || status === 'UP') status = 'healthy';
+                            if (status === 'down' || status === 'DOWN') status = 'unhealthy';
+                            return { ...p, status: status as any };
+                        });
+                    });
+                }
+                setServerHistory(mappedHistory);
+            } catch (e) {
+                console.warn("Failed to fetch dashboard health", e);
+            }
 
         } catch (e) {
             console.error("Failed to fetch topology for health history", e);
@@ -187,8 +212,10 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         getServiceHistory,
         getServiceCurrentHealth,
         latestTopology,
-        refreshTopology: fetchTopology
-    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
+        refreshTopology: fetchTopology,
+        serverHistory,
+        services
+    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology, serverHistory, services]);
 
     // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
     const topologyValue = useMemo(() => ({
