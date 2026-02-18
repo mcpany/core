@@ -20,15 +20,16 @@ import (
 )
 
 var (
-	sharedSafeTransport *http.Transport
-	transportOnce       sync.Once
+	transportCache = make(map[string]*http.Transport)
+	transportMu    sync.Mutex
 )
 
-// ForTestsOnlyResetSafeHTTPClient resets the shared HTTP transport singleton.
+// ForTestsOnlyResetSafeHTTPClient resets the shared HTTP transport cache.
 // This allows tests to modify environment variables and re-initialize the client.
 func ForTestsOnlyResetSafeHTTPClient() {
-	transportOnce = sync.Once{}
-	sharedSafeTransport = nil
+	transportMu.Lock()
+	defer transportMu.Unlock()
+	transportCache = make(map[string]*http.Transport)
 }
 
 // IPResolver defines an interface for looking up IP addresses.
@@ -185,34 +186,47 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Returns:
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
+	allowLoopback := false
+	allowPrivate := false
+
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		allowLoopback = true
+		allowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		allowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		allowPrivate = true
+	}
+
 	// ⚡ BOLT: Implement connection pooling via shared transport.
 	// Randomized Selection from Top 5 High-Impact Targets
-	transportOnce.Do(func() {
+	// Key based on configuration to allow safe sharing even if env vars change.
+	key := fmt.Sprintf("L:%v|P:%v", allowLoopback, allowPrivate)
+
+	transportMu.Lock()
+	transport, ok := transportCache[key]
+	if !ok {
 		dialer := NewSafeDialer()
-		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
-			dialer.AllowLoopback = true
-			dialer.AllowPrivate = true
-		}
-		if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-			dialer.AllowLoopback = true
-		}
-		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-			dialer.AllowPrivate = true
-		}
+		dialer.AllowLoopback = allowLoopback
+		dialer.AllowPrivate = allowPrivate
 		// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
 
-		sharedSafeTransport = &http.Transport{
+		transport = &http.Transport{
 			DialContext: dialer.DialContext,
 			// Ensure proper connection pooling settings
 			MaxIdleConns:        100,
 			MaxIdleConnsPerHost: 10,
 			IdleConnTimeout:     90 * time.Second,
 		}
-	})
+		transportCache[key] = transport
+	}
+	transportMu.Unlock()
 
 	return &http.Client{
 		Timeout:   10 * time.Second,
-		Transport: sharedSafeTransport,
+		Transport: transport,
 	}
 }
 
