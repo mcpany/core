@@ -34,7 +34,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address
+                address: process.env.CI ? "http://http-echo-server:8080" : "http://localhost:50051", // Use echo server in CI
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],

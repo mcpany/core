@@ -8,7 +8,7 @@
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "NODE_ENV=production next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "TEST_PORT=$(shuf -i 10000-20000 -n 1) playwright test",
     "typecheck": "tsc --noEmit"
   },
