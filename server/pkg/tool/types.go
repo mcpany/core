@@ -2370,6 +2370,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
+						// If running a shell, validate that inputs are safe for shell execution
+						cmd := t.service.GetCommand()
+						if isShellCommand(cmd) {
+							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -3613,7 +3620,9 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
 	// Sentinel Security Update: Space is only dangerous for Shells, not for Interpreters when using exec.Command
 	dangerousChars := ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
-	if isShell {
+	// For command runners like env/sudo, arguments with spaces are safe because they are not interpreted as shell commands
+	// but rather passed as distinct arguments to the child process.
+	if isShell && !isSafeRunner(command) {
 		dangerousChars += " "
 	}
 
@@ -3627,6 +3636,17 @@ func checkUnquotedInjection(val, command string, isShell bool) error {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+func isSafeRunner(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	runners := []string{"env", "sudo", "nice", "nohup", "time", "watch", "timeout"}
+	for _, r := range runners {
+		if base == r {
+			return true
+		}
+	}
+	return false
 }
 
 func isInterpreter(command string) bool {
