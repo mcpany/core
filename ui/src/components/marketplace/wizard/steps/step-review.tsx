@@ -8,8 +8,8 @@ import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import SyntaxHighlighter from '@/components/ui/optimized-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 /**
  * StepReview.
@@ -30,7 +30,7 @@ export function StepReview({ onComplete }: { onComplete: (config: any) => void }
             <div className="space-y-2">
                  <h3 className="font-medium">Spec Preview</h3>
                  <div className="rounded-md overflow-hidden border">
-                     <SyntaxHighlighter language="json" style={oneDark} showLineNumbers customStyle={{ margin: 0, maxHeight: '300px' }}>
+                     <SyntaxHighlighter language="json" style={vscDarkPlus} showLineNumbers customStyle={{ margin: 0, maxHeight: '300px' }}>
                         {JSON.stringify(config, null, 2)}
                      </SyntaxHighlighter>
                  </div>
