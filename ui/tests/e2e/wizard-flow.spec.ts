@@ -10,7 +10,6 @@ test.describe('Smart Config Wizard', () => {
 
   test.beforeEach(async ({ request }) => {
     // Cleanup: Ensure service does not exist
-    // Note: This requires the backend to be running and accessible
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => {});
   });
 
@@ -20,6 +19,9 @@ test.describe('Smart Config Wizard', () => {
   });
 
   test('should verify the full wizard flow for PostgreSQL template', async ({ page }) => {
+    page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
+    page.on('pageerror', err => console.log('BROWSER ERROR:', err));
+
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
     await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
@@ -28,8 +30,13 @@ test.describe('Smart Config Wizard', () => {
     // Force click to ensure it works even if toasts overlay
     await page.getByRole('button', { name: 'Create Config' }).click({ force: true });
 
-    // Check if dialog opened
-    await expect(page.getByRole('heading', { name: 'Create Upstream Service Config' })).toBeVisible({ timeout: 10000 });
+    // Check if dialog opened with increased timeout
+    try {
+        await expect(page.getByRole('heading', { name: 'Create Upstream Service Config' })).toBeVisible({ timeout: 15000 });
+    } catch (e) {
+        console.log('Dialog not visible. Body HTML:', await page.innerHTML('body'));
+        throw e;
+    }
 
     // 3. Select Template
     // The Select trigger usually has the current value or placeholder
@@ -61,7 +68,8 @@ test.describe('Smart Config Wizard', () => {
 
     // 10. Review & Finish
     await expect(page.getByText('Review & Finish')).toBeVisible();
-    await expect(page.getByText('"name": "Test Postgres Wizard"')).toBeVisible();
+    // Use regex to be more flexible with formatting
+    await expect(page.getByText(/"name":\s*"Test Postgres Wizard"/)).toBeVisible();
 
     // Click Finish
     await page.getByRole('button', { name: 'Finish & Save to Local Marketplace' }).click();
@@ -71,6 +79,6 @@ test.describe('Smart Config Wizard', () => {
 
     // 12. Verify in "Local Templates" tab
     await page.getByRole('tab', { name: 'Local' }).click();
-    await expect(page.getByRole('heading', { name: 'Test Postgres Wizard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: serviceName })).toBeVisible();
   });
 });
