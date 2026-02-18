@@ -794,12 +794,12 @@ authentication:
 
 Configures the authentication method for MCP Any to use when connecting to an upstream service.
 
-| Field          | Type                      | Description                                        |
-| -------------- | ------------------------- | -------------------------------------------------- |
-| `api_key`      | `UpstreamAPIKeyAuth`      | API key sent in a header.                          |
-| `bearer_token` | `UpstreamBearerTokenAuth` | Bearer token in the `Authorization` header.        |
-| `basic_auth`   | `UpstreamBasicAuth`       | Basic authentication with a username and password. |
-| `oauth2`       | `UpstreamOAuth2Auth`      | OAuth 2.0 client credentials flow.                 |
+| Field          | Type             | Description                                        |
+| -------------- | ---------------- | -------------------------------------------------- |
+| `api_key`      | `APIKeyAuth`     | API key in a header, query param, or cookie.       |
+| `bearer_token` | `BearerTokenAuth`| Bearer token in the `Authorization` header.        |
+| `basic_auth`   | `BasicAuth`      | Basic authentication with a username and password. |
+| `oauth2`       | `OAuth2Auth`     | OAuth 2.0 client credentials flow.                 |
 
 ##### Use Case and Example
 
@@ -823,8 +823,9 @@ Authenticate with an upstream service using an API key stored in HashiCorp Vault
 ```yaml
 upstream_auth:
   api_key:
-    header_name: "X-API-Key"
-    api_key:
+    param_name: "X-API-Key"
+    in: "HEADER"
+    value:
       vault:
         address: "https://vault.example.com"
         token: "s.1234567890abcdef"
@@ -839,35 +840,37 @@ Authenticate using an API key stored in AWS Secrets Manager.
 ```yaml
 upstream_auth:
   api_key:
-    header_name: "X-API-Key"
-    api_key:
+    param_name: "X-API-Key"
+    in: "HEADER"
+    value:
       aws_secret_manager:
         secret_id: "my-app/api-keys"
         json_key: "my-api-key"
         region: "us-west-2"
 ```
 
-##### `UpstreamAPIKeyAuth`
+##### `APIKeyAuth`
 
-| Field         | Type          | Description                                  |
-| ------------- | ------------- | -------------------------------------------- |
-| `header_name` | `string`      | The name of the header to carry the API key. |
-| `api_key`     | `SecretValue` | The API key value, managed as a secret.      |
+| Field        | Type          | Description                                                     |
+| ------------ | ------------- | --------------------------------------------------------------- |
+| `param_name` | `string`      | The name of the parameter carrying the key (e.g., "X-API-Key"). |
+| `in`         | `enum`        | Where the API key is located (`HEADER` or `QUERY`).             |
+| `value`      | `SecretValue` | The API key value, managed as a secret.                         |
 
-##### `UpstreamBearerTokenAuth`
+##### `BearerTokenAuth`
 
 | Field   | Type          | Description                            |
 | ------- | ------------- | -------------------------------------- |
 | `token` | `SecretValue` | The bearer token, managed as a secret. |
 
-##### `UpstreamBasicAuth`
+##### `BasicAuth`
 
 | Field      | Type          | Description                            |
 | ---------- | ------------- | -------------------------------------- |
 | `username` | `string`      | The username for basic authentication. |
 | `password` | `SecretValue` | The password, managed as a secret.     |
 
-##### `UpstreamOAuth2Auth`
+##### `OAuth2Auth`
 
 | Field           | Type          | Description                               |
 | --------------- | ------------- | ----------------------------------------- |

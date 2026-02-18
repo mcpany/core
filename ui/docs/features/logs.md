@@ -24,5 +24,6 @@ Use the search bar at the top to filter logs by keyword (e.g., "error", "payment
 ![Filtered Logs](screenshots/logs_filtered.png)
 
 ### 3. Pause and Resume
-- **Scroll Up**: Scrolling up automatically pauses the live tail, allowing you to read history.
-- **Resume**: Click the "Resume" button (or scroll to bottom) to re-enable auto-scrolling.
+- **Pause**: Click the **Pause** button to stop receiving new logs. This is useful for inspecting a specific moment in time without new events shifting the view.
+- **Resume**: Click the **Resume** button to start receiving logs again.
+- **Auto-Scroll**: The view automatically scrolls to the latest log entry. Scrolling up will temporarily detach from the bottom, allowing you to read history while logs continue to accumulate in the background. Scrolling back to the bottom re-enables auto-scrolling.
