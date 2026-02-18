@@ -7,6 +7,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
+    // Mock the user preferences to avoid backend dependency/latency
+    await page.route('**/api/v1/user/preferences', async route => {
+        await route.fulfill({
+            json: {} // Empty object triggers default layout
+        });
+    });
+
     // Mock the stats endpoint
     await page.route('**/api/v1/dashboard/metrics', async route => {
         await route.fulfill({
