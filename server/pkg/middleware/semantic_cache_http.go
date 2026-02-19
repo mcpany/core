@@ -25,23 +25,16 @@ type HTTPEmbeddingProvider struct {
 	client           *http.Client
 }
 
-// NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
-// url is the url.
-// headers is the headers.
-// bodyTemplateStr is the bodyTemplateStr.
-// responseJSONPath is the responseJSONPath.
-// Returns the result.
-// Returns an error if the operation fails.
+// NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider. url is the url. headers is the headers. bodyTemplateStr is the bodyTemplateStr. responseJSONPath is the responseJSONPath. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
-//  - url (string): The URL.
-//  - headers (map[string]string): The headers.
-//  - bodyTemplateStr: The parameter.
-//  - responseJSONPath (string): The responseJSONPath.
-//
+//  - url (string): The target URL.
+//  - headers (map[string]string): The headers string.
+//  - bodyTemplateStr: The bodyTemplateStr parameter.
+//  - responseJSONPath (string): The responseJSONPath string.
 // Returns:
-//  - *HTTPEmbeddingProvider: The result.
-//  - error: Returns error on failure.
+//  - *HTTPEmbeddingProvider: The resulting HTTPEmbeddingProvider.
+//  - error: Returns an error if the operation fails.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
@@ -63,19 +56,14 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 
 
-// Embed generates an embedding for the given text.
-// ctx is the context for the request.
-// text is the text.
-// Returns the result.
-// Returns an error if the operation fails.
+// Embed generates an embedding for the given text. ctx is the context for the request. text is the text. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - text (string): The text.
-//
+//  - text (string): The text string.
 // Returns:
-//  - []float32: The result.
-//  - error: Returns error on failure.
+//  - []float32: The resulting []float32.
+//  - error: Returns an error if the operation fails.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?

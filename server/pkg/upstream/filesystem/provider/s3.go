@@ -22,16 +22,11 @@ type S3Provider struct {
 }
 
 // NewS3Provider creates a new S3Provider from the given configuration.
+//
 // config holds the configuration settings.
+//
 // Returns the result.
 // Returns an error if the operation fails.
-//
-// Parameters:
-//  - config (*configv1.S3Fs): The configuration.
-//
-// Returns:
-//  - *S3Provider: The result.
-//  - error: Returns error on failure.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("s3 config is nil")
@@ -70,25 +65,18 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 }
 
 // GetFs returns the underlying filesystem.
-// Returns the result.
 //
-// Returns:
-//  - afero.Fs: The result.
+// Returns the result.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path in the bucket.
+//
 // virtualPath is the virtualPath.
+//
 // Returns the result.
 // Returns an error if the operation fails.
-//
-// Parameters:
-//  - virtualPath (string): The virtualPath.
-//
-// Returns:
-//  - string: The string representation.
-//  - error: Returns error on failure.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
@@ -106,10 +94,8 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 }
 
 // Close closes the provider.
-// Returns an error if the operation fails.
 //
-// Returns:
-//  - error: Returns error on failure.
+// Returns an error if the operation fails.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,
 	// but satisfy the interface.

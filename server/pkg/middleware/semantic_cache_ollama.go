@@ -20,17 +20,13 @@ type OllamaEmbeddingProvider struct {
 	client  *http.Client
 }
 
-// NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
-// baseURL is the baseURL.
-// model is the model.
-// Returns the result.
+// NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider. baseURL is the baseURL. model is the model. Returns the result.
 //
 // Parameters:
-//  - baseURL: The parameter.
-//  - model (string): The model.
-//
+//  - baseURL: The baseURL parameter.
+//  - model (string): The model string.
 // Returns:
-//  - *OllamaEmbeddingProvider: The result.
+//  - *OllamaEmbeddingProvider: The resulting OllamaEmbeddingProvider.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -54,19 +50,14 @@ type ollamaEmbeddingResponse struct {
 	Embedding []float32 `json:"embedding"`
 }
 
-// Embed generates an embedding for the given text using Ollama.
-// ctx is the context for the request.
-// text is the text.
-// Returns the result.
-// Returns an error if the operation fails.
+// Embed generates an embedding for the given text using Ollama. ctx is the context for the request. text is the text. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - text (string): The text.
-//
+//  - text (string): The text string.
 // Returns:
-//  - []float32: The result.
-//  - error: Returns error on failure.
+//  - []float32: The resulting []float32.
+//  - error: Returns an error if the operation fails.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

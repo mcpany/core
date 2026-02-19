@@ -27,12 +27,6 @@ type ConfigFile struct {
 }
 
 // Seed walks the examples directory and saves service templates.
-//
-// Parameters:
-//  - ctx (context.Context): The context for the request.
-//
-// Returns:
-//  - error: Returns error on failure.
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)
 	if err != nil {

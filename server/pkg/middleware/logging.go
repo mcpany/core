@@ -13,20 +13,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// LoggingMiddleware creates an MCP middleware that logs information about each
-// incoming request. It records the start and completion of each request,
-// including the duration of the handling.
-//
-// This is useful for debugging and monitoring the flow of requests through the
-// server.
-//
-// Summary: MCP Middleware for request logging.
+// LoggingMiddleware creates an MCP middleware that logs information about each incoming request. It records the start and completion of each request, including the duration of the handling. This is useful for debugging and monitoring the flow of requests through the server.
 //
 // Parameters:
-//   - log: *slog.Logger. The logger to be used. If `nil`, the default global logger will be used.
-//
+//  - log (*slog.Logger): The log parameter.
 // Returns:
-//   - mcp.Middleware: The logging middleware function.
+//  - mcp.Middleware: The resulting mcp.Middleware.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

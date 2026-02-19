@@ -25,10 +25,6 @@ var (
 )
 
 // AddHealthStatus adds a status point to the history.
-//
-// Parameters:
-//  - serviceName (string): The serviceName.
-//  - status (string): The status.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -65,9 +61,6 @@ func AddHealthStatus(serviceName string, status string) {
 }
 
 // GetHealthHistory returns the history for all services.
-//
-// Returns:
-//  - map[string][]HistoryPoint: The result.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

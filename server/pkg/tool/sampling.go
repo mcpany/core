@@ -36,58 +36,36 @@ type Sampler = Session
 type sessionContextKey struct{}
 
 // NewContextWithSession creates a new context with the given Session.
+//
 // ctx is the context for the request.
 // s is the s.
+//
 // Returns the result.
-//
-// Parameters:
-//  - ctx (context.Context): The context for the request.
-//  - s (Session): The s.
-//
-// Returns:
-//  - context.Context: The result.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
 
 // GetSession retrieves the Session from the context.
+//
 // ctx is the context for the request.
+//
 // Returns the result.
 // Returns true if successful.
-//
-// Parameters:
-//  - ctx (context.Context): The context for the request.
-//
-// Returns:
-//  - Session: The result.
-//  - bool: True if successful.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok
 }
 
 // NewContextWithSampler creates a new context with the given Sampler.
+//
 // Deprecated: Use NewContextWithSession instead.
-//
-// Parameters:
-//  - ctx (context.Context): The context for the request.
-//  - s (Sampler): The s.
-//
-// Returns:
-//  - context.Context: The result.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
 
 // GetSampler retrieves the Sampler from the context.
+//
 // Deprecated: Use GetSession instead.
-//
-// Parameters:
-//  - ctx (context.Context): The context for the request.
-//
-// Returns:
-//  - Sampler: The result.
-//  - bool: True if successful.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

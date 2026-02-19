@@ -81,14 +81,12 @@ type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
-// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware. If nil, a simple default tokenizer is used.
 //
 // Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
-//     If nil, a simple default tokenizer is used.
-//
+//  - t (tokenizer.Tokenizer): The t parameter.
 // Returns:
-//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+//  - *ToolMetricsMiddleware: The resulting ToolMetricsMiddleware.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -107,21 +105,15 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	}
 }
 
-// Execute executes the tool metrics middleware.
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
-// Returns the result.
-// Returns an error if the operation fails.
+// Execute executes the tool metrics middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - req (*tool.ExecutionRequest): The request parameters.
-//  - next (tool.ExecutionFunc): The next handler in the chain.
-//
+//  - req (*tool.ExecutionRequest): The request object.
+//  - next (tool.ExecutionFunc): The next handler in the middleware chain.
 // Returns:
-//  - any: The result.
-//  - error: Returns error on failure.
+//  - any: The resulting any.
+//  - error: Returns an error if the operation fails.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

@@ -36,13 +36,6 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 
 // Execute sends the given data as a JSON-encoded message to the writer and
 // decodes the JSON-encoded response from the reader into the given result.
-//
-// Parameters:
-//  - data: The parameter.
-//  - result (any): The result.
-//
-// Returns:
-//  - error: Returns error on failure.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

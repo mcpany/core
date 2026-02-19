@@ -51,19 +51,14 @@ type SemanticCache struct {
 	threshold float32
 }
 
-// NewSemanticCache creates a new SemanticCache.
-// provider is the provider.
-// store is the store.
-// threshold is the threshold.
-// Returns the result.
+// NewSemanticCache creates a new SemanticCache. provider is the provider. store is the store. threshold is the threshold. Returns the result.
 //
 // Parameters:
-//  - provider (EmbeddingProvider): The provider.
+//  - provider (EmbeddingProvider): The provider parameter.
 //  - store (VectorStore): The storage backend.
-//  - threshold (float32): The threshold.
-//
+//  - threshold (float32): The threshold parameter.
 // Returns:
-//  - *SemanticCache: The result.
+//  - *SemanticCache: The resulting SemanticCache.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -78,19 +73,17 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 	}
 }
 
-// Get attempts to find a semantically similar cached result.
-// It returns the result, the computed embedding, a boolean indicating a hit, and an error.
+// Get attempts to find a semantically similar cached result. It returns the result, the computed embedding, a boolean indicating a hit, and an error.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - key (string): The key.
-//  - input (string): The input.
-//
+//  - key (string): The lookup key.
+//  - input (string): The input data.
 // Returns:
-//  - any: The result.
-//  - []float32: The result.
-//  - bool: True if successful.
-//  - error: Returns error on failure.
+//  - any: The resulting any.
+//  - []float32: The resulting []float32.
+//  - bool: Returns true if the operation was successful, false otherwise.
+//  - error: Returns an error if the operation fails.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
@@ -104,23 +97,16 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 	return nil, embedding, false, nil
 }
 
-// Set adds a result to the cache using the provided embedding.
-// ctx is the context for the request.
-// key is the key.
-// embedding is the embedding.
-// result is the result.
-// ttl is the ttl.
-// Returns an error if the operation fails.
+// Set adds a result to the cache using the provided embedding. ctx is the context for the request. key is the key. embedding is the embedding. result is the result. ttl is the ttl. Returns an error if the operation fails.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - key (string): The key.
-//  - embedding ([]float32): The embedding.
-//  - result (any): The result.
-//  - ttl (time.Duration): The ttl.
-//
+//  - key (string): The lookup key.
+//  - embedding ([]float32): The embedding parameter.
+//  - result (any): The result parameter.
+//  - ttl (time.Duration): The ttl parameter.
 // Returns:
-//  - error: Returns error on failure.
+//  - error: Returns an error if the operation fails.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

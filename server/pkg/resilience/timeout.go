@@ -15,14 +15,10 @@ type Timeout struct {
 }
 
 // NewTimeout creates a new Timeout instance with the given duration.
+//
 // duration is the duration.
+//
 // Returns the result.
-//
-// Parameters:
-//  - duration (*durationpb.Duration): The duration.
-//
-// Returns:
-//  - *Timeout: The result.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,
@@ -30,16 +26,11 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 }
 
 // Execute runs the provided work function with a timeout.
+//
 // ctx is the context for the request.
 // work is the work.
+//
 // Returns an error if the operation fails.
-//
-// Parameters:
-//  - ctx (context.Context): The context for the request.
-//  - work (func(context.Context): The work.
-//
-// Returns:
-//  - error: Returns error on failure.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())
 	defer cancel()

@@ -12,42 +12,32 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
+// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny) based on tool name and arguments.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
-// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
-// toolManager is the toolManager.
-// Returns the result.
+// NewCallPolicyMiddleware creates a new CallPolicyMiddleware. toolManager is the toolManager. Returns the result.
 //
 // Parameters:
-//  - toolManager (tool.ManagerInterface): The toolManager.
-//
+//  - toolManager (tool.ManagerInterface): The toolManager parameter.
 // Returns:
-//  - *CallPolicyMiddleware: The result.
+//  - *CallPolicyMiddleware: The resulting CallPolicyMiddleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute enforces call policies before proceeding to the next handler.
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
-// Returns the result.
-// Returns an error if the operation fails.
+// Execute enforces call policies before proceeding to the next handler. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - req (*tool.ExecutionRequest): The request parameters.
-//  - next (tool.ExecutionFunc): The next handler in the chain.
-//
+//  - req (*tool.ExecutionRequest): The request object.
+//  - next (tool.ExecutionFunc): The next handler in the middleware chain.
 // Returns:
-//  - any: The result.
-//  - error: Returns error on failure.
+//  - any: The resulting any.
+//  - error: Returns an error if the operation fails.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

@@ -10,34 +10,29 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
+// HTTPCORSMiddleware handles CORS for HTTP endpoints. It is thread-safe and supports dynamic updates.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
 	wildcardAllowed bool
 }
 
-// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
+// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware. If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin). To allow all, pass []string{"*"}.
 //
 // Parameters:
-//  - allowedOrigins ([]string): The allowedOrigins.
-//
+//  - allowedOrigins ([]string): The allowedOrigins string.
 // Returns:
-//  - *HTTPCORSMiddleware: The result.
+//  - *HTTPCORSMiddleware: The resulting HTTPCORSMiddleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
 }
 
-// Update updates the allowed origins.
-// allowedOrigins is the allowedOrigins.
+// Update updates the allowed origins. allowedOrigins is the allowedOrigins.
 //
 // Parameters:
-//  - allowedOrigins ([]string): The allowedOrigins.
+//  - allowedOrigins ([]string): The allowedOrigins string.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -59,15 +54,12 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
-// next is the next.
-// Returns the result.
+// Handler wraps an http.Handler with CORS logic. next is the next. Returns the result.
 //
 // Parameters:
-//  - next (http.Handler): The next handler in the chain.
-//
+//  - next (http.Handler): The next handler in the middleware chain.
 // Returns:
-//  - http.Handler: The result.
+//  - http.Handler: The resulting http.Handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

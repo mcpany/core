@@ -37,10 +37,8 @@ type Doctor struct {
 }
 
 // NewDoctor creates a new Doctor.
-// Returns the result.
 //
-// Returns:
-//  - *Doctor: The result.
+// Returns the result.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -49,12 +47,9 @@ func NewDoctor() *Doctor {
 }
 
 // AddCheck adds a named health check.
+//
 // name is the name of the resource.
 // check is the check.
-//
-// Parameters:
-//  - name (string): The name.
-//  - check (CheckFunc): The check.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -62,10 +57,8 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 }
 
 // Handler returns the http handler.
-// Returns the result.
 //
-// Returns:
-//  - http.HandlerFunc: The result.
+// Returns the result.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

@@ -23,10 +23,8 @@ type Transformer struct {
 }
 
 // NewTransformer creates and returns a new instance of Transformer.
-// Returns the result.
 //
-// Returns:
-//  - *Transformer: The result.
+// Returns the result.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
@@ -39,18 +37,11 @@ func NewTransformer() *Transformer {
 
 // Transform takes a map of data and a Go template string and returns a byte
 // slice containing the transformed output.
+//
 // templateStr is the Go template to be executed.
 // data is the data to be used in the template.
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
-//
-// Parameters:
-//  - templateStr (string): The templateStr.
-//  - data (any): The data.
-//
-// Returns:
-//  - []byte: The result.
-//  - error: Returns error on failure.
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error

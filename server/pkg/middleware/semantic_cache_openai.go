@@ -21,15 +21,13 @@ type OpenAIEmbeddingProvider struct {
 	client  *http.Client
 }
 
-// NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
-// It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
+// NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider. It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
 //
 // Parameters:
-//  - apiKey: The parameter.
-//  - model (string): The model.
-//
+//  - apiKey: The apiKey parameter.
+//  - model (string): The model string.
 // Returns:
-//  - *OpenAIEmbeddingProvider: The result.
+//  - *OpenAIEmbeddingProvider: The resulting OpenAIEmbeddingProvider.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -57,16 +55,14 @@ type openAIEmbeddingResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// Embed generates an embedding vector for the given text using the OpenAI API.
-// It returns the embedding as a slice of float32 and any error encountered.
+// Embed generates an embedding vector for the given text using the OpenAI API. It returns the embedding as a slice of float32 and any error encountered.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - text (string): The text.
-//
+//  - text (string): The text string.
 // Returns:
-//  - []float32: The result.
-//  - error: Returns error on failure.
+//  - []float32: The resulting []float32.
+//  - error: Returns an error if the operation fails.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,

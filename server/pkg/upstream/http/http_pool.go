@@ -27,10 +27,8 @@ type httpPool struct {
 }
 
 // Close closes the connection pool and the idle connections.
-// Returns an error if the operation fails.
 //
-// Returns:
-//  - error: Returns error on failure.
+// Returns an error if the operation fails.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err

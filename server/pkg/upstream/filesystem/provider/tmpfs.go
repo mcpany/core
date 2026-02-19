@@ -15,10 +15,8 @@ type TmpfsProvider struct {
 }
 
 // NewTmpfsProvider creates a new TmpfsProvider.
-// Returns the result.
 //
-// Returns:
-//  - *TmpfsProvider: The result.
+// Returns the result.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),
@@ -26,35 +24,26 @@ func NewTmpfsProvider() *TmpfsProvider {
 }
 
 // GetFs returns the underlying filesystem.
-// Returns the result.
 //
-// Returns:
-//  - afero.Fs: The result.
+// Returns the result.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path.
+//
 // virtualPath is the virtualPath.
+//
 // Returns the result.
 // Returns an error if the operation fails.
-//
-// Parameters:
-//  - virtualPath (string): The virtualPath.
-//
-// Returns:
-//  - string: The string representation.
-//  - error: Returns error on failure.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
 }
 
 // Close closes the provider.
-// Returns an error if the operation fails.
 //
-// Returns:
-//  - error: Returns error on failure.
+// Returns an error if the operation fails.
 func (p *TmpfsProvider) Close() error {
 	return nil
 }

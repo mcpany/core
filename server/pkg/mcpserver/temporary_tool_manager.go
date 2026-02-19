@@ -16,9 +16,6 @@ type TemporaryToolManager struct {
 }
 
 // NewTemporaryToolManager creates a new TemporaryToolManager.
-//
-// Returns:
-//  - *TemporaryToolManager: The result.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),
@@ -26,10 +23,6 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 }
 
 // AddServiceInfo implements tool.ManagerInterface.
-//
-// Parameters:
-//  - serviceID (string): The serviceID.
-//  - info (*tool.ServiceInfo): The info.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	if m.serviceInfo == nil {
 		m.serviceInfo = make(map[string]*tool.ServiceInfo)
@@ -38,13 +31,6 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 }
 
 // GetServiceInfo implements tool.ManagerInterface.
-//
-// Parameters:
-//  - serviceID (string): The serviceID.
-//
-// Returns:
-//  - *tool.ServiceInfo: The result.
-//  - bool: True if successful.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	if m.serviceInfo == nil {
 		return nil, false
@@ -54,12 +40,6 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 }
 
 // GetToolCountForService implements tool.ManagerInterface.
-//
-// Parameters:
-//  - _ (string): The _.
-//
-// Returns:
-//  - int: The count.
 func (m *TemporaryToolManager) GetToolCountForService(_ string) int {
 	return 0
 }

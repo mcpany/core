@@ -28,8 +28,7 @@ import (
 // Pre-allocated to avoid allocation on every request.
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
+// RateLimitMiddleware is a tool execution middleware that provides rate limiting functionality for upstream services.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -42,32 +41,25 @@ type RateLimitMiddleware struct {
 // Option defines a functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
-// WithTokenizer sets a custom tokenizer for the middleware.
-// t is the t.
-// Returns the result.
+// WithTokenizer sets a custom tokenizer for the middleware. t is the t. Returns the result.
 //
 // Parameters:
-//  - t (tokenizer.Tokenizer): The t.
-//
+//  - t (tokenizer.Tokenizer): The t parameter.
 // Returns:
-//  - Option: The result.
+//  - Option: The resulting Option.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
-// toolManager is the toolManager.
-// opts contains the options.
-// Returns the result.
+// NewRateLimitMiddleware creates a new RateLimitMiddleware. toolManager is the toolManager. opts contains the options. Returns the result.
 //
 // Parameters:
-//  - toolManager (tool.ManagerInterface): The toolManager.
-//  - opts (...Option): The options.
-//
+//  - toolManager (tool.ManagerInterface): The toolManager parameter.
+//  - opts (...Option): The options for the operation.
 // Returns:
-//  - *RateLimitMiddleware: The result.
+//  - *RateLimitMiddleware: The resulting RateLimitMiddleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -90,21 +82,15 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
-// Returns the result.
-// Returns an error if the operation fails.
+// Execute executes the rate limiting middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
 //  - ctx (context.Context): The context for the request.
-//  - req (*tool.ExecutionRequest): The request parameters.
-//  - next (tool.ExecutionFunc): The next handler in the chain.
-//
+//  - req (*tool.ExecutionRequest): The request object.
+//  - next (tool.ExecutionFunc): The next handler in the middleware chain.
 // Returns:
-//  - any: The result.
-//  - error: Returns error on failure.
+//  - any: The resulting any.
+//  - error: Returns an error if the operation fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {
