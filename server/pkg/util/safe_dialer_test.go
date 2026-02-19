@@ -103,8 +103,8 @@ func TestSafeDialer_AllIPsFail(t *testing.T) {
 	ips := []net.IP{ip1}
 
 	resolver.On("LookupIP", ctx, "ip", host).Return(ips, nil)
-	expectedErr := errors.New("timeout")
-	dialer.On("DialContext", ctx, "tcp", net.JoinHostPort(ip1.String(), port)).Return(nil, expectedErr)
+	dialErr := errors.New("timeout")
+	dialer.On("DialContext", ctx, "tcp", net.JoinHostPort(ip1.String(), port)).Return(nil, dialErr)
 
 	// Execution
 	conn, err := safeDialer.DialContext(ctx, "tcp", addr)
@@ -112,7 +112,8 @@ func TestSafeDialer_AllIPsFail(t *testing.T) {
 	// Verification
 	require.Error(t, err)
 	assert.Nil(t, conn)
-	assert.Equal(t, expectedErr, err)
+	assert.Contains(t, err.Error(), "all attempts failed")
+	assert.Contains(t, err.Error(), "timeout")
 }
 
 func TestSafeDialer_BlocksUnspecified(t *testing.T) {

@@ -183,10 +183,22 @@ prepare:
 			rm -f "$(PROTOC_GEN_GO_GRPC)"; \
 		fi; \
 	fi
-	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_GO)"; then \
+		echo "Installing protoc-gen-go..."; \
+		for i in 1 2 3 4 5; do GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION) && break || { echo "Install failed, retrying ($$i/5)..."; sleep 5; }; done; \
+	fi
+	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then \
+		echo "Installing protoc-gen-go-grpc..."; \
+		for i in 1 2 3 4 5; do GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION) && break || { echo "Install failed, retrying ($$i/5)..."; sleep 5; }; done; \
+	fi
+	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then \
+		echo "Installing protoc-gen-grpc-gateway..."; \
+		for i in 1 2 3 4 5; do GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION) && break || { echo "Install failed, retrying ($$i/5)..."; sleep 5; }; done; \
+	fi
+	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then \
+		echo "Installing protoc-gen-openapiv2..."; \
+		for i in 1 2 3 4 5; do GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION) && break || { echo "Install failed, retrying ($$i/5)..."; sleep 5; }; done; \
+	fi
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -357,7 +369,7 @@ prepare:
 		fi; \
 	fi
 	@echo "Downloading go modules..." && \
-	go mod download
+	for i in 1 2 3 4 5; do go mod download && break || { echo "go mod download failed, retrying ($$i/5)..."; sleep 5; }; done
 	@echo "Preparation complete."
 
 

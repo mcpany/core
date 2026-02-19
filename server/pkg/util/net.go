@@ -127,18 +127,20 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 	}
 
 	// All IPs are safe. Dial them in order until one succeeds.
-	var firstErr error
+	var errs []error
 	for _, ip := range ips {
 		dialAddr := net.JoinHostPort(ip.String(), port)
 		conn, err := dialer.DialContext(ctx, network, dialAddr)
 		if err == nil {
 			return conn, nil
 		}
-		if firstErr == nil {
-			firstErr = err
-		}
+		errs = append(errs, err)
 	}
-	return nil, firstErr
+
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("all attempts failed: %v", errs)
+	}
+	return nil, fmt.Errorf("no addresses to dial")
 }
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
