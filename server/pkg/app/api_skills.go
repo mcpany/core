@@ -12,9 +12,12 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// handleUploadSkillAsset returns a handler that saves an asset for a skill.
-// POST /api/v1/skills/{name}/assets
-// Query Param: path (relative path).
+// handleUploadSkillAsset handles uploading assets for a skill.
+//
+// Summary: Uploads an asset file for a skill.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

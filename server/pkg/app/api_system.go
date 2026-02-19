@@ -13,16 +13,31 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SystemStatusResponse represents the response from the system status API.
+// SystemStatusResponse represents the response payload for system status.
+//
+// Summary: System health and status information.
 type SystemStatusResponse struct {
-	UptimeSeconds     int64    `json:"uptime_seconds"`
-	ActiveConnections int32    `json:"active_connections"`
-	BoundHTTPPort     int      `json:"bound_http_port"`
-	BoundGRPCPort     int      `json:"bound_grpc_port"`
-	Version           string   `json:"version"`
-	SecurityWarnings  []string `json:"security_warnings"`
+	// UptimeSeconds is the server uptime in seconds.
+	UptimeSeconds int64 `json:"uptime_seconds"`
+	// ActiveConnections is the number of currently active HTTP connections.
+	ActiveConnections int32 `json:"active_connections"`
+	// BoundHTTPPort is the actual port the HTTP server is listening on.
+	BoundHTTPPort int `json:"bound_http_port"`
+	// BoundGRPCPort is the actual port the gRPC server is listening on.
+	BoundGRPCPort int `json:"bound_grpc_port"`
+	// Version is the server version.
+	Version string `json:"version"`
+	// SecurityWarnings contains any active security warnings.
+	SecurityWarnings []string `json:"security_warnings"`
 }
 
+// handleSystemStatus returns the current system status.
+//
+// Summary: Retrieves system status.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - _ : *http.Request. The HTTP request (unused).
 func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request) {
 	uptime := int64(time.Since(a.startTime).Seconds())
 	activeConns := atomic.LoadInt32(&a.activeConnections)

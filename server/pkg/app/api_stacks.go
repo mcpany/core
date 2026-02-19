@@ -20,7 +20,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// handleStackConfig handles getting and setting the configuration of a stack (collection) in YAML format.
+// handleStackConfig manages stack (collection) configuration in YAML format.
+//
+// Summary: Gets or sets stack configuration.
+//
+// Parameters:
+//   - store: storage.Storage. The storage interface.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleStackConfig(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Only supporting GET and POST for now (POST updates/saves)
@@ -50,6 +58,15 @@ func (a *Application) handleStackConfig(store storage.Storage) http.HandlerFunc 
 	}
 }
 
+// getStackConfig retrieves the configuration of a stack as YAML.
+//
+// Summary: Retrieves stack configuration.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
+//   - store: storage.Storage. The storage interface.
+//   - stackID: string. The ID of the stack.
 func (a *Application) getStackConfig(w http.ResponseWriter, r *http.Request, store storage.Storage, stackID string) {
 	collection, err := store.GetServiceCollection(r.Context(), stackID)
 	if err != nil {
@@ -95,6 +112,15 @@ func (a *Application) getStackConfig(w http.ResponseWriter, r *http.Request, sto
 	_, _ = w.Write(yamlBytes)
 }
 
+// saveStackConfig updates the configuration of a stack from YAML.
+//
+// Summary: Updates stack configuration.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
+//   - store: storage.Storage. The storage interface.
+//   - stackID: string. The ID of the stack.
 func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, store storage.Storage, stackID string) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -168,13 +194,15 @@ func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, st
 	_, _ = w.Write([]byte("{}"))
 }
 
-// Helper to reuse unsafe check logic - duplicate from api.go for now or make public?
-// Since they are in the same package `app`, we can share if `isUnsafeConfig` is accessible.
-// `isUnsafeConfig` is at the bottom of api.go and IS unexported (lowercase).
-// But `package app` means it IS accessible here!
-// `a` is Application. `isUnsafeAllowed` is not a method yet.
-// I'll check auth context manually.
-
+// isUnsafeAllowed checks if the current request context allows unsafe configurations.
+//
+// Summary: Checks permission for unsafe config.
+//
+// Parameters:
+//   - r: *http.Request. The HTTP request.
+//
+// Returns:
+//   - bool: True if allowed, false otherwise.
 func (a *Application) isUnsafeAllowed(r *http.Request) bool {
 	if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
 		return true

@@ -17,7 +17,12 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// handleLogsWS handles WebSocket connections for log streaming.
+// handleLogsWS establishes a WebSocket connection for streaming logs.
+//
+// Summary: Streams server logs via WebSocket.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleLogsWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

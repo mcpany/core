@@ -128,7 +128,13 @@ func (r *SkillResource) Resource() *mcp.Resource {
 	}
 }
 
-// resolvePath determines the absolute path to the resource file.
+// resolvePath resolves the absolute, secure path to the resource file.
+//
+// Summary: Resolves and secures the file path.
+//
+// Returns:
+//   - string: The absolute path to the file.
+//   - error: An error if the path is invalid or insecure.
 func (r *SkillResource) resolvePath() (string, error) {
 	if r.assetPath == "" {
 		// Read main SKILL.md
@@ -230,6 +236,16 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 	return r.createResult(content)
 }
 
+// createResult constructs a ReadResourceResult from the file content.
+//
+// Summary: Creates the resource result.
+//
+// Parameters:
+//   - content: []byte. The file content.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The MCP result.
+//   - error: An error if creation fails (currently always nil).
 func (r *SkillResource) createResult(content []byte) (*mcp.ReadResourceResult, error) {
 	mimeType := r.Resource().MIMEType
 	resourceContent := &mcp.ResourceContents{
@@ -250,6 +266,15 @@ func (r *SkillResource) createResult(content []byte) (*mcp.ReadResourceResult, e
 	}, nil
 }
 
+// isTextMime checks if the MIME type represents text content.
+//
+// Summary: Checks if MIME type is text.
+//
+// Parameters:
+//   - mimeType: string. The MIME type to check.
+//
+// Returns:
+//   - bool: True if the type is text-based.
 func isTextMime(mimeType string) bool {
 	baseMime, _, _ := strings.Cut(mimeType, ";")
 	baseMime = strings.TrimSpace(baseMime)

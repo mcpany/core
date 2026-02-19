@@ -14,7 +14,13 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 )
 
-// handleAuditLogs handles requests to list audit logs.
+// handleAuditLogs returns audit logs matching the criteria.
+//
+// Summary: Lists audit logs with filtering.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing filter query parameters.
 func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -77,6 +83,13 @@ func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleAuditExport exports audit logs as CSV.
+//
+// Summary: Exports filtered audit logs to a CSV file.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing filter query parameters.
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

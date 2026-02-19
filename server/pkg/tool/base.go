@@ -22,6 +22,20 @@ type baseTool struct {
 	callable      Callable
 }
 
+// newBaseTool initializes the base tool structure.
+//
+// Summary: Creates a base tool instance.
+//
+// Parameters:
+//   - toolDef: *configv1.ToolDefinition. The tool definition.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. The service configuration.
+//   - callable: Callable. The callable implementation.
+//   - inputSchema: *structpb.Struct. The input schema.
+//   - outputSchema: *structpb.Struct. The output schema.
+//
+// Returns:
+//   - *baseTool: The initialized base tool.
+//   - error: An error if conversion fails.
 func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*baseTool, error) {
 	pbTool, err := ConvertToolDefinitionToProto(toolDef, inputSchema, outputSchema)
 	if err != nil {

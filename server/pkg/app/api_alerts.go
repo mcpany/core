@@ -11,6 +11,12 @@ import (
 	"github.com/mcpany/core/server/pkg/alerts"
 )
 
+// handleAlerts handles requests for listing and creating alerts.
+//
+// Summary: Manages alerts (list, create).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -34,6 +40,12 @@ func (a *Application) handleAlerts() http.HandlerFunc {
 	}
 }
 
+// handleAlertWebhook handles requests for managing the alert webhook URL.
+//
+// Summary: Manages the alert webhook URL (get, set).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -58,6 +70,12 @@ func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	}
 }
 
+// handleAlertDetail handles requests for a specific alert.
+//
+// Summary: Manages a specific alert (get, update).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleAlertDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/")
@@ -94,6 +112,12 @@ func (a *Application) handleAlertDetail() http.HandlerFunc {
 	}
 }
 
+// handleAlertRules handles requests for listing and creating alert rules.
+//
+// Summary: Manages alert rules (list, create).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleAlertRules() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -117,6 +141,12 @@ func (a *Application) handleAlertRules() http.HandlerFunc {
 	}
 }
 
+// handleAlertRuleDetail handles requests for a specific alert rule.
+//
+// Summary: Manages a specific alert rule (get, update, delete).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleAlertRuleDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/rules/")

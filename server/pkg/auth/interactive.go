@@ -17,8 +17,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// InitiateOAuth starts the OAuth2 flow for a given service or credential.
-// It returns the authorization URL and the state parameter.
+// InitiateOAuth starts the OAuth2 authentication flow.
+//
+// Summary: Initiates OAuth2 flow.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - userID: string. The ID of the user initiating the flow.
+//   - serviceID: string. The ID of the service (optional if credentialID is provided).
+//   - credentialID: string. The ID of the credential (optional if serviceID is provided).
+//   - redirectURL: string. The URL to redirect back to after auth.
+//
+// Returns:
+//   - string: The authorization URL.
+//   - string: The state parameter for CSRF protection.
+//   - error: An error if initiation fails.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -117,7 +130,20 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	return url, state, nil
 }
 
-// HandleOAuthCallback handles the OAuth2 callback code exchange.
+// HandleOAuthCallback processes the OAuth2 callback and exchanges the code for a token.
+//
+// Summary: Handles OAuth2 callback.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - userID: string. The ID of the user.
+//   - serviceID: string. The ID of the service.
+//   - credentialID: string. The ID of the credential.
+//   - code: string. The authorization code received from the provider.
+//   - redirectURL: string. The redirect URL used in the initial request.
+//
+// Returns:
+//   - error: An error if the token exchange or save fails.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

@@ -16,7 +16,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// handleTemplates handles listing and creating service templates.
+// handleTemplates handles requests for listing and creating service templates.
+//
+// Summary: Manages service templates (list, create).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -80,7 +85,12 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 	}
 }
 
-// handleTemplateDetail handles retrieving and deleting a specific service template.
+// handleTemplateDetail handles requests for a specific service template.
+//
+// Summary: Manages a specific service template (get, delete).
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTemplateDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

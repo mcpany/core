@@ -15,7 +15,13 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// listSecretsHandler returns all secrets (masked).
+// listSecretsHandler lists all secrets with masked values.
+//
+// Summary: Lists stored secrets.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
 func (a *Application) listSecretsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -37,7 +43,13 @@ func (a *Application) listSecretsHandler(w http.ResponseWriter, r *http.Request)
 	writeJSON(w, http.StatusOK, resp)
 }
 
-// getSecretHandler returns a secret by ID (masked).
+// getSecretHandler retrieves a specific secret by ID with masked value.
+//
+// Summary: Retrieves a secret.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
 func (a *Application) getSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -66,7 +78,13 @@ func (a *Application) getSecretHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, secret)
 }
 
-// createSecretHandler creates or updates a secret.
+// createSecretHandler creates or updates a secret configuration.
+//
+// Summary: Creates or updates a secret.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing the secret.
 func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -110,7 +128,13 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 	writeJSON(w, http.StatusCreated, &secret)
 }
 
-// deleteSecretHandler deletes a secret.
+// deleteSecretHandler deletes a secret by ID.
+//
+// Summary: Deletes a secret.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
 func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -132,7 +156,13 @@ func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// revealSecretHandler reveals a secret value.
+// revealSecretHandler returns the unmasked value of a secret.
+//
+// Summary: Reveals a secret's value.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request.
 func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -167,6 +197,12 @@ func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request
 	writeJSON(w, http.StatusOK, map[string]string{"value": secret.GetValue()})
 }
 
+// sanitizeSecret masks the value of a secret for display.
+//
+// Summary: Masks secret value.
+//
+// Parameters:
+//   - s: *configv1.Secret. The secret to sanitize.
 func sanitizeSecret(s *configv1.Secret) {
 	if s == nil {
 		return

@@ -329,6 +329,15 @@ func NewServer(
 	return s, nil
 }
 
+// routerMiddleware dispatches requests to registered handlers in the router.
+//
+// Summary: Routes requests to specific handlers.
+//
+// Parameters:
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.MethodHandler: The middleware handler.
 func (s *Server) routerMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,
@@ -342,6 +351,15 @@ func (s *Server) routerMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	}
 }
 
+// toolListFilteringMiddleware filters the list of tools based on the user's profile.
+//
+// Summary: Filters tools by profile.
+//
+// Parameters:
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.MethodHandler: The middleware handler.
 func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,
@@ -1058,6 +1076,15 @@ func summarizeCallToolResult(ctr *mcp.CallToolResult) slog.Value {
 	return slog.GroupValue(attrs...)
 }
 
+// resourceListFilteringMiddleware filters the list of resources based on the user's profile.
+//
+// Summary: Filters resources by profile.
+//
+// Parameters:
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.MethodHandler: The middleware handler.
 func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,
@@ -1099,6 +1126,15 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 	}
 }
 
+// promptListFilteringMiddleware filters the list of prompts based on the user's profile.
+//
+// Summary: Filters prompts by profile.
+//
+// Parameters:
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.MethodHandler: The middleware handler.
 func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

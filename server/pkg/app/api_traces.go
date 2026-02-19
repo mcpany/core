@@ -17,27 +17,46 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Span represents a span in a trace.
+// Span represents a single operation within a trace.
+//
+// Summary: Trace span details.
 type Span struct {
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	Type         string         `json:"type"`
-	StartTime    int64          `json:"startTime"` // Unix millis
-	EndTime      int64          `json:"endTime"`   // Unix millis
-	Status       string         `json:"status"`    // success, error, pending
-	Input        map[string]any `json:"input,omitempty"`
-	Output       map[string]any `json:"output,omitempty"`
-	ErrorMessage string         `json:"errorMessage,omitempty"`
+	// ID is the unique identifier for the span.
+	ID string `json:"id"`
+	// Name is the name of the operation.
+	Name string `json:"name"`
+	// Type is the type of span (e.g., "tool").
+	Type string `json:"type"`
+	// StartTime is the start timestamp in Unix milliseconds.
+	StartTime int64 `json:"startTime"`
+	// EndTime is the end timestamp in Unix milliseconds.
+	EndTime int64 `json:"endTime"`
+	// Status indicates success or failure.
+	Status string `json:"status"`
+	// Input contains the arguments passed to the operation.
+	Input map[string]any `json:"input,omitempty"`
+	// Output contains the result of the operation.
+	Output map[string]any `json:"output,omitempty"`
+	// ErrorMessage contains the error message if status is error.
+	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
-// Trace represents a full trace.
+// Trace represents a complete execution trace.
+//
+// Summary: Full execution trace.
 type Trace struct {
-	ID            string `json:"id"`
-	RootSpan      Span   `json:"rootSpan"`
-	Timestamp     string `json:"timestamp"` // ISO 8601
-	TotalDuration int64  `json:"totalDuration"`
-	Status        string `json:"status"`
-	Trigger       string `json:"trigger"`
+	// ID is the unique identifier for the trace.
+	ID string `json:"id"`
+	// RootSpan is the top-level span of the trace.
+	RootSpan Span `json:"rootSpan"`
+	// Timestamp is the trace creation time in ISO 8601 format.
+	Timestamp string `json:"timestamp"`
+	// TotalDuration is the total duration in milliseconds.
+	TotalDuration int64 `json:"totalDuration"`
+	// Status indicates the overall success or failure.
+	Status string `json:"status"`
+	// Trigger indicates what initiated the trace (e.g., "user").
+	Trigger string `json:"trigger"`
 }
 
 const (
@@ -45,6 +64,15 @@ const (
 	statusError   = "error"
 )
 
+// toTrace converts an audit entry to a Trace object.
+//
+// Summary: Converts audit entry to trace.
+//
+// Parameters:
+//   - entry: audit.Entry. The audit log entry.
+//
+// Returns:
+//   - *Trace: The converted trace object.
 func toTrace(entry audit.Entry) *Trace {
 	// Generate deterministic ID based on content to prevent duplicates during history replay
 	data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
@@ -101,6 +129,12 @@ func toTrace(entry audit.Entry) *Trace {
 	}
 }
 
+// handleTraces handles requests for listing traces.
+//
+// Summary: Lists execution traces.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -153,6 +187,12 @@ func (a *Application) handleTraces() http.HandlerFunc {
 	}
 }
 
+// handleTracesWS establishes a WebSocket connection for streaming traces.
+//
+// Summary: Streams execution traces via WebSocket.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTracesWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

@@ -823,6 +823,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return t.processResponse(ctx, resp)
 }
 
+// createHTTPRequest constructs the HTTP request object.
+//
+// Summary: Builds an HTTP request.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - urlString: string. The full URL.
+//   - body: io.Reader. The request body.
+//   - contentType: string. The content type of the body.
+//   - inputs: map[string]interface{}. The input parameters (used for query params).
+//
+// Returns:
+//   - *http.Request: The constructed request.
+//   - error: An error if request creation fails.
 func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body io.Reader, contentType string, inputs map[string]interface{}) (*http.Request, error) {
 	httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, body)
 	if err != nil {
@@ -854,6 +868,14 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 	return httpReq, nil
 }
 
+// logRequest logs details about the HTTP request for debugging.
+//
+// Summary: Logs HTTP request details.
+//
+// Parameters:
+//   - ctx: context.Context. The context for logging.
+//   - httpReq: *http.Request. The request to log.
+//   - body: io.Reader. The body reader (will be seeked if possible).
 func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader) {
 	// Log headers
 	// Note: We use httpReq.URL.Path here which might contain secrets.
@@ -886,6 +908,20 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 }
 
+// prepareInputsAndURL processes inputs and constructs the target URL.
+//
+// Summary: Prepares inputs and URL.
+//
+// Parameters:
+//   - ctx: context.Context. The context for secret resolution.
+//   - req: *ExecutionRequest. The execution request.
+//
+// Returns:
+//   - map[string]any: The processed inputs map.
+//   - string: The final URL string.
+//   - string: The redacted URL string for logging.
+//   - bool: True if inputs were modified/filtered.
+//   - error: An error if processing fails.
 func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, string, bool, error) {
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
@@ -1022,6 +1058,19 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	return inputs, urlString, redactedURLString, inputsModified, nil
 }
 
+// processParameters maps inputs to path and query parameters, handling secrets and escaping.
+//
+// Summary: Processes and validates parameters.
+//
+// Parameters:
+//   - ctx: context.Context. The context for secret resolution.
+//   - inputs: map[string]any. The input map (modified in place).
+//
+// Returns:
+//   - map[string]string: Path replacements.
+//   - map[string]string: Query replacements.
+//   - bool: True if inputs were modified.
+//   - error: An error if validation or resolution fails.
 func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
 	pathReplacements := make(map[string]string, len(t.parameters))
 	queryReplacements := make(map[string]string, len(t.parameters))
@@ -1128,6 +1177,22 @@ func parseURLSegments(template string) []urlSegment {
 	return segments
 }
 
+// prepareBody constructs the request body from inputs.
+//
+// Summary: Prepares the HTTP request body.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - inputs: map[string]any. The inputs map.
+//   - method: string. The HTTP method.
+//   - toolName: string. The tool name.
+//   - originalInputs: []byte. The original input bytes.
+//   - inputsModified: bool. Whether inputs were modified.
+//
+// Returns:
+//   - io.Reader: The body reader.
+//   - string: The content type.
+//   - error: An error if body creation fails.
 func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, method string, toolName string, originalInputs []byte, inputsModified bool) (io.Reader, string, error) {
 	if inputs == nil {
 		return nil, "", nil
@@ -1187,6 +1252,17 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 	return body, contentType, nil
 }
 
+// processResponse reads and processes the HTTP response.
+//
+// Summary: Processes the HTTP response.
+//
+// Parameters:
+//   - ctx: context.Context. The context.
+//   - resp: *http.Response. The received response.
+//
+// Returns:
+//   - any: The processed result.
+//   - error: An error if processing fails.
 func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (any, error) {
 	maxSize := getMaxHTTPResponseSize()
 	// Read up to maxSize + 1 to detect if it exceeds the limit

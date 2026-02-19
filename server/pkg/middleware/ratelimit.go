@@ -42,23 +42,31 @@ type RateLimitMiddleware struct {
 // Option defines a functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
-// WithTokenizer sets a custom tokenizer for the middleware.
+// WithTokenizer configures the middleware to use a specific tokenizer.
 //
-// t is the t.
+// Summary: Sets the tokenizer for token counting.
 //
-// Returns the result.
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer implementation.
+//
+// Returns:
+//   - Option: A configuration option function.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// NewRateLimitMiddleware initializes a new rate limiting middleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Summary: Creates a rate limit middleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The manager to look up tool configurations.
+//   - opts: ...Option. Optional configuration functions.
+//
+// Returns:
+//   - *RateLimitMiddleware: The initialized middleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -81,14 +89,18 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
+// Execute enforces rate limits on tool execution.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Checks rate limits before executing the tool.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The result of the tool execution.
+//   - error: An error if the limit is exceeded or execution fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

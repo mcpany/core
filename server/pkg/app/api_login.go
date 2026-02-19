@@ -12,19 +12,31 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-// LoginRequest is the request body for login.
+// LoginRequest represents the payload for a login request.
+//
+// Summary: Credentials for login.
 type LoginRequest struct {
+	// Username is the user's identifier.
 	Username string `json:"username"`
+	// Password is the user's secret.
 	Password string `json:"password"`
 }
 
-// LoginResponse is the response body for login.
+// LoginResponse represents the response for a successful login.
+//
+// Summary: Authentication token response.
 type LoginResponse struct {
+	// Token is the generated authentication token.
 	Token string `json:"token"`
 }
 
-// handleLogin handles the login request.
-// POST /api/v1/auth/login.
+// handleLogin processes a user login request.
+//
+// Summary: Authenticates a user and issues a token.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing credentials.
 func (a *Application) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

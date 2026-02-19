@@ -12,8 +12,12 @@ import (
 )
 
 // handleInitiateOAuth handles the request to initiate an OAuth2 flow.
-// POST /auth/oauth/initiate
-// Body: {"service_id": "github", "redirect_url": "..."}.
+//
+// Summary: Initiates an OAuth2 authentication flow.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing service ID and redirect URL.
 func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -64,10 +68,13 @@ func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// handleOAuthCallback handles the OAuth2 callback.
-// POST /auth/oauth/callback
-// Body: {"service_id": "github", "code": "...", "redirect_url": "..."}
-// Note: Usually callbacks are GET requests to the frontend, which then POST code to backend.
+// handleOAuthCallback handles the OAuth2 callback code exchange.
+//
+// Summary: Processes the OAuth2 callback and exchanges code for tokens.
+//
+// Parameters:
+//   - w: http.ResponseWriter. The response writer.
+//   - r: *http.Request. The HTTP request containing the auth code.
 func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
