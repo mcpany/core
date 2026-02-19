@@ -5,7 +5,7 @@
 
 
 import { renderHook, act } from '@testing-library/react';
-import { useTraces } from './use-traces';
+import { useTraces, MAX_TRACES } from './use-traces';
 import { Trace } from '@/types/trace';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -153,5 +153,36 @@ describe('useTraces Hook', () => {
 
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
+  });
+
+  it('should limit the number of stored traces to MAX_TRACES', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+
+    act(() => {
+      mockWebSocket.onopen({} as any);
+    });
+
+    // Simulate exceeding MAX_TRACES
+    const totalTraces = MAX_TRACES + 50;
+
+    // Simulate rapid updates
+    act(() => {
+        for (let i = 0; i < totalTraces; i++) {
+            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    // Advance timer to trigger buffer flush
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces).toHaveLength(MAX_TRACES);
+    // The newest trace (highest ID) should be at the start
+    expect(result.current.traces[0].id).toBe(`${totalTraces - 1}`);
+    // The oldest kept trace should be at the end
+    expect(result.current.traces[MAX_TRACES - 1].id).toBe('50');
   });
 });

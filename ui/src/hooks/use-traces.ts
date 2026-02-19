@@ -6,6 +6,9 @@
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
 
+// ⚡ BOLT: Limit trace history to prevent memory leaks and UI lag
+export const MAX_TRACES = 1000;
+
 interface UseTracesOptions {
     initialPaused?: boolean;
 }
@@ -45,7 +48,8 @@ export function useTraces(options: UseTracesOptions = {}) {
             bufferRef.current = [];
 
             setTraces((prev) => {
-                // ⚡ BOLT: Batched updates logic
+                // ⚡ BOLT: Batched updates logic with Limit & Optimization
+                // Randomized Selection from Top 5 High-Impact Targets
 
                 // 1. Deduplicate buffer (last write wins)
                 const updatesMap = new Map<string, Trace>();
@@ -68,18 +72,20 @@ export function useTraces(options: UseTracesOptions = {}) {
                     }
                 }
 
-                // 4. Apply updates in-place to preserve order of existing items
-                const nextTraces = prev.map(t => {
-                    if (updatesForExisting.has(t.id)) {
-                        return updatesForExisting.get(t.id)!;
-                    }
-                    return t;
-                });
+                // 4. Apply updates only if needed (Optimization: skip O(N) map if no updates)
+                let nextTraces = prev;
+                if (updatesForExisting.size > 0) {
+                     nextTraces = prev.map(t => {
+                        if (updatesForExisting.has(t.id)) {
+                            return updatesForExisting.get(t.id)!;
+                        }
+                        return t;
+                    });
+                }
 
-                // 5. Prepend new inserts (newest first).
+                // 5. Prepend new inserts & Slice to MAX_TRACES (Memory Optimization)
                 // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                return [...inserts.reverse(), ...nextTraces].slice(0, MAX_TRACES);
             });
         }, 100);
 
