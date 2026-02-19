@@ -3556,6 +3556,7 @@ func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
+	// Sentinel Security Update: Block indirect function calls (@fun) and extensions (@include, @load)
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 	if isAwk {
 		if strings.Contains(val, "|") {
@@ -3569,6 +3570,9 @@ func checkAwkInjection(val, base string) error {
 		}
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+		if strings.Contains(val, "@") {
+			return fmt.Errorf("awk injection detected: value contains '@'")
 		}
 	}
 	return nil
