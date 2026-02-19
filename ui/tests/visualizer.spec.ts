@@ -19,7 +19,11 @@ test.describe('Visualizer', () => {
     // although simply checking for the tool node is enough.
     const command = 'weather-service.get_weather {"weather": "sunny"}';
     await page.getByPlaceholder('Enter command or select a tool...').fill(command);
-    await page.getByLabel('Send').click();
+
+    // Wait for Send button to be enabled (might be disabled during initial load/state update)
+    const sendBtn = page.getByLabel('Send');
+    await expect(sendBtn).toBeEnabled();
+    await sendBtn.click();
 
     // Wait for the execution result to ensure trace is generated
     // The result comes in a collapsible with "Result: weather-service.get_weather"
@@ -28,20 +32,18 @@ test.describe('Visualizer', () => {
     // 2. Navigate to Visualizer
     await page.goto('/visualizer');
 
-    // Wait a bit for backend to process and log the trace
-    await page.waitForTimeout(1000);
-
-    // Click Refresh to ensure we have the latest trace
-    // The refresh button is an icon button with RefreshCcw
-    // We can find it by looking for the button in the card
-    const refreshBtn = page.locator('button').filter({ has: page.locator('svg.lucide-refresh-ccw') });
-    if (await refreshBtn.isVisible()) {
-        await refreshBtn.click();
-    }
-
-    // Check if the dropdown contains our trace
-    // The select trigger should show the trace name eventually
-    await expect(page.getByRole('combobox')).toContainText('weather-service.get_weather');
+    // Retry refreshing until trace appears
+    // The visualizer might take a moment to fetch the new trace.
+    await expect(async () => {
+        const refreshBtn = page.locator('button').filter({ has: page.locator('svg.lucide-refresh-ccw') });
+        if (await refreshBtn.isVisible()) {
+            await refreshBtn.click();
+        }
+        await expect(page.getByRole('combobox')).toContainText('weather-service.get_weather', { timeout: 1000 });
+    }).toPass({
+        timeout: 30000,
+        intervals: [2000]
+    });
 
     // 3. Verify Graph Elements
 
