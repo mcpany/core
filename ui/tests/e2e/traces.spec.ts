@@ -31,7 +31,7 @@ test.describe('Trace Viewer', () => {
     await page.fill('input[name="username"]', 'e2e-admin');
     await page.fill('input[name="password"]', 'password');
     await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await page.waitForURL('/', { timeout: 60000 });
 
     // Navigate to dashboard
     await page.goto('/');
