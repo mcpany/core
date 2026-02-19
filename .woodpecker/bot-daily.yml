@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 
 pipeline:
   daily-cleanup:
@@ -13,7 +16,7 @@ pipeline:
         DAYS_THRESHOLD=3
         DATE_THRESHOLD=$(date -d "$DAYS_THRESHOLD days ago" +%Y-%m-%d)
         CUTOFF_DATE=$(date -d "$DAYS_THRESHOLD days ago" +%s)
-        
+
         # Close Stale PRs
         echo "Closing PRs updated before $DATE_THRESHOLD..."
         gh pr list --repo $CI_REPO --search "state:open updated:<$DATE_THRESHOLD" --limit 1000 --json number --jq '.[].number' | while read pr_number; do
@@ -32,7 +35,7 @@ pipeline:
               if [[ "$branch_name" == "$excluded" ]]; then skip=true; break; fi
             done
             if [[ "$skip" == "true" ]]; then continue; fi
-            
+
             # Check PR status... (simplified for brevity, matching logic)
             if [[ $commit_date -lt $CUTOFF_DATE ]]; then
                echo "Processing stale branch: $branch_name"
