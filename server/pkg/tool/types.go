@@ -62,6 +62,11 @@ var (
 	metricHTTPRequestLatency = []string{"http", "request", "latency"}
 )
 
+// sandboxCapabilityCache caches the result of the capability check for tools
+// to avoid repeated execution of --version commands.
+// Key: command path (string), Value: bool (true if sandbox supported)
+var sandboxCapabilityCache sync.Map
+
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
@@ -1888,18 +1893,30 @@ func NewLocalCommandTool(
 			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
 		}
 	} else if isAwkCommand(base) {
-		// Check if awk supports --sandbox
+		// Check if awk supports --sandbox (cached)
 		// gawk supports --sandbox which disables system(), pipes, and redirections.
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
-		if err := checkCmd.Run(); err == nil {
+		supported := false
+		if val, ok := sandboxCapabilityCache.Load(cmd); ok {
+			supported = val.(bool)
+		} else {
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
+			checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
+			if err := checkCmd.Run(); err == nil {
+				supported = true
+			}
+			sandboxCapabilityCache.Store(cmd, supported)
+		}
+
+		if supported {
 			t.sandboxArgs = []string{"--sandbox"}
 			logging.GetLogger().Info("Enabled sandbox mode for awk tool", "tool", tool.GetName())
 		} else {
 			// Do NOT block execution if sandbox missing, as standard awk is common.
 			// Rely on manual checks (Defense in Depth).
-			logging.GetLogger().Warn("Awk tool detected but --sandbox not supported; relying on input validation", "tool", tool.GetName(), "error", err)
+			// We log this once per tool instance creation, which might be acceptable, but ideally we should log only once per command type.
+			// However, tool names differ, so context is useful.
+			logging.GetLogger().Warn("Awk tool detected but --sandbox not supported; relying on input validation", "tool", tool.GetName())
 		}
 	}
 
