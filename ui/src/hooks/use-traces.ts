@@ -8,6 +8,9 @@ import { Trace } from "@/types/trace";
 
 // ⚡ BOLT: Maximum number of traces to keep in memory to prevent crashes
 // Randomized Selection from Top 5 High-Impact Targets
+/**
+ * Maximum number of traces to keep in memory to prevent crashes.
+ */
 export const MAX_TRACES = 1000;
 
 interface UseTracesOptions {
