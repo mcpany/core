@@ -1,36 +1,26 @@
-/**
- * Copyright 2026 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
 
-import tsParser from "@typescript-eslint/parser";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import nextPlugin from "@next/eslint-plugin-next";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-export default [
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
-    files: ["**/*.ts", "**/*.tsx"],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaFeatures: { modules: true, jsx: true },
-        sourceType: "module",
-        ecmaVersion: "latest"
+      rules: {
+          "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
+          "@typescript-eslint/no-explicit-any": "warn",
+          "react/no-unescaped-entities": "off"
       }
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-      "@next/next": nextPlugin
-    },
-    rules: {
-       ...tsPlugin.configs.recommended.rules,
-       ...nextPlugin.configs.recommended.rules,
-       "no-undef": "off",
-       "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
-       "@typescript-eslint/no-explicit-any": "warn"
-    }
   },
   {
-    ignores: [".next/**", "node_modules/**", "eslint.config.mjs", "next-env.d.ts"]
+      ignores: [".next/**", "node_modules/**", "eslint.config.mjs", "next-env.d.ts"]
   }
 ];
+
+export default eslintConfig;

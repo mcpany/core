@@ -8,7 +8,7 @@
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "NODE_ENV=production next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "TEST_PORT=$(shuf -i 10000-20000 -n 1) playwright test",
     "typecheck": "tsc --noEmit"
   },
@@ -80,6 +80,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
     "@playwright/test": "1.58.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -94,7 +95,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@typescript-eslint/parser": "^8.52.0",
     "@vitejs/plugin-react": "^5.1.2",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "^15.0.4",
     "genkit-cli": "^1.20.0",
     "jsdom": "^27.4.0",

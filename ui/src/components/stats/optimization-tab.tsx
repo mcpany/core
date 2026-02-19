@@ -45,7 +45,7 @@ export function OptimizationTab({ tools, toolUsage, onToggleTool }: Optimization
     const analysis = useMemo(() => {
         const ghostTools: { tool: ToolDefinition; tokens: number }[] = [];
         let totalWastedTokens = 0;
-        let potentialSavings = 0;
+        // let potentialSavings = 0;
 
         tools.forEach((tool) => {
             if (tool.disable) return; // Skip already disabled tools
