@@ -72,9 +72,11 @@ def main():
     has_errors = False
 
     for dirpath, dirnames, filenames in os.walk(root_dir):
-        # skip node_modules
+        # skip node_modules and mocks
         if 'node_modules' in dirnames:
             dirnames.remove('node_modules')
+        if 'mocks' in dirnames:
+            dirnames.remove('mocks')
 
         for filename in filenames:
             if filename.endswith('.ts') or filename.endswith('.tsx'):
