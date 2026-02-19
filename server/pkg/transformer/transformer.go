@@ -89,69 +89,8 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 func joinFunc(sep string, input any) (string, error) {
 	// ⚡ BOLT: Optimized joinFunc to avoid allocation overhead of toAnySlice
 	// Randomized Selection from Top 5 High-Impact Targets
-	switch v := input.(type) {
-	case []string:
-		return strings.Join(v, sep), nil
-	case []int:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		}
-		return sb.String(), nil
-	case []int64:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], val, 10))
-		}
-		return sb.String(), nil
-	case []float64:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
-		}
-		return sb.String(), nil
-	case []bool:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendBool(scratch[:0], val))
-		}
-		return sb.String(), nil
-	case []int32:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		}
-		return sb.String(), nil
-	case []uint64:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
-		}
-		return sb.String(), nil
+	if s, ok := optimizedJoin(sep, input); ok {
+		return s, nil
 	}
 
 	a, err := toAnySlice(input)
@@ -246,4 +185,72 @@ func toAnySlice(input any) ([]any, error) {
 		a[i] = val.Index(i).Interface()
 	}
 	return a, nil
+}
+
+func optimizedJoin(sep string, input any) (string, bool) {
+	switch v := input.(type) {
+	case []string:
+		return strings.Join(v, sep), true
+	case []int:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		}
+		return sb.String(), true
+	case []int64:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendInt(scratch[:0], val, 10))
+		}
+		return sb.String(), true
+	case []float64:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
+		}
+		return sb.String(), true
+	case []bool:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendBool(scratch[:0], val))
+		}
+		return sb.String(), true
+	case []int32:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		}
+		return sb.String(), true
+	case []uint64:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
+		}
+		return sb.String(), true
+	}
+	return "", false
 }
