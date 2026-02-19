@@ -46,6 +46,7 @@ test.describe('Network Topology', () => {
     });
 
     await page.goto('/network');
+    await expect(page).toHaveURL(/\/network/, { timeout: 60000 });
   });
 
   test('should display network topology nodes', async ({ page }) => {
