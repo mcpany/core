@@ -4,9 +4,14 @@
 package tool
 
 import (
+	"fmt"
+
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+// maxSchemaDepth is the maximum depth for schema traversal to prevent stack overflows.
+const maxSchemaDepth = 100
 
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
@@ -16,13 +21,23 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 		return nil, nil
 	}
 
-	// Deep copy schema to avoid mutation of the input
-	schemaCopy := deepCopyJSON(schema)
+	// Deep copy schema to avoid mutation of the input and break cycles
+	schemaCopy := deepCopyJSON(schema, 0)
+	if schemaCopy == nil {
+		// If deep copy failed (e.g. only depth limit hit), we might return empty struct or error.
+		// For now, let's assume it returned a truncated structure.
+		// If the root was truncated, it's nil.
+		return nil, fmt.Errorf("schema too deep or invalid")
+	}
 
-	return sanitizeJSONSchemaInPlace(schemaCopy)
+	return sanitizeJSONSchemaInPlace(schemaCopy, 0)
 }
 
-func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
+func sanitizeJSONSchemaInPlace(schema any, depth int) (*structpb.Struct, error) {
+	if depth > maxSchemaDepth {
+		return nil, fmt.Errorf("schema depth limit exceeded")
+	}
+
 	schemaMap, ok := schema.(map[string]interface{})
 	if !ok {
 		// If it's not a map, we can't really sanitize it easily, but it might be valid if it's not an object type.
@@ -39,53 +54,116 @@ func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 		}
 	}
 
+	// Helper to recurse safely
+	recurse := func(v interface{}) (interface{}, error) {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			sanitized, err := sanitizeJSONSchemaInPlace(vMap, depth+1)
+			if err != nil {
+				return nil, err
+			}
+			if sanitized != nil {
+				return sanitized.AsMap(), nil
+			}
+		}
+		return v, nil
+	}
+
 	// 2. Recursively sanitize properties
 	if props, ok := schemaMap["properties"].(map[string]interface{}); ok {
 		for k, v := range props {
-			if vMap, ok := v.(map[string]interface{}); ok {
-				// Recursively sanitize
-				sanitizedV, err := sanitizeJSONSchemaInPlace(vMap)
-				if err == nil && sanitizedV != nil {
-					props[k] = sanitizedV.AsMap()
-				}
+			sanitizedV, err := recurse(v)
+			if err == nil {
+				props[k] = sanitizedV
 			}
 		}
 	}
 
 	// 3. Recursively sanitize items (for arrays)
-	if items, ok := schemaMap["items"].(map[string]interface{}); ok {
-		sanitizedItems, err := sanitizeJSONSchemaInPlace(items)
-		if err == nil && sanitizedItems != nil {
-			schemaMap["items"] = sanitizedItems.AsMap()
+	if items, ok := schemaMap["items"]; ok {
+		if itemsMap, ok := items.(map[string]interface{}); ok {
+			// Single schema
+			sanitizedItems, err := sanitizeJSONSchemaInPlace(itemsMap, depth+1)
+			if err == nil && sanitizedItems != nil {
+				schemaMap["items"] = sanitizedItems.AsMap()
+			}
+		} else if itemsList, ok := items.([]interface{}); ok {
+			// Array of schemas (tuple validation)
+			newItems := make([]interface{}, len(itemsList))
+			for i, item := range itemsList {
+				if itemMap, ok := item.(map[string]interface{}); ok {
+					sanitizedItem, err := sanitizeJSONSchemaInPlace(itemMap, depth+1)
+					if err == nil && sanitizedItem != nil {
+						newItems[i] = sanitizedItem.AsMap()
+					} else {
+						newItems[i] = item
+					}
+				} else {
+					newItems[i] = item
+				}
+			}
+			schemaMap["items"] = newItems
 		}
 	}
 
-	// 4. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
-	// The issue #10606 says: "input_schema does not support oneOf, allOf, or anyOf at the top level"
-	// If we detect this at the top level, what can we do?
-	// We could try to merge them if possible, or just pick the first one?
-	// Merging is hard. Picking the first one is lossy.
-	// For now, let's just log a warning if we see it at the top level.
-	// Note: We need to know if this is the "top level" of the Tool's InputSchema.
-	// Since this function is recursive, we might need a context or just assume the caller handles the top-level check.
-	// But `SanitizeJSONSchema` is likely called on the root schema.
+	// 4. Recursively sanitize additionalProperties
+	if additionalProps, ok := schemaMap["additionalProperties"].(map[string]interface{}); ok {
+		sanitizedAP, err := sanitizeJSONSchemaInPlace(additionalProps, depth+1)
+		if err == nil && sanitizedAP != nil {
+			schemaMap["additionalProperties"] = sanitizedAP.AsMap()
+		}
+	}
+
+	// 5. Recursively sanitize $defs / definitions
+	for _, key := range []string{"$defs", "definitions"} {
+		if defs, ok := schemaMap[key].(map[string]interface{}); ok {
+			for k, v := range defs {
+				sanitizedV, err := recurse(v)
+				if err == nil {
+					defs[k] = sanitizedV
+				}
+			}
+		}
+	}
+
+	// 6. Recursively sanitize oneOf, anyOf, allOf
+	for _, key := range []string{"oneOf", "anyOf", "allOf"} {
+		if list, ok := schemaMap[key].([]interface{}); ok {
+			newList := make([]interface{}, len(list))
+			for i, item := range list {
+				if itemMap, ok := item.(map[string]interface{}); ok {
+					sanitizedItem, err := sanitizeJSONSchemaInPlace(itemMap, depth+1)
+					if err == nil && sanitizedItem != nil {
+						newList[i] = sanitizedItem.AsMap()
+					} else {
+						newList[i] = item
+					}
+				} else {
+					newList[i] = item
+				}
+			}
+			schemaMap[key] = newList
+		}
+	}
 
 	// Let's convert back to structpb
 	return structpb.NewStruct(schemaMap)
 }
 
-func deepCopyJSON(src any) any {
+func deepCopyJSON(src any, depth int) any {
+	if depth > maxSchemaDepth {
+		return nil
+	}
 	switch v := src.(type) {
 	case map[string]interface{}:
 		dst := make(map[string]interface{}, len(v))
 		for k, val := range v {
-			dst[k] = deepCopyJSON(val)
+			dst[k] = deepCopyJSON(val, depth+1)
 		}
 		return dst
 	case []interface{}:
 		dst := make([]interface{}, len(v))
 		for i, val := range v {
-			dst[i] = deepCopyJSON(val)
+			dst[i] = deepCopyJSON(val, depth+1)
 		}
 		return dst
 	default:
