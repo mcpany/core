@@ -62,8 +62,9 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
             openWorldHint: false,
             integrity: undefined,
             // Set serviceId to enable execution in the editor.
-            // We prioritize ID if available, otherwise Name (which acts as ID in some contexts).
-            serviceId: service.id || service.name,
+            // We use service.name because the backend ServiceRegistrationWorker currently
+            // registers tools using the Service Name as the namespace, not the generated ID (hash).
+            serviceId: service.name,
         };
 
         const newCall: HttpCallDefinition = {
@@ -178,7 +179,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
         const tool = tools[index];
         if (!tool) return tool;
         if (!tool.serviceId) {
-            return { ...tool, serviceId: service.id || service.name };
+            return { ...tool, serviceId: service.name };
         }
         return tool;
     };
