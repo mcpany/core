@@ -4,6 +4,7 @@
 package transformer
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -105,4 +106,22 @@ func TestTransformer(t *testing.T) {
 			}
 		})
 	}
+}
+
+type customInt int
+
+func (c customInt) String() string {
+	return fmt.Sprintf("custom(%d)", c)
+}
+
+func TestTransformer_JoinStringer(t *testing.T) {
+	transformer := NewTransformer()
+
+	items := []customInt{1, 2, 3}
+	templateStr := `{{join "," .items}}`
+	data := map[string]any{"items": items}
+
+	got, err := transformer.Transform(templateStr, data)
+	require.NoError(t, err)
+	assert.Equal(t, "custom(1),custom(2),custom(3)", string(got))
 }
