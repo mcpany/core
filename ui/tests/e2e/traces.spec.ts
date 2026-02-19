@@ -4,9 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser } from './test-data';
 
 test.describe('Trace Viewer', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await seedUser(request, "e2e-admin-traces");
+
     // Mock Traces API for all tests in this suite
     await page.route('/api/traces', async route => {
         await route.fulfill({
@@ -22,17 +25,16 @@ test.describe('Trace Viewer', () => {
             ]
         });
     });
-  });
-
-  test('should navigate to traces page and view details', async ({ page }) => {
 
     // Ensure login
     await page.goto('/login');
-    await page.fill('input[name="username"]', 'e2e-admin');
+    await page.fill('input[name="username"]', 'e2e-admin-traces');
     await page.fill('input[name="password"]', 'password');
     await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await expect(page).toHaveURL('/', { timeout: 30000 });
+  });
 
+  test('should navigate to traces page and view details', async ({ page }) => {
     // Navigate to dashboard
     await page.goto('/');
 

@@ -4,15 +4,17 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser } from './test-data';
 
 test.describe('Network Topology', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+      await seedUser(request, "e2e-admin-network");
       // Ensure login
       await page.goto('/login');
-      await page.fill('input[name="username"]', 'e2e-admin');
+      await page.fill('input[name="username"]', 'e2e-admin-network');
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]', { force: true });
-      await page.waitForURL('/', { timeout: 30000 });
+      await expect(page).toHaveURL('/', { timeout: 30000 });
 
     // Mock the topology API
     await page.route('**/api/v1/topology', async route => {
