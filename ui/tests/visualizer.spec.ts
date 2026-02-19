@@ -61,7 +61,8 @@ test.describe('Agent Flow Visualizer', () => {
 
     // Check for "MCP Core" node (The central node)
     // The label is "MCP Any" in backend manager.go: coreNode label "MCP Any"
-    await expect(page.locator('text=MCP Any')).toBeVisible({ timeout: 10000 });
+    // We scope to .react-flow to avoid matching the header text "MCP Any"
+    await expect(page.locator('.react-flow').getByText('MCP Any')).toBeVisible({ timeout: 10000 });
 
     // Check for Service Nodes (seeded by seedServices)
     // "Payment Gateway"
