@@ -168,15 +168,20 @@ describe('useTraces Hook', () => {
     const TOTAL_TRACES = 1100;
     const MAX_TRACES = 1000;
 
-    act(() => {
-        for (let i = 0; i < TOTAL_TRACES; i++) {
-            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
-        }
-    });
-
-    act(() => {
-        vi.advanceTimersByTime(200);
-    });
+    // Send in batches to be gentle on the test runner environment
+    const BATCH_SIZE = 100;
+    for (let i = 0; i < TOTAL_TRACES; i += BATCH_SIZE) {
+        act(() => {
+            for (let j = 0; j < BATCH_SIZE && i + j < TOTAL_TRACES; j++) {
+                const id = i + j;
+                mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${id}`, id)) } as any);
+            }
+        });
+        // Allow interval to flush
+        act(() => {
+            vi.advanceTimersByTime(100);
+        });
+    }
 
     expect(result.current.traces.length).toBe(MAX_TRACES);
     // Since newest are prepended, we expect ID '1099' to be first.
