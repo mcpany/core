@@ -5,7 +5,7 @@
 
 
 import { renderHook, act } from '@testing-library/react';
-import { useTraces } from './use-traces';
+import { useTraces, MAX_TRACES } from './use-traces';
 import { Trace } from '@/types/trace';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -153,5 +153,32 @@ describe('useTraces Hook', () => {
 
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
+  });
+
+  it('should limit the number of traces to avoid memory leak', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+    act(() => { mockWebSocket.onopen({} as any); });
+
+    const extra = 50;
+    const total = MAX_TRACES + extra;
+
+    // Simulate MAX_TRACES + 50 updates
+    act(() => {
+        for (let i = 0; i < total; i++) {
+            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces).toHaveLength(MAX_TRACES);
+    // Newest trace is total-1.
+    expect(result.current.traces[0].id).toBe(`${total - 1}`);
+    // Oldest trace kept should be trace with id (total - MAX_TRACES)
+    expect(result.current.traces[MAX_TRACES - 1].id).toBe(`${total - MAX_TRACES}`);
   });
 });
