@@ -161,3 +161,27 @@ func BenchmarkTextParser_ParseJQ(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkTransformer_JoinStrings_Typed(b *testing.B) {
+	b.ReportAllocs()
+	t := NewTransformer()
+	// Create a large list of strings
+	listSize := 1000
+	items := make([]string, listSize)
+	for i := 0; i < listSize; i++ {
+		items[i] = "item"
+	}
+
+	templateStr := `{{join "," .items}}`
+	data := map[string]any{
+		"items": items,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := t.Transform(templateStr, data)
+		if err != nil {
+			b.Fatalf("failed to transform: %v", err)
+		}
+	}
+}
