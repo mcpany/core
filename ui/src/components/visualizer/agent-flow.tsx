@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -15,7 +15,8 @@ import {
   Background,
   MiniMap,
   Connection,
-  MarkerType,
+  Node,
+  Edge
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
@@ -23,6 +24,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { DebuggerControls } from './debugger-controls';
 import { VariableInspector } from './variable-inspector';
+import { getLayoutedElements } from '@/lib/graph-layout';
+import { Trace } from '@/types/trace';
+import { Loader2 } from 'lucide-react';
 
 const nodeTypes = {
   user: UserNode,
@@ -32,28 +36,67 @@ const nodeTypes = {
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
-
 /**
- * AgentFlow component renders the interactive flow visualization.
+ * AgentFlow component renders the interactive flow visualization using real trace data.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [isPlaying, setIsPlaying] = useState(true); // Auto-play by default for "Live" feel
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [traces, setTraces] = useState<Trace[]>([]);
+  const [selectedTraceId, setSelectedTraceId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Poll for traces
+  useEffect(() => {
+    const fetchTraces = async () => {
+      try {
+        const res = await fetch('/api/traces');
+        if (res.ok) {
+            const data: Trace[] = await res.json();
+            setTraces(data);
+
+            // If we have no selected trace, or if "isPlaying" is true, select the latest one
+            if (data.length > 0) {
+                 if (!selectedTraceId || isPlaying) {
+                     // Find the most recent trace
+                     // data is already sorted by timestamp desc from API
+                     const latest = data[0];
+                     if (latest.id !== selectedTraceId) {
+                         setSelectedTraceId(latest.id);
+                     }
+                 }
+            }
+        }
+      } catch (err) {
+        console.error("Failed to fetch traces", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTraces();
+    const interval = setInterval(fetchTraces, 3000);
+    return () => clearInterval(interval);
+  }, [isPlaying, selectedTraceId]);
+
+  // Update Graph when selected trace changes
+  useEffect(() => {
+      if (!selectedTraceId) {
+          setNodes([]);
+          setEdges([]);
+          return;
+      }
+
+      const trace = traces.find(t => t.id === selectedTraceId);
+      if (trace) {
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(trace, 'LR');
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+      }
+  }, [selectedTraceId, traces, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
@@ -70,19 +113,6 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
-
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
@@ -90,19 +120,32 @@ export function AgentFlow() {
           <DebuggerControls
             isPlaying={isPlaying}
             onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
+            onStep={() => { }}
+            onStop={() => setIsPlaying(false)}
           />
           <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
-            </SelectContent>
-          </Select>
+           <div className="flex items-center gap-2">
+               {isLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+               <Select
+                value={selectedTraceId || ""}
+                onValueChange={(val) => {
+                    setSelectedTraceId(val);
+                    setIsPlaying(false); // Pause auto-update if user manually selects
+                }}
+               >
+                <SelectTrigger className="w-[200px] h-8 text-xs font-mono">
+                  <SelectValue placeholder="Select Trace" />
+                </SelectTrigger>
+                <SelectContent>
+                  {traces.map(t => (
+                      <SelectItem key={t.id} value={t.id} className="text-xs font-mono">
+                          {new Date(t.timestamp).toLocaleTimeString()} - {t.rootSpan.name}
+                      </SelectItem>
+                  ))}
+                  {traces.length === 0 && <SelectItem value="none" disabled>No traces found</SelectItem>}
+                </SelectContent>
+              </Select>
+           </div>
         </Card>
       </div>
 
@@ -124,6 +167,15 @@ export function AgentFlow() {
         <Controls />
         <MiniMap />
         <Background gap={12} size={1} />
+
+        {nodes.length === 0 && !isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-muted-foreground text-center">
+                    <p className="text-lg font-medium">No active flow</p>
+                    <p className="text-sm">Run a tool in the Playground to see it visualized here.</p>
+                </div>
+            </div>
+        )}
       </ReactFlow>
     </div>
   );

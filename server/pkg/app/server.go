@@ -1992,6 +1992,9 @@ func (a *Application) runServerMode(
 		}
 	})))
 
+	// Traces API
+	mux.Handle("/api/traces", authMiddleware(a.handleTraces()))
+
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
 		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
