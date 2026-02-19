@@ -103,11 +103,8 @@ func TestValidate_MoreServices(t *testing.T) {
 						}.Build(),
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
-								// Using a path that IsSecurePath accepts (relative or absolute without weirdness)
-								// but FileExists fails.
-								// Note: IsSecurePath usually checks perms if file exists.
-								// If file doesn't exist, IsSecurePath might fail if it tries to stat it?
-								// Let's use a path in temp dir which is allowed by SetAllowedPaths
+								// Use a path allowed by SetAllowedPaths (in temp dir) but that does not exist on disk.
+								// This verifies that FileExists check fails as expected after IsSecurePath passes.
 								ClientCertPath: proto.String(insecurePath + ".missing"),
 								ClientKeyPath:  proto.String(insecurePath + ".missing"),
 							}.Build(),
@@ -515,20 +512,10 @@ func TestValidate_MoreServices(t *testing.T) {
 						}.Build(),
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
-								// We need client cert/key to be valid to reach CA check?
-								// Actually validation order matters.
-								// If ClientCertPath is insecurePath (which exists), IsSecurePath checks it.
-								// If IsSecurePath fails on insecurePath (it does in previous tests), we might not reach CA check.
-								// But here we want to test CA path missing.
-								// We should use a "secure" path for client cert/key if we want to bypass that check?
-								// But we don't have a secure path easily mockable without filesystem?
-								// Wait, we mocked IsAllowedPath in TestValidate_MtlsInsecure but not here.
-								// In TestValidate_MoreServices, we only mocked execLookPath.
-								// We set SetAllowedPaths to TempDir.
-								// insecurePath is in TempDir.
-								// The error "access to private key file ... is denied" suggests IsSecurePath is failing on "non-existent..."
-								// or checking file existence inside IsSecurePath?
-								// Let's use a path in TempDir that doesn't exist.
+								// Client/Key paths point to an existing file with insecure permissions (0777).
+								// However, since SetAllowedPaths allows TempDir, IsSecurePath logic might pass or fail depending on implementation.
+								// Here we primarily want to test CaCertPath existence.
+								// Note: insecurePath is a real file with 0777 permissions.
 								ClientCertPath: proto.String(insecurePath),
 								ClientKeyPath:  proto.String(insecurePath),
 								CaCertPath:     proto.String(insecurePath + ".missing_ca"),
@@ -981,11 +968,6 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			// We need to ensure "insecure.pem" exists if we want to pass IsSecurePath FIRST?
-			// IsSecurePath is checked BEFORE FileExists.
-			// So if IsSecurePath fails, we get error immediately.
-			// "insecure.pem" created as temp file in TestValidate_MtlsInsecure setup.
-
 			errs := Validate(context.Background(), tc.config, Server)
 			if tc.expectedErrorCount != len(errs) {
 				t.Fatalf("error count mismatch: expected %d, got %d. Errors: %v", tc.expectedErrorCount, len(errs), errs)
