@@ -6,7 +6,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Responsive, WidthProvider } from "react-grid-layout";
+// @ts-expect-error - WidthProvider is missing from main export in v2, using legacy which includes it
+import { Responsive, WidthProvider } from "react-grid-layout/legacy";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
