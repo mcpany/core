@@ -37,14 +37,17 @@ type WebsocketTool struct {
 	cache             *configv1.CacheConfig
 }
 
-// NewWebsocketTool creates a new WebsocketTool.
+// NewWebsocketTool creates a new WebsocketTool instance.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a WebSocket client from the connection pool.
-// serviceID identifies the specific WebSocket service connection pool.
-// authenticator handles adding authentication credentials to the connection request.
-// callDefinition contains the configuration for the WebSocket call, such as
-// parameter mappings and transformers.
+// Parameters:
+//   - tool (*v1.Tool): The protobuf definition of the tool.
+//   - poolManager (*pool.Manager): Used to get a WebSocket client from the connection pool.
+//   - serviceID (string): Identifies the specific WebSocket service connection pool.
+//   - authenticator (auth.UpstreamAuthenticator): Handles adding authentication credentials.
+//   - callDefinition (*configv1.WebsocketCallDefinition): The call configuration.
+//
+// Returns:
+//   - *WebsocketTool: A new instance of WebsocketTool.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -66,14 +69,16 @@ func NewWebsocketTool(
 
 // Tool returns the protobuf definition of the WebSocket tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -87,14 +92,24 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, or nil if none.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebSocket tool. It retrieves a connection
-// from the pool, sends the tool inputs as a message, and waits for a single
-// response message, which it then processes and returns.
+// Execute handles the execution of the WebSocket tool.
+//
+// It retrieves a connection from the pool, sends the tool inputs as a message,
+// and waits for a single response message, which it then processes and returns.
+//
+// Parameters:
+//   - ctx (context.Context): The execution context.
+//   - req (*ExecutionRequest): The request payload.
+//
+// Returns:
+//   - any: The parsed response.
+//   - error: An error if execution fails.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
