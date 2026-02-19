@@ -9,6 +9,10 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
+// In CI (docker-compose), the echo server is available at this hostname.
+// Locally it might be localhost:5678
+const ECHO_SERVER_ADDR = process.env.CI ? 'http://ui-http-echo-server:5678' : 'http://localhost:8080';
+
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -52,7 +56,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: ECHO_SERVER_ADDR, // Use reachable address in CI
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
@@ -141,9 +145,12 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    // Extract HH:MM from ISO string for the backend expectation
-    const now = new Date();
-    const timeStr = now.toISOString().substring(11, 16);
+
+    // Use a time from 5 minutes ago to ensure it's safely in the past history window
+    // and avoids any "future" timestamp issues due to clock skew or timezone mapping.
+    const past = new Date(Date.now() - 5 * 60 * 1000);
+    const timeStr = past.toISOString().substring(11, 16); // Extract HH:MM
+
     const points = [
         { time: timeStr, requests: 100, errors: 2, latency: 50 }
     ];
