@@ -87,96 +87,91 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 }
 
 func joinFunc(sep string, input any) (string, error) {
-	a, err := toAnySlice(input)
-	if err != nil {
-		return "", fmt.Errorf("join: %w", err)
+	// ⚡ BOLT: Optimized joinFunc to avoid allocation of []any for common slice types
+	// Randomized Selection from Top 5 High-Impact Targets
+
+	val := reflect.ValueOf(input)
+	kind := val.Kind()
+	if kind != reflect.Slice && kind != reflect.Array {
+		return "", fmt.Errorf("expected slice or array, got %T", input)
+	}
+
+	n := val.Len()
+	if n == 0 {
+		return "", nil
 	}
 
 	var sb strings.Builder
-	sepLen := len(sep)
-	var totalLen int
+	// Heuristic for capacity: assume average 10 bytes per item + separator
+	// This avoids expensive pre-calculation via reflection
+	sb.Grow(n * (10 + len(sep)))
 
-	// First pass: try to calculate total length
-	for i, v := range a {
-		if i > 0 {
-			totalLen += sepLen
-		}
-
-		if s, ok := v.(string); ok {
-			totalLen += len(s)
-		} else {
-			// For non-strings, we stop estimating and just guess.
-			// This avoids expensive iteration and type assertions for numbers.
-			remaining := len(a) - i
-			totalLen += remaining * 10
-			// Add separators estimate for remaining items
-			if remaining > 1 {
-				totalLen += (remaining - 1) * sepLen
+	// Fast path for []string to avoid reflection overhead per item
+	if s, ok := input.([]string); ok {
+		for i, v := range s {
+			if i > 0 {
+				sb.WriteString(sep)
 			}
-			break
+			sb.WriteString(v)
 		}
+		return sb.String(), nil
 	}
-
-	sb.Grow(totalLen)
 
 	// Scratch buffer for number conversion to avoid allocations
 	var scratch [64]byte
 
-	for i, v := range a {
+	for i := 0; i < n; i++ {
 		if i > 0 {
 			sb.WriteString(sep)
 		}
-		switch val := v.(type) {
-		case string:
-			sb.WriteString(val)
-		case int:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case int64:
-			sb.Write(strconv.AppendInt(scratch[:0], val, 10))
-		case int32:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case int16:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case int8:
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		case uint:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case uint64:
-			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
-		case uint32:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case uint16:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case uint8:
-			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-		case float64:
-			// Use -1 to behave like %v / %g
-			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
-		case float32:
-			sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
-		case bool:
-			sb.Write(strconv.AppendBool(scratch[:0], val))
-		case fmt.Stringer:
-			sb.WriteString(val.String())
-		default:
+
+		v := val.Index(i)
+		// Handle interface elements (e.g. []any)
+		if v.Kind() == reflect.Interface {
+			if v.IsNil() {
+				sb.WriteString("<nil>")
+				continue
+			}
+			v = v.Elem()
+		}
+
+		// Check if the type is a standard Go type (empty PkgPath).
+		// If it's a named type (e.g. type MyInt int), it might implement fmt.Stringer,
+		// so we should fall back to fmt package logic to be safe.
+		if v.Type().PkgPath() == "" {
+			switch v.Kind() {
+			case reflect.String:
+				sb.WriteString(v.String())
+				continue
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				sb.Write(strconv.AppendInt(scratch[:0], v.Int(), 10))
+				continue
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				sb.Write(strconv.AppendUint(scratch[:0], v.Uint(), 10))
+				continue
+			case reflect.Float32:
+				sb.Write(strconv.AppendFloat(scratch[:0], v.Float(), 'g', -1, 32))
+				continue
+			case reflect.Float64:
+				sb.Write(strconv.AppendFloat(scratch[:0], v.Float(), 'g', -1, 64))
+				continue
+			case reflect.Bool:
+				sb.Write(strconv.AppendBool(scratch[:0], v.Bool()))
+				continue
+			}
+		}
+
+		// Fallback for named types or complex types (structs, maps, etc.)
+		// Also handles fmt.Stringer implementation correctly.
+		if v.IsValid() && v.CanInterface() {
+			if stringer, ok := v.Interface().(fmt.Stringer); ok {
+				sb.WriteString(stringer.String())
+				continue
+			}
+			fmt.Fprint(&sb, v.Interface())
+		} else {
 			fmt.Fprint(&sb, v)
 		}
 	}
 	return sb.String(), nil
-}
-
-func toAnySlice(input any) ([]any, error) {
-	if s, ok := input.([]any); ok {
-		return s, nil
-	}
-	val := reflect.ValueOf(input)
-	if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
-		return nil, fmt.Errorf("expected slice or array, got %T", input)
-	}
-	l := val.Len()
-	a := make([]any, l)
-	for i := 0; i < l; i++ {
-		a[i] = val.Index(i).Interface()
-	}
-	return a, nil
 }
