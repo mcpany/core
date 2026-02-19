@@ -2986,8 +2986,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		// in unquoted (Level 0), quoted (Level 1, 2), and backticked (Level 3) strings.
+		if quoteLevel <= 3 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}

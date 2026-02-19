@@ -95,7 +95,8 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// Can be shell injection (;) or interpreter injection (import) depending on check order
+		assert.Contains(t, err.Error(), "injection detected")
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
@@ -168,6 +169,35 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "cmd.exe should block injection even in single quotes")
+	})
+
+	// Case 10: Perl interpreter injection (unquoted system)
+	t.Run("perl_interpreter_injection", func(t *testing.T) {
+		cmd := "perl"
+		tool := createTestCommandToolWithTemplate(cmd, "{{input}}") // Unquoted
+		// Payload: system q/echo PWNED/
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "system q/echo PWNED/"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "interpreter injection detected")
+	})
+
+	// Case 11: Python interpreter injection (unquoted system)
+	t.Run("python_interpreter_injection_unquoted", func(t *testing.T) {
+		cmd := "python"
+		tool := createTestCommandToolWithTemplate(cmd, "{{input}}") // Unquoted
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "system"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "interpreter injection detected")
 	})
 }
 
