@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('User Guide Walkthrough', () => {
   test('Dashboard loads key metrics', async ({ page }) => {
     // Mock the stats endpoint
-    await page.route('**/api/v1/dashboard/metrics', async route => {
+    await page.route('**/api/v1/dashboard/metrics**', async route => {
         await route.fulfill({
             json: [
                 { label: "Total Requests", value: "1234", icon: "Activity" },
@@ -19,11 +19,20 @@ test.describe('User Guide Walkthrough', () => {
     });
 
     await page.goto('/');
-    // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 10000 });
+
+    // Wait for loading to finish if present
+    const loadingState = page.getByText('Loading dashboard metrics...');
+    if (await loadingState.isVisible()) {
+        await loadingState.waitFor({ state: 'hidden', timeout: 10000 });
+    }
+
+    // Check for "Total Requests" card using a more robust selector
+    // Sometimes text=... can be finicky if split across elements
+    await expect(page.getByText('Total Requests', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
     // Check for "Active Services" card
-    await expect(page.locator('text=Active Services')).toBeVisible();
-    await expect(page.locator('text=Connected Tools')).toBeVisible();
+    await expect(page.getByText('Active Services', { exact: false }).first()).toBeVisible();
+    await expect(page.getByText('Connected Tools', { exact: false }).first()).toBeVisible();
   });
 
   test('Services: Add Service Redirects to Marketplace', async ({ page }) => {
