@@ -1391,6 +1391,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the network topology graph.
+     * @returns A promise that resolves to the graph.
+     */
+    getTopology: async () => {
+        const res = await fetchWithAuth('/api/v1/topology');
+        if (!res.ok) throw new Error('Failed to fetch topology');
+        return res.json();
+    },
+
+    /**
      * Gets the dashboard traffic history.
      * @param serviceId Optional service ID to filter by.
      * @param timeRange Optional time range to filter by (e.g. "1h", "24h").

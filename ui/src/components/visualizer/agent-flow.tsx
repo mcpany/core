@@ -5,24 +5,26 @@
 
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ReactFlow,
   useNodesState,
   useEdgesState,
-  addEdge,
   Controls,
   Background,
   MiniMap,
-  Connection,
-  MarkerType,
+  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
-import { DebuggerControls } from './debugger-controls';
+import { Button } from '@/components/ui/button';
+import { RefreshCw, Database } from 'lucide-react';
 import { VariableInspector } from './variable-inspector';
+import { useTopology } from '@/hooks/use-topology';
+import { getLayoutedElements } from './layout';
+import { apiClient } from '@/lib/client';
+import { useToast } from '@/hooks/use-toast';
 
 const nodeTypes = {
   user: UserNode,
@@ -32,35 +34,17 @@ const nodeTypes = {
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
-
 /**
- * AgentFlow component renders the interactive flow visualization.
- * @returns The AgentFlow component.
+ * NetworkTopology component renders the real-time service topology.
+ * @returns The NetworkTopology component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+  const { graph, loading, refresh } = useTopology(isLive);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState<any>(null);
-
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
-    [setEdges],
-  );
-
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  const { toast } = useToast();
 
   const onNodeClick = useCallback((_: any, node: any) => {
     setSelectedNode(node);
@@ -70,50 +54,37 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
+  // Update graph when data changes
+  useEffect(() => {
+      if (graph) {
+          const layouted = getLayoutedElements(graph);
+          setNodes(layouted.nodes);
+          setEdges(layouted.edges);
+      }
+  }, [graph, setNodes, setEdges]);
+
+  const handleSeed = async () => {
+      try {
+          const now = new Date();
+          // Seed some dummy traffic
+          await apiClient.seedTrafficData([
+              { time: now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}), total: 50, errors: 2, latency: 150 },
+              { time: "12:00", total: 100, errors: 0, latency: 50 } // Some past data
+          ]);
+          toast({ title: "Traffic Seeded", description: "Injected sample traffic data." });
+          refresh();
+      } catch (e) {
+          toast({ title: "Seed Failed", description: String(e), variant: "destructive" });
+      }
+  };
 
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
-      <div className="absolute top-4 right-4 z-10 flex gap-2">
-        <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
-          <DebuggerControls
-            isPlaying={isPlaying}
-            onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
-          />
-          <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
-            </SelectContent>
-          </Select>
-        </Card>
-      </div>
-
-      <VariableInspector selectedNode={selectedNode} onClose={() => setSelectedNode(null)} />
-
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
@@ -124,7 +95,43 @@ export function AgentFlow() {
         <Controls />
         <MiniMap />
         <Background gap={12} size={1} />
+
+        <Panel position="top-right" className="flex gap-2">
+            <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
+                <Button
+                    variant={isLive ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setIsLive(!isLive)}
+                    className="gap-2"
+                >
+                    <RefreshCw className={`h-4 w-4 ${isLive ? "animate-spin" : ""}`} />
+                    {isLive ? "Live" : "Paused"}
+                </Button>
+                <div className="w-px h-6 bg-border mx-1" />
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={refresh}
+                    title="Refresh Once"
+                >
+                    Refresh
+                </Button>
+                 <div className="w-px h-6 bg-border mx-1" />
+                 {/* Developer Tool: Seed Data */}
+                 <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSeed}
+                    title="Seed Debug Traffic"
+                    className="text-xs"
+                >
+                    <Database className="h-3 w-3 mr-1" /> Seed
+                </Button>
+            </Card>
+        </Panel>
       </ReactFlow>
+
+      <VariableInspector selectedNode={selectedNode} onClose={() => setSelectedNode(null)} />
     </div>
   );
 }
