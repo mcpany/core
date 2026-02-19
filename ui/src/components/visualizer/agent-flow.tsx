@@ -8,14 +8,13 @@
 import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
-  useNodesState,
-  useEdgesState,
-  addEdge,
   Controls,
   Background,
   MiniMap,
   Connection,
-  MarkerType,
+  addEdge,
+  useEdgesState, // Still needed for onConnect if we want manual connections?
+  // Probably not for topology view, but let's keep it robust.
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
@@ -23,6 +22,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { DebuggerControls } from './debugger-controls';
 import { VariableInspector } from './variable-inspector';
+import { useTopology } from '@/hooks/use-topology';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
 
 const nodeTypes = {
   user: UserNode,
@@ -32,35 +34,21 @@ const nodeTypes = {
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
-
 /**
  * AgentFlow component renders the interactive flow visualization.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+  const { nodes, edges, onNodesChange, onEdgesChange, refresh, loading } = useTopology(isLive);
   const [selectedNode, setSelectedNode] = useState<any>(null);
 
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
-    [setEdges],
-  );
-
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  // We can still allow manual connections if needed, but topology is read-only usually.
+  // We'll keep the handler but it might not be used.
+  // Note: useTopology manages the state, so onConnect needs access to setEdges?
+  // useTopology uses useEdgesState internally and exposes setEdges? No, strictly onEdgesChange.
+  // If we want manual edges, we'd need to lift state up or expose setEdges.
+  // For visualizer, read-only is fine.
 
   const onNodeClick = useCallback((_: any, node: any) => {
     setSelectedNode(node);
@@ -70,39 +58,20 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
-
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
           <DebuggerControls
-            isPlaying={isPlaying}
-            onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
+            isPlaying={isLive}
+            onPlayPause={() => setIsLive(!isLive)}
+            onStep={refresh} // Step acts as manual refresh
+            onStop={() => setIsLive(false)}
           />
           <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
-            </SelectContent>
-          </Select>
+          <Button variant="ghost" size="icon" onClick={refresh} title="Refresh Topology">
+             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
         </Card>
       </div>
 
@@ -113,7 +82,6 @@ export function AgentFlow() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}

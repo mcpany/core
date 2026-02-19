@@ -124,7 +124,7 @@ export const ServiceNode = memo(({ data, selected }: any) => {
           </div>
           <div className="flex flex-col">
               <span className="text-sm font-bold">{data.label}</span>
-              <span className="text-[10px] text-muted-foreground">Service</span>
+            <span className="text-[10px] text-muted-foreground">{data.role || 'Service'}</span>
           </div>
         </div>
       </NodeWrapper>
