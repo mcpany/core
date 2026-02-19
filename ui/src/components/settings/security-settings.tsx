@@ -41,13 +41,14 @@ const securitySchema = z.object({
 
   // Audit
   audit_enabled: z.boolean(),
-  audit_storage: z.enum(["file", "sqlite", "postgres", "webhook", "splunk", "datadog"]), // mapped to enums or handled as strings
+  audit_storage: z.enum(["file", "sqlite", "postgres", "webhook", "splunk", "datadog"]),
   audit_path: z.string().optional(),
   audit_log_args: z.boolean(),
   audit_log_results: z.boolean(),
 });
 
 type SecurityValues = z.infer<typeof securitySchema>;
+type StorageType = "file" | "sqlite" | "postgres" | "webhook" | "splunk" | "datadog";
 
 export function SecuritySettings() {
   const [loading, setLoading] = useState(false);
@@ -79,16 +80,15 @@ export function SecuritySettings() {
       try {
         const settings = await apiClient.getGlobalSettings();
         if (settings) {
-            let storageType = "file";
+            let storageType: StorageType = "file";
             const sType = settings.audit?.storage_type;
-            // Map integer enum to string if needed, or if API returns string (it returns json so likely string or int)
-            // configv1.AuditConfig_STORAGE_TYPE_FILE is 1.
+
             if (sType === 1 || sType === "STORAGE_TYPE_FILE") storageType = "file";
-            if (sType === 2 || sType === "STORAGE_TYPE_SQLITE") storageType = "sqlite";
-            if (sType === 3 || sType === "STORAGE_TYPE_POSTGRES") storageType = "postgres";
-            if (sType === 4 || sType === "STORAGE_TYPE_WEBHOOK") storageType = "webhook";
-            if (sType === 5 || sType === "STORAGE_TYPE_SPLUNK") storageType = "splunk";
-            if (sType === 6 || sType === "STORAGE_TYPE_DATADOG") storageType = "datadog";
+            else if (sType === 2 || sType === "STORAGE_TYPE_SQLITE") storageType = "sqlite";
+            else if (sType === 3 || sType === "STORAGE_TYPE_POSTGRES") storageType = "postgres";
+            else if (sType === 4 || sType === "STORAGE_TYPE_WEBHOOK") storageType = "webhook";
+            else if (sType === 5 || sType === "STORAGE_TYPE_SPLUNK") storageType = "splunk";
+            else if (sType === 6 || sType === "STORAGE_TYPE_DATADOG") storageType = "datadog";
 
             form.reset({
                 dlp_enabled: settings.dlp?.enabled || false,
@@ -99,7 +99,7 @@ export function SecuritySettings() {
                 ratelimit_burst: settings.rate_limit?.burst || 50,
 
                 audit_enabled: settings.audit?.enabled || false,
-                audit_storage: storageType as any,
+                audit_storage: storageType,
                 audit_path: settings.audit?.output_path || "",
                 audit_log_args: settings.audit?.log_arguments || false,
                 audit_log_results: settings.audit?.log_results || false,
