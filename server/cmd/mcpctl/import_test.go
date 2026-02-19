@@ -14,6 +14,7 @@ import (
 )
 
 func TestImportCmd_HappyPath_Stdout(t *testing.T) {
+	t.Parallel()
 	// Create a temporary input file
 	inputContent := `{
 		"mcpServers": {
@@ -59,6 +60,7 @@ func TestImportCmd_HappyPath_Stdout(t *testing.T) {
 }
 
 func TestImportCmd_HappyPath_File(t *testing.T) {
+	t.Parallel()
 	inputContent := `{
 		"mcpServers": {
 			"server1": {
@@ -105,6 +107,7 @@ func TestImportCmd_HappyPath_File(t *testing.T) {
 }
 
 func TestImportCmd_FileNotFound(t *testing.T) {
+	t.Parallel()
 	cmd := newImportCmd()
 	var out bytes.Buffer
 	cmd.SetOut(&out)
@@ -116,6 +119,7 @@ func TestImportCmd_FileNotFound(t *testing.T) {
 }
 
 func TestImportCmd_InvalidJSON(t *testing.T) {
+	t.Parallel()
 	inputFile, err := os.CreateTemp("", "invalid_config_*.json")
 	require.NoError(t, err)
 	defer os.Remove(inputFile.Name())
@@ -134,6 +138,7 @@ func TestImportCmd_InvalidJSON(t *testing.T) {
 }
 
 func TestImportCmd_EmptyConfig(t *testing.T) {
+	t.Parallel()
 	inputContent := `{ "mcpServers": {} }`
 	inputFile, err := os.CreateTemp("", "empty_config_*.json")
 	require.NoError(t, err)
@@ -157,6 +162,7 @@ func TestImportCmd_EmptyConfig(t *testing.T) {
 }
 
 func TestImportCmd_ComplexConfig(t *testing.T) {
+	t.Parallel()
 	inputContent := `{
 		"mcpServers": {
 			"complex-server": {
@@ -215,20 +221,22 @@ func TestImportCmd_ComplexConfig(t *testing.T) {
 }
 
 func TestImportCmd_InvalidArgs(t *testing.T) {
-    cmd := newImportCmd()
-    var out bytes.Buffer
-    cmd.SetOut(&out)
-    // No args provided
-    cmd.SetArgs([]string{})
+	t.Parallel()
+	cmd := newImportCmd()
+	var out bytes.Buffer
+	cmd.SetOut(&out)
+	// No args provided
+	cmd.SetArgs([]string{})
 
-    err := cmd.Execute()
-    require.Error(t, err)
-    // Cobra usually returns an error about missing arguments
+	err := cmd.Execute()
+	require.Error(t, err)
+	// Cobra usually returns an error about missing arguments
 }
 
 func TestImportCmd_BadOutputPath(t *testing.T) {
-    // This test might be tricky depending on permissions, but trying to write to a directory usually fails
-    inputContent := `{"mcpServers": {}}`
+	t.Parallel()
+	// This test might be tricky depending on permissions, but trying to write to a directory usually fails
+	inputContent := `{"mcpServers": {}}`
 	inputFile, err := os.CreateTemp("", "valid_config_*.json")
 	require.NoError(t, err)
 	defer os.Remove(inputFile.Name())
@@ -236,17 +244,17 @@ func TestImportCmd_BadOutputPath(t *testing.T) {
 	require.NoError(t, err)
 	inputFile.Close()
 
-    // Create a temp dir to use as a file path which should fail
-    tempDir, err := os.MkdirTemp("", "test_dir")
-    require.NoError(t, err)
-    defer os.RemoveAll(tempDir)
+	// Create a temp dir to use as a file path which should fail
+	tempDir, err := os.MkdirTemp("", "test_dir")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
 
-    cmd := newImportCmd()
-    var out bytes.Buffer
-    cmd.SetOut(&out)
-    cmd.SetArgs([]string{inputFile.Name(), "-o", tempDir}) // Writing to a directory path usually fails
+	cmd := newImportCmd()
+	var out bytes.Buffer
+	cmd.SetOut(&out)
+	cmd.SetArgs([]string{inputFile.Name(), "-o", tempDir}) // Writing to a directory path usually fails
 
-    err = cmd.Execute()
-    require.Error(t, err)
-    // The error message depends on OS, but usually "is a directory"
+	err = cmd.Execute()
+	require.Error(t, err)
+	// The error message depends on OS, but usually "is a directory"
 }
