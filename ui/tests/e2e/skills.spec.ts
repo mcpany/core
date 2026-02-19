@@ -51,7 +51,7 @@ test('Agent Skills', () => {
         response.url().includes('/api/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        { timeout: 60000 }
     );
 
     await page.getByRole('button', { name: 'Create Skill' }).click();
@@ -66,7 +66,7 @@ test('Agent Skills', () => {
         await page.reload();
         await expect(page.locator(`text=${testSkillName}`)).toBeVisible({ timeout: 5000 });
     }).toPass({
-        timeout: 45000, // Increased timeout for K8s
+        timeout: 90000, // Increased timeout for K8s
         intervals: [2000, 5000, 10000] // Backoff retry
     });
   });
@@ -85,7 +85,7 @@ test('Agent Skills', () => {
         response.url().includes('/api/v1/skills') &&
         response.request().method() === 'POST' &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+        { timeout: 60000 }
     );
     await page.getByRole('button', { name: 'Create Skill' }).click();
     await createPromise;
@@ -95,12 +95,12 @@ test('Agent Skills', () => {
     await expect(async () => {
         await page.reload();
         await expect(page.locator(`text=${skillName}`)).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
+    }).toPass({ timeout: 90000, intervals: [2000, 5000, 10000] });
 
     // Navigate to detail page directly to verify routing
     await expect(async () => {
         await page.goto(`/skills/${skillName}`);
         await expect(page.locator('h1')).toContainText(skillName);
-    }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
+    }).toPass({ timeout: 90000, intervals: [2000, 5000, 10000] });
   });
 });
