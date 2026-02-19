@@ -117,13 +117,13 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           android: true
           dotnet: true
           haskell: true
           large-packages: true
-          docker-images: true
-          swap-storage: true
+          docker-images: false
+          swap-storage: false
 
       - uses: actions/checkout@v5
 
@@ -252,13 +252,13 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           android: true
           dotnet: true
           haskell: true
           large-packages: true
-          docker-images: true
-          swap-storage: true
+          docker-images: false
+          swap-storage: false
 
       - uses: actions/checkout@v5
 
@@ -419,13 +419,13 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           android: true
           dotnet: true
           haskell: true
           large-packages: true
           docker-images: false
-          swap-storage: true
+          swap-storage: false
       - uses: actions/checkout@v5
 
       - name: Set up Go
@@ -554,13 +554,13 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           android: true
           dotnet: true
           haskell: true
           large-packages: true
-          docker-images: true
-          swap-storage: true
+          docker-images: false
+          swap-storage: false
 
       - uses: actions/checkout@v5
 
@@ -694,13 +694,13 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           android: true
           dotnet: true
           haskell: true
           large-packages: true
-          docker-images: true
-          swap-storage: true
+          docker-images: false
+          swap-storage: false
 
       - uses: actions/checkout@v5
 
@@ -867,17 +867,17 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      #      - name: Free Disk Space (Ubuntu)
-      #        uses: jlumbroso/free-disk-space@main
-      #        with:
-      #          tool-cache: false
-      #          android: true
-      #          dotnet: true
-      #          haskell: true
-      #          large-packages: true
-      #          docker-images: false
-      #          swap-storage: true
-      #
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: false
+
       - uses: actions/checkout@v5
 
       - name: Detect Architecture
@@ -921,6 +921,17 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: false
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
