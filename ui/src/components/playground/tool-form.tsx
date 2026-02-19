@@ -318,7 +318,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
                       Cancel
                   </Button>
                   <Button type="submit">
-                      Build Command
+                      Run Tool
                   </Button>
               </div>
       </div>

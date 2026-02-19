@@ -40,7 +40,7 @@ describe("ToolForm", () => {
   it("renders form mode by default", () => {
     render(<ToolForm tool={mockTool} onSubmit={handleSubmit} onCancel={handleCancel} />);
     expect(screen.getByRole("tab", { name: "Form" })).toHaveAttribute("data-state", "active");
-    expect(screen.getByRole("button", { name: "Build Command" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Run Tool" })).toBeInTheDocument();
   });
 
   it("switches to Schema tab and displays schema", async () => {
