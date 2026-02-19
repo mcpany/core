@@ -53,7 +53,9 @@ export function AgentFlow() {
       try {
           const res = await fetch('/api/traces');
           if (res.ok) {
-              const data: Trace[] = await res.json();
+              const fullData: Trace[] = await res.json();
+              // Limit to 50 latest traces to prevent UI lag and memory issues
+              const data = fullData.slice(0, 50);
               setTraces(data);
 
               // If live, or no trace selected, select the first one
@@ -84,10 +86,11 @@ export function AgentFlow() {
   useEffect(() => {
       let interval: NodeJS.Timeout;
       if (isLive) {
-          interval = setInterval(fetchTraces, 2000);
+          // Poll every 5 seconds instead of 2 seconds to reduce backend load in CI
+          interval = setInterval(fetchTraces, 5000);
       }
       return () => clearInterval(interval);
-  }, [isLive, selectedTraceId]); // dependency on selectedTraceId to ensure closure has latest? actually fetchTraces doesn't depend on it except for logic.
+  }, [isLive, selectedTraceId]);
 
   // Update graph when selected trace changes
   useEffect(() => {

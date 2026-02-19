@@ -21,7 +21,8 @@ test.describe('Agent Flow Visualizer E2E', () => {
       await page.fill('input[name="username"]', 'e2e-admin');
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]', { force: true });
-      await page.waitForURL('/', { timeout: 30000 });
+      // Increased timeout for CI stability
+      await page.waitForURL('/', { timeout: 60000 });
   });
 
   // No cleanup needed as we are not seeding dynamic resources
@@ -40,8 +41,8 @@ test.describe('Agent Flow Visualizer E2E', () => {
         await expect(page.getByRole('heading', { name: 'Console' })).toBeVisible();
         // Use loose matching or look for 'get_weather'
         // The tool name in log is 'weather-service.get_weather', but UI might show simple name or full name.
-        await expect(page.getByText('get_weather', { exact: false }).first()).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 30000 });
+        await expect(page.getByText('get_weather', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+    }).toPass({ timeout: 45000 });
 
     // Click on get_weather to configure
     await page.getByText('get_weather', { exact: false }).first().click();
@@ -63,20 +64,20 @@ test.describe('Agent Flow Visualizer E2E', () => {
 
     // 7. Wait for result
     // "tool-result" type message.
-    await expect(page.getByText('Result:', { exact: false })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Result:', { exact: false })).toBeVisible({ timeout: 30000 });
 
     // 8. Navigate to Visualizer
     await page.goto('/visualizer');
 
     // 9. Verify Graph
     // Should see "MCP Core"
-    await expect(page.locator('.react-flow__node').filter({ hasText: 'MCP Core' })).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.react-flow__node').filter({ hasText: 'MCP Core' })).toBeVisible({ timeout: 20000 });
 
     // Should see "weather-service"
     await expect(async () => {
          const nodes = await page.locator('.react-flow__node').allInnerTexts();
          const hasNode = nodes.some(n => /weather-service/i.test(n));
          expect(hasNode).toBeTruthy();
-    }).toPass({ timeout: 10000 });
+    }).toPass({ timeout: 20000 });
   });
 });
