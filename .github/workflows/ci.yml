@@ -59,6 +59,9 @@ jobs:
           docker-images: true
           swap-storage: true
 
+      - name: Prune Docker
+        run: docker system prune -af
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
@@ -135,6 +138,9 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
+
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v5
 
@@ -270,6 +276,9 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
+
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v5
 
@@ -573,6 +582,9 @@ jobs:
           docker-images: true
           swap-storage: true
 
+      - name: Prune Docker
+        run: docker system prune -af
+
       - uses: actions/checkout@v5
 
       - name: Install dependencies
@@ -712,6 +724,9 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
+
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v5
 
@@ -889,6 +904,9 @@ jobs:
           docker-images: false
           swap-storage: true
 
+      - name: Prune Docker
+        run: docker system prune -af
+
       - uses: actions/checkout@v5
 
       - name: Detect Architecture
@@ -942,6 +960,9 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
+
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v5
 
