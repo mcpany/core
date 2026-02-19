@@ -348,3 +348,59 @@ func TestSentinelRCE_NodeExecSync(t *testing.T) {
 	assert.Contains(t, err.Error(), "interpreter injection detected")
 	assert.Contains(t, err.Error(), "require")
 }
+
+func TestSentinelRCE_RunnerInjection_Timeout(t *testing.T) {
+	// 1. Configure a tool that uses 'timeout' to run 'sh -c {{cmd}}'
+	// 'timeout' is now in the 'shells' list, so 'checkUnquotedInjection' must block spaces.
+	svc := configv1.CommandLineUpstreamService_builder{
+		Command:          proto.String("timeout"),
+		WorkingDirectory: proto.String("."),
+	}.Build()
+
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"0.1s", "sh", "-c", "{{cmd}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("cmd"),
+					Type: &stringType,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("timeout-tool")
+
+	tool := NewLocalCommandTool(
+		toolProto,
+		svc,
+		callDef,
+		nil,
+		"timeout-tool",
+	)
+
+	// 2. Craft a malicious input with spaces (ls -la)
+	// This relies on 'timeout' being recognized as a shell/runner to enforce strict checking on unquoted args.
+	payload := "ls -la"
+
+	inputMap := map[string]interface{}{
+		"cmd": payload,
+	}
+	inputBytes, _ := json.Marshal(inputMap)
+
+	req := &ExecutionRequest{
+		ToolName:   "timeout-tool",
+		ToolInputs: inputBytes,
+	}
+
+	// 3. Execute - Expect Error "shell injection detected"
+	res, err := tool.Execute(context.Background(), req)
+
+	// 4. Assert
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "shell injection detected")
+}

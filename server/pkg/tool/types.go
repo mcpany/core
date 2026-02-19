@@ -2947,6 +2947,8 @@ func isShell(cmd string) bool {
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
 		"busybox", "expect", "watch", "tmux", "screen",
+		"chroot", "nice", "nohup", "taskset", "timeout", "stdbuf", "setarch",
+		"parallel", "runuser", "runcon", "nsenter", "unshare", "capsh", "pkexec",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
