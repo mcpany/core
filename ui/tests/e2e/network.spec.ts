@@ -7,6 +7,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Network Topology', () => {
   test.beforeEach(async ({ page }) => {
+    // Login
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]', { force: true });
+    await page.waitForURL('/', { timeout: 60000 });
+
     // Mock the topology API
     await page.route('**/api/v1/topology', async route => {
         await route.fulfill({
