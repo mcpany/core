@@ -8,6 +8,9 @@ import { Trace } from "@/types/trace";
 
 // ⚡ BOLT: Limit trace history to prevent memory leaks
 // Randomized Selection from Top 5 High-Impact Targets
+/**
+ * Maximum number of traces to keep in memory.
+ */
 export const MAX_TRACES = 1000;
 
 interface UseTracesOptions {
