@@ -35,7 +35,8 @@ Browse the sidebar to find the tool you wish to test.
 Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
 
 1. Enter values (e.g., `/var/log` for path).
-2. Click **"Run Tool"**.
+2. Click **"Build Command"**. This populates the chat input with the correct JSON.
+3. Press **Enter** or click the **Send** icon to execute the tool.
 
 ![Form Filled](screenshots/playground_form_filled.png)
 
