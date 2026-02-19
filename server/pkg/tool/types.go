@@ -2970,7 +2970,17 @@ func isShell(cmd string) bool {
 
 func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool) error {
 	// Determine the quoting context of the placeholder in the template
-	quoteLevel := analyzeQuoteContext(template, placeholder)
+	quoteLevel, innerQuote := analyzeQuoteContext(template, placeholder)
+	isInnerQuoted := innerQuote != 0
+
+	// If not running in a shell, the quotes detected in the template are passed directly to the interpreter.
+	// For most interpreters (Node, Python string args), this means we are inside a string.
+	// However, Single Quotes (Level 2) are often used to wrap Code (e.g. perl -e 'code'), so we treat them as Unquoted.
+	// Double Quotes (Level 1) are often used for String Literals (e.g. node -e "...").
+	// So we assume quoteLevel == 1 implies String Literal context (or at least hybrid) for non-shell commands.
+	if !isShell && quoteLevel == 1 {
+		isInnerQuoted = true
+	}
 
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
@@ -2988,8 +2998,20 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
 		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val, base); err != nil {
+			// Always check as Unquoted first to detect code injection (e.g. eval("{{msg}}") where msg="__import__...")
+			// This assumes the content IS code, which is the safest default.
+			if err := checkInterpreterFunctionCalls(val, base, false); err != nil {
 				return err
+			}
+
+			// If context implies quotes, ALSO check as Quoted to detect breakout attacks (e.g. node -e 'console.log("{{msg}}")')
+			// where msg="); require..."
+			// The Unquoted check above might pass "); require..." because it thinks " opens a quote.
+			// The Quoted check will see " as closing the quote and catch the breakout.
+			if isInnerQuoted {
+				if err := checkInterpreterFunctionCalls(val, base, true); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -3007,7 +3029,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			}
 			// Also check function calls for the detected interpreter context
 			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
+				if err := checkInterpreterFunctionCalls(val, argBase, isInnerQuoted); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -3180,7 +3202,7 @@ func stripInterpreterComments(val, language string) string {
 	return b.String()
 }
 
-func checkInterpreterFunctionCalls(val, language string) error {
+func checkInterpreterFunctionCalls(val, language string, isInnerQuoted bool) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
@@ -3192,44 +3214,28 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"__import__",
 	}
 
-	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+	if err := checkDangerousKeywords(val, dangerousKeywords, language, isInnerQuoted); err != nil {
 		return err
 	}
 
-	// Normalize value to detect obfuscation (e.g. system ( ) )
-	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
-		if !unicode.IsSpace(r) {
-			b.WriteRune(r)
-		}
-	}
-	cleanVal := strings.ToLower(b.String())
-
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
-		}
-	}
-
-	if strings.Contains(cleanVal, "__import__") {
-		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
-	}
 	return nil
 }
 
+// checkDangerousKeywords scans the value for dangerous keywords, respecting quotes and backticks based on the language.
+// It replaces checkUnquotedKeywords and fixes false positives with string literals.
 //nolint:gocyclo
-func checkUnquotedKeywords(val string, keywords []string) error {
+func checkDangerousKeywords(val string, keywords []string, language string, isInnerQuoted bool) error {
+	// If we are already inside an inner quote (detected from template analysis),
+	// we initialize the state accordingly. We assume standard quotes (' or ") behave similarly
+	// regarding blocking keyword execution in most languages.
+	// Since we don't know exactly WHICH quote it was (single or double) passed here easily without more params,
+	// and since checkDangerousKeywords logic for Single/Double is identical (ignore keywords),
+	// we can just set inDouble = true.
 	inSingle := false
-	inDouble := false
+	inDouble := isInnerQuoted
 	inBacktick := false
 	escaped := false
 
@@ -3237,9 +3243,36 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	lastChar := rune(0) // Last non-whitespace char before current word
 	lastWord := ""      // Last word seen before current word (separated only by whitespace)
 
+	// Determine if backticks are safe (strings) or dangerous (execution)
+	backticksAreStrings := false
+	if language == "node" || language == "nodejs" || language == "bun" || language == "deno" {
+		backticksAreStrings = true
+	}
+
+	checkWord := func(word string, inBacktickContext bool) error {
+		// If we are in backticks, and backticks are strings (JS), we ignore keywords.
+		if inBacktickContext && backticksAreStrings {
+			return nil
+		}
+		// If we are in backticks and they are dangerous (Perl/Ruby/PHP/Shell), we check keywords.
+		// If we are unquoted, we check keywords.
+		return checkKeyword(word, keywords, lastChar, lastWord)
+	}
+
 	for _, char := range val {
 		if escaped {
 			escaped = false
+			// If escaped inside a word (e.g. sys\tem), we treat it as part of the word if it's alphanumeric?
+			// But usually backslash escapes the next char.
+			// stripInterpreterComments already handles line continuations.
+			// Here we handle escaped quotes or chars.
+			if !inSingle && !inDouble && !inBacktick {
+				// Outside quotes, backslash might escape a space or delimiter?
+				// Treat escaped char as word char if alphanumeric?
+				if char < 128 && isWordChar(byte(char)) {
+					wordBuilder.WriteByte(byte(char))
+				}
+			}
 			continue
 		}
 		if char == '\\' {
@@ -3250,19 +3283,16 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		// Quote handling
 		if char == '\'' && !inDouble && !inBacktick {
 			inSingle = !inSingle
-			// Treat quotes as delimiters
-			if inSingle { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-						return err
-					}
-					lastWord = word
-					wordBuilder.Reset()
+			// Toggle quote state.
+			// If entering quote, check pending word.
+			if inSingle && wordBuilder.Len() > 0 {
+				if err := checkWord(wordBuilder.String(), false); err != nil {
+					return err
 				}
+				lastWord = wordBuilder.String()
+				wordBuilder.Reset()
 			}
-			// When exiting quote, we don't update lastWord because quoted string is not a word
-			// But we should update lastChar to the quote
+			// If exiting quote, update lastChar but not lastWord (string literal is not a keyword-preceding word usually)
 			if !inSingle {
 				lastChar = char
 				lastWord = ""
@@ -3271,15 +3301,12 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		}
 		if char == '"' && !inSingle && !inBacktick {
 			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-						return err
-					}
-					lastWord = word
-					wordBuilder.Reset()
+			if inDouble && wordBuilder.Len() > 0 {
+				if err := checkWord(wordBuilder.String(), false); err != nil {
+					return err
 				}
+				lastWord = wordBuilder.String()
+				wordBuilder.Reset()
 			}
 			if !inDouble {
 				lastChar = char
@@ -3289,16 +3316,15 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		}
 		if char == '`' && !inSingle && !inDouble {
 			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-						return err
-					}
-					lastWord = word
-					wordBuilder.Reset()
+			// Entering/Exiting backtick
+			if inBacktick && wordBuilder.Len() > 0 {
+				if err := checkWord(wordBuilder.String(), false); err != nil {
+					return err
 				}
+				lastWord = wordBuilder.String()
+				wordBuilder.Reset()
 			}
+			// If exiting backtick, and backticks are dangerous (execution), treated as expression end?
 			if !inBacktick {
 				lastChar = char
 				lastWord = ""
@@ -3306,38 +3332,55 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if inSingle || inDouble {
+			// Ignore contents of single/double quotes (always strings)
 			continue
 		}
 
+		if inBacktick {
+			// Inside backticks
+			if char < 128 && isWordChar(byte(char)) {
+				wordBuilder.WriteByte(byte(char))
+			} else {
+				// Delimiter inside backticks
+				if wordBuilder.Len() > 0 {
+					if err := checkWord(wordBuilder.String(), true); err != nil {
+						return err
+					}
+					lastWord = wordBuilder.String()
+					wordBuilder.Reset()
+				}
+				if !unicode.IsSpace(char) {
+					lastChar = char
+					lastWord = ""
+				}
+			}
+			continue
+		}
+
+		// Unquoted
 		if char < 128 && isWordChar(byte(char)) {
 			wordBuilder.WriteByte(byte(char))
 		} else {
-			// Delimiter (including non-ASCII characters)
-			// Non-ASCII characters cannot be part of the dangerous keywords we check (which are ASCII only).
-			// We treat them as delimiters to ensure we correctly isolate potential keywords.
+			// Delimiter
 			if wordBuilder.Len() > 0 {
-				word := wordBuilder.String()
-				if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+				if err := checkWord(wordBuilder.String(), false); err != nil {
 					return err
 				}
-				lastWord = word
+				lastWord = wordBuilder.String()
 				wordBuilder.Reset()
 			}
 
 			if !unicode.IsSpace(char) {
 				lastChar = char
-				lastWord = "" // Clear lastWord if we hit a non-space delimiter
+				lastWord = ""
 			}
 		}
 	}
 
 	// Check last word
 	if wordBuilder.Len() > 0 {
-		word := wordBuilder.String()
-		if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
-			return err
-		}
+		return checkWord(wordBuilder.String(), inBacktick)
 	}
 	return nil
 }
@@ -3570,6 +3613,11 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
+		// Sentinel Security Update: Explicitly block 'system' as it is the primary RCE vector in awk.
+		// While checkInterpreterFunctionCalls covers 'system(...)', blocking it here adds depth.
+		if strings.Contains(val, "system") {
+			return fmt.Errorf("awk injection detected: value contains 'system'")
+		}
 	}
 	return nil
 }
@@ -3701,13 +3749,14 @@ func getPrefix(s string, idx int) string {
 	return s[start+1 : idx]
 }
 
-func analyzeQuoteContext(template, placeholder string) int {
+func analyzeQuoteContext(template, placeholder string) (int, rune) {
 	if template == "" || placeholder == "" {
-		return 0
+		return 0, 0
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
 	minLevel := 3
+	var innerQuote rune
 
 	inSingle := false
 	inDouble := false
@@ -3724,10 +3773,19 @@ func analyzeQuoteContext(template, placeholder string) int {
 			switch {
 			case inSingle:
 				currentLevel = 2
+				// Check for inner quote: if the char before placeholder is NOT the single quote that opened this context
+				// but is another quote char, then we have an inner quote.
+				if i > 0 && template[i-1] != '\'' && (template[i-1] == '"' || template[i-1] == '\'') {
+					innerQuote = rune(template[i-1])
+				}
 			case inBacktick:
 				currentLevel = 3
 			case inDouble:
 				currentLevel = 1
+				// Check for inner quote
+				if i > 0 && template[i-1] != '"' && (template[i-1] == '\'' || template[i-1] == '"') {
+					innerQuote = rune(template[i-1])
+				}
 			}
 
 			if currentLevel < minLevel {
@@ -3768,11 +3826,10 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	if !foundAny {
-		return 0 // Should not happen if called correctly, fallback to strict
+		return 0, 0 // Should not happen if called correctly, fallback to strict
 	}
 
-	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
-	return minLevel
+	return minLevel, innerQuote
 }
 
 func checkEnvInjection(val string) error {

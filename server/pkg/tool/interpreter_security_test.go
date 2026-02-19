@@ -266,8 +266,9 @@ func TestInterpreterSecurity(t *testing.T) {
 			Command: &cmd,
 		}).Build()
 
+		// Use unquoted template to allow code execution if not blocked
 		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-e", "\"{{code}}\""},
+			Args: []string{"-e", "{{code}}"},
 			Parameters: []*configv1.CommandLineParameterMapping{
 				(&configv1.CommandLineParameterMapping_builder{
 					Schema: (&configv1.ParameterSchema_builder{
@@ -306,8 +307,9 @@ func TestInterpreterSecurity(t *testing.T) {
 			Command: &cmd,
 		}).Build()
 
+		// Use unquoted template to allow code execution if not blocked
 		callDef := (&configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-e", "\"{{code}}\""},
+			Args: []string{"-e", "{{code}}"},
 			Parameters: []*configv1.CommandLineParameterMapping{
 				(&configv1.CommandLineParameterMapping_builder{
 					Schema: (&configv1.ParameterSchema_builder{
@@ -333,6 +335,6 @@ func TestInterpreterSecurity(t *testing.T) {
 		_, err := tool.Execute(context.Background(), req)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected: perl qx execution", "Should detect qx execution in double quotes")
+		assert.Contains(t, err.Error(), "shell injection detected: perl qx execution", "Should detect qx execution")
 	})
 }
