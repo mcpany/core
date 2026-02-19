@@ -10,22 +10,16 @@ test('Rich Result Viewer displays complex data as table', async ({ page }) => {
   await page.goto('/tools');
 
   // 2. Find get_complex_data
-  // Wait for tools to load (real data from backend)
-  await expect(page.getByText('get_complex_data')).toBeVisible({ timeout: 10000 });
+  // Wait for tools to load (real data from backend). Use regex to match namespaced tools (e.g. test-service.get_complex_data)
+  await expect(page.getByText(/get_complex_data/)).toBeVisible({ timeout: 10000 });
 
   // 3. Open Inspector
   // Find the row with get_complex_data and click Inspect button
-  // The Inspect button might be hidden in a menu or direct?
-  // In tool-table.tsx, it's a direct button usually or inside "More" menu?
-  // Let's assume direct button as per tool-inspector.spec.ts example
-  // But wait, tool-inspector.spec.ts used:
-  // await page.locator('tr').filter({ hasText: 'get_weather' }).getByText('Inspect').click();
-  // Let's use getByRole('button', { name: 'Inspect' }) if possible, or getByText('Inspect')
-  await page.locator('tr').filter({ hasText: 'get_complex_data' }).getByRole('button', { name: 'Inspect' }).click();
+  await page.locator('tr').filter({ hasText: /get_complex_data/ }).getByRole('button', { name: 'Inspect' }).click();
 
   // 4. Wait for inspector to open
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog').getByText('get_complex_data').first()).toBeVisible();
+  await expect(page.getByRole('dialog').getByText(/get_complex_data/).first()).toBeVisible();
 
   // 5. Execute
   // Click "Execute" button.
