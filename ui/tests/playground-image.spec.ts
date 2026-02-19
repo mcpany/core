@@ -68,16 +68,15 @@ test.describe('Playground Image Rendering', () => {
         await expect(page.getByRole('dialog')).toBeVisible();
         await expect(page.getByText('Configure arguments')).toBeVisible();
 
-        // Since no args required, we can just click "Build Command"
+        // Since no args required, we can just click "Run Tool"
         // The dialog has a form.
         // There should be a submit button.
-        await page.getByRole('button', { name: 'Build Command' }).click();
+        await page.getByRole('button', { name: 'Run Tool' }).click();
 
         // Dialog closes, command is populated in input
         await expect(page.getByRole('dialog')).toBeHidden();
 
-        // Click "Send" button to execute
-        await page.getByLabel('Send').click();
+        // No need to click Send, it auto executes
 
         // Wait for result
         // Result should contain an image

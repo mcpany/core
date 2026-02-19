@@ -64,8 +64,19 @@ test.describe('Playground Tool Configuration', () => {
     await page.getByLabel('days').fill('5');
 
     // Run Tool
-    await page.getByRole('button', { name: /build command/i }).click();
-    await page.getByLabel('Send').click();
+    await page.getByRole('button', { name: /run tool/i }).click();
+    // Note: The "Run Tool" button now executes immediately, no need to click Send.
+    // However, if the logic in `tool-form.tsx` just populates the input and sends,
+    // we might need to check if it auto-sends.
+    // Looking at `tool-form.tsx` change in Step 1, it calls `onSubmit`.
+    // In `PlaygroundClientPro.tsx`, `handleToolFormSubmit` calls `processResponse` immediately.
+    // So we don't need to click Send.
+    // But `PlaygroundClient.tsx` (non-pro) logic might differ?
+    // Wait, the test uses `/playground` which renders `PlaygroundClientPro`.
+    // And `PlaygroundClientPro` sets input and calls `processResponse`.
+    // So removing `await page.getByLabel('Send').click();` is correct if it auto-executes.
+    // But let's verify if `processResponse` is called.
+    // Actually, `handleToolFormSubmit` updates state.
 
     // Verify chat message
     // The message should appear in the chat.
@@ -109,10 +120,9 @@ test.describe('Playground Tool Configuration', () => {
     await page.getByRole('button', { name: 'Use', exact: true }).click();
 
     // Build command (empty args)
-    await page.getByRole('button', { name: /build command/i }).click();
+    await page.getByRole('button', { name: /run tool/i }).click();
 
-    // Send
-    await page.getByLabel('Send').click();
+    // Note: Auto-execution means we don't click Send.
 
     // Verify error message appears
     await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible();
