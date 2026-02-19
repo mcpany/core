@@ -84,14 +84,16 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 }
             }
 
-            // 1. Fetch Topology
-            const res = await fetch(url, { headers });
+            // ⚡ Bolt Optimization: Use Promise.all to fetch topology and health concurrently.
+            // This reduces the total time to wait for both responses.
+            const topologyPromise = fetch(url, { headers }).then(async (res) => {
+                if (res.status === 304 && lastGraph.current) {
+                    // Not modified, use cached graph
+                    return;
+                }
 
-            if (res.status === 304 && lastGraph.current) {
-                // Not modified, use cached graph
-                // We still want to fetch dashboard health even if topology unchanged?
-                // Yes, because history grows.
-            } else if (res.ok) {
+                if (!res.ok) return;
+
                 const etag = res.headers.get('ETag');
                 if (etag) {
                     lastEtag.current = etag;
@@ -149,13 +151,11 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
                     return next;
                 });
-            }
+            }).catch(e => {
+                console.error("Failed to fetch topology", e);
+            });
 
-            // 2. Fetch Dashboard Health (Server-side History)
-            // ⚡ Bolt Optimization: Centralized polling to avoid redundant requests.
-            // Randomized Selection from Top 5 High-Impact Targets
-            try {
-                const healthData = await apiClient.getDashboardHealth();
+            const healthPromise = apiClient.getDashboardHealth().then(healthData => {
                 setServices(healthData.services || []);
 
                 // Map status strings if needed (backend might return "up"/"down", UI wants "healthy")
@@ -171,12 +171,14 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                     });
                 }
                 setServerHistory(mappedHistory);
-            } catch (e) {
+            }).catch(e => {
                 console.warn("Failed to fetch dashboard health", e);
-            }
+            });
+
+            await Promise.all([topologyPromise, healthPromise]);
 
         } catch (e) {
-            console.error("Failed to fetch topology for health history", e);
+            console.error("Failed to execute polling cycle", e);
         }
     }, []);
 
