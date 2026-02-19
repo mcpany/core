@@ -9,6 +9,13 @@ test('dashboard network topology widget', async ({ page }) => {
   // Go to dashboard
   await page.goto('/');
 
+  // Wait for topology API to respond to ensure data is loaded
+  try {
+      await page.waitForResponse(resp => resp.url().includes('/api/v1/topology') && resp.status() === 200, { timeout: 15000 });
+  } catch (e) {
+      console.warn("Topology API wait timed out, proceeding to check UI...");
+  }
+
   // The widget should be present in the default layout.
   // We can look for the React Flow container
   await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });

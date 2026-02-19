@@ -8,6 +8,8 @@ import { seedUser, cleanupUser } from '../e2e/test-data';
 
 test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
+        // Ensure clean state
+        await cleanupUser(request, "test-api-user");
         await seedUser(request, "e2e-admin-users");
         await page.goto('/login');
         await page.fill('input[name="username"]', 'e2e-admin-users');
