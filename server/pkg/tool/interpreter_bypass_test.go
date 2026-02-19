@@ -46,7 +46,12 @@ func TestInterpreterFunctionCalls_BypassAttempts(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := checkInterpreterFunctionCalls(tc.val, tc.language)
+			// mimic the check sequence for Level 1/2
+			err := checkInterpreterKeywords(tc.val, tc.language)
+			if err == nil {
+				err = checkInterpreterObfuscation(tc.val, tc.language)
+			}
+
 			if tc.shouldBlock {
 				if err == nil {
 					t.Errorf("SECURITY BYPASS: content %q (lang: %s) was NOT blocked", tc.val, tc.language)

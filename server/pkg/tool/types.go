@@ -2985,10 +2985,23 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			return err
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
-		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
+		// Block dangerous function calls and keywords commonly used for RCE.
+
+		// 1. Check for unquoted keywords (Level 0, 1, 2)
+		// This blocks "system" in `system q/ls/` (unquoted) or `system` inside quotes if parsed as code.
+		// Note: checkInterpreterKeywords respects quotes, so `print("system")` is allowed.
+		if quoteLevel <= 2 {
+			if err := checkInterpreterKeywords(val, base); err != nil {
+				return err
+			}
+		}
+
+		// 2. Check for obfuscated calls (Level 1, 2 only)
+		// This blocks `system("ls")` inside strings if the string might be evaluated.
+		// We skip this for Level 0 because checkInterpreterKeywords already covers unquoted keywords,
+		// and checkInterpreterObfuscation is too aggressive for unquoted code (e.g. `print("system")` would be blocked).
 		if quoteLevel == 1 || quoteLevel == 2 {
-			if err := checkInterpreterFunctionCalls(val, base); err != nil {
+			if err := checkInterpreterObfuscation(val, base); err != nil {
 				return err
 			}
 		}
@@ -3006,8 +3019,13 @@ func checkForShellInjection(val string, template string, placeholder string, com
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
+			if quoteLevel <= 2 {
+				if err := checkInterpreterKeywords(val, argBase); err != nil {
+					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
+				}
+			}
 			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
+				if err := checkInterpreterObfuscation(val, argBase); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -3180,22 +3198,37 @@ func stripInterpreterComments(val, language string) string {
 	return b.String()
 }
 
-func checkInterpreterFunctionCalls(val, language string) error {
+// checkInterpreterKeywords checks for dangerous keywords in unquoted context.
+// It respects quotes (via checkUnquotedKeywords) so safe strings like print("system") are allowed.
+func checkInterpreterKeywords(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
-	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
-	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
+	// Sentinel Security Update: Check for standalone keywords that can execute code.
+	// This uses a robust parser that respects quotes.
 	dangerousKeywords := []string{
 		"system", "exec", "popen", "eval",
 		"spawn", "fork",
-		"import", "require",
-		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
+		"subprocess", "child_process", "dlopen",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
 		return err
+	}
+	return nil
+}
+
+// checkInterpreterObfuscation checks for obfuscated function calls.
+// This is more aggressive and ignores quotes, so it should only be used when we suspect
+// the value is being interpolated into code (e.g. inside a string that might be eval'd).
+func checkInterpreterObfuscation(val, language string) error {
+	// Strip comments and line continuations first
+	val = stripInterpreterComments(val, language)
+
+	dangerousKeywords := []string{
+		"system", "exec", "popen", "eval",
+		"spawn", "fork",
+		"subprocess", "child_process", "dlopen",
 	}
 
 	// Normalize value to detect obfuscation (e.g. system ( ) )

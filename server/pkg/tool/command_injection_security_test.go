@@ -95,7 +95,8 @@ func TestCommandInjection_Advanced(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// "import" keyword is caught by interpreter injection check
+		assert.Contains(t, err.Error(), "interpreter injection detected")
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
