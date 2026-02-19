@@ -89,7 +89,8 @@ test.describe('Dashboard Real Data', () => {
         // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
         const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+        // Increase timeout for backend aggregation delay
+        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 60000 });
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();

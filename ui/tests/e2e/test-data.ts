@@ -11,6 +11,10 @@ const HEADERS = { 'X-API-Key': API_KEY };
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
+    // Cleanup first to ensure clean state
+    await cleanupServices(context);
+
     const services = [
         {
             id: "svc_01",

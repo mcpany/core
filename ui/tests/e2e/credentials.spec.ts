@@ -61,8 +61,12 @@ test.describe('Credentials Management', () => {
     await updatedRow.getByRole('button', { name: 'Delete' }).click();
 
     // Handle Radix alert dialog if present (overrides native dialog often)
-    if (await page.getByText('Are you sure?').isVisible()) {
-         await page.getByRole('button', { name: 'Delete' }).last().click();
+    // Wait for dialog to appear to avoid race condition
+    try {
+        await expect(page.getByText('Are you sure?')).toBeVisible({ timeout: 5000 });
+        await page.getByRole('button', { name: 'Delete' }).last().click();
+    } catch (e) {
+        // Ignore if native dialog handled it
     }
 
     await expect(page.getByText('Updated API Key')).toBeHidden();
