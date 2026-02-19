@@ -48,6 +48,8 @@ const (
 	redactedPlaceholder = "[REDACTED]"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
+	//
+	// Summary: Constant for unhealthy service status.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -405,6 +407,11 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result (usually a map or JSON string).
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Invokes the underlying gRPC service method.
+//   - Updates gRPC request metrics.
+//   - Logs execution details.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -673,6 +680,11 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Sends an HTTP request to the upstream service.
+//   - Updates HTTP request metrics.
+//   - Logs execution details.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1369,6 +1381,10 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Invokes the downstream MCP tool via the client.
+//   - Logs execution details.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1608,6 +1624,10 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Sends an HTTP request to the upstream service.
+//   - Logs execution details.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1942,6 +1962,10 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Executes a subprocess on the local system.
+//   - Logs execution details.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2287,6 +2311,10 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Executes a command via the configured executor.
+//   - Logs execution details.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError

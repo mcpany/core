@@ -38,6 +38,9 @@ var (
 )
 
 // fastJSON is a jsoniter configuration that disables map key sorting for performance.
+//
+// Summary: Fast JSON configuration.
+//
 // The order of keys in the JSON response does not matter for the LLM.
 var fastJSON = jsoniter.Config{
 	EscapeHTML:             true,
@@ -46,6 +49,9 @@ var fastJSON = jsoniter.Config{
 }.Froze()
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+//
+// Summary: Testing hook for middleware inspection.
+//
 // It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
 //
 // Side Effects:
@@ -53,6 +59,8 @@ var fastJSON = jsoniter.Config{
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application.
+//
+// Summary: Core MCP server implementation.
 //
 // It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
 // tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
@@ -73,6 +81,8 @@ type Server struct {
 
 // Server returns the underlying *mcp.Server instance.
 //
+// Summary: Returns the underlying MCP server.
+//
 // It provides access to the core MCP server functionality, which can be used for advanced
 // configurations or direct interaction with the MCP server.
 //
@@ -88,6 +98,8 @@ func (s *Server) Server() *mcp.Server {
 }
 
 // NewServer creates and initializes a new MCP Any Server.
+//
+// Summary: Initializes a new MCP Any Server.
 //
 // It sets up the necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for request processing,
@@ -107,6 +119,10 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Side Effects:
+//   - Initializes internal managers.
+//   - Registers MCP handlers.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -401,6 +417,8 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 
 // ListPrompts handles the "prompts/list" MCP request.
 //
+// Summary: Lists available prompts.
+//
 // It retrieves the list of available prompts from the PromptManager, converts them to the MCP format,
 // and returns them to the client.
 //
@@ -429,6 +447,8 @@ func (s *Server) ListPrompts(
 
 // CreateMessage requests a message creation from the client (sampling).
 //
+// Summary: Creates a sampled message.
+//
 // This method exposes sampling to the Server instance if a session is available.
 //
 // Parameters:
@@ -447,6 +467,8 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 }
 
 // GetPrompt handles the "prompts/get" MCP request.
+//
+// Summary: Retrieves and executes a prompt.
 //
 // It retrieves a specific prompt by name from the PromptManager and executes it with the provided
 // arguments, returning the result.
@@ -490,6 +512,8 @@ func (s *Server) GetPrompt(
 
 // ListResources handles the "resources/list" MCP request.
 //
+// Summary: Lists available resources.
+//
 // It fetches the list of available resources from the ResourceManager, converts them to the MCP
 // format, and returns them to the client.
 //
@@ -517,6 +541,8 @@ func (s *Server) ListResources(
 }
 
 // ReadResource handles the "resources/read" MCP request.
+//
+// Summary: Reads a resource.
 //
 // It retrieves a specific resource by its URI from the ResourceManager and returns its content.
 //
@@ -553,6 +579,8 @@ func (s *Server) ReadResource(
 
 // AuthManager returns the server's authentication manager.
 //
+// Summary: Returns the authentication manager.
+//
 // It provides access to the authentication manager, which is responsible for handling
 // authentication for incoming requests.
 //
@@ -563,6 +591,8 @@ func (s *Server) AuthManager() *auth.Manager {
 }
 
 // ToolManager returns the server's tool manager.
+//
+// Summary: Returns the tool manager.
 //
 // It provides access to the tool manager, which is responsible for managing the lifecycle
 // and access to tools.
@@ -575,6 +605,8 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 
 // PromptManager returns the server's prompt manager.
 //
+// Summary: Returns the prompt manager.
+//
 // It provides access to the prompt manager, which is responsible for managing the lifecycle
 // and access to prompts.
 //
@@ -585,6 +617,8 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 }
 
 // ResourceManager returns the server's resource manager.
+//
+// Summary: Returns the resource manager.
 //
 // It provides access to the resource manager, which is responsible for managing the lifecycle
 // and access to resources.
@@ -597,6 +631,8 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 
 // ServiceRegistry returns the server's service registry.
 //
+// Summary: Returns the service registry.
+//
 // It provides access to the service registry, which keeps track of all registered upstream services.
 //
 // Returns:
@@ -606,6 +642,8 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 }
 
 // AddServiceInfo adds information about a service to the tool manager.
+//
+// Summary: Adds service information.
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
@@ -619,6 +657,8 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 
 // GetTool retrieves a tool by its name.
 //
+// Summary: Retrieves a tool.
+//
 // Parameters:
 //   - toolName: string. The name of the tool to retrieve.
 //
@@ -631,6 +671,8 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 
 // ListTools returns a list of all available tools.
 //
+// Summary: Lists all tools.
+//
 // Returns:
 //   - []tool.Tool: A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
@@ -640,6 +682,8 @@ func (s *Server) ListTools() []tool.Tool {
 }
 
 // CallTool executes a tool with the provided request.
+//
+// Summary: Executes a tool.
 //
 // It handles the execution of the tool, including logging, metrics collection, and profile-based
 // access control.
@@ -651,6 +695,11 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Side Effects:
+//   - Executes the tool.
+//   - Increments metrics.
+//   - Logs activity.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -805,6 +854,8 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 // SetMCPServer sets the MCP server provider for the tool manager.
 //
+// Summary: Sets the MCP server provider.
+//
 // Parameters:
 //   - mcpServer: tool.MCPServerProvider. The MCP server provider to set.
 //
@@ -816,6 +867,8 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 
 // AddTool registers a new tool with the tool manager.
 //
+// Summary: Registers a new tool.
+//
 // Parameters:
 //   - t: tool.Tool. The tool instance to register.
 //
@@ -826,6 +879,8 @@ func (s *Server) AddTool(t tool.Tool) error {
 }
 
 // GetServiceInfo retrieves information about a service by its ID.
+//
+// Summary: Retrieves service information.
 //
 // Parameters:
 //   - serviceID: string. The unique identifier of the service.
@@ -843,6 +898,8 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 
 // ClearToolsForService removes all tools associated with a specific service.
 //
+// Summary: Clears tools for a service.
+//
 // Parameters:
 //   - serviceKey: string. The identifier of the service whose tools should be cleared.
 //
@@ -854,6 +911,8 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 
 // SetReloadFunc sets the function to be called when a configuration reload is triggered.
 //
+// Summary: Sets the reload function.
+//
 // Parameters:
 //   - f: func(context.Context) error. The function to execute on reload.
 //
@@ -864,6 +923,8 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 }
 
 // Reload reloads the server's configuration and updates its state.
+//
+// Summary: Reloads the server configuration.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the reload operation.
@@ -980,14 +1041,21 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 
 // LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
 // its JSON content only when logged.
+//
+// Summary: Lazy redaction wrapper for logging.
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
+//
+// Summary: Returns the redacted log value.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
 // LazyLogResult wraps a tool execution result for efficient logging.
+//
+// Summary: Lazy log result wrapper.
+//
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 type LazyLogResult struct {
@@ -995,6 +1063,8 @@ type LazyLogResult struct {
 }
 
 // LogValue implements slog.LogValuer.
+//
+// Summary: Returns the log value.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")
