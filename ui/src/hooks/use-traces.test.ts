@@ -154,4 +154,32 @@ describe('useTraces Hook', () => {
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
   });
+
+  it('should enforce max trace limit', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+    act(() => {
+        mockWebSocket.onopen({} as any);
+    });
+
+    // Add 1005 items
+    act(() => {
+        for (let i = 0; i < 1005; i++) {
+             mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    // Should be capped at 1000
+    expect(result.current.traces).toHaveLength(1000);
+    // Newest items should be present (LIFO)
+    // IDs were 0..1004. So 1004 is newest.
+    // 1000 items means IDs 1004 down to 5.
+    expect(result.current.traces[0].id).toBe('1004');
+    expect(result.current.traces[999].id).toBe('5');
+  });
 });
