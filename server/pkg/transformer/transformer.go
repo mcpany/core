@@ -141,9 +141,7 @@ func joinFunc(sep string, input any) (string, error) {
 			sb.Write(strconv.AppendBool(scratch[:0], v.Bool()))
 		case reflect.Interface:
 			// If element type is interface (e.g. []any was handled, but maybe []error or others)
-			if err := writeAny(&sb, v.Interface(), scratch[:]); err != nil {
-				return "", err
-			}
+			writeAny(&sb, v.Interface(), scratch[:])
 		default:
 			// Fallback
 			fmt.Fprint(&sb, v.Interface())
@@ -183,14 +181,12 @@ func joinAnySlice(sep string, a []any) (string, error) {
 		if i > 0 {
 			sb.WriteString(sep)
 		}
-		if err := writeAny(&sb, v, scratch[:]); err != nil {
-			return "", err
-		}
+		writeAny(&sb, v, scratch[:])
 	}
 	return sb.String(), nil
 }
 
-func writeAny(sb *strings.Builder, v any, scratch []byte) error {
+func writeAny(sb *strings.Builder, v any, scratch []byte) {
 	switch val := v.(type) {
 	case string:
 		sb.WriteString(val)
@@ -225,5 +221,4 @@ func writeAny(sb *strings.Builder, v any, scratch []byte) error {
 	default:
 		fmt.Fprint(sb, v)
 	}
-	return nil
 }
