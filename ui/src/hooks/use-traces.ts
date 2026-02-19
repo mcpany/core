@@ -43,8 +43,14 @@ export function useTraces(options: UseTracesOptions = {}) {
             if (bufferRef.current.length === 0) return;
 
             // Take current buffer and clear it immediately
-            const buffer = bufferRef.current;
+            let buffer = bufferRef.current;
             bufferRef.current = [];
+
+            // ⚡ BOLT: Safety valve for massive floods (e.g. initial load or stress test)
+            // If buffer exceeds limit, only process the newest items to save CPU.
+            if (buffer.length > MAX_TRACES) {
+                buffer = buffer.slice(buffer.length - MAX_TRACES);
+            }
 
             setTraces((prev) => {
                 // ⚡ BOLT: Batched updates logic with Max Limit Optimization
