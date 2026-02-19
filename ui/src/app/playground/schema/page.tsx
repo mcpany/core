@@ -7,11 +7,11 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, Play } from "lucide-react";
 import { apiClient } from "@/lib/client";
+import { ConfigEditor } from "@/components/stacks/config-editor";
 
 /**
  * SchemaPlaygroundPage provides an interactive environment for users to test and validate
@@ -51,15 +51,7 @@ export default function SchemaPlaygroundPage() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/v1/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content }),
-      });
-
-      const data = await response.json();
+      const data = await apiClient.validateConfig(content);
       setResult({
         valid: data.valid,
         message: data.message || data.error || "Unknown response",
@@ -75,64 +67,60 @@ export default function SchemaPlaygroundPage() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Schema Validation Playground</h2>
+    <div className="flex-1 flex flex-col h-[calc(100vh-4rem)] p-8 pt-6 space-y-4">
+      <div className="flex items-center justify-between shrink-0">
+        <div>
+            <h2 className="text-3xl font-bold tracking-tight">Schema Validator</h2>
+            <p className="text-muted-foreground">Validate your configuration syntax and rules.</p>
+        </div>
+        <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setContent(EXAMPLES.http)}>Load HTTP Example</Button>
+            <Button variant="outline" size="sm" onClick={() => setContent(EXAMPLES.command)}>Load CLI Example</Button>
+            <Button variant="outline" size="sm" onClick={() => setContent(EXAMPLES.invalid)}>Load Invalid Example</Button>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Configuration Editor</CardTitle>
-            <CardDescription>
-              Paste your JSON or YAML configuration snippet here to validate it against the server schema.
-            </CardDescription>
+      <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-7 min-h-0">
+        <Card className="col-span-4 flex flex-col h-full overflow-hidden">
+          <CardHeader className="py-3 border-b bg-muted/20 flex flex-row items-center justify-between space-y-0">
+            <div className="flex flex-col">
+                <CardTitle className="text-sm font-medium">Editor</CardTitle>
+            </div>
+            <Button onClick={handleValidate} disabled={isValidating || !content.trim()} size="sm">
+                {isValidating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                Validate
+            </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setContent(EXAMPLES.http)}>Load HTTP Example</Button>
-              <Button variant="outline" size="sm" onClick={() => setContent(EXAMPLES.command)}>Load Stdio Example</Button>
-              <Button variant="outline" size="sm" onClick={() => setContent(EXAMPLES.invalid)}>Load Invalid Example</Button>
-            </div>
-            <Textarea
-              placeholder="Paste JSON or YAML here..."
-              className="min-h-[400px] font-mono"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+          <CardContent className="flex-1 p-0 relative">
+            <ConfigEditor
+                value={content}
+                onChange={(v) => setContent(v || "")}
+                language="yaml"
             />
-            <div className="flex justify-end">
-              <Button onClick={handleValidate} disabled={isValidating || !content.trim()}>
-                {isValidating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Validate Configuration
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Validation Results</CardTitle>
-            <CardDescription>
-              Real-time feedback on your configuration structure and rules.
-            </CardDescription>
+        <Card className="col-span-3 flex flex-col h-full overflow-hidden bg-muted/5">
+          <CardHeader className="py-3 border-b bg-muted/20">
+            <CardTitle className="text-sm font-medium">Results</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 flex-1 overflow-auto">
             {result ? (
-              <Alert variant={result.valid ? "default" : "destructive"}>
+              <Alert variant={result.valid ? "default" : "destructive"} className={result.valid ? "border-green-500 bg-green-50 dark:bg-green-900/20" : ""}>
                 {result.valid ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
                 ) : (
                   <AlertCircle className="h-4 w-4" />
                 )}
-                <AlertTitle>{result.valid ? "Valid Configuration" : "Validation Error"}</AlertTitle>
-                <AlertDescription className="mt-2 whitespace-pre-wrap">
+                <AlertTitle>{result.valid ? "Configuration Valid" : "Validation Failed"}</AlertTitle>
+                <AlertDescription className="mt-2 font-mono text-xs whitespace-pre-wrap break-all">
                   {result.message}
                 </AlertDescription>
               </Alert>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
-                <p>No validation results yet.</p>
-                <p className="text-sm">Click "Validate Configuration" to start.</p>
+              <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
+                <CheckCircle2 className="h-12 w-12 mb-2" />
+                <p>Ready to validate.</p>
               </div>
             )}
           </CardContent>

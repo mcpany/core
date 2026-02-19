@@ -650,6 +650,30 @@ export const apiClient = {
      * @param config The service configuration to validate.
      * @returns A promise that resolves to the validation result.
      */
+    /**
+     * Validates a full server configuration snippet.
+     * @param content The configuration content (YAML/JSON) to validate.
+     * @returns A promise that resolves to the validation result.
+     */
+    validateConfig: async (content: string) => {
+        const response = await fetchWithAuth('/api/v1/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+             throw new Error(data.error || `Failed to validate config: ${response.status}`);
+        }
+        return data;
+    },
+
+    /**
+     * Validates a service configuration.
+     * @param config The service configuration to validate.
+     * @returns A promise that resolves to the validation result.
+     */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
