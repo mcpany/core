@@ -166,3 +166,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+### Strategic Evolution: [2026-02-19]
+* [Security] Zero Trust Policy Firewall: Rego-based tool call filtering to mitigate OpenClaw-style exploits.
+* [Comms] Isolated Inter-Agent Comms: Docker-bound named pipes for secure subagent routing, replacing local HTTP tunnels.
