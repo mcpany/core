@@ -14,7 +14,7 @@ test.describe('Network Topology Visualizer', () => {
     await page.getByRole('button', { name: 'Seed' }).click();
 
     // 3. Verify Toast appears
-    await expect(page.getByText('Traffic Seeded')).toBeVisible();
+    await expect(page.getByText('Traffic Seeded', { exact: true })).toBeVisible();
 
     // 4. Verify Nodes appear
     // The Core node ID is "mcp-core"
