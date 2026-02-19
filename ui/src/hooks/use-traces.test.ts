@@ -154,4 +154,32 @@ describe('useTraces Hook', () => {
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
   });
+
+  it('should limit the number of traces to MAX_TRACES', async () => {
+     const { result } = renderHook(() => useTraces());
+
+     expect(mockWebSocket.onopen).toBeTruthy();
+
+     act(() => {
+        mockWebSocket.onopen({} as any);
+     });
+
+     // MAX_TRACES is 1000. Simulate 1100 updates.
+     act(() => {
+         for (let i = 0; i < 1100; i++) {
+             mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+         }
+     });
+
+     act(() => {
+         vi.advanceTimersByTime(200);
+     });
+
+     // Should be capped at 1000
+     expect(result.current.traces).toHaveLength(1000);
+     // Newest should be '1099'
+     expect(result.current.traces[0].id).toBe('1099');
+     // Oldest (index 999) should be '100' (since 0-99 were dropped)
+     expect(result.current.traces[999].id).toBe('100');
+  });
 });
