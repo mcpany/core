@@ -89,66 +89,93 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 func joinFunc(sep string, input any) (string, error) {
 	// ⚡ BOLT: Optimization for common slice types to avoid []any allocation (boxing)
 	// Randomized Selection from Top 5 High-Impact Targets
-	var sb strings.Builder
-	sepLen := len(sep)
-
 	switch a := input.(type) {
 	case []string:
-		totalLen := 0
-		for i, v := range a {
-			if i > 0 {
-				totalLen += sepLen
-			}
-			totalLen += len(v)
-		}
-		sb.Grow(totalLen)
-		for i, v := range a {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.WriteString(v)
-		}
-		return sb.String(), nil
+		return joinStrings(sep, a), nil
 	case []int:
-		// Estimate length: 2 digits + sep
-		sb.Grow(len(a) * (sepLen + 2))
-		var scratch [64]byte
-		for i, v := range a {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], int64(v), 10))
-		}
-		return sb.String(), nil
+		return joinInts(sep, a), nil
 	case []int64:
-		sb.Grow(len(a) * (sepLen + 2))
-		var scratch [64]byte
-		for i, v := range a {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], v, 10))
-		}
-		return sb.String(), nil
+		return joinInt64s(sep, a), nil
 	case []float64:
-		sb.Grow(len(a) * (sepLen + 5))
-		var scratch [64]byte
-		for i, v := range a {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendFloat(scratch[:0], v, 'g', -1, 64))
-		}
-		return sb.String(), nil
+		return joinFloat64s(sep, a), nil
 	case []any:
 		// Fast path for []any if already provided, fall through to generic logic
 	}
 
+	return joinGeneric(sep, input)
+}
+
+func joinStrings(sep string, a []string) string {
+	var sb strings.Builder
+	sepLen := len(sep)
+	totalLen := 0
+	for i, v := range a {
+		if i > 0 {
+			totalLen += sepLen
+		}
+		totalLen += len(v)
+	}
+	sb.Grow(totalLen)
+	for i, v := range a {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.WriteString(v)
+	}
+	return sb.String()
+}
+
+func joinInts(sep string, a []int) string {
+	var sb strings.Builder
+	sepLen := len(sep)
+	// Estimate length: 2 digits + sep
+	sb.Grow(len(a) * (sepLen + 2))
+	var scratch [64]byte
+	for i, v := range a {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendInt(scratch[:0], int64(v), 10))
+	}
+	return sb.String()
+}
+
+func joinInt64s(sep string, a []int64) string {
+	var sb strings.Builder
+	sepLen := len(sep)
+	sb.Grow(len(a) * (sepLen + 2))
+	var scratch [64]byte
+	for i, v := range a {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendInt(scratch[:0], v, 10))
+	}
+	return sb.String()
+}
+
+func joinFloat64s(sep string, a []float64) string {
+	var sb strings.Builder
+	sepLen := len(sep)
+	sb.Grow(len(a) * (sepLen + 5))
+	var scratch [64]byte
+	for i, v := range a {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendFloat(scratch[:0], v, 'g', -1, 64))
+	}
+	return sb.String()
+}
+
+func joinGeneric(sep string, input any) (string, error) {
 	a, err := toAnySlice(input)
 	if err != nil {
 		return "", fmt.Errorf("join: %w", err)
 	}
 
+	var sb strings.Builder
+	sepLen := len(sep)
 	var totalLen int
 
 	// First pass: try to calculate total length
