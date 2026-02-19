@@ -122,6 +122,36 @@ func joinFunc(sep string, input any) (string, error) {
 			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
 		}
 		return sb.String(), nil
+	case []bool:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendBool(scratch[:0], val))
+		}
+		return sb.String(), nil
+	case []int32:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		}
+		return sb.String(), nil
+	case []uint64:
+		var sb strings.Builder
+		var scratch [64]byte
+		for i, val := range v {
+			if i > 0 {
+				sb.WriteString(sep)
+			}
+			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
+		}
+		return sb.String(), nil
 	}
 
 	a, err := toAnySlice(input)
