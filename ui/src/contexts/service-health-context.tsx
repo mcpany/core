@@ -34,6 +34,8 @@ interface ServiceHealthContextType {
     serverHistory: Record<string, HealthHistoryPoint[]>;
     /** List of services with current health status from backend. */
     serverServices: ServiceHealth[];
+    /** Whether the initial data fetch has completed (successfully or failed). */
+    isInitialized: boolean;
 }
 
 interface TopologyContextType {
@@ -50,6 +52,25 @@ const MAX_HISTORY_POINTS = 30;
 /** Polling interval in milliseconds (5 seconds). */
 const POLLING_INTERVAL = 5000;
 
+/** Request timeout in milliseconds. */
+const REQUEST_TIMEOUT = 5000;
+
+/**
+ * Helper to fetch with timeout.
+ */
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = REQUEST_TIMEOUT) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(id);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
+    }
+};
+
 /**
  * ServiceHealthProvider component.
  * @param props - The component props.
@@ -61,6 +82,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
     const [serverHistory, setServerHistory] = useState<Record<string, HealthHistoryPoint[]>>({});
     const [serverServices, setServerServices] = useState<ServiceHealth[]>([]);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     const lastTopologyText = useRef<string>('');
     const lastGraph = useRef<Graph | null>(null);
@@ -90,7 +112,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                         }
                     }
 
-                    const res = await fetch(url, { headers });
+                    const res = await fetchWithTimeout(url, { headers });
 
                     if (res.status === 304 && lastGraph.current) {
                         return lastGraph.current;
@@ -123,7 +145,15 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
             const fetchHealthPromise = (async () => {
                  try {
-                     return await apiClient.getDashboardHealth();
+                     // Wrap apiClient call in a race with timeout
+                     const timeoutPromise = new Promise<null>((_, reject) =>
+                         setTimeout(() => reject(new Error('Health fetch timeout')), REQUEST_TIMEOUT)
+                     );
+
+                     return await Promise.race([
+                         apiClient.getDashboardHealth(),
+                         timeoutPromise
+                     ]);
                  } catch (e) {
                      console.warn("Failed to fetch dashboard health", e);
                      return null;
@@ -180,8 +210,12 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
         } catch (e) {
             console.error("Failed to fetch topology/health", e);
+        } finally {
+            if (!isInitialized) {
+                setIsInitialized(true);
+            }
         }
-    }, []);
+    }, [isInitialized]);
 
     useEffect(() => {
         void fetchTopology();
@@ -217,8 +251,9 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         latestTopology,
         refreshTopology: fetchTopology,
         serverHistory,
-        serverServices
-    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology, serverHistory, serverServices]);
+        serverServices,
+        isInitialized
+    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology, serverHistory, serverServices, isInitialized]);
 
     // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
     const topologyValue = useMemo(() => ({

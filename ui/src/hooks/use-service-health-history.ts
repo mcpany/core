@@ -25,17 +25,14 @@ export interface ServiceHistory {
  * @returns An object containing the current services list, their health history, and a loading state.
  */
 export function useServiceHealthHistory() {
-  const { serverHistory, serverServices } = useServiceHealth();
+  const { serverHistory, serverServices, isInitialized } = useServiceHealth();
 
-  // Heuristic: If we have no data, we might be loading, or we might just have no services.
-  // Since the context initializes with empty arrays, we can't distinguish easily without extra state.
-  // However, for the widget, returning empty arrays with isLoading=false renders "No services", which is fine.
-  // If we want to show a skeleton, we could check if latestTopology is null in the context, but we didn't expose that directly here.
-  // For now, we assume if the provider is mounted, we have data or are fetching it.
+  // If not initialized, we are loading.
+  // Once initialized, even if data is empty (no services), we are done loading.
 
   return {
     services: serverServices,
     history: serverHistory,
-    isLoading: false
+    isLoading: !isInitialized
   };
 }
