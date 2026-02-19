@@ -79,7 +79,15 @@ export function useTraces(options: UseTracesOptions = {}) {
                 // 5. Prepend new inserts (newest first).
                 // Buffer is oldest->newest. We want newest at top of list.
                 // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                const merged = [...inserts.reverse(), ...nextTraces];
+
+                // ⚡ BOLT: Cap the size of the traces array to prevent memory leaks
+                // Randomized Selection from Top 5 High-Impact Targets
+                const MAX_TRACES = 1000;
+                if (merged.length > MAX_TRACES) {
+                    return merged.slice(0, MAX_TRACES);
+                }
+                return merged;
             });
         }, 100);
 

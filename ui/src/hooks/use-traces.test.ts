@@ -154,4 +154,32 @@ describe('useTraces Hook', () => {
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
   });
+
+  it('should limit the number of traces to avoid memory leak', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+
+    act(() => {
+       mockWebSocket.onopen({} as any);
+    });
+
+    // Simulate sending more than MAX_TRACES (1000)
+    const TOTAL_TRACES = 1100;
+    const MAX_TRACES = 1000;
+
+    act(() => {
+        for (let i = 0; i < TOTAL_TRACES; i++) {
+            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces.length).toBe(MAX_TRACES);
+    // Since newest are prepended, we expect ID '1099' to be first.
+    expect(result.current.traces[0].id).toBe(`${TOTAL_TRACES - 1}`);
+ });
 });
