@@ -12,7 +12,7 @@ test('verify stats page', async ({ page }) => {
   // Mock all API calls to ensure page loads even if backend is slow/down
   await page.route('/api/v1/**', async route => {
     const url = route.request().url();
-    if (url.includes('dashboard/traffic') || url.includes('tools/top')) {
+    if (url.includes('dashboard/traffic') || url.includes('tools/top') || url.includes('dashboard/tool-usage') || url.includes('dashboard/tool-failures')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     } else {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
