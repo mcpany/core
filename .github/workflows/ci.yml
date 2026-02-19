@@ -50,6 +50,17 @@ jobs:
     env:
       SKIP_PLAYWRIGHT_INSTALL: true
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
@@ -117,16 +128,16 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       SKIP_PLAYWRIGHT_INSTALL: true
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - uses: actions/checkout@v5
 
@@ -253,16 +264,16 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       SKIP_PLAYWRIGHT_INSTALL: true
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - uses: actions/checkout@v5
 
@@ -533,6 +544,17 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       SKIP_PLAYWRIGHT_INSTALL: true
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Install dependencies
@@ -653,6 +675,17 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       SKIP_PLAYWRIGHT_INSTALL: true
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Install dependencies
@@ -818,17 +851,17 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      #      - name: Free Disk Space (Ubuntu)
-      #        uses: jlumbroso/free-disk-space@main
-      #        with:
-      #          tool-cache: false
-      #          android: true
-      #          dotnet: true
-      #          haskell: true
-      #          large-packages: true
-      #          docker-images: false
-      #          swap-storage: true
-      #
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Detect Architecture
@@ -872,6 +905,17 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
