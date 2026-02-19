@@ -52,6 +52,7 @@ export function SystemStatusIndicator() {
       setReport(data);
       setError(null);
     } catch (err) {
+      console.error("SystemStatusIndicator: Fetch failed", err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setReport(null);
     } finally {

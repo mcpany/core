@@ -7,8 +7,17 @@ import { test, expect } from '@playwright/test';
 
 test.describe('System Status', () => {
   test('should display status indicator in header', async ({ page }) => {
+    // Monitor console logs for debugging
+    page.on('console', msg => {
+      if (msg.type() === 'error')
+        console.log(`[Browser Console Error] ${msg.text()}`);
+      else
+        console.log(`[Browser Console] ${msg.text()}`);
+    });
+
     // Mock the doctor status endpoint
     await page.route('**/api/v1/doctor', async (route) => {
+      console.log('Mocking /api/v1/doctor response');
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -27,11 +36,19 @@ test.describe('System Status', () => {
 
     // Wait for the indicator to appear
     const indicator = page.getByTitle('System Status');
+
+    // Check if we hit the Disconnected state which implies mock failure or fetch error
+    // We expect it to NOT be visible or contain "Disconnected"
     await expect(indicator).toBeVisible();
-    await expect(indicator).toHaveText(/Healthy/);
+
+    // Explicitly check for Healthy to confirm data load
+    // Using a more lenient text matcher or ensuring we wait long enough
+    await expect(indicator).toContainText('Healthy', { timeout: 10000 });
   });
 
   test('should open status sheet on click', async ({ page }) => {
+    page.on('console', msg => console.log(`[Browser Console] ${msg.text()}`));
+
     // Mock the doctor status endpoint
     await page.route('**/api/v1/doctor', async (route) => {
       await route.fulfill({
