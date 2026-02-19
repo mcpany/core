@@ -87,7 +87,7 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 }
 
 func joinFunc(sep string, input any) (string, error) {
-	// ⚡ BOLT: Optimized joinFunc to avoid allocation of []any for common slice types
+	// ⚡ BOLT: Optimized joinFunc to avoid allocation of []any for common slice types.
 	// Randomized Selection from Top 5 High-Impact Targets
 
 	val := reflect.ValueOf(input)
