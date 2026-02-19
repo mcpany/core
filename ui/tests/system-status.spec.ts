@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('System Status', () => {
   test('should display status indicator in header', async ({ page }) => {
     // Mock the doctor status endpoint
-    await page.route('**/api/v1/doctor/status', async (route) => {
+    await page.route('**/api/v1/doctor', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -33,7 +33,7 @@ test.describe('System Status', () => {
 
   test('should open status sheet on click', async ({ page }) => {
     // Mock the doctor status endpoint
-    await page.route('**/api/v1/doctor/status', async (route) => {
+    await page.route('**/api/v1/doctor', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
