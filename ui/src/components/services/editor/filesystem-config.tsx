@@ -20,6 +20,14 @@ interface FilesystemConfigProps {
     onChange: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * Component for configuring filesystem upstream services.
+ * Allows users to set root paths, read-only mode, and filesystem type specific settings.
+ *
+ * @param props - Component properties.
+ * @param props.service - The service configuration to edit.
+ * @param props.onChange - Callback when configuration changes.
+ */
 export function FilesystemConfig({ service, onChange }: FilesystemConfigProps) {
     const fsConfig = service.filesystemService || {
         rootPaths: {},
