@@ -4,11 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, seedUser, cleanupServices, cleanupUser } from './test-data';
+import { seedServices, seedUser, seedProfiles, cleanupServices, cleanupUser, cleanupProfiles } from './test-data';
 
 test.describe('Agent Skills', () => {
   test.beforeEach(async ({ page, request }) => {
     await seedServices(request);
+    await seedProfiles(request);
     await seedUser(request, "e2e-admin-skills");
 
     // Login first
@@ -27,6 +28,7 @@ test.describe('Agent Skills', () => {
 
   test.afterEach(async ({ request }) => {
     await cleanupServices(request);
+    await cleanupProfiles(request);
     // await cleanupUser(request, "e2e-admin-skills");
   });
 
@@ -56,7 +58,7 @@ test.describe('Agent Skills', () => {
     );
 
     // Click the Save button in the wizard specifically
-    const saveButton = page.locator('div[role="dialog"]').locator('button:has-text("Create Skill")');
+    const saveButton = page.locator('main').locator('button:has-text("Create Skill")');
     await expect(saveButton).toBeVisible();
     await saveButton.click({ force: true });
     await createPromise;
@@ -93,7 +95,7 @@ test.describe('Agent Skills', () => {
         { timeout: 30000 }
     );
     // Click the Save button in the wizard specifically
-    const saveButton = page.locator('div[role="dialog"] button:has-text("Create Skill")');
+    const saveButton = page.locator('main').locator('button:has-text("Create Skill")');
     await expect(saveButton).toBeVisible();
     await saveButton.click();
     await createPromise;

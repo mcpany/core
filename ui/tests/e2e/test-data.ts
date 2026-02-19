@@ -314,7 +314,8 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
                 password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
             }
         },
-        roles: ["admin"]
+        roles: ["admin"],
+        profile_ids: ["dev", "prod"]
     };
     // We don't delete first anymore to avoid race conditions in parallel tests
     // await cleanupUser(context, username);
@@ -337,5 +338,45 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup user: ${e}`);
+    }
+};
+
+export const seedProfiles = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const profiles = [
+        {
+            name: "dev",
+            required_roles: ["admin"],
+            service_config: {
+                "svc_01": { enabled: true }
+            }
+        },
+        {
+            name: "prod",
+            required_roles: ["admin"],
+            service_config: {
+                "svc_01": { enabled: false }
+            }
+        }
+    ];
+
+    for (const p of profiles) {
+        try {
+            await context.post('/api/v1/profiles', { data: p, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed profile ${p.name}: ${e}`);
+        }
+    }
+};
+
+export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const names = ["dev", "prod"];
+    for (const name of names) {
+        try {
+            await context.delete(`/api/v1/profiles/${name}`, { headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to cleanup profile ${name}: ${e}`);
+        }
     }
 };

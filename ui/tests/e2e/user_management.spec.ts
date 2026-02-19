@@ -4,12 +4,14 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from '../e2e/test-data';
+import { seedUser, cleanupUser, seedProfiles, cleanupProfiles } from '../e2e/test-data';
 
 test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
         await cleanupUser(request, "test-api-user").catch(() => { });
+        await seedProfiles(request);
         await seedUser(request, "e2e-admin-users");
+        page.on('console', msg => console.log(`BROWSER_LOG: ${msg.text()}`));
         await page.goto('/login');
         await page.fill('input[name="username"]', 'e2e-admin-users');
         await page.fill('input[name="password"]', 'password');
@@ -21,6 +23,7 @@ test.describe('User Management', () => {
     test.afterEach(async ({ request }) => {
         await cleanupUser(request, "e2e-admin-users").catch(() => { });
         await cleanupUser(request, "test-api-user").catch(() => { });
+        await cleanupProfiles(request);
     });
 
     test('should allow creating a user with API Key', async ({ page }) => {
@@ -43,11 +46,7 @@ test.describe('User Management', () => {
         await page.click('button[role="tab"]:has-text("API Key")');
 
         // 4. API Key Configuration
-        // Ensure input is visible
-        await expect(page.locator('input[placeholder="e.g. Production API Key"]')).toBeVisible({ timeout: 10000 });
-
-        // Type key name
-        await page.fill('input[placeholder="e.g. Production API Key"]', 'test-api-key');
+        // Note: No name input required for API Key generation in current UI
 
         // Wait for and click Generate
         const generateButton = page.getByRole('button', { name: 'Generate' });

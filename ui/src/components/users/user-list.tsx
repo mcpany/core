@@ -160,12 +160,12 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            {user.authentication?.apiKey ? (
+                                            {user.authentication?.apiKey || (user.authentication as any)?.api_key ? (
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
                                                     <Key className="h-3.5 w-3.5 text-orange-500" />
                                                     <span>API Key</span>
                                                 </div>
-                                            ) : user.authentication?.basicAuth ? (
+                                            ) : user.authentication?.basicAuth || (user.authentication as any)?.basic_auth ? (
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
                                                     <Lock className="h-3.5 w-3.5 text-blue-500" />
                                                     <span>Password</span>

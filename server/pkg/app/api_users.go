@@ -83,7 +83,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			} else {
 				// Maybe body IS the user?
 				if err := protojson.Unmarshal(body, &user); err != nil {
-					http.Error(w, "missing user field or invalid body", http.StatusBadRequest)
+					logging.GetLogger().Error("failed to unmarshal user", "error", err, "body", string(body)); http.Error(w, "missing user field or invalid body: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			}
@@ -207,7 +207,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			} else {
 				// Maybe body IS the user?
 				if err := protojson.Unmarshal(body, &user); err != nil {
-					http.Error(w, "missing user field or invalid body", http.StatusBadRequest)
+					logging.GetLogger().Error("failed to unmarshal user", "error", err, "body", string(body)); http.Error(w, "missing user field or invalid body: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			}

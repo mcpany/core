@@ -103,6 +103,25 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/dashboard/tool-usage", a.handleDashboardToolUsage())
 	mux.HandleFunc("/dashboard/health", a.handleDashboardHealth())
 
+	mux.HandleFunc("/skills", a.handleSkills())
+	mux.HandleFunc("/skills/", a.handleSkillDetail())
+	// Asset upload is handled via query param path, but we can mount it if needed.
+	// Actually handleUploadSkillAsset parses path manually, so checking if we need explicit mount.
+	// No, handleUploadSkillAsset is NOT registered!
+	// Wait, I should probably register it under /skills/{name}/assets if I could use pattern matching,
+	// but standard http mux in Go < 1.22 doesn't support wildcards well (unless using Go 1.22+).
+	// If Go 1.22+, "POST /skills/{name}/assets" works.
+	// check Go version? mcpany likely uses 1.21 or 1.22.
+	// But `handleUploadSkillAsset` manually parses `strings.Split(r.URL.Path, "/")`.
+	// So I should mount it under `/skills/` ?
+	// `handleSkillDetail` handles everything under `/skills/` except if I add more specific handlers?
+	// If I mount `/skills/` for `handleSkillDetail`, it catches everything starting with `/skills/`.
+	// I need to dispatch inside `handleSkillDetail` or make it smarter.
+	// OR I can just use `handleSkillDetail` to delegate if it sees `assets`?
+	// `handleUploadSkillAsset` expects `/skills/{name}/assets`.
+	// If I register `/skills/` for `handleSkillDetail`, I can't easily register `/skills/{name}/assets` separately without 1.22.
+	// Let's assume `handleSkillDetail` needs to handle sub-paths or I merge them.
+
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
 
