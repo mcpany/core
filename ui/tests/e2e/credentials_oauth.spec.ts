@@ -4,82 +4,77 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { createServer, Server } from 'http';
+import { AddressInfo } from 'net';
 
 test.describe('Credential OAuth Flow E2E', () => {
-  const credentialID = 'cred-123';
-  const credentials: any[] = [];
+  let mockProviderServer: Server;
+  let mockProviderUrl: string;
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeAll(async () => {
+    // Start a mock OAuth provider server accessible by the backend
+    mockProviderServer = createServer((req, res) => {
+      // Enable CORS
+      res.setHeader('Access-Control-Allow-Origin', '*');
+
+      if (req.url?.startsWith('/auth')) {
+        // Extract redirect_uri and state
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        const redirectUri = url.searchParams.get('redirect_uri');
+        const state = url.searchParams.get('state');
+
+        if (redirectUri && state) {
+          // Redirect back to the application callback
+          res.writeHead(302, {
+            'Location': `${redirectUri}?code=test-auth-code&state=${state}`
+          });
+          res.end();
+        } else {
+          res.writeHead(400);
+          res.end('Missing params');
+        }
+      } else if (req.url?.startsWith('/token')) {
+        // Return JSON access token
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          access_token: 'mock-provider-access-token',
+          token_type: 'Bearer',
+          expires_in: 3600
+        }));
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
+    });
+
+    await new Promise<void>((resolve) => {
+      mockProviderServer.listen(0, () => {
+        const port = (mockProviderServer.address() as AddressInfo).port;
+        // Use 127.0.0.1 to avoid IPv6 issues if localhost resolves ambiguously
+        mockProviderUrl = `http://127.0.0.1:${port}`;
+        console.log(`Mock OAuth Provider running at ${mockProviderUrl}`);
+        resolve();
+      });
+    });
+  });
+
+  test.afterAll(async () => {
+    await new Promise<void>(resolve => mockProviderServer.close(() => resolve()));
+  });
+
+  test.beforeEach(async ({ page, request }) => {
     // Increase viewport height for long forms
     await page.setViewportSize({ width: 1280, height: 1000 });
-
-    credentials.length = 0;
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: { credentials } });
-        } else if (route.request().method() === 'POST') {
-             const req = route.request().postDataJSON();
-             const newCred = {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: null
-             };
-             credentials.push(newCred);
-             await route.fulfill({ json: newCred });
-        } else {
-            await route.continue();
-        }
-    });
+    // Seed/Reset database via Backend API to ensure clean state
+    // We send an empty list to clear credentials, or we could leave it
+    // and rely on unique names. For robustness, let's just ensure we don't conflict.
+    // Ideally we would delete the specific credential we are about to create if it exists.
+    // The debug/seed endpoint upserts.
 
-    await page.route(`**/api/v1/credentials/${credentialID}`, async route => {
-        const method = route.request().method();
-        if (method === 'PUT') {
-            const req = route.request().postDataJSON();
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) {
-                cred.name = req.name;
-                cred.authentication = req.authentication;
-            }
-             await route.fulfill({
-                 json: {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: req.token
-                 }
-             });
-        } else if (method === 'DELETE') {
-            const idx = credentials.findIndex(c => c.id === credentialID);
-            if (idx !== -1) credentials.splice(idx, 1);
-            await route.fulfill({ json: {} });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
-        const urlStr = route.request().url();
-        console.log(`OAuth mock hit for ${urlStr}`);
-        if (urlStr.includes('/initiate')) {
-            const origin = new URL(page.url()).origin;
-            await route.fulfill({
-                json: {
-                    authorization_url: `${origin}/auth/callback?code=mock-code&state=xyz`,
-                    state: 'xyz'
-                }
-            });
-        } else if (urlStr.includes('/callback')) {
-            // Find credential and update token
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) cred.token = { accessToken: 'mock-token' };
-            await route.fulfill({ json: { status: 'success' } });
-        } else {
-            await route.continue();
-        }
-    });
+    // For this test, we create via UI, so we just want to ensure the backend is responsive.
+    // We don't mock /api/v1/credentials anymore.
   });
 
   test('should create oauth credential and connect', async ({ page }) => {
@@ -88,7 +83,8 @@ test.describe('Credential OAuth Flow E2E', () => {
     await page.getByRole('button', { name: 'New Credential' }).click({ force: true });
 
     // Use placeholder to avoid name conflicts
-    await page.getByPlaceholder('My Credential').fill('Test OAuth Cred');
+    const credName = `Test OAuth Cred ${Date.now()}`;
+    await page.getByPlaceholder('My Credential').fill(credName);
 
     // Select Type
     await page.getByRole('combobox', { name: 'Type' }).click({ force: true });
@@ -102,8 +98,10 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     await page.getByLabel('Client ID').fill('test-client-id');
     await page.getByLabel('Client Secret').fill('test-client-secret');
-    await authUrlLabel.fill('http://example.com/auth');
-    await page.getByLabel('Token URL').fill('http://example.com/token');
+
+    // Use our local mock provider URL
+    await authUrlLabel.fill(`${mockProviderUrl}/auth`);
+    await page.getByLabel('Token URL').fill(`${mockProviderUrl}/token`);
 
     const saveButton = page.getByRole('button', { name: 'Save', exact: true });
     await saveButton.scrollIntoViewIfNeeded();
@@ -111,13 +109,15 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
 
-    await expect(page.getByText('Test OAuth Cred')).toBeVisible();
+    await expect(page.getByText(credName)).toBeVisible();
 
-    const row = page.locator('tr').filter({ hasText: 'Test OAuth Cred' });
+    const row = page.locator('tr').filter({ hasText: credName });
     // Click direct Edit button
     await row.getByRole('button', { name: 'Edit' }).click({ force: true });
 
     await expect(page.getByRole('button', { name: 'Connect Account' })).toBeVisible({ timeout: 15000 });
+
+    // This will trigger navigation to mockProviderUrl/auth -> redirect to /oauth/callback -> calls backend -> backend calls mockProviderUrl/token
     await page.getByRole('button', { name: 'Connect Account' }).click({ force: true });
 
     await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 20000 });
@@ -125,6 +125,6 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     // Use auto-retrying toHaveURL
     await expect(page).toHaveURL(/\/credentials/);
-    await expect(page.getByText('Test OAuth Cred')).toBeVisible();
+    await expect(page.getByText(credName)).toBeVisible();
   });
 });

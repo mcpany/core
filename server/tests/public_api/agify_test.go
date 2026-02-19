@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_Agify(t *testing.T) {
-	// t.SkipNow()
+	// // t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

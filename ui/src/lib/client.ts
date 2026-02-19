@@ -1601,6 +1601,20 @@ export const apiClient = {
     },
 
     /**
+     * Seeds the database with test data (Debug/Test only).
+     * @param data The data to seed (credentials, services, secrets, profiles).
+     */
+    seedData: async (data: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Failed to seed data');
+        return res.json();
+    },
+
+    /**
      * Updates an alert status.
      * @param id The ID of the alert.
      * @param status The new status.

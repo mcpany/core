@@ -1121,7 +1121,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--db-path", dbPath,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
+	// Allow /tmp for tests using t.TempDir()
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true", "MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true", "MCPANY__GLOBAL_SETTINGS__ALLOWED_FILE_PATHS=[\"/\"]"}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}

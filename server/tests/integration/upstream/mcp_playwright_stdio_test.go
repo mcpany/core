@@ -6,6 +6,7 @@ package upstream
 import (
 	"context"
 	"encoding/json"
+	"path/filepath"
 	"testing"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -17,8 +18,6 @@ import (
 )
 
 func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
-	t.Skip("Skipping failing Playwright test: tool returns 0 tools in test env (investigated: stdout pollution fixed in docker_transport.go)")
-
 	testCase := &framework.E2ETestCase{
 		Name:                "playwright server (Stdio)",
 		UpstreamServiceType: "stdio",
@@ -33,10 +32,16 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			}
 			cmd := "node"
 			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "debug"}
-			setupCommands := []string{
-				"npm install --no-optional @playwright/mcp",
-			}
-			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/tmp", "mcr.microsoft.com/playwright:v1.58.0-jammy", setupCommands, env, args...)
+			// Use project root where dependencies are already installed by make build
+			projectRoot, err := integration.GetProjectRoot()
+			require.NoError(t, err)
+			// Remove double dash if causing argument parsing error in newer version?
+			args = []string{"./node_modules/.bin/mcp-server-playwright", "--console-level", "debug"}
+			workDir := filepath.Join(projectRoot, "tests/integration/upstream")
+
+			// Use local execution (empty image) to avoid Docker overlayfs issues in CI
+			// No setup commands needed as we use pre-installed modules
+			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, workDir, "", nil, env, args...)
 
 
 
