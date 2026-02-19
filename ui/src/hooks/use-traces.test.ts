@@ -154,4 +154,29 @@ describe('useTraces Hook', () => {
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
   });
+
+  it('should limit the number of traces to avoid memory leak', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+    act(() => {
+       mockWebSocket.onopen({} as any);
+    });
+
+    // Simulate 1100 updates (limit is 1000)
+    act(() => {
+        for (let i = 0; i < 1100; i++) {
+            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces).toHaveLength(1000);
+    // Should have the newest traces (id 1099 down to 100)
+    expect(result.current.traces[0].id).toBe('1099');
+    expect(result.current.traces[999].id).toBe('100');
+ });
 });
