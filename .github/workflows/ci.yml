@@ -48,6 +48,17 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
@@ -381,6 +392,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
+          docker system prune -af
+          docker system prune -af
           for f in *.tar; do
             docker load -i "$f"
           done
@@ -838,7 +851,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -886,6 +899,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
+          docker system prune -af
           for f in *.tar; do
             docker load -i "$f"
           done
@@ -968,6 +982,7 @@ jobs:
 
       - name: Load Docker Images into Kind
         run: |
+          docker system prune -af
           # Load all tarballs into docker daemon first?
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
