@@ -13,17 +13,16 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 const mockWebSocket = {
   send: vi.fn(),
   close: vi.fn(),
-  onopen: null as any,
-  onmessage: null as any,
-  onclose: null as any,
-  onerror: null as any,
+  onopen: null as ((ev: Event) => void) | null,
+  onmessage: null as ((ev: MessageEvent) => void) | null,
+  onclose: null as ((ev: CloseEvent) => void) | null,
+  onerror: null as ((ev: Event) => void) | null,
 };
 
 // Setup global WebSocket mock
-const originalWebSocket = global.WebSocket;
 global.WebSocket = vi.fn().mockImplementation(function() {
   return mockWebSocket;
-}) as any;
+}) as unknown as typeof WebSocket;
 
 describe('useTraces Hook', () => {
   beforeEach(() => {
@@ -68,7 +67,9 @@ describe('useTraces Hook', () => {
 
     // Simulate connection open
     act(() => {
-      mockWebSocket.onopen({} as any);
+      if (mockWebSocket.onopen) {
+        mockWebSocket.onopen(new Event('open'));
+      }
     });
 
     expect(result.current.isConnected).toBe(true);
@@ -78,8 +79,10 @@ describe('useTraces Hook', () => {
 
     // Simulate incoming messages
     act(() => {
-        mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
-        mockWebSocket.onmessage({ data: JSON.stringify(trace2) } as any);
+        if (mockWebSocket.onmessage) {
+            mockWebSocket.onmessage(new MessageEvent('message', { data: JSON.stringify(trace1) }));
+            mockWebSocket.onmessage(new MessageEvent('message', { data: JSON.stringify(trace2) }));
+        }
     });
 
     // Advance timers to trigger interval flush
@@ -100,7 +103,9 @@ describe('useTraces Hook', () => {
     expect(mockWebSocket.onopen).toBeTruthy();
 
     act(() => {
-      mockWebSocket.onopen({} as any);
+      if (mockWebSocket.onopen) {
+        mockWebSocket.onopen(new Event('open'));
+      }
     });
 
     const trace1 = createTrace('1', 100);
@@ -108,7 +113,9 @@ describe('useTraces Hook', () => {
 
     // First message
     act(() => {
-      mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
+      if (mockWebSocket.onmessage) {
+        mockWebSocket.onmessage(new MessageEvent('message', { data: JSON.stringify(trace1) }));
+      }
     });
 
     act(() => {
@@ -120,7 +127,9 @@ describe('useTraces Hook', () => {
 
     // Update message
     act(() => {
-      mockWebSocket.onmessage({ data: JSON.stringify(trace1Update) } as any);
+      if (mockWebSocket.onmessage) {
+        mockWebSocket.onmessage(new MessageEvent('message', { data: JSON.stringify(trace1Update) }));
+      }
     });
 
     act(() => {
@@ -137,13 +146,17 @@ describe('useTraces Hook', () => {
      expect(mockWebSocket.onopen).toBeTruthy();
 
      act(() => {
-        mockWebSocket.onopen({} as any);
+        if (mockWebSocket.onopen) {
+            mockWebSocket.onopen(new Event('open'));
+        }
      });
 
      // Simulate 100 updates rapidly
      act(() => {
-         for (let i = 0; i < 100; i++) {
-             mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+         if (mockWebSocket.onmessage) {
+             for (let i = 0; i < 100; i++) {
+                 mockWebSocket.onmessage(new MessageEvent('message', { data: JSON.stringify(createTrace(`${i}`, i)) }));
+             }
          }
      });
 
@@ -161,14 +174,18 @@ describe('useTraces Hook', () => {
     expect(mockWebSocket.onopen).toBeTruthy();
 
     act(() => {
-        mockWebSocket.onopen({} as any);
+        if (mockWebSocket.onopen) {
+            mockWebSocket.onopen(new Event('open'));
+        }
     });
 
     // Simulate 1100 updates rapidly (limit is 1000)
     act(() => {
-        // Send in batches to respect buffer interval slightly
-        for (let i = 0; i < 1100; i++) {
-            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        if (mockWebSocket.onmessage) {
+            // Send in batches to respect buffer interval slightly
+            for (let i = 0; i < 1100; i++) {
+                mockWebSocket.onmessage(new MessageEvent('message', { data: JSON.stringify(createTrace(`${i}`, i)) }));
+            }
         }
     });
 
