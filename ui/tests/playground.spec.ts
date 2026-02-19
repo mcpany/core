@@ -65,18 +65,7 @@ test.describe('Playground Tool Configuration', () => {
 
     // Run Tool
     await page.getByRole('button', { name: /run tool/i }).click();
-    // Note: The "Run Tool" button now executes immediately, no need to click Send.
-    // However, if the logic in `tool-form.tsx` just populates the input and sends,
-    // we might need to check if it auto-sends.
-    // Looking at `tool-form.tsx` change in Step 1, it calls `onSubmit`.
-    // In `PlaygroundClientPro.tsx`, `handleToolFormSubmit` calls `processResponse` immediately.
-    // So we don't need to click Send.
-    // But `PlaygroundClient.tsx` (non-pro) logic might differ?
-    // Wait, the test uses `/playground` which renders `PlaygroundClientPro`.
-    // And `PlaygroundClientPro` sets input and calls `processResponse`.
-    // So removing `await page.getByLabel('Send').click();` is correct if it auto-executes.
-    // But let's verify if `processResponse` is called.
-    // Actually, `handleToolFormSubmit` updates state.
+    // The "Run Tool" button triggers immediate execution, so clicking "Send" is no longer required.
 
     // Verify chat message
     // The message should appear in the chat.
