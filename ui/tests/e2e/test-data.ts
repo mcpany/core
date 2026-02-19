@@ -107,7 +107,8 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
         name: name,
         services: [
             {
-                name: "weather-service",
+                // Use a unique name to avoid collision with config.minimal.yaml default service
+                name: "weather-service-e2e",
                 // Use command_line_service matching config.minimal.yaml to avoid Docker issues in E2E
                 command_line_service: {
                     command: "echo",
@@ -261,6 +262,9 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
         await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        await context.delete('/api/v1/services/weather-service', { headers: HEADERS });
+        await context.delete('/api/v1/services/weather-service-e2e', { headers: HEADERS });
+        await context.delete('/api/v1/services/test-service-1771498840189', { headers: HEADERS }); // Cleanup potential leftover from previous runs
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
