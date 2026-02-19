@@ -94,7 +94,7 @@ func newImportCmd() *cobra.Command {
 		Use:   "import [path to claude_desktop_config.json]",
 		Short: "Import configuration from Claude Desktop",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(_ *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			inputPath := filepath.Clean(args[0])
 
 			// Read input file
@@ -139,9 +139,9 @@ func newImportCmd() *cobra.Command {
 				if err := os.WriteFile(outputPath, yamlData, 0600); err != nil {
 					return fmt.Errorf("failed to write output file: %w", err)
 				}
-				fmt.Printf("Successfully imported configuration to %s\n", outputPath)
+				fmt.Fprintf(cmd.OutOrStdout(), "Successfully imported configuration to %s\n", outputPath)
 			} else {
-				fmt.Println(string(yamlData))
+				fmt.Fprintln(cmd.OutOrStdout(), string(yamlData))
 			}
 
 			return nil
