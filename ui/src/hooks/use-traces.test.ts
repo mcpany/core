@@ -163,9 +163,9 @@ describe('useTraces Hook', () => {
        mockWebSocket.onopen({} as any);
     });
 
-    // Simulate 1100 updates (limit is 1000)
+    // Simulate 1010 updates (limit is 1000) - Reduced from 1100 to save CI resources
     act(() => {
-        for (let i = 0; i < 1100; i++) {
+        for (let i = 0; i < 1010; i++) {
             mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
         }
     });
@@ -175,8 +175,8 @@ describe('useTraces Hook', () => {
     });
 
     expect(result.current.traces).toHaveLength(1000);
-    // Should have the newest traces (id 1099 down to 100)
-    expect(result.current.traces[0].id).toBe('1099');
-    expect(result.current.traces[999].id).toBe('100');
+    // Should have the newest traces (id 1009 down to 10)
+    expect(result.current.traces[0].id).toBe('1009');
+    expect(result.current.traces[999].id).toBe('10');
  });
 });
